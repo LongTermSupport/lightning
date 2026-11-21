@@ -153,7 +153,7 @@ void ScheduledSendController::setClient(MatrixClient *client)
         }
     });
     connect(m_client, &MatrixClient::roomSendFinished, this,
-            [this](quint64 opId, const QString &, bool ok, const QString &) {
+            [this](quint64 opId, const QString &, bool ok, const QString &category) {
         for (int i = 0; i < m_entries.size(); ++i) {
             Entry &e = m_entries[i];
             if (e.sendOp == 0 || e.sendOp != opId)
