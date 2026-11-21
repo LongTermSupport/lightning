@@ -1,4 +1,5 @@
 
+#include "app/DraftStore.h"
 #include "matrix/MatrixClient.h"
 #include "models/MessageComposer.h"
 #include "models/MessageHtml.h"
@@ -167,6 +168,75 @@ private Q_SLOTS:
         m_composer = nullptr;
         delete m_client;
         m_client = nullptr;
+    }
+
+    void cancellingAReplyKeepsThePickedMentions_data()
+    {
+        QTest::addColumn<bool>("threadChip");
+        QTest::newRow("reply") << false;
+        QTest::newRow("thread reply") << true;
+    }
+
+    void cancellingAReplyKeepsThePickedMentions()
+    {
+        QFETCH(bool, threadChip);
+        if (threadChip)
+            m_composer->beginThreadReply(QStringLiteral("$root"), QStringLiteral("p"));
+        else
+            m_composer->beginReply(QStringLiteral("$evt"), QStringLiteral("Bob"),
+                                   QStringLiteral("hi"));
+        m_composer->setText(QStringLiteral("hi @bo"));
+        m_composer->insertMention(QStringLiteral("@bob:example.org"),
+                                  QStringLiteral("Bob"), 3, 6);
+        m_composer->setText(m_composer->text() + QStringLiteral("there"));
+        QCOMPARE(m_composer->text(), QStringLiteral("hi @Bob there"));
+        m_composer->cancelReplyOrEdit();
+        QVERIFY(!m_composer->isReplying() && !m_composer->inThread());
+        QCOMPARE(m_composer->text(), QStringLiteral("hi @Bob there"));
+        QCOMPARE(m_composer->mentionRanges().size(), 1);
+        m_composer->send();
+        QCOMPARE(m_client->sends.size(), 1);
+        const SendRecord &s = m_client->sends.first();
+        QCOMPARE(s.kind, QStringLiteral("text"));
+        QCOMPARE(s.mentionIds, QStringList{ QStringLiteral("@bob:example.org") });
+        QVERIFY2(s.body.contains(QStringLiteral("https://matrix.to/#/@bob:example.org")),
+                 qPrintable(s.body));
+    }
+
+    void anEditOfAMentionAfterCancellingAReplyStillDropsIt()
+    {
+        m_composer->beginReply(QStringLiteral("$evt"), QStringLiteral("Bob"),
+                               QStringLiteral("hi"));
+        m_composer->setText(QStringLiteral("@bo"));
+        m_composer->insertMention(QStringLiteral("@bob:example.org"),
+                                  QStringLiteral("Bob"), 0, 3);
+        m_composer->cancelReplyOrEdit();
+        m_composer->setText(QStringLiteral("@Bo "));
+        QVERIFY(m_composer->mentionRanges().isEmpty());
+        m_composer->send();
+        QCOMPARE(m_client->sends.size(), 1);
+        QVERIFY(m_client->sends.first().mentionIds.isEmpty());
+        QVERIFY(!m_client->sends.first().body.contains(QStringLiteral("matrix.to")));
+    }
+
+    void cancellingAnEditGivesBackTheDraftsMentionsOnly()
+    {
+        auto *drafts = new DraftStore(m_composer);
+        drafts->setClient(m_client);
+        m_composer->setDraftStore(drafts);
+        m_composer->setText(QStringLiteral("hi @al"));
+        m_composer->insertMention(QStringLiteral("@alice:example.org"),
+                                  QStringLiteral("Alice"), 3, 6);
+        m_composer->beginEdit(
+            QStringLiteral("$e"),
+            QStringLiteral("[Carol](https://matrix.to/#/@carol:example.org) x"));
+        QCOMPARE(m_composer->mentionRanges().size(), 1);
+        m_composer->cancelReplyOrEdit();
+        QCOMPARE(m_composer->text(), QStringLiteral("hi @Alice "));
+        m_composer->send();
+        QCOMPARE(m_client->sends.size(), 1);
+        QCOMPARE(m_client->sends.first().mentionIds,
+                 QStringList{ QStringLiteral("@alice:example.org") });
     }
 
     void typingNoticesAreSentByDefault()

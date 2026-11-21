@@ -2015,6 +2015,7 @@ Item {
                             }
                         }
                         IconButton {
+                            objectName: "composerReplyCancelButton"
                             Layout.alignment: Qt.AlignVCenter
                             implicitWidth: 24; implicitHeight: 24
                             radius: AppTheme.radiusControl

@@ -1936,8 +1936,6 @@ void MessageComposer::cancelReplyOrEdit()
     m_editingTimelineId.clear();
     m_threadRootId.clear();
     m_threadPreview.clear();
-    m_mentionRefs.clear();
-    Q_EMIT mentionRangesChanged();
     if (wasEditing) {
         m_text.clear();
         m_mentionRefs.clear();

@@ -1109,6 +1109,52 @@ private slots:
         input->setProperty("text", QString());
     }
 
+    void cancellingAReplyKeepsAPickedMention_data()
+    {
+        QTest::addColumn<bool>("viaButton");
+        QTest::newRow("escape") << false;
+        QTest::newRow("close button") << true;
+    }
+
+    void cancellingAReplyKeepsAPickedMention()
+    {
+        QFETCH(bool, viaButton);
+        m_controller->setCurrentRoomId(QStringLiteral("!general:mock.local"));
+        auto *composer = m_controller->composer();
+        composer->beginReply(QStringLiteral("$evt"), QStringLiteral("Bob"),
+                             QStringLiteral("hi"));
+        auto *input = item("composerInput");
+        QVERIFY(input);
+        openMention(input, QString());
+        QVERIFY(popupVisible());
+        QTest::keyClick(m_window, Qt::Key_Return);
+        QTest::qWait(20);
+        const QString inserted = input->property("text").toString();
+        QCOMPARE(composer->mentionRanges().size(), 1);
+        QVERIFY(composer->isReplying());
+        if (viaButton) {
+            auto *close = item("composerReplyCancelButton");
+            QVERIFY(close);
+            const QPointF c = close->mapToScene(
+                QPointF(close->width() / 2, close->height() / 2));
+            QTest::mouseClick(m_window, Qt::LeftButton, {}, c.toPoint());
+        } else {
+            QTest::keyClick(m_window, Qt::Key_Escape);
+        }
+        QTest::qWait(20);
+        QVERIFY(!composer->isReplying());
+        QCOMPARE(input->property("text").toString(), inserted);
+        QCOMPARE(composer->mentionRanges().size(), 1);
+        auto *mock = m_controller->findChild<MockMatrixClient *>();
+        QVERIFY(mock);
+        composer->send();
+        QTest::qWait(20);
+        QCOMPARE(mock->lastMentionIdsForTest().size(), 1);
+        QVERIFY(mock->lastSentBodyForTest().contains(
+            QStringLiteral("https://matrix.to/#/")));
+        input->setProperty("text", QString());
+    }
+
     void startingAReplyGivesTheComposerTheKeyboard()
     {
         m_controller->setCurrentRoomId(QStringLiteral("!general:mock.local"));
