@@ -587,6 +587,7 @@ void UpdateManager::consumeUpdateStatusFile()
     LastResult result = NoResult;
     QString mode;
     QString error;
+    QString backupPath;
 
     QFile file(path);
     if (file.open(QIODevice::ReadOnly)) {
@@ -602,6 +603,16 @@ void UpdateManager::consumeUpdateStatusFile()
                     result = okValue.toBool() ? InstallSucceeded : InstallFailed;
                     mode = sanitizedStatusToken(object.value(QLatin1String("mode")));
                     error = sanitizedStatusToken(object.value(QLatin1String("error")));
+                    const QJsonValue backup = object.value(QLatin1String("backupPath"));
+                    if (error == QLatin1String("rollback-failed") && backup.isString()
+                        && backup.toString().size() <= 1024) {
+                        const QString path = backup.toString();
+                        bool clean = QDir::isAbsolutePath(path);
+                        for (const QChar c : path)
+                            clean = clean && c.unicode() >= 0x20 && c.unicode() != 0x7F;
+                        if (clean)
+                            backupPath = path;
+                    }
                 }
             }
         }
@@ -615,6 +626,7 @@ void UpdateManager::consumeUpdateStatusFile()
     m_lastUpdateResult = result;
     m_lastUpdateMode = mode;
     m_lastUpdateError = error;
+    m_lastUpdateBackupPath = backupPath;
     Q_EMIT lastUpdateResultChanged();
 }
 
@@ -627,6 +639,7 @@ void UpdateManager::clearLastUpdateResult()
     m_lastUpdateResult = NoResult;
     m_lastUpdateError.clear();
     m_lastUpdateMode.clear();
+    m_lastUpdateBackupPath.clear();
     Q_EMIT lastUpdateResultChanged();
 }
 
@@ -1031,7 +1044,7 @@ QString UpdateManager::helperProgramPath() const
     return QCoreApplication::applicationDirPath() + QLatin1Char('/') + name;
 }
 
-QString UpdateManager::explainInstallError(const QString &token)
+QString UpdateManager::explainInstallError(const QString &token, const QString &backupPath)
 {
     const QString key = token.trimmed().toLower();
     if (key.isEmpty())
@@ -1112,6 +1125,15 @@ QString UpdateManager::explainInstallError(const QString &token)
     }
 
     if (key == QLatin1String("rollback-failed")) {
+        if (!backupPath.isEmpty()) {
+            return tr("The update failed and the previous version could not be "
+                      "fully restored. The files that were not put back are in "
+                      "%1. Move them back into the Lightning folder, or "
+                      "reinstall Lightning from the downloads page. Your "
+                      "messages and account are on the server and are not "
+                      "affected.")
+                .arg(QDir::toNativeSeparators(backupPath));
+        }
         return tr("The update failed and the previous version could not be "
                   "fully restored. Please reinstall Lightning from the "
                   "downloads page. Your messages and account are on the "

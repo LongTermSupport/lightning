@@ -508,6 +508,32 @@ private Q_SLOTS:
         QVERIFY(settingsOf(r.client.writesOf(0).last()).contains("clockFormat"));
     }
 
+    void importPreviewReportsADroppedActiveTheme()
+    {
+        Rig r(false);
+        QTemporaryDir dir;
+        QFile f(dir.filePath("in.json"));
+        QVERIFY(f.open(QIODevice::WriteOnly));
+        f.write("{\"format\":\"lightning-settings\",\"version\":1,\"settings\":{},"
+                "\"customThemes\":[7,{\"lightningTheme\":1,\"name\":\"B\"}],"
+                "\"activeCustomTheme\":0}");
+        f.close();
+        QVariantMap p = r.sync.previewImport(QUrl::fromLocalFile(f.fileName()));
+        QVERIFY(p.value("ok").toBool());
+        QVERIFY(p.value("activeThemeDropped").toBool());
+        r.sync.cancelImport();
+
+        QVERIFY(f.open(QIODevice::WriteOnly | QIODevice::Truncate));
+        f.write("{\"format\":\"lightning-settings\",\"version\":1,\"settings\":{},"
+                "\"customThemes\":[7,{\"lightningTheme\":1,\"name\":\"B\"}],"
+                "\"activeCustomTheme\":1}");
+        f.close();
+        p = r.sync.previewImport(QUrl::fromLocalFile(f.fileName()));
+        QVERIFY(p.value("ok").toBool());
+        QVERIFY(p.contains("activeThemeDropped"));
+        QVERIFY(!p.value("activeThemeDropped").toBool());
+    }
+
     void importPreviewNamesChoicesAndIgnoresUnknownShortcuts()
     {
         Rig r(false);

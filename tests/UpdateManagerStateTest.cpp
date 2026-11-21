@@ -246,12 +246,14 @@ public:
 };
 
 bool writeHelperStatus(const QString &stagingRoot, bool ok, const QString &mode,
-                       const QString &error)
+                       const QString &error, const QString &backupPath = QString())
 {
     QJsonObject object;
     object.insert(QStringLiteral("ok"), ok);
     object.insert(QStringLiteral("mode"), mode);
     object.insert(QStringLiteral("error"), error);
+    if (!backupPath.isEmpty())
+        object.insert(QStringLiteral("backupPath"), backupPath);
     object.insert(QStringLiteral("timestamp"),
                   QStringLiteral("2026-08-16T12:00:00Z"));
     QFile file(QDir(stagingRoot).absoluteFilePath(QStringLiteral("update-status.json")));
@@ -407,6 +409,7 @@ private slots:
     void handoffNeverClaimsTheUpdateWasInstalled();
     void helperSuccessStatusIsSurfacedOnceThenConsumed();
     void helperFailureStatusIsSurfacedWithItsError();
+    void aFailedRollbackNamesTheBackupFolderToRestoreFrom();
     void unusableStatusFileIsSimplyNoResult_data();
     void unusableStatusFileIsSimplyNoResult();
     void staleStagedArtifactsAreSweptAtStartup();
@@ -1148,6 +1151,42 @@ void UpdateManagerStateTest::helperFailureStatusIsSurfacedWithItsError()
 
     QVERIFY(!manager.lastUpdateError().contains(QLatin1Char('/')));
     QVERIFY(!manager.lastUpdateError().contains(QLatin1Char('@')));
+}
+
+void UpdateManagerStateTest::aFailedRollbackNamesTheBackupFolderToRestoreFrom()
+{
+    QTemporaryDir root;
+    QVERIFY(root.isValid());
+    const QString backup =
+        QDir(root.path()).absoluteFilePath(QStringLiteral("Lightning.lightning-previous"));
+    QVERIFY(writeHelperStatus(root.path(), false, QStringLiteral("windows-portable"),
+                              QStringLiteral("rollback-failed"), backup));
+
+    UpdateManager manager;
+    manager.setStagingRootForTest(root.path());
+    QCOMPARE(manager.lastUpdateError(), QStringLiteral("rollback-failed"));
+    QCOMPARE(manager.lastUpdateBackupPath(), backup);
+    const QString shown = UpdateManager::explainInstallError(
+        manager.lastUpdateError(), manager.lastUpdateBackupPath());
+    QVERIFY2(shown.contains(QDir::toNativeSeparators(backup)), qPrintable(shown));
+    QVERIFY(!UpdateManager::explainInstallError(QStringLiteral("rollback-failed"))
+                 .contains(QDir::toNativeSeparators(backup)));
+
+    manager.clearLastUpdateResult();
+    QVERIFY(manager.lastUpdateBackupPath().isEmpty());
+
+    QVERIFY(writeHelperStatus(root.path(), false, QStringLiteral("windows-portable"),
+                              QStringLiteral("promote-failed"), backup));
+    UpdateManager other;
+    other.setStagingRootForTest(root.path());
+    QVERIFY(other.lastUpdateBackupPath().isEmpty());
+
+    QVERIFY(writeHelperStatus(root.path(), false, QStringLiteral("windows-portable"),
+                              QStringLiteral("rollback-failed"),
+                              QStringLiteral("relative/folder")));
+    UpdateManager relative;
+    relative.setStagingRootForTest(root.path());
+    QVERIFY(relative.lastUpdateBackupPath().isEmpty());
 }
 
 void UpdateManagerStateTest::unusableStatusFileIsSimplyNoResult_data()

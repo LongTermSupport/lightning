@@ -59,7 +59,7 @@ void writeStderr(const QString &line)
 // Exactly four fields, all from our own enums or fixed strings: never a path,
 // token or process output.
 void writeStatus(const QString &statusPath, bool ok, const QString &mode,
-                 const QString &error)
+                 const QString &error, const QString &backupPath = QString())
 {
     if (statusPath.isEmpty())
         return;
@@ -68,6 +68,8 @@ void writeStatus(const QString &statusPath, bool ok, const QString &mode,
     object.insert(QStringLiteral("ok"), ok);
     object.insert(QStringLiteral("mode"), mode);
     object.insert(QStringLiteral("error"), error);
+    if (!backupPath.isEmpty())
+        object.insert(QStringLiteral("backupPath"), backupPath);
     object.insert(QStringLiteral("timestamp"),
                   QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
 
@@ -328,6 +330,7 @@ int main(int argc, char *argv[])
 
     int failureExit = ExitInternalError;
     QString failureCode;
+    QString failureBackupPath;
 
     if (strategy.plan.requiresExternalProcess) {
         const int installerExit = runExternalInstaller(strategy.plan, args.expectedSha256);
@@ -357,6 +360,8 @@ int main(int argc, char *argv[])
                               ? QString::fromLatin1(
                                     updater::replaceErrorName(swapped.error))
                               : archiveError;
+            if (swapped.error == updater::ReplaceError::RollbackFailed)
+                failureBackupPath = swapped.backupPath;
         }
     } else if (args.mode == updater::UpdaterMode::LinuxAppImage) {
         const updater::ReplaceResult replaced = runAppImageReplace(args);
@@ -371,7 +376,7 @@ int main(int argc, char *argv[])
     }
 
     if (!failureCode.isEmpty()) {
-        writeStatus(args.statusPath, false, mode, failureCode);
+        writeStatus(args.statusPath, false, mode, failureCode, failureBackupPath);
         writeStderr(QStringLiteral("lightning-updater: install failed (%1)")
                         .arg(failureCode));
         return failureExit;
