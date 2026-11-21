@@ -21,8 +21,10 @@ class MediaBridge;
 //   permalinks into the source room.
 // - The source's relation (reply, m.thread) is never carried over.
 // - forwarded() fires only once the send is dispatched. Failures before
-//   dispatch set `error`; a media send refused afterwards is reported through
+//   dispatch set `error`; a send refused afterwards is reported through
 //   forwardFailed(), since the picker has already closed.
+// - A selection pair counts as sent only on the backend's acknowledgement
+//   (roomSendFinished); progressDone counts settled pairs, sent or failed.
 // - Redacted, local-echo and undecryptable content is refused in begin().
 //
 // begin() takes an immutable snapshot of the activated row instead of
@@ -98,6 +100,8 @@ Q_SIGNALS:
 private Q_SLOTS:
     void onAttachmentQueueFinished(quint64 opId, const QString &roomId,
                                    bool ok, const QString &category);
+    void onRoomSendFinished(quint64 opId, const QString &roomId, bool ok,
+                            const QString &category);
     void onMediaBytesForStar(const QString &mediaKey, bool ok,
                              const QByteArray &bytes, const QString &category);
 
@@ -138,6 +142,8 @@ private:
     QString m_mode = QStringLiteral("content");
     QVariantList m_selectionSnapshots;
     QList<Pending> m_queue;
+    // Op ids are per client: cleared on sign-out, client change and new batch.
+    QHash<quint64, Pending> m_inFlight;
     QList<Pending> m_failedPairs;
     QVariantList m_failures;
     int m_progressDone = 0;

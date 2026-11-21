@@ -923,6 +923,14 @@ public:
     virtual quint64 sendRoomContent(const QString &roomId,
                                     const QString &contentJson)
     { Q_UNUSED(roomId); Q_UNUSED(contentJson); return 0; }
+    // True when sendRoomMessage and sendThreadTextAcked are implemented and
+    // answer on roomSendFinished.
+    virtual bool supportsAcknowledgedTextSend() const { return false; }
+    // Thread-focused send of a plain thread message; 0 when refused.
+    virtual quint64 sendThreadTextAcked(const QString &roomId,
+                                        const QString &threadRootId,
+                                        const QString &body)
+    { Q_UNUSED(roomId); Q_UNUSED(threadRootId); Q_UNUSED(body); return 0; }
     virtual quint64 sendRoomMessage(const QString &roomId, const QString &body,
                                     const QVariantMap &bodySpec,
                                     const QStringList &mentionUserIds,

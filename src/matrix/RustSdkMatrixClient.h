@@ -490,6 +490,10 @@ public:
                             qint64 delayMs) override;
     quint64 sendRoomContent(const QString &roomId,
                             const QString &contentJson) override;
+    bool supportsAcknowledgedTextSend() const override { return true; }
+    quint64 sendThreadTextAcked(const QString &roomId,
+                                const QString &threadRootId,
+                                const QString &body) override;
     quint64 sendRoomMessage(const QString &roomId, const QString &body,
                             const QVariantMap &bodySpec,
                             const QStringList &mentionUserIds,

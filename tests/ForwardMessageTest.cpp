@@ -67,9 +67,24 @@ public:
     {
         threadSends.append({ roomId, rootId, body });
     }
-    struct RoomSend { quint64 op; QString roomId; QString body; QString rootId; };
+    struct RoomSend {
+        quint64 op; QString roomId; QString body; QString rootId;
+        bool threadPath = false;
+    };
     QList<RoomSend> roomSends;
     bool refuseRoomSends = false;
+    bool roomMessageSupported = true;
+    bool supportsAcknowledgedTextSend() const override { return roomMessageSupported; }
+    quint64 sendThreadTextAcked(const QString &roomId, const QString &rootId,
+                                const QString &body) override
+    {
+        if (refuseRoomSends)
+            return 0;
+        const quint64 op = nextSendOp++;
+        roomSends.append({ op, roomId, body, rootId, true });
+        threadSends.append({ roomId, rootId, body });
+        return op;
+    }
     quint64 sendRoomMessage(const QString &roomId, const QString &body,
                             const QVariantMap &, const QStringList &,
                             const QString &, const QString &rootId) override
@@ -251,6 +266,7 @@ private Q_SLOTS:
         });
 
         QCOMPARE(client.textSends.size(), 4);
+        client.ackAll();
         QCOMPARE(fwd.progressTotal(), 4);
         QCOMPARE(fwd.progressDone(), 4);
         QCOMPARE(fwd.failureCount(), 0);
@@ -284,6 +300,7 @@ private Q_SLOTS:
         });
         fwd.sendSelection({ QVariantMap{
             { QStringLiteral("roomId"), QStringLiteral("!x:e.org") } } });
+        client.ackAll();
 
         QCOMPARE(fwd.progressTotal(), 2);
         QCOMPARE(fwd.progressDone(), 2);
@@ -309,6 +326,7 @@ private Q_SLOTS:
         fwd.sendSelection({ QVariantMap{
             { QStringLiteral("roomId"), QStringLiteral("!x:e.org") } } });
         QCOMPARE(client.textSends.size(), 1);
+        client.ackAll();
         QCOMPARE(fwd.failureCount(), 1);
 
         fwd.retryFailures();
@@ -422,6 +440,7 @@ private Q_SLOTS:
         } });
         QCOMPARE(client.roomSends.size(), 1);
         QCOMPARE(client.roomSends.at(0).rootId, QStringLiteral("$root"));
+        QVERIFY(client.roomSends.at(0).threadPath);
         QCOMPARE(fwd.progressDone(), 0);
 
         client.ack(client.roomSends.at(0), false);
@@ -498,6 +517,23 @@ private Q_SLOTS:
         QVERIFY(!fwd.busy());
         QVERIFY(!fwd.error().isEmpty());
         QVERIFY(client.textSends.isEmpty());
+    }
+
+    void aBackendWithoutASendResultStillForwardsTheSelection()
+    {
+        FakeClient client;
+        client.roomMessageSupported = false;
+        ForwardController fwd;
+        fwd.setClient(&client);
+        fwd.beginSelection(QStringLiteral("!src:example.org"),
+                           { selectedText(QStringLiteral("$a"),
+                                         QStringLiteral("hello")) });
+        fwd.sendSelection({ QVariantMap{
+            { QStringLiteral("roomId"), QStringLiteral("!x:e.org") } } });
+        QVERIFY(client.roomSends.isEmpty());
+        QCOMPARE(client.textSends.size(), 1);
+        QCOMPARE(fwd.progressDone(), 1);
+        QVERIFY(!fwd.busy());
     }
 
     void contextModeAttributesAndIsNeverTheDefault()

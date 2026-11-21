@@ -724,6 +724,7 @@ const CLASSES: &[(&str, EventClass)] = {
         ("thread_read_marker_advanced", UiOnly),
         ("thread_reset", UiOnly),
         ("thread_send_failed", UiOnly),
+        ("thread_send_result", UiOnly),
         ("thread_subscription_result", UiOnly),
         ("thread_subscription_state", UiOnly),
         ("timeline_closed", UiOnly),

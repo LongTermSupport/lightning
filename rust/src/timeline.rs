@@ -1513,6 +1513,27 @@ impl TimelineRegistry {
         mention_user_ids: Vec<String>,
         spec: SendBodySpec,
     ) -> Result<(), String> {
+        self.send_thread_text_op(
+            runtime, client, room_id, root_event_id, body, in_reply_to,
+            mention_user_ids, spec, 0,
+        )
+    }
+
+    /// With a nonzero `op_id` the server's answer arrives as
+    /// `thread_send_result`, and a failure is not also `thread_send_failed`.
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn send_thread_text_op(
+        self: &Arc<Self>,
+        runtime: &tokio::runtime::Runtime,
+        client: Client,
+        room_id: String,
+        root_event_id: String,
+        body: String,
+        in_reply_to: Option<String>,
+        mention_user_ids: Vec<String>,
+        spec: SendBodySpec,
+        op_id: u64,
+    ) -> Result<(), String> {
         let reply_to = match &in_reply_to {
             Some(id) if !id.trim().is_empty() => Some(
                 EventId::parse(id)
@@ -1530,6 +1551,11 @@ impl TimelineRegistry {
             let watcher = bounded(watch_thread_send(&client, &room_id))
                 .await
                 .flatten();
+            let ack_updates = if op_id != 0 {
+                bounded(watch_thread_send(&client, &room_id)).await.flatten()
+            } else {
+                None
+            };
             let send_on = |timeline: Arc<Timeline>| {
                 let body = body.clone();
                 let reply_to = reply_to.clone();
@@ -1546,7 +1572,7 @@ impl TimelineRegistry {
                             unwedge_send_queue(&timeline);
                             // Never timed: send_reply ends in the queue push, and a
                             // timeout there reports failure for a message still sent.
-                            timeline.send_reply(content, reply_to).await.is_ok()
+                            timeline.send_reply(content, reply_to).await.map(|_| None)
                         }
                         None => {
                             let message =
@@ -1557,13 +1583,13 @@ impl TimelineRegistry {
                                     message,
                                 ))
                                 .await
-                                .is_ok()
+                                .map(Some)
                         }
                     }
                 }
             };
-            let sent = if let Some((timeline, _gen, _lc)) = open_thread {
-                send_on(timeline).await
+            let queued = if let Some((timeline, _gen, _lc)) = open_thread {
+                send_on(timeline).await.ok()
             } else {
                 match bounded(build_transient_thread_timeline(
                     &client, &room_id, &root_event_id,
@@ -1571,14 +1597,22 @@ impl TimelineRegistry {
                 .await
                 .flatten()
                 {
-                    Some(timeline) => send_on(timeline).await,
-                    None => false,
+                    Some(timeline) => send_on(timeline).await.ok(),
+                    None => None,
                 }
             };
+            let sent = queued.is_some();
             if sent {
                 registry.subscribe_after_thread_send(
                     client.clone(), &room_id, &root_event_id, watcher, lifecycle,
                 );
+            }
+            if op_id != 0 {
+                registry.report_thread_send(
+                    client.clone(), room_id, queued, ack_updates, op_id,
+                    lifecycle,
+                );
+                return;
             }
             if !sent && registry.thread_current(thread_gen, lifecycle) {
                 enqueue(
@@ -2532,6 +2566,54 @@ impl TimelineRegistry {
                 return;
             }
             let _ = room.subscribe_thread_if_needed(&root, Some(sent)).await;
+        });
+        self.register_thread_auto_subscription(task.abort_handle(), lifecycle);
+    }
+
+    fn report_thread_send(
+        self: &Arc<Self>,
+        client: Client,
+        room_id: String,
+        queued: Option<Option<matrix_sdk::send_queue::SendHandle>>,
+        updates: Option<tokio::sync::broadcast::Receiver<RoomSendQueueUpdate>>,
+        op_id: u64,
+        lifecycle: u64,
+    ) {
+        let registry = Arc::clone(self);
+        let events = Arc::clone(&self.events);
+        let task = tokio::spawn(async move {
+            let room = RoomId::parse(&room_id).ok().and_then(|id| client.get_room(&id));
+            let outcome = match (queued, updates, room) {
+                (Some(Some(handle)), Some(updates), Some(room)) => {
+                    crate::sendrecovery::await_queued(
+                        &room.send_queue(),
+                        updates,
+                        handle,
+                        std::time::Duration::from_secs(THREAD_SEND_WATCH_SECS),
+                    )
+                    .await
+                }
+                (None, _, _) => crate::sendrecovery::QueuedSend::Failed("rejected".to_owned()),
+                _ => crate::sendrecovery::QueuedSend::Unresolved,
+            };
+            if !registry.lifecycle_current(lifecycle) {
+                return;
+            }
+            let (ok, category) = match outcome {
+                crate::sendrecovery::QueuedSend::Sent(_) => (true, ""),
+                crate::sendrecovery::QueuedSend::Failed(err) => {
+                    (false, crate::rooms::classify_room_error(&err))
+                }
+                crate::sendrecovery::QueuedSend::Unresolved => (false, "unresolved"),
+            };
+            enqueue(
+                &events,
+                json!({
+                    "type": "thread_send_result", "lifecycle": lifecycle,
+                    "op_id": op_id, "room_id": room_id, "ok": ok,
+                    "category": category,
+                }),
+            );
         });
         self.register_thread_auto_subscription(task.abort_handle(), lifecycle);
     }
@@ -10293,4 +10375,35 @@ mod thread_list_tally_tests {
         let json = thread_list_item_to_json(&item(0, None));
         assert_eq!(json["root_sender_avatar_url"], "mxc://example.org/bo");
     }
+}
+
+/// Plain thread message through the thread-focused send path; the server's
+/// answer arrives as `thread_send_result {op_id, room_id, ok, category}`.
+#[no_mangle]
+pub unsafe extern "C" fn mx_rust_thread_send_text_acked(
+    ptr: *mut std::ffi::c_void,
+    room_id: *const std::ffi::c_char,
+    root_event_id: *const std::ffi::c_char,
+    body: *const std::ffi::c_char,
+    op_id: u64,
+) -> *mut std::ffi::c_char {
+    crate::ffi_string(|| {
+        let bridge = unsafe { crate::bridge(ptr)? };
+        let room_id = unsafe { crate::cstr_arg(room_id) }?;
+        let root = unsafe { crate::cstr_arg(root_event_id) }?;
+        let body = unsafe { crate::cstr_arg(body) }?;
+        if op_id == 0 || body.trim().is_empty() {
+            return Err("invalid_arguments".to_owned());
+        }
+        let Some(client) = bridge.client.lock().ok().and_then(|g| g.clone()) else {
+            return Err("Rust SDK session is not logged in.".to_owned());
+        };
+        bridge
+            .timelines
+            .send_thread_text_op(
+                &bridge.runtime, client, room_id, root, body, None, Vec::new(),
+                SendBodySpec::default(), op_id,
+            )
+            .map(|_| String::new())
+    })
 }

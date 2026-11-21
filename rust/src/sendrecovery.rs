@@ -173,18 +173,29 @@ pub(crate) async fn send_queued(
     content: matrix_sdk::ruma::events::AnyMessageLikeEventContent,
     wait: Duration,
 ) -> QueuedSend {
-    use matrix_sdk::send_queue::RoomSendQueueUpdate;
     let queue = room.send_queue();
     // Overrides the recovery back-off for this room; a paused queue would
     // otherwise hold a message the user just sent until the next retry.
     queue.set_enabled(true);
-    let Ok((_, mut updates)) = queue.subscribe().await else {
+    let Ok((_, updates)) = queue.subscribe().await else {
         return QueuedSend::Failed("the send queue is unavailable".to_owned());
     };
     let handle = match queue.send(content).await {
         Ok(handle) => handle,
         Err(err) => return QueuedSend::Failed(err.to_string()),
     };
+    await_queued(&queue, updates, handle, wait).await
+}
+
+/// Waits for the server's answer to one queued request; `updates` must have
+/// been subscribed before the request was queued.
+pub(crate) async fn await_queued(
+    queue: &matrix_sdk::send_queue::RoomSendQueue,
+    mut updates: tokio::sync::broadcast::Receiver<matrix_sdk::send_queue::RoomSendQueueUpdate>,
+    handle: matrix_sdk::send_queue::SendHandle,
+    wait: Duration,
+) -> QueuedSend {
+    use matrix_sdk::send_queue::RoomSendQueueUpdate;
     let failed = |reason: String| {
         let handle = handle.clone();
         async move {

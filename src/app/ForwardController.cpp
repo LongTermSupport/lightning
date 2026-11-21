@@ -26,14 +26,22 @@ void ForwardController::setClient(MatrixClient *client)
     if (m_client)
         m_client->disconnect(this);
     m_client = client;
+    m_queue.clear();
+    m_inFlight.clear();
+    m_dispatchedSends.clear();
+    resetToIdle();
     if (m_client) {
         connect(m_client, &MatrixClient::loggedOut, this, [this] {
             resetToIdle();
+            m_queue.clear();
+            m_inFlight.clear();
             m_dispatchedSends.clear();
             Q_EMIT changed();
         });
         connect(m_client, &MatrixClient::attachmentQueueFinished, this,
                 &ForwardController::onAttachmentQueueFinished);
+        connect(m_client, &MatrixClient::roomSendFinished, this,
+                &ForwardController::onRoomSendFinished);
     }
 }
 
@@ -230,6 +238,7 @@ void ForwardController::beginSelection(const QString &sourceRoomId,
     m_failures.clear();
     m_failedPairs.clear();
     m_queue.clear();
+    m_inFlight.clear();
     m_progressDone = 0;
     m_progressTotal = 0;
     m_sourceRoomId = sourceRoomId;
@@ -275,6 +284,7 @@ void ForwardController::sendSelection(const QVariantList &targets)
     if (!m_selectionActive || !m_client || targets.isEmpty())
         return;
     m_queue.clear();
+    m_inFlight.clear();
     m_failures.clear();
     m_failedPairs.clear();
     m_progressDone = 0;
@@ -305,6 +315,7 @@ void ForwardController::retryFailures()
     if (m_failedPairs.isEmpty() || !m_client)
         return;
     m_queue = m_failedPairs;
+    m_inFlight.clear();
     m_failedPairs.clear();
     m_failures.clear();
     m_progressDone = 0;
@@ -355,6 +366,21 @@ void ForwardController::pumpQueue()
         if (m_mode == QLatin1String("context"))
             body = contextPrefixFor(pair.snapshot) + body;
 
+        if (m_client->supportsAcknowledgedTextSend()) {
+            // A thread target stays on the thread-focused path (§8).
+            const quint64 op = pair.threadRootId.isEmpty()
+                ? m_client->sendRoomMessage(pair.targetRoomId, body, {}, {},
+                                            {}, {})
+                : m_client->sendThreadTextAcked(pair.targetRoomId,
+                                                pair.threadRootId, body);
+            if (op == 0)
+                notePairResult(pair, false, tr("Couldn't send to this room."));
+            else
+                m_inFlight.insert(op, pair);
+            continue;
+        }
+        // shortcut: the mock and HTTP backends report no send result, so a
+        // copy counts at dispatch there.
         if (!pair.threadRootId.isEmpty()) {
             m_client->sendThreadReplyTo(pair.targetRoomId, pair.threadRootId,
                                         QString(), body);
@@ -378,9 +404,20 @@ void ForwardController::forwardTo(const QString &targetRoomId)
         // formatted_body is never read: its pills point into the source
         // room. The shared send path renders Markdown, so the copy is not
         // byte-faithful; do not "fix" that by reusing formatted_body.
-        // sendTextMessage attaches no relation.
+        // Neither send path attaches a relation.
         const QString body = m_snapshot.value(QStringLiteral("body")).toString();
-        m_client->sendTextMessage(targetRoomId, body);
+        if (m_client->supportsAcknowledgedTextSend()) {
+            const quint64 op = m_client->sendRoomMessage(targetRoomId, body,
+                                                         {}, {}, {}, {});
+            if (op == 0) {
+                m_busy = false;
+                setError(tr("Couldn't forward this message."));
+                return;
+            }
+            m_dispatchedSends.insert(op, targetRoomId);
+        } else {
+            m_client->sendTextMessage(targetRoomId, body);
+        }
         const QString target = targetRoomId;
         resetToIdle();
         Q_EMIT changed();
@@ -523,6 +560,24 @@ void ForwardController::onAttachmentQueueFinished(quint64 opId,
     Q_UNUSED(category);
     Q_EMIT forwardFailed(roomId.isEmpty() ? target : roomId,
                          tr("That message could not be forwarded."));
+}
+
+void ForwardController::onRoomSendFinished(quint64 opId,
+                                           const QString &roomId, bool ok,
+                                           const QString &category)
+{
+    const auto pending = m_inFlight.constFind(opId);
+    if (pending == m_inFlight.constEnd()) {
+        onAttachmentQueueFinished(opId, roomId, ok, category);
+        return;
+    }
+    const Pending pair = pending.value();
+    m_inFlight.erase(pending);
+    notePairResult(pair, ok,
+                   ok ? QString()
+                   : category == QLatin1String("forbidden")
+                       ? tr("You can't send messages in that room.")
+                       : tr("Couldn't send to this room."));
 }
 
 void ForwardController::resetToIdle()
