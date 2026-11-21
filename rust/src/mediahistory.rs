@@ -26,17 +26,21 @@ pub(crate) struct MediaEntry {
 
 #[derive(Debug, Clone, PartialEq)]
 pub(crate) struct MediaEdit {
+    pub event_id: String,
+    pub ts: u64,
     pub sender: String,
     pub body: String,
     pub filename: Option<String>,
     pub spoiler: bool,
 }
 
-/// Edits seen so far in a walk, by the id of the event they replace. A
-/// backward walk meets the replacement (newer) before the original, so the
-/// edit waits here and is applied when the original is classified.
-pub(crate) type PendingEdits = HashMap<String, MediaEdit>;
+/// Edits seen so far in a walk, by the id of the event they replace: the
+/// newest per sender, since who may edit is known only once the original
+/// arrives. A backward walk meets replacements before their original.
+pub(crate) type PendingEdits = HashMap<String, Vec<MediaEdit>>;
 pub(crate) const MAX_PENDING_EDITS: usize = 4096;
+/// Further senders' edits of one event are dropped, never promoted.
+const MAX_EDITORS_PER_EVENT: usize = 8;
 
 impl MediaEntry {
     pub(crate) fn to_json(&self) -> Value {
@@ -229,7 +233,7 @@ pub(crate) fn classify_with_edits(value: &Value, edits: &mut PendingEdits) -> Sc
         out.undecryptable = true;
         return out;
     }
-    if type_str != "m.room.message" && type_str != "m.sticker" {
+    if (type_str != "m.room.message" && type_str != "m.sticker") || value.get("state_key").is_some() {
         return out;
     }
     let event_id = value
@@ -255,30 +259,34 @@ pub(crate) fn classify_with_edits(value: &Value, edits: &mut PendingEdits) -> Sc
     if content.as_object().map(|o| o.is_empty()).unwrap_or(true) {
         return out;
     }
-    if type_str == "m.room.message" {
-        if let Some(rel) = content.get("m.relates_to") {
-            if rel.get("rel_type").and_then(|v| v.as_str()) == Some("m.replace") {
-                let target = rel.get("event_id").and_then(|v| v.as_str()).unwrap_or("");
-                let new_content = content.get("m.new_content");
-                let new_body = new_content.and_then(|c| c.get("body")).and_then(|v| v.as_str());
-                if let (false, Some(new_body)) = (target.is_empty(), new_body) {
-                    if edits.len() < MAX_PENDING_EDITS || edits.contains_key(target) {
-                        edits.entry(target.to_owned()).or_insert_with(|| MediaEdit {
-                            sender: sender.clone(),
-                            body: new_body.to_owned(),
-                            filename: new_content
-                                .and_then(|c| c.get("filename"))
-                                .and_then(|v| v.as_str())
-                                .map(str::to_owned),
-                            spoiler: new_content
-                                .and_then(crate::spoiler::spoiler_of)
-                                .is_some(),
-                        });
-                    }
-                }
-                return out;
-            }
+    if type_str == "m.room.message" && crate::replacement::is_replacement(value) {
+        let Some(r) = crate::replacement::parse(value) else { return out };
+        let Some(new_body) = r.new_content.get("body").and_then(|v| v.as_str()) else {
+            return out;
+        };
+        if edits.len() >= MAX_PENDING_EDITS && !edits.contains_key(r.target) {
+            return out;
         }
+        let candidate = MediaEdit {
+            event_id: r.event_id.to_owned(),
+            ts: r.ts,
+            sender: r.sender.to_owned(),
+            body: new_body.to_owned(),
+            filename: r.new_content.get("filename").and_then(|v| v.as_str()).map(str::to_owned),
+            spoiler: crate::spoiler::spoiler_of(r.new_content).is_some(),
+        };
+        let list = edits.entry(r.target.to_owned()).or_default();
+        if let Some(held) = list.iter_mut().find(|e| e.sender == candidate.sender) {
+            if crate::replacement::supersedes(
+                (candidate.ts, candidate.event_id.as_str()),
+                (held.ts, held.event_id.as_str()),
+            ) {
+                *held = candidate;
+            }
+        } else if list.len() < MAX_EDITORS_PER_EVENT {
+            list.push(candidate);
+        }
+        return out;
     }
     let msgtype = if type_str == "m.sticker" {
         "m.sticker"
@@ -293,9 +301,11 @@ pub(crate) fn classify_with_edits(value: &Value, edits: &mut PendingEdits) -> Sc
         .and_then(|v| v.as_str())
         .unwrap_or_default()
         .to_owned();
-    let edit = edits
-        .remove(&event_id)
-        .filter(|e| e.sender == sender);
+    let edit = edits.remove(&event_id).and_then(|list| {
+        list.into_iter().find(|e| {
+            crate::replacement::may_replace(&e.sender, "m.room.message", &sender, type_str)
+        })
+    });
 
     if let Some(kind) = media_kind(msgtype, content) {
         let info = content.get("info");
@@ -588,6 +598,52 @@ mod tests {
         assert!(e.gif);
         video["content"]["info"] = json!({ "mimetype": "video/mp4" });
         assert!(!classify(&video).entries[0].gif);
+    }
+
+    fn caption_edit(id: &str, sender: &str, ts: u64, caption: &str) -> Value {
+        let mut edit = edit_event(id, "$1", sender, caption);
+        edit["origin_server_ts"] = json!(ts);
+        edit["content"]["msgtype"] = json!("m.image");
+        edit["content"]["m.new_content"]["msgtype"] = json!("m.image");
+        edit
+    }
+
+    fn caption_after(walk: &[Value]) -> String {
+        let mut edits = PendingEdits::new();
+        for edit in walk {
+            assert!(classify_with_edits(edit, &mut edits).entries.is_empty());
+        }
+        classify_with_edits(&image_event(false), &mut edits).entries[0].body.clone()
+    }
+
+    #[test]
+    fn a_strangers_edit_never_displaces_the_owners_correction() {
+        let owner = caption_edit("$own", "@a:example.org", 2_500, "corrected caption");
+        let newer_stranger = caption_edit("$x2", "@mallory:example.org", 3_000, "hijacked");
+        let older_stranger = caption_edit("$x1", "@mallory:example.org", 2_100, "hijacked");
+        assert_eq!(caption_after(&[newer_stranger.clone(), owner.clone()]), "corrected caption");
+        assert_eq!(caption_after(&[owner.clone(), older_stranger.clone()]), "corrected caption");
+        assert_eq!(caption_after(&[newer_stranger, owner, older_stranger]), "corrected caption");
+    }
+
+    #[test]
+    fn the_newest_edit_wins_whatever_order_the_walk_meets_them_in() {
+        let first = caption_edit("$e1", "@a:example.org", 2_000, "first caption");
+        let second = caption_edit("$e2", "@a:example.org", 3_000, "second caption");
+        assert_eq!(caption_after(&[first.clone(), second.clone()]), "second caption");
+        assert_eq!(caption_after(&[second, first]), "second caption");
+    }
+
+    #[test]
+    fn a_message_edit_cannot_rewrite_a_sticker() {
+        let sticker = json!({
+            "type": "m.sticker", "event_id": "$s", "sender": "@a:example.org",
+            "origin_server_ts": 3u64,
+            "content": { "body": "waving cat", "url": "mxc://example.org/cat" },
+        });
+        let mut edits = PendingEdits::new();
+        classify_with_edits(&edit_event("$e", "$s", "@a:example.org", "rewritten"), &mut edits);
+        assert_eq!(classify_with_edits(&sticker, &mut edits).entries[0].body, "waving cat");
     }
 
     #[test]

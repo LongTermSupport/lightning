@@ -117,6 +117,8 @@ pub(crate) fn handle_prefix(op_id: u64) -> String {
 
 #[derive(Debug, Clone, PartialEq)]
 struct Edit {
+    event_id: String,
+    ts: u64,
     sender: String,
     body: String,
     formatted_body: String,
@@ -285,21 +287,27 @@ impl WalkState {
         let relation = content.get("m.relates_to");
         let rel_type = str_of(relation.and_then(|r| r.get("rel_type")));
         if type_str == "m.room.message" && rel_type == "m.replace" {
-            let target = str_of(relation.and_then(|r| r.get("event_id")));
-            let new_content = content.get("m.new_content");
-            if let (false, Some(new_content)) = (target.is_empty(), new_content) {
-                if self.pending_edits < MAX_PENDING_EDITS {
-                    let list = self.edits.entry(target.to_owned()).or_default();
-                    if list.len() < MAX_EDITORS_PER_EVENT
-                        && !list.iter().any(|e| e.sender == sender)
-                    {
-                        list.push(Edit {
-                            sender: sender.clone(),
-                            body: str_of(new_content.get("body")).to_owned(),
-                            formatted_body: formatted_of(new_content),
-                        });
-                        self.pending_edits += 1;
+            if let Some(r) = crate::replacement::parse(value)
+                .filter(|r| self.pending_edits < MAX_PENDING_EDITS || self.edits.contains_key(r.target))
+            {
+                let candidate = Edit {
+                    event_id: r.event_id.to_owned(),
+                    ts: r.ts,
+                    sender: sender.clone(),
+                    body: str_of(r.new_content.get("body")).to_owned(),
+                    formatted_body: formatted_of(r.new_content),
+                };
+                let list = self.edits.entry(r.target.to_owned()).or_default();
+                if let Some(held) = list.iter_mut().find(|e| e.sender == sender) {
+                    if crate::replacement::supersedes(
+                        (candidate.ts, candidate.event_id.as_str()),
+                        (held.ts, held.event_id.as_str()),
+                    ) {
+                        *held = candidate;
                     }
+                } else if self.pending_edits < MAX_PENDING_EDITS && list.len() < MAX_EDITORS_PER_EVENT {
+                    list.push(candidate);
+                    self.pending_edits += 1;
                 }
             }
             return None;
@@ -335,7 +343,10 @@ impl WalkState {
         // edit by anyone else is ignored, never applied.
         if let Some(list) = self.edits.remove(&event_id) {
             self.pending_edits = self.pending_edits.saturating_sub(list.len());
-            if let Some(edit) = list.into_iter().find(|e| e.sender == sender) {
+            if let Some(edit) = list.into_iter().find(|e| {
+                value.get("state_key").is_none()
+                    && crate::replacement::may_replace(&e.sender, "m.room.message", &sender, type_str)
+            }) {
                 body = edit.body;
                 formatted_body = edit.formatted_body;
                 edited = true;
@@ -470,6 +481,37 @@ mod tests {
         assert_eq!(row.body, "second");
         assert_eq!(row.formatted_body, "<b>second</b>");
         assert!(row.edited);
+    }
+
+    #[test]
+    fn the_newest_edit_wins_by_time_then_event_id_not_by_walk_order() {
+        let mut state = WalkState::new(Range::All);
+        let rows = rows_of(&mut state, &[
+            edit("$e1", "@ann:example.org", 200, "$1", "first"),
+            edit("$e2", "@ann:example.org", 300, "$1", "second"),
+            text("$1", "@ann:example.org", 100, "original"),
+        ]);
+        assert_eq!(rows[0].body, "second");
+        let mut state = WalkState::new(Range::All);
+        let rows = rows_of(&mut state, &[
+            edit("$b", "@ann:example.org", 200, "$1", "bee"),
+            edit("$a", "@ann:example.org", 200, "$1", "ay"),
+            text("$1", "@ann:example.org", 100, "original"),
+        ]);
+        assert_eq!(rows[0].body, "bee");
+    }
+
+    #[test]
+    fn a_message_edit_cannot_rewrite_a_sticker() {
+        let mut state = WalkState::new(Range::All);
+        let rows = rows_of(&mut state, &[
+            edit("$e1", "@ann:example.org", 200, "$s", "rewritten"),
+            json!({"type": "m.sticker", "event_id": "$s", "sender": "@ann:example.org",
+                   "origin_server_ts": 100u64,
+                   "content": {"body": "waving cat", "url": "mxc://example.org/cat"}}),
+        ]);
+        assert_eq!(rows[0].body, "waving cat");
+        assert!(!rows[0].edited);
     }
 
     #[test]

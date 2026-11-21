@@ -241,6 +241,51 @@ async fn a_gap_fill_applies_the_redactions_it_fetches() {
     assert!(!indexed(&index, "$m3"), "an already redacted event was indexed");
 }
 
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn a_gap_fill_applies_edits_paged_before_their_original() {
+    let server = MatrixMockServer::new().await;
+    let client = server.client_builder().build().await;
+    client.event_cache().subscribe().unwrap();
+    let index = Arc::new(Mutex::new(Some(SearchIndex::open_in_memory().unwrap())));
+    let _live = register_live_index_handler(&client, &index);
+    let events = Arc::new(Mutex::new(std::collections::VecDeque::new()));
+    let filler = spawn_gap_filler(&client, &index, open_gate(), &events);
+
+    sync(&client, vec![message("$m1", "an older line", 1000)], "1", None).await;
+    wait_indexed(&index, "$m1").await;
+    let edit = |id: &str, body: &str, ts: u64| {
+        serde_json::json!({"type": "m.room.message", "event_id": id, "room_id": ROOM,
+            "sender": "@friend:localhost", "origin_server_ts": ts,
+            "content": {"msgtype": "m.text", "body": format!("* {body}"),
+                "m.new_content": {"msgtype": "m.text", "body": body},
+                "m.relates_to": {"rel_type": "m.replace", "event_id": "$o"}}})
+    };
+    let raws = |values: Vec<serde_json::Value>| -> Vec<Raw<matrix_sdk::ruma::events::AnyTimelineEvent>> {
+        values.into_iter().map(|v| serde_json::from_value(v).unwrap()).collect()
+    };
+    server
+        .mock_room_messages()
+        .match_from("gap-token")
+        .ok(RoomMessagesResponseTemplate::default()
+            .events(raws(vec![edit("$e2", "the corrected plan", 3000), edit("$e1", "an interim plan", 2500)]))
+            .end_token("p1"))
+        .mount()
+        .await;
+    server
+        .mock_room_messages()
+        .match_from("p1")
+        .ok(RoomMessagesResponseTemplate::default().events(raws(vec![message("$o", "the first plan", 2000)])))
+        .mount()
+        .await;
+    sync(&client, vec![message("$m4", "the newest line", 4000)], "2", Some("gap-token")).await;
+    wait_indexed(&index, "$o").await;
+    filler.abort();
+    let ix = index.lock().unwrap();
+    let ix = ix.as_ref().unwrap();
+    assert_eq!(ix.search("corrected plan", "", 10, 0).unwrap().len(), 1, "the edit paged first was lost");
+    assert!(ix.search("first plan", "", 10, 0).unwrap().is_empty());
+}
+
 #[test]
 fn the_gap_queue_is_first_in_first_out_with_the_newest_token() {
     let mut queue = GapQueue::default();

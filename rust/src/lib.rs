@@ -116,6 +116,7 @@ mod stickers;
 mod uia;
 mod warm_rooms;
 mod recovery;
+mod replacement;
 mod password;
 mod policy;
 mod presence;

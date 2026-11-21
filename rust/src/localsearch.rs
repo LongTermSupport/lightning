@@ -139,7 +139,7 @@ impl SearchIndex {
                      body          TEXT NOT NULL DEFAULT '',
                      msgtype       TEXT NOT NULL DEFAULT '',
                      ts            INTEGER NOT NULL
-                     -- `filename` and `edit_id` are added by migrate(): an index
+                     -- `filename`, `edit_id` and `edit_ts` are added by migrate(): an index
                      -- made before them has neither, and ALTER TABLE ADD COLUMN
                      -- is the one change that costs it nothing.
                  );
@@ -204,7 +204,7 @@ impl SearchIndex {
             .query_row("PRAGMA user_version", [], |r| r.get(0))
             .map_err(|e| format!("cannot read the search index version: {e}"))?;
         let fail = |e: rusqlite::Error| format!("cannot migrate the search index: {e}");
-        for column in ["filename", "edit_id"] {
+        for (column, kind) in [("filename", "TEXT"), ("edit_id", "TEXT"), ("edit_ts", "INTEGER")] {
             let present: bool = self
                 .conn
                 .prepare("SELECT 1 FROM pragma_table_info('messages') WHERE name = ?1")
@@ -212,7 +212,7 @@ impl SearchIndex {
                 .map_err(|e| format!("cannot inspect the search index: {e}"))?;
             if !present {
                 self.conn
-                    .execute_batch(&format!("ALTER TABLE messages ADD COLUMN {column} TEXT;"))
+                    .execute_batch(&format!("ALTER TABLE messages ADD COLUMN {column} {kind};"))
                     .map_err(fail)?;
             }
         }
@@ -376,22 +376,30 @@ impl SearchIndex {
             .map_err(|e| format!("cannot record a file name: {e}"))
     }
 
-    pub(crate) fn sender_of(&self, event_id: &str) -> Result<Option<String>, String> {
+    fn original_of(&self, event_id: &str) -> Result<Option<Original>, String> {
         self.conn
             .query_row(
-                "SELECT sender FROM messages WHERE event_id = ?1",
+                "SELECT room_id, sender, edit_ts, edit_id FROM messages WHERE event_id = ?1",
                 params![event_id],
-                |r| r.get(0),
+                |r| {
+                    let edit_id: Option<String> = r.get(3)?;
+                    Ok(Original {
+                        room_id: r.get(0)?,
+                        sender: r.get(1)?,
+                        edit: r.get::<_, Option<i64>>(2)?.map(|ts| (ts, edit_id.unwrap_or_default())),
+                    })
+                },
             )
             .optional()
             .map_err(|e| e.to_string())
     }
 
-    pub(crate) fn set_edit_id(&self, event_id: &str, edit_id: &str) -> Result<bool, String> {
+    fn set_edit(&self, event_id: &str, edit_id: Option<&str>, edit_ts: i64) -> Result<bool, String> {
         self.conn
             .execute(
-                "UPDATE messages SET edit_id = ?2 WHERE event_id = ?1 AND edit_id IS NOT ?2",
-                params![event_id, edit_id],
+                "UPDATE messages SET edit_id = ?2, edit_ts = ?3
+                 WHERE event_id = ?1 AND (edit_id IS NOT ?2 OR edit_ts IS NOT ?3)",
+                params![event_id, edit_id, edit_ts],
             )
             .map(|changed| changed != 0)
             .map_err(|e| format!("cannot record an edit: {e}"))
@@ -627,6 +635,15 @@ use matrix_sdk::room::Room;
 
 const DEEP_PAGE_SIZE: u16 = 100;
 
+struct Original {
+    room_id: String,
+    sender: String,
+    /// (ts, event id) of the edit now applied; `None` also for rows written
+    /// before it was recorded, which any valid edit may then replace once.
+    edit: Option<(i64, String)>,
+}
+
+#[derive(Clone)]
 struct Indexable {
     event_id: String,
     sender: String,
@@ -641,7 +658,7 @@ fn indexable_from(raw: &serde_json::Value) -> Option<Indexable> {
     let event_id = raw.get("event_id")?.as_str()?.to_owned();
     let sender = raw.get("sender")?.as_str()?.to_owned();
     let ts = raw.get("origin_server_ts")?.as_i64()?;
-    if raw.get("type")?.as_str()? != "m.room.message" {
+    if raw.get("type")?.as_str()? != "m.room.message" || raw.get("state_key").is_some() {
         return None;
     }
     // A redacted event is never indexable. The live handler removes the row
@@ -657,18 +674,11 @@ fn indexable_from(raw: &serde_json::Value) -> Option<Indexable> {
     }
     let content = raw.get("content")?;
 
-    let relates = content.get("m.relates_to");
-    let is_replacement = relates
-        .and_then(|r| r.get("rel_type"))
-        .and_then(|v| v.as_str())
-        == Some("m.replace");
+    let is_replacement = crate::replacement::is_replacement(raw);
     let own_id = event_id.clone();
     let (target_id, body_source) = if is_replacement {
-        let target = relates
-            .and_then(|r| r.get("event_id"))
-            .and_then(|v| v.as_str())?
-            .to_owned();
-        (target, content.get("m.new_content").unwrap_or(content))
+        let replacement = crate::replacement::parse(raw)?;
+        (replacement.target.to_owned(), replacement.new_content)
     } else {
         (event_id, content)
     };
@@ -1186,12 +1196,7 @@ async fn batch_from(room: &Room, raws: impl Iterator<Item = serde_json::Value>) 
             }
             continue;
         }
-        let is_replacement = raw
-            .get("content")
-            .and_then(|c| c.get("m.relates_to"))
-            .and_then(|r| r.get("rel_type"))
-            .and_then(|v| v.as_str())
-            == Some("m.replace");
+        let is_replacement = crate::replacement::is_replacement(&raw);
         if let Some(item) = indexable_from(&raw) {
             if !names.contains_key(&item.sender) {
                 let resolved = match matrix_sdk::ruma::UserId::parse(&item.sender) {
@@ -1369,6 +1374,9 @@ async fn fill_gap(
     let mut written = 0;
     let mut outcome = "pages_exhausted";
     let mut from = Some(token.to_owned());
+    // A backward page can hold an edit whose original is on a later page.
+    let mut carried: Vec<Indexable> = Vec::new();
+    let mut carried_names = std::collections::HashMap::new();
     for _ in 0..GAP_PAGES {
         if stop.load(std::sync::atomic::Ordering::Relaxed) {
             break;
@@ -1384,7 +1392,13 @@ async fn fill_gap(
             .iter()
             .filter_map(|event| event.raw().deserialize_as::<serde_json::Value>().ok())
             .collect();
-        let batch = batch_from(&room, raws.into_iter()).await;
+        let mut batch = batch_from(&room, raws.into_iter()).await;
+        batch.edits.extend(carried.iter().cloned());
+        carried = batch.edits.clone();
+        for (sender, name) in &carried_names {
+            batch.names.entry(sender.clone()).or_insert_with(|| name.clone());
+        }
+        carried_names = batch.names.clone();
         let ids: Vec<String> = batch.ordinary.iter().map(|c| c.event_id.clone()).collect();
         let reached_indexed = {
             let Ok(guard) = index.lock() else { break };
@@ -1457,6 +1471,10 @@ pub(crate) fn write_batch(index: &SearchIndex, room_id: &str, batch: &RoomBatch)
     }
 }
 
+fn edit_key(edit: &Indexable) -> (u64, &str) {
+    (edit.ts.max(0) as u64, edit.edit_id.as_deref().unwrap_or(""))
+}
+
 fn write_batch_rows(index: &SearchIndex, room_id: &str, batch: &RoomBatch) -> usize {
     for id in &batch.redactions {
         let _ = index.remove_event(id);
@@ -1499,18 +1517,16 @@ fn write_batch_rows(index: &SearchIndex, room_id: &str, batch: &RoomBatch) -> us
             written += 1;
         }
     }
-    // Only the original's sender may edit it (spec), so edits by anyone else
-    // are discarded BEFORE the last one is chosen: a later edit by a stranger
-    // must not displace the owner's. The original is read from the index, where
-    // the pass above has just put it if it was new; when it is not there, its
-    // edits are skipped, never inserted under the editor's name.
-    //
-    // Then the last cached edit of an event wins; intermediate wording is not
-    // replayed into FTS on every sweep.
+    // Invalid edits are discarded BEFORE the winner is chosen, so a stranger's
+    // later edit cannot displace the owner's. The original is read from the
+    // index, where the pass above has just put it if it was new; an edit of an
+    // event not there is skipped, never inserted under the editor's name.
+    // Rows written before `edit_ts` existed have no recorded winner, so the
+    // first valid edit after the upgrade replaces them once and records it.
     let mut order: Vec<&str> = Vec::new();
     let mut final_edits: std::collections::HashMap<&str, &Indexable> =
         std::collections::HashMap::new();
-    let mut owners: std::collections::HashMap<&str, Option<String>> =
+    let mut originals: std::collections::HashMap<&str, Option<Original>> =
         std::collections::HashMap::new();
     for edit in &batch.edits {
         let target = edit.event_id.as_str();
@@ -1519,13 +1535,30 @@ fn write_batch_rows(index: &SearchIndex, room_id: &str, batch: &RoomBatch) -> us
         {
             continue;
         }
-        let owner = owners
+        let original = originals
             .entry(target)
-            .or_insert_with(|| index.sender_of(target).ok().flatten());
-        if owner.as_deref() != Some(edit.sender.as_str()) {
+            .or_insert_with(|| index.original_of(target).ok().flatten());
+        let Some(original) = original else { continue };
+        // Both are m.room.message: indexable_from admits no other type.
+        if original.room_id != room_id
+            || !crate::replacement::may_replace(
+                &edit.sender,
+                "m.room.message",
+                &original.sender,
+                "m.room.message",
+            )
+        {
             continue;
         }
-        if final_edits.insert(target, edit).is_none() {
+        let applied = original.edit.as_ref().map(|(ts, id)| ((*ts).max(0) as u64, id.as_str()));
+        if applied.is_some_and(|applied| !crate::replacement::supersedes(edit_key(edit), applied)) {
+            continue;
+        }
+        if final_edits
+            .get(target)
+            .is_none_or(|best| crate::replacement::supersedes(edit_key(edit), edit_key(best)))
+            && final_edits.insert(target, edit).is_none()
+        {
             order.push(target);
         }
     }
@@ -1547,9 +1580,7 @@ fn write_batch_rows(index: &SearchIndex, room_id: &str, batch: &RoomBatch) -> us
         {
             written += 1;
         }
-        if let Some(edit_id) = &edit.edit_id {
-            let _ = index.set_edit_id(target, edit_id);
-        }
+        let _ = index.set_edit(target, edit.edit_id.as_deref(), edit.ts);
     }
     index.maybe_prune(written);
     written
@@ -2352,7 +2383,7 @@ mod tests {
             .collect();
         assert_eq!(
             columns,
-            ["id", "event_id", "room_id", "sender", "sender_name", "body", "msgtype", "ts", "filename", "edit_id"]
+            ["id", "event_id", "room_id", "sender", "sender_name", "body", "msgtype", "ts", "filename", "edit_id", "edit_ts"]
         );
     }
 
@@ -2513,6 +2544,23 @@ mod tests {
     }
 
     #[test]
+    fn an_edit_recorded_before_edit_times_were_kept_is_replaced_once_then_ordered() {
+        let conn = Connection::open_in_memory().unwrap();
+        conn.execute_batch(LEGACY_SCHEMA).unwrap();
+        conn.execute_batch(
+            "ALTER TABLE messages ADD COLUMN edit_id TEXT;
+             UPDATE messages SET body = 'legacy edit', edit_id = '$old' WHERE event_id = '$text';",
+        )
+        .unwrap();
+        let ix = SearchIndex::from_connection(conn).unwrap();
+        let edit = |id: &str, body: &str, ts| edit_of("$text", id, "@a:x", body, ts);
+        write_batch(&ix, "!r:x", &edits_batch(vec![], vec![edit("$new", "recorded wording", 5000)]));
+        assert_eq!(body_of(&ix, "$text"), "recorded wording");
+        write_batch(&ix, "!r:x", &edits_batch(vec![], vec![edit("$older", "stale wording", 4000)]));
+        assert_eq!(body_of(&ix, "$text"), "recorded wording");
+    }
+
+    #[test]
     fn a_migrated_attachment_is_backfilled_once_by_the_ordinary_sweep() {
         let conn = Connection::open_in_memory().unwrap();
         conn.execute_batch(LEGACY_SCHEMA).unwrap();
@@ -2580,6 +2628,138 @@ mod tests {
         };
         assert_eq!(write_batch(&ix, "!r:x", &batch), 0);
         assert!(ix.search("redacted", "", 10, 0).unwrap().is_empty());
+    }
+
+    fn edit_of(target: &str, id: &str, sender: &str, body: &str, ts: i64) -> Indexable {
+        Indexable {
+            event_id: target.into(), sender: sender.into(), body: body.into(),
+            msgtype: "m.text".into(), ts, filename: None, edit_id: Some(id.into()),
+        }
+    }
+
+    fn edits_batch(ordinary: Vec<Indexable>, edits: Vec<Indexable>) -> RoomBatch {
+        RoomBatch {
+            ordinary, edits, names: std::collections::HashMap::new(),
+            undecryptable: vec![], redactions: vec![],
+        }
+    }
+
+    fn body_of(ix: &SearchIndex, id: &str) -> String {
+        ix.conn
+            .query_row("SELECT body FROM messages WHERE event_id = ?1", [id], |r| r.get(0))
+            .unwrap()
+    }
+
+    #[test]
+    fn a_backward_page_keeps_the_newest_edit_not_the_last_one_seen() {
+        let ix = index();
+        let original = Indexable { edit_id: None, ..edit_of("$o", "$o", "@a:x", "original wording", 1000) };
+        let batch = edits_batch(
+            vec![original],
+            vec![
+                edit_of("$o", "$e2", "@a:x", "final wording", 3000),
+                edit_of("$o", "$e1", "@a:x", "obsolete wording", 2000),
+            ],
+        );
+        write_batch(&ix, "!r:x", &batch);
+        assert_eq!(body_of(&ix, "$o"), "final wording");
+        let before = ix.conn.total_changes();
+        write_batch(&ix, "!r:x", &batch);
+        assert_eq!(ix.conn.total_changes(), before, "a repeat sweep wrote again");
+        let ts: i64 = ix.conn
+            .query_row("SELECT ts FROM messages WHERE event_id = '$o'", [], |r| r.get(0))
+            .unwrap();
+        assert_eq!(ts, 1000, "search order must stay on the original's time");
+    }
+
+    #[test]
+    fn a_stale_sweep_cannot_restore_an_older_edit() {
+        let ix = index();
+        ix.upsert("$o", "!r:x", "@a:x", "Ann", "original wording", "m.text", 1000).unwrap();
+        write_batch(&ix, "!r:x", &edits_batch(vec![], vec![edit_of("$o", "$e2", "@a:x", "final wording", 3000)]));
+        assert_eq!(
+            write_batch(&ix, "!r:x", &edits_batch(vec![], vec![edit_of("$o", "$e1", "@a:x", "obsolete wording", 2000)])),
+            0
+        );
+        assert_eq!(body_of(&ix, "$o"), "final wording");
+    }
+
+    #[test]
+    fn equal_edit_times_go_to_the_greatest_event_id_in_either_order() {
+        for reversed in [false, true] {
+            let ix = index();
+            ix.upsert("$o", "!r:x", "@a:x", "Ann", "original wording", "m.text", 1000).unwrap();
+            let mut edits = vec![
+                edit_of("$o", "$b", "@a:x", "bee wording", 2000),
+                edit_of("$o", "$a", "@a:x", "ay wording", 2000),
+            ];
+            if reversed {
+                edits.reverse();
+            }
+            write_batch(&ix, "!r:x", &edits_batch(vec![], edits));
+            assert_eq!(body_of(&ix, "$o"), "bee wording", "reversed={reversed}");
+        }
+    }
+
+    #[test]
+    fn redacting_the_winning_edit_falls_back_to_the_previous_valid_one() {
+        let ix = index();
+        let original = Indexable { edit_id: None, ..edit_of("$o", "$o", "@a:x", "original wording", 1000) };
+        let batch = edits_batch(
+            vec![original],
+            vec![
+                edit_of("$o", "$e1", "@a:x", "earlier wording", 2000),
+                edit_of("$o", "$e2", "@a:x", "regretted wording", 3000),
+            ],
+        );
+        write_batch(&ix, "!r:x", &batch);
+        ix.remove_event("$e2").unwrap();
+        write_batch(&ix, "!r:x", &batch);
+        assert_eq!(body_of(&ix, "$o"), "earlier wording");
+        assert!(ix.search("regretted", "", 10, 0).unwrap().is_empty());
+    }
+
+    #[test]
+    fn an_edit_sent_in_another_room_leaves_the_original_alone() {
+        let ix = index();
+        ix.upsert("$o", "!a:x", "@a:x", "Ann", "original wording", "m.text", 1000).unwrap();
+        write_batch(&ix, "!b:x", &edits_batch(vec![], vec![edit_of("$o", "$e", "@a:x", "cross room wording", 2000)]));
+        assert_eq!(body_of(&ix, "$o"), "original wording");
+        let room: String = ix.conn
+            .query_row("SELECT room_id FROM messages WHERE event_id = '$o'", [], |r| r.get(0))
+            .unwrap();
+        assert_eq!(room, "!a:x");
+    }
+
+    #[test]
+    fn a_replacement_without_new_content_or_a_state_event_is_not_indexable() {
+        let no_new_content = serde_json::json!({
+            "type": "m.room.message", "event_id": "$e", "sender": "@a:x", "origin_server_ts": 2,
+            "content": {"msgtype": "m.text", "body": "* fallback wording",
+                        "m.relates_to": {"rel_type": "m.replace", "event_id": "$o"}}
+        });
+        assert!(indexable_from(&no_new_content).is_none());
+        let state = serde_json::json!({
+            "type": "m.room.message", "event_id": "$s", "sender": "@a:x", "origin_server_ts": 2,
+            "state_key": "", "content": {"msgtype": "m.text", "body": "state wording"}
+        });
+        assert!(indexable_from(&state).is_none());
+    }
+
+    #[test]
+    fn an_edit_may_change_the_msgtype() {
+        let ix = index();
+        ix.upsert("$o", "!r:x", "@a:x", "Ann", "waves", "m.text", 1000).unwrap();
+        let edit = indexable_from(&serde_json::json!({
+            "type": "m.room.message", "event_id": "$e", "sender": "@a:x", "origin_server_ts": 2000,
+            "content": {"msgtype": "m.emote", "body": "* waves hello",
+                        "m.new_content": {"msgtype": "m.emote", "body": "waves hello"},
+                        "m.relates_to": {"rel_type": "m.replace", "event_id": "$o"}}
+        }))
+        .unwrap();
+        assert_eq!(write_batch(&ix, "!r:x", &edits_batch(vec![], vec![edit])), 1);
+        let hit = ix.search("waves hello", "", 10, 0).unwrap().remove(0);
+        assert_eq!(hit.msgtype, "m.emote");
     }
 
     #[test]
