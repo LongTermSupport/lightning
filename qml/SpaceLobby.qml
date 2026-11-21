@@ -15,9 +15,13 @@ ColumnLayout {
     property bool busy: false
     property string errorMessage: ""
     property bool homeLoading: false
+    // RoomDiscoveryController.spaceChildrenCoverage(): "" when complete.
+    property string coverage: ""
+    property int loadedCount: 0
     property var loadingIds: ({})
 
     signal filterEdited(string text)
+    signal retryRequested()
     signal openRoomRequested(string roomId)
     signal openSpaceRequested(string spaceId)
     signal joinRequested(string roomId, var via, bool isSpace)
@@ -192,6 +196,36 @@ ColumnLayout {
         onTextChanged: {
             if (text !== root.filterText)
                 root.filterEdited(text)
+        }
+    }
+
+    RowLayout {
+        objectName: "spaceLobbyPartial"
+        visible: root.coverage !== "" && !root.homeLoading
+        Layout.fillWidth: true
+        spacing: AppTheme.spacingS
+        Label {
+            objectName: "spaceLobbyPartialText"
+            Layout.fillWidth: true
+            text: root.coverage === "limit"
+                  ? qsTr("Only the first %n room(s) of this Space are listed. A room that is not "
+                         + "listed can still be opened by its address.", "", root.loadedCount)
+                  : root.coverage === "stale"
+                    ? qsTr("This Space could not be refreshed. Showing the rooms loaded earlier.")
+                    : qsTr("Loading stopped early, so some rooms of this Space may be missing.")
+            textFormat: Text.PlainText
+            color: AppTheme.textMuted
+            font.family: AppTheme.uiFont
+            font.pixelSize: AppTheme.scaled(AppTheme.textMeta)
+            wrapMode: Text.Wrap
+        }
+        AppButton {
+            objectName: "spaceLobbyPartialRetry"
+            visible: root.coverage !== "limit"
+            kind: "secondary"
+            size: "sm"
+            text: qsTr("Retry")
+            onClicked: root.retryRequested()
         }
     }
 

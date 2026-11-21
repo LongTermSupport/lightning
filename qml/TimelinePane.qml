@@ -6085,6 +6085,8 @@ Rectangle {
             property var lobbySubspaceIds: []
             property var hierarchyBySpace: ({})
             property bool homeLoading: false
+            property string homeCoverage: ""
+            property int homeLoadedCount: 0
             property var loadingIds: ({})
             property var unjoinedChildren: []
             property string addNotice: ""
@@ -6196,6 +6198,9 @@ Rectangle {
                 hierarchyBySpace = byspace
                 loadingIds = loading
                 homeLoading = loading[spaceId] === true
+                homeCoverage = spaceId !== "" && app.discovery.supported
+                    ? app.discovery.spaceChildrenCoverage(spaceId) : ""
+                homeLoadedCount = (byspace[spaceId] || []).length
                 unjoinedChildren = out
                 scheduleRebuild()
             }
@@ -6898,6 +6903,9 @@ Rectangle {
                         busy: app.discovery.busy
                         errorMessage: app.discovery.errorMessage
                         homeLoading: spaceHome.homeLoading
+                        coverage: spaceHome.homeCoverage
+                        loadedCount: spaceHome.homeLoadedCount
+                        onRetryRequested: spaceHome.requestHierarchy()
                         loadingIds: spaceHome.loadingIds
                         onFilterEdited: (text) => {
                             spaceHome.childFilter = text

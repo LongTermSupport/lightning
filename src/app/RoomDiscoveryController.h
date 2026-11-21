@@ -48,6 +48,10 @@ public:
     Q_INVOKABLE void refreshSpaceChildren(const QString &spaceId);
     Q_INVOKABLE QVariantList spaceChildren(const QString &spaceId) const;
     Q_INVOKABLE QString spaceChildrenState(const QString &spaceId) const;
+    // "" when the listing is complete, "limit" when the fetch budget cut it
+    // short, "stale" when a refresh failed and the previous rows remain,
+    // otherwise the category of the failure that interrupted it.
+    Q_INVOKABLE QString spaceChildrenCoverage(const QString &spaceId) const;
 
     Q_INVOKABLE void clearError();
 
@@ -112,6 +116,7 @@ private:
     struct SpaceChildrenEntry {
         QString state;
         QVariantList rows;
+        QString coverage;
         quint64 pendingOp = 0;
     };
     QHash<QString, SpaceChildrenEntry> m_spaceChildren;
