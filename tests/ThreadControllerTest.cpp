@@ -14,6 +14,7 @@
 #include "crypto/E2eeDiagnostics.h"
 
 #include <QBuffer>
+#include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
 #include <QImage>
@@ -909,6 +910,44 @@ private Q_SLOTS:
         controller.cancelReply();
         QVERIFY(!controller.inReply());
         QCOMPARE(replySpy.count(), 2);
+    }
+
+    void replyComposerShowsTextAndVoicePreviewsAndConcealsSpoilers()
+    {
+        MockMatrixClient client;
+        QVERIFY(login(client));
+        ThreadController controller;
+        controller.setClient(&client);
+        QString rootId;
+        QVERIFY(openFixtureThread(client, controller, kGeneral, &rootId));
+        QTRY_COMPARE(controller.state(), ThreadController::Ready);
+        const QString thread = MatrixClient::threadTimelineId(kGeneral, rootId);
+
+        TimelineEvent event;
+        event.type = TimelineEvent::TextMessage;
+        event.threadRootId = rootId;
+        event.eventId = QStringLiteral("$plain");
+        event.body = QStringLiteral("ordinary reply");
+        client.appendEventForTest(thread, event);
+        controller.beginReply(event.eventId);
+        QCOMPARE(controller.replyToPreview(), event.body);
+
+        event.eventId = QStringLiteral("$spoiler");
+        event.body = QStringLiteral("a hidden ending b");
+        event.formattedBody = QStringLiteral("a <span data-mx-spoiler>hidden ending</span> b");
+        client.appendEventForTest(thread, event);
+        controller.beginReply(event.eventId);
+        QCOMPARE(controller.replyToPreview(), QStringLiteral("a \u2588\u2588\u2588\u2588\u2588 b"));
+
+        event.eventId = QStringLiteral("$voice");
+        event.type = TimelineEvent::Audio;
+        event.mediaIsVoice = true;
+        event.body = QStringLiteral("voice.ogg");
+        event.formattedBody.clear();
+        client.appendEventForTest(thread, event);
+        controller.beginReply(event.eventId);
+        QCOMPARE(controller.replyToPreview(),
+                 QCoreApplication::translate("EventPreview", "Voice message"));
     }
 
     void sendWithReplyTargetCreatesRichThreadReply()
