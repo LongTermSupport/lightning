@@ -102,6 +102,7 @@ private:
         bool hasNextText = false;
         QString nextBody;
         QString nextHtml;
+        QStringList nextMentionIds;
         QString mediaName;
         QString content;
         quint64 prepareOp = 0;

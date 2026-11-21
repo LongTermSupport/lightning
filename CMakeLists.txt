@@ -2291,6 +2291,8 @@ if(BUILD_TESTING)
         tests/ScheduledSendTest.cpp
         src/models/ScheduledSendController.h
         src/models/ScheduledSendController.cpp
+        src/models/MentionTokenizer.h
+        src/models/MentionTokenizer.cpp
         src/app/SettingsManager.h
         src/app/SettingsManager.cpp
         src/media/MediaVisibilityStore.h

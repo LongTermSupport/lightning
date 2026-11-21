@@ -2,6 +2,7 @@
 
 #include "app/SettingsManager.h"
 #include "matrix/MatrixClient.h"
+#include "models/MentionTokenizer.h"
 
 #include <QDateTime>
 #include <QUuid>
@@ -10,6 +11,20 @@
 
 namespace {
 constexpr qint64 kMaxTimerMs = 24LL * 60 * 60 * 1000;
+
+// The body keeps the composer's matrix.to links, so its mentions are exactly
+// the links still in it; "@room" is plain text and survives only while typed.
+QStringList mentionsIn(const QString &body, const QStringList &previous)
+{
+    QStringList ids;
+    for (const mention::MentionRef &ref : mention::recoverFromBody(body).refs)
+        if (!ids.contains(ref.userId))
+            ids.append(ref.userId);
+    const QString room = QStringLiteral("@room");
+    if (previous.contains(room) && body.contains(room))
+        ids.append(room);
+    return ids;
+}
 }
 
 ScheduledSendController::ScheduledSendController(QObject *parent)
@@ -107,11 +122,13 @@ void ScheduledSendController::setClient(MatrixClient *client)
                     if (e.hasNextText) {
                         e.body = e.nextBody;
                         e.html = e.nextHtml;
+                        e.mentionIds = e.nextMentionIds;
                     }
                     e.nextSendAtMs = -1;
                     e.hasNextText = false;
                     e.nextBody.clear();
                     e.nextHtml.clear();
+                    e.nextMentionIds.clear();
                     e.status = QStringLiteral("pending");
                     e.error.clear();
                     submitServer(e);
@@ -489,6 +506,7 @@ void ScheduledSendController::becomeLocal(Entry &e)
     e.hasNextText = false;
     e.nextBody.clear();
     e.nextHtml.clear();
+    e.nextMentionIds.clear();
 }
 
 void ScheduledSendController::submitServer(Entry &e)
@@ -641,11 +659,13 @@ void ScheduledSendController::updateText(const QString &id, const QString &body,
     if (!e || !e->mediaName.isEmpty() || body.trimmed().isEmpty())
         return;
     const QString trimmed = body.trimmed();
+    const QStringList mentionIds = mentionsIn(trimmed, e->mentionIds);
     if (e->mode == QLatin1String("server")) {
         if (e->op != 0 && e->delayId.isEmpty()) {
             e->hasNextText = true;
             e->nextBody = trimmed;
             e->nextHtml = html;
+            e->nextMentionIds = mentionIds;
             Q_EMIT pendingChanged();
             return;
         }
@@ -655,6 +675,7 @@ void ScheduledSendController::updateText(const QString &id, const QString &body,
             e->hasNextText = true;
             e->nextBody = trimmed;
             e->nextHtml = html;
+            e->nextMentionIds = mentionIds;
             e->resubmitAfterCancel = true;
             beginServerCancel(*e);
             persist();
@@ -667,6 +688,7 @@ void ScheduledSendController::updateText(const QString &id, const QString &body,
     }
     e->body = trimmed;
     e->html = html;
+    e->mentionIds = mentionIds;
     persist();
     Q_EMIT pendingChanged();
 }
@@ -677,11 +699,14 @@ void ScheduledSendController::armTimer()
     const qint64 now = QDateTime::currentMSecsSinceEpoch();
     qint64 earliest = -1;
     const QSet<QString> sending = roomsSending();
+    // Offline, local entries wait for the Syncing transition (fireDue), not a timer.
+    const bool online = connected();
     for (const Entry &e : m_entries) {
         qint64 at = -1;
         if (e.prepareOp != 0 || (e.sendOp == 0 && sending.contains(e.roomId)))
             continue;
-        if (e.mode == QLatin1String("local") && e.status == QLatin1String("pending"))
+        if (online && e.mode == QLatin1String("local")
+            && e.status == QLatin1String("pending"))
             at = e.sendAtMs;
         else if (e.mode == QLatin1String("server") && !e.delayId.isEmpty()
                  && e.status == QLatin1String("pending"))
@@ -717,22 +742,29 @@ void ScheduledSendController::fireDue()
         armTimer();
         return;
     }
-    // One send per room at a time, so entries due together keep their order.
+    // One send per room at a time, earliest deadline first (ties keep creation
+    // order), so entries due together leave in the order the list shows.
     QSet<QString> sending = roomsSending();
-    for (int i = 0; i < m_entries.size(); ++i) {
-        Entry &e = m_entries[i];
-        if (e.mode == QLatin1String("local") && e.status == QLatin1String("pending")
-            && e.sendAtMs <= now && !sending.contains(e.roomId)) {
-            const QString roomId = e.roomId;
-            const qsizetype before = m_entries.size();
-            dispatchLocal(e);
-            if (m_entries.size() < before) {
-                --i;
-                continue;
-            }
-            if (m_entries.at(i).sendOp != 0)
-                sending.insert(roomId);
+    QSet<QString> tried;
+    for (;;) {
+        int next = -1;
+        for (int i = 0; i < m_entries.size(); ++i) {
+            const Entry &e = m_entries.at(i);
+            if (e.mode == QLatin1String("local") && e.status == QLatin1String("pending")
+                && e.sendAtMs <= now && !sending.contains(e.roomId)
+                && !tried.contains(e.id)
+                && (next < 0 || e.sendAtMs < m_entries.at(next).sendAtMs))
+                next = i;
         }
+        if (next < 0)
+            break;
+        const QString id = m_entries.at(next).id;
+        const QString roomId = m_entries.at(next).roomId;
+        tried.insert(id);
+        dispatchLocal(m_entries[next]);
+        const int at = indexOf(id);
+        if (at >= 0 && m_entries.at(at).sendOp != 0)
+            sending.insert(roomId);
     }
     armTimer();
 }
