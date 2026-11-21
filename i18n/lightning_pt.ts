@@ -14878,7 +14878,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1953"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
         <location line="+991"/>
         <source>Open</source>
         <translation>Abrir</translation>
@@ -15411,7 +15411,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2833"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2844"/>
         <source>(spoiler)</source>
         <translation>(spoiler)</translation>
     </message>
@@ -15476,9 +15476,9 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Nova notificação do Matrix</translation>
     </message>
     <message numerus="yes">
-        <location line="+230"/>
+        <location line="+233"/>
         <location line="+217"/>
-        <location line="+1714"/>
+        <location line="+1722"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n nova mensagem</numerusform>
@@ -15486,7 +15486,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1927"/>
+        <location line="-1935"/>
         <location line="+211"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15495,7 +15495,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1719"/>
+        <location line="+1727"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>em %n sala</numerusform>
@@ -15522,7 +15522,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+29"/>
+        <location line="+30"/>
         <source>You can close this window and return to Lightning.</source>
         <translation>Pode fechar esta janela e voltar ao Lightning.</translation>
     </message>
@@ -20012,12 +20012,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Iniciou sessão, mas o Lightning não conseguiu abrir o armazenamento desta conta neste dispositivo. Nada foi guardado aqui.</translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+37"/>
         <source>You signed in, but Lightning could not save this account on this device, so it did not open it.</source>
         <translation>Iniciou sessão, mas o Lightning não conseguiu guardar esta conta neste dispositivo, por isso não a abriu.</translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+110"/>
         <source>You signed in, but your system keyring is locked or did not accept the sign-in, so Lightning did not keep it. Unlock the keyring and sign in again. The server now lists an unused session from this attempt; you can sign it out under Sessions.</source>
         <translation>Iniciou sessão, mas o porta-chaves do sistema está bloqueado ou não aceitou o início de sessão, por isso o Lightning não o guardou. Desbloqueie o porta-chaves e volte a iniciar sessão. O servidor lista agora uma sessão não utilizada desta tentativa; pode terminá-la em Sessões.</translation>
     </message>
@@ -20506,17 +20506,27 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>O servidor não cancelou esta mensagem.</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+35"/>
         <source>The server did not send this message.</source>
         <translation>O servidor não enviou esta mensagem.</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+22"/>
+        <source>Not sent yet: the connection failed. Lightning will try again.</source>
+        <translation>Ainda não enviada: a conexão falhou. O Lightning tentará novamente.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>This message could not be sent. Check the room before sending it again.</source>
+        <translation>Não foi possível enviar esta mensagem. Verifique a sala antes de enviá-la novamente.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>The room did not accept this message. It was not sent.</source>
         <translation>A sala não aceitou esta mensagem. Não foi enviada.</translation>
     </message>
     <message>
-        <location line="+236"/>
+        <location line="+277"/>
         <source>Lightning closed before the server confirmed this message. Check the room before scheduling it again.</source>
         <translation>O Lightning fechou antes de o servidor confirmar esta mensagem. Verifique a sala antes de a agendar novamente.</translation>
     </message>
@@ -20526,7 +20536,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>O Lightning fechou enquanto enviava isto. Verifique a sala antes de a enviar novamente.</translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+62"/>
         <source>Attachment</source>
         <translation>Anexo</translation>
     </message>
@@ -20541,7 +20551,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>O Lightning não conseguiu contactar o servidor para enviar isto agora. Continua agendada.</translation>
     </message>
     <message>
-        <location line="+169"/>
+        <location line="+175"/>
         <source>Waiting for the connection.</source>
         <translation>A aguardar a ligação.</translation>
     </message>
@@ -21255,7 +21265,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>SettingsBackupSection</name>
     <message>
-        <location filename="../qml/SettingsBackupSection.qml" line="+25"/>
+        <location filename="../qml/SettingsBackupSection.qml" line="+26"/>
         <source>Appearance</source>
         <translation>Aparência</translation>
     </message>
@@ -21471,6 +21481,11 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <location line="+10"/>
         <source>This file was made by a newer Lightning. The settings this version knows are read; the rest are ignored.</source>
         <translation>Este ficheiro foi criado por uma versão mais recente do Lightning. As definições que esta versão conhece são lidas; as restantes são ignoradas.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>The active custom theme in this file could not be imported, so your current custom theme stays selected.</source>
+        <translation>Não foi possível importar o tema personalizado ativo deste arquivo, então seu tema personalizado atual continua selecionado.</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -26863,7 +26878,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Não foi possível ler esse ficheiro.</translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+87"/>
         <source>Choose a file first.</source>
         <translation>Escolha primeiro um ficheiro.</translation>
     </message>
@@ -35376,7 +35391,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
 <context>
     <name>lightning::update::UpdateManager</name>
     <message>
-        <location filename="../src/update/UpdateManager.cpp" line="+1042"/>
+        <location filename="../src/update/UpdateManager.cpp" line="+1058"/>
         <source>Lightning is installed for all users of this computer, so installing an update needs administrator approval, and Windows did not get it. Nothing was changed. Approve the prompt next time, or ask an administrator to install the update.</source>
         <translation>O Lightning está instalado para todos os utilizadores deste computador, por isso instalar uma atualização exige aprovação de administrador, e o Windows não a obteve. Nada foi alterado. Aprove o pedido da próxima vez, ou peça a um administrador que instale a atualização.</translation>
     </message>
@@ -35416,7 +35431,22 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>A nova versão não pôde ser colocada no lugar, por isso a anterior foi restaurada. Nada se perdeu.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Those files are in %1. Move them back into the Lightning folder and delete that folder, or reinstall Lightning from the downloads page.</source>
+        <translation>Uma atualização anterior não conseguiu devolver todos os arquivos da versão anterior, então as atualizações estão pausadas. Esses arquivos estão em %1. Mova-os de volta para a pasta do Lightning e exclua essa pasta, ou reinstale o Lightning pela página de downloads.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Reinstall Lightning from the downloads page.</source>
+        <translation>Uma atualização anterior não conseguiu devolver todos os arquivos da versão anterior, então as atualizações estão pausadas. Reinstale o Lightning pela página de downloads.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The update failed and the previous version could not be fully restored. The files that were not put back are in %1. Move them back into the Lightning folder, or reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
+        <translation>A atualização falhou e a versão anterior não pôde ser totalmente restaurada. Os arquivos que não foram devolvidos estão em %1. Mova-os de volta para a pasta do Lightning ou reinstale o Lightning pela página de downloads. Suas mensagens e sua conta estão no servidor e não foram afetadas.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>The update failed and the previous version could not be fully restored. Please reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
         <translation>A atualização falhou e a versão anterior não pôde ser totalmente restaurada. Reinstale o Lightning a partir da página de transferências. As suas mensagens e a sua conta estão no servidor e não são afetadas.</translation>
     </message>

@@ -15102,7 +15102,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1953"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
         <location line="+991"/>
         <source>Open</source>
         <translation>فتح</translation>
@@ -15635,7 +15635,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2833"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2844"/>
         <source>(spoiler)</source>
         <translation>(حرق)</translation>
     </message>
@@ -15700,9 +15700,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>إشعار Matrix جديد</translation>
     </message>
     <message numerus="yes">
-        <location line="+230"/>
+        <location line="+233"/>
         <location line="+217"/>
-        <location line="+1714"/>
+        <location line="+1722"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>لا رسائل جديدة (%n)</numerusform>
@@ -15714,7 +15714,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1927"/>
+        <location line="-1935"/>
         <location line="+211"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15727,7 +15727,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1719"/>
+        <location line="+1727"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>في %n غرف</numerusform>
@@ -15758,7 +15758,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+29"/>
+        <location line="+30"/>
         <source>You can close this window and return to Lightning.</source>
         <translation>يمكنك إغلاق هذه النافذة والعودة إلى Lightning.</translation>
     </message>
@@ -20332,12 +20332,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>سجّلت الدخول، لكن تعذّر على Lightning فتح تخزين هذا الحساب على هذا الجهاز. لم يُحفظ شيء هنا.</translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+37"/>
         <source>You signed in, but Lightning could not save this account on this device, so it did not open it.</source>
         <translation>سجّلت الدخول، لكن تعذّر على Lightning حفظ هذا الحساب على هذا الجهاز، لذا لم يفتحه.</translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+110"/>
         <source>You signed in, but your system keyring is locked or did not accept the sign-in, so Lightning did not keep it. Unlock the keyring and sign in again. The server now lists an unused session from this attempt; you can sign it out under Sessions.</source>
         <translation>سجّلت الدخول، لكن حلقة مفاتيح نظامك مقفلة أو لم تقبل تسجيل الدخول، لذا لم يحتفظ به Lightning. افتح قفل حلقة المفاتيح وسجّل الدخول مجددًا. يُدرج الخادوم الآن جلسة غير مستخدمة من هذه المحاولة؛ يمكنك تسجيل خروجها من قسم الجلسات.</translation>
     </message>
@@ -20826,17 +20826,27 @@ Signing out and signing in again is the only fix.</source>
         <translation>لم يلغِ الخادوم هذه الرسالة.</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+35"/>
         <source>The server did not send this message.</source>
         <translation>لم يرسل الخادوم هذه الرسالة.</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+22"/>
+        <source>Not sent yet: the connection failed. Lightning will try again.</source>
+        <translation>لم يُرسل بعد: فشل الاتصال. سيحاول Lightning مرة أخرى.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>This message could not be sent. Check the room before sending it again.</source>
+        <translation>تعذّر إرسال هذه الرسالة. تحقّق من الغرفة قبل إرسالها مرة أخرى.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>The room did not accept this message. It was not sent.</source>
         <translation>لم تقبل الغرفة هذه الرسالة. لم تُرسل.</translation>
     </message>
     <message>
-        <location line="+236"/>
+        <location line="+277"/>
         <source>Lightning closed before the server confirmed this message. Check the room before scheduling it again.</source>
         <translation>أُغلق Lightning قبل أن يؤكد الخادوم هذه الرسالة. تحقّق من الغرفة قبل جدولتها مجددًا.</translation>
     </message>
@@ -20846,7 +20856,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>أُغلق Lightning أثناء إرسال هذه. تحقّق من الغرفة قبل إرسالها مجددًا.</translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+62"/>
         <source>Attachment</source>
         <translation>مرفق</translation>
     </message>
@@ -20861,7 +20871,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>تعذّر على Lightning الوصول إلى الخادوم لإرسال هذه الآن. ما زالت مجدولة.</translation>
     </message>
     <message>
-        <location line="+169"/>
+        <location line="+175"/>
         <source>Waiting for the connection.</source>
         <translation>بانتظار الاتصال.</translation>
     </message>
@@ -21587,7 +21597,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>SettingsBackupSection</name>
     <message>
-        <location filename="../qml/SettingsBackupSection.qml" line="+25"/>
+        <location filename="../qml/SettingsBackupSection.qml" line="+26"/>
         <source>Appearance</source>
         <translation>المظهر</translation>
     </message>
@@ -21815,6 +21825,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+10"/>
         <source>This file was made by a newer Lightning. The settings this version knows are read; the rest are ignored.</source>
         <translation>صُنع هذا الملف بإصدار أحدث من Lightning. تُقرأ الإعدادات التي يعرفها هذا الإصدار ويُتجاهل الباقي.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>The active custom theme in this file could not be imported, so your current custom theme stays selected.</source>
+        <translation>تعذّر استيراد السمة المخصصة النشطة في هذا الملف، لذا تبقى سمتك المخصصة الحالية محددة.</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -27267,7 +27282,7 @@ Note: importing keys does not verify this session.</source>
         <translation>تعذّرت قراءة ذلك الملف.</translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+87"/>
         <source>Choose a file first.</source>
         <translation>اختر ملفًا أولًا.</translation>
     </message>
@@ -36024,7 +36039,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>lightning::update::UpdateManager</name>
     <message>
-        <location filename="../src/update/UpdateManager.cpp" line="+1042"/>
+        <location filename="../src/update/UpdateManager.cpp" line="+1058"/>
         <source>Lightning is installed for all users of this computer, so installing an update needs administrator approval, and Windows did not get it. Nothing was changed. Approve the prompt next time, or ask an administrator to install the update.</source>
         <translation>Lightning مثبّت لجميع مستخدمي هذا الحاسوب، لذا يتطلب تثبيت التحديث موافقة مسؤول، ولم ينلها Windows. لم يتغيّر شيء. وافق على المطالبة في المرة القادمة، أو اطلب من مسؤول تثبيت التحديث.</translation>
     </message>
@@ -36064,7 +36079,22 @@ Note: importing keys does not verify this session.</source>
         <translation>تعذّر وضع الإصدار الجديد في مكانه، فاستُعيد السابق. لم يضع شيء.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Those files are in %1. Move them back into the Lightning folder and delete that folder, or reinstall Lightning from the downloads page.</source>
+        <translation>لم يتمكن تحديث سابق من إعادة كل ملفات الإصدار السابق، لذا التحديثات متوقفة مؤقتًا. هذه الملفات موجودة في %1. انقلها مجددًا إلى مجلد Lightning واحذف ذلك المجلد، أو أعد تثبيت Lightning من صفحة التنزيلات.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Reinstall Lightning from the downloads page.</source>
+        <translation>لم يتمكن تحديث سابق من إعادة كل ملفات الإصدار السابق، لذا التحديثات متوقفة مؤقتًا. أعد تثبيت Lightning من صفحة التنزيلات.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The update failed and the previous version could not be fully restored. The files that were not put back are in %1. Move them back into the Lightning folder, or reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
+        <translation>فشل التحديث ولم يمكن استعادة الإصدار السابق بالكامل. الملفات التي لم تُعَد موجودة في %1. انقلها مجددًا إلى مجلد Lightning، أو أعد تثبيت Lightning من صفحة التنزيلات. رسائلك وحسابك على الخادم ولم تتأثر.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>The update failed and the previous version could not be fully restored. Please reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
         <translation>فشل التحديث وتعذّرت استعادة الإصدار السابق بالكامل. يُرجى إعادة تثبيت Lightning من صفحة التنزيلات. رسائلك وحسابك على الخادوم ولا يتأثران.</translation>
     </message>

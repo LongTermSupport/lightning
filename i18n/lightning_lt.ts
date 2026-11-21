@@ -14934,7 +14934,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1953"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
         <location line="+991"/>
         <source>Open</source>
         <translation>Atidaryti</translation>
@@ -15467,7 +15467,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2833"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2844"/>
         <source>(spoiler)</source>
         <translation>(spoileris)</translation>
     </message>
@@ -15532,9 +15532,9 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Naujas Matrix pranešimas</translation>
     </message>
     <message numerus="yes">
-        <location line="+230"/>
+        <location line="+233"/>
         <location line="+217"/>
-        <location line="+1714"/>
+        <location line="+1722"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n nauja žinutė</numerusform>
@@ -15543,7 +15543,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1927"/>
+        <location line="-1935"/>
         <location line="+211"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15553,7 +15553,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1719"/>
+        <location line="+1727"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>%n kambaryje</numerusform>
@@ -15581,7 +15581,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+29"/>
+        <location line="+30"/>
         <source>You can close this window and return to Lightning.</source>
         <translation>Galite uždaryti šį langą ir grįžti į „Lightning“.</translation>
     </message>
@@ -20092,12 +20092,12 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Prisijungėte, bet „Lightning“ nepavyko atidaryti šios paskyros saugyklos šiame įrenginyje. Čia nieko neįrašyta.</translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+37"/>
         <source>You signed in, but Lightning could not save this account on this device, so it did not open it.</source>
         <translation>Prisijungėte, bet „Lightning“ nepavyko išsaugoti šios paskyros šiame įrenginyje, todėl jos neatidarė.</translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+110"/>
         <source>You signed in, but your system keyring is locked or did not accept the sign-in, so Lightning did not keep it. Unlock the keyring and sign in again. The server now lists an unused session from this attempt; you can sign it out under Sessions.</source>
         <translation>Prisijungėte, bet jūsų sistemos raktų saugykla užrakinta arba nepriėmė prisijungimo, todėl Lightning jo neišsaugojo. Atrakinkite raktų saugyklą ir prisijunkite dar kartą. Serveris dabar rodo nenaudojamą šio bandymo seansą; jį galite atjungti skiltyje Seansai.</translation>
     </message>
@@ -20586,17 +20586,27 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Serveris neatšaukė šios žinutės.</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+35"/>
         <source>The server did not send this message.</source>
         <translation>Serveris neišsiuntė šios žinutės.</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+22"/>
+        <source>Not sent yet: the connection failed. Lightning will try again.</source>
+        <translation>Dar neišsiųsta: nepavyko prisijungti. Lightning bandys dar kartą.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>This message could not be sent. Check the room before sending it again.</source>
+        <translation>Šios žinutės išsiųsti nepavyko. Prieš siųsdami dar kartą patikrinkite kambarį.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>The room did not accept this message. It was not sent.</source>
         <translation>Kambarys nepriėmė šios žinutės. Ji neišsiųsta.</translation>
     </message>
     <message>
-        <location line="+236"/>
+        <location line="+277"/>
         <source>Lightning closed before the server confirmed this message. Check the room before scheduling it again.</source>
         <translation>„Lightning“ užsidarė, kol serveris nepatvirtino šios žinutės. Prieš planuodami iš naujo patikrinkite kambarį.</translation>
     </message>
@@ -20606,7 +20616,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>„Lightning“ užsidarė siunčiant tai. Prieš siųsdami iš naujo patikrinkite kambarį.</translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+62"/>
         <source>Attachment</source>
         <translation>Priedas</translation>
     </message>
@@ -20621,7 +20631,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>„Lightning“ nepavyko susisiekti su serveriu, kad išsiųstų tai dabar. Ji vis dar suplanuota.</translation>
     </message>
     <message>
-        <location line="+169"/>
+        <location line="+175"/>
         <source>Waiting for the connection.</source>
         <translation>Laukiama ryšio.</translation>
     </message>
@@ -21338,7 +21348,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>SettingsBackupSection</name>
     <message>
-        <location filename="../qml/SettingsBackupSection.qml" line="+25"/>
+        <location filename="../qml/SettingsBackupSection.qml" line="+26"/>
         <source>Appearance</source>
         <translation>Išvaizda</translation>
     </message>
@@ -21557,6 +21567,11 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <location line="+10"/>
         <source>This file was made by a newer Lightning. The settings this version knows are read; the rest are ignored.</source>
         <translation>Šį failą sukūrė naujesnė „Lightning“. Šios versijos žinomi nustatymai nuskaitomi, likusieji ignoruojami.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>The active custom theme in this file could not be imported, so your current custom theme stays selected.</source>
+        <translation>Aktyvios pasirinktinės temos iš šio failo importuoti nepavyko, todėl lieka pasirinkta dabartinė pasirinktinė tema.</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -26964,7 +26979,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Nepavyko perskaityti to failo.</translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+87"/>
         <source>Choose a file first.</source>
         <translation>Pirmiausia pasirinkite failą.</translation>
     </message>
@@ -35538,7 +35553,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
 <context>
     <name>lightning::update::UpdateManager</name>
     <message>
-        <location filename="../src/update/UpdateManager.cpp" line="+1042"/>
+        <location filename="../src/update/UpdateManager.cpp" line="+1058"/>
         <source>Lightning is installed for all users of this computer, so installing an update needs administrator approval, and Windows did not get it. Nothing was changed. Approve the prompt next time, or ask an administrator to install the update.</source>
         <translation>„Lightning“ įdiegta visiems šio kompiuterio naudotojams, todėl naujinio diegimui reikia administratoriaus patvirtinimo, o „Windows“ jo negavo. Niekas nepakeista. Kitą kartą patvirtinkite užklausą arba paprašykite administratoriaus įdiegti naujinį.</translation>
     </message>
@@ -35578,7 +35593,22 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Naujos versijos įdiegti nepavyko, todėl atkurta ankstesnė. Niekas neprarasta.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Those files are in %1. Move them back into the Lightning folder and delete that folder, or reinstall Lightning from the downloads page.</source>
+        <translation>Ankstesnis atnaujinimas negalėjo grąžinti visų ankstesnės versijos failų, todėl atnaujinimai sustabdyti. Tie failai yra %1. Perkelkite juos atgal į Lightning aplanką ir ištrinkite tą aplanką arba iš naujo įdiekite Lightning iš atsisiuntimų puslapio.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Reinstall Lightning from the downloads page.</source>
+        <translation>Ankstesnis atnaujinimas negalėjo grąžinti visų ankstesnės versijos failų, todėl atnaujinimai sustabdyti. Iš naujo įdiekite Lightning iš atsisiuntimų puslapio.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The update failed and the previous version could not be fully restored. The files that were not put back are in %1. Move them back into the Lightning folder, or reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
+        <translation>Atnaujinti nepavyko ir ankstesnės versijos visiškai atkurti nepavyko. Negrąžinti failai yra %1. Perkelkite juos atgal į Lightning aplanką arba iš naujo įdiekite Lightning iš atsisiuntimų puslapio. Jūsų žinutės ir paskyra yra serveryje ir nepaveiktos.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>The update failed and the previous version could not be fully restored. Please reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
         <translation>Naujinimas nepavyko, o ankstesnės versijos nepavyko visiškai atkurti. Iš naujo įdiekite „Lightning“ iš atsisiuntimų puslapio. Jūsų žinutės ir paskyra yra serveryje ir nepaveiktos.</translation>
     </message>

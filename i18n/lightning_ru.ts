@@ -14934,7 +14934,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1953"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
         <location line="+991"/>
         <source>Open</source>
         <translation>Открыть</translation>
@@ -15467,7 +15467,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2833"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2844"/>
         <source>(spoiler)</source>
         <translation>(спойлер)</translation>
     </message>
@@ -15532,9 +15532,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>Новое уведомление Matrix</translation>
     </message>
     <message numerus="yes">
-        <location line="+230"/>
+        <location line="+233"/>
         <location line="+217"/>
-        <location line="+1714"/>
+        <location line="+1722"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n новое сообщение</numerusform>
@@ -15543,7 +15543,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1927"/>
+        <location line="-1935"/>
         <location line="+211"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15553,7 +15553,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1719"/>
+        <location line="+1727"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>в %n комнате</numerusform>
@@ -15581,7 +15581,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+29"/>
+        <location line="+30"/>
         <source>You can close this window and return to Lightning.</source>
         <translation>Вы можете закрыть это окно и вернуться в Lightning.</translation>
     </message>
@@ -20092,12 +20092,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>Вы вошли, но Lightning не смог открыть хранилище этой учётной записи на этом устройстве. Здесь ничего не сохранено.</translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+37"/>
         <source>You signed in, but Lightning could not save this account on this device, so it did not open it.</source>
         <translation>Вы вошли, но Lightning не смог сохранить эту учётную запись на этом устройстве, поэтому не открыл её.</translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+110"/>
         <source>You signed in, but your system keyring is locked or did not accept the sign-in, so Lightning did not keep it. Unlock the keyring and sign in again. The server now lists an unused session from this attempt; you can sign it out under Sessions.</source>
         <translation>Вы вошли, но системная связка ключей заблокирована или не приняла вход, поэтому Lightning его не сохранил. Разблокируйте связку ключей и войдите снова. Теперь на сервере есть неиспользуемый сеанс от этой попытки; его можно завершить в разделе «Сеансы».</translation>
     </message>
@@ -20586,17 +20586,27 @@ Signing out and signing in again is the only fix.</source>
         <translation>Сервер не отменил это сообщение.</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+35"/>
         <source>The server did not send this message.</source>
         <translation>Сервер не отправил это сообщение.</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+22"/>
+        <source>Not sent yet: the connection failed. Lightning will try again.</source>
+        <translation>Ещё не отправлено: не удалось подключиться. Lightning попробует снова.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>This message could not be sent. Check the room before sending it again.</source>
+        <translation>Не удалось отправить это сообщение. Проверьте комнату, прежде чем отправлять его снова.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>The room did not accept this message. It was not sent.</source>
         <translation>Комната не приняла это сообщение. Оно не отправлено.</translation>
     </message>
     <message>
-        <location line="+236"/>
+        <location line="+277"/>
         <source>Lightning closed before the server confirmed this message. Check the room before scheduling it again.</source>
         <translation>Lightning закрылся до подтверждения сервером этого сообщения. Проверьте комнату, прежде чем планировать его снова.</translation>
     </message>
@@ -20606,7 +20616,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Lightning закрылся во время отправки. Проверьте комнату, прежде чем отправлять его снова.</translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+62"/>
         <source>Attachment</source>
         <translation>Вложение</translation>
     </message>
@@ -20621,7 +20631,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Lightning не смог связаться с сервером, чтобы отправить его сейчас. Оно всё ещё запланировано.</translation>
     </message>
     <message>
-        <location line="+169"/>
+        <location line="+175"/>
         <source>Waiting for the connection.</source>
         <translation>Ожидание подключения.</translation>
     </message>
@@ -21338,7 +21348,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>SettingsBackupSection</name>
     <message>
-        <location filename="../qml/SettingsBackupSection.qml" line="+25"/>
+        <location filename="../qml/SettingsBackupSection.qml" line="+26"/>
         <source>Appearance</source>
         <translation>Внешний вид</translation>
     </message>
@@ -21557,6 +21567,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+10"/>
         <source>This file was made by a newer Lightning. The settings this version knows are read; the rest are ignored.</source>
         <translation>Этот файл создан более новой версией Lightning. Известные этой версии настройки будут прочитаны, остальные пропущены.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>The active custom theme in this file could not be imported, so your current custom theme stays selected.</source>
+        <translation>Активную пользовательскую тему из этого файла импортировать не удалось, поэтому остаётся выбранной текущая пользовательская тема.</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -26964,7 +26979,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Не удалось прочитать этот файл.</translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+87"/>
         <source>Choose a file first.</source>
         <translation>Сначала выберите файл.</translation>
     </message>
@@ -35538,7 +35553,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>lightning::update::UpdateManager</name>
     <message>
-        <location filename="../src/update/UpdateManager.cpp" line="+1042"/>
+        <location filename="../src/update/UpdateManager.cpp" line="+1058"/>
         <source>Lightning is installed for all users of this computer, so installing an update needs administrator approval, and Windows did not get it. Nothing was changed. Approve the prompt next time, or ask an administrator to install the update.</source>
         <translation>Lightning установлен для всех пользователей этого компьютера, поэтому установка обновления требует разрешения администратора, и Windows его не получил. Ничего не изменено. Подтвердите запрос в следующий раз или попросите администратора установить обновление.</translation>
     </message>
@@ -35578,7 +35593,22 @@ Note: importing keys does not verify this session.</source>
         <translation>Новую версию не удалось поставить на место, поэтому предыдущая восстановлена. Ничего не потеряно.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Those files are in %1. Move them back into the Lightning folder and delete that folder, or reinstall Lightning from the downloads page.</source>
+        <translation>Предыдущее обновление не смогло вернуть все файлы прежней версии, поэтому обновления приостановлены. Эти файлы находятся в %1. Переместите их обратно в папку Lightning и удалите ту папку или переустановите Lightning со страницы загрузок.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Reinstall Lightning from the downloads page.</source>
+        <translation>Предыдущее обновление не смогло вернуть все файлы прежней версии, поэтому обновления приостановлены. Переустановите Lightning со страницы загрузок.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The update failed and the previous version could not be fully restored. The files that were not put back are in %1. Move them back into the Lightning folder, or reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
+        <translation>Обновление не удалось, и прежнюю версию не удалось полностью восстановить. Невозвращённые файлы находятся в %1. Переместите их обратно в папку Lightning или переустановите Lightning со страницы загрузок. Ваши сообщения и учётная запись хранятся на сервере и не затронуты.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>The update failed and the previous version could not be fully restored. Please reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
         <translation>Обновление не удалось, и предыдущую версию не удалось полностью восстановить. Переустановите Lightning со страницы загрузок. Ваши сообщения и учётная запись хранятся на сервере и не затронуты.</translation>
     </message>

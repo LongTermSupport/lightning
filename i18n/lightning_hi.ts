@@ -14878,7 +14878,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1953"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
         <location line="+991"/>
         <source>Open</source>
         <translation>खोलें</translation>
@@ -15411,7 +15411,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2833"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2844"/>
         <source>(spoiler)</source>
         <translation>(स्पॉइलर)</translation>
     </message>
@@ -15476,9 +15476,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>नया Matrix नोटिफिकेशन</translation>
     </message>
     <message numerus="yes">
-        <location line="+230"/>
+        <location line="+233"/>
         <location line="+217"/>
-        <location line="+1714"/>
+        <location line="+1722"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n नया संदेश</numerusform>
@@ -15486,7 +15486,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1927"/>
+        <location line="-1935"/>
         <location line="+211"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15495,7 +15495,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1719"/>
+        <location line="+1727"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>%n रूम में</numerusform>
@@ -15522,7 +15522,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+29"/>
+        <location line="+30"/>
         <source>You can close this window and return to Lightning.</source>
         <translation>आप यह विंडो बंद करके Lightning पर लौट सकते हैं।</translation>
     </message>
@@ -20012,12 +20012,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>आप साइन इन हो गए, लेकिन Lightning इस डिवाइस पर इस खाते का स्टोरेज नहीं खोल सका। यहाँ कुछ भी सहेजा नहीं गया।</translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+37"/>
         <source>You signed in, but Lightning could not save this account on this device, so it did not open it.</source>
         <translation>आप साइन इन हो गए, लेकिन Lightning इस डिवाइस पर यह खाता सहेज नहीं सका, इसलिए उसने इसे नहीं खोला।</translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+110"/>
         <source>You signed in, but your system keyring is locked or did not accept the sign-in, so Lightning did not keep it. Unlock the keyring and sign in again. The server now lists an unused session from this attempt; you can sign it out under Sessions.</source>
         <translation>आपने साइन इन किया, लेकिन आपकी सिस्टम कीरिंग लॉक है या उसने साइन-इन स्वीकार नहीं किया, इसलिए Lightning ने उसे नहीं रखा। कीरिंग अनलॉक करें और दोबारा साइन इन करें। इस प्रयास से बना एक अप्रयुक्त सेशन अब सर्वर की सूची में है; आप सेशन अनुभाग से इसे साइन आउट कर सकते हैं।</translation>
     </message>
@@ -20506,17 +20506,27 @@ Signing out and signing in again is the only fix.</source>
         <translation>सर्वर ने इस संदेश को रद्द नहीं किया।</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+35"/>
         <source>The server did not send this message.</source>
         <translation>सर्वर ने इस संदेश को नहीं भेजा।</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+22"/>
+        <source>Not sent yet: the connection failed. Lightning will try again.</source>
+        <translation>अभी नहीं भेजा गया: कनेक्शन विफल रहा। Lightning फिर से कोशिश करेगा।</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>This message could not be sent. Check the room before sending it again.</source>
+        <translation>यह संदेश नहीं भेजा जा सका। दोबारा भेजने से पहले रूम देख लें।</translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>The room did not accept this message. It was not sent.</source>
         <translation>रूम ने यह संदेश स्वीकार नहीं किया। यह नहीं भेजा गया।</translation>
     </message>
     <message>
-        <location line="+236"/>
+        <location line="+277"/>
         <source>Lightning closed before the server confirmed this message. Check the room before scheduling it again.</source>
         <translation>सर्वर की पुष्टि से पहले Lightning बंद हो गया। दोबारा शेड्यूल करने से पहले रूम जाँच लें।</translation>
     </message>
@@ -20526,7 +20536,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>इसे भेजते समय Lightning बंद हो गया। दोबारा भेजने से पहले रूम जाँच लें।</translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+62"/>
         <source>Attachment</source>
         <translation>अटैचमेंट</translation>
     </message>
@@ -20541,7 +20551,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>इसे अभी भेजने के लिए Lightning सर्वर तक नहीं पहुँच सका। यह अब भी शेड्यूल है।</translation>
     </message>
     <message>
-        <location line="+169"/>
+        <location line="+175"/>
         <source>Waiting for the connection.</source>
         <translation>कनेक्शन की प्रतीक्षा है।</translation>
     </message>
@@ -21255,7 +21265,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>SettingsBackupSection</name>
     <message>
-        <location filename="../qml/SettingsBackupSection.qml" line="+25"/>
+        <location filename="../qml/SettingsBackupSection.qml" line="+26"/>
         <source>Appearance</source>
         <translation>दिखावट</translation>
     </message>
@@ -21471,6 +21481,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+10"/>
         <source>This file was made by a newer Lightning. The settings this version knows are read; the rest are ignored.</source>
         <translation>यह फ़ाइल Lightning के नए संस्करण ने बनाई थी। जो सेटिंग्स यह संस्करण जानता है वे पढ़ी जाती हैं; बाकी अनदेखी की जाती हैं।</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>The active custom theme in this file could not be imported, so your current custom theme stays selected.</source>
+        <translation>इस फ़ाइल की सक्रिय कस्टम थीम आयात नहीं की जा सकी, इसलिए आपकी मौजूदा कस्टम थीम चुनी रहेगी।</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -26863,7 +26878,7 @@ Note: importing keys does not verify this session.</source>
         <translation>वह फ़ाइल पढ़ी नहीं जा सकी।</translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+87"/>
         <source>Choose a file first.</source>
         <translation>पहले कोई फ़ाइल चुनें।</translation>
     </message>
@@ -35376,7 +35391,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>lightning::update::UpdateManager</name>
     <message>
-        <location filename="../src/update/UpdateManager.cpp" line="+1042"/>
+        <location filename="../src/update/UpdateManager.cpp" line="+1058"/>
         <source>Lightning is installed for all users of this computer, so installing an update needs administrator approval, and Windows did not get it. Nothing was changed. Approve the prompt next time, or ask an administrator to install the update.</source>
         <translation>Lightning इस कंप्यूटर के सभी यूज़र के लिए इंस्टॉल है, इसलिए अपडेट इंस्टॉल करने के लिए एडमिनिस्ट्रेटर की मंज़ूरी चाहिए, और Windows को वह नहीं मिली। कुछ नहीं बदला गया। अगली बार प्रॉम्प्ट मंज़ूर करें, या किसी एडमिनिस्ट्रेटर से अपडेट इंस्टॉल करने को कहें।</translation>
     </message>
@@ -35416,7 +35431,22 @@ Note: importing keys does not verify this session.</source>
         <translation>नया संस्करण अपनी जगह पर नहीं रखा जा सका, इसलिए पिछला बहाल कर दिया गया। कुछ नहीं खोया।</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Those files are in %1. Move them back into the Lightning folder and delete that folder, or reinstall Lightning from the downloads page.</source>
+        <translation>पिछला अपडेट पिछले संस्करण की सभी फ़ाइलें वापस नहीं रख सका, इसलिए अपडेट रोक दिए गए हैं। वे फ़ाइलें %1 में हैं। उन्हें वापस Lightning फ़ोल्डर में ले जाएँ और उस फ़ोल्डर को हटा दें, या डाउनलोड पेज से Lightning दोबारा इंस्टॉल करें।</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Reinstall Lightning from the downloads page.</source>
+        <translation>पिछला अपडेट पिछले संस्करण की सभी फ़ाइलें वापस नहीं रख सका, इसलिए अपडेट रोक दिए गए हैं। डाउनलोड पेज से Lightning दोबारा इंस्टॉल करें।</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The update failed and the previous version could not be fully restored. The files that were not put back are in %1. Move them back into the Lightning folder, or reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
+        <translation>अपडेट विफल रहा और पिछला संस्करण पूरी तरह बहाल नहीं हो सका। जो फ़ाइलें वापस नहीं रखी गईं वे %1 में हैं। उन्हें वापस Lightning फ़ोल्डर में ले जाएँ, या डाउनलोड पेज से Lightning दोबारा इंस्टॉल करें। आपके संदेश और खाता सर्वर पर हैं और प्रभावित नहीं हुए हैं।</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>The update failed and the previous version could not be fully restored. Please reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
         <translation>अपडेट विफल रहा और पिछला संस्करण पूरी तरह बहाल नहीं हो सका। कृपया डाउनलोड पेज से Lightning दोबारा इंस्टॉल करें। आपके संदेश और खाता सर्वर पर हैं और प्रभावित नहीं हैं।</translation>
     </message>

@@ -14822,7 +14822,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1953"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
         <location line="+991"/>
         <source>Open</source>
         <translation>打开</translation>
@@ -15355,7 +15355,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2833"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2844"/>
         <source>(spoiler)</source>
         <translation>（剧透）</translation>
     </message>
@@ -15420,16 +15420,16 @@ Signing out and signing in again is the only fix.</source>
         <translation>新的 Matrix 通知</translation>
     </message>
     <message numerus="yes">
-        <location line="+230"/>
+        <location line="+233"/>
         <location line="+217"/>
-        <location line="+1714"/>
+        <location line="+1722"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n 条新消息</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1927"/>
+        <location line="-1935"/>
         <location line="+211"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15437,7 +15437,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1719"/>
+        <location line="+1727"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>在 %n 个房间中</numerusform>
@@ -15463,7 +15463,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+29"/>
+        <location line="+30"/>
         <source>You can close this window and return to Lightning.</source>
         <translation>你可以关闭此窗口并返回 Lightning。</translation>
     </message>
@@ -19932,12 +19932,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>你已登录，但 Lightning 无法在此设备上打开该账号的存储。此处未保存任何内容。</translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+37"/>
         <source>You signed in, but Lightning could not save this account on this device, so it did not open it.</source>
         <translation>你已登录，但 Lightning 无法在此设备上保存该账号，因此没有打开它。</translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+110"/>
         <source>You signed in, but your system keyring is locked or did not accept the sign-in, so Lightning did not keep it. Unlock the keyring and sign in again. The server now lists an unused session from this attempt; you can sign it out under Sessions.</source>
         <translation>你已登录，但你的系统密钥环已锁定或未接受该登录信息，因此 Lightning 没有保存它。请解锁密钥环并重新登录。服务器现在会列出此次尝试产生的一个未使用的会话；你可以在“会话”中将其退出。</translation>
     </message>
@@ -20426,17 +20426,27 @@ Signing out and signing in again is the only fix.</source>
         <translation>服务器未取消此消息。</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+35"/>
         <source>The server did not send this message.</source>
         <translation>服务器未发送此消息。</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+22"/>
+        <source>Not sent yet: the connection failed. Lightning will try again.</source>
+        <translation>尚未发送：连接失败。Lightning 将重试。</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>This message could not be sent. Check the room before sending it again.</source>
+        <translation>无法发送此消息。再次发送前请先查看房间。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>The room did not accept this message. It was not sent.</source>
         <translation>房间未接受此消息。消息未发送。</translation>
     </message>
     <message>
-        <location line="+236"/>
+        <location line="+277"/>
         <source>Lightning closed before the server confirmed this message. Check the room before scheduling it again.</source>
         <translation>在服务器确认此消息之前，Lightning 已关闭。请在再次定时发送前检查该房间。</translation>
     </message>
@@ -20446,7 +20456,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>发送此消息时 Lightning 已关闭。请在再次发送前检查该房间。</translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+62"/>
         <source>Attachment</source>
         <translation>附件</translation>
     </message>
@@ -20461,7 +20471,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Lightning 无法连接服务器以立即发送此消息。它仍处于定时状态。</translation>
     </message>
     <message>
-        <location line="+169"/>
+        <location line="+175"/>
         <source>Waiting for the connection.</source>
         <translation>正在等待连接。</translation>
     </message>
@@ -21172,7 +21182,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>SettingsBackupSection</name>
     <message>
-        <location filename="../qml/SettingsBackupSection.qml" line="+25"/>
+        <location filename="../qml/SettingsBackupSection.qml" line="+26"/>
         <source>Appearance</source>
         <translation>外观</translation>
     </message>
@@ -21385,6 +21395,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+10"/>
         <source>This file was made by a newer Lightning. The settings this version knows are read; the rest are ignored.</source>
         <translation>此文件由较新版本的 Lightning 创建。此版本会读取它所识别的设置，其余的将被忽略。</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>The active custom theme in this file could not be imported, so your current custom theme stays selected.</source>
+        <translation>无法导入此文件中当前使用的自定义主题，因此仍保留你当前的自定义主题。</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -26762,7 +26777,7 @@ Note: importing keys does not verify this session.</source>
         <translation>无法读取该文件。</translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+87"/>
         <source>Choose a file first.</source>
         <translation>请先选择一个文件。</translation>
     </message>
@@ -35214,7 +35229,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>lightning::update::UpdateManager</name>
     <message>
-        <location filename="../src/update/UpdateManager.cpp" line="+1042"/>
+        <location filename="../src/update/UpdateManager.cpp" line="+1058"/>
         <source>Lightning is installed for all users of this computer, so installing an update needs administrator approval, and Windows did not get it. Nothing was changed. Approve the prompt next time, or ask an administrator to install the update.</source>
         <translation>Lightning 为此电脑的所有用户安装，因此安装更新需要管理员批准，而 Windows 未获得该批准。未更改任何内容。下次请批准提示，或请管理员安装更新。</translation>
     </message>
@@ -35254,7 +35269,22 @@ Note: importing keys does not verify this session.</source>
         <translation>无法放置新版本，因此已恢复为之前的版本。没有任何内容丢失。</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Those files are in %1. Move them back into the Lightning folder and delete that folder, or reinstall Lightning from the downloads page.</source>
+        <translation>之前的更新未能恢复旧版本的全部文件，因此更新已暂停。这些文件位于 %1。请将它们移回 Lightning 文件夹并删除该文件夹，或从下载页面重新安装 Lightning。</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Reinstall Lightning from the downloads page.</source>
+        <translation>之前的更新未能恢复旧版本的全部文件，因此更新已暂停。请从下载页面重新安装 Lightning。</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The update failed and the previous version could not be fully restored. The files that were not put back are in %1. Move them back into the Lightning folder, or reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
+        <translation>更新失败，且未能完全恢复旧版本。未恢复的文件位于 %1。请将它们移回 Lightning 文件夹，或从下载页面重新安装 Lightning。你的消息和帐户保存在服务器上，不受影响。</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>The update failed and the previous version could not be fully restored. Please reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
         <translation>更新失败，且无法完全恢复之前的版本。请从下载页面重新安装 Lightning。你的消息和账号保存在服务器上，不受影响。</translation>
     </message>
