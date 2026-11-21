@@ -88,6 +88,22 @@ QByteArray deflateRaw(const QByteArray &plain, int level = 9, int strategy = 0)
 #endif
 }
 
+
+QByteArray compressibleBlob(int blockSize, int repeats, quint32 seed)
+{
+    QByteArray block(blockSize, '\0');
+    quint32 state = seed ? seed : 1u;
+    for (int i = 0; i < blockSize; ++i) {
+        state = state * 1664525u + 1013904223u;
+        block[i] = static_cast<char>((state >> 24) & 0xFFu);
+    }
+    QByteArray out;
+    out.reserve(static_cast<qsizetype>(blockSize) * repeats);
+    for (int i = 0; i < repeats; ++i)
+        out.append(block);
+    return out;
+}
+
 // Replays the extractor's pre-fix loop: true when one inflate call consumed
 // the last input and filled the 64 KiB output before the stream ended.
 bool lastInputFillsTheOutput(const QByteArray &compressed)
@@ -150,21 +166,6 @@ constexpr DeflateStyle kDeflateStyles[] = {
     { "fixed-huffman", 9, 4 },
     { "dynamic-huffman", 9, 0 },
 };
-
-QByteArray compressibleBlob(int blockSize, int repeats, quint32 seed)
-{
-    QByteArray block(blockSize, '\0');
-    quint32 state = seed ? seed : 1u;
-    for (int i = 0; i < blockSize; ++i) {
-        state = state * 1664525u + 1013904223u;
-        block[i] = static_cast<char>((state >> 24) & 0xFFu);
-    }
-    QByteArray out;
-    out.reserve(static_cast<qsizetype>(blockSize) * repeats);
-    for (int i = 0; i < repeats; ++i)
-        out.append(block);
-    return out;
-}
 
 struct ZipEntry {
     QByteArray name;

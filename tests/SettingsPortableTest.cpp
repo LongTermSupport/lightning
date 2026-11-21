@@ -280,7 +280,7 @@ private Q_SLOTS:
                 .object().value("name").toString();
         };
         QJsonObject oversized = theme("big");
-        oversized.insert("pad", QString(70 * 1024, 'x'));
+        oversized.insert("pad", QString(70 * 1024, QLatin1Char('x')));
 
         ParseResult r = parse({ QJsonValue(), theme("B"), theme("C") }, 1);
         QVERIFY(r.ok);
