@@ -46,6 +46,51 @@ class ProfileBioBadgeTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
+    void delayedBioReadsReserveCapacityForTheOpenedProfile()
+    {
+        FakeBioClient client;
+        ProfileBioManager manager;
+        manager.setClient(&client);
+        const auto user = [](int i) { return QStringLiteral("@p%1:example.org").arg(i); };
+        const auto answer = QStringLiteral("bio");
+        const auto complete = [&](quint64 op, const QString &id) {
+            Q_EMIT client.profileBioReceived(op, id, answer, true);
+        };
+        for (int i = 0; i < 250; ++i) {
+            manager.request(user(i));
+            complete(client.fetches.last().opId, user(i));
+        }
+        QList<QPair<quint64, QString>> delayed;
+        for (int i = 250; i < 550; ++i) {
+            const auto before = client.fetches.size();
+            manager.request(user(i));
+            if (client.fetches.size() != before)
+                delayed.append({client.fetches.last().opId, user(i)});
+        }
+        QCOMPARE(delayed.size(), 16);
+        manager.setOwnBio("new bio");
+        Q_EMIT client.profileBioSet(client.lastWriteOp, true, answer, {});
+        for (auto it = delayed.crbegin(); it != delayed.crend(); ++it)
+            complete(it->first, it->second);
+        const QString latest = user(549);
+        QCOMPARE(client.fetches.last().userId, latest);
+        complete(client.fetches.last().opId, latest);
+        QVERIFY(!manager.bioFor(latest).isEmpty());
+        QVERIFY(!manager.bioFor(client.self).isEmpty());
+        int retained = 1;
+        for (int i = 0; i < 550; ++i)
+            retained += !manager.bioFor(user(i)).isEmpty();
+        QVERIFY(retained <= 256);
+        manager.request(user(600));
+        const auto stale = client.fetches.last().opId;
+        Q_EMIT client.loggedOut();
+        manager.request(user(600));
+        complete(stale, user(600));
+        QVERIFY(manager.bioFor(user(600)).isEmpty());
+        complete(client.fetches.last().opId, user(600));
+        QVERIFY(!manager.bioFor(user(600)).isEmpty());
+    }
+
     void anUnknownUserRendersNothingAndIsAskedExactlyOnce()
     {
         FakeBioClient client;

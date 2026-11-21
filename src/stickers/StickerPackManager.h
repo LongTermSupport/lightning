@@ -7,6 +7,7 @@
 
 #include <QHash>
 #include <QObject>
+#include <QPointer>
 #include <functional>
 #include <memory>
 
@@ -20,6 +21,7 @@ class QTimer;
 
 class QTemporaryDir;
 class MatrixClient;
+class StickerExportWorker;
 
 class StickerPackManager : public QObject
 {
@@ -168,6 +170,7 @@ public:
     Q_INVOKABLE void exportPack(const QString &packId, const QUrl &zipFile);
     Q_INVOKABLE void uploadImagesToPack(const QString &packId,
                                         const QVariantList &fileUrls);
+    Q_INVOKABLE void cancelTransfer();
     Q_INVOKABLE void retryFailedUploads();
     Q_INVOKABLE int failedUploadCount() const { return int(m_failedUploads.size()); }
     Q_INVOKABLE void importPack(const QUrl &zipFile);
@@ -250,9 +253,10 @@ private:
         QList<BatchItem> retry;
         stickers::Pack frozen;
         QString packId;
-        QString destination;
         QHash<quint64, int> pending;
-        QList<QByteArray> bytes;
+        int writing = 0;
+        int written = 0;
+        bool finalizing = false;
         int nextFetch = 0;
         quint64 generation = 0;
     };
@@ -269,7 +273,10 @@ private:
     void onBatchItemFinished(bool ok, const QString &category,
                              const QString &shortcode);
     void pumpExport();
-    void finishExport();
+    StickerExportWorker *m_exportWorker = nullptr;
+    QPointer<MatrixClient> m_exportClient;
+    void cancelExportDownloads();
+    void stopExportWorker();
     void onMediaFetched(quint64 opId, const QByteArray &bytes);
     void onMediaFetchFailed(quint64 opId);
     void startBatch(const QString &kind, const QString &name,
@@ -339,6 +346,7 @@ private:
     quint64 m_republishOp = 0;
     void dropRepublishScratch();
     QString m_failedUploadsAccount;
+    QString m_failedUploadsPackId;
     static QString localGroupFor(const QString &userId);
     bool m_refreshOwed = false;
     bool m_refreshOwedDeep = false;

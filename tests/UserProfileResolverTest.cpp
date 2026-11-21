@@ -8,6 +8,28 @@
 namespace {
 constexpr int kSignalTimeoutMs = 3000;
 
+class DelayedProfiles : public MockMatrixClient
+{
+public:
+    QString currentUserId() const override { return QStringLiteral("@self:example.org"); }
+    quint64 fetchUserProfile(const QString &userId) override
+    {
+        requests.append(userId);
+        return quint64(requests.size());
+    }
+    void complete(int index, bool ok)
+    {
+        const QString userId = requests.at(index);
+        Q_EMIT userProfileFinished(quint64(index + 1), ok, userId, "name", {}, {});
+    }
+    QStringList requests;
+};
+
+QString profileId(int i)
+{
+    return QStringLiteral("@p%1:example.org").arg(i);
+}
+
 bool login(MockMatrixClient &client)
 {
     QSignalSpy spy(&client, &MatrixClient::loginSucceeded);
@@ -22,6 +44,65 @@ class UserProfileResolverTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
+    void delayedReadsShareTheCacheBudgetAndAnOpenedProfileTakesPriority()
+    {
+        DelayedProfiles client;
+        UserProfileResolver resolver;
+        resolver.setClient(&client);
+        resolver.request(client.currentUserId());
+        client.complete(0, true);
+        for (int i = 0; i < 3990; ++i) {
+            resolver.request(profileId(i));
+            client.complete(i + 1, true);
+        }
+        const int begin = int(client.requests.size());
+        for (int i = 4000; i < 8200; ++i)
+            resolver.request(profileId(i));
+        QCOMPARE(resolver.inFlightCount(), 16);
+        QVERIFY(resolver.cachedCount() + resolver.inFlightCount() <= 4000);
+        const auto opened = QStringLiteral("@opened:example.org");
+        resolver.lookup(opened);
+        client.complete(begin + 15, true);
+        QCOMPARE(client.requests.last(), opened);
+        client.complete(int(client.requests.size()) - 1, true);
+        QVERIFY(resolver.profile(opened).known);
+        for (int i = begin + 14; i >= begin; --i) {
+            client.complete(i, true);
+            QVERIFY(resolver.cachedCount() + resolver.inFlightCount() <= 4000);
+        }
+        QVERIFY(resolver.profile(client.currentUserId()).known);
+        const auto stale = int(client.requests.size()) - 1;
+        Q_EMIT client.loggedOut();
+        client.complete(stale, true);
+        QCOMPARE(resolver.cachedCount(), 0);
+        QCOMPARE(resolver.inFlightCount(), 0);
+        QCOMPARE(resolver.failedCount(), 0);
+    }
+
+    void negativeEntriesAreBoundedAndExpireWithoutAnotherLookup()
+    {
+        DelayedProfiles client;
+        UserProfileResolver resolver;
+        resolver.setClient(&client);
+        for (int i = 0; i < 4010; ++i) {
+            resolver.request(profileId(i));
+            QCOMPARE(client.requests.size(), i + 1);
+            client.complete(i, false);
+            QVERIFY(resolver.failedCount() <= 4000);
+        }
+        QCOMPARE(resolver.failedCount(), 4000);
+        resolver.request(profileId(0));
+        QCOMPARE(resolver.inFlightCount(), 1);
+        client.complete(int(client.requests.size()) - 1, false);
+        resolver.setFailureRetryForTest(50);
+        resolver.request(profileId(4010));
+        client.complete(int(client.requests.size()) - 1, false);
+        QVERIFY(resolver.failedCount() >= 1);
+        QTRY_COMPARE(resolver.failedCount(), 0);
+        resolver.request(profileId(4009));
+        QCOMPARE(resolver.inFlightCount(), 1);
+    }
+
     void asksOnceAndAnswersFromTheCacheAfterwards()
     {
         MockMatrixClient client;

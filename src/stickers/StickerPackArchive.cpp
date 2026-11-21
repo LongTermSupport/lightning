@@ -2,6 +2,10 @@
 
 #include "updater/SafeArchive.h"
 
+#include <array>
+#include <utility>
+
+#include <QBuffer>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -16,24 +20,22 @@ namespace {
 
 constexpr auto kFormat = "lightning.sticker-pack";
 constexpr int kVersion = 1;
-constexpr int kMaxShortcodeChars = 100;  // Matrix v1.19 grammar bound
 constexpr int kMaxBodyChars = 160;
 constexpr int kMaxNameChars = 80;
 constexpr int kMaxAttributionChars = 160;
 
 quint32 crc32(const QByteArray &data)
 {
-    static quint32 table[256];
-    static bool ready = false;
-    if (!ready) {
+    static constexpr auto table = [] {
+        std::array<quint32, 256> entries{};
         for (quint32 i = 0; i < 256; ++i) {
             quint32 c = i;
             for (int k = 0; k < 8; ++k)
                 c = (c & 1) ? (0xEDB88320u ^ (c >> 1)) : (c >> 1);
-            table[i] = c;
+            entries[i] = c;
         }
-        ready = true;
-    }
+        return entries;
+    }();
     quint32 c = 0xFFFFFFFFu;
     for (const char ch : data)
         c = table[(c ^ quint8(ch)) & 0xFF] ^ (c >> 8);
@@ -49,63 +51,6 @@ void le32(QByteArray &b, quint32 v)
 {
     le16(b, quint16(v & 0xFFFF));
     le16(b, quint16(v >> 16));
-}
-
-struct ZipEntry {
-    QByteArray name;
-    QByteArray data;
-};
-
-QByteArray writeStoredZip(const QList<ZipEntry> &entries)
-{
-    QByteArray out;
-    QByteArray central;
-    for (const ZipEntry &e : entries) {
-        const quint32 offset = quint32(out.size());
-        const quint32 crc = crc32(e.data);
-        le32(out, 0x04034b50);
-        le16(out, 20);
-        le16(out, 0x0800);
-        le16(out, 0);
-        le16(out, 0);
-        le16(out, 0x0021);
-        le32(out, crc);
-        le32(out, quint32(e.data.size()));
-        le32(out, quint32(e.data.size()));
-        le16(out, quint16(e.name.size()));
-        le16(out, 0);
-        out.append(e.name);
-        out.append(e.data);
-        le32(central, 0x02014b50);
-        le16(central, 20);
-        le16(central, 20);
-        le16(central, 0x0800);
-        le16(central, 0);
-        le16(central, 0);
-        le16(central, 0x0021);
-        le32(central, crc);
-        le32(central, quint32(e.data.size()));
-        le32(central, quint32(e.data.size()));
-        le16(central, quint16(e.name.size()));
-        le16(central, 0);
-        le16(central, 0);
-        le16(central, 0);
-        le16(central, 0);
-        le32(central, 0);
-        le32(central, offset);
-        central.append(e.name);
-    }
-    const quint32 centralOffset = quint32(out.size());
-    out.append(central);
-    le32(out, 0x06054b50);
-    le16(out, 0);
-    le16(out, 0);
-    le16(out, quint16(entries.size()));
-    le16(out, quint16(entries.size()));
-    le32(out, quint32(central.size()));
-    le32(out, centralOffset);
-    le16(out, 0);
-    return out;
 }
 
 QString oneLine(const QString &text, int maxChars)
@@ -196,52 +141,127 @@ QString mimeForExtension(const QString &ext)
     return {};
 }
 
-QByteArray buildArchive(const Pack &pack, int *skipped)
+WriteResult Writer::writeEntry(const QByteArray &name, const QByteArray &data)
 {
-    int skippedCount = 0;
-    QList<ZipEntry> entries;
+    // Stored ZIP: local header, central record, two names, and the final directory trailer.
+    const qint64 finalSize = m_offset + m_central.size() + data.size()
+                             + 30 + 46 + 2 * name.size() + 22;
+    if (finalSize > kMaxArchiveBytes)
+        return WriteResult::TooLarge;
+    const quint32 crc = crc32(data);
+    QByteArray header;
+    le32(header, 0x04034b50);
+    le16(header, 20);
+    le16(header, 0x0800);
+    le16(header, 0);
+    le16(header, 0);
+    le16(header, 0x0021);
+    le32(header, crc);
+    le32(header, quint32(data.size()));
+    le32(header, quint32(data.size()));
+    le16(header, quint16(name.size()));
+    le16(header, 0);
+    header.append(name);
+    if (m_output.write(header) != header.size() || m_output.write(data) != data.size())
+        return WriteResult::WriteFailed;
+    le32(m_central, 0x02014b50);
+    le16(m_central, 20);
+    le16(m_central, 20);
+    le16(m_central, 0x0800);
+    le16(m_central, 0);
+    le16(m_central, 0);
+    le16(m_central, 0x0021);
+    le32(m_central, crc);
+    le32(m_central, quint32(data.size()));
+    le32(m_central, quint32(data.size()));
+    le16(m_central, quint16(name.size()));
+    le16(m_central, 0);
+    le16(m_central, 0);
+    le16(m_central, 0);
+    le16(m_central, 0);
+    le32(m_central, 0);
+    le32(m_central, quint32(m_offset));
+    m_central.append(name);
+    m_offset += header.size() + data.size();
+    return WriteResult::Ok;
+}
+
+WriteResult Writer::append(int index, const Image &image)
+{
+    const QString ext = extensionForBytes(image.data);
+    const QString code = proposeShortcode(image.shortcode);
+    if (ext.isEmpty() || image.data.size() > kMaxImageBytes || code.isEmpty()
+        || m_images.size() >= kMaxImages || m_codes.contains(code) || m_images.contains(index))
+        return WriteResult::Skipped;
+    const QString file = QStringLiteral("images/%1-%2.%3")
+                             .arg(index + 1, 4, 10, QLatin1Char('0'))
+                             .arg(code.left(64), ext);
+    const auto result = writeEntry(file.toUtf8(), image.data);
+    if (result != WriteResult::Ok)
+        return result;
+    QJsonObject obj;
+    obj.insert(QStringLiteral("shortcode"), code);
+    obj.insert(QStringLiteral("file"), file);
+    obj.insert(QStringLiteral("mimetype"), mimeForExtension(ext));
+    obj.insert(QStringLiteral("usage"), normalizeUsage(image.usage));
+    const QString body = oneLine(image.body, kMaxBodyChars);
+    if (!body.isEmpty() && body != code)
+        obj.insert(QStringLiteral("body"), body);
+    m_codes.insert(code);
+    m_images.insert(index, obj);
+    return WriteResult::Ok;
+}
+
+WriteResult Writer::finish(const QString &name, const QString &attribution)
+{
+    if (m_images.isEmpty())
+        return WriteResult::Skipped;
     QJsonArray images;
-    int index = 0;
-    for (const Image &image : pack.images) {
-        const QString ext = extensionForBytes(image.data);
-        if (ext.isEmpty() || image.data.isEmpty()
-            || image.data.size() > kMaxImageBytes || index >= kMaxImages) {
-            ++skippedCount;
-            continue;
-        }
-        const QString code = proposeShortcode(image.shortcode);
-        if (code.isEmpty()) {
-            ++skippedCount;
-            continue;
-        }
-        ++index;
-        const QString file = QStringLiteral("images/%1-%2.%3")
-                                 .arg(index, 4, 10, QLatin1Char('0'))
-                                 .arg(code.left(64), ext);
-        QJsonObject obj;
-        obj.insert(QStringLiteral("shortcode"), code);
-        obj.insert(QStringLiteral("file"), file);
-        obj.insert(QStringLiteral("mimetype"), mimeForExtension(ext));
-        obj.insert(QStringLiteral("usage"), normalizeUsage(image.usage));
-        const QString body = oneLine(image.body, kMaxBodyChars);
-        if (!body.isEmpty() && body != code)
-            obj.insert(QStringLiteral("body"), body);
-        images.append(obj);
-        entries.append({file.toUtf8(), image.data});
-    }
+    for (const auto &image : std::as_const(m_images))
+        images.append(image);
     QJsonObject manifest;
     manifest.insert(QStringLiteral("format"), QLatin1String(kFormat));
     manifest.insert(QStringLiteral("version"), kVersion);
-    manifest.insert(QStringLiteral("name"), oneLine(pack.name, kMaxNameChars));
-    if (!pack.attribution.isEmpty())
-        manifest.insert(QStringLiteral("attribution"),
-                        oneLine(pack.attribution, kMaxAttributionChars));
+    manifest.insert(QStringLiteral("name"), oneLine(name, kMaxNameChars));
+    if (!attribution.isEmpty())
+        manifest.insert(QStringLiteral("attribution"), oneLine(attribution, kMaxAttributionChars));
     manifest.insert(QStringLiteral("images"), images);
-    entries.prepend({QByteArrayLiteral("pack.json"),
-                     QJsonDocument(manifest).toJson(QJsonDocument::Indented)});
+    const auto json = QJsonDocument(manifest).toJson(QJsonDocument::Indented);
+    if (json.size() > kMaxManifestBytes)
+        return WriteResult::TooLarge;
+    const auto result = writeEntry(QByteArrayLiteral("pack.json"), json);
+    if (result != WriteResult::Ok)
+        return result;
+    QByteArray out = m_central;
+    le32(out, 0x06054b50);
+    le16(out, 0);
+    le16(out, 0);
+    le16(out, quint16(m_images.size() + 1));
+    le16(out, quint16(m_images.size() + 1));
+    le32(out, quint32(m_central.size()));
+    le32(out, quint32(m_offset));
+    le16(out, 0);
+    return m_output.write(out) == out.size() ? WriteResult::Ok : WriteResult::WriteFailed;
+}
+
+QByteArray buildArchive(const Pack &pack, int *skipped)
+{
+    QBuffer buffer;
+    buffer.open(QIODevice::WriteOnly);
+    Writer writer(buffer);
+    int skippedCount = 0;
+    for (int i = 0; i < pack.images.size(); ++i) {
+        const auto result = writer.append(i, pack.images.at(i));
+        if (result == WriteResult::Skipped)
+            ++skippedCount;
+        else if (result != WriteResult::Ok)
+            return {};
+    }
     if (skipped)
         *skipped = skippedCount;
-    return writeStoredZip(entries);
+    if (writer.finish(pack.name, pack.attribution) != WriteResult::Ok)
+        return {};
+    return buffer.data();
 }
 
 ReadResult readArchive(const QString &zipPath, const QString &workDir)
@@ -250,8 +270,8 @@ ReadResult readArchive(const QString &zipPath, const QString &workDir)
     updater::ArchiveLimits limits;
     limits.maxEntries = kMaxImages + 8;
     limits.maxEntryUncompressedBytes = kMaxImageBytes;
-    limits.maxTotalUncompressedBytes = 96LL * 1024 * 1024;
-    limits.maxArchiveBytes = 96LL * 1024 * 1024;
+    limits.maxTotalUncompressedBytes = kMaxArchiveBytes;
+    limits.maxArchiveBytes = kMaxArchiveBytes;
     limits.maxPathDepth = 4;
     const updater::ArchiveResult extracted =
         updater::extractZipSafely(zipPath, workDir, limits);

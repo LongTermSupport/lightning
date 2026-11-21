@@ -1,13 +1,19 @@
 #pragma once
 
 #include <QByteArray>
+#include <QIODevice>
+#include <QJsonObject>
 #include <QList>
+#include <QMap>
+#include <QSet>
 #include <QString>
 
 namespace stickers::archive {
 
 constexpr int kMaxImages = 512;
+constexpr int kMaxShortcodeChars = 100;
 constexpr qint64 kMaxImageBytes = 4 * 1024 * 1024;
+constexpr qint64 kMaxArchiveBytes = 96LL * 1024 * 1024;
 constexpr qint64 kMaxManifestBytes = 1024 * 1024;
 
 struct Image {
@@ -29,6 +35,24 @@ struct Pack {
 // are not PNG / JPEG / WebP / GIF. SVG and anything else are "".
 QString extensionForBytes(const QByteArray &bytes);
 QString mimeForExtension(const QString &extension);
+
+enum class WriteResult { Ok, Skipped, TooLarge, WriteFailed };
+
+class Writer
+{
+public:
+    explicit Writer(QIODevice &output) : m_output(output) {}
+    WriteResult append(int index, const Image &image);
+    WriteResult finish(const QString &name, const QString &attribution);
+
+private:
+    WriteResult writeEntry(const QByteArray &name, const QByteArray &data);
+    QIODevice &m_output;
+    qint64 m_offset = 0;
+    QByteArray m_central;
+    QMap<int, QJsonObject> m_images;
+    QSet<QString> m_codes;
+};
 
 QByteArray buildArchive(const Pack &pack, int *skipped = nullptr);
 

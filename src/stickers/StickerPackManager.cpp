@@ -6,12 +6,14 @@
 #include <QGuiApplication>
 #include <QClipboard>
 #include <QSettings>
+#include <QSharedPointer>
 #include <QFile>
 #include <QFileInfo>
 #include <QPointer>
 #include <QRegularExpression>
 #include <QSaveFile>
 #include <QTemporaryDir>
+#include <QThread>
 #include <QThreadPool>
 #include <QTimer>
 
@@ -24,11 +26,24 @@
 
 #include <QLoggingCategory>
 
+#include <utility>
+
 Q_LOGGING_CATEGORY(lcStickers, "lightning.stickers")
 
 namespace {
 
 constexpr int kMaxCompletionRows = 64;
+
+QString reserveShortcode(const QString &base, QSet<QString> &reserved)
+{
+    QString code = base;
+    for (qsizetype n = 2; reserved.contains(code); ++n) {
+        const QString suffix = QStringLiteral("-%1").arg(n);
+        code = base.left(stickers::archive::kMaxShortcodeChars - suffix.size()) + suffix;
+    }
+    reserved.insert(code);
+    return code;
+}
 
 bool packsTraceEnabled()
 {
@@ -77,6 +92,63 @@ stickers::Pack packFromVariant(const QVariantMap &map)
 
 }
 
+class StickerExportWorker : public QObject
+{
+    Q_OBJECT
+public:
+    explicit StickerExportWorker(const QString &path, QThread *ownerThread)
+        : m_file(new QSaveFile(path, this)), m_writer(*m_file), m_ownerThread(ownerThread)
+    {
+    }
+
+    void append(int index, stickers::archive::Image image)
+    {
+        using stickers::archive::WriteResult;
+        if (m_failed)
+            return;
+        const auto result = m_file->isOpen() || m_file->open(QIODevice::WriteOnly)
+            ? m_writer.append(index, image) : WriteResult::WriteFailed;
+        image.data.clear();
+        if (check(result))
+            Q_EMIT processed(result == WriteResult::Skipped);
+    }
+
+    void finish(const QString &name, const QString &attribution)
+    {
+        if (m_failed || !check(m_writer.finish(name, attribution)))
+            return;
+        if (!m_file->flush()) {
+            Q_EMIT failed(QStringLiteral("write_failed"));
+            return;
+        }
+        // Only the current account's controller may publish the prepared file.
+        m_file->setParent(nullptr);
+        m_file->moveToThread(m_ownerThread);
+        Q_EMIT prepared(QSharedPointer<QSaveFile>(m_file, &QObject::deleteLater));
+    }
+
+Q_SIGNALS:
+    void processed(bool skipped);
+    void failed(const QString &category);
+    void prepared(QSharedPointer<QSaveFile> file);
+
+private:
+    bool check(stickers::archive::WriteResult result)
+    {
+        using stickers::archive::WriteResult;
+        m_failed = result == WriteResult::TooLarge || result == WriteResult::WriteFailed;
+        if (m_failed)
+            Q_EMIT failed(result == WriteResult::TooLarge ? QStringLiteral("too_large")
+                                                          : QStringLiteral("write_failed"));
+        return !m_failed;
+    }
+
+    QSaveFile *m_file;
+    stickers::archive::Writer m_writer;
+    QThread *m_ownerThread;
+    bool m_failed = false;
+};
+
 StickerPackManager::StickerPackManager(QObject *parent)
     : QObject(parent)
     , m_packs(new StickerPackModel(this))
@@ -85,7 +157,29 @@ StickerPackManager::StickerPackManager(QObject *parent)
 {
 }
 
-StickerPackManager::~StickerPackManager() = default;
+StickerPackManager::~StickerPackManager()
+{
+    stopExportWorker();
+}
+
+void StickerPackManager::cancelExportDownloads()
+{
+    const auto pending = std::exchange(m_transfer.pending, {});
+    if (m_exportClient) {
+        for (auto it = pending.cbegin(); it != pending.cend(); ++it)
+            m_exportClient->cancelMediaFetch(it.key());
+    }
+}
+
+void StickerPackManager::stopExportWorker()
+{
+    cancelExportDownloads();
+    m_exportClient.clear();
+    if (m_exportWorker) {
+        m_exportWorker->thread()->quit();
+        m_exportWorker = nullptr;
+    }
+}
 
 void StickerPackManager::setClient(MatrixClient *client)
 {
@@ -129,10 +223,14 @@ void StickerPackManager::setClient(MatrixClient *client)
         connect(m_client, &MatrixClient::mediaReady, this,
                 [this](quint64 opId, const QString &, int,
                        const QByteArray &bytes, const QString &,
-                       const QString &) { onMediaFetched(opId, bytes); });
+                       const QString &) {
+                    if (sender() == m_exportClient.data())
+                        onMediaFetched(opId, bytes);
+                });
         connect(m_client, &MatrixClient::mediaFailed, this,
                 [this](quint64 opId, const QString &, int, const QString &) {
-                    onMediaFetchFailed(opId);
+                    if (sender() == m_exportClient.data())
+                        onMediaFetchFailed(opId);
                 });
         // Packs are account data.
         // loggedOut also fires on every in-place account SWITCH (the client
@@ -917,6 +1015,7 @@ void StickerPackManager::onSaveFinished(quint64 opId, bool ok,
 void StickerPackManager::onLoggedOut()
 {
     ++m_transferGeneration;
+    stopExportWorker();
     m_transfer = Transfer();
     m_importDir.reset();
     if (m_transferWatchdog)
@@ -933,6 +1032,7 @@ void StickerPackManager::onLoggedOut()
     // Another account must never retry this one's batch (or reuse its media).
     m_failedUploads.clear();
     m_failedUploadsAccount.clear();
+    m_failedUploadsPackId.clear();
     m_refreshOwed = false;
     m_refreshOwedDeep = false;
     m_deepRoomId.clear();
@@ -1081,7 +1181,7 @@ QString StickerPackManager::shortcodeError(const QString &packId,
 {
     if (candidate.isEmpty())
         return tr("Enter a name.");
-    if (candidate.size() > 100)
+    if (candidate.size() > stickers::archive::kMaxShortcodeChars)
         return tr("Names can be at most 100 characters (this one has %1).")
             .arg(candidate.size());
     if (!stickers::archive::isValidShortcode(candidate))
@@ -1125,26 +1225,40 @@ void StickerPackManager::beginTransfer(const QString &kind, const QString &name,
             if (!m_transfer.active)
                 return;
             if (m_transfer.kind == QLatin1String("export")) {
+                if (m_transfer.pending.isEmpty()) {
+                    finishTransfer(false, QStringLiteral("timeout"));
+                    return;
+                }
                 m_transfer.failed += int(m_transfer.pending.size())
                     + (m_transfer.total - m_transfer.nextFetch);
-                m_transfer.pending.clear();
+                cancelExportDownloads();
                 m_transfer.nextFetch = m_transfer.total;
-                finishExport();
+                m_transferWatchdog->start();
+                pumpExport();
             } else {
+                if (m_transfer.kind == QLatin1String("upload") && m_transfer.op) {
+                    BatchItem &pending = m_transfer.items[m_transfer.index - 1];
+                    if (!m_transfer.lastUploaded.isEmpty())
+                        pending.reuseUrl = m_transfer.lastUploaded;
+                    const auto remaining = m_transfer.items.mid(m_transfer.index - 1);
+                    m_transfer.retry.append(remaining);
+                    m_transfer.failed += int(remaining.size());
+                }
                 m_saveOp = 0;
                 finishTransfer(m_transfer.added > 0, QStringLiteral("timeout"));
             }
         });
     }
     m_transferWatchdog->start();
-    emitStateChanged();
 }
 
 void StickerPackManager::finishTransfer(bool ok, const QString &category)
 {
+    stopExportWorker();
     const Transfer done = m_transfer;
     if (done.kind == QLatin1String("upload")) {
         m_failedUploads = done.retry;
+        m_failedUploadsPackId = done.packId;
         m_failedUploadsAccount = m_client ? m_client->currentUserId() : QString();
     }
     m_transfer = Transfer();
@@ -1271,7 +1385,9 @@ void StickerPackManager::uploadImagesToPack(const QString &packId,
     if (pack.source != QLatin1String("room") || pack.roomId.isEmpty())
         return;
     QList<BatchItem> items;
-    QSet<QString> names;
+    QSet<QString> reserved;
+    for (const stickers::PackImage &image : pack.images)
+        reserved.insert(image.key);
     for (const QVariant &value : fileUrls) {
         const QUrl url = value.toUrl().isValid() ? value.toUrl()
                                                  : QUrl(value.toString());
@@ -1280,14 +1396,10 @@ void StickerPackManager::uploadImagesToPack(const QString &packId,
         BatchItem item;
         item.path = url.toLocalFile();
         QString code = stickers::archive::proposeShortcode(
-            QFileInfo(item.path).completeBaseName());
+            QFileInfo(item.path).completeBaseName().normalized(QString::NormalizationForm_C));
         if (code.isEmpty())
             code = QStringLiteral("image");
-        QString unique = code;
-        for (int n = 2; names.contains(unique); ++n)
-            unique = code.left(96) + QStringLiteral("-%1").arg(n);
-        names.insert(unique);
-        item.shortcode = unique;
+        item.shortcode = reserveShortcode(code, reserved);
         item.body = QString();
         item.roomId = pack.roomId;
         item.stateKey = pack.stateKey.isNull() ? QStringLiteral("") : pack.stateKey;
@@ -1299,20 +1411,33 @@ void StickerPackManager::uploadImagesToPack(const QString &packId,
     m_failedUploads.clear();
     beginTransfer(QStringLiteral("upload"), pack.displayName, int(items.size()));
     m_transfer.items = items;
-    for (const stickers::PackImage &image : pack.images)
-        m_transfer.taken.insert(image.key);
-    for (BatchItem &item : m_transfer.items) {
-        QString unique = item.shortcode;
-        for (int n = 2; m_transfer.taken.contains(unique) && n < 1000; ++n)
-            unique = item.shortcode.left(96) + QStringLiteral("-%1").arg(n);
-        item.shortcode = unique;
-    }
+    m_transfer.packId = packId;
     advanceBatch();
+}
+
+void StickerPackManager::cancelTransfer()
+{
+    if (!m_transfer.active)
+        return;
+    if (m_transfer.kind == QLatin1String("export")) {
+        finishTransfer(false, QStringLiteral("cancelled"));
+    } else if (m_transfer.kind == QLatin1String("upload")) {
+        // The dispatched room-state write can still succeed after cancellation.
+        const auto unsent = m_transfer.items.mid(m_transfer.index);
+        if (unsent.isEmpty())
+            return;
+        m_transfer.retry.append(unsent);
+        m_transfer.done += int(unsent.size());
+        m_transfer.failed += int(unsent.size());
+        m_transfer.items.resize(m_transfer.index);
+        emitStateChanged();
+    }
 }
 
 void StickerPackManager::retryFailedUploads()
 {
-    if (!m_client || !available() || m_transfer.active || m_failedUploads.isEmpty())
+    if (!m_client || !available() || m_transfer.active || m_saveOp || m_editOp
+        || m_failedUploads.isEmpty())
         return;
     if (m_client->currentUserId() != m_failedUploadsAccount) {
         m_failedUploads.clear();
@@ -1320,9 +1445,18 @@ void StickerPackManager::retryFailedUploads()
         emitStateChanged();
         return;
     }
-    const QList<BatchItem> items = m_failedUploads;
+    QList<BatchItem> items = m_failedUploads;
+    QSet<QString> reserved;
+    const int row = m_packs->indexOfPack(m_failedUploadsPackId);
+    if (row >= 0) {
+        for (const auto &image : m_packs->packs().at(row).images)
+            reserved.insert(image.key);
+    }
+    for (BatchItem &item : items)
+        item.shortcode = reserveShortcode(item.shortcode, reserved);
     m_failedUploads.clear();
     beginTransfer(QStringLiteral("upload"), QString(), int(items.size()));
+    m_transfer.packId = m_failedUploadsPackId;
     m_transfer.items = items;
     advanceBatch();
 }
@@ -1347,6 +1481,7 @@ void StickerPackManager::importPack(const QUrl &zipFile)
     beginTransfer(QStringLiteral("import"), QString(), 0);
     const quint64 generation = m_transfer.generation;
     const QString workDir = m_importDir->path();
+    emitStateChanged();
     QPointer<StickerPackManager> self(this);
     QThreadPool::globalInstance()->start([self, zipPath, workDir, generation] {
         stickers::archive::ReadResult read =
@@ -1415,6 +1550,10 @@ QString StickerPackManager::transferMessage(const QString &kind, bool ok,
         if (category == QLatin1String("fetch_failed"))
             return tr("None of the images could be downloaded, so nothing was "
                       "exported.");
+        if (category == QLatin1String("too_large"))
+            return tr("The sticker pack exceeds the 96 MiB archive limit.");
+        if (category == QLatin1String("cancelled"))
+            return tr("Export cancelled.");
         if (category == QLatin1String("write_failed"))
             return tr("The file could not be written.");
         if (category == QLatin1String("unreadable"))
@@ -1487,9 +1626,42 @@ void StickerPackManager::exportPack(const QString &packId,
     beginTransfer(QStringLiteral("export"), pack.displayName,
                   int(pack.images.size()));
     m_transfer.frozen = pack;
-    m_transfer.packId = packId;
-    m_transfer.destination = dest;
-    m_transfer.bytes.resize(pack.images.size());
+    const auto generation = m_transfer.generation;
+    m_exportClient = m_client;
+    auto *workerThread = new QThread;
+    m_exportWorker = new StickerExportWorker(dest, thread());
+    m_exportWorker->moveToThread(workerThread);
+    connect(workerThread, &QThread::finished, m_exportWorker, &QObject::deleteLater);
+    connect(workerThread, &QThread::finished, workerThread, &QObject::deleteLater);
+    connect(m_exportWorker, &StickerExportWorker::processed, this,
+            [this, generation](bool skipped) {
+                if (m_transfer.generation != generation)
+                    return;
+                --m_transfer.writing;
+                if (skipped)
+                    ++m_transfer.skipped;
+                else
+                    ++m_transfer.written;
+                m_transferWatchdog->start();
+                pumpExport();
+            });
+    connect(m_exportWorker, &StickerExportWorker::failed, this,
+            [this, generation](const QString &category) {
+                if (m_transfer.generation == generation)
+                    finishTransfer(false, category);
+            });
+    connect(m_exportWorker, &StickerExportWorker::prepared, this,
+            [this, generation](const QSharedPointer<QSaveFile> &file) {
+                if (m_transfer.generation != generation)
+                    return;
+                if (!file->commit()) {
+                    finishTransfer(false, QStringLiteral("write_failed"));
+                    return;
+                }
+                m_transfer.added = m_transfer.written;
+                finishTransfer(true, {});
+            });
+    workerThread->start();
     pumpExport();
 }
 
@@ -1499,11 +1671,10 @@ void StickerPackManager::pumpExport()
         return;
     const QList<stickers::PackImage> &images = m_transfer.frozen.images;
     constexpr int kInFlight = 3;
-    while (m_transfer.pending.size() < kInFlight
+    while (m_transfer.pending.size() + m_transfer.writing < kInFlight
            && m_transfer.nextFetch < images.size()) {
         const int index = m_transfer.nextFetch++;
-        const quint64 opId = m_client->fetchMxcThumbnail(images.at(index).url,
-                                                         0, 0);
+        const quint64 opId = m_exportClient->fetchMxcThumbnail(images.at(index).url, 0, 0);
         if (opId == 0) {
             ++m_transfer.failed;
             ++m_transfer.done;
@@ -1511,8 +1682,20 @@ void StickerPackManager::pumpExport()
             m_transfer.pending.insert(opId, index);
         }
     }
-    if (m_transfer.pending.isEmpty() && m_transfer.nextFetch >= images.size()) {
-        finishExport();
+    if (m_transfer.pending.isEmpty() && !m_transfer.writing
+        && m_transfer.nextFetch >= images.size()) {
+        if (!m_transfer.written) {
+            finishTransfer(false, QStringLiteral("fetch_failed"));
+            return;
+        }
+        if (!m_transfer.finalizing) {
+            m_transfer.finalizing = true;
+            QMetaObject::invokeMethod(m_exportWorker,
+                [worker = m_exportWorker, name = m_transfer.frozen.displayName,
+                 attribution = m_transfer.frozen.attribution] {
+                    worker->finish(name, attribution);
+                });
+        }
         return;
     }
     emitStateChanged();
@@ -1523,7 +1706,23 @@ void StickerPackManager::onMediaFetched(quint64 opId, const QByteArray &bytes)
     if (!m_transfer.active || !m_transfer.pending.contains(opId))
         return;
     const int index = m_transfer.pending.take(opId);
-    m_transfer.bytes[index] = bytes;
+    if (bytes.size() > stickers::archive::kMaxImageBytes
+        || stickers::archive::extensionForBytes(bytes).isEmpty()) {
+        ++m_transfer.skipped;
+    } else {
+        const auto &image = m_transfer.frozen.images.at(index);
+        stickers::archive::Image entry;
+        entry.shortcode = image.key;
+        entry.body = image.body;
+        entry.data = bytes;
+        entry.usage = image.isSticker && image.isEmoticon ? QStringLiteral("both")
+            : image.isEmoticon ? QStringLiteral("emoticon") : QStringLiteral("sticker");
+        ++m_transfer.writing;
+        QMetaObject::invokeMethod(m_exportWorker,
+            [worker = m_exportWorker, index, entry = std::move(entry)]() mutable {
+                worker->append(index, std::move(entry));
+            });
+    }
     ++m_transfer.done;
     m_transferWatchdog->start();
     pumpExport();
@@ -1538,47 +1737,6 @@ void StickerPackManager::onMediaFetchFailed(quint64 opId)
     ++m_transfer.done;
     m_transferWatchdog->start();
     pumpExport();
-}
-
-void StickerPackManager::finishExport()
-{
-    stickers::archive::Pack out;
-    {
-        const stickers::Pack &pack = m_transfer.frozen;
-        out.name = pack.displayName;
-        out.attribution = pack.attribution;
-        for (int i = 0; i < pack.images.size() && i < m_transfer.bytes.size();
-             ++i) {
-            const stickers::PackImage &image = pack.images.at(i);
-            if (m_transfer.bytes.at(i).isEmpty())
-                continue;
-            stickers::archive::Image entry;
-            entry.shortcode = image.key;
-            entry.body = image.body;
-            entry.data = m_transfer.bytes.at(i);
-            entry.usage = (image.isSticker && image.isEmoticon)
-                              ? QStringLiteral("both")
-                          : image.isEmoticon ? QStringLiteral("emoticon")
-                                             : QStringLiteral("sticker");
-            out.images.append(entry);
-        }
-    }
-    int skipped = 0;
-    const QByteArray zip = stickers::archive::buildArchive(out, &skipped);
-    m_transfer.skipped += skipped;
-    const int written = int(out.images.size()) - skipped;
-    if (written <= 0) {
-        finishTransfer(false, QStringLiteral("fetch_failed"));
-        return;
-    }
-    QSaveFile file(m_transfer.destination);
-    if (!file.open(QIODevice::WriteOnly) || file.write(zip) != zip.size()
-        || !file.commit()) {
-        finishTransfer(false, QStringLiteral("write_failed"));
-        return;
-    }
-    m_transfer.added = written;
-    finishTransfer(true, QString());
 }
 
 QVariantList StickerPackManager::emoticonsInHtml(const QString &html) const
@@ -2007,3 +2165,5 @@ void StickerPackManager::emitStateChanged()
     ++m_revision;
     Q_EMIT stateChanged();
 }
+
+#include "StickerPackManager.moc"

@@ -1,4 +1,26 @@
 #include "profile/ProfileBioManager.h"
+#include "profile/ProfileFieldsManager.h"
+
+namespace {
+void reserveBio(const QString &id, const QString &own, int capacity, QStringList &order,
+                QSet<QString> &asked, QHash<QString, QString> &cache,
+                const QHash<quint64, QString> &inFlight)
+{
+    if (asked.contains(id))
+        return;
+    if (asked.size() >= capacity) {
+        for (qsizetype i = 0; i < order.size(); ++i) {
+            if (order.at(i) == own || inFlight.key(order.at(i)))
+                continue;
+            const QString oldest = order.takeAt(i);
+            cache.remove(oldest);
+            asked.remove(oldest);
+            break;
+        }
+    }
+    asked.insert(id);
+}
+}
 
 ProfileBioManager::ProfileBioManager(QObject *parent)
     : QObject(parent)
@@ -46,34 +68,20 @@ QString ProfileBioManager::ownBio() const
 
 void ProfileBioManager::request(const QString &userId)
 {
-    if (!available() || userId.isEmpty() || !m_supported)
-        return;
-    if (m_asked.contains(userId))
-        return;
-    // At the cap the longest-held answer gives way, never this account's own.
-    if (m_cache.size() >= kMaxCached) {
-        const QString own = m_client->currentUserId();
-        for (qsizetype i = 0; i < m_order.size(); ++i) {
-            if (m_order.at(i) == own)
-                continue;
-            const QString oldest = m_order.takeAt(i);
-            m_cache.remove(oldest);
-            m_asked.remove(oldest);
-            break;
-        }
-    }
-    m_asked.insert(userId);
-    const quint64 opId = m_nextOpId++;
-    m_inFlight.insert(opId, userId);
-    m_client->fetchProfileBio(userId, opId);
+    if (!m_asked.contains(userId))
+        refresh(userId);
 }
 
 void ProfileBioManager::refresh(const QString &userId)
 {
-    if (userId.isEmpty())
+    if (!available() || userId.isEmpty() || !m_supported || m_inFlight.key(userId)
+        || profile_requests::deferIfBusy(m_inFlight, userId))
         return;
-    m_asked.remove(userId);
-    request(userId);
+    reserveBio(userId, m_client->currentUserId(), kMaxCached, m_order, m_asked,
+               m_cache, m_inFlight);
+    const quint64 opId = m_nextOpId++;
+    m_inFlight.insert(opId, userId);
+    m_client->fetchProfileBio(userId, opId);
 }
 
 void ProfileBioManager::setOwnBio(const QString &text)
@@ -110,15 +118,16 @@ void ProfileBioManager::handleReceived(quint64 opId, const QString &userId,
                                        const QString &bio, bool supported)
 {
     const auto it = m_inFlight.constFind(opId);
-    if (it == m_inFlight.constEnd())
+    if (!opId || it == m_inFlight.constEnd() || *it != userId)
         return;
     m_inFlight.erase(it);
-
-    if (!supported && m_supported) {
+    const bool lostSupport = !supported && m_supported;
+    if (lostSupport)
         m_supported = false;
-        Q_EMIT supportedChanged();
-    }
     cache(userId, bio);
+    refresh(m_inFlight.take(profile_requests::kDeferred));
+    if (lostSupport)
+        Q_EMIT supportedChanged();
 }
 
 void ProfileBioManager::handleSet(quint64 opId, bool ok, const QString &bio,
@@ -139,7 +148,9 @@ void ProfileBioManager::handleSet(quint64 opId, bool ok, const QString &bio,
     setLastError({});
     if (m_client) {
         const QString own = m_client->currentUserId();
-        m_asked.insert(own);
+        if (own.isEmpty())
+            return;
+        reserveBio(own, own, kMaxCached, m_order, m_asked, m_cache, m_inFlight);
         cache(own, bio);
     }
 }

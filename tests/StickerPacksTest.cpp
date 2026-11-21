@@ -18,6 +18,7 @@
 #include <QSignalSpy>
 #include <QTemporaryDir>
 #include <limits>
+#include <utility>
 #include <QElapsedTimer>
 #include <QtTest/QtTest>
 
@@ -190,6 +191,8 @@ public:
         lastRoomPackOp = opId;
     }
     QList<QPair<quint64, QString>> mxcFetches;
+    QList<quint64> cancelledFetches;
+    void cancelMediaFetch(quint64 op) override { cancelledFetches.append(op); }
     quint64 nextFetchOp = 1000;
     quint64 fetchMxcThumbnail(const QString &mxc, int, int) override
     {
@@ -1589,6 +1592,98 @@ private Q_SLOTS:
                     .toString().startsWith(QLatin1String("mxc://")));
     }
 
+    void bulkUploadReservesEveryFinalShortcode_data()
+    {
+        QTest::addColumn<QStringList>("occupied");
+        QTest::addColumn<QStringList>("files");
+        QTest::addColumn<QStringList>("expected");
+        QTest::newRow("cat and cat-2") << QStringList{"cat"}
+            << QStringList{"cat.png", "cat-2.png"} << QStringList{"cat-2", "cat-2-2"};
+        QTest::newRow("reverse") << QStringList{"cat"}
+            << QStringList{"cat-2.png", "cat.png"} << QStringList{"cat-2", "cat-3"};
+        QTest::newRow("both occupied") << QStringList{"cat", "cat-2"}
+            << QStringList{"cat.png", "cat-3.png"} << QStringList{"cat-3", "cat-3-2"};
+        QTest::newRow("repeated basename") << QStringList{"cat"}
+            << QStringList{"cat.png", "cat.gif"} << QStringList{"cat-2", "cat-3"};
+        QTest::newRow("canonical equivalents") << QStringList{"caf"}
+            << QStringList{QStringLiteral("café.png"), QStringLiteral("cafe\u0301.gif")}
+            << QStringList{"caf-2", "caf-3"};
+        QStringList crowded{"cat"};
+        for (int n = 2; n <= 500; ++n)
+            crowded << QStringLiteral("cat-%1").arg(n);
+        QTest::newRow("crowded room pack") << crowded
+            << QStringList{"cat.png", "cat-501.gif"} << QStringList{"cat-501", "cat-501-2"};
+        const QString base(100, QLatin1Char('a'));
+        QStringList taken{base};
+        for (int n = 2; n <= 999; ++n) {
+            const QString suffix = QStringLiteral("-%1").arg(n);
+            taken << base.left(100 - suffix.size()) + suffix;
+        }
+        QTest::newRow("four-digit suffix") << taken << QStringList{base + ".png"}
+            << QStringList{base.left(95) + "-1000"};
+    }
+
+    void bulkUploadReservesEveryFinalShortcode()
+    {
+        QFETCH(QStringList, occupied);
+        QFETCH(QStringList, files);
+        QFETCH(QStringList, expected);
+        FakeClient client;
+        StickerPackManager manager;
+        manager.setClient(&client);
+        QVariantList images;
+        for (const QString &code : occupied)
+            images << image(code, kMxcA, true, false);
+        QVariantMap target = pack("S", "room", "Animals", images);
+        target.insert("roomId", kRoom);
+        target.insert("canManage", true);
+        manager.applySnapshotForTest(kRoom, true, {target});
+        QVariantList urls;
+        for (const QString &file : files)
+            urls << QUrl::fromLocalFile(QStringLiteral("/tmp/") + file);
+        QSignalSpy done(&manager, &StickerPackManager::transferFinished);
+        manager.uploadImagesToPack("S", urls);
+        for (qsizetype i = 0; i < expected.size(); ++i) {
+            QCOMPARE(client.roomUploadCalls, i + 1);
+            QCOMPARE(client.roomUploadCode, expected.at(i));
+            QCOMPARE(client.roomUploadPath, urls.at(i).toUrl().toLocalFile());
+            Q_EMIT client.stickerPackAddFinished(client.lastRoomUploadOp, true, {},
+                                                 expected.at(i));
+        }
+        QCOMPARE(done.count(), 1);
+        QCOMPARE(done.first().at(3).toInt(), files.size());
+        QCOMPARE(done.first().at(4).toInt(), 0);
+        QCOMPARE(done.first().at(5).toInt(), 0);
+    }
+
+    void cancelledUploadRetriesOnlyUnsentFilesAgainstCurrentPack()
+    {
+        FakeClient client;
+        StickerPackManager manager;
+        manager.setClient(&client);
+        QVariantMap target = pack("S", "room", "Animals", {});
+        target.insert("roomId", kRoom);
+        target.insert("canManage", true);
+        manager.applySnapshotForTest(kRoom, true, {target});
+        QSignalSpy done(&manager, &StickerPackManager::transferFinished);
+        manager.uploadImagesToPack("S", {QUrl::fromLocalFile("/tmp/a.png"),
+                                         QUrl::fromLocalFile("/tmp/b.png")});
+        manager.cancelTransfer();
+        Q_EMIT client.stickerPackAddFinished(client.lastRoomUploadOp, true, {}, "a");
+        QCOMPARE(client.roomUploadCalls, 1);
+        QCOMPARE(done.count(), 1);
+        QCOMPARE(done.first().at(3).toInt(), 1);
+        QCOMPARE(done.first().at(5).toInt(), 1);
+        QCOMPARE(manager.failedUploadCount(), 1);
+        target.insert("images", QVariantList{image("b", kMxcA, true, false)});
+        manager.applySnapshotForTest(kRoom, true, {target});
+        manager.retryFailedUploads();
+        QCOMPARE(client.roomUploadCalls, 2);
+        QCOMPARE(client.roomUploadCode, QStringLiteral("b-2"));
+        Q_EMIT client.stickerPackAddFinished(client.lastRoomUploadOp, true, {}, "b-2");
+        QCOMPARE(manager.failedUploadCount(), 0);
+    }
+
     void addingImagesToARoomPackUploadsEachAndRetriesWithoutReuploading()
     {
         FakeClient client;
@@ -2184,7 +2279,7 @@ private Q_SLOTS:
         QCOMPARE(finished.count(), 0);
         Q_EMIT client.mediaReady(client.mxcFetches[1].first, kMxcB, 0, png,
                                  QStringLiteral("image/png"), QString());
-        QCOMPARE(finished.count(), 1);
+        QTRY_COMPARE(finished.count(), 1);
         QVERIFY(finished.first().at(1).toBool());
         QCOMPARE(finished.first().at(3).toInt(), 2);
         QVERIFY(QFileInfo(zipPath).size() > 100);
@@ -2198,6 +2293,156 @@ private Q_SLOTS:
         QCOMPARE(read.pack.images[0].usage, QStringLiteral("sticker"));
         QCOMPARE(read.pack.images[1].shortcode, QStringLiteral("wave"));
         QCOMPARE(read.pack.images[1].usage, QStringLiteral("emoticon"));
+    }
+
+    void exportBoundsRetainedMediaAndCancelsMidDownload()
+    {
+        FakeClient client;
+        StickerPackManager manager;
+        manager.setClient(&client);
+        QVariantList images;
+        for (int i = 0; i < 30; ++i) {
+            images << image(QString::number(i), QStringLiteral("mxc://example.org/%1").arg(i),
+                            true, false);
+        }
+        manager.applySnapshotForTest(kRoom, false, {pack("user", "user", "Large", images)});
+        QTemporaryDir dir;
+        QFile destination(dir.filePath("pack.zip"));
+        QVERIFY(destination.open(QIODevice::WriteOnly));
+        QCOMPARE(destination.write("previous"), 8);
+        destination.close();
+#ifdef Q_OS_LINUX
+        const auto peakRssKiB = []() -> qint64 {
+            QFile status(QStringLiteral("/proc/self/status"));
+            if (status.open(QIODevice::ReadOnly)) {
+                for (const auto &line : status.readAll().split('\n')) {
+                    if (line.startsWith("VmHWM:"))
+                        return line.simplified().split(' ').value(1).toLongLong();
+                }
+            }
+            return -1;
+        };
+        const qint64 before = peakRssKiB();
+#endif
+        manager.exportPack("user", QUrl::fromLocalFile(destination.fileName()));
+        QList<QByteArray> replies;
+        qsizetype peakRetained = 0;
+        for (int i = 0; i < 18; ++i) {
+            QTRY_VERIFY(client.mxcFetches.size() > i);
+            replies.removeIf([](const QByteArray &bytes) { return bytes.isDetached(); });
+            QByteArray bytes(stickers::archive::kMaxImageBytes, 'p');
+            bytes.replace(0, 6, "GIF89a");
+            replies.append(std::move(bytes));
+            const auto op = client.mxcFetches.at(i);
+            Q_EMIT client.mediaReady(op.first, op.second, 0, replies.last(), {}, {});
+            qsizetype retained = 0;
+            for (const QByteArray &reply : std::as_const(replies)) {
+                if (!reply.isDetached())
+                    retained += reply.size();
+            }
+            peakRetained = qMax(peakRetained, retained);
+            QVERIFY(peakRetained <= 3 * stickers::archive::kMaxImageBytes);
+        }
+        QTRY_VERIFY(client.mxcFetches.size() > 18);
+        const auto late = client.mxcFetches.at(18);
+        QSignalSpy finished(&manager, &StickerPackManager::transferFinished);
+        QElapsedTimer timer;
+        timer.start();
+        manager.cancelTransfer();
+        const auto elapsed = timer.elapsed();
+        qInfo() << "peak shared export payload bytes" << peakRetained
+                << "cancel milliseconds" << elapsed;
+#ifdef Q_OS_LINUX
+        qInfo() << "process high-water RSS in KiB before and after export" << before << peakRssKiB();
+#endif
+        QVERIFY(elapsed < 1000);
+        QVERIFY(!manager.transferring());
+        QCOMPARE(finished.size(), 1);
+        QVERIFY(!finished.first().at(1).toBool());
+        QVERIFY(client.cancelledFetches.contains(late.first));
+        Q_EMIT client.mediaReady(late.first, late.second, 0, replies.last(), {}, {});
+        QVERIFY(destination.open(QIODevice::ReadOnly));
+        QCOMPARE(destination.readAll(), QByteArray("previous"));
+        destination.close();
+        QTRY_COMPARE(QDir(dir.path()).entryList(QDir::Files | QDir::Hidden).size(), 1);
+    }
+
+    void anOverBudgetExportPreservesTheDestination()
+    {
+        FakeClient client;
+        StickerPackManager manager;
+        manager.setClient(&client);
+        QVariantList images;
+        for (int i = 0; i < 25; ++i)
+            images << image(QString::number(i), QStringLiteral("mxc://example.org/%1").arg(i),
+                            true, false);
+        manager.applySnapshotForTest(kRoom, false, {pack("user", "user", "Large", images)});
+        QTemporaryDir dir;
+        QFile destination(dir.filePath("pack.zip"));
+        QVERIFY(destination.open(QIODevice::WriteOnly));
+        QCOMPARE(destination.write("previous"), 8);
+        destination.close();
+        QSignalSpy finished(&manager, &StickerPackManager::transferFinished);
+        manager.exportPack("user", QUrl::fromLocalFile(destination.fileName()));
+        const auto bytes = QByteArray("GIF89a").leftJustified(stickers::archive::kMaxImageBytes, 'g');
+        for (int i = 0; i < images.size(); ++i) {
+            QTRY_VERIFY(!finished.isEmpty() || client.mxcFetches.size() > i);
+            if (!finished.isEmpty())
+                break;
+            const auto op = client.mxcFetches.at(i);
+            Q_EMIT client.mediaReady(op.first, op.second, 0, bytes, {}, {});
+        }
+        QTRY_COMPARE(finished.size(), 1);
+        QVERIFY(!finished.first().at(1).toBool());
+        QCOMPARE(finished.first().at(2).toString(), QStringLiteral("too_large"));
+        QCOMPARE(finished.first().at(3).toInt(), 0);
+        QVERIFY(destination.open(QIODevice::ReadOnly));
+        QCOMPARE(destination.readAll(), QByteArray("previous"));
+    }
+
+    void anUnwritableExportStopsFetching()
+    {
+        FakeClient client;
+        StickerPackManager manager;
+        manager.setClient(&client);
+        QVariantList images;
+        for (int i = 0; i < 6; ++i)
+            images << image(QString::number(i), QStringLiteral("mxc://example.org/%1").arg(i),
+                            true, false);
+        manager.applySnapshotForTest(kRoom, false, {pack("user", "user", "Pack", images)});
+        QTemporaryDir dir;
+        QSignalSpy finished(&manager, &StickerPackManager::transferFinished);
+        manager.exportPack("user", QUrl::fromLocalFile(dir.filePath("missing/pack.zip")));
+        QCOMPARE(client.mxcFetches.size(), 3);
+        const auto first = client.mxcFetches.first();
+        Q_EMIT client.mediaReady(first.first, first.second, 0, QByteArray("GIF89a"), {}, {});
+        QTRY_COMPARE(finished.count(), 1);
+        QCOMPARE(finished.first().at(2).toString(), QStringLiteral("write_failed"));
+        QCOMPARE(finished.first().at(3).toInt(), 0);
+        QCOMPARE(client.mxcFetches.size(), 3);
+        QCOMPARE(client.cancelledFetches.size(), 2);
+    }
+
+    void anOversizedImageIsCountedBeforeTheNextDownload()
+    {
+        FakeClient client;
+        StickerPackManager manager;
+        manager.setClient(&client);
+        manager.applySnapshotForTest(kRoom, false, twoPacks());
+        QTemporaryDir dir;
+        manager.exportPack("user", QUrl::fromLocalFile(dir.filePath("pack.zip")));
+        QByteArray large(stickers::archive::kMaxImageBytes + 1, 'g');
+        large.replace(0, 6, "GIF89a");
+        const auto first = client.mxcFetches.first();
+        Q_EMIT client.mediaReady(first.first, first.second, 0, large, {}, {});
+        QVERIFY(large.isDetached());
+        QSignalSpy finished(&manager, &StickerPackManager::transferFinished);
+        const auto last = client.mxcFetches.last();
+        Q_EMIT client.mediaReady(last.first, last.second, 0, QByteArray("GIF89a"), {}, {});
+        QTRY_COMPARE(finished.count(), 1);
+        QVERIFY(finished.first().at(1).toBool());
+        QCOMPARE(finished.first().at(3).toInt(), 1);
+        QCOMPARE(finished.first().at(4).toInt(), 1);
     }
 
     void anExportIsAFrozenSnapshotWhateverSyncDoesMeanwhile()
@@ -2226,14 +2471,16 @@ private Q_SLOTS:
         auto bytesFor = [](const QString &mxc) {
             return QByteArray("\x89PNG\r\n\x1A\n", 8) + mxc.toUtf8() + QByteArray(16, 'x');
         };
-        for (int round = 0; round < 3 && finished.isEmpty(); ++round) {
+        for (int round = 0; round < 2; ++round) {
+            if (round == 1)
+                QTRY_COMPARE(client.mxcFetches.size(), 4);
             const auto fetches = client.mxcFetches;
             for (int i = fetches.size() - 1; i >= 0; --i)
                 Q_EMIT client.mediaReady(fetches[i].first, fetches[i].second, 0,
                                          bytesFor(fetches[i].second),
                                          QStringLiteral("image/png"), QString());
         }
-        QCOMPARE(finished.count(), 1);
+        QTRY_COMPARE(finished.count(), 1);
         QVERIFY(finished.first().at(1).toBool());
         QTemporaryDir work;
         const auto read = stickers::archive::readArchive(zipPath, work.path());
@@ -2265,7 +2512,7 @@ private Q_SLOTS:
                                  QStringLiteral("image/png"), QString());
         Q_EMIT client.mediaFailed(client.mxcFetches[1].first, kMxcB, 0,
                                   QStringLiteral("network"));
-        QCOMPARE(finished.count(), 1);
+        QTRY_COMPARE(finished.count(), 1);
         QVERIFY(finished.first().at(1).toBool());
         QCOMPARE(finished.first().at(3).toInt(), 1);
         QCOMPARE(finished.first().at(5).toInt(), 1);
@@ -2278,7 +2525,7 @@ private Q_SLOTS:
         manager.exportPack(QStringLiteral("user"), QUrl::fromLocalFile(none));
         Q_EMIT client.mediaFailed(client.mxcFetches[2].first, kMxcA, 0, QString());
         Q_EMIT client.mediaFailed(client.mxcFetches[3].first, kMxcB, 0, QString());
-        QCOMPARE(finished.count(), 1);
+        QTRY_COMPARE(finished.count(), 1);
         QVERIFY(!finished.first().at(1).toBool());
         QCOMPARE(finished.first().at(2).toString(), QStringLiteral("fetch_failed"));
         QVERIFY(!QFileInfo::exists(none));
@@ -2301,7 +2548,7 @@ private Q_SLOTS:
                                  QStringLiteral("image/png"), QString());
         Q_EMIT client.mediaReady(client.mxcFetches[1].first, kMxcB, 0, png,
                                  QStringLiteral("image/png"), QString());
-        QCOMPARE(finished.count(), 1);
+        QTRY_COMPARE(finished.count(), 1);
         QVERIFY(finished.first().at(1).toBool());
         QCOMPARE(finished.first().at(3).toInt(), 1);
         QCOMPARE(finished.first().at(4).toInt(), 1);
@@ -2382,6 +2629,35 @@ private Q_SLOTS:
                                         QStringLiteral("unreadable"), 0, 0, 0,
                                         QString())
                     .contains(QStringLiteral("not a readable")));
+    }
+
+    void signingOutBeforePublicationDiscardsThePreparedExport()
+    {
+        FakeClient client;
+        StickerPackManager manager;
+        manager.setClient(&client);
+        manager.applySnapshotForTest(kRoom, false, twoPacks());
+        QTemporaryDir dir;
+        const auto path = dir.filePath("pack.zip");
+        QSignalSpy finished(&manager, &StickerPackManager::transferFinished);
+        manager.exportPack("user", QUrl::fromLocalFile(path));
+        const auto original = client.mxcFetches;
+        for (const auto &op : original)
+            Q_EMIT client.mediaReady(op.first, op.second, 0, QByteArray("GIF89a-old"), {}, {});
+        Q_EMIT client.loggedOut();
+        QVERIFY(finished.isEmpty());
+        QVERIFY(!QFile::exists(path));
+
+        manager.applySnapshotForTest(kRoom, false, twoPacks());
+        manager.exportPack("user", QUrl::fromLocalFile(path));
+        for (const auto &op : client.mxcFetches.mid(original.size()))
+            Q_EMIT client.mediaReady(op.first, op.second, 0, QByteArray("GIF89a-new"), {}, {});
+        QTRY_COMPARE(finished.size(), 1);
+        QFile output(path);
+        QVERIFY(output.open(QIODevice::ReadOnly));
+        const auto zip = output.readAll();
+        QVERIFY(zip.contains("GIF89a-new"));
+        QVERIFY(!zip.contains("GIF89a-old"));
     }
 
     void signingOutDropsAJobInFlightAndItsAnswers()
