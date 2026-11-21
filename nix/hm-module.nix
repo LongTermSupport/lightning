@@ -21,8 +21,8 @@ in
         { };
 
     settingsFilePath = lib.mkOption {
-      type = lib.types.str;
-      default = "$XDG_CONFIG_HOME/MatrixClient/matrix-client.conf";
+      type = lib.types.nullOr lib.types.str;
+      default = null;
       internal = true;
       description = ''
         Internal option for getting the settings file path for Lightning.
@@ -79,10 +79,22 @@ in
       # Merge each setting into the existing file with one `initool` call per key.
       activation = lib.mkIf (cfg.settings != { }) {
         lightningMatrixClientMergeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-          run mkdir -p "$(dirname "${cfg.settingsFilePath}")"
-          if [ ! -f "${cfg.settingsFilePath}" ]; then
-            run touch "${cfg.settingsFilePath}"
+          lightningSettingsFile=${
+            if cfg.settingsFilePath == null then
+              ''"''${XDG_CONFIG_HOME:-$HOME/.config}/MatrixClient/matrix-client.conf"''
+            else
+              lib.escapeShellArg cfg.settingsFilePath
+          }
+          run mkdir -p -- "$(dirname -- "$lightningSettingsFile")"
+          if [ ! -f "$lightningSettingsFile" ]; then
+            run touch -- "$lightningSettingsFile"
           fi
+          mergeLightningSetting() (
+            tmp="$(mktemp -- "$lightningSettingsFile.XXXXXXXX")" || return 1
+            trap 'rm -f -- "$tmp"' EXIT
+            ${lib.getExe pkgs.initool} set "$lightningSettingsFile" "$@" > "$tmp" &&
+              mv -- "$tmp" "$lightningSettingsFile"
+          )
           ${
             let
               # [section ... key value] lists; unsupported value types are dropped.
@@ -111,13 +123,15 @@ in
                     path ++ [ processedValue ]
                 ) cfg.settings
               );
-              setSetting = ''${lib.getExe pkgs.initool} set "${cfg.settingsFilePath}"'';
-              # initool prints the result instead of editing in place.
-              pipeReplace = ''> "${cfg.settingsFilePath}.tmppipe" && mv "${cfg.settingsFilePath}.tmppipe" "${cfg.settingsFilePath}"'';
+              arguments = setting: lib.escapeShellArgs [
+                (lib.head setting)
+                (lib.concatStringsSep "\\" (lib.tail (lib.dropEnd 1 setting)))
+                (lib.last setting)
+              ];
             in
             lib.concatStringsSep "\n" (
               lib.map (setting: ''
-                run ${setSetting} "${lib.head setting}" "${lib.concatStringsSep ''\\'' (lib.tail (lib.dropEnd 1 setting))}" "${lib.last setting}" ${pipeReplace}
+                run mergeLightningSetting ${arguments setting}
               '') settingsList
             )
           }

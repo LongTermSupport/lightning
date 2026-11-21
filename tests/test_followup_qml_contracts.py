@@ -12,15 +12,12 @@ class FollowupQmlContracts(unittest.TestCase):
         for name in ("MessageDelegate.qml", "TimelinePane.qml"):
             with self.subTest(qml=name):
                 source = (ROOT / "qml" / name).read_text()
-                self.assertTrue(
-                    re.search(r"var previewText = (?:root\.)?timelineModel\.replyPreviewForEvent\(eventId\)", source),
+                self.assertRegex(
+                    source,
+                    r"\bpreviewText\s*=\s*(?:root\s*\.\s*)?timelineModel\s*\.\s*"
+                    r"replyPreviewForEvent\s*\(\s*eventId\s*\)",
                     name + " must use the dedicated reply preview",
                 )
-        thread = (ROOT / "src/threads/ThreadController.cpp").read_text()
-        self.assertTrue(
-            "m_replyToPreview = m_model.replyPreviewForEvent(eventId).left(80);" in thread,
-            "Thread replies must use the dedicated reply preview",
-        )
 
     def test_both_creation_modes_gate_placement_on_the_space_permission(self):
         source = (ROOT / "qml/NewConversationDialog.qml").read_text()

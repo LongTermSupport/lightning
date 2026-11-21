@@ -155,15 +155,15 @@ current_latest="$tmp_dir/current-latest.json"
 status="$(api_request --output "$current_latest" --write-out '%{http_code}' \
     "$(api_request_url "${latest_base}/${UPDATE_MANIFEST_NAME}")")" || \
     die "could not read the current latest manifest"
-if [[ "$UPDATE_REFRESH_LATEST_ONLY" == true ]]; then
-    [[ "$status" == 200 ]] || die "refresh mode needs an existing latest manifest (HTTP $status)"
-    current_version="$(jq -r '.version // empty' "$current_latest" 2>/dev/null || true)"
-    [[ "$current_version" == "$PACKAGE_VERSION" ]] || \
-        die "refresh mode re-promotes the version already in the latest slot (${current_version:-none}); this manifest is for ${PACKAGE_VERSION}"
-fi
-if [[ "$status" == 200 ]]; then
-    current_version="$(jq -r '.version // empty' "$current_latest" 2>/dev/null || true)"
-    if [[ -n "$current_version" && "$current_version" != "$PACKAGE_VERSION" ]]; then
+case "$status" in
+    200)
+        current_version="$(jq -ers '
+            select(length == 1) | .[0].version | strings |
+            select(test("\\A[0-9]+\\.[0-9]+\\.[0-9]+\\z"))
+        ' "$current_latest" 2>/dev/null)" || die "current latest manifest needs a valid X.Y.Z version"
+        if [[ "$UPDATE_REFRESH_LATEST_ONLY" == true && "$current_version" != "$PACKAGE_VERSION" ]]; then
+            die "refresh mode re-promotes the version already in the latest slot (${current_version}); this manifest is for ${PACKAGE_VERSION}"
+        fi
         newest="$(printf '%s\n%s\n' "$current_version" "$PACKAGE_VERSION" | sort -V | tail -n 1)"
         if [[ "$newest" != "$PACKAGE_VERSION" ]]; then
             if [[ "${UPDATE_ALLOW_LATEST_ROLLBACK:-false}" == true ]]; then
@@ -172,9 +172,11 @@ if [[ "$status" == 200 ]]; then
             else
                 die "refusing to move the latest slot backwards from ${current_version} to ${PACKAGE_VERSION}; set UPDATE_ALLOW_LATEST_ROLLBACK=true only to yank a bad release deliberately"
             fi
-        fi
-    fi
-fi
+        fi ;;
+    404)
+        [[ "$UPDATE_REFRESH_LATEST_ONLY" == false ]] || die "refresh mode needs an existing latest manifest (HTTP 404)" ;;
+    *) die "current latest manifest returned HTTP $status" ;;
+esac
 
 publish_latest "$sig" "${latest_base}/${UPDATE_SIG_NAME}" "${UPDATE_LATEST_SLOT}/${UPDATE_SIG_NAME}"
 publish_latest "$manifest" "${latest_base}/${UPDATE_MANIFEST_NAME}" "${UPDATE_LATEST_SLOT}/${UPDATE_MANIFEST_NAME}"

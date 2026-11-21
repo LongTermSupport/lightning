@@ -9,7 +9,8 @@ Flathub's builder, after the release.
 
 Asserts that every registry crate in the lock file appears in
 cargo-sources.json at `cargo/vendor/<name>-<version>` with the lock's
-checksum as its sha256. Extra entries are reported but allowed. A git
+checksum in both the archive and Cargo's .cargo-checksum.json. Extra
+entries are reported but allowed. A git
 dependency in the lock file fails outright, because this check cannot verify
 one and flatpak-cargo-generator lays it out differently.
 
@@ -30,10 +31,16 @@ lock = tomllib.loads(lock_path.read_text())
 sources = json.loads(sources_path.read_text())
 
 vendored = {}
+cargo_checksums = {}
 for entry in sources:
     dest = entry.get("dest", "")
-    if entry.get("type") == "archive" and dest.startswith("cargo/vendor/"):
-        vendored[dest.removeprefix("cargo/vendor/")] = entry.get("sha256")
+    if not dest.startswith("cargo/vendor/"):
+        continue
+    key = dest.removeprefix("cargo/vendor/")
+    if entry.get("type") == "archive":
+        vendored[key] = entry.get("sha256")
+    elif entry.get("type") == "inline" and entry.get("dest-filename") == ".cargo-checksum.json":
+        cargo_checksums[key] = json.loads(entry["contents"]).get("package")
 
 errors = []
 wanted = set()
@@ -50,6 +57,8 @@ for pkg in lock.get("package", []):
         errors.append(f"{key}: in Cargo.lock, missing from cargo-sources.json")
     elif vendored[key] != pkg.get("checksum"):
         errors.append(f"{key}: sha256 differs from the Cargo.lock checksum")
+    elif cargo_checksums.get(key) != pkg["checksum"]:
+        errors.append(f"{key}: missing or stale .cargo-checksum.json")
 
 extra = sorted(set(vendored) - wanted)
 if extra:
