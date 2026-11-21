@@ -2191,6 +2191,19 @@ void NotificationManager::deliverNow(Card card)
 {
     noteCardFor(card.accountKey);
     if (card.replacement && !replacementStillOwned(card)) {
+        // The group's first card may still be waiting for the capability probe.
+        for (Card &waiting : m_capabilityWaits) {
+            if (waiting.accountKey == card.accountKey
+                && waiting.payload.value(QStringLiteral("group"))
+                    == card.payload.value(QStringLiteral("group"))
+                && waiting.payload.value(QStringLiteral("eventId"))
+                    == card.payload.value(QStringLiteral("eventId"))) {
+                waiting.title = card.title;
+                waiting.body = card.body;
+                waiting.payload = card.payload;
+                return;
+            }
+        }
         ++m_droppedReplacements;
         qCInfo(lcNotify) << "dropped a replacement for a card that is gone";
         return;
