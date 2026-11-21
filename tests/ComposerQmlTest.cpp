@@ -395,6 +395,8 @@ private slots:
     {
         QVERIFY(m_config.isValid());
         qputenv("XDG_CONFIG_HOME", m_config.path().toUtf8());
+        QCoreApplication::setOrganizationName(QStringLiteral("MatrixClientTests"));
+        QCoreApplication::setApplicationName(QStringLiteral("composer-qml-test"));
         m_controller = new AppController(AppController::MockBackend);
         m_engine = new QQmlEngine(this);
         connect(m_engine, &QQmlEngine::warnings, this,
