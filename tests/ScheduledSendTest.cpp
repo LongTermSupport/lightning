@@ -9,7 +9,10 @@
 //   * a due local entry is marked "sending" and persisted before the send
 //     leaves, goes through the room-level send (any room), and leaves the
 //     queue only on the room's acceptance; a refusal is reported;
-//   * nothing is dispatched while disconnected; the reconnect fires it;
+//   * nothing is dispatched until the sync runs (starting/retrying is not
+//     connected); the reconnect fires it, earliest deadline first;
+//   * a network/rate-limit failure stays pending for the next reconnect and is
+//     resent under the same transaction id; any other refusal is failed;
 //   * a row found in "sending" on the next start is reported as unsent and
 //     never re-fired on a guess;
 //   * server-side mutations are serialized on the entry's one in-flight op: a
@@ -88,6 +91,7 @@ struct RoomSend {
     QVariantMap spec;
     QString persistedStatusAtSend;
     QStringList mentionIds;
+    QString txnId;
 };
 
 class FakeClient final : public MatrixClient
@@ -101,6 +105,8 @@ public:
 
     QList<RoomInfo> roomSet;
     ConnectionState state = Syncing;
+    // Rust reports starting/retrying as Syncing too; only a running sync is connected.
+    bool running = true;
     SettingsManager *settings = nullptr;
     quint64 nextOp = 1;
     bool refuseServerScheduling = false;
@@ -115,7 +121,9 @@ public:
     QList<ScheduleCall> scheduleCalls;
     struct UpdateCall { QString delayId; QString action; quint64 op; };
     QList<UpdateCall> updateCalls;
-    struct ContentCall { QString roomId; QString content; qint64 delayMs; quint64 op; };
+    struct ContentCall {
+        QString roomId; QString content; qint64 delayMs; quint64 op; QString txnId;
+    };
     QList<ContentCall> contentSchedules;
     QList<ContentCall> contentSends;
 
@@ -126,12 +134,14 @@ public:
         contentSchedules.append({ roomId, content, delayMs, op });
         return op;
     }
-    quint64 sendRoomContent(const QString &roomId, const QString &content) override
+    quint64 sendRoomContent(const QString &roomId, const QString &content,
+                            const QString &txnId) override
     {
         const quint64 op = nextOp++;
-        contentSends.append({ roomId, content, 0, op });
+        contentSends.append({ roomId, content, 0, op, txnId });
         return op;
     }
+    bool syncRunning() const override { return connectionState() == Syncing && running; }
 
     QString persistedStatusFor(const QString &body) const
     {
@@ -166,13 +176,14 @@ public:
     quint64 sendRoomMessage(const QString &roomId, const QString &body,
                             const QVariantMap &spec, const QStringList &mentionIds,
                             const QString &replyToEventId,
-                            const QString &threadRootEventId) override
+                            const QString &threadRootEventId,
+                            const QString &txnId) override
     {
         if (!roomSendSupported)
             return 0;
         const quint64 op = nextOp++;
         roomSends.append({ op, roomId, body, threadRootEventId, replyToEventId, spec,
-                           persistedStatusFor(body), mentionIds });
+                           persistedStatusFor(body), mentionIds, txnId });
         return op;
     }
 
@@ -266,6 +277,36 @@ QVariantMap message(const QString &roomId, const QString &body,
 }
 
 qint64 nowMs() { return QDateTime::currentMSecsSinceEpoch(); }
+
+// The Rust sync's states: offline, then starting/retrying (reported as Syncing),
+// and only "running" announces the homeserver as reachable.
+void goOffline(FakeClient &c)
+{
+    c.state = MatrixClient::Offline;
+    c.running = false;
+    Q_EMIT c.connectionStateChanged(MatrixClient::Offline);
+}
+void goRetrying(FakeClient &c)
+{
+    c.state = MatrixClient::Syncing;
+    c.running = false;
+    Q_EMIT c.connectionStateChanged(MatrixClient::Syncing);
+}
+void goRunning(FakeClient &c)
+{
+    c.state = MatrixClient::Syncing;
+    c.running = true;
+    Q_EMIT c.homeserverReachable();
+}
+void flap(FakeClient &c, int cycles)
+{
+    for (int i = 0; i < cycles; ++i) {
+        goRetrying(c);
+        QTest::qWait(40);
+        goOffline(c);
+        QTest::qWait(40);
+    }
+}
 
 QVariantMap mentioning(const QString &roomId, const QString &body, const QStringList &ids)
 {
@@ -1188,6 +1229,229 @@ private Q_SLOTS:
                                                 QStringLiteral("cancel"), true, QString());
         QCOMPARE(h.client.scheduleCalls.last().body, QStringLiteral("again"));
         QCOMPARE(h.client.scheduleCalls.last().mentionIds, QStringList());
+    }
+    void aFlappingOutageDispatchesNothingUntilTheSyncRuns()
+    {
+        Harness h;
+        const QString id = h.scheduler.schedule(
+            message(kPlain, QStringLiteral("due in an outage")), nowMs() + 100);
+        QVERIFY(!id.isEmpty());
+        goOffline(h.client);
+        flap(h.client, 6);
+        goRetrying(h.client);
+        const int before = h.client.stateReads;
+        QTest::qWait(300);
+        const int wakeups = h.client.stateReads - before;
+        QVERIFY2(wakeups < 5, qPrintable(QStringLiteral("woke %1 times").arg(wakeups)));
+        QVERIFY(h.client.roomSends.isEmpty());
+        QCOMPARE(h.entry(id).value(QStringLiteral("status")).toString(),
+                 QStringLiteral("pending"));
+
+        goRunning(h.client);
+        QCOMPARE(h.client.roomSends.size(), 1);
+        goRunning(h.client);
+        Q_EMIT h.client.connectionStateChanged(MatrixClient::Syncing);
+        QTest::qWait(100);
+        QCOMPARE(h.client.roomSends.size(), 1);
+    }
+
+    void aTransientFailureStaysPendingAndRetriesOnceWithTheSameTransaction_data()
+    {
+        QTest::addColumn<QString>("category");
+        QTest::newRow("network") << QStringLiteral("network");
+        QTest::newRow("rate_limited") << QStringLiteral("rate_limited");
+    }
+
+    void aTransientFailureStaysPendingAndRetriesOnceWithTheSameTransaction()
+    {
+        QFETCH(QString, category);
+        Harness h;
+        const QString id = h.scheduler.schedule(
+            message(kPlain, QStringLiteral("flaky")), nowMs() + 60);
+        QTRY_COMPARE_WITH_TIMEOUT(h.client.roomSends.size(), 1, 3000);
+        h.answerRoomSend(false, category);
+        QCOMPARE(h.entry(id).value(QStringLiteral("status")).toString(),
+                 QStringLiteral("pending"));
+        QCOMPARE(h.entry(id).value(QStringLiteral("busy")).toBool(), false);
+        QCOMPARE(h.client.persistedStatusFor(QStringLiteral("flaky")),
+                 QStringLiteral("pending"));
+        QTest::qWait(300);
+        QCOMPARE(h.client.roomSends.size(), 1);
+
+        goOffline(h.client);
+        flap(h.client, 2);
+        goRetrying(h.client);
+        QCOMPARE(h.client.roomSends.size(), 1);
+        goRunning(h.client);
+        QCOMPARE(h.client.roomSends.size(), 2);
+        QVERIFY(!h.client.roomSends.at(0).txnId.isEmpty());
+        QCOMPARE(h.client.roomSends.at(1).txnId, h.client.roomSends.at(0).txnId);
+        goRunning(h.client);
+        QCOMPARE(h.client.roomSends.size(), 2);
+        h.answerRoomSend(true);
+        QVERIFY(h.entry(id).isEmpty());
+        QTest::qWait(150);
+        QCOMPARE(h.client.roomSends.size(), 2);
+    }
+
+    void aDefinitiveRefusalStillFailsAndIsNotRetriedOnReconnect()
+    {
+        Harness h;
+        const QString id = h.scheduler.schedule(
+            message(kPlain, QStringLiteral("not allowed")), nowMs() + 60);
+        QTRY_COMPARE_WITH_TIMEOUT(h.client.roomSends.size(), 1, 3000);
+        h.answerRoomSend(false, QStringLiteral("forbidden"));
+        QCOMPARE(h.entry(id).value(QStringLiteral("status")).toString(),
+                 QStringLiteral("failed"));
+        goOffline(h.client);
+        goRetrying(h.client);
+        goRunning(h.client);
+        Q_EMIT h.client.connectionStateChanged(MatrixClient::Syncing);
+        QTest::qWait(150);
+        QCOMPARE(h.client.roomSends.size(), 1);
+        QCOMPARE(h.entry(id).value(QStringLiteral("status")).toString(),
+                 QStringLiteral("failed"));
+    }
+
+    void overdueEntriesLeaveInDeadlineOrderThroughAFlappingOutage()
+    {
+        Harness h;
+        goOffline(h.client);
+        h.scheduler.schedule(message(kPlain, QStringLiteral("made first, due later")),
+                             nowMs() + 250);
+        h.scheduler.schedule(message(kPlain, QStringLiteral("made second, due earlier")),
+                             nowMs() + 100);
+        flap(h.client, 5);
+        goRetrying(h.client);
+        QTest::qWait(50);
+        QVERIFY(h.client.roomSends.isEmpty());
+        goRunning(h.client);
+        QCOMPARE(h.client.roomSends.size(), 1);
+        QCOMPARE(h.client.roomSends.first().body, QStringLiteral("made second, due earlier"));
+        h.answerRoomSend(true);
+        QTRY_COMPARE_WITH_TIMEOUT(h.client.roomSends.size(), 2, 3000);
+        QCOMPARE(h.client.roomSends.at(1).body, QStringLiteral("made first, due later"));
+    }
+    void anEditAfterANetworkFailureSendsUnderANewTransaction()
+    {
+        Harness h;
+        const QString id = h.scheduler.schedule(
+            message(kPlain, QStringLiteral("first words")), nowMs() + 60);
+        QTRY_COMPARE_WITH_TIMEOUT(h.client.roomSends.size(), 1, 3000);
+        h.answerRoomSend(false, QStringLiteral("network"));
+        h.scheduler.updateText(id, QStringLiteral("second words"), QString());
+        goOffline(h.client);
+        goRunning(h.client);
+        QCOMPARE(h.client.roomSends.size(), 2);
+        QCOMPARE(h.client.roomSends.at(1).body, QStringLiteral("second words"));
+        QVERIFY(!h.client.roomSends.at(1).txnId.isEmpty());
+        QVERIFY(h.client.roomSends.at(1).txnId != h.client.roomSends.at(0).txnId);
+    }
+
+    void anUnknownRefusalFailsHonestlyAndIsNotRetried()
+    {
+        Harness h;
+        const QString id = h.scheduler.schedule(
+            message(kPlain, QStringLiteral("too big")), nowMs() + 60);
+        QTRY_COMPARE_WITH_TIMEOUT(h.client.roomSends.size(), 1, 3000);
+        h.answerRoomSend(false, QStringLiteral("unknown"));
+        const QVariantMap e = h.entry(id);
+        QCOMPARE(e.value(QStringLiteral("status")).toString(), QStringLiteral("failed"));
+        QVERIFY(e.value(QStringLiteral("error")).toString().contains(
+            QStringLiteral("Check the room")));
+        goOffline(h.client);
+        goRunning(h.client);
+        QTest::qWait(100);
+        QCOMPARE(h.client.roomSends.size(), 1);
+    }
+
+    void theRetryStateAndTransactionSurviveARestart()
+    {
+        Harness h;
+        h.scheduler.schedule(message(kPlain, QStringLiteral("kept")), nowMs() + 60);
+        QTRY_COMPARE_WITH_TIMEOUT(h.client.roomSends.size(), 1, 3000);
+        h.answerRoomSend(false, QStringLiteral("network"));
+        const QVariantMap row = h.settings.scheduledSends().first().toMap();
+        QCOMPARE(row.value(QStringLiteral("txnId")).toString(),
+                 h.client.roomSends.first().txnId);
+        QCOMPARE(row.value(QStringLiteral("transientFailures")).toInt(), 1);
+        QVERIFY(row.value(QStringLiteral("retryAtMs")).toLongLong() > nowMs());
+
+        Harness next;
+        next.settings.setScheduledSends({ QVariantMap{
+            { QStringLiteral("id"), QStringLiteral("restarted") },
+            { QStringLiteral("roomId"), kPlain },
+            { QStringLiteral("body"), QStringLiteral("four tries in") },
+            { QStringLiteral("sendAtMs"), nowMs() - 5000 },
+            { QStringLiteral("mode"), QStringLiteral("local") },
+            { QStringLiteral("status"), QStringLiteral("pending") },
+            { QStringLiteral("txnId"), QStringLiteral("txn-kept") },
+            { QStringLiteral("transientFailures"), 4 },
+        } });
+        Q_EMIT next.client.connectionStateChanged(MatrixClient::Syncing);
+        QTRY_COMPARE_WITH_TIMEOUT(next.client.roomSends.size(), 1, 3000);
+        QCOMPARE(next.client.roomSends.first().txnId, QStringLiteral("txn-kept"));
+        next.answerRoomSend(false, QStringLiteral("network"));
+        QCOMPARE(next.entry(QStringLiteral("restarted")).value(QStringLiteral("status"))
+                     .toString(), QStringLiteral("failed"));
+    }
+
+    void aRoomWaitingToRetryHoldsItsLaterEntries()
+    {
+        Harness h;
+        h.scheduler.schedule(message(kPlain, QStringLiteral("earlier")), nowMs() + 60);
+        h.scheduler.schedule(message(kPlain, QStringLiteral("later")), nowMs() + 250);
+        QTRY_COMPARE_WITH_TIMEOUT(h.client.roomSends.size(), 1, 3000);
+        QCOMPARE(h.client.roomSends.first().body, QStringLiteral("earlier"));
+        h.answerRoomSend(false, QStringLiteral("network"));
+        QTest::qWait(450);
+        QCOMPARE(h.client.roomSends.size(), 1);
+        const int before = h.client.stateReads;
+        QTest::qWait(300);
+        QVERIFY2(h.client.stateReads - before < 5,
+                 qPrintable(QStringLiteral("woke %1 times").arg(h.client.stateReads - before)));
+        goOffline(h.client);
+        goRunning(h.client);
+        QCOMPARE(h.client.roomSends.size(), 2);
+        QCOMPARE(h.client.roomSends.at(1).body, QStringLiteral("earlier"));
+        h.answerRoomSend(true);
+        QTRY_COMPARE_WITH_TIMEOUT(h.client.roomSends.size(), 3, 3000);
+        QCOMPARE(h.client.roomSends.at(2).body, QStringLiteral("later"));
+    }
+
+    void theRetryTimerFiresWithoutAReconnect()
+    {
+        Harness h;
+        h.scheduler.setRetryPolicy(150, 5);
+        h.scheduler.schedule(message(kPlain, QStringLiteral("again")), nowMs() + 60);
+        QTRY_COMPARE_WITH_TIMEOUT(h.client.roomSends.size(), 1, 3000);
+        h.answerRoomSend(false, QStringLiteral("rate_limited"));
+        QTest::qWait(50);
+        QCOMPARE(h.client.roomSends.size(), 1);
+        QTRY_COMPARE_WITH_TIMEOUT(h.client.roomSends.size(), 2, 3000);
+        QCOMPARE(h.client.roomSends.at(1).txnId, h.client.roomSends.at(0).txnId);
+    }
+
+    void theLastAllowedTransientFailureTurnsFailed()
+    {
+        Harness h;
+        h.scheduler.setRetryPolicy(50, 5);
+        const QString id = h.scheduler.schedule(
+            message(kPlain, QStringLiteral("unlucky")), nowMs() + 60);
+        for (int attempt = 1; attempt <= 4; ++attempt) {
+            QTRY_COMPARE_WITH_TIMEOUT(h.client.roomSends.size(), attempt, 3000);
+            h.answerRoomSend(false, QStringLiteral("network"));
+            QCOMPARE(h.entry(id).value(QStringLiteral("status")).toString(),
+                     QStringLiteral("pending"));
+        }
+        QTRY_COMPARE_WITH_TIMEOUT(h.client.roomSends.size(), 5, 3000);
+        h.answerRoomSend(false, QStringLiteral("network"));
+        const QVariantMap e = h.entry(id);
+        QCOMPARE(e.value(QStringLiteral("status")).toString(), QStringLiteral("failed"));
+        QVERIFY(e.value(QStringLiteral("error")).toString().contains(
+            QStringLiteral("Check the room")));
+        QTest::qWait(250);
+        QCOMPARE(h.client.roomSends.size(), 5);
     }
 };
 

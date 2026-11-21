@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QHash>
 #include <QObject>
 #include <QSet>
 #include <QString>
@@ -41,6 +42,11 @@ class SettingsManager;
 // Local dispatch uses the room-level sendRoomMessage, which works for any room
 // and reports a real result. An entry is marked "sending" and persisted
 // before dispatch, so a crash leaves a row reported as unsent, not re-fired.
+// It waits for a running sync (not one starting or retrying). A network or
+// rate-limit failure keeps it pending for the next reconnect (or a backoff),
+// holding the room's later entries, and is resent under the same transaction
+// id so the homeserver deduplicates a send that did reach it; editing the text
+// takes a new id. Anything else is reported failed.
 class ScheduledSendController : public QObject
 {
     Q_OBJECT
@@ -74,6 +80,11 @@ public:
 
     static constexpr qint64 kServerRetireGraceMs = 60 * 1000;
     static constexpr int kMaxEntries = 64;
+    void setRetryPolicy(qint64 delayMs, int maxTransientFailures)
+    {
+        m_retryDelayMs = delayMs;
+        m_maxTransientFailures = maxTransientFailures;
+    }
 
 Q_SIGNALS:
     void pendingChanged();
@@ -106,6 +117,10 @@ private:
         QString mediaName;
         QString content;
         quint64 prepareOp = 0;
+        qint64 retryAtMs = 0;
+        int transientFailures = 0;
+        // Reused by every retry of the same content; a content edit takes a new one.
+        QString txnId;
     };
 
     Entry newEntry(const QString &roomId, const QString &threadRootId,
@@ -118,6 +133,7 @@ private:
     void load();
     void armTimer();
     void fireDue();
+    void onConnected();
     void dispatchLocal(Entry &e);
     void submitServer(Entry &e);
     void beginServerCancel(Entry &e);
@@ -127,6 +143,8 @@ private:
     QVariantMap bodySpecFor(const Entry &e) const;
     bool connected() const;
     QSet<QString> roomsSending() const;
+    QHash<QString, qint64> roomHolds(qint64 now) const;
+    static qint64 dueAt(const Entry &e, const QHash<QString, qint64> &holds);
 
     MatrixClient *m_client = nullptr;
     SettingsManager *m_settings = nullptr;
@@ -134,4 +152,6 @@ private:
     QTimer m_timer;
     int m_serverScheduling = -1;
     bool m_loaded = false;
+    qint64 m_retryDelayMs = 30 * 1000;
+    int m_maxTransientFailures = 5;
 };
