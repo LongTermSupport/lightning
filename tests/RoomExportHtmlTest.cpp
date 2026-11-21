@@ -7,6 +7,7 @@
 #include <QBuffer>
 #include <QDir>
 #include <QFile>
+#include <QSet>
 #include <QSignalSpy>
 #include <QTemporaryDir>
 #include <QTimeZone>
@@ -499,6 +500,19 @@ private Q_SLOTS:
             QStringLiteral("!r:example.org"));
         QCOMPARE(voice.type, TimelineEvent::Audio);
         QVERIFY(voice.mediaIsVoice);
+    }
+
+    void aStalledOrBoundedWalkIsNotDescribedAsTheWholeRoom()
+    {
+        RoomExportController::Job job;
+        job.range = RoomExportController::Range::All;
+        const QString start = RoomExportController::rangeDescription(job, QStringLiteral("start"));
+        const QString stalled = RoomExportController::rangeDescription(job, QStringLiteral("stalled"));
+        const QString boundary = RoomExportController::rangeDescription(job, QStringLiteral("history_end"));
+        const QString cap = RoomExportController::rangeDescription(job, QStringLiteral("cap"));
+        QVERIFY(stalled.contains(QStringLiteral("incomplete")));
+        QVERIFY(boundary.contains(QStringLiteral("as far back as this account can read")));
+        QCOMPARE(QSet<QString>({ start, stalled, boundary, cap }).size(), 4);
     }
 
     void aFullHtmlExportFetchesByHandleWithinTheBudget()

@@ -164,6 +164,10 @@ QString RoomExportController::rangeDescription(const Job &job,
     }
     if (stopReason == QLatin1String("cap"))
         out += QStringLiteral(" (stopped at the 100,000-message limit)");
+    else if (stopReason == QLatin1String("stalled"))
+        out += QStringLiteral(" (incomplete: the server stopped returning older history)");
+    else if (stopReason == QLatin1String("history_end"))
+        out += QStringLiteral(" (as far back as this account can read)");
     return out;
 }
 

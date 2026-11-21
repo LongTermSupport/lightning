@@ -7802,6 +7802,7 @@ pub unsafe extern "C" fn mx_rust_media_history_page(
         let events = Arc::clone(&bridge.events);
         let cursors = Arc::clone(&bridge.media_history);
         let timelines = Arc::clone(&bridge.timelines);
+        let lifecycle = timelines.lifecycle();
         let encrypted_room = room.encryption_state().is_encrypted();
         let private_room = encrypted_room || room.encryption_state().is_unknown();
         let want: u64 = match limit {
@@ -7836,78 +7837,96 @@ pub unsafe extern "C" fn mx_rust_media_history_page(
             if encrypted_room && cursor.token.is_none() {
                 timelines.prefetch_backup_keys_for_room(&client, &room_id).await;
             }
-            let mut opts = MessagesOptions::backward();
-            opts.from = cursor.token.clone();
-            opts.limit = UInt::new(want).unwrap_or(uint!(50));
-            match room.messages(opts).await {
-                Ok(messages) => {
-                    let mut entries: Vec<serde_json::Value> = Vec::new();
-                    let mut scanned = 0u64;
-                    let mut undecryptable = 0u64;
-                    let mut pending_edits = cursor.pending_edits.clone();
-                    for event in messages.chunk.iter() {
-                        scanned += 1;
-                        let raw = event.raw();
-                        let Ok(value) = serde_json::from_str::<serde_json::Value>(
-                            raw.json().get())
-                        else {
-                            continue;
-                        };
-                        let found = mediahistory::classify_with_edits(
-                            &value, event.encryption_info().is_some(), &mut pending_edits);
-                        if found.undecryptable {
-                            undecryptable += 1;
-                        }
-                        if !found.entries.is_empty() {
-                            if let (Some(media), Some(event_id)) = (
-                                mediahistory::stored_media_from_event(&value),
-                                value.get("event_id").and_then(|v| v.as_str()),
-                            ) {
-                                timelines.remember_media(event_id.to_owned(), media);
-                                if private_room {
-                                    timelines.mark_media_from_encrypted_room(event_id);
-                                }
+            let mut token = cursor.token.clone();
+            let mut pager = cursor.pager.clone();
+            let mut entries: Vec<serde_json::Value> = Vec::new();
+            let mut scanned = 0u64;
+            let mut undecryptable = 0u64;
+            let mut pending_edits = cursor.pending_edits.clone();
+            // An empty page with a token is not the end: page on, bounded by the pager.
+            let end = loop {
+                let mut opts = MessagesOptions::backward();
+                opts.from = token.clone();
+                opts.limit = UInt::new(want).unwrap_or(uint!(50));
+                let messages = match room.messages(opts).await {
+                    Ok(messages) => messages,
+                    Err(err) => {
+                        enqueue(&events, json!({
+                            "type": "media_history_failed",
+                            "op_id": op_id,
+                            "room_id": room_id,
+                            "message": format_matrix_error(
+                                "could not read room history", err),
+                        }));
+                        return;
+                    }
+                };
+                if !timelines.lifecycle_current(lifecycle) {
+                    return;
+                }
+                for event in messages.chunk.iter() {
+                    scanned += 1;
+                    let raw = event.raw();
+                    let Ok(value) = serde_json::from_str::<serde_json::Value>(
+                        raw.json().get())
+                    else {
+                        continue;
+                    };
+                    let found = mediahistory::classify_with_edits(
+                        &value, event.encryption_info().is_some(), &mut pending_edits);
+                    if found.undecryptable {
+                        undecryptable += 1;
+                    }
+                    if !found.entries.is_empty() {
+                        if let (Some(media), Some(event_id)) = (
+                            found.attachment.as_ref()
+                                .and_then(mediahistory::stored_media_from_content),
+                            value.get("event_id").and_then(|v| v.as_str()),
+                        ) {
+                            timelines.remember_media(event_id.to_owned(), media);
+                            if private_room {
+                                timelines.mark_media_from_encrypted_room(event_id);
                             }
                         }
-                        for entry in found.entries {
-                            entries.push(entry.to_json());
-                        }
                     }
-                    let exhausted =
-                        messages.end.is_none() || messages.chunk.is_empty();
-                    let next = mediahistory::Cursor {
-                        token: messages.end.clone(),
-                        exhausted,
-                        scanned_total: cursor.scanned_total + scanned,
-                        undecryptable_total: cursor.undecryptable_total
-                            + undecryptable,
-                        pending_edits,
-                    };
-                    if let Ok(mut map) = cursors.lock() {
-                        map.insert(room_id.clone(), next.clone());
+                    for entry in found.entries {
+                        entries.push(entry.to_json());
                     }
-                    enqueue(&events, json!({
-                        "type": "media_history_page",
-                        "op_id": op_id,
-                        "room_id": room_id,
-                        "entries": entries,
-                        "scanned": scanned,
-                        "scanned_total": next.scanned_total,
-                        "undecryptable_total": next.undecryptable_total,
-                        "complete": exhausted,
-                        "encrypted_room": encrypted_room,
-                    }));
                 }
-                Err(err) => {
-                    enqueue(&events, json!({
-                        "type": "media_history_failed",
-                        "op_id": op_id,
-                        "room_id": room_id,
-                        "message": format_matrix_error(
-                            "could not read room history", err),
-                    }));
+                let end = pager.after_page(
+                    token.as_deref(), messages.end.as_deref(), messages.chunk.len());
+                if !(end == roomexport::PageEnd::Stalled && pager.repeats(messages.end.as_deref())) {
+                    token = messages.end.clone();
                 }
+                if end != roomexport::PageEnd::More || !messages.chunk.is_empty() {
+                    break end;
+                }
+            };
+            // A stall is incomplete, never the start: a later request retries.
+            let exhausted = end == roomexport::PageEnd::End;
+            let next = mediahistory::Cursor {
+                token,
+                exhausted,
+                scanned_total: cursor.scanned_total + scanned,
+                undecryptable_total: cursor.undecryptable_total + undecryptable,
+                pending_edits,
+                pager,
+            };
+            let (scanned_total, undecryptable_total) = (next.scanned_total, next.undecryptable_total);
+            if let Ok(mut map) = cursors.lock() {
+                map.insert(room_id.clone(), next);
             }
+            enqueue(&events, json!({
+                "type": "media_history_page",
+                "op_id": op_id,
+                "room_id": room_id,
+                "entries": entries,
+                "scanned": scanned,
+                "scanned_total": scanned_total,
+                "undecryptable_total": undecryptable_total,
+                "complete": exhausted,
+                "encrypted_room": encrypted_room,
+            }));
         });
         Ok(String::new())
     })
@@ -7940,6 +7959,7 @@ pub unsafe extern "C" fn mx_rust_room_export_start(
             let mut state = roomexport::WalkState::new(range);
             let mut names: HashMap<String, String> = HashMap::new();
             let mut token: Option<String> = None;
+            let mut pager = roomexport::Pager::default();
             if encrypted_room {
                 timelines.prefetch_backup_keys_for_room(&client, &room_id).await;
             }
@@ -7987,7 +8007,7 @@ pub unsafe extern "C" fn mx_rust_room_export_start(
                     }
                     let mut media_key = String::new();
                     if row.is_attachment() {
-                        if let Some(media) = mediahistory::stored_media_from_event(&value) {
+                        if let Some(media) = mediahistory::stored_media_from_content(&row.content) {
                             let handle = roomexport::media_handle(op_id, &row.event_id);
                             if timelines.remember_export_media(handle.clone(), media, private_room) {
                                 media_key = handle;
@@ -7997,8 +8017,8 @@ pub unsafe extern "C" fn mx_rust_room_export_start(
                     let name = names.get(&row.sender).map(String::as_str).unwrap_or("");
                     rows.push(row.to_json(name, &media_key));
                 }
-                let exhausted = messages.end.is_none() || messages.chunk.is_empty();
-                state.end_of_page(exhausted);
+                state.end_of_page(pager.after_page(
+                    token.as_deref(), messages.end.as_deref(), messages.chunk.len()));
                 token = messages.end.clone();
                 if !timelines.lifecycle_current(lifecycle) {
                     return;
@@ -8014,6 +8034,7 @@ pub unsafe extern "C" fn mx_rust_room_export_start(
                     "undecryptable_total": state.undecryptable,
                     "done": done,
                     "stop_reason": state.stop.map(|s| s.as_str()).unwrap_or(""),
+                    "edits_unresolved": state.unresolved_edits,
                     "encrypted_room": encrypted_room,
                 }));
                 if done {

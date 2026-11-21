@@ -1,16 +1,62 @@
 
 use serde_json::{json, Value};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 pub(crate) const MAX_ROWS: u64 = 100_000;
 
 pub(crate) const PAGE_SIZE: u64 = 100;
 
 const MAX_PENDING_EDITS: usize = 8192;
-// shortcut: eight newer stranger edits of one event crowd out the owner's
-// (bounded, and a stranger is never promoted); keep senders unbounded per
-// event if that is ever seen.
-const MAX_EDITORS_PER_EVENT: usize = 8;
+
+/// Consecutive pages wholly older than a date range before the walk stops:
+/// history order is the server's, not `origin_server_ts`, so one old event
+/// proves nothing about the next page.
+const DATE_GRACE_PAGES: u32 = 3;
+
+/// Consecutive empty pages a server may hand out before the walk gives up.
+const MAX_EMPTY_PAGES: u32 = 20;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum PageEnd {
+    More,
+    /// No `end` token: the spec's only end of history.
+    End,
+    /// A token seen before, or too many empty pages in a row.
+    Stalled,
+}
+
+/// Backward `/messages` continuation. An empty chunk with an `end` is not the
+/// end of history (Matrix allows it); a repeated token or a run of empty
+/// pages is a stall, never the start of the room.
+#[derive(Debug, Clone, Default)]
+pub(crate) struct Pager {
+    seen: HashSet<String>,
+    empty_run: u32,
+}
+
+impl Pager {
+    pub(crate) fn after_page(&mut self, from: Option<&str>, end: Option<&str>, events: usize) -> PageEnd {
+        let Some(end) = end else { return PageEnd::End };
+        if let Some(from) = from {
+            self.seen.insert(from.to_owned());
+        }
+        if self.seen.contains(end) {
+            return PageEnd::Stalled;
+        }
+        self.empty_run = if events == 0 { self.empty_run + 1 } else { 0 };
+        if self.empty_run >= MAX_EMPTY_PAGES {
+            self.empty_run = 0;
+            PageEnd::Stalled
+        } else {
+            PageEnd::More
+        }
+    }
+
+    /// A stall on a token already walked; continuing from it cannot progress.
+    pub(crate) fn repeats(&self, end: Option<&str>) -> bool {
+        end.is_some_and(|end| self.seen.contains(end))
+    }
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum Range {
@@ -43,19 +89,25 @@ impl Range {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum StopReason {
+    /// History ended at the room's creation event.
     Start,
+    /// History ended earlier: the oldest this account may read.
+    HistoryEnd,
     Limit,
     Date,
     Cap,
+    Stalled,
 }
 
 impl StopReason {
     pub(crate) fn as_str(self) -> &'static str {
         match self {
             StopReason::Start => "start",
+            StopReason::HistoryEnd => "history_end",
             StopReason::Limit => "limit",
             StopReason::Date => "date",
             StopReason::Cap => "cap",
+            StopReason::Stalled => "stalled",
         }
     }
 }
@@ -76,6 +128,8 @@ pub(crate) struct ExportRow {
     pub filename: String,
     pub mimetype: String,
     pub size: u64,
+    /// The content the row shows, edits applied; never serialized.
+    pub content: Value,
 }
 
 impl ExportRow {
@@ -123,8 +177,7 @@ struct Edit {
     event_id: String,
     ts: u64,
     sender: String,
-    body: String,
-    formatted_body: String,
+    new_content: Value,
     encrypted: bool,
 }
 
@@ -136,7 +189,12 @@ pub(crate) struct WalkState {
     pub undecryptable: u64,
     edits: HashMap<String, Vec<Edit>>,
     pending_edits: usize,
-    older_seen: bool,
+    /// Edits refused because `MAX_PENDING_EDITS` was full.
+    pub unresolved_edits: u64,
+    page_older: bool,
+    page_not_older: bool,
+    older_pages: u32,
+    saw_create: bool,
     pub stop: Option<StopReason>,
 }
 
@@ -234,7 +292,11 @@ impl WalkState {
             undecryptable: 0,
             edits: HashMap::new(),
             pending_edits: 0,
-            older_seen: false,
+            unresolved_edits: 0,
+            page_older: false,
+            page_not_older: false,
+            older_pages: 0,
+            saw_create: false,
             stop: None,
         }
     }
@@ -292,31 +354,52 @@ impl WalkState {
         let rel_type = str_of(relation.and_then(|r| r.get("rel_type")));
         if type_str == "m.room.message" && rel_type == "m.replace" {
             if let Some(r) = crate::replacement::parse(value)
-                .filter(|r| self.pending_edits < MAX_PENDING_EDITS || self.edits.contains_key(r.target))
+                .filter(|r| crate::replacement::complete_message(r.new_content))
             {
                 let candidate = Edit {
                     event_id: r.event_id.to_owned(),
                     ts: r.ts,
                     sender: sender.clone(),
-                    body: str_of(r.new_content.get("body")).to_owned(),
-                    formatted_body: formatted_of(r.new_content),
+                    new_content: r.new_content.clone(),
                     encrypted,
                 };
-                let list = self.edits.entry(r.target.to_owned()).or_default();
-                if let Some(held) = list.iter_mut().find(|e| e.sender == sender) {
+                let held = self
+                    .edits
+                    .get_mut(r.target)
+                    .and_then(|list| list.iter_mut().find(|e| e.sender == sender));
+                if let Some(held) = held {
                     if crate::replacement::supersedes(
                         (candidate.ts, candidate.event_id.as_str()),
                         (held.ts, held.event_id.as_str()),
                     ) {
                         *held = candidate;
                     }
-                } else if self.pending_edits < MAX_PENDING_EDITS && list.len() < MAX_EDITORS_PER_EVENT {
-                    list.push(candidate);
+                } else if self.pending_edits < MAX_PENDING_EDITS {
+                    self.edits.entry(r.target.to_owned()).or_default().push(candidate);
                     self.pending_edits += 1;
+                } else {
+                    self.unresolved_edits += 1;
                 }
             }
             return None;
         }
+
+        // Only the original sender's edit replaces content (the spec's rule): an
+        // edit by anyone else is ignored, never applied.
+        let mut edited = false;
+        let mut projected = None;
+        if let Some(list) = self.edits.remove(&event_id) {
+            self.pending_edits = self.pending_edits.saturating_sub(list.len());
+            if let Some(edit) = list.into_iter().find(|e| {
+                value.get("state_key").is_none()
+                    && crate::replacement::may_replace(&e.sender, "m.room.message", &sender, type_str)
+                    && crate::replacement::encryption_permits(e.encrypted, encrypted)
+            }) {
+                projected = Some(crate::replacement::project(content, &edit.new_content));
+                edited = true;
+            }
+        }
+        let content = projected.as_ref().unwrap_or(content);
 
         let kind = kind_for(type_str, content);
         let thread_root = if rel_type == "m.thread" {
@@ -342,22 +425,7 @@ impl WalkState {
         } else {
             str_of(content.get("body")).to_owned()
         };
-        let mut formatted_body = formatted_of(content);
-        let mut edited = false;
-        // Only the original sender's edit replaces content (the spec's rule): an
-        // edit by anyone else is ignored, never applied.
-        if let Some(list) = self.edits.remove(&event_id) {
-            self.pending_edits = self.pending_edits.saturating_sub(list.len());
-            if let Some(edit) = list.into_iter().find(|e| {
-                value.get("state_key").is_none()
-                    && crate::replacement::may_replace(&e.sender, "m.room.message", &sender, type_str)
-                    && crate::replacement::encryption_permits(e.encrypted, encrypted)
-            }) {
-                body = edit.body;
-                formatted_body = edit.formatted_body;
-                edited = true;
-            }
-        }
+        let formatted_body = formatted_of(content);
         if !reply_to.is_empty() && !edited {
             body = strip_reply_fallback(&body);
         }
@@ -384,6 +452,7 @@ impl WalkState {
         }
         row.body = body;
         row.formatted_body = formatted_body;
+        row.content = content.clone();
         Some(row)
     }
 
@@ -393,14 +462,21 @@ impl WalkState {
             return None;
         }
         self.scanned += 1;
+        if str_of(value.get("type")) == "m.room.create" && str_of(value.get("state_key")).is_empty() {
+            self.saw_create = true;
+        }
         let row = self.classify(value, encrypted);
         let ts = value
             .get("origin_server_ts")
             .and_then(|v| v.as_u64())
             .unwrap_or(0);
         if let Range::Between { from_ms, to_ms } = self.range {
-            if ts != 0 && ts < from_ms {
-                self.older_seen = true;
+            if ts != 0 {
+                if ts < from_ms {
+                    self.page_older = true;
+                } else {
+                    self.page_not_older = true;
+                }
             }
             if ts < from_ms || ts > to_ms {
                 return None;
@@ -422,15 +498,24 @@ impl WalkState {
         Some(row)
     }
 
-    pub(crate) fn end_of_page(&mut self, exhausted: bool) {
+    pub(crate) fn end_of_page(&mut self, end: PageEnd) {
+        if self.page_not_older {
+            self.older_pages = 0;
+        } else if self.page_older {
+            self.older_pages += 1;
+        }
+        self.page_older = false;
+        self.page_not_older = false;
         if self.stop.is_some() {
             return;
         }
-        if self.older_seen {
-            self.stop = Some(StopReason::Date);
-        } else if exhausted {
-            self.stop = Some(StopReason::Start);
-        }
+        self.stop = match end {
+            PageEnd::End if self.saw_create => Some(StopReason::Start),
+            PageEnd::End => Some(StopReason::HistoryEnd),
+            PageEnd::Stalled => Some(StopReason::Stalled),
+            PageEnd::More if self.older_pages >= DATE_GRACE_PAGES => Some(StopReason::Date),
+            PageEnd::More => None,
+        };
     }
 }
 
@@ -716,7 +801,7 @@ mod tests {
         assert_eq!(rows[0].event_id, "$0", "the NEWEST rows are kept");
         assert_eq!(state.stop, Some(StopReason::Limit));
         assert!(state.consume(&text("$x", "@a:b", 1, "late"), false).is_none());
-        state.end_of_page(true);
+        state.end_of_page(PageEnd::End);
         assert_eq!(state.stop, Some(StopReason::Limit));
     }
 
@@ -732,19 +817,163 @@ mod tests {
         ]);
         let ids: Vec<&str> = rows.iter().map(|r| r.event_id.as_str()).collect();
         assert_eq!(ids, vec!["$in1", "$in2", "$skew"]);
-        assert_eq!(state.stop, None, "a page is finished before the walk stops");
-        state.end_of_page(false);
+        state.end_of_page(PageEnd::More);
+        assert_eq!(state.stop, None, "a page with days in range is not past the range");
+        for page in 0..DATE_GRACE_PAGES {
+            assert_eq!(state.stop, None, "stopped after {page} old pages");
+            rows_of(&mut state, &[text(&format!("$o{page}"), "@a:b", 50, "old")]);
+            state.end_of_page(PageEnd::More);
+        }
         assert_eq!(state.stop, Some(StopReason::Date));
+    }
+
+    #[test]
+    fn an_old_timestamp_on_one_page_does_not_hide_a_later_page_in_range() {
+        let mut state = WalkState::new(Range::Between { from_ms: 100, to_ms: 200 });
+        let mut kept = rows_of(&mut state, &[text("$a", "@a:b", 150, "in"), text("$b", "@a:b", 50, "skewed")]);
+        state.end_of_page(PageEnd::More);
+        kept.extend(rows_of(&mut state, &[
+            json!({ "type": "m.room.member", "event_id": "$m", "sender": "@a:b",
+                    "origin_server_ts": 10u64, "state_key": "@a:b",
+                    "content": { "membership": "join" } }),
+        ]));
+        state.end_of_page(PageEnd::More);
+        kept.extend(rows_of(&mut state, &[text("$c", "@a:b", 130, "in")]));
+        state.end_of_page(PageEnd::End);
+        let ids: Vec<&str> = kept.iter().map(|r| r.event_id.as_str()).collect();
+        assert_eq!(ids, vec!["$a", "$c"]);
+        assert_eq!(state.stop, Some(StopReason::HistoryEnd));
     }
 
     #[test]
     fn the_start_of_the_room_ends_an_unbounded_walk() {
         let mut state = WalkState::new(Range::All);
         rows_of(&mut state, &[text("$1", "@a:b", 1, "first ever")]);
-        state.end_of_page(false);
+        state.end_of_page(PageEnd::More);
         assert_eq!(state.stop, None);
-        state.end_of_page(true);
+        rows_of(&mut state, &[json!({ "type": "m.room.create", "event_id": "$c", "sender": "@a:b",
+                                      "origin_server_ts": 1u64, "state_key": "",
+                                      "content": { "room_version": "11" } })]);
+        state.end_of_page(PageEnd::End);
         assert_eq!(state.stop, Some(StopReason::Start));
+    }
+
+    #[test]
+    fn history_end_stall_and_cap_are_distinct_reasons() {
+        let mut state = WalkState::new(Range::All);
+        state.end_of_page(PageEnd::End);
+        assert_eq!(state.stop, Some(StopReason::HistoryEnd), "no create event: not the start of the room");
+        let mut state = WalkState::new(Range::All);
+        state.end_of_page(PageEnd::Stalled);
+        assert_eq!(state.stop, Some(StopReason::Stalled));
+        let reasons: HashSet<&str> = [
+            StopReason::Start, StopReason::HistoryEnd, StopReason::Limit,
+            StopReason::Date, StopReason::Cap, StopReason::Stalled,
+        ].iter().map(|r| r.as_str()).collect();
+        assert_eq!(reasons.len(), 6);
+    }
+
+    #[test]
+    fn an_empty_page_with_a_token_continues_and_only_an_absent_token_ends() {
+        let mut pager = Pager::default();
+        assert_eq!(pager.after_page(None, Some("t1"), 0), PageEnd::More);
+        assert_eq!(pager.after_page(Some("t1"), Some("t2"), 5), PageEnd::More);
+        assert_eq!(pager.after_page(Some("t2"), None, 0), PageEnd::End);
+    }
+
+    #[test]
+    fn a_repeated_token_a_cycle_or_endless_empty_pages_is_a_stall() {
+        let mut pager = Pager::default();
+        assert_eq!(pager.after_page(Some("t1"), Some("t1"), 0), PageEnd::Stalled);
+        let mut pager = Pager::default();
+        assert_eq!(pager.after_page(Some("a"), Some("b"), 3), PageEnd::More);
+        assert_eq!(pager.after_page(Some("b"), Some("a"), 3), PageEnd::Stalled);
+        let mut pager = Pager::default();
+        let mut from = "t0".to_owned();
+        let mut last = PageEnd::More;
+        for i in 1..=MAX_EMPTY_PAGES {
+            let end = format!("t{i}");
+            last = pager.after_page(Some(&from), Some(&end), 0);
+            from = end;
+        }
+        assert_eq!(last, PageEnd::Stalled);
+    }
+
+    fn file_event(id: &str, name: &str, url: &str) -> Value {
+        json!({
+            "type": "m.room.message", "event_id": id, "sender": "@ann:example.org",
+            "origin_server_ts": 100u64,
+            "content": { "msgtype": "m.file", "body": name, "url": url,
+                         "info": { "mimetype": "application/pdf", "size": 10 } },
+        })
+    }
+
+    fn replacing(id: &str, target: &str, ts: u64, new_content: Value) -> Value {
+        json!({
+            "type": "m.room.message", "event_id": id, "sender": "@ann:example.org",
+            "origin_server_ts": ts,
+            "content": { "msgtype": "m.text", "body": "* edited", "m.new_content": new_content,
+                         "m.relates_to": { "rel_type": "m.replace", "event_id": target } },
+        })
+    }
+
+    #[test]
+    fn an_edit_replaces_the_whole_content_including_the_attachment() {
+        let mut state = WalkState::new(Range::All);
+        let row = rows_of(&mut state, &[
+            replacing("$e", "$f", 200, json!({ "msgtype": "m.text", "body": "never mind" })),
+            file_event("$f", "a.pdf", "mxc://example.org/a"),
+        ]).remove(0);
+        assert_eq!((row.kind.as_str(), row.body.as_str()), ("text", "never mind"));
+        assert!(!row.is_attachment());
+        assert!(crate::mediahistory::stored_media_from_content(&row.content).is_none());
+
+        let mut state = WalkState::new(Range::All);
+        let row = rows_of(&mut state, &[
+            replacing("$e", "$f", 200, json!({ "msgtype": "m.file", "body": "b.pdf",
+                                                "url": "mxc://example.org/b",
+                                                "info": { "mimetype": "text/plain", "size": 99 } })),
+            file_event("$f", "a.pdf", "mxc://example.org/a"),
+        ]).remove(0);
+        assert_eq!((row.filename.as_str(), row.mimetype.as_str(), row.size), ("b.pdf", "text/plain", 99));
+        let media = crate::mediahistory::stored_media_from_content(&row.content).unwrap();
+        assert!(matches!(&media.source,
+            matrix_sdk::ruma::events::room::MediaSource::Plain(uri) if uri.as_str() == "mxc://example.org/b"));
+
+        let mut state = WalkState::new(Range::All);
+        let row = rows_of(&mut state, &[
+            replacing("$e", "$1", 200, json!({ "msgtype": "m.emote", "body": "waves" })),
+            text("$1", "@ann:example.org", 100, "hello"),
+        ]).remove(0);
+        assert_eq!((row.kind.as_str(), row.body.as_str()), ("emote", "waves"));
+    }
+
+    #[test]
+    fn an_incomplete_edit_is_ignored_and_the_original_relations_stay() {
+        let mut state = WalkState::new(Range::All);
+        let mut original = text("$1", "@ann:example.org", 100, "in the thread");
+        original["content"]["m.relates_to"] = json!({ "rel_type": "m.thread", "event_id": "$root" });
+        let row = rows_of(&mut state, &[
+            replacing("$bad", "$1", 300, json!({ "msgtype": "m.image", "body": "no file" })),
+            replacing("$good", "$1", 200, json!({ "msgtype": "m.text", "body": "fixed",
+                "m.relates_to": { "rel_type": "m.thread", "event_id": "$elsewhere" } })),
+            original,
+        ]).remove(0);
+        assert_eq!(row.body, "fixed");
+        assert_eq!(row.thread_root, "$root");
+    }
+
+    #[test]
+    fn eight_strangers_cannot_crowd_out_the_authors_edit() {
+        let mut state = WalkState::new(Range::All);
+        let mut page: Vec<Value> = (0..8)
+            .map(|i| edit(&format!("$x{i}"), &format!("@m{i}:example.org"), 500, "$1", "forged"))
+            .collect();
+        page.push(edit("$own", "@ann:example.org", 200, "$1", "corrected"));
+        page.push(text("$1", "@ann:example.org", 100, "original"));
+        let rows = rows_of(&mut state, &page);
+        assert_eq!(rows[0].body, "corrected");
+        assert_eq!(state.unresolved_edits, 0);
     }
 
     #[test]
