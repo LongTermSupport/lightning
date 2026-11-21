@@ -3662,17 +3662,18 @@ void RustSdkMatrixClient::endPoll(const QString &roomId,
     }
 }
 
-void RustSdkMatrixClient::createPoll(const QString &roomId,
-                                     const QString &threadRootId,
-                                     const QString &question,
-                                     const QStringList &answers,
-                                     bool undisclosed,
-                                     int maxSelections)
+quint64 RustSdkMatrixClient::createPoll(const QString &roomId,
+                                        const QString &threadRootId,
+                                        const QString &question,
+                                        const QStringList &answers,
+                                        bool undisclosed,
+                                        int maxSelections)
 {
     if (!timelineActiveFor(roomId)) {
         refuseUntilTimelineReady("createPoll");
-        return;
+        return 0;
     }
+    const quint64 op = nextOpId();
     const QByteArray roomBytes = roomId.toUtf8();
     const QByteArray threadBytes = threadRootId.toUtf8();
     const QByteArray questionBytes = question.toUtf8();
@@ -3681,12 +3682,14 @@ void RustSdkMatrixClient::createPoll(const QString &roomId,
         m_rustHandle, roomBytes.constData(), threadBytes.constData(),
         questionBytes.constData(), answerBytes.constData(),
         undisclosed ? 1 : 0,
-        static_cast<unsigned int>(qMax(1, maxSelections))));
+        static_cast<unsigned int>(qMax(1, maxSelections)), op));
     if (!result.isEmpty()) {
         Q_EMIT errorOccurred(result.startsWith(QLatin1String("error: "))
                                  ? result.mid(7)
                                  : result);
+        return 0;
     }
+    return op;
 }
 
 void RustSdkMatrixClient::sendTyping(const QString &roomId, bool typing, int)

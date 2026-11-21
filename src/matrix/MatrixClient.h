@@ -328,12 +328,14 @@ public:
         Q_UNUSED(threadRootId);
         Q_UNUSED(pollStartEventId);
     }
-    virtual void createPoll(const QString &roomId,
-                            const QString &threadRootId,
-                            const QString &question,
-                            const QStringList &answers,
-                            bool undisclosed,
-                            int maxSelections)
+    // 0 when refused; otherwise answered on roomSendFinished, where ok means
+    // the room's send queue holds the poll (local echo, SDK retry).
+    virtual quint64 createPoll(const QString &roomId,
+                               const QString &threadRootId,
+                               const QString &question,
+                               const QStringList &answers,
+                               bool undisclosed,
+                               int maxSelections)
     {
         Q_UNUSED(roomId);
         Q_UNUSED(threadRootId);
@@ -341,6 +343,7 @@ public:
         Q_UNUSED(answers);
         Q_UNUSED(undisclosed);
         Q_UNUSED(maxSelections);
+        return 0;
     }
     virtual void sendTyping(const QString &roomId,
                             bool isTyping,

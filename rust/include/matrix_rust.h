@@ -755,13 +755,16 @@ char *mx_rust_timeline_poll_end(void *client,
                                 const char *room_id,
                                 const char *thread_root_id,
                                 const char *poll_start_event_id);
+/* Answered by acked_send_result {op_id, room_id, ok, category}, where ok
+ * means the send queue holds the poll. */
 char *mx_rust_timeline_poll_create(void *client,
                                    const char *room_id,
                                    const char *thread_root_id,
                                    const char *question,
                                    const char *answers,
                                    int undisclosed,
-                                   unsigned int max_selections);
+                                   unsigned int max_selections,
+                                   unsigned long long op_id);
 
 /*
  * v0.5.9 — room management, user search, attachments and the media bridge.

@@ -6190,6 +6190,7 @@ pub unsafe extern "C" fn mx_rust_timeline_poll_create(
     answers: *const c_char,
     undisclosed: c_int,
     max_selections: c_uint,
+    op_id: u64,
 ) -> *mut c_char {
     ffi_string(|| {
         let bridge = unsafe { bridge(ptr)? };
@@ -6197,6 +6198,9 @@ pub unsafe extern "C" fn mx_rust_timeline_poll_create(
         let thread_root = unsafe { thread_root_arg(thread_root_id) }?;
         let question = unsafe { cstr_arg(question) }?;
         let answers = unsafe { cstr_list_arg(answers) }?;
+        if op_id == 0 {
+            return Err("invalid_arguments".to_owned());
+        }
         let Some(client) = bridge.client.lock().ok().and_then(|g| g.clone()) else {
             return Err("Rust SDK session is not logged in.".to_owned());
         };
@@ -6211,6 +6215,7 @@ pub unsafe extern "C" fn mx_rust_timeline_poll_create(
                 answers,
                 undisclosed != 0,
                 u64::from(max_selections),
+                op_id,
             )
             .map(|_| String::new())
     })

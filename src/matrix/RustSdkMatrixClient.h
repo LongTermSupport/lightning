@@ -241,12 +241,12 @@ public:
     void endPoll(const QString &roomId,
                  const QString &threadRootId,
                  const QString &pollStartEventId) override;
-    void createPoll(const QString &roomId,
-                    const QString &threadRootId,
-                    const QString &question,
-                    const QStringList &answers,
-                    bool undisclosed,
-                    int maxSelections) override;
+    quint64 createPoll(const QString &roomId,
+                       const QString &threadRootId,
+                       const QString &question,
+                       const QStringList &answers,
+                       bool undisclosed,
+                       int maxSelections) override;
 
     void sendTyping(const QString &roomId, bool isTyping, int timeoutMs = 20000) override;
     void sendReadReceipt(const QString &roomId, const QString &eventId) override;

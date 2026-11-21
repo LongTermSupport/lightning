@@ -55,6 +55,9 @@ public:
     void sendPollResponse(const QString &roomId, const QString &threadRootId,
                           const QString &pollStartEventId,
                           const QStringList &answerIds) override;
+    quint64 createPoll(const QString &roomId, const QString &threadRootId,
+                       const QString &question, const QStringList &answers,
+                       bool undisclosed, int maxSelections) override;
     void acceptInvite(const QString &roomId) override;
     void rejectInvite(const QString &roomId) override;
     void setRoomMarkedUnread(const QString &roomId, bool unread) override;

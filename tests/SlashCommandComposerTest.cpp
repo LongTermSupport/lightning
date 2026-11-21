@@ -138,6 +138,17 @@ public:
         calls.append(QStringLiteral("roomname|%1|%2").arg(roomId, name));
         return 1;
     }
+    quint64 pollOp = 0;
+    QStringList polls;
+    quint64 createPoll(const QString &roomId, const QString &threadRootId,
+                       const QString &question, const QStringList &answers,
+                       bool, int maxSelections) override
+    {
+        polls.append(QStringLiteral("%1|%2|%3|%4|%5").arg(
+            roomId, threadRootId, question, answers.join(QLatin1Char(',')))
+                         .arg(maxSelections));
+        return pollOp;
+    }
     quint64 joinOp = 1;
     bool joinByAddress = false;
     bool supportsJoinByAddress() const override { return joinByAddress; }
@@ -237,6 +248,74 @@ private Q_SLOTS:
         QCOMPARE(m_client->sends.size(), 1);
         QCOMPARE(m_client->sends.first().mentionIds,
                  QStringList{ QStringLiteral("@alice:example.org") });
+    }
+
+    void aPollTheBackendRefusesIsNotPending()
+    {
+        QSignalSpy finished(m_composer, &MessageComposer::pollCreateFinished);
+        QVERIFY(!m_composer->createPoll(QStringLiteral("Lunch?"),
+                                        { QStringLiteral("a"), QStringLiteral("b") },
+                                        false, 1));
+        QCOMPARE(m_client->polls.size(), 1);
+        m_client->pollOp = 7;
+        QVERIFY2(m_composer->createPoll(QStringLiteral("Lunch?"),
+                                        { QStringLiteral("a"), QStringLiteral("b") },
+                                        false, 1),
+                 "a refusal left a poll pending");
+        QCOMPARE(finished.count(), 0);
+    }
+
+    void anAcceptedPollAnswersOnceForItsOwnOp()
+    {
+        m_client->pollOp = 7;
+        QSignalSpy finished(m_composer, &MessageComposer::pollCreateFinished);
+        QVERIFY(m_composer->createPoll(QStringLiteral("Lunch?"),
+                                       { QStringLiteral("a"), QStringLiteral("b") },
+                                       true, 2));
+        QVERIFY2(!m_composer->createPoll(QStringLiteral("Lunch?"),
+                                         { QStringLiteral("a"), QStringLiteral("b") },
+                                         true, 2),
+                 "a second poll was offered while the first was pending");
+        QCOMPARE(m_client->polls,
+                 QStringList{ QStringLiteral("!room:example.org||Lunch?|a,b|2") });
+        Q_EMIT m_client->roomSendFinished(99, kRoom, true, QString());
+        QCOMPARE(finished.count(), 0);
+        Q_EMIT m_client->roomSendFinished(7, kRoom, false,
+                                          QStringLiteral("poll_create_rejected"));
+        QCOMPARE(finished.count(), 1);
+        QCOMPARE(finished.first().first().toBool(), false);
+        Q_EMIT m_client->roomSendFinished(7, kRoom, true, QString());
+        QCOMPARE(finished.count(), 1);
+    }
+
+    void anInlineThreadPollGoesToTheThread()
+    {
+        m_client->pollOp = 3;
+        m_composer->setThreadTargetRootId(QStringLiteral("$root"));
+        QVERIFY(m_composer->createPoll(QStringLiteral("Q"),
+                                       { QStringLiteral("a"), QStringLiteral("b") },
+                                       false, 1));
+        QCOMPARE(m_client->polls,
+                 QStringList{ QStringLiteral("!room:example.org|$root|Q|a,b|1") });
+    }
+
+    void aRoomSwitchOrALostBackendEndsThePendingPoll()
+    {
+        m_client->pollOp = 7;
+        QSignalSpy finished(m_composer, &MessageComposer::pollCreateFinished);
+        QVERIFY(m_composer->createPoll(QStringLiteral("Q"),
+                                       { QStringLiteral("a"), QStringLiteral("b") },
+                                       false, 1));
+        m_composer->setRoomId(QStringLiteral("!other:example.org"));
+        Q_EMIT m_client->roomSendFinished(7, kRoom, true, QString());
+        QCOMPARE(finished.count(), 0);
+        m_client->pollOp = 8;
+        QVERIFY(m_composer->createPoll(QStringLiteral("Q"),
+                                       { QStringLiteral("a"), QStringLiteral("b") },
+                                       false, 1));
+        Q_EMIT m_client->sendsAbandoned();
+        QCOMPARE(finished.count(), 1);
+        QCOMPARE(finished.first().first().toBool(), false);
     }
 
     void typingNoticesAreSentByDefault()

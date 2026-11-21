@@ -1,6 +1,7 @@
 #include <QtTest/QtTest>
 
 #include <QElapsedTimer>
+#include <QSignalSpy>
 #include <QQmlComponent>
 #include <QQmlContext>
 #include <QQmlExpression>
@@ -9,6 +10,7 @@
 #include <QQuickWindow>
 
 #include "app/AppController.h"
+#include "models/MessageComposer.h"
 
 namespace {
 QStringList g_warnings;
@@ -220,6 +222,38 @@ private Q_SLOTS:
         teardown();
     }
 
+    void aPollTheBackendRefusesStaysEditable()
+    {
+        setup();
+        app->composer()->setRoomId(QString());
+        fillValidPoll();
+        click(findVisual(content, QStringLiteral("createPollSubmitButton")));
+        settle();
+        verifyPollKept();
+        QQuickItem *error = findVisual(content, QStringLiteral("pollSendError"));
+        QVERIFY2(error && error->isVisible(), "a refused poll said nothing");
+        teardown();
+    }
+
+    void anAcceptedPollIsRetiredOnceAndNeverSentTwice()
+    {
+        setup();
+        QSignalSpy finished(app->composer(), SIGNAL(pollCreateFinished(bool)));
+        QVERIFY(finished.isValid());
+        app->composer()->setRoomId(QStringLiteral("!poll:mock.local"));
+        fillValidPoll();
+        QQuickItem *q = findVisual(content, QStringLiteral("pollQuestionField"));
+        q->forceActiveFocus();
+        QTest::keyClick(window, Qt::Key_Return);
+        QTest::keyClick(window, Qt::Key_Return);
+        click(findVisual(content, QStringLiteral("createPollSubmitButton")));
+        settle();
+        QCOMPARE(finished.count(), 1);
+        QVERIFY(finished.first().first().toBool());
+        QVERIFY(!dialog->property("opened").toBool());
+        teardown();
+    }
+
     void enterInANonLastRowOfAValidFormNeverSends()
     {
         setup();
@@ -256,6 +290,7 @@ private Q_SLOTS:
                                          "append({answerText:'a'+j});"
                                          "bumpAnswerRevision(); answerModel.count"));
         QCOMPARE(ex.evaluate().toInt(), 20);
+        app->composer()->setRoomId(QStringLiteral("!poll:mock.local"));
         settle();
         auto fields = answerFields();
         QCOMPARE(fields.size(), 20);

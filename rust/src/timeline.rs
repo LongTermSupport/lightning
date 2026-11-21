@@ -1640,10 +1640,13 @@ impl TimelineRegistry {
         failure_category: &'static str,
     ) -> Result<(), String> {
         self.send_content_to_timeline(
-            runtime, client, room_id, thread_root_id, content, failure_category,
+            runtime, client, room_id, thread_root_id, content, failure_category, 0,
         )
     }
 
+    /// With a nonzero `op_id` the outcome is `acked_send_result`, where `ok`
+    /// means the send queue holds the event, and a failure is reported only there.
+    #[allow(clippy::too_many_arguments)]
     fn send_content_to_timeline(
         self: &Arc<Self>,
         runtime: &tokio::runtime::Runtime,
@@ -1652,6 +1655,7 @@ impl TimelineRegistry {
         thread_root_id: String,
         content: AnyMessageLikeEventContent,
         failure_category: &'static str,
+        op_id: u64,
     ) -> Result<(), String> {
         if thread_root_id.trim().is_empty() {
             let Some((timeline, room_gen, lifecycle)) = self.timeline_for(&room_id)
@@ -1663,9 +1667,10 @@ impl TimelineRegistry {
             let lane = send_lane_key(&room_id, "");
             self.spawn_ordered(runtime, lane, async move {
                 unwedge_send_queue(&timeline);
-                if timeline.send(content).await.is_err()
-                    && registry.is_current(room_gen, lifecycle)
-                {
+                let queued = timeline.send(content).await.is_ok();
+                if op_id != 0 {
+                    registry.report_queued(&room_id, op_id, queued, failure_category, lifecycle);
+                } else if !queued && registry.is_current(room_gen, lifecycle) {
                     enqueue(
                         &events,
                         json!({
@@ -1713,7 +1718,9 @@ impl TimelineRegistry {
                     client.clone(), &room_id, &thread_root_id, watcher, lifecycle,
                 );
             }
-            if !sent && registry.thread_current(thread_gen, lifecycle) {
+            if op_id != 0 {
+                registry.report_queued(&room_id, op_id, sent, failure_category, lifecycle);
+            } else if !sent && registry.thread_current(thread_gen, lifecycle) {
                 enqueue(
                     &events,
                     json!({
@@ -1745,7 +1752,7 @@ impl TimelineRegistry {
         );
         self.send_content_to_timeline(
             runtime, client, room_id, thread_root_id, content,
-            "poll_response_rejected",
+            "poll_response_rejected", 0,
         )
     }
 
@@ -1764,7 +1771,7 @@ impl TimelineRegistry {
         );
         self.send_content_to_timeline(
             runtime, client, room_id, thread_root_id, content,
-            "poll_end_rejected",
+            "poll_end_rejected", 0,
         )
     }
 
@@ -1778,6 +1785,7 @@ impl TimelineRegistry {
         answers: Vec<String>,
         undisclosed: bool,
         max_selections: u64,
+        op_id: u64,
     ) -> Result<(), String> {
         let content = build_poll_start_content(
             &question, &answers, undisclosed, max_selections,
@@ -1787,7 +1795,7 @@ impl TimelineRegistry {
             AnyMessageLikeEventContent::UnstablePollStart(
                 UnstablePollStartEventContent::New(content),
             ),
-            "poll_create_rejected",
+            "poll_create_rejected", op_id,
         )
     }
 
@@ -2593,6 +2601,27 @@ impl TimelineRegistry {
                 Some(room), room_id, handle.map(Some), updates, op_id, lifecycle,
             );
         });
+    }
+
+    fn report_queued(
+        &self,
+        room_id: &str,
+        op_id: u64,
+        queued: bool,
+        failure_category: &str,
+        lifecycle: u64,
+    ) {
+        if !self.lifecycle_current(lifecycle) {
+            return;
+        }
+        enqueue(
+            &self.events,
+            json!({
+                "type": "acked_send_result", "lifecycle": lifecycle,
+                "op_id": op_id, "room_id": room_id, "ok": queued,
+                "category": if queued { "" } else { failure_category },
+            }),
+        );
     }
 
     /// `acked_send_result {op_id, room_id, ok, category}`; category `pending`
@@ -10396,6 +10425,76 @@ mod thread_list_tally_tests {
     fn the_root_senders_avatar_is_reported() {
         let json = thread_list_item_to_json(&item(0, None));
         assert_eq!(json["root_sender_avatar_url"], "mxc://example.org/bo");
+    }
+}
+
+#[cfg(test)]
+mod poll_queue_tests {
+    use super::{ActiveTimeline, TimelineRegistry};
+    use matrix_sdk::ruma::room_id;
+    use matrix_sdk::test_utils::mocks::MatrixMockServer;
+    use matrix_sdk_ui::timeline::TimelineBuilder;
+    use serde_json::Value;
+    use std::collections::VecDeque;
+    use std::sync::atomic::AtomicBool;
+    use std::sync::{Arc, Mutex};
+    use std::time::{Duration, Instant};
+
+    const ROOM: &str = "!poll:localhost";
+
+    fn of_type(events: &Mutex<VecDeque<Value>>, kind: &str) -> Vec<Value> {
+        events.lock().unwrap().iter().filter(|e| e["type"] == kind).cloned().collect()
+    }
+
+    #[test]
+    fn a_poll_is_answered_once_the_send_queue_holds_it() {
+        let runtime = tokio::runtime::Builder::new_multi_thread()
+            .worker_threads(2)
+            .enable_all()
+            .build()
+            .expect("runtime");
+        let (_server, client, timeline) = runtime.block_on(async {
+            let server = MatrixMockServer::new().await;
+            let client = server.client_builder().build().await;
+            client.event_cache().subscribe().unwrap();
+            let room = server.sync_joined_room(&client, room_id!("!poll:localhost")).await;
+            server.mock_room_state_encryption().plain().mount().await;
+            room.latest_encryption_state().await.unwrap();
+            let timeline = TimelineBuilder::new(&room).build().await.expect("timeline");
+            (server, client, Arc::new(timeline))
+        });
+        let events = Arc::new(Mutex::new(VecDeque::new()));
+        let registry = Arc::new(TimelineRegistry::new(Arc::clone(&events)));
+        let send = |op_id: u64| {
+            registry.send_poll_start(
+                &runtime, client.clone(), ROOM.to_owned(), String::new(),
+                "Lunch?".to_owned(), vec!["red".to_owned(), "blue".to_owned()],
+                false, 1, op_id,
+            )
+        };
+        assert!(send(7).is_err(), "no live timeline must refuse before any queue");
+
+        *registry.active.lock().unwrap() = Some(ActiveTimeline {
+            room_id: ROOM.to_owned(),
+            room_gen: 0,
+            timeline: Some(timeline),
+            task: None,
+            pagination_busy: Arc::new(AtomicBool::new(false)),
+            reached_start: Arc::new(AtomicBool::new(false)),
+        });
+        send(7).expect("a live timeline takes the poll");
+        let deadline = Instant::now() + Duration::from_secs(10);
+        while of_type(&events, "acked_send_result").is_empty() {
+            assert!(Instant::now() < deadline, "the poll was never answered");
+            std::thread::sleep(Duration::from_millis(20));
+        }
+        let acked = of_type(&events, "acked_send_result");
+        assert_eq!(acked.len(), 1);
+        assert_eq!(acked[0]["op_id"], 7);
+        assert_eq!(acked[0]["ok"], true);
+        assert_eq!(acked[0]["room_id"], ROOM);
+        assert!(of_type(&events, "timeline_send_failed").is_empty());
+        registry.shutdown(&runtime);
     }
 }
 

@@ -36,6 +36,8 @@ Dialog {
         undisclosedSwitch.checked = false
         multipleSwitch.checked = false
         answerRevision = 0
+        sending = false
+        sendFailed = false
     }
     function answerTexts() {
         var texts = []
@@ -52,14 +54,26 @@ Dialog {
                && answerTexts().length >= 2
     }
 
+    // The draft is retired only once the send queue holds the poll.
+    property bool sending: false
+    property bool sendFailed: false
     function submit() {
-        if (!formValid) return
+        if (!formValid || sending) return
         var answers = answerTexts()
-        app.composer.createPoll(
+        sendFailed = !app.composer.createPoll(
             questionField.text.trim(), answers,
             undisclosedSwitch.checked,
             multipleSwitch.checked ? answers.length : 1)
-        close()
+        sending = !sendFailed
+    }
+    Connections {
+        target: app.composer
+        function onPollCreateFinished(ok) {
+            if (!root.sending) return
+            root.sending = false
+            if (ok) root.close()
+            else root.sendFailed = true
+        }
     }
 
     readonly property bool dirty: {
@@ -530,6 +544,16 @@ Dialog {
             }
         }
 
+        Label {
+            objectName: "pollSendError"
+            Layout.fillWidth: true
+            visible: root.sendFailed
+            text: qsTr("The poll was not sent. Your question and answers are "
+                       + "still here, so you can try again.")
+            color: AppTheme.stormDanger
+            wrapMode: Text.Wrap
+        }
+
         RowLayout {
             Layout.fillWidth: true
             Layout.topMargin: AppTheme.spacing8
@@ -546,7 +570,7 @@ Dialog {
                 objectName: "createPollSubmitButton"
                 kind: "primary"
                 text: qsTr("Send poll")
-                enabled: root.formValid
+                enabled: root.formValid && !root.sending
                 Accessible.name: qsTr("Send poll")
                 onClicked: root.submit()
             }

@@ -165,6 +165,7 @@ void MessageComposer::setClient(MatrixClient *client)
     m_imagePrep.releaseAll();
     m_client = client;
     m_slashJoinOp = 0;
+    m_pendingPollOp = 0;
     ++m_dropGeneration;
     m_attachments->setClient(client);
     if (m_client) {
@@ -181,6 +182,17 @@ void MessageComposer::setClient(MatrixClient *client)
                 });
         connect(m_client, &MatrixClient::attachmentQueueFinished,
                 this, &MessageComposer::onAttachmentQueueFinished);
+        connect(m_client, &MatrixClient::roomSendFinished, this,
+                [this](quint64 opId, const QString &, bool ok, const QString &) {
+                    if (opId == 0 || opId != m_pendingPollOp)
+                        return;
+                    m_pendingPollOp = 0;
+                    Q_EMIT pollCreateFinished(ok);
+                });
+        connect(m_client, &MatrixClient::sendsAbandoned, this, [this] {
+            if (std::exchange(m_pendingPollOp, 0) != 0)
+                Q_EMIT pollCreateFinished(false);
+        });
         connect(m_client, &MatrixClient::messageEditsRemoved, this,
                 [this](const QString &roomId, const QString &eventId, bool ok,
                        int removed, int failed, bool truncated) {
@@ -191,6 +203,7 @@ void MessageComposer::setClient(MatrixClient *client)
                 });
         connect(m_client, &MatrixClient::loggedOut, this, [this] {
             ++m_dropGeneration;
+            m_pendingPollOp = 0;
             m_imagePrep.releaseAll();
             discardAllAttachments();
             // Unresolved voice recordings must not outlive the session on disk.
@@ -832,6 +845,7 @@ void MessageComposer::setRoomId(const QString &r)
     m_draftDebounce.stop();
     m_roomId = r;
     m_slashJoinOp = 0;
+    m_pendingPollOp = 0;
     m_text.clear();
     m_mentionRefs.clear();
     restoreDraft();
@@ -2122,14 +2136,17 @@ void MessageComposer::endPoll(const QString &pollEventId,
     m_client->endPoll(m_roomId, threadRootId, pollEventId);
 }
 
-void MessageComposer::createPoll(const QString &question,
+bool MessageComposer::createPoll(const QString &question,
                                  const QStringList &answers,
                                  bool undisclosed,
                                  int maxSelections)
 {
-    if (!m_client || m_roomId.isEmpty()) return;
-    m_client->createPoll(m_roomId, sendThreadRootId(), question, answers,
-                         undisclosed, maxSelections);
+    if (!m_client || m_roomId.isEmpty() || m_pendingPollOp != 0)
+        return false;
+    m_pendingPollOp = m_client->createPoll(m_roomId, sendThreadRootId(),
+                                           question, answers, undisclosed,
+                                           maxSelections);
+    return m_pendingPollOp != 0;
 }
 
 void MessageComposer::sendImageFromPath(const QString &localPath)

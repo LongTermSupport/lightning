@@ -218,7 +218,9 @@ public:
                               const QString &threadRootId = QString());
     Q_INVOKABLE void endPoll(const QString &pollEventId,
                              const QString &threadRootId = QString());
-    Q_INVOKABLE void createPoll(const QString &question,
+    // True once the backend took the request; pollCreateFinished then says
+    // whether its send queue holds the poll.
+    Q_INVOKABLE bool createPoll(const QString &question,
                                 const QStringList &answers,
                                 bool undisclosed,
                                 int maxSelections);
@@ -279,6 +281,7 @@ Q_SIGNALS:
     void attachmentRejected(const QString &reason);
     void droppedAttachmentsResolved();
     void ownMessageSent();
+    void pollCreateFinished(bool ok);
 
 public:
     void setTypingNotificationsEnabled(bool enabled);
@@ -317,6 +320,7 @@ private:
     MatrixClient *m_client = nullptr;
     bool m_preparingForSchedule = false;
     quint64 m_slashJoinOp = 0;
+    quint64 m_pendingPollOp = 0;
     std::function<QString(const QString &)> m_emoticonResolver;
     std::function<void(const QVariantMap &)> m_customEmojiUseRecorder;
     std::function<QVariantList(const QString &, int)> m_emoticonSearch;
