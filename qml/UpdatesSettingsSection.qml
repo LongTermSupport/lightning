@@ -581,7 +581,7 @@ ColumnLayout {
                         // uncreatable non-singleton is not reliably reachable
                         // through the type name.
                         var explained = root.um.explainInstallError(
-                            root.um.lastUpdateError)
+                            root.um.lastUpdateError, root.um.lastUpdateBackupPath)
                         return explained.length > 0
                             ? explained
                             : qsTr("The last update could not be installed, and "

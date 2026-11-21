@@ -4962,6 +4962,16 @@ if(BUILD_TESTING)
     set_tests_properties(change-password-qml PROPERTIES
         ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
+    qt_add_executable(settings-backup-section-qml-test
+        tests/SettingsBackupSectionQmlTest.cpp
+        ${APP_LIB_SOURCES}
+    )
+    lightning_configure_qml_test(settings-backup-section-qml-test)
+    target_link_libraries(settings-backup-section-qml-test PRIVATE Qt6::Test)
+    add_test(NAME settings-backup-section-qml COMMAND settings-backup-section-qml-test)
+    set_tests_properties(settings-backup-section-qml PROPERTIES
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
     # Notifications page, account half: push-rule settings, the troubleshooter
     # and the real QML section against the real controller.
     qt_add_executable(push-rules-test

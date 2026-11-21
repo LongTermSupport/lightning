@@ -5,6 +5,7 @@
 #include "update/UpdateEndpoints.h"
 #include "update/SignatureVerifier.h"
 #include "updater/ArtifactDigest.h"
+#include "updater/AtomicReplace.h"
 
 #include <QCoreApplication>
 #include <QDir>
@@ -21,6 +22,7 @@
 #include <QStandardPaths>
 #include <QTemporaryFile>
 
+#include <algorithm>
 #include <optional>
 
 #ifdef Q_OS_WIN
@@ -587,6 +589,7 @@ void UpdateManager::consumeUpdateStatusFile()
     LastResult result = NoResult;
     QString mode;
     QString error;
+    QString backupPath;
 
     QFile file(path);
     if (file.open(QIODevice::ReadOnly)) {
@@ -602,6 +605,17 @@ void UpdateManager::consumeUpdateStatusFile()
                     result = okValue.toBool() ? InstallSucceeded : InstallFailed;
                     mode = sanitizedStatusToken(object.value(QLatin1String("mode")));
                     error = sanitizedStatusToken(object.value(QLatin1String("error")));
+                    // Only ever a recovery folder beside this installation.
+                    const QString reported = object.value(QLatin1String("backupPath")).toString();
+                    if ((error == QLatin1String("rollback-failed")
+                         || error == QLatin1String("restore-incomplete"))
+                        && std::none_of(reported.cbegin(), reported.cend(),
+                                        [](QChar c) {
+                                            return c.unicode() < 0x20 || c.unicode() == 0x7F;
+                                        })
+                        && updater::isPortableRecoveryPath(
+                            QCoreApplication::applicationDirPath(), reported))
+                        backupPath = reported;
                 }
             }
         }
@@ -615,6 +629,7 @@ void UpdateManager::consumeUpdateStatusFile()
     m_lastUpdateResult = result;
     m_lastUpdateMode = mode;
     m_lastUpdateError = error;
+    m_lastUpdateBackupPath = backupPath;
     Q_EMIT lastUpdateResultChanged();
 }
 
@@ -627,6 +642,7 @@ void UpdateManager::clearLastUpdateResult()
     m_lastUpdateResult = NoResult;
     m_lastUpdateError.clear();
     m_lastUpdateMode.clear();
+    m_lastUpdateBackupPath.clear();
     Q_EMIT lastUpdateResultChanged();
 }
 
@@ -1031,7 +1047,7 @@ QString UpdateManager::helperProgramPath() const
     return QCoreApplication::applicationDirPath() + QLatin1Char('/') + name;
 }
 
-QString UpdateManager::explainInstallError(const QString &token)
+QString UpdateManager::explainInstallError(const QString &token, const QString &backupPath)
 {
     const QString key = token.trimmed().toLower();
     if (key.isEmpty())
@@ -1111,7 +1127,30 @@ QString UpdateManager::explainInstallError(const QString &token)
                   "one was restored. Nothing was lost.");
     }
 
+    if (key == QLatin1String("restore-incomplete")) {
+        if (!backupPath.isEmpty()) {
+            return tr("An earlier update could not put every file of the "
+                      "previous version back, so updating is paused. Those "
+                      "files are in %1. Move them back into the Lightning "
+                      "folder and delete that folder, or reinstall Lightning "
+                      "from the downloads page.")
+                .arg(QDir::toNativeSeparators(backupPath));
+        }
+        return tr("An earlier update could not put every file of the previous "
+                  "version back, so updating is paused. Reinstall Lightning "
+                  "from the downloads page.");
+    }
+
     if (key == QLatin1String("rollback-failed")) {
+        if (!backupPath.isEmpty()) {
+            return tr("The update failed and the previous version could not be "
+                      "fully restored. The files that were not put back are in "
+                      "%1. Move them back into the Lightning folder, or "
+                      "reinstall Lightning from the downloads page. Your "
+                      "messages and account are on the server and are not "
+                      "affected.")
+                .arg(QDir::toNativeSeparators(backupPath));
+        }
         return tr("The update failed and the previous version could not be "
                   "fully restored. Please reinstall Lightning from the "
                   "downloads page. Your messages and account are on the "

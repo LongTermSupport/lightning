@@ -82,6 +82,8 @@ private Q_SLOTS:
                  "a stale success/failure must be dismissible for good");
         QVERIFY2(block.contains(QStringLiteral("explainInstallError")),
                  "the failure must be explained, not shown as its enum token");
+        QVERIFY2(block.contains(QStringLiteral("lastUpdateBackupPath")),
+                 "a failed rollback must name the folder to restore from");
         QVERIFY2(block.contains(QStringLiteral("updateLastResultCode")),
                  "the token must still be shown separately, for reporting");
     }

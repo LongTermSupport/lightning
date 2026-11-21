@@ -16,6 +16,7 @@ ColumnLayout {
     readonly property bool previewHasChanges:
         (backup.preview.changes ? backup.preview.changes.length : 0) > 0 || previewHasExtras
     readonly property bool syncAvailable: !!sync && sync.supported
+    readonly property bool previewActiveThemeDropped: !!backup.preview.activeThemeDropped
     property var preview: ({})
     property string notice: ""
     property bool noticeIsError: false
@@ -337,6 +338,17 @@ ColumnLayout {
                 font.pixelSize: AppTheme.textMeta
                 text: qsTr("This file was made by a newer Lightning. The settings "
                            + "this version knows are read; the rest are ignored.")
+            }
+            Label {
+                objectName: "importPreviewActiveThemeDropped"
+                Layout.fillWidth: true
+                visible: backup.previewActiveThemeDropped
+                wrapMode: Text.WordWrap
+                textFormat: Text.PlainText
+                color: AppTheme.stormTextMuted
+                font.pixelSize: AppTheme.textMeta
+                text: qsTr("The active custom theme in this file could not be "
+                           + "imported, so your current custom theme stays selected.")
             }
             ListView {
                 objectName: "importPreviewList"

@@ -63,6 +63,7 @@ class UpdateManager : public QObject
     Q_PROPERTY(LastResult lastUpdateResult READ lastUpdateResult NOTIFY lastUpdateResultChanged)
     Q_PROPERTY(QString lastUpdateError READ lastUpdateError NOTIFY lastUpdateResultChanged)
     Q_PROPERTY(QString lastUpdateMode READ lastUpdateMode NOTIFY lastUpdateResultChanged)
+    Q_PROPERTY(QString lastUpdateBackupPath READ lastUpdateBackupPath NOTIFY lastUpdateResultChanged)
 
 public:
     enum State {
@@ -122,6 +123,7 @@ public:
     LastResult lastUpdateResult() const { return m_lastUpdateResult; }
     QString lastUpdateError() const { return m_lastUpdateError; }
     QString lastUpdateMode() const { return m_lastUpdateMode; }
+    QString lastUpdateBackupPath() const { return m_lastUpdateBackupPath; }
 
     Q_INVOKABLE void checkForUpdates();
     Q_INVOKABLE void downloadUpdate();
@@ -225,7 +227,8 @@ public:
     static QStringList helperRuntimeLibraries();
     static QStringList helperRuntimeLibraryStems();
 
-    Q_INVOKABLE static QString explainInstallError(const QString &token);
+    Q_INVOKABLE static QString explainInstallError(const QString &token,
+                                                   const QString &backupPath = QString());
 
 private:
     QString installTargetPath() const;
@@ -269,6 +272,7 @@ private:
     LastResult m_lastUpdateResult = NoResult;
     QString m_lastUpdateError;
     QString m_lastUpdateMode;
+    QString m_lastUpdateBackupPath;
 
     InstallDetection m_detection;
     CompiledTrustStore m_compiledTrust;
