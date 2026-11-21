@@ -1033,7 +1033,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7354"/>
+        <location filename="../src/app/AppController.cpp" line="+7358"/>
         <source>Room invitation</source>
         <translation>রুমের আমন্ত্রণ</translation>
     </message>
@@ -1154,7 +1154,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>আগত কল</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5705"/>
+        <location filename="../src/app/AppController.cpp" line="-5709"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>অ্যাকাউন্ট বদলে যাওয়ায় সাইন আউট বাতিল হয়েছে। কিছুই রিসেট হয়নি।</translation>
     </message>
@@ -1184,7 +1184,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>রুম তৈরি হয়েছে, তবে এর ছবি সেট করা যায়নি।</translation>
     </message>
     <message>
-        <location line="+104"/>
+        <location line="+108"/>
         <source>Could not switch accounts — returning to the previous account.</source>
         <translation>অ্যাকাউন্ট পাল্টানো যায়নি — আগের অ্যাকাউন্টে ফিরে যাওয়া হচ্ছে।</translation>
     </message>
@@ -1310,13 +1310,13 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>YYYY-MM-DD ফরম্যাটে প্রকৃত তারিখ দিন; “শুরু” তারিখ “শেষ” তারিখের পরে হতে পারবে না।</translation>
     </message>
     <message>
-        <location line="-4761"/>
-        <location line="+2699"/>
+        <location line="-4765"/>
+        <location line="+2703"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
     <message>
-        <location line="-2698"/>
+        <location line="-2702"/>
         <source>This is a test notification. If you can read it, desktop notifications work.</source>
         <translation>এটি একটি পরীক্ষামূলক বিজ্ঞপ্তি। এটি পড়তে পারলে ডেস্কটপ বিজ্ঞপ্তি কাজ করছে।</translation>
     </message>
@@ -1341,7 +1341,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>%1-এ যোগ দিয়েছেন</translation>
     </message>
     <message>
-        <location line="+854"/>
+        <location line="+858"/>
         <source>That notification was for a different account, so nothing was sent. Switch back to that account and try again.</source>
         <translation>ওই বিজ্ঞপ্তিটি অন্য একটি অ্যাকাউন্টের ছিল, তাই কিছু পাঠানো হয়নি। ওই অ্যাকাউন্টে ফিরে গিয়ে আবার চেষ্টা করুন।</translation>
     </message>
@@ -8663,7 +8663,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+83"/>
+        <location filename="../src/app/ForwardController.cpp" line="+96"/>
         <source>Photo</source>
         <translation>ছবি</translation>
     </message>
@@ -8712,7 +8712,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="-11"/>
-        <location line="+73"/>
+        <location line="+78"/>
         <source>Locations can&apos;t be forwarded yet.</source>
         <translation>লোকেশন এখনও ফরওয়ার্ড করা যায় না।</translation>
     </message>
@@ -8722,7 +8722,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>আপনি একসাথে সর্বোচ্চ %1টি বার্তা ফরওয়ার্ড করতে পারেন।</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+30"/>
         <source>Nothing was selected to forward.</source>
         <translation>ফরওয়ার্ড করার জন্য কিছু বাছা হয়নি।</translation>
     </message>
@@ -8737,7 +8737,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1 থেকে ফরওয়ার্ড করা</translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+94"/>
         <source>Not signed in.</source>
         <translation>সাইন ইন করা নেই।</translation>
     </message>
@@ -8752,7 +8752,13 @@ Signing out and signing in again is the only fix.</source>
         <translation>পাঠানোর মতো কিছু নেই।</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+13"/>
+        <location line="+210"/>
+        <source>Couldn&apos;t send to this room.</source>
+        <translation>এই রুমে পাঠানো যায়নি।</translation>
+    </message>
+    <message>
+        <location line="-158"/>
         <source>Media isn&apos;t available right now.</source>
         <translation>মিডিয়া এই মুহূর্তে উপলব্ধ নয়।</translation>
     </message>
@@ -8777,7 +8783,13 @@ Signing out and signing in again is the only fix.</source>
         <translation>এই স্পয়লারটি তার আবরণসহ ফরোয়ার্ড করা যায় না।</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+90"/>
+        <source>You can&apos;t send messages in that room.</source>
+        <translation>আপনি ওই রুমে বার্তা পাঠাতে পারবেন না।</translation>
+    </message>
+    <message>
+        <location line="-173"/>
+        <location line="+105"/>
         <source>Couldn&apos;t forward this message.</source>
         <translation>এই বার্তাটি ফরওয়ার্ড করা যায়নি।</translation>
     </message>
@@ -8881,15 +8893,20 @@ Signing out and signing in again is the only fix.</source>
         <translation>%2-এর মধ্যে %1 পাঠানো হচ্ছে…</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Sent %n copy(ies).</source>
         <translation>
             <numerusform>%nটি কপি পাঠানো হয়েছে।</numerusform>
             <numerusform>%nটি কপি পাঠানো হয়েছে।</numerusform>
         </translation>
     </message>
+    <message>
+        <location line="+3"/>
+        <source>%1 of %2 sent.</source>
+        <translation>%2টির মধ্যে %1টি পাঠানো হয়েছে।</translation>
+    </message>
     <message numerus="yes">
-        <location line="+2"/>
+        <location line="+4"/>
         <source>%1 of %2 sent — %n failed.</source>
         <translation>
             <numerusform>%2-এর মধ্যে %1 পাঠানো হয়েছে — %nটি ব্যর্থ।</numerusform>
@@ -8897,7 +8914,15 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+29"/>
+        <location line="+13"/>
+        <source>%n copy(ies) not confirmed — check the room before sending again.</source>
+        <translation>
+            <numerusform>%nটি কপি নিশ্চিত হয়নি — আবার পাঠানোর আগে রুমটি দেখে নিন।</numerusform>
+            <numerusform>%nটি কপি নিশ্চিত হয়নি — আবার পাঠানোর আগে রুমটি দেখে নিন।</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+27"/>
         <source>%n room(s) selected</source>
         <translation>
             <numerusform>%n টি রুম নির্বাচিত</numerusform>
@@ -19833,7 +19858,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+41"/>
-        <location line="+960"/>
+        <location line="+961"/>
         <source>Failed to create Rust SDK backend handle.</source>
         <translation>Rust SDK ব্যাকএন্ড হ্যান্ডেল তৈরি ব্যর্থ হয়েছে।</translation>
     </message>
@@ -20161,7 +20186,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>ভোটের কাজ সম্পন্ন করা যায়নি।</translation>
     </message>
     <message>
-        <location line="-6526"/>
+        <location line="-6527"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>এই অ্যাকাউন্টের ডেটা এখনও একটি ব্যাকগ্রাউন্ড সেশনে ব্যবহৃত হচ্ছে। একটু অপেক্ষা করে আবার চেষ্টা করুন।</translation>
     </message>
@@ -20176,7 +20201,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>এই অ্যাকাউন্টের নেটওয়ার্ক রুট প্রয়োগ করা যায়নি, তাই Lightning এটি সরাসরি সংযুক্ত করবে না। সেটিংসে প্রক্সি পরীক্ষা করুন।</translation>
     </message>
     <message>
-        <location line="+593"/>
+        <location line="+594"/>
         <source>Enter your username.</source>
         <translation>আপনার ব্যবহারকারীর নাম দিন।</translation>
     </message>

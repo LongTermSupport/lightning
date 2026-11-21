@@ -1043,7 +1043,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7354"/>
+        <location filename="../src/app/AppController.cpp" line="+7358"/>
         <source>Room invitation</source>
         <translation>Приглашение в комнату</translation>
     </message>
@@ -1165,7 +1165,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>Входящий вызов</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5705"/>
+        <location filename="../src/app/AppController.cpp" line="-5709"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>Выход отменён, потому что учётная запись изменилась. Ничего не сброшено.</translation>
     </message>
@@ -1195,7 +1195,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>Комната создана, но установить её изображение не удалось.</translation>
     </message>
     <message>
-        <location line="+104"/>
+        <location line="+108"/>
         <source>Could not switch accounts — returning to the previous account.</source>
         <translation>Не удалось переключить учётную запись — возврат к предыдущей.</translation>
     </message>
@@ -1321,13 +1321,13 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>Используйте реальные даты в формате YYYY-MM-DD; дата «С» не должна быть позже даты «По».</translation>
     </message>
     <message>
-        <location line="-4761"/>
-        <location line="+2699"/>
+        <location line="-4765"/>
+        <location line="+2703"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
     <message>
-        <location line="-2698"/>
+        <location line="-2702"/>
         <source>This is a test notification. If you can read it, desktop notifications work.</source>
         <translation>Это тестовое уведомление. Если вы его видите, уведомления на рабочем столе работают.</translation>
     </message>
@@ -1352,7 +1352,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>Вы вступили в %1</translation>
     </message>
     <message>
-        <location line="+854"/>
+        <location line="+858"/>
         <source>That notification was for a different account, so nothing was sent. Switch back to that account and try again.</source>
         <translation>Это уведомление относилось к другой учётной записи, поэтому ничего не отправлено. Переключитесь обратно на эту учётную запись и повторите попытку.</translation>
     </message>
@@ -8697,7 +8697,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+83"/>
+        <location filename="../src/app/ForwardController.cpp" line="+96"/>
         <source>Photo</source>
         <translation>Фото</translation>
     </message>
@@ -8746,7 +8746,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="-11"/>
-        <location line="+73"/>
+        <location line="+78"/>
         <source>Locations can&apos;t be forwarded yet.</source>
         <translation>Местоположения пока нельзя пересылать.</translation>
     </message>
@@ -8756,7 +8756,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Можно переслать не более %1 сообщений за раз.</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+30"/>
         <source>Nothing was selected to forward.</source>
         <translation>Для пересылки ничего не выбрано.</translation>
     </message>
@@ -8771,7 +8771,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Переслано из %1</translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+94"/>
         <source>Not signed in.</source>
         <translation>Вы не вошли в систему.</translation>
     </message>
@@ -8786,7 +8786,13 @@ Signing out and signing in again is the only fix.</source>
         <translation>Нечего отправлять.</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+13"/>
+        <location line="+210"/>
+        <source>Couldn&apos;t send to this room.</source>
+        <translation>Не удалось отправить в эту комнату.</translation>
+    </message>
+    <message>
+        <location line="-158"/>
         <source>Media isn&apos;t available right now.</source>
         <translation>Вложение сейчас недоступно.</translation>
     </message>
@@ -8811,7 +8817,13 @@ Signing out and signing in again is the only fix.</source>
         <translation>Этот спойлер нельзя переслать вместе с его обложкой.</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+90"/>
+        <source>You can&apos;t send messages in that room.</source>
+        <translation>Вы не можете отправлять сообщения в эту комнату.</translation>
+    </message>
+    <message>
+        <location line="-173"/>
+        <location line="+105"/>
         <source>Couldn&apos;t forward this message.</source>
         <translation>Не удалось переслать это сообщение.</translation>
     </message>
@@ -8916,7 +8928,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Отправка %1 из %2…</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Sent %n copy(ies).</source>
         <translation>
             <numerusform>Отправлена %n копия.</numerusform>
@@ -8924,8 +8936,13 @@ Signing out and signing in again is the only fix.</source>
             <numerusform>Отправлено %n копий.</numerusform>
         </translation>
     </message>
+    <message>
+        <location line="+3"/>
+        <source>%1 of %2 sent.</source>
+        <translation>Отправлено %1 из %2.</translation>
+    </message>
     <message numerus="yes">
-        <location line="+2"/>
+        <location line="+4"/>
         <source>%1 of %2 sent — %n failed.</source>
         <translation>
             <numerusform>Отправлено %1 из %2; ошибка: %n</numerusform>
@@ -8934,7 +8951,16 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+29"/>
+        <location line="+13"/>
+        <source>%n copy(ies) not confirmed — check the room before sending again.</source>
+        <translation>
+            <numerusform>%n копия не подтверждена — проверьте комнату, прежде чем отправлять снова.</numerusform>
+            <numerusform>%n копии не подтверждены — проверьте комнату, прежде чем отправлять снова.</numerusform>
+            <numerusform>%n копий не подтверждено — проверьте комнату, прежде чем отправлять снова.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+27"/>
         <source>%n room(s) selected</source>
         <translation>
             <numerusform>Выбрана %n комната</numerusform>
@@ -19912,7 +19938,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+41"/>
-        <location line="+960"/>
+        <location line="+961"/>
         <source>Failed to create Rust SDK backend handle.</source>
         <translation>Не удалось создать дескриптор бэкенда Rust SDK.</translation>
     </message>
@@ -20240,7 +20266,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Не удалось выполнить действие с опросом.</translation>
     </message>
     <message>
-        <location line="-6526"/>
+        <location line="-6527"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>Данные этой учётной записи всё ещё используются фоновым сеансом. Подождите немного и повторите попытку.</translation>
     </message>
@@ -20255,7 +20281,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Не удалось применить сетевой маршрут этой учётной записи, поэтому Lightning не будет подключать её напрямую. Проверьте прокси в настройках.</translation>
     </message>
     <message>
-        <location line="+593"/>
+        <location line="+594"/>
         <source>Enter your username.</source>
         <translation>Введите имя пользователя.</translation>
     </message>

@@ -1034,7 +1034,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     <name>AppController</name>
     <message>
         <location filename="../qml/LoginScreen.qml" line="+433"/>
-        <location filename="../src/app/AppController.cpp" line="+6391"/>
+        <location filename="../src/app/AppController.cpp" line="+6395"/>
         <location line="+25"/>
         <location line="+562"/>
         <location line="+454"/>
@@ -1042,13 +1042,13 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Lightning kann die gespeicherten Anmeldungen dieses Geräts gerade nicht lesen – der System-Schlüsselbund ist gesperrt oder nicht verfügbar. Entsperre ihn und versuche es erneut.</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-6832"/>
-        <location line="+2699"/>
+        <location filename="../src/app/AppController.cpp" line="-6836"/>
+        <location line="+2703"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
     <message>
-        <location line="-2698"/>
+        <location line="-2702"/>
         <source>This is a test notification. If you can read it, desktop notifications work.</source>
         <translation>Dies ist eine Testbenachrichtigung. Wenn du sie lesen kannst, funktionieren Desktop-Benachrichtigungen.</translation>
     </message>
@@ -1093,7 +1093,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>%1 beigetreten</translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+80"/>
         <source>Could not switch accounts — returning to the previous account.</source>
         <translation>Kontowechsel nicht möglich – es wird zum vorherigen Konto zurückgekehrt.</translation>
     </message>
@@ -8663,7 +8663,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+83"/>
+        <location filename="../src/app/ForwardController.cpp" line="+96"/>
         <source>Photo</source>
         <translation>Foto</translation>
     </message>
@@ -8712,7 +8712,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="-11"/>
-        <location line="+73"/>
+        <location line="+78"/>
         <source>Locations can&apos;t be forwarded yet.</source>
         <translation>Standorte können noch nicht weitergeleitet werden.</translation>
     </message>
@@ -8722,7 +8722,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Du kannst bis zu %1 Nachrichten auf einmal weiterleiten.</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+30"/>
         <source>Nothing was selected to forward.</source>
         <translation>Es wurde nichts zum Weiterleiten ausgewählt.</translation>
     </message>
@@ -8737,7 +8737,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Weitergeleitet von %1</translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+94"/>
         <source>Not signed in.</source>
         <translation>Nicht angemeldet.</translation>
     </message>
@@ -8752,7 +8752,13 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Nichts zu senden.</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+13"/>
+        <location line="+210"/>
+        <source>Couldn&apos;t send to this room.</source>
+        <translation>Senden an diesen Raum fehlgeschlagen.</translation>
+    </message>
+    <message>
+        <location line="-158"/>
         <source>Media isn&apos;t available right now.</source>
         <translation>Medien sind gerade nicht verfügbar.</translation>
     </message>
@@ -8777,7 +8783,13 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Dieser Spoiler kann nicht mit seiner Abdeckung weitergeleitet werden.</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+90"/>
+        <source>You can&apos;t send messages in that room.</source>
+        <translation>Du kannst in diesem Raum keine Nachrichten senden.</translation>
+    </message>
+    <message>
+        <location line="-173"/>
+        <location line="+105"/>
         <source>Couldn&apos;t forward this message.</source>
         <translation>Diese Nachricht konnte nicht weitergeleitet werden.</translation>
     </message>
@@ -8881,15 +8893,20 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>%1 von %2 werden gesendet …</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Sent %n copy(ies).</source>
         <translation>
             <numerusform>%n Kopie gesendet.</numerusform>
             <numerusform>%n Kopien gesendet.</numerusform>
         </translation>
     </message>
+    <message>
+        <location line="+3"/>
+        <source>%1 of %2 sent.</source>
+        <translation>%1 von %2 gesendet.</translation>
+    </message>
     <message numerus="yes">
-        <location line="+2"/>
+        <location line="+4"/>
         <source>%1 of %2 sent — %n failed.</source>
         <translation>
             <numerusform>%1 von %2 gesendet – %n fehlgeschlagen.</numerusform>
@@ -8897,7 +8914,15 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+29"/>
+        <location line="+13"/>
+        <source>%n copy(ies) not confirmed — check the room before sending again.</source>
+        <translation>
+            <numerusform>%n Kopie nicht bestätigt – prüfe den Raum, bevor du erneut sendest.</numerusform>
+            <numerusform>%n Kopien nicht bestätigt – prüfe den Raum, bevor du erneut sendest.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+27"/>
         <source>%n room(s) selected</source>
         <translation>
             <numerusform>%n Raum ausgewählt</numerusform>
@@ -19888,17 +19913,17 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+41"/>
-        <location line="+960"/>
+        <location line="+961"/>
         <source>Failed to create Rust SDK backend handle.</source>
         <translation>Das Rust-SDK-Backend-Handle konnte nicht erstellt werden.</translation>
     </message>
     <message>
-        <location line="-921"/>
+        <location line="-922"/>
         <source>This account&apos;s network route could not be applied, so Lightning will not connect it directly. Check the proxy in Settings.</source>
         <translation>Die Netzwerkroute dieses Kontos konnte nicht angewendet werden, daher verbindet Lightning es nicht direkt. Prüfe den Proxy in den Einstellungen.</translation>
     </message>
     <message>
-        <location line="+591"/>
+        <location line="+592"/>
         <source>Enter a server, for example matrix.org.</source>
         <translation>Gib einen Server ein, zum Beispiel matrix.org.</translation>
     </message>
