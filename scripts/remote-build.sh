@@ -3,6 +3,7 @@
 # Needs ~/.config/lightning/gitlab-trigger and gitlab-com-token.
 # Usage: scripts/remote-build.sh [ref] [--test]; the binary lands in
 # build-remote/. --test also runs ctest and cargo test as parallel jobs; logs land there too.
+# NONRUST=1 also builds and tests the non-Rust tree (mock/HTTP backends).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 ref=${1:-main}
@@ -14,7 +15,7 @@ token=$(cat "$conf/gitlab-trigger")
 auth=$(mktemp)
 trap 'rm -f "$auth"' EXIT
 printf 'header = "PRIVATE-TOKEN: %s"\n' "$(tr -d '\r\n ' < "$conf/gitlab-com-token")" > "$auth"
-id=$(curl -fsS -X POST -F "token=$token" -F "ref=$ref" -F "variables[RUN_TESTS]=$tests" "$api/trigger/pipeline" |
+id=$(curl -fsS -X POST -F "token=$token" -F "ref=$ref" -F "variables[RUN_TESTS]=$tests" -F "variables[RUN_NONRUST]=${NONRUST:-0}" "$api/trigger/pipeline" |
     python3 -c 'import sys,json;print(json.load(sys.stdin)["id"])')
 echo "pipeline $id: https://gitlab.com/lightning-matrix/lightning/-/pipelines/$id"
 while :; do
@@ -37,6 +38,8 @@ while read -r job name state; do
     elif [ "$name" = test-nixos ]; then
         curl -fsSL -K "$auth" "$api/jobs/$job/artifacts/out/ctest.log" -o build-remote/ctest.log || true
         curl -fsSL -K "$auth" "$api/jobs/$job/trace" -o build-remote/test-job.log || true
+    elif [ "$name" = test-nonrust ]; then
+        curl -fsSL -K "$auth" "$api/jobs/$job/artifacts/out/ctest-nonrust.log" -o build-remote/ctest-nonrust.log || true
     elif [ "$name" = test-rust ]; then
         curl -fsSL -K "$auth" "$api/jobs/$job/artifacts/out/cargo.log" -o build-remote/cargo.log || true
     fi
