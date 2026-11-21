@@ -298,16 +298,6 @@ void goRunning(FakeClient &c)
     c.running = true;
     Q_EMIT c.homeserverReachable();
 }
-// Red proof only: lets these cases compile against a controller without the seam.
-template <typename T>
-void setRetryPolicy(T &scheduler, qint64 delayMs, int maxFailures)
-{
-    if constexpr (requires { scheduler.setRetryPolicy(delayMs, maxFailures); })
-        scheduler.setRetryPolicy(delayMs, maxFailures);
-    else
-        QFAIL("no retry policy seam");
-}
-
 void flap(FakeClient &c, int cycles)
 {
     for (int i = 0; i < cycles; ++i) {
@@ -1378,8 +1368,7 @@ private Q_SLOTS:
     void theRetryStateAndTransactionSurviveARestart()
     {
         Harness h;
-        const QString id = h.scheduler.schedule(
-            message(kPlain, QStringLiteral("kept")), nowMs() + 60);
+        h.scheduler.schedule(message(kPlain, QStringLiteral("kept")), nowMs() + 60);
         QTRY_COMPARE_WITH_TIMEOUT(h.client.roomSends.size(), 1, 3000);
         h.answerRoomSend(false, QStringLiteral("network"));
         const QVariantMap row = h.settings.scheduledSends().first().toMap();
@@ -1405,7 +1394,6 @@ private Q_SLOTS:
         next.answerRoomSend(false, QStringLiteral("network"));
         QCOMPARE(next.entry(QStringLiteral("restarted")).value(QStringLiteral("status"))
                      .toString(), QStringLiteral("failed"));
-        Q_UNUSED(id);
     }
 
     void aRoomWaitingToRetryHoldsItsLaterEntries()
@@ -1434,7 +1422,7 @@ private Q_SLOTS:
     void theRetryTimerFiresWithoutAReconnect()
     {
         Harness h;
-        setRetryPolicy(h.scheduler, 150, 5);
+        h.scheduler.setRetryPolicy(150, 5);
         h.scheduler.schedule(message(kPlain, QStringLiteral("again")), nowMs() + 60);
         QTRY_COMPARE_WITH_TIMEOUT(h.client.roomSends.size(), 1, 3000);
         h.answerRoomSend(false, QStringLiteral("rate_limited"));
@@ -1447,7 +1435,7 @@ private Q_SLOTS:
     void theLastAllowedTransientFailureTurnsFailed()
     {
         Harness h;
-        setRetryPolicy(h.scheduler, 50, 5);
+        h.scheduler.setRetryPolicy(50, 5);
         const QString id = h.scheduler.schedule(
             message(kPlain, QStringLiteral("unlucky")), nowMs() + 60);
         for (int attempt = 1; attempt <= 4; ++attempt) {

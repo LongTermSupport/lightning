@@ -11,8 +11,6 @@
 
 namespace {
 constexpr qint64 kMaxTimerMs = 24LL * 60 * 60 * 1000;
-constexpr qint64 kTransientRetryMs = 30 * 1000;
-constexpr int kMaxTransientFailures = 5;
 
 // The body keeps the composer's matrix.to links, so its mentions are exactly
 // the links still in it; "@room" is plain text and survives only while typed.
@@ -125,6 +123,7 @@ void ScheduledSendController::setClient(MatrixClient *client)
                         e.body = e.nextBody;
                         e.html = e.nextHtml;
                         e.mentionIds = e.nextMentionIds;
+                        e.txnId = QUuid::createUuid().toString(QUuid::WithoutBraces);
                     }
                     e.nextSendAtMs = -1;
                     e.hasNextText = false;
@@ -163,11 +162,18 @@ void ScheduledSendController::setClient(MatrixClient *client)
                 m_entries.removeAt(i);
             } else if ((category == QLatin1String("network")
                         || category == QLatin1String("rate_limited"))
-                       && ++e.transientFailures < kMaxTransientFailures) {
+                       && ++e.transientFailures < m_maxTransientFailures) {
                 e.status = QStringLiteral("pending");
-                e.retryAtMs = QDateTime::currentMSecsSinceEpoch() + kTransientRetryMs;
+                e.retryAtMs = QDateTime::currentMSecsSinceEpoch() + m_retryDelayMs;
                 e.error = tr("Not sent yet: the connection failed. Lightning "
                              "will try again.");
+            } else if (category == QLatin1String("network")
+                       || category == QLatin1String("rate_limited")
+                       || category == QLatin1String("unknown")) {
+                // It may have reached the room; saying "not sent" could be false.
+                e.status = QStringLiteral("failed");
+                e.error = tr("This message could not be sent. Check the room "
+                             "before sending it again.");
             } else {
                 e.status = QStringLiteral("failed");
                 e.error = tr("The room did not accept this message. It was "
@@ -227,6 +233,31 @@ QSet<QString> ScheduledSendController::roomsSending() const
         if (e.sendOp != 0 || e.prepareOp != 0)
             rooms.insert(e.roomId);
     return rooms;
+}
+
+// A room whose earliest overdue entry waits to retry holds its later entries,
+// so they never overtake it.
+QHash<QString, qint64> ScheduledSendController::roomHolds(qint64 now) const
+{
+    QHash<QString, const Entry *> first;
+    for (const Entry &e : m_entries) {
+        if (e.mode != QLatin1String("local") || e.status != QLatin1String("pending")
+            || e.sendAtMs > now)
+            continue;
+        const Entry *f = first.value(e.roomId);
+        if (!f || e.sendAtMs < f->sendAtMs)
+            first.insert(e.roomId, &e);
+    }
+    QHash<QString, qint64> holds;
+    for (auto it = first.cbegin(); it != first.cend(); ++it)
+        if (it.value()->retryAtMs > now)
+            holds.insert(it.key(), it.value()->retryAtMs);
+    return holds;
+}
+
+qint64 ScheduledSendController::dueAt(const Entry &e, const QHash<QString, qint64> &holds)
+{
+    return qMax(qMax(e.sendAtMs, e.retryAtMs), holds.value(e.roomId, 0));
 }
 
 bool ScheduledSendController::connected() const
@@ -374,6 +405,9 @@ void ScheduledSendController::persist()
         m.remove(QStringLiteral("busy"));
         m.remove(QStringLiteral("uploading"));
         m.insert(QStringLiteral("mentionIds"), e.mentionIds);
+        m.insert(QStringLiteral("txnId"), e.txnId);
+        m.insert(QStringLiteral("retryAtMs"), e.retryAtMs);
+        m.insert(QStringLiteral("transientFailures"), e.transientFailures);
         if (!e.content.isEmpty())
             m.insert(QStringLiteral("content"), e.content);
         rows.append(m);
@@ -406,6 +440,9 @@ void ScheduledSendController::load()
         e.delayId = m.value(QStringLiteral("delayId")).toString();
         e.mediaName = m.value(QStringLiteral("media")).toString();
         e.content = m.value(QStringLiteral("content")).toString();
+        e.txnId = m.value(QStringLiteral("txnId"), e.id).toString();
+        e.retryAtMs = m.value(QStringLiteral("retryAtMs")).toLongLong();
+        e.transientFailures = m.value(QStringLiteral("transientFailures")).toInt();
         if (e.id.isEmpty() || e.roomId.isEmpty()
             || (e.mediaName.isEmpty() ? e.body.isEmpty() : e.content.isEmpty()))
             continue;
@@ -445,6 +482,7 @@ ScheduledSendController::Entry ScheduledSendController::newEntry(
 {
     Entry e;
     e.id = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    e.txnId = e.id;
     e.roomId = roomId;
     e.threadRootId = threadRootId;
     e.replyToEventId = replyToEventId;
@@ -705,6 +743,10 @@ void ScheduledSendController::updateText(const QString &id, const QString &body,
     } else if (e->sendOp != 0) {
         return;
     }
+    if (e->body != trimmed || e->html != html || e->mentionIds != mentionIds) {
+        e->txnId = QUuid::createUuid().toString(QUuid::WithoutBraces);
+        e->transientFailures = 0;
+    }
     e->body = trimmed;
     e->html = html;
     e->mentionIds = mentionIds;
@@ -720,13 +762,14 @@ void ScheduledSendController::armTimer()
     const QSet<QString> sending = roomsSending();
     // Offline, local entries wait for the Syncing transition (fireDue), not a timer.
     const bool online = connected();
+    const QHash<QString, qint64> holds = roomHolds(now);
     for (const Entry &e : m_entries) {
         qint64 at = -1;
         if (e.prepareOp != 0 || (e.sendOp == 0 && sending.contains(e.roomId)))
             continue;
         if (online && e.mode == QLatin1String("local")
             && e.status == QLatin1String("pending"))
-            at = qMax(e.sendAtMs, e.retryAtMs);
+            at = dueAt(e, holds);
         else if (e.mode == QLatin1String("server") && !e.delayId.isEmpty()
                  && e.status == QLatin1String("pending"))
             at = e.sendAtMs + kServerRetireGraceMs;
@@ -765,12 +808,13 @@ void ScheduledSendController::fireDue()
     // order), so entries due together leave in the order the list shows.
     QSet<QString> sending = roomsSending();
     QSet<QString> tried;
+    const QHash<QString, qint64> holds = roomHolds(now);
     for (;;) {
         int next = -1;
         for (int i = 0; i < m_entries.size(); ++i) {
             const Entry &e = m_entries.at(i);
             if (e.mode == QLatin1String("local") && e.status == QLatin1String("pending")
-                && qMax(e.sendAtMs, e.retryAtMs) <= now && !sending.contains(e.roomId)
+                && dueAt(e, holds) <= now && !sending.contains(e.roomId)
                 && !tried.contains(e.id)
                 && (next < 0 || e.sendAtMs < m_entries.at(next).sendAtMs))
                 next = i;
@@ -804,7 +848,7 @@ void ScheduledSendController::dispatchLocal(Entry &e)
     persist();
     Q_EMIT pendingChanged();
     if (!e.content.isEmpty()) {
-        e.sendOp = m_client->sendRoomContent(e.roomId, e.content, e.id);
+        e.sendOp = m_client->sendRoomContent(e.roomId, e.content, e.txnId);
         if (e.sendOp == 0) {
             e.status = QStringLiteral("failed");
             e.error = tr("The attachment could not be sent.");
@@ -815,7 +859,7 @@ void ScheduledSendController::dispatchLocal(Entry &e)
     }
     const QVariantMap spec = bodySpecFor(e);
     const quint64 op = m_client->sendRoomMessage(e.roomId, e.body, spec, e.mentionIds,
-                                                 e.replyToEventId, e.threadRootId, e.id);
+                                                 e.replyToEventId, e.threadRootId, e.txnId);
     if (op != 0) {
         e.sendOp = op;
         return;

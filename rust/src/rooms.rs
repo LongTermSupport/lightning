@@ -80,6 +80,40 @@ pub(crate) fn classify_room_error(message: &str) -> &'static str {
     }
 }
 
+/// A room send's failure: "network" / "rate_limited" only when the request may
+/// not have got through (transport failure, timeout, 429, 5xx bar 520), so it is
+/// worth retrying; an unclassified refusal is "unknown", never "network".
+pub(crate) fn classify_send_error(err: &matrix_sdk::Error) -> &'static str {
+    let http = match err {
+        matrix_sdk::Error::Http(http) => match http.as_ref() {
+            matrix_sdk::HttpError::Cached(inner) => Some(inner.as_ref()),
+            other => Some(other),
+        },
+        matrix_sdk::Error::ConcurrentRequestFailed | matrix_sdk::Error::Timeout => {
+            return "network"
+        }
+        _ => None,
+    };
+    if let Some(http) = http {
+        if matches!(http, matrix_sdk::HttpError::Reqwest(_)) {
+            return "network";
+        }
+        if let Some(api) = http.as_client_api_error() {
+            let code = api.status_code.as_u16();
+            if code == 429 {
+                return "rate_limited";
+            }
+            if api.status_code.is_server_error() && code != 520 {
+                return "network";
+            }
+        }
+    }
+    match classify_room_error(&err.to_string()) {
+        "network" | "rate_limited" => "unknown",
+        other => other,
+    }
+}
+
 pub(crate) fn sniff_image_mime(bytes: &[u8]) -> Option<&'static str> {
     if bytes.len() < 12 {
         return None;
@@ -4724,7 +4758,7 @@ pub(crate) fn send_room_content(
             Err(err) => json!({
                 "type": "room_send_result", "lifecycle": lifecycle,
                 "op_id": op_id, "room_id": room_id, "ok": false,
-                "category": classify_room_error(&err.to_string()),
+                "category": classify_send_error(&err),
             }),
         });
     });
@@ -6862,6 +6896,36 @@ mod tests {
         assert_eq!(classify_room_error("connection reset by peer"), "network");
     }
 
+    fn send_error(status: u16, kind: matrix_sdk::ruma::api::error::ErrorKind) -> matrix_sdk::Error {
+        use matrix_sdk::ruma::api::error::{
+            Error as ApiError, ErrorBody, FromHttpResponseError, StandardErrorBody,
+        };
+        let api = ApiError::new(
+            matrix_sdk::reqwest::StatusCode::from_u16(status).unwrap(),
+            ErrorBody::Standard(StandardErrorBody::new(kind, "refused".to_owned())),
+        );
+        matrix_sdk::HttpError::from(FromHttpResponseError::Server(
+            matrix_sdk::RumaApiError::MatrixError(api),
+        ))
+        .into()
+    }
+
+    #[test]
+    fn only_a_send_that_may_not_have_got_through_is_retryable() {
+        use matrix_sdk::ruma::api::error::ErrorKind;
+        assert_eq!(classify_send_error(&matrix_sdk::Error::Timeout), "network");
+        assert_eq!(classify_send_error(&matrix_sdk::Error::ConcurrentRequestFailed), "network");
+        assert_eq!(classify_send_error(&send_error(502, ErrorKind::Unknown)), "network");
+        assert_eq!(classify_send_error(&send_error(520, ErrorKind::Unknown)), "unknown");
+        assert_eq!(
+            classify_send_error(&send_error(429, ErrorKind::LimitExceeded(Default::default()))),
+            "rate_limited");
+        assert_eq!(classify_send_error(&send_error(403, ErrorKind::Forbidden)), "forbidden");
+        assert_eq!(classify_send_error(&send_error(413, ErrorKind::TooLarge)), "unknown");
+        assert_eq!(classify_send_error(&send_error(400, ErrorKind::BadJson)), "unknown");
+        assert_eq!(classify_send_error(&matrix_sdk::Error::InsufficientData), "unknown");
+    }
+
     #[test]
     fn sniff_image_mime_by_magic_bytes() {
         let mut png = vec![0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A];
@@ -7175,7 +7239,7 @@ pub(crate) fn send_room_message(
             Err(err) => enqueue(&events, json!({
                 "type": "room_send_result", "lifecycle": lifecycle,
                 "op_id": op_id, "room_id": room_id, "ok": false,
-                "category": classify_room_error(&err.to_string()),
+                "category": classify_send_error(&err),
             })),
         }
     });
