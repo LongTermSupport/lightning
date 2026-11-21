@@ -30,7 +30,7 @@ pub(crate) fn parse(event: &Value) -> Option<Replacement<'_>> {
     Some(Replacement {
         event_id: event.get("event_id")?.as_str()?,
         sender: event.get("sender")?.as_str()?,
-        ts: event.get("origin_server_ts")?.as_u64()?,
+        ts: event.get("origin_server_ts").and_then(Value::as_u64).unwrap_or(0),
         target: content
             .pointer("/m.relates_to/event_id")?
             .as_str()
