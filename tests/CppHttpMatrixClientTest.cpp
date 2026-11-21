@@ -395,6 +395,96 @@ private Q_SLOTS:
         QVERIFY(restoreAs(settings, client, kBob, QStringLiteral("tokB")));
         QVERIFY(settings.hasSession());
     }
+
+    void aTransientRestoreFailureKeepsTheSession_data()
+    {
+        QTest::addColumn<int>("status");
+        QTest::addColumn<QByteArray>("body");
+        QTest::addColumn<bool>("unreachable");
+        QTest::newRow("unreachable") << 0 << QByteArray() << true;
+        QTest::newRow("server-error") << 500 << QByteArray(R"({"errcode":"M_UNKNOWN"})") << false;
+        QTest::newRow("malformed") << 200 << QByteArray("<html>gateway</html>") << false;
+        QTest::newRow("proxy-401") << 401 << QByteArray("denied") << false;
+    }
+
+    void aTransientRestoreFailureKeepsTheSession()
+    {
+        QFETCH(int, status);
+        QFETCH(QByteArray, body);
+        QFETCH(bool, unreachable);
+        SettingsManager settings;
+        QString url = m_url;
+        if (unreachable) {
+            QTcpServer closed;
+            QVERIFY(closed.listen(QHostAddress::LocalHost, 0));
+            url = QStringLiteral("http://127.0.0.1:%1").arg(closed.serverPort());
+        }
+        QVERIFY(settings.saveSession(url, kAlice, QStringLiteral("DEV"),
+                                     QStringLiteral("tokA")));
+        {
+            CacheStore cache;
+            QVERIFY(cache.openFor(kAlice));
+            RoomInfo room;
+            room.id = kRoom;
+            room.name = QStringLiteral("Cached");
+            cache.saveRoom(room);
+            TimelineEvent e;
+            e.eventId = QStringLiteral("$cached");
+            e.roomId = kRoom;
+            e.sender = kAlice;
+            e.body = QStringLiteral("kept");
+            e.type = TimelineEvent::TextMessage;
+            cache.appendEvent(e);
+            cache.close();
+        }
+        m_server->whoami = [status, body](QTcpSocket *socket, const Request &) {
+            FakeHomeserver::reply(socket, status, body);
+        };
+
+        CppHttpMatrixClient client(&settings);
+        QSignalSpy succeeded(&client, &MatrixClient::loginSucceeded);
+        QSignalSpy failed(&client, &MatrixClient::loginFailed);
+        QVERIFY(client.restoreSession());
+        QVERIFY(succeeded.wait(10000));
+        QCOMPARE(failed.count(), 0);
+        QVERIFY(client.isLoggedIn());
+        QCOMPARE(client.currentUserId(), kAlice);
+        QVERIFY(settings.hasSession());
+        QCOMPARE(bodyOf(client, QStringLiteral("$cached")), QStringLiteral("kept"));
+
+        if (!unreachable) {
+            m_server->whoami = {};
+            client.startSync();
+            QTRY_VERIFY(m_server->count("/_matrix/client/v3/sync", "Bearer tokA") > 0);
+            client.stopSync();
+        }
+    }
+
+    void aRevokedTokenEndsTheSession_data()
+    {
+        QTest::addColumn<bool>("soft");
+        QTest::newRow("hard") << false;
+        QTest::newRow("soft") << true;
+    }
+
+    void aRevokedTokenEndsTheSession()
+    {
+        QFETCH(bool, soft);
+        SettingsManager settings;
+        QVERIFY(settings.saveSession(m_url, kAlice, QStringLiteral("DEV"),
+                                     QStringLiteral("dead")));
+        m_server->whoami = [soft](QTcpSocket *socket, const Request &) {
+            FakeHomeserver::reply(socket, 401,
+                soft ? R"({"errcode":"M_UNKNOWN_TOKEN","error":"x","soft_logout":true})"
+                     : R"({"errcode":"M_UNKNOWN_TOKEN","error":"x"})");
+        };
+        CppHttpMatrixClient client(&settings);
+        QSignalSpy failed(&client, &MatrixClient::loginFailed);
+        QVERIFY(client.restoreSession());
+        QVERIFY(failed.wait(5000));
+        QVERIFY(!client.isLoggedIn());
+        QCOMPARE(settings.hasSession(), soft);
+    }
 };
 
 QTEST_MAIN(CppHttpMatrixClientTest)

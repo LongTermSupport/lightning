@@ -60,6 +60,18 @@ QString percentPath(const QString &segment)
     return QString::fromUtf8(QUrl::toPercentEncoding(segment));
 }
 
+// Only the homeserver's own invalid-token answer proves the session is gone;
+// any other 401 (a proxy, a captive portal) is treated as transient.
+bool tokenRejected(int status, const QByteArray &body, bool *softLogout)
+{
+    const auto obj = QJsonDocument::fromJson(body).object();
+    const QString code = obj.value(QStringLiteral("errcode")).toString();
+    *softLogout = obj.value(QStringLiteral("soft_logout")).toBool();
+    return status == 401
+        && (code == QLatin1String("M_UNKNOWN_TOKEN")
+            || code == QLatin1String("M_MISSING_TOKEN"));
+}
+
 }
 
 CppHttpMatrixClient::CppHttpMatrixClient(SettingsManager *settings, QObject *parent)
@@ -303,23 +315,30 @@ void CppHttpMatrixClient::doWhoami()
             return;
         const int status = reply->attribute(
             QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        if (reply->error() != QNetworkReply::NoError) {
-            QString msg = (status == 401)
-                ? tr("Session expired — please sign in again.")
-                : extractMatrixError(reply->readAll(), reply->errorString());
-            qCWarning(lcHttp) << "whoami failed" << status;
-            clearLocalSession(true);
-            Q_EMIT loginFailed(msg);
+        const QByteArray body = reply->readAll();
+        bool soft = false;
+        if (tokenRejected(status, body, &soft)) {
+            qCWarning(lcHttp) << "whoami rejected the token; soft_logout=" << soft;
+            if (soft && m_cache) {
+                m_cache->close();
+                m_cache.reset();
+            }
+            clearLocalSession(!soft);
+            Q_EMIT loginFailed(tr("Session expired — please sign in again."));
             return;
         }
-        const auto doc = QJsonDocument::fromJson(reply->readAll());
-        if (!doc.isObject() ||
-            !doc.object().contains(QStringLiteral("user_id"))) {
-            clearLocalSession(true);
-            Q_EMIT loginFailed(tr("Invalid /whoami response."));
+        const auto doc = QJsonDocument::fromJson(body);
+        const QString confirmed = doc.object().value(QStringLiteral("user_id")).toString();
+        if (reply->error() != QNetworkReply::NoError || confirmed.isEmpty()) {
+            // Offline, DNS/TLS, 5xx or a garbled answer: the token is not shown
+            // to be invalid, so keep the session and let /sync retry.
+            qCWarning(lcHttp) << "whoami unavailable; continuing offline, status=" << status;
+            m_loggedIn = true;
+            setState(Offline);
+            Q_EMIT loginSucceeded(m_userId);
             return;
         }
-        m_userId  = doc.object().value(QStringLiteral("user_id")).toString();
+        m_userId  = confirmed;
         m_loggedIn = true;
         setState(Disconnected);
         qCInfo(lcHttp) << "session restored for" << m_userId;
@@ -463,10 +482,15 @@ void CppHttpMatrixClient::startNextSync()
         const int status = reply->attribute(
             QNetworkRequest::HttpStatusCodeAttribute).toInt();
         if (reply->error() != QNetworkReply::NoError) {
-            if (status == 401) {
-                qCWarning(lcHttp) << "sync 401 — session expired";
+            bool soft = false;
+            if (tokenRejected(status, reply->readAll(), &soft)) {
+                qCWarning(lcHttp) << "sync 401 — session expired; soft_logout=" << soft;
                 Q_EMIT errorOccurred(tr("Session expired during sync."));
-                clearLocalSession(true);
+                if (soft && m_cache) {
+                    m_cache->close();
+                    m_cache.reset();
+                }
+                clearLocalSession(!soft);
                 Q_EMIT loggedOut();
                 return;
             }
