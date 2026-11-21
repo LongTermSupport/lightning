@@ -309,6 +309,92 @@ private Q_SLOTS:
         }));
         QCOMPARE(bodyOf(client, QStringLiteral("$r")), QString());
     }
+
+    void aDelayedUploadDoesNotSendAsTheNextAccount()
+    {
+        SettingsManager settings;
+        CppHttpMatrixClient client(&settings);
+        QVERIFY(restoreAs(settings, client, kAlice, QStringLiteral("tokA")));
+        QFile file(m_home.path() + QStringLiteral("/note.txt"));
+        QVERIFY(file.open(QIODevice::WriteOnly));
+        file.write("hello");
+        file.close();
+
+        m_server->held.insert("/_matrix/media/v3/upload");
+        client.sendFile(kRoom, file.fileName());
+        QTRY_COMPARE(m_server->count("/_matrix/media/v3/upload"), 1);
+        QVERIFY(client.detachSession());
+        QVERIFY(restoreAs(settings, client, kBob, QStringLiteral("tokB")));
+
+        m_server->release("/_matrix/media/v3/upload");
+        QTest::qWait(300);
+        QCOMPARE(m_server->count("/_matrix/client/v3/rooms/"), 0);
+        QVERIFY(client.timeline(kRoom).isEmpty());
+
+        client.sendFile(kRoom, file.fileName());
+        QTRY_COMPARE(m_server->count("/_matrix/client/v3/rooms/", "Bearer tokB"), 1);
+    }
+
+    void aDelayedHistoryPageDoesNotReachTheNextAccount()
+    {
+        SettingsManager settings;
+        CppHttpMatrixClient client(&settings);
+        QVERIFY(restoreAs(settings, client, kAlice, QStringLiteral("tokA")));
+        client.m_rooms[kRoom].prevBatchToken = QStringLiteral("t1");
+        m_server->held.insert("/_matrix/client/v3/rooms/");
+        client.loadOlderMessages(kRoom);
+        QTRY_COMPARE(m_server->count("/_matrix/client/v3/rooms/"), 1);
+        QVERIFY(client.detachSession());
+        QVERIFY(restoreAs(settings, client, kBob, QStringLiteral("tokB")));
+        QVERIFY(!client.paginating(kRoom));
+
+        m_server->release("/_matrix/client/v3/rooms/");
+        QTest::qWait(300);
+        QVERIFY(client.timeline(kRoom).isEmpty());
+
+        client.m_rooms[kRoom].prevBatchToken = QStringLiteral("t1");
+        client.loadOlderMessages(kRoom);
+        QTRY_COMPARE(bodyOf(client, QStringLiteral("$old")), QStringLiteral("from A"));
+    }
+
+    void aDelayedWhoamiDoesNotReplaceTheNextAccount()
+    {
+        SettingsManager settings;
+        CppHttpMatrixClient client(&settings);
+        QVERIFY(settings.saveSession(m_url, kAlice, QStringLiteral("DEV"),
+                                     QStringLiteral("tokA")));
+        m_server->held.insert("/_matrix/client/v3/account/whoami");
+        QVERIFY(client.restoreSession());
+        QTRY_COMPARE(m_server->count("/_matrix/client/v3/account/whoami"), 1);
+        QVERIFY(client.detachSession());
+        m_server->held.clear();
+        QVERIFY(restoreAs(settings, client, kBob, QStringLiteral("tokB")));
+
+        QSignalSpy succeeded(&client, &MatrixClient::loginSucceeded);
+        m_server->release("/_matrix/client/v3/account/whoami");
+        QTest::qWait(300);
+        QCOMPARE(client.currentUserId(), kBob);
+        QCOMPARE(succeeded.count(), 0);
+    }
+
+    void aSwitchWaitsForASignOutInFlight()
+    {
+        SettingsManager settings;
+        CppHttpMatrixClient client(&settings);
+        QVERIFY(restoreAs(settings, client, kAlice, QStringLiteral("tokA")));
+        m_server->held.insert("/_matrix/client/v3/logout");
+        QSignalSpy out(&client, &MatrixClient::loggedOut);
+        client.logout();
+        QTRY_COMPARE(m_server->count("/_matrix/client/v3/logout"), 1);
+        QVERIFY(!client.detachSession());
+        QVERIFY(!client.restoreSession());
+        m_server->release("/_matrix/client/v3/logout");
+        QTRY_COMPARE(out.count(), 1);
+        QVERIFY(!settings.hasSession());
+
+        QVERIFY(restoreAs(settings, client, kBob, QStringLiteral("tokB")));
+        QVERIFY(settings.hasSession());
+    }
 };
 
 QTEST_MAIN(CppHttpMatrixClientTest)

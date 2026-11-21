@@ -189,8 +189,11 @@ void CppHttpMatrixClient::login(const QString &homeserver,
 
     QNetworkReply *reply = m_nam->post(
         req, QJsonDocument(body).toJson(QJsonDocument::Compact));
-    QObject::connect(reply, &QNetworkReply::finished, this, [this, reply] {
+    const quint64 generation = m_sessionGeneration;
+    QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, generation] {
         reply->deleteLater();
+        if (generation != m_sessionGeneration)
+            return;
         const int status = reply->attribute(
             QNetworkRequest::HttpStatusCodeAttribute).toInt();
         if (reply->error() != QNetworkReply::NoError) {
@@ -249,8 +252,9 @@ void CppHttpMatrixClient::login(const QString &homeserver,
 
 bool CppHttpMatrixClient::restoreSession()
 {
-    if (!m_settings || !m_settings->hasSession())
+    if (m_logoutInFlight || !m_settings || !m_settings->hasSession())
         return false;
+    ++m_sessionGeneration;
 
     m_homeserver  = sanitizeHomeserver(m_settings->homeserverUrl());
     m_userId      = m_settings->userId();
@@ -292,8 +296,11 @@ void CppHttpMatrixClient::doWhoami()
     QNetworkRequest req(endpoint(QStringLiteral("/account/whoami")));
     applyBearer(req);
     QNetworkReply *reply = m_nam->get(req);
-    QObject::connect(reply, &QNetworkReply::finished, this, [this, reply] {
+    const quint64 generation = m_sessionGeneration;
+    QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, generation] {
         reply->deleteLater();
+        if (generation != m_sessionGeneration)
+            return;
         const int status = reply->attribute(
             QNetworkRequest::HttpStatusCodeAttribute).toInt();
         if (reply->error() != QNetworkReply::NoError) {
@@ -331,8 +338,13 @@ void CppHttpMatrixClient::logout()
     QNetworkRequest req(endpoint(QStringLiteral("/logout")));
     applyBearer(req);
     QNetworkReply *reply = m_nam->post(req, QByteArray("{}"));
-    QObject::connect(reply, &QNetworkReply::finished, this, [this, reply] {
+    m_logoutInFlight = true;
+    const quint64 generation = m_sessionGeneration;
+    QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, generation] {
         reply->deleteLater();
+        m_logoutInFlight = false;
+        if (generation != m_sessionGeneration)
+            return;
         if (reply->error() != QNetworkReply::NoError)
             qCWarning(lcHttp) << "logout returned error, clearing locally anyway";
         clearLocalSession(true);
@@ -345,6 +357,8 @@ bool CppHttpMatrixClient::detachSession()
     // Account switch: end the local session without a server logout. Session
     // metadata, tokens and the per-account cache file stay; only in-memory
     // state and the cache handle are released.
+    if (m_logoutInFlight)
+        return false;
     if (m_cache) {
         m_cache->close();
         m_cache.reset();
@@ -357,6 +371,7 @@ bool CppHttpMatrixClient::detachSession()
 void CppHttpMatrixClient::clearLocalSession(bool clearPersisted)
 {
     stopSync();
+    ++m_sessionGeneration;
     m_loggedIn = false;
     m_accessToken.clear();
     m_userId.clear();
@@ -367,6 +382,7 @@ void CppHttpMatrixClient::clearLocalSession(bool clearPersisted)
     m_timelines.clear();
     m_pendingSends.clear();
     m_lastReceiptSent.clear();
+    m_paginating.clear();
     if (m_initialSyncDone) {
         m_initialSyncDone = false;
         Q_EMIT initialSyncDoneChanged();
@@ -1044,8 +1060,11 @@ void CppHttpMatrixClient::putSendJson(const QString &roomId,
         req, QJsonDocument(content).toJson(QJsonDocument::Compact));
 
     QObject::connect(reply, &QNetworkReply::finished, this,
-                     [this, reply, roomId, echoEventId, txnId, debugLabel] {
+                     [this, reply, roomId, echoEventId, txnId, debugLabel,
+                      generation = m_sessionGeneration] {
         reply->deleteLater();
+        if (generation != m_sessionGeneration)
+            return;
         if (reply->error() != QNetworkReply::NoError) {
             const QString msg = extractMatrixError(reply->readAll(),
                                                     reply->errorString());
@@ -1264,8 +1283,10 @@ void CppHttpMatrixClient::redactByHttp(const QString &roomId,
     QNetworkReply *reply = m_nam->put(
         req, QJsonDocument(body).toJson(QJsonDocument::Compact));
     QObject::connect(reply, &QNetworkReply::finished, this,
-                     [this, reply, roomId, eventId] {
+                     [this, reply, roomId, eventId, generation = m_sessionGeneration] {
         reply->deleteLater();
+        if (generation != m_sessionGeneration)
+            return;
         if (reply->error() != QNetworkReply::NoError) {
             const QString error = tr("Redaction failed: %1").arg(
                 extractMatrixError(reply->readAll(), reply->errorString()));
@@ -1445,8 +1466,10 @@ void CppHttpMatrixClient::sendImage(const QString &roomId, const QString &localP
     QObject::connect(reply, &QNetworkReply::finished, this,
                      [this, reply, roomId, echoEventId, fileName, mime,
                       width = echo.mediaWidth, height = echo.mediaHeight,
-                      size = echo.mediaSize] {
+                      size = echo.mediaSize, generation = m_sessionGeneration] {
         reply->deleteLater();
+        if (generation != m_sessionGeneration)
+            return;
         if (reply->error() != QNetworkReply::NoError) {
             for (auto &ev : m_timelines[roomId]) {
                 if (ev.eventId == echoEventId) {
@@ -1539,8 +1562,10 @@ void CppHttpMatrixClient::sendFile(const QString &roomId, const QString &localPa
 
     QObject::connect(reply, &QNetworkReply::finished, this,
                      [this, reply, roomId, echoEventId, fileName, mime,
-                      size = echo.mediaSize] {
+                      size = echo.mediaSize, generation = m_sessionGeneration] {
         reply->deleteLater();
+        if (generation != m_sessionGeneration)
+            return;
         if (reply->error() != QNetworkReply::NoError) {
             for (auto &ev : m_timelines[roomId]) {
                 if (ev.eventId == echoEventId) {
@@ -1607,8 +1632,10 @@ void CppHttpMatrixClient::loadOlderMessages(const QString &roomId)
     applyBearer(req);
     QNetworkReply *reply = m_nam->get(req);
     QObject::connect(reply, &QNetworkReply::finished, this,
-                     [this, reply, roomId] {
+                     [this, reply, roomId, generation = m_sessionGeneration] {
         reply->deleteLater();
+        if (generation != m_sessionGeneration)
+            return;
         m_paginating.remove(roomId);
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(lcHttp) << "pagination failed";

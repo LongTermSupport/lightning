@@ -131,6 +131,10 @@ private:
     QString m_syncToken;
 
     bool m_loggedIn = false;
+    bool m_logoutInFlight = false;
+    // Bumped whenever the session ends or another one begins; every network
+    // completion compares the value it captured and drops itself when stale.
+    quint64 m_sessionGeneration = 0;
     ConnectionState m_state = Disconnected;
 
     bool m_syncActive = false;
