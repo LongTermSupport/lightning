@@ -380,6 +380,7 @@ private:
     void deliverCallNotification();
     void flushAvatarWaits(bool fallbackAll);
     void flushHeldUndecryptable();
+    void forgetUndecryptableOf(const QString &accountKey);
     void recordPayload(const QString &accountKey, quint32 id,
                        const QVariantMap &payload);
     bool takeNotifyReply(const Card &card, const QString &groupKey,

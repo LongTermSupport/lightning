@@ -102,6 +102,12 @@ QString messageGroupKey(const QString &roomId, const QString &threadRootId)
         + threadRootId;
 }
 
+// Each live account decides an undecryptable message for itself.
+QString utdKey(const QString &accountKey, const QString &eventId)
+{
+    return accountKey + kKeySeparator + eventId;
+}
+
 QString genericGroupKey(const QString &key)
 {
     return QStringLiteral("g") + kKeySeparator + key;
@@ -510,14 +516,14 @@ void NotificationManager::processEvent(const TimelineEvent &event,
     const Decision decision = decide(event, context);
     if (event.undecryptable && !event.eventId.isEmpty()
         && passesContextGates(event, context)) {
-        auto live = m_liveUtds.find(event.eventId);
+        const QString key = utdKey(context.accountUserId, event.eventId);
+        auto live = m_liveUtds.find(key);
         if (live == m_liveUtds.end()) {
-            m_liveUtds.insert(event.eventId,
-                              LiveUtd{ UtdState::Quiet, nowMs() });
-            m_liveUtdOrder.append(event.eventId);
+            m_liveUtds.insert(key, LiveUtd{ UtdState::Quiet, nowMs() });
+            m_liveUtdOrder.append(key);
             while (m_liveUtdOrder.size() > kMaxLiveUndecryptable)
                 m_liveUtds.remove(m_liveUtdOrder.takeFirst());
-            live = m_liveUtds.find(event.eventId);
+            live = m_liveUtds.find(key);
         } else if (live->state != UtdState::Quiet) {
             return;
         }
@@ -553,7 +559,8 @@ void NotificationManager::flushHeldUndecryptable()
         }
     }
     for (const HeldUtd &held : std::as_const(due)) {
-        auto live = m_liveUtds.find(held.event->eventId);
+        auto live = m_liveUtds.find(
+            utdKey(held.context.accountUserId, held.event->eventId));
         if (live != m_liveUtds.end())
             live->state = UtdState::Delivered;
         const Decision decision = decide(*held.event, held.context);
@@ -576,7 +583,8 @@ void NotificationManager::processDecrypted(const TimelineEvent &event,
         return;
     if (event.isEdit)
         refreshFromEdit(event, context);
-    const auto live = m_liveUtds.find(event.eventId);
+    const auto live =
+        m_liveUtds.find(utdKey(context.accountUserId, event.eventId));
     if (live == m_liveUtds.end() || live->state == UtdState::Decided)
         return;
     const LiveUtd seen = live.value();
@@ -587,8 +595,9 @@ void NotificationManager::processDecrypted(const TimelineEvent &event,
     }
     const Decision decision = decide(event, context);
     if (seen.state == UtdState::Held) {
-        m_heldUtds.removeIf([&event](const HeldUtd &held) {
-            return held.event->eventId == event.eventId;
+        m_heldUtds.removeIf([&event, &context](const HeldUtd &held) {
+            return held.event->eventId == event.eventId
+                && held.context.accountUserId == context.accountUserId;
         });
         if (m_heldUtds.isEmpty())
             m_utdHoldTimer.stop();
@@ -1000,8 +1009,13 @@ void NotificationManager::withdrawEvent(const QString &eventId)
     });
     if (m_heldUtds.isEmpty())
         m_utdHoldTimer.stop();
-    if (m_liveUtds.remove(eventId) > 0)
-        m_liveUtdOrder.removeOne(eventId);
+    const auto ofEvent = [&eventId](const QString &key) {
+        return key.endsWith(kKeySeparator + eventId);
+    };
+    m_liveUtds.removeIf([&ofEvent](decltype(m_liveUtds)::iterator it) {
+        return ofEvent(it.key());
+    });
+    m_liveUtdOrder.removeIf(ofEvent);
     const int withdrawn =
         withdrawEverywhere([&eventId](const QVariantMap &payload) {
             return payload.value(QStringLiteral("eventId")).toString()
@@ -1009,6 +1023,23 @@ void NotificationManager::withdrawEvent(const QString &eventId)
         });
     if (withdrawn > 0)
         qCInfo(lcNotify) << "withdrew a notification for a removed message";
+}
+
+void NotificationManager::forgetUndecryptableOf(const QString &accountKey)
+{
+    m_heldUtds.removeIf([&accountKey](const HeldUtd &held) {
+        return held.context.accountUserId == accountKey;
+    });
+    if (m_heldUtds.isEmpty())
+        m_utdHoldTimer.stop();
+    const QString prefix = accountKey + kKeySeparator;
+    const auto own = [&prefix](const QString &key) {
+        return key.startsWith(prefix);
+    };
+    m_liveUtds.removeIf([&own](decltype(m_liveUtds)::iterator it) {
+        return own(it.key());
+    });
+    m_liveUtdOrder.removeIf(own);
 }
 
 void NotificationManager::clearPendingFor(const QString &accountUserId)
@@ -1040,10 +1071,7 @@ void NotificationManager::clearPendingFor(const QString &accountUserId)
     if (foreground) {
         m_activationTokens.clear();
         m_capabilityWaits.clear();
-        m_heldUtds.clear();
-        m_utdHoldTimer.stop();
-        m_liveUtds.clear();
-        m_liveUtdOrder.clear();
+        forgetUndecryptableOf(accountUserId);
         m_roomsAwaitingUnread.clear();
         m_balloonQueue.clear();
         m_balloonRooms.clear();
@@ -1053,18 +1081,7 @@ void NotificationManager::clearPendingFor(const QString &accountUserId)
     for (const quint32 id : shown)
         m_activationTokens.remove(id);
     m_capabilityWaits.removeIf(ownCard);
-    for (auto it = m_heldUtds.begin(); it != m_heldUtds.end();) {
-        if (it->context.accountUserId == accountUserId) {
-            const QString eventId = it->event->eventId;
-            if (m_liveUtds.remove(eventId) > 0)
-                m_liveUtdOrder.removeOne(eventId);
-            it = m_heldUtds.erase(it);
-        } else {
-            ++it;
-        }
-    }
-    if (m_heldUtds.isEmpty())
-        m_utdHoldTimer.stop();
+    forgetUndecryptableOf(accountUserId);
     const auto ownBalloon = [&accountUserId](const Balloon &balloon) {
         return balloon.accountKey == accountUserId;
     };

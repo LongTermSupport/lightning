@@ -414,6 +414,94 @@ private Q_SLOTS:
         QCOMPARE(manager.trayAttemptsForTest(), 2);
     }
 
+    void eachLiveAccountDecidesASharedUndecryptableForItself()
+    {
+        for (const bool annNotifies : { true, false }) {
+            for (const bool quietDecryptsFirst : { true, false }) {
+                NotificationManager manager;
+                prepare(manager);
+                manager.setAccountUserId(kAnn);
+                manager.setLiveAccountsMode(true);
+                const auto ann = foregroundContext();
+                const auto bea = hostContext(kBea, QStringLiteral("Bea"));
+                TimelineEvent utd = message(kRoomA, QStringLiteral("$e"));
+                utd.undecryptable = true;
+                manager.processEvent(utd, ann);
+                manager.processEvent(utd, bea);
+                QCOMPARE(manager.heldUndecryptableCountForTest(), 2);
+
+                TimelineEvent loud = message(kRoomA, QStringLiteral("$e"));
+                loud.pushVerdict = TimelineEvent::PushVerdict::Notify;
+                TimelineEvent quiet = loud;
+                quiet.pushVerdict = TimelineEvent::PushVerdict::Quiet;
+                const auto notifier = annNotifies ? ann : bea;
+                const auto silent = annNotifies ? bea : ann;
+                if (quietDecryptsFirst) {
+                    manager.processDecrypted(quiet, silent);
+                    manager.processDecrypted(loud, notifier);
+                } else {
+                    manager.processDecrypted(loud, notifier);
+                    manager.processDecrypted(quiet, silent);
+                }
+                const QByteArray where = QByteArray("annNotifies=")
+                    + (annNotifies ? "1" : "0") + " quietFirst="
+                    + (quietDecryptsFirst ? "1" : "0");
+                QVERIFY2(manager.trayAttemptsForTest() == 1, where.constData());
+                QCOMPARE(manager.lastTrayPayloadForTest()
+                             .value(QStringLiteral("accountUserId")).toString(),
+                         annNotifies ? kAnn : kBea);
+                QCOMPARE(manager.heldUndecryptableCountForTest(), 0);
+            }
+        }
+    }
+
+    void aSharedUndecryptableBothAccountsNotifyIsOneCard()
+    {
+        NotificationManager manager;
+        prepare(manager);
+        manager.setAccountUserId(kAnn);
+        manager.setLiveAccountsMode(true);
+        const auto ann = foregroundContext();
+        const auto bea = hostContext(kBea, QStringLiteral("Bea"));
+        TimelineEvent utd = message(kRoomA, QStringLiteral("$both"));
+        utd.undecryptable = true;
+        manager.processEvent(utd, ann);
+        manager.processEvent(utd, bea);
+        TimelineEvent plain = message(kRoomA, QStringLiteral("$both"));
+        plain.pushVerdict = TimelineEvent::PushVerdict::Notify;
+        manager.processDecrypted(plain, bea);
+        manager.processDecrypted(plain, ann);
+        QCOMPARE(manager.trayAttemptsForTest(), 1);
+        QCOMPARE(manager.eventCardAccountsForTest(kRoomA, QStringLiteral("$both")),
+                 (QStringList{ kBea, kAnn }));
+    }
+
+    void clearingTheForegroundKeepsABackgroundAccountsUndecryptable()
+    {
+        NotificationManager manager;
+        prepare(manager);
+        manager.setAccountUserId(kAnn);
+        manager.setLiveAccountsMode(true);
+        const auto bea = hostContext(kBea, QStringLiteral("Bea"));
+        TimelineEvent utd = message(kRoomB, QStringLiteral("$kept"));
+        utd.undecryptable = true;
+        manager.processEvent(utd, foregroundContext());
+        manager.processEvent(utd, bea);
+        QCOMPARE(manager.heldUndecryptableCountForTest(), 2);
+
+        manager.clearPendingFor(QString());
+        QCOMPARE(manager.heldUndecryptableCountForTest(), 1);
+        TimelineEvent plain = message(kRoomB, QStringLiteral("$kept"));
+        plain.pushVerdict = TimelineEvent::PushVerdict::Notify;
+        manager.processDecrypted(plain, foregroundContext());
+        QCOMPARE(manager.trayAttemptsForTest(), 0);
+        manager.processDecrypted(plain, bea);
+        QCOMPARE(manager.trayAttemptsForTest(), 1);
+        QCOMPARE(manager.lastTrayPayloadForTest()
+                     .value(QStringLiteral("accountUserId")).toString(),
+                 kBea);
+    }
+
     void aFullWaitingQueueKeepsItsMentions()
     {
         NotificationManager manager;
