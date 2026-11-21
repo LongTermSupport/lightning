@@ -221,8 +221,8 @@ void QuickSwitcherModel::rebuild()
 
     // Category is the primary sort key so the switcher renders contiguous
     // sections: rooms, people, spaces, then invites (Enter on an invite only
-    // opens its accept/decline view). Tie-breaks within a category are
-    // unchanged.
+    // opens its accept/decline view). The cap applies per category, after the
+    // relevance sort, so a scope never sees a list another category truncated.
     static const auto categoryRank = [](const Result &r) {
         if (r.category == QStringLiteral("room"))  return 0;
         if (r.category == QStringLiteral("dm"))     return 1;
@@ -240,10 +240,26 @@ void QuickSwitcherModel::rebuild()
             return a.highlight > b.highlight;
         if (a.hasUnread != b.hasUnread)
             return a.hasUnread;
-        return a.name.compare(b.name, Qt::CaseInsensitive) < 0;
+        const int byName = a.name.compare(b.name, Qt::CaseInsensitive);
+        if (byName != 0)
+            return byName < 0;
+        return a.roomId < b.roomId;
     });
-    if (next.size() > kMaxResults)
-        next.erase(next.begin() + kMaxResults, next.end());
+    int kept = 0;
+    int inCategory = 0;
+    int previousRank = -1;
+    for (int i = 0; i < next.size(); ++i) {
+        const int rank = categoryRank(next.at(i));
+        if (rank != previousRank)
+            inCategory = 0;
+        previousRank = rank;
+        if (inCategory++ >= kMaxPerCategory)
+            continue;
+        if (kept != i)
+            next[kept] = std::move(next[i]);
+        ++kept;
+    }
+    next.erase(next.begin() + kept, next.end());
 
     beginResetModel();
     m_results = std::move(next);
