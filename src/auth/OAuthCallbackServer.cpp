@@ -263,7 +263,8 @@ void OAuthCallbackServer::finishWithSocket(QTcpSocket *socket, const QString &re
 
     const QString required = m_flow == Flow::Sso ? QStringLiteral("loginToken")
                                                  : QStringLiteral("code");
-    const QString credential = query.queryItemValue(required);
+    // The login token is opaque: hand over its value, not its %-encoded spelling.
+    const QString credential = query.queryItemValue(required, QUrl::FullyDecoded);
     if (credential.isEmpty()) {
         m_outcome = "incomplete";
         respond(socket,

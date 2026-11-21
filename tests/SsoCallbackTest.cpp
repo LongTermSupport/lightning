@@ -166,6 +166,40 @@ private Q_SLOTS:
         QVERIFY(!server.isListening());
     }
 
+    void anEncodedLoginTokenIsDeliveredDecoded()
+    {
+        const QList<QPair<QString, QString>> cases{
+            { QStringLiteral("abc%2Bdef%25ghi"), QStringLiteral("abc+def%ghi") },
+            { QStringLiteral("a+b"), QStringLiteral("a+b") },
+            { QStringLiteral("syt_x-y_z.1~"), QStringLiteral("syt_x-y_z.1~") },
+        };
+        for (const auto &[sent, expected] : cases) {
+            OAuthCallbackServer server;
+            server.setFlow(OAuthCallbackServer::Flow::Sso);
+            QVERIFY(server.listen());
+            QSignalSpy received(&server, &OAuthCallbackServer::callbackReceived);
+            QVERIFY(deliver(portOf(server),
+                            pathOf(server) + QStringLiteral("?loginToken=") + sent));
+            QVERIFY2(received.wait(3000), qPrintable(sent));
+            QCOMPARE(received.at(0).at(0).toString(), expected);
+        }
+    }
+
+    void anOAuthCallbackIsForwardedVerbatim()
+    {
+        OAuthCallbackServer server;
+        server.setFlow(OAuthCallbackServer::Flow::OAuth);
+        QVERIFY(server.listen());
+        const quint16 port = portOf(server);
+        const QString target =
+            pathOf(server) + QStringLiteral("?code=a%2Bb%25c&state=s+t");
+        QSignalSpy received(&server, &OAuthCallbackServer::callbackReceived);
+        QVERIFY(deliver(port, target));
+        QVERIFY(received.wait(3000));
+        QCOMPARE(received.at(0).at(0).toString(),
+                 QStringLiteral("http://127.0.0.1:%1%2").arg(port).arg(target));
+    }
+
     void aMissingOrEmptyTokenIsAFailureNotAnEmptySuccess()
     {
         for (const QString &suffix : { QString(),
