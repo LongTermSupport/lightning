@@ -8650,12 +8650,13 @@ pub unsafe extern "C" fn mx_rust_request_event_source(
     ptr: *mut c_void,
     room_id: *const c_char,
     event_id: *const c_char,
+    op_id: u64,
 ) -> *mut c_char {
     ffi_string(|| {
         let bridge = unsafe { bridge(ptr)? };
         let room_id = unsafe { cstr_arg(room_id) }?;
         let event_id = unsafe { cstr_arg(event_id) }?;
-        rooms::request_event_source(bridge, room_id, event_id).map(|_| String::new())
+        rooms::request_event_source(bridge, room_id, event_id, op_id).map(|_| String::new())
     })
 }
 

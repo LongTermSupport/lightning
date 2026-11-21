@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QElapsedTimer>
 #include <QObject>
 #include <QSet>
 #include <QString>
@@ -54,6 +55,10 @@ public:
     Q_INVOKABLE void undoRemove();
     Q_INVOKABLE void refresh();
     Q_INVOKABLE void resolveVisible();
+    // Re-reads every preview, keeping the shown text until each answer lands.
+    Q_INVOKABLE void refreshPreviews();
+    Q_INVOKABLE void retryPreview(const QString &roomId, const QString &eventId);
+    Q_INVOKABLE void clearFilters();
     Q_INVOKABLE void open(const QString &roomId, const QString &eventId);
     Q_INVOKABLE void openRoot(const QString &roomId, const QString &eventId);
     Q_INVOKABLE void openRoom(const QString &roomId);
@@ -76,6 +81,10 @@ private:
         QString kind;
         bool resolved = false;
         bool available = false;
+        bool failed = false;
+        quint64 op = 0;
+        qint64 deadlineMs = 0;
+        QString timelineBody;
     };
     static bool validRef(const Ref &ref);
     static QString key(const QString &roomId, const QString &eventId);
@@ -87,9 +96,13 @@ private:
     bool parseRefs(const QVariantMap &content, bool present, QVector<Ref> &refs) const;
     void failWrite(const QString &message);
     void pumpResolve();
+    void armResolveTimer();
+    void expireResolves();
+    void invalidatePreview(const QString &roomId, const QString &eventId);
+    qint64 nowMs() const;
     void receive(const QVariantMap &content, bool present);
     void receiveSource(const QString &roomId, const QString &eventId,
-                       bool ok, const QString &json);
+                       bool ok, const QString &json, const QVariantMap &meta);
 
     MatrixClient *m_client = nullptr;
     QString m_userId;
@@ -114,4 +127,9 @@ private:
     QSet<QString> m_attempted;
     QSet<QString> m_redacted;
     QTimer m_resolveTimeout;
+    QElapsedTimer m_clock;
+    qint64 m_nowForTest = -1;
+
+private Q_SLOTS:
+    void setNowForTest(qint64 ms);
 };
