@@ -2264,12 +2264,14 @@ void MediaBridge::writeSaveFile(const QUrl &destination, const QByteArray &bytes
                                 const QString &mediaKey, bool uniquify)
 {
     const QFileInfo chosen(destination.toLocalFile());
-    const QDir parent(QFileInfo(chosen.absolutePath()).canonicalFilePath());
-    if (!parent.exists()) {
-        Q_EMIT saveFinished(false, tr("The destination is not writable."),
+    // An empty canonical path would make QDir the working directory.
+    const QString parentPath = QFileInfo(chosen.absolutePath()).canonicalFilePath();
+    if (parentPath.isEmpty() || !QFileInfo(parentPath).isDir()) {
+        Q_EMIT saveFinished(false, tr("The destination folder is not available."),
                             mediaKey);
         return;
     }
+    const QDir parent(parentPath);
     const QString leaf = sanitizedFileName(chosen.fileName());
     if (uniquify) {
         for (int n = 0; n < 1000; ++n) {

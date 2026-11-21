@@ -946,10 +946,16 @@ fn with_call_override(
     request
 }
 
+/// Creation-content key carrying the id of the create attempt that made the room.
+pub(crate) const DM_ATTEMPT_KEY: &str = "org.lightning_matrix.dm_attempt";
+
 pub(crate) fn dm_create_request(
     uid: &UserId,
     creator_power: bool,
+    attempt: &str,
 ) -> create_room::v3::Request {
+    let mut creation = serde_json::Map::new();
+    creation.insert(DM_ATTEMPT_KEY.to_owned(), json!(attempt));
     let initial_state = vec![InitialStateEvent::with_empty_state_key(
         RoomEncryptionEventContent::with_recommended_defaults(),
     )
@@ -960,6 +966,7 @@ pub(crate) fn dm_create_request(
             is_direct: true,
             preset: Some(RoomPreset::TrustedPrivateChat),
             initial_state,
+            creation_content: Raw::new(&creation).ok().map(|raw| raw.cast_unchecked()),
         }),
         creator_power,
     )
@@ -1040,6 +1047,7 @@ pub(crate) fn create_dm(bridge: &RustClient, user_id: String, op_id: u64) -> Res
     let timelines = Arc::clone(&bridge.timelines);
     let registry = Arc::clone(&bridge.dm_creates);
     let lifecycle = timelines.lifecycle();
+    let attempt = matrix_sdk::ruma::TransactionId::new().to_string();
     bridge.spawn_room_action(async move {
         let before: std::collections::HashSet<OwnedRoomId> =
             client.rooms().iter().map(|r| r.room_id().to_owned()).collect();
@@ -1047,7 +1055,7 @@ pub(crate) fn create_dm(bridge: &RustClient, user_id: String, op_id: u64) -> Res
         let guard = registry.begin();
         let creator_power = default_room_version_privileges_creators(&client).await;
         let result =
-            send_create_room(&client, dm_create_request(&uid, creator_power)).await;
+            send_create_room(&client, dm_create_request(&uid, creator_power, &attempt)).await;
         let ended_ms = now_ms();
         let answered = match &result {
             Ok(room_id) => {
@@ -1110,7 +1118,8 @@ pub(crate) fn create_dm(bridge: &RustClient, user_id: String, op_id: u64) -> Res
                 }));
                 if answered && !refused_before_creation(category) {
                     sweep_failed_dm_orphans(
-                        &client, &before, started_ms, ended_ms, &registry, &timelines, lifecycle,
+                        &client, &before, &attempt, started_ms, ended_ms, &registry, &timelines,
+                        lifecycle,
                     )
                     .await;
                 }
@@ -1162,10 +1171,12 @@ pub(crate) struct DmOrphanProbe {
     pub join_rule_invite: bool,
     pub created_in_window: bool,
     pub returned_by_a_create: bool,
+    pub marked_by_this_attempt: bool,
 }
 
 pub(crate) fn is_failed_dm_orphan(p: &DmOrphanProbe) -> bool {
     p.joined
+        && p.marked_by_this_attempt
         && !p.known_before_request
         && !p.returned_by_a_create
         && p.created_in_window
@@ -1179,14 +1190,22 @@ pub(crate) fn is_failed_dm_orphan(p: &DmOrphanProbe) -> bool {
         && p.join_rule_invite
 }
 
-async fn create_ts_ms(room: &matrix_sdk::Room) -> Option<u64> {
+pub(crate) fn create_event_marks_attempt(create_event: &serde_json::Value, attempt: &str) -> bool {
+    !attempt.is_empty()
+        && create_event.pointer("/content").and_then(|c| c.get(DM_ATTEMPT_KEY))
+            .and_then(|v| v.as_str())
+            == Some(attempt)
+}
+
+async fn create_event_json(room: &matrix_sdk::Room) -> Option<serde_json::Value> {
+    use matrix_sdk::deserialized_responses::RawSyncOrStrippedState;
     use matrix_sdk::ruma::events::room::create::RoomCreateEventContent;
-    match room.get_state_event_static::<RoomCreateEventContent>().await.ok()??.deserialize().ok()? {
-        SyncOrStrippedState::Sync(SyncStateEvent::Original(ev)) => {
-            Some(u64::from(ev.origin_server_ts.get()))
-        }
-        _ => None,
-    }
+    let RawSyncOrStrippedState::Sync(raw) =
+        room.get_state_event_static::<RoomCreateEventContent>().await.ok()??
+    else {
+        return None;
+    };
+    serde_json::from_str(raw.json().get()).ok()
 }
 
 async fn sleep_while_current(
@@ -1206,6 +1225,7 @@ async fn sleep_while_current(
 async fn sweep_failed_dm_orphans(
     client: &matrix_sdk::Client,
     before: &std::collections::HashSet<OwnedRoomId>,
+    attempt: &str,
     started_ms: u64,
     ended_ms: u64,
     registry: &Arc<DmCreateRegistry>,
@@ -1225,6 +1245,7 @@ async fn sweep_failed_dm_orphans(
                 continue;
             }
             let creators = room.creators().unwrap_or_default();
+            let create_event = create_event_json(&room).await.unwrap_or_default();
             let probe = DmOrphanProbe {
                 joined: room.state() == RoomState::Joined,
                 joined_members: room.joined_members_count(),
@@ -1237,11 +1258,12 @@ async fn sweep_failed_dm_orphans(
                 encrypted: room.encryption_state().is_encrypted(),
                 join_rule_invite: matches!(room.join_rule(), Some(JoinRule::Invite)),
                 created_in_window: created_in_window(
-                    create_ts_ms(&room).await,
+                    create_event.get("origin_server_ts").and_then(|t| t.as_u64()),
                     started_ms,
                     ended_ms,
                 ),
                 returned_by_a_create: registry.returned_by_a_create(room.room_id()),
+                marked_by_this_attempt: create_event_marks_attempt(&create_event, attempt),
             };
             if !is_failed_dm_orphan(&probe) {
                 continue;
@@ -6618,7 +6640,31 @@ mod tests {
             join_rule_invite: true,
             created_in_window: true,
             returned_by_a_create: false,
+            marked_by_this_attempt: true,
         }
+    }
+
+    #[test]
+    fn a_matching_room_from_another_device_is_never_an_orphan() {
+        let other_device = DmOrphanProbe { marked_by_this_attempt: false, ..orphan_probe() };
+        assert!(!is_failed_dm_orphan(&other_device));
+    }
+
+    #[test]
+    fn only_this_attempts_marker_proves_ownership() {
+        let uid = UserId::parse("@peer:example.org").unwrap();
+        let cc: serde_json::Value = dm_create_request(&uid, false, "attempt-a")
+            .creation_content
+            .expect("a DM request names its attempt")
+            .deserialize_as_unchecked()
+            .unwrap();
+        let ours = json!({ "type": "m.room.create", "content": cc });
+        assert!(create_event_marks_attempt(&ours, "attempt-a"));
+        assert!(!create_event_marks_attempt(&ours, "attempt-b"));
+        assert!(!create_event_marks_attempt(&ours, ""));
+        let unmarked = json!({ "type": "m.room.create", "content": { "room_version": "11" } });
+        assert!(!create_event_marks_attempt(&unmarked, "attempt-a"));
+        assert!(!create_event_marks_attempt(&serde_json::Value::Null, "attempt-a"));
     }
 
     #[test]
@@ -6734,7 +6780,7 @@ mod tests {
     #[test]
     fn the_dm_request_is_what_create_dm_builds() {
         let uid = UserId::parse("@peer:example.org").unwrap();
-        let req = dm_create_request(&uid, false);
+        let req = dm_create_request(&uid, false, "attempt");
         assert!(req.is_direct);
         assert_eq!(req.invite, vec![uid]);
         assert!(matches!(req.preset, Some(RoomPreset::TrustedPrivateChat)));
@@ -6789,7 +6835,7 @@ mod tests {
     #[test]
     fn a_created_dm_lets_the_invitee_publish_call_membership() {
         let uid = UserId::parse("@peer:example.org").unwrap();
-        let raw = dm_create_request(&uid, false)
+        let raw = dm_create_request(&uid, false, "attempt")
             .power_level_content_override
             .expect("a DM that can host a call needs the override");
         let v: serde_json::Value = raw.deserialize_as_unchecked().unwrap();

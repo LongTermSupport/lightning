@@ -12,6 +12,7 @@
 #include <QTemporaryDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QScopeGuard>
 #include <QDir>
 #include <QSignalSpy>
 #include <QtTest/QtTest>
@@ -2282,6 +2283,86 @@ private Q_SLOTS:
         QVERIFY(completed2.count() > 0 || completed2.wait(3000));
         QCOMPARE(QFileInfo(completed2.at(0).at(1).toString()).fileName(),
                  QStringLiteral("a.bin"));
+    }
+
+    void aVanishedDestinationFolderFailsAndNeverWritesTheWorkingDirectory()
+    {
+        QTemporaryDir cwd;
+        QTemporaryDir root;
+        QVERIFY(cwd.isValid() && root.isValid());
+        const QString leaf = QStringLiteral("été a.bin");
+        {
+            QFile canary(cwd.filePath(leaf));
+            QVERIFY(canary.open(QIODevice::WriteOnly));
+            canary.write("canary");
+        }
+        const QString previousCwd = QDir::currentPath();
+        QVERIFY(QDir::setCurrent(cwd.path()));
+        const auto restoreCwd = qScopeGuard([&] { QDir::setCurrent(previousCwd); });
+
+        QFile notADir(root.filePath(QStringLiteral("plain")));
+        QVERIFY(notADir.open(QIODevice::WriteOnly));
+        notADir.close();
+        QVERIFY(QFile::link(root.filePath(QStringLiteral("nowhere")),
+                            root.filePath(QStringLiteral("dangling"))));
+
+        FakeClient client;
+        MediaBridge bridge;
+        bridge.setClient(&client);
+        QSignalSpy saved(&bridge, &MediaBridge::saveFinished);
+        QSignalSpy completed(&bridge, &MediaBridge::saveCompleted);
+
+        const auto expectRefused = [&](const QString &why) {
+            QVERIFY2(saved.count() > 0 || saved.wait(3000), qPrintable(why));
+            QVERIFY2(!saved.last().at(0).toBool(), qPrintable(why));
+            QVERIFY2(completed.isEmpty(), qPrintable(why));
+            QVERIFY2(QDir(cwd.path()).entryList(QDir::Files) == QStringList{leaf},
+                     qPrintable(why));
+            QFile canary(cwd.filePath(leaf));
+            QVERIFY(canary.open(QIODevice::ReadOnly));
+            QVERIFY2(canary.readAll() == QByteArray("canary"), qPrintable(why));
+            saved.clear();
+        };
+
+        for (const bool into : {false, true}) {
+            const QString gone = root.filePath(into ? QStringLiteral("gone-into")
+                                                    : QStringLiteral("gone-as"));
+            QVERIFY(QDir().mkpath(gone));
+            if (into)
+                bridge.saveInto(QStringLiteral("$file"), gone, leaf);
+            else
+                bridge.saveAs(QStringLiteral("$file"),
+                              QUrl::fromLocalFile(QDir(gone).filePath(leaf)));
+            QVERIFY(QDir(gone).removeRecursively());
+            client.succeed(client.fetches.last().opId, QByteArray("payload"),
+                           QStringLiteral("application/octet-stream"));
+            expectRefused(into ? QStringLiteral("saveInto, removed while pending")
+                               : QStringLiteral("saveAs, removed while pending"));
+        }
+
+        bridge.mediaSource(QStringLiteral("$file"), QStringLiteral("full"));
+        client.succeed(client.fetches.last().opId, QByteArray("pixels"));
+        QVERIFY(!bridge.cachedBytes(QStringLiteral("full:$file")).isEmpty());
+        const auto fetchesBefore = client.fetches.size();
+        for (const QString &parent : {QStringLiteral("missing"),
+                                      QStringLiteral("plain"),
+                                      QStringLiteral("dangling")}) {
+            const QString folder = root.filePath(parent);
+            bridge.saveAs(QStringLiteral("$file"),
+                          QUrl::fromLocalFile(QDir(folder).filePath(leaf)));
+            expectRefused(QStringLiteral("cached saveAs into ") + parent);
+            bridge.saveInto(QStringLiteral("$file"), folder, leaf);
+            expectRefused(QStringLiteral("cached saveInto ") + parent);
+        }
+        QCOMPARE(client.fetches.size(), fetchesBefore);
+
+        bridge.saveAs(QStringLiteral("$file"),
+                      QUrl::fromLocalFile(root.filePath(leaf)));
+        QVERIFY(saved.count() > 0 || saved.wait(3000));
+        QVERIFY(saved.last().at(0).toBool());
+        QCOMPARE(completed.count(), 1);
+        QCOMPARE(QFileInfo(completed.at(0).at(1).toString()).canonicalFilePath(),
+                 QFileInfo(root.filePath(leaf)).canonicalFilePath());
     }
 
     void clearingTheSessionDropsTheSaveList()
