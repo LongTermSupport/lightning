@@ -1568,7 +1568,7 @@ mod token_persistence_tests {
                 &client, changes, Arc::clone(&events), None, Arc::clone(&custody));
             client.refresh_access_token().await.expect("refresh");
             let deadline = tokio::time::Instant::now() + Duration::from_secs(5);
-            while custody.generation() == 0 && tokio::time::Instant::now() < deadline {
+            while refreshed(&events).is_empty() && tokio::time::Instant::now() < deadline {
                 tokio::time::sleep(Duration::from_millis(20)).await;
             }
             watcher.abort();
@@ -1597,25 +1597,35 @@ mod token_persistence_tests {
             let events = Arc::new(Mutex::new(VecDeque::new()));
             let watcher = spawn_token_persistence_custody(
                 &client, changes, Arc::clone(&events), None, Arc::clone(&custody));
+            // Holding the queue forces the order a busy runner can produce: custody is
+            // marked before the event is queued, and the abort lands in between.
+            let held = events.lock().unwrap();
             let _ = client.whoami().await;
-            let deadline = tokio::time::Instant::now() + Duration::from_secs(5);
-            while !custody.revoked() && tokio::time::Instant::now() < deadline {
-                tokio::time::sleep(Duration::from_millis(20)).await;
+            let deadline = std::time::Instant::now() + Duration::from_secs(5);
+            while !custody.revoked() && std::time::Instant::now() < deadline {
+                std::thread::sleep(Duration::from_millis(20));
             }
             watcher.abort();
+            drop(held);
+            let revoked = || -> Vec<serde_json::Value> {
+                events
+                    .lock()
+                    .unwrap()
+                    .iter()
+                    .map(|e| serde_json::from_str::<serde_json::Value>(e).unwrap())
+                    .filter(|e| e["type"] == "session_token_revoked")
+                    .collect()
+            };
+            let deadline = std::time::Instant::now() + Duration::from_secs(5);
+            while revoked().is_empty() && std::time::Instant::now() < deadline {
+                std::thread::sleep(Duration::from_millis(20));
+            }
             assert!(custody.revoked(), "UnknownToken did not set the revoked flag");
             let facts = custody.custody_json(|| None);
             assert_eq!(facts["revoked_kind"], "unknown_token");
             assert_eq!(facts["soft_logout"], false);
             assert_eq!(facts["had_refresh_token"], false);
-            let revoked: Vec<serde_json::Value> = events
-                .lock()
-                .unwrap()
-                .iter()
-                .map(|e| serde_json::from_str::<serde_json::Value>(e).unwrap())
-                .filter(|e| e["type"] == "session_token_revoked")
-                .collect();
-            assert_eq!(revoked.len(), 1, "the queue output must be unchanged");
+            assert_eq!(revoked().len(), 1, "an abort after custody must not lose the event");
         });
     }
 
