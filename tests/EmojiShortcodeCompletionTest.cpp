@@ -467,6 +467,66 @@ private Q_SLOTS:
         QVERIFY(m_composer->selectedEmoticons().isEmpty());
     }
 
+    void codeIsNeverConvertedAtSend_data()
+    {
+        QTest::addColumn<QString>("text");
+        QTest::addColumn<QString>("sent");
+        const QString t = kThumbsUp;
+        QTest::newRow("double-backtick span")
+            << QStringLiteral("``x :thumbsup: ``") << QStringLiteral("``x :thumbsup: ``");
+        QTest::newRow("triple-backtick inline span")
+            << QStringLiteral("```x :thumbsup:```") << QStringLiteral("```x :thumbsup:```");
+        QTest::newRow("backtick fence")
+            << QStringLiteral("```\n:thumbsup:\n```") << QStringLiteral("```\n:thumbsup:\n```");
+        QTest::newRow("tilde fence")
+            << QStringLiteral("~~~\n:thumbsup:\n~~~") << QStringLiteral("~~~\n:thumbsup:\n~~~");
+        QTest::newRow("unclosed tilde fence")
+            << QStringLiteral("~~~\n:thumbsup:") << QStringLiteral("~~~\n:thumbsup:");
+        QTest::newRow("prose around a double span")
+            << QStringLiteral(":thumbsup: ``a :thumbsup: b`` :thumbsup:")
+            << t + QStringLiteral(" ``a :thumbsup: b`` ") + t;
+        QTest::newRow("literal backtick inside a double span")
+            << QStringLiteral("``a ` :thumbsup: b`` :thumbsup:")
+            << QStringLiteral("``a ` :thumbsup: b`` ") + t;
+        QTest::newRow("escaped backtick is prose")
+            << QStringLiteral("\\` :thumbsup:") << QStringLiteral("\\` ") + t;
+        QTest::newRow("multiline paste with a tilde fence")
+            << QStringLiteral("a :thumbsup:\n~~~\nb :thumbsup:\n~~~\nc :thumbsup:")
+            << QStringLiteral("a ") + t + QStringLiteral("\n~~~\nb :thumbsup:\n~~~\nc ") + t;
+        QTest::newRow("single spans either side")
+            << QStringLiteral("`one` :thumbsup: `two`")
+            << QStringLiteral("`one` ") + t + QStringLiteral(" `two`");
+    }
+
+    void codeIsNeverConvertedAtSend()
+    {
+        QFETCH(QString, text);
+        QFETCH(QString, sent);
+        m_composer->setText(text);
+        m_composer->send();
+        QCOMPARE(m_client->sentBodies, QStringList{ sent });
+    }
+
+    void codeIsNeverConvertedWhileTyping()
+    {
+        const QString open = QStringLiteral("``x :thumbsup: ");
+        m_composer->setText(open);
+        QCOMPARE(m_composer->maybeAutoConvertShortcodeBeforeCursor(open.size()), -1);
+        QVERIFY(m_composer->shortcodeAutoConvertEdit(open, open.size()).isEmpty());
+
+        const QString fence = QStringLiteral("~~~\n:thumbsup: ");
+        m_composer->setText(fence);
+        QCOMPARE(m_composer->maybeAutoConvertShortcodeBeforeCursor(fence.size()), -1);
+        QCOMPARE(m_composer->text(), fence);
+        QVERIFY(m_composer->shortcodeAutoConvertEdit(fence, fence.size()).isEmpty());
+        QVERIFY(m_composer->emojiCompletionsForText(QStringLiteral("~~~\n:thu"), 8).isEmpty());
+
+        const QString after = QStringLiteral("``a`` :thumbsup: ");
+        m_composer->setText(after);
+        QVERIFY(m_composer->maybeAutoConvertShortcodeBeforeCursor(after.size()) > 0);
+        QCOMPARE(m_composer->text(), QStringLiteral("``a`` ") + kThumbsUp + QStringLiteral(" "));
+    }
+
     void eachInlineThreadDraftKeepsItsOwnChosenImage()
     {
         auto *drafts = new DraftStore(m_composer);

@@ -1005,7 +1005,7 @@ QVariantMap resolveShortcodes(
     }
     return found;
 }
-bool insideCode(const QString &text, int cursor);
+bool insideCode(const QString &text, int at, bool openToEnd);
 }
 
 QVariantMap MessageComposer::composedMessage() const
@@ -1044,7 +1044,7 @@ QString MessageComposer::convertUnicodeShortcodesForSend(const QString &text) co
         const QString code = m.captured(1);
         QString emoji;
         const bool shadowedByCustomPack = customShortcodeExists(code);
-        if (!shadowedByCustomPack && !insideCode(text, start))
+        if (!shadowedByCustomPack && !insideCode(text, start, false))
             emoji = m_unicodeShortcodeResolver(code);
         if (!emoji.isEmpty()) {
             out += emoji;
@@ -1302,14 +1302,135 @@ QPair<int, int> emojiTokenAt(const QString &text, int cursor)
     return { colon, cursor - colon };
 }
 
-bool insideCode(const QString &text, int cursor)
+int runLength(const QString &text, int at, int end, QChar c)
 {
-    int ticks = 0;
-    for (int i = 0; i < cursor && i < text.size(); ++i) {
-        if (text.at(i) == QLatin1Char('`'))
-            ++ticks;
+    int e = at;
+    while (e < end && text.at(e) == c)
+        ++e;
+    return e - at;
+}
+
+// Fence opener per CommonMark: up to three spaces, then >= 3 backticks or
+// tildes; a backtick fence's info string may not contain a backtick.
+int fenceRun(const QString &text, int lineStart, int lineEnd, QChar *marker)
+{
+    int i = lineStart;
+    while (i < lineEnd && i - lineStart < 3 && text.at(i) == QLatin1Char(' '))
+        ++i;
+    if (i >= lineEnd)
+        return 0;
+    const QChar c = text.at(i);
+    if (c != QLatin1Char('`') && c != QLatin1Char('~'))
+        return 0;
+    const int run = runLength(text, i, lineEnd, c);
+    if (run < 3)
+        return 0;
+    if (c == QLatin1Char('`')
+        && QStringView(text).mid(i + run, lineEnd - i - run).contains(c))
+        return 0;
+    *marker = c;
+    return run;
+}
+
+// Code spans of one paragraph: a backtick run closes only on a run of the
+// same length; a backslash-escaped backtick opens nothing. With `openToEnd`
+// (live typing) an unclosed run is treated as a span still being written.
+void codeSpans(const QString &text, int from, int to, bool openToEnd,
+               QList<QPair<int, int>> &out)
+{
+    int i = from;
+    while (i < to) {
+        const QChar c = text.at(i);
+        if (c == QLatin1Char('\\')) {
+            i += 2;
+            continue;
+        }
+        if (c != QLatin1Char('`')) {
+            ++i;
+            continue;
+        }
+        const int len = runLength(text, i, to, c);
+        int j = i + len;
+        int close = -1;
+        while (j < to) {
+            if (text.at(j) != c) {
+                ++j;
+                continue;
+            }
+            const int run = runLength(text, j, to, c);
+            if (run == len) {
+                close = j + run;
+                break;
+            }
+            j += run;
+        }
+        if (close < 0) {
+            if (openToEnd) {
+                out.append({ i, to });
+                return;
+            }
+            i += len;
+            continue;
+        }
+        out.append({ i, close });
+        i = close;
     }
-    return ticks % 2 == 1;
+}
+
+// What a Markdown renderer shows verbatim: fenced blocks (an unclosed one runs
+// to the end) and code spans, which never cross a fence or a blank line.
+QList<QPair<int, int>> codeRanges(const QString &text, bool openToEnd)
+{
+    QList<QPair<int, int>> out;
+    const int n = text.size();
+    int inlineStart = 0;
+    int line = 0;
+    while (line <= n) {
+        int eol = text.indexOf(QLatin1Char('\n'), line);
+        if (eol < 0)
+            eol = n;
+        QChar marker;
+        const int open = fenceRun(text, line, eol, &marker);
+        if (open > 0) {
+            codeSpans(text, inlineStart, line, openToEnd, out);
+            int end = n;
+            for (int next = eol + 1; next <= n;) {
+                int nextEol = text.indexOf(QLatin1Char('\n'), next);
+                if (nextEol < 0)
+                    nextEol = n;
+                QChar closeMarker;
+                const int close = fenceRun(text, next, nextEol, &closeMarker);
+                if (close >= open && closeMarker == marker
+                    && QStringView(text).mid(next, nextEol - next).trimmed().size()
+                        == close) {
+                    end = nextEol;
+                    break;
+                }
+                next = nextEol + 1;
+            }
+            out.append({ line, end });
+            line = end + 1;
+            inlineStart = line;
+            continue;
+        }
+        if (QStringView(text).mid(line, eol - line).trimmed().isEmpty()) {
+            codeSpans(text, inlineStart, line, openToEnd, out);
+            inlineStart = eol + 1;
+        }
+        line = eol + 1;
+    }
+    if (inlineStart < n)
+        codeSpans(text, inlineStart, n, openToEnd, out);
+    return out;
+}
+
+bool insideCode(const QString &text, int at, bool openToEnd)
+{
+    for (const auto &range : codeRanges(text, openToEnd)) {
+        if (range.first <= at && at < range.second)
+            return true;
+    }
+    return false;
 }
 
 QPair<int, int> completeShortcodeEndingAt(const QString &text, int end)
@@ -1360,7 +1481,7 @@ QVariantList MessageComposer::emojiCompletionsForText(const QString &text,
     if (token.first < 0)
         return out;
     const QString prefix = text.mid(token.first + 1, token.second - 1);
-    if (prefix.isEmpty() || insideCode(text, cursorPos))
+    if (prefix.isEmpty() || insideCode(text, token.first, true))
         return out;
     if (m_emoticonSearch)
         out = m_emoticonSearch(prefix, kMaxEmojiCompletions);
@@ -1416,10 +1537,8 @@ QVariantMap MessageComposer::shortcodeAutoConvertEdit(const QString &text,
         return {};
     if (text.at(cursorPos - 1) != QLatin1Char(' '))
         return {};
-    if (insideCode(text, cursorPos))
-        return {};
     const auto token = completeShortcodeEndingAt(text, cursorPos - 1);
-    if (token.first < 0)
+    if (token.first < 0 || insideCode(text, token.first, true))
         return {};
     const QString code = text.mid(token.first + 1, token.second - 2);
     if (customShortcodeExists(code))
@@ -1686,10 +1805,8 @@ int MessageComposer::maybeAutoConvertShortcodeBeforeCursor(int cursorPos)
         return -1;
     if (m_text.at(cursorPos - 1) != QLatin1Char(' '))
         return -1;
-    if (insideCode(m_text, cursorPos))
-        return -1;
     const auto token = completeShortcodeEndingAt(m_text, cursorPos - 1);
-    if (token.first < 0)
+    if (token.first < 0 || insideCode(m_text, token.first, true))
         return -1;
     const QString code = m_text.mid(token.first + 1, token.second - 2);
     if (customShortcodeExists(code))
