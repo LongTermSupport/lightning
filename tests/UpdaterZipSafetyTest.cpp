@@ -57,14 +57,12 @@ void appendU32(QByteArray &out, quint32 value)
     out.append(static_cast<char>((value >> 24) & 0xFF));
 }
 
-QByteArray deflateRaw(const QByteArray &plain)
+QByteArray deflateRaw(const QByteArray &plain, int level = 9, int strategy = 0)
 {
 #if defined(LIGHTNING_UPDATER_HAVE_ZLIB)
     z_stream zs;
     std::memset(&zs, 0, sizeof(zs));
-    if (::deflateInit2(&zs, Z_BEST_COMPRESSION, Z_DEFLATED, -MAX_WBITS, 8,
-                       Z_DEFAULT_STRATEGY)
-        != Z_OK) {
+    if (::deflateInit2(&zs, level, Z_DEFLATED, -MAX_WBITS, 8, strategy) != Z_OK) {
         return QByteArray();
     }
     QByteArray out;
@@ -84,9 +82,74 @@ QByteArray deflateRaw(const QByteArray &plain)
     return out;
 #else
     Q_UNUSED(plain);
+    Q_UNUSED(level);
+    Q_UNUSED(strategy);
     return QByteArray();
 #endif
 }
+
+// Replays the extractor's pre-fix loop: true when one inflate call consumed
+// the last input and filled the 64 KiB output before the stream ended.
+bool lastInputFillsTheOutput(const QByteArray &compressed)
+{
+#if defined(LIGHTNING_UPDATER_HAVE_ZLIB)
+    z_stream zs;
+    std::memset(&zs, 0, sizeof(zs));
+    if (::inflateInit2(&zs, -MAX_WBITS) != Z_OK)
+        return false;
+    QByteArray in = compressed;
+    QByteArray out(64 * 1024, '\0');
+    qsizetype offset = 0;
+    bool hit = false;
+    for (int guard = 0; guard < 100000; ++guard) {
+        if (zs.avail_in == 0) {
+            if (offset == in.size())
+                break;
+            const qsizetype chunk = qMin<qsizetype>(64 * 1024, in.size() - offset);
+            zs.next_in = reinterpret_cast<Bytef *>(in.data() + offset);
+            zs.avail_in = static_cast<uInt>(chunk);
+            offset += chunk;
+        }
+        zs.next_out = reinterpret_cast<Bytef *>(out.data());
+        zs.avail_out = static_cast<uInt>(out.size());
+        const int status = ::inflate(&zs, Z_NO_FLUSH);
+        if (status != Z_OK && status != Z_BUF_ERROR)
+            break;
+        if (zs.avail_in == 0 && offset == in.size() && zs.avail_out == 0) {
+            hit = true;
+            break;
+        }
+        if (status == Z_BUF_ERROR)
+            break;
+    }
+    ::inflateEnd(&zs);
+    return hit;
+#else
+    Q_UNUSED(compressed);
+    return false;
+#endif
+}
+
+QByteArray zeroTailedBlob(qsizetype size)
+{
+    QByteArray out = compressibleBlob(1024, int(size / 1024) + 1, 0x5EEDu)
+                         .left(qMax<qsizetype>(0, size - 258));
+    out.append(QByteArray(size - out.size(), '\0'));
+    return out;
+}
+
+struct DeflateStyle {
+    const char *name;
+    int level;
+    int strategy;
+};
+
+// level 0 = stored blocks; strategy 4 = Z_FIXED (fixed Huffman); 0 = dynamic.
+constexpr DeflateStyle kDeflateStyles[] = {
+    { "stored", 0, 0 },
+    { "fixed-huffman", 9, 4 },
+    { "dynamic-huffman", 9, 0 },
+};
 
 QByteArray compressibleBlob(int blockSize, int repeats, quint32 seed)
 {
@@ -111,6 +174,8 @@ struct ZipEntry {
     bool corruptCrc = false;
     quint16 method = 0;
     qint64 declaredUncompressedSize = -1;
+    int deflateLevel = 9;
+    int deflateStrategy = 0;
     std::function<void(QByteArray &)> mutatePayload;
 };
 
@@ -158,7 +223,8 @@ bool writeZip(const QString &path, const QList<ZipEntry> &entries)
         if (entry.method == 0) {
             payload = entry.contents;
         } else if (entry.method == 8) {
-            payload = deflateRaw(entry.contents);
+            payload = deflateRaw(entry.contents, entry.deflateLevel,
+                                 entry.deflateStrategy);
             if (payload.isEmpty())
                 return false;
         } else {
@@ -273,10 +339,14 @@ private slots:
     void acceptsAnEntryAtTheCompressionRatioCap();
     void refusesADeflatedTraversalEntry();
     void refusesADeflatedSymlinkEntry();
+    void extractsStreamsWhoseLastInputFillsTheOutputBuffer();
+    void theFinalDrainStillEnforcesTheDeclaredSizeAndCrc();
+    void aTruncatedBoundaryStreamFailsWithoutLooping();
 
 private:
     QStringList filesUnderStaging() const;
     void resetStaging();
+    qsizetype boundaryZeroSize() const;
 
     QTemporaryDir m_dir;
     QString m_staging;
@@ -968,6 +1038,113 @@ void UpdaterZipSafetyTest::refusesADeflatedSymlinkEntry()
     QVERIFY(filesUnderStaging().isEmpty());
     QVERIFY(!QFileInfo(QDir(m_staging).absoluteFilePath(QStringLiteral("config")))
                  .isSymLink());
+}
+
+qsizetype UpdaterZipSafetyTest::boundaryZeroSize() const
+{
+    for (qsizetype size = 65537; size < 65536 + 1024; ++size) {
+        if (lastInputFillsTheOutput(deflateRaw(QByteArray(size, '\0'))))
+            return size;
+    }
+    return -1;
+}
+
+void UpdaterZipSafetyTest::extractsStreamsWhoseLastInputFillsTheOutputBuffer()
+{
+    SKIP_WITHOUT_DEFLATE();
+
+    // Zero runs exceed the default ratio cap; the cap is not under test here.
+    ArchiveLimits limits;
+    limits.maxCompressionRatio = 2000;
+    const auto outPath = QDir(m_staging).absoluteFilePath(QStringLiteral("data.bin"));
+
+    for (const DeflateStyle &style : kDeflateStyles) {
+        int boundaryHits = 0;
+        for (const qsizetype base : { qsizetype(65536), qsizetype(131072) }) {
+            for (qsizetype size = base - 2; size <= base + 96; ++size) {
+                for (int family = 0; family < 2; ++family) {
+                    const QByteArray plain =
+                        family == 0 ? QByteArray(size, '\0') : zeroTailedBlob(size);
+                    ZipEntry entry = deflatedFile("data.bin", plain);
+                    entry.deflateLevel = style.level;
+                    entry.deflateStrategy = style.strategy;
+                    if (lastInputFillsTheOutput(
+                            deflateRaw(plain, style.level, style.strategy)))
+                        ++boundaryHits;
+
+                    resetStaging();
+                    QVERIFY(writeZip(m_zip, {entry}));
+                    const ArchiveResult result =
+                        extractZipSafely(m_zip, m_staging, limits);
+                    QVERIFY2(result.ok(),
+                             qPrintable(QStringLiteral("%1 size %2 family %3: %4")
+                                            .arg(QLatin1String(style.name))
+                                            .arg(size)
+                                            .arg(family)
+                                            .arg(QLatin1String(
+                                                archiveErrorName(result.error)))));
+                    QFile out(outPath);
+                    QVERIFY(out.open(QIODevice::ReadOnly));
+                    QCOMPARE(out.readAll(), plain);
+                }
+            }
+        }
+        // The sweep must actually reach the boundary on this zlib, or it
+        // proves nothing about it.
+        if (style.level != 0)
+            QVERIFY2(boundaryHits > 0, style.name);
+    }
+}
+
+void UpdaterZipSafetyTest::theFinalDrainStillEnforcesTheDeclaredSizeAndCrc()
+{
+    SKIP_WITHOUT_DEFLATE();
+
+    const qsizetype size = boundaryZeroSize();
+    QVERIFY(size > 0);
+    ArchiveLimits limits;
+    limits.maxCompressionRatio = 2000;
+
+    ZipEntry undersized = deflatedFile("data.bin", QByteArray(size, '\0'));
+    undersized.declaredUncompressedSize = size - 1;
+    QVERIFY(writeZip(m_zip, {undersized}));
+    ArchiveResult result = extractZipSafely(m_zip, m_staging, limits);
+    QCOMPARE(result.error, ArchiveError::EntrySizeExceeded);
+    QVERIFY(filesUnderStaging().isEmpty());
+
+    resetStaging();
+    ZipEntry badCrc = deflatedFile("data.bin", QByteArray(size, '\0'));
+    badCrc.corruptCrc = true;
+    QVERIFY(writeZip(m_zip, {badCrc}));
+    result = extractZipSafely(m_zip, m_staging, limits);
+    QCOMPARE(result.error, ArchiveError::ChecksumMismatch);
+    QVERIFY(filesUnderStaging().isEmpty());
+
+    resetStaging();
+    QVERIFY(writeZip(m_zip, {deflatedFile("data.bin", QByteArray(size, '\0'))}));
+    limits.maxCompressionRatio = ArchiveLimits().maxCompressionRatio;
+    result = extractZipSafely(m_zip, m_staging, limits);
+    QCOMPARE(result.error, ArchiveError::CompressionRatioExceeded);
+    QVERIFY(filesUnderStaging().isEmpty());
+}
+
+void UpdaterZipSafetyTest::aTruncatedBoundaryStreamFailsWithoutLooping()
+{
+    SKIP_WITHOUT_DEFLATE();
+
+    const qsizetype size = boundaryZeroSize();
+    QVERIFY(size > 0);
+    ArchiveLimits limits;
+    limits.maxCompressionRatio = 2000;
+
+    ZipEntry entry = deflatedFile("data.bin", QByteArray(size, '\0'));
+    entry.mutatePayload = [](QByteArray &payload) { payload.chop(1); };
+    QVERIFY(writeZip(m_zip, {entry}));
+    const ArchiveResult result = extractZipSafely(m_zip, m_staging, limits);
+    QVERIFY2(result.error == ArchiveError::Truncated
+                 || result.error == ArchiveError::InflateFailed,
+             archiveErrorName(result.error));
+    QVERIFY(filesUnderStaging().isEmpty());
 }
 
 QTEST_GUILESS_MAIN(UpdaterZipSafetyTest)

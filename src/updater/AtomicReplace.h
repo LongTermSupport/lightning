@@ -45,6 +45,8 @@ struct ReplaceResult {
 struct ReplaceHooks {
     std::function<bool()> beforeBackupRename;
     std::function<bool()> beforePromoteRename;
+    // Per-entry rename in swapDirectory; returning false fails that rename.
+    std::function<bool(const QString &from, const QString &to)> beforeEntryRename;
     bool forceCopyFallback = false;
 };
 
@@ -69,5 +71,9 @@ bool directoryIsWritable(const QString &directory);
 // Sharing the parent keeps promotion a same-filesystem rename. Shared with the
 // helper so tests assert the rule it actually uses.
 QString portableBackupPath(const QString &targetDir);
+
+// Written into a portable backup that still holds files a failed update could
+// not put back; swapDirectory never clears a backup that carries it.
+constexpr auto kUnrestoredBackupMarker = "LIGHTNING-RESTORE-INCOMPLETE.txt";
 
 }

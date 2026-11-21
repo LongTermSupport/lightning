@@ -788,6 +788,7 @@ QVariantMap SettingsSyncController::previewImport(const QUrl &file)
     out.insert(QStringLiteral("shortcutChanges"), shortcutChanges);
     out.insert(QStringLiteral("shortcutsRejected"), int(parsed.shortcutsRejected.size()));
     out.insert(QStringLiteral("themesNew"), themesNew);
+    out.insert(QStringLiteral("activeThemeDropped"), parsed.activeThemeDropped);
     return out;
 }
 

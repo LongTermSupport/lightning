@@ -352,7 +352,10 @@ ParseResult parseDocument(const QByteArray &bytes)
     }
 
     const QJsonArray themes = root.value(QStringLiteral("customThemes")).toArray();
-    for (const QJsonValue &t : themes) {
+    const QJsonValue active = root.value(QStringLiteral("activeCustomTheme"));
+    const int activeSource = active.isDouble() ? active.toInt(-1) : -1;
+    for (int i = 0; i < themes.size(); ++i) {
+        const QJsonValue t = themes.at(i);
         if (r.doc.themes.size() >= kMaxThemes || !t.isObject()) {
             ++r.themesDropped;
             continue;
@@ -362,11 +365,11 @@ ParseResult parseDocument(const QByteArray &bytes)
             ++r.themesDropped;
             continue;
         }
+        if (i == activeSource)
+            r.doc.activeTheme = int(r.doc.themes.size());
         r.doc.themes.append(QString::fromUtf8(compact));
     }
-    const QJsonValue active = root.value(QStringLiteral("activeCustomTheme"));
-    if (active.isDouble() && active.toInt(-1) >= 0 && active.toInt(-1) < r.doc.themes.size())
-        r.doc.activeTheme = active.toInt();
+    r.activeThemeDropped = activeSource >= 0 && r.doc.activeTheme < 0;
 
     r.ok = true;
     return r;

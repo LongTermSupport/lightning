@@ -85,6 +85,9 @@ struct ParseResult
     QStringList unknown;
     QStringList shortcutsRejected;
     int themesDropped = 0;
+    // The file named an active theme that was not kept; activeTheme is then -1
+    // and the import leaves the current active custom theme selected.
+    bool activeThemeDropped = false;
 };
 ParseResult parseDocument(const QByteArray &bytes);
 

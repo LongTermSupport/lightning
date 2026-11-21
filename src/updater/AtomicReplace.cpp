@@ -111,9 +111,19 @@ QStringList directoryEntryNames(const QString &directory)
                                      | QDir::System | QDir::NoDotAndDotDot);
 }
 
+using EntryRenameHook = std::function<bool(const QString &, const QString &)>;
+
+bool renameEntry(const QString &from, const QString &to, const EntryRenameHook &hook)
+{
+    if (hook && !hook(from, to))
+        return false;
+    return QDir().rename(from, to);
+}
+
 bool moveDirectoryEntries(const QString &from, const QString &to,
                           QStringList *movedNames,
-                          const QStringList &preserveNames = QStringList())
+                          const QStringList &preserveNames,
+                          const EntryRenameHook &hook)
 {
     const QDir source(from);
     const QDir destination(to);
@@ -124,8 +134,8 @@ bool moveDirectoryEntries(const QString &from, const QString &to,
         // that step 4 deletes.
         if (preserveNames.contains(name, Qt::CaseInsensitive))
             continue;
-        if (!QDir().rename(source.absoluteFilePath(name),
-                           destination.absoluteFilePath(name)))
+        if (!renameEntry(source.absoluteFilePath(name),
+                         destination.absoluteFilePath(name), hook))
             return false;
         if (movedNames)
             movedNames->append(name);
@@ -133,14 +143,40 @@ bool moveDirectoryEntries(const QString &from, const QString &to,
     return true;
 }
 
-void moveEntriesBack(const QString &from, const QString &to,
-                     const QStringList &names)
+// Tries every name even after a failure; true only when all of them moved.
+bool moveEntriesBack(const QString &from, const QString &to,
+                     const QStringList &names, const EntryRenameHook &hook)
 {
     const QDir source(from);
     const QDir destination(to);
-    for (const QString &name : names)
-        QDir().rename(source.absoluteFilePath(name),
-                      destination.absoluteFilePath(name));
+    bool all = true;
+    for (const QString &name : names) {
+        if (!renameEntry(source.absoluteFilePath(name),
+                         destination.absoluteFilePath(name), hook))
+            all = false;
+    }
+    return all;
+}
+
+ReplaceResult unrestoredBackupFailure(const QString &backup, const QString &target,
+                                      const QString &message)
+{
+    QFile marker(QDir(backup).absoluteFilePath(
+        QString::fromLatin1(kUnrestoredBackupMarker)));
+    if (!directoryEntryNames(backup).isEmpty()
+        && marker.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        marker.write(QStringLiteral(
+                         "A Lightning update failed and could not put every file "
+                         "of the previous version back.\nThis folder holds the "
+                         "files that were not restored. Move them back into:\n%1\n"
+                         "then delete this folder, or reinstall Lightning.\n")
+                         .arg(QDir::toNativeSeparators(target))
+                         .toUtf8());
+        marker.close();
+    }
+    ReplaceResult failure = replaceFail(ReplaceError::RollbackFailed, message);
+    failure.backupPath = backup;
+    return failure;
 }
 
 // Recursive removal with hard guards. Refuses anything that is not an
@@ -405,6 +441,8 @@ ReplaceResult swapDirectory(const QString &stagedDir, const QString &targetDir,
         // cannot delete the then-mapped helper). Its holder is gone now, so
         // clear it rather than fail every later update.
         if (backupInfo.isSymLink() || !backupInfo.isDir()
+            || QFileInfo::exists(QDir(cleanBackup).absoluteFilePath(
+                QString::fromLatin1(kUnrestoredBackupMarker)))
             || !removeTreeGuarded(cleanBackup, cleanTarget)
             || QFileInfo::exists(cleanBackup)) {
             return replaceFail(ReplaceError::BackupPathUnusable,
@@ -464,10 +502,17 @@ true);
     }
     QStringList backedUp;
     if (!moveDirectoryEntries(cleanTarget, cleanBackup, &backedUp,
-                              preserveNames)) {
-        moveEntriesBack(cleanBackup, cleanTarget, backedUp);
-        removeTreeGuarded(cleanBackup, cleanTarget);
+                              preserveNames, hooks.beforeEntryRename)) {
+        const bool restored = moveEntriesBack(cleanBackup, cleanTarget, backedUp,
+                                              hooks.beforeEntryRename);
         removeTreeGuarded(scratch, cleanTarget);
+        if (!restored || !directoryEntryNames(cleanBackup).isEmpty())
+            return unrestoredBackupFailure(
+                cleanBackup, cleanTarget,
+                QStringLiteral("could not move the current installation aside "
+                               "AND could not put all of it back; the rest of "
+                               "the previous version is at the backup path"));
+        QDir().rmdir(cleanBackup);
         return replaceFail(ReplaceError::BackupFailed,
                            QStringLiteral("could not move the current installation "
                                           "aside; nothing was changed"),
@@ -480,9 +525,9 @@ true);
             if (!preserveNames.contains(name, Qt::CaseInsensitive))
                 undo << name;
         }
-        moveEntriesBack(cleanTarget, scratch, undo);
+        moveEntriesBack(cleanTarget, scratch, undo, hooks.beforeEntryRename);
         removeTreeGuarded(scratch, cleanTarget);
-        moveEntriesBack(cleanBackup, cleanTarget, backedUp);
+        moveEntriesBack(cleanBackup, cleanTarget, backedUp, hooks.beforeEntryRename);
         QStringList remaining;
         for (const QString &name : directoryEntryNames(cleanTarget)) {
             if (!preserveNames.contains(name, Qt::CaseInsensitive))
@@ -498,28 +543,25 @@ true);
 
     if (hooks.beforePromoteRename && !hooks.beforePromoteRename()) {
         if (!rollback())
-            return replaceFail(ReplaceError::RollbackFailed,
-                               QStringLiteral("the new version could not be "
-                                              "promoted AND the previous "
-                                              "installation could not be restored; "
-                                              "the previous version is at the "
-                                              "backup path"));
+            return unrestoredBackupFailure(
+                cleanBackup, cleanTarget,
+                QStringLiteral("the new version could not be promoted AND the "
+                               "previous installation could not be restored; "
+                               "the previous version is at the backup path"));
         return replaceFail(ReplaceError::PromoteFailed,
                            QStringLiteral("simulated failure before promoting the "
                                           "new installation"),
 true);
     }
 
-    if (!moveDirectoryEntries(scratch, cleanTarget, nullptr, preserveNames)) {
-        if (!rollback()) {
-            ReplaceResult failure =
-                replaceFail(ReplaceError::RollbackFailed,
-                            QStringLiteral("the new version could not be promoted "
-                                           "AND the previous installation could "
-                                           "not be restored"));
-            failure.backupPath = cleanBackup;
-            return failure;
-        }
+    if (!moveDirectoryEntries(scratch, cleanTarget, nullptr, preserveNames,
+                              hooks.beforeEntryRename)) {
+        if (!rollback())
+            return unrestoredBackupFailure(
+                cleanBackup, cleanTarget,
+                QStringLiteral("the new version could not be promoted AND the "
+                               "previous installation could not be restored; "
+                               "the previous version is at the backup path"));
         return replaceFail(ReplaceError::PromoteFailed,
                            QStringLiteral("could not promote the new installation"),
 true);

@@ -233,10 +233,6 @@ updater::ReplaceResult runPortableSwap(const updater::UpdaterArguments &args,
         failure.message = *archiveError;
         return failure;
     }
-    QDir stale(updater::portableBackupPath(args.targetPath));
-    if (stale.exists())
-        stale.removeRecursively();
-
     QTemporaryDir staging(QDir(workRoot).absoluteFilePath(
         QStringLiteral("staging-")));
     staging.setAutoRemove(true);
