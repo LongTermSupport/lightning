@@ -5247,22 +5247,49 @@ bool SettingsManager::saveSession(const QString &homeserverUrl_,
         { kSecretRefreshToken, refreshToken_ },
         { kSecretOAuthClientId, oauthClientId_ },
     };
+    const QStringList recordKeys{
+        QLatin1String(kActiveAccount), QLatin1String(kHomeserver),
+        QLatin1String(kAccessTokenLegacy), accountKey(slug, kAccountUserId),
+        accountKey(slug, kAccountHomeserver), accountKey(slug, kAccountDeviceId),
+        accountKey(slug, kAccountAddedAt), accountKey(slug, kAccountAuthType),
+        accountKey(slug, kAccountSyncToken), accountKey(slug, kAccountKeyringItems),
+        accountKey(slug, kAccountKeyringDevice), accountKey(slug, kAccountKeyringBackend),
+    };
+    QHash<QString, QVariant> previousRecord;
+    for (const QString &key : recordKeys) {
+        if (m_store->contains(key))
+            previousRecord.insert(key, m_store->value(key));
+    }
+    const auto restoreRecord = [&] {
+        for (const QString &key : recordKeys) {
+            const auto before = previousRecord.constFind(key);
+            if (before == previousRecord.cend())
+                m_store->remove(key);
+            else
+                m_store->setValue(key, before.value());
+        }
+    };
     QHash<QString, QString> previousSecrets;
     const auto restoreSecrets = [&] {
         for (const auto &[key, value] : secrets) {
             const QString before = previousSecrets.value(QLatin1String(key));
-            if (before.isEmpty())
-                m_secretStore->deleteSecret(uidCanonical, QLatin1String(key));
-            else
-                m_secretStore->storeSecret(uidCanonical, QLatin1String(key), before);
+            const bool restored = before.isEmpty()
+                ? m_secretStore->deleteSecret(uidCanonical, QLatin1String(key))
+                : m_secretStore->storeSecret(uidCanonical, QLatin1String(key), before);
+            if (!restored)
+                qCWarning(lcSettings) << "saveSession: could not put back the previous" << key;
         }
     };
     if (m_secretStore) {
+        // Point the record at the keyring this write reaches first, so the
+        // reads below ask where the new items go (see TwoBackendSecretStore).
+        noteKeyringBackend(uidCanonical);
         for (const auto &[key, value] : secrets) {
             previousSecrets.insert(QLatin1String(key),
                                    m_secretStore->readSecret(uidCanonical, QLatin1String(key)));
             if (m_secretStore->lastReadFailed() && !holder.isEmpty()) {
                 qCWarning(lcSettings) << "saveSession refused: the keyring could not be read";
+                restoreRecord();
                 return false;
             }
         }
@@ -5278,24 +5305,12 @@ bool SettingsManager::saveSession(const QString &homeserverUrl_,
                 qCWarning(lcSettings) << "saveSession refused: the keyring did not keep"
                                       << key << m_secretStore->lastError();
                 restoreSecrets();
+                restoreRecord();
                 return false;
             }
         }
     }
 
-    const QStringList recordKeys{
-        QLatin1String(kActiveAccount), QLatin1String(kHomeserver),
-        QLatin1String(kAccessTokenLegacy), accountKey(slug, kAccountUserId),
-        accountKey(slug, kAccountHomeserver), accountKey(slug, kAccountDeviceId),
-        accountKey(slug, kAccountAddedAt), accountKey(slug, kAccountAuthType),
-        accountKey(slug, kAccountSyncToken), accountKey(slug, kAccountKeyringItems),
-        accountKey(slug, kAccountKeyringDevice), accountKey(slug, kAccountKeyringBackend),
-    };
-    QHash<QString, QVariant> previousRecord;
-    for (const QString &key : recordKeys) {
-        if (m_store->contains(key))
-            previousRecord.insert(key, m_store->value(key));
-    }
     // status() keeps the first error, so only one that appears here is ours.
     const bool storeWasHealthy = m_store->status() == QSettings::NoError;
 
@@ -5303,6 +5318,7 @@ bool SettingsManager::saveSession(const QString &homeserverUrl_,
         qCWarning(lcSettings) << "saveSession rejected: unsafe user id";
         if (m_secretStore)
             restoreSecrets();
+        restoreRecord();
         return false;
     }
     m_store->remove(accountKey(slug, kAccountSyncToken));
@@ -5327,15 +5343,9 @@ bool SettingsManager::saveSession(const QString &homeserverUrl_,
     m_store->sync();
     if (storeWasHealthy && m_store->status() != QSettings::NoError) {
         qCWarning(lcSettings) << "saveSession refused: the settings file could not be written";
-        for (const QString &key : recordKeys) {
-            const auto before = previousRecord.constFind(key);
-            if (before == previousRecord.cend())
-                m_store->remove(key);
-            else
-                m_store->setValue(key, before.value());
-        }
         if (m_secretStore)
             restoreSecrets();
+        restoreRecord();
         Q_EMIT accountsChanged();
         return false;
     }

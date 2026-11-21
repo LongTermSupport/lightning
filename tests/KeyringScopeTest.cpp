@@ -360,6 +360,7 @@ private Q_SLOTS:
 
     void aSignInTheSecretServiceHoldsIsReadThereWhenALaterLaunchGetsTheFileKeyring();
     void aSignInTheFileKeyringHoldsIsUnreadableNotLostWhenThePortalDidNotAnswer();
+    void signingInAgainWhileTheFileKeyringIsUnreachableSavesToTheSecretService();
     void aSecretServiceNotUpYetIsTransientAndTheNextReadFindsTheSignIn();
     void signingOutOfAnAccountReadPastTheFileKeyringClearsBothKeyrings();
     void aSignInSavedBeforeTheRecordIsRecordedWhereItIsFound();
@@ -1017,6 +1018,28 @@ void KeyringScopeTest::aSignInTheFileKeyringHoldsIsUnreadableNotLostWhenThePorta
         QCOMPARE(launch->accessTokenFor(kUser), QStringLiteral("file-access"));
         QVERIFY(!launch->secretBackendUnavailable());
     }
+}
+
+void KeyringScopeTest::signingInAgainWhileTheFileKeyringIsUnreachableSavesToTheSecretService()
+{
+    FakeKeyring file;
+    FakeKeyring service;
+    {
+        SandboxKeyringStore store(&file, &service, QStringLiteral("file"));
+        auto launch = openInstall(kFlatpak, &store);
+        QVERIFY(launch->saveSession(kHs, kUser, QStringLiteral("FLATPAKDEV"),
+                                    QStringLiteral("file-access")));
+    }
+    const int fileItems = scopedItemsFor(file, kUser);
+    SandboxKeyringStore store(&file, &service, QStringLiteral("service"));
+    auto launch = openInstall(kFlatpak, &store);
+    QVERIFY(launch->saveSession(kHs, kUser, QStringLiteral("NEWDEV"),
+                                QStringLiteral("service-access"),
+                                QStringLiteral("service-refresh")));
+    QCOMPARE(launch->keyringBackendFor(kUser), QStringLiteral("service"));
+    QCOMPARE(launch->accessTokenFor(kUser), QStringLiteral("service-access"));
+    QCOMPARE(launch->refreshTokenFor(kUser), QStringLiteral("service-refresh"));
+    QCOMPARE(scopedItemsFor(file, kUser), fileItems);
 }
 
 void KeyringScopeTest::aSecretServiceNotUpYetIsTransientAndTheNextReadFindsTheSignIn()
