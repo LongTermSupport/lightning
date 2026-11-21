@@ -207,6 +207,61 @@ async fn a_message_redacted_in_the_same_sync_is_never_indexed() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn redacting_the_shown_edit_falls_back_to_the_previous_one_without_a_sweep() {
+    let server = MatrixMockServer::new().await;
+    let client = server.client_builder().build().await;
+    client.event_cache().subscribe().unwrap();
+    let index = Arc::new(Mutex::new(Some(SearchIndex::open_in_memory().unwrap())));
+    let _live = register_live_index_handler(&client, &index);
+    let _redactions = register_redaction_handler(&client, &index);
+
+    sync(&client, vec![message("$m0", "an older line", 500)], "0", None).await;
+    server.mock_room_state_encryption().plain().mount().await;
+    client
+        .get_room(room_id!("!dm:localhost"))
+        .unwrap()
+        .latest_encryption_state()
+        .await
+        .unwrap();
+    let edit = |id: &str, body: &str, ts: u64| {
+        serde_json::json!({"type": "m.room.message", "event_id": id, "room_id": ROOM,
+            "sender": "@friend:localhost", "origin_server_ts": ts,
+            "content": {"msgtype": "m.text", "body": format!("* {body}"),
+                "m.new_content": {"msgtype": "m.text", "body": body},
+                "m.relates_to": {"rel_type": "m.replace", "event_id": "$o"}}})
+    };
+    sync(&client, vec![message("$o", "kappa original", 1000)], "1", None).await;
+    sync(&client, vec![edit("$e1", "lambda interim", 2000)], "2", None).await;
+    sync(&client, vec![edit("$e2", "mu final", 3000)], "3", None).await;
+    let hits = |q: &str| index.lock().unwrap().as_ref().unwrap().search(q, "", 10, 0).unwrap().len();
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+    while hits("mu final") == 0 {
+        assert!(std::time::Instant::now() < deadline, "the last edit was never indexed");
+        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
+    }
+
+    sync(&client, vec![redaction("$r", "$e2", 3500)], "4", None).await;
+    sync(&client, vec![message("$barrier", "a later line", 4000)], "5", None).await;
+    wait_indexed(&index, "$barrier").await;
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+    while hits("lambda interim") == 0 && std::time::Instant::now() < deadline {
+        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
+    }
+    assert_eq!(hits("mu final"), 0, "the redacted edit is still searchable");
+    assert_eq!(hits("lambda interim"), 1, "the message did not fall back to the previous edit");
+    assert_eq!(hits("kappa original"), 0);
+    assert!(indexed(&index, "$o"));
+
+    sync(&client, vec![redaction("$r1", "$e1", 4500)], "6", None).await;
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+    while hits("kappa original") == 0 && std::time::Instant::now() < deadline {
+        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
+    }
+    assert_eq!(hits("lambda interim"), 0);
+    assert_eq!(hits("kappa original"), 1, "the message did not fall back to its own text");
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_gap_fill_applies_the_redactions_it_fetches() {
     let server = MatrixMockServer::new().await;
     let client = server.client_builder().build().await;

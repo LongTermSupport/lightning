@@ -405,18 +405,22 @@ impl SearchIndex {
             .map_err(|e| format!("cannot record an edit: {e}"))
     }
 
-    pub(crate) fn remove_event(&self, event_id: &str) -> Result<(), String> {
+    /// Returns the messages whose shown edit this was; their rows are gone
+    /// and only the event cache can say what they read before that edit.
+    pub(crate) fn remove_event(&self, event_id: &str) -> Result<Vec<String>, String> {
         let _ = self.note_redacted(event_id);
         self.conn
             .execute("DELETE FROM messages WHERE event_id = ?1", params![event_id])
             .map_err(|e| format!("cannot remove a message from the index: {e}"))?;
-        self.conn
-            .execute(
-                "DELETE FROM messages WHERE edit_id = ?1 AND edit_id IS NOT NULL",
-                params![event_id],
-            )
+        let mut stmt = self
+            .conn
+            .prepare("DELETE FROM messages WHERE edit_id = ?1 RETURNING event_id")
+            .map_err(|e| e.to_string())?;
+        let edited = stmt
+            .query_map(params![event_id], |r| r.get::<_, String>(0))
+            .and_then(|rows| rows.collect::<Result<Vec<_>, _>>())
             .map_err(|e| format!("cannot remove an edited message from the index: {e}"))?;
-        Ok(())
+        Ok(edited)
     }
 
     /// Every writer checks this list, so a redaction processed before the
@@ -1610,7 +1614,7 @@ pub(crate) fn register_redaction_handler(
 ) -> matrix_sdk::event_handler::EventHandlerDropGuard {
     let index = std::sync::Arc::clone(index);
     let handle = client.add_event_handler(
-        move |ev: matrix_sdk::ruma::events::room::redaction::SyncRoomRedactionEvent| {
+        move |ev: matrix_sdk::ruma::events::room::redaction::SyncRoomRedactionEvent, room: Room| {
             let index = std::sync::Arc::clone(&index);
             async move {
                 // `redacts` moved from the event to its content between room versions;
@@ -1626,15 +1630,49 @@ pub(crate) fn register_redaction_handler(
                     return;
                 };
                 let target = redacts.to_string();
-                if let Ok(guard) = index.lock() {
-                    if let Some(index) = guard.as_ref() {
-                        let _ = index.remove_event(&target);
-                    }
+                let generation = current_generation(&index);
+                let edited = match index.lock() {
+                    Ok(guard) => guard
+                        .as_ref()
+                        .and_then(|index| index.remove_event(&target).ok())
+                        .unwrap_or_default(),
+                    Err(_) => return,
+                };
+                for original in edited {
+                    reindex_from_cache(&room, &index, generation, &original).await;
                 }
             }
         },
     );
     client.event_handler_drop_guard(handle)
+}
+
+/// Re-derives one message from the original and the edits the event cache
+/// holds; the redacted edit is skipped through the redaction list. If the
+/// original is not in the cache the row stays out until a sweep finds it.
+async fn reindex_from_cache(
+    room: &Room,
+    index: &std::sync::Arc<std::sync::Mutex<Option<SearchIndex>>>,
+    generation: u64,
+    original: &str,
+) {
+    let Ok(event_id) = matrix_sdk::ruma::EventId::parse(original) else { return };
+    let Ok((room_cache, _drop_handles)) = room.event_cache().await else { return };
+    let Ok(Some((event, edits))) = room_cache
+        .find_event_with_relations(
+            &event_id,
+            Some(vec![matrix_sdk::ruma::events::relation::RelationType::Replacement]),
+        )
+        .await
+    else {
+        return;
+    };
+    let raws = std::iter::once(&event).chain(edits.iter()).filter_map(with_encryption);
+    let batch = batch_from(room, raws).await;
+    let room_id = room.room_id().to_string();
+    let index = std::sync::Arc::clone(index);
+    let _ = tokio::task::spawn_blocking(move || write_locked(&index, generation, &room_id, &batch))
+        .await;
 }
 
 #[cfg(test)]
