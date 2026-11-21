@@ -35,10 +35,12 @@ public:
                      const QString &key,
                      const QString &value) override
     {
-        if (m_failStore) {
+        if (m_failStore || key == failKey) {
             m_error = QStringLiteral("simulated store failure");
             return false;
         }
+        if (key == dropKey)
+            return true;
         m_values.insert(userId + QLatin1Char('/') + key, value);
         return true;
     }
@@ -78,6 +80,8 @@ public:
     {
         return m_values.contains(userId + QLatin1Char('/') + key);
     }
+    QString failKey;
+    QString dropKey;
 
 private:
     QHash<QString, QString> m_values;
@@ -172,6 +176,9 @@ private Q_SLOTS:
     void aPendingSignInEndsWithItsSignInOrItsStore();
     void aPendingSignInTypedAsAStandInEndsWhenItsStoreIsRecorded();
     void aWriterKilledMidWriteLeavesTheLastGoodFile();
+    void aCredentialTheKeyringDidNotKeepLeavesThePreviousSignIn();
+    void aFirstSignInWhoseCredentialsWereNotKeptIsNotSaved();
+    void aSettingsFileThatCannotBeWrittenLeavesThePreviousSignIn();
 
 private:
     static void seedAccountRecord(const QString &userId,
@@ -3133,6 +3140,96 @@ void SettingsSessionTest::aWriterKilledMidWriteLeavesTheLastGoodFile()
     writer.sync();
     QCOMPARE(writer.status(), QSettings::NoError);
     QVERIFY(QSettings().value(QStringLiteral("r6/afterTheKill")).toBool());
+}
+
+void SettingsSessionTest::aCredentialTheKeyringDidNotKeepLeavesThePreviousSignIn()
+{
+    const QString hs = QStringLiteral("https://matrix.example");
+    const QString user = QStringLiteral("@alice:matrix.example");
+    for (const QString key : { QStringLiteral("accessToken"), QStringLiteral("refreshToken"),
+                               QStringLiteral("oauthClientId") }) {
+        for (const bool drop : { false, true }) {
+            init();
+            FakeSecretStore secrets;
+            SettingsManager settings;
+            settings.setSecretStore(&secrets);
+            QVERIFY(settings.saveSession(hs, user, QStringLiteral("OLDDEVICE"),
+                                         QStringLiteral("old-access-fixture"),
+                                         QStringLiteral("old-refresh-fixture"),
+                                         QStringLiteral("oauth"),
+                                         QStringLiteral("old-client")));
+            (drop ? secrets.dropKey : secrets.failKey) = key;
+            const QByteArray where = key.toLatin1() + (drop ? " dropped" : " refused");
+            QVERIFY2(!settings.saveSession(hs, user, QStringLiteral("NEWDEVICE"),
+                                           QStringLiteral("new-access-fixture"),
+                                           QStringLiteral("new-refresh-fixture"),
+                                           QStringLiteral("oauth"),
+                                           QStringLiteral("new-client")),
+                     where.constData());
+            QCOMPARE(settings.accessTokenFor(user), QStringLiteral("old-access-fixture"));
+            QCOMPARE(settings.refreshTokenFor(user), QStringLiteral("old-refresh-fixture"));
+            QCOMPARE(settings.oauthClientIdFor(user), QStringLiteral("old-client"));
+            QCOMPARE(settings.deviceId(), QStringLiteral("OLDDEVICE"));
+        }
+    }
+}
+
+void SettingsSessionTest::aFirstSignInWhoseCredentialsWereNotKeptIsNotSaved()
+{
+    const QString user = QStringLiteral("@alice:matrix.example");
+    for (const QString key : { QStringLiteral("refreshToken"),
+                               QStringLiteral("oauthClientId") }) {
+        init();
+        FakeSecretStore secrets;
+        SettingsManager settings;
+        settings.setSecretStore(&secrets);
+        secrets.failKey = key;
+        QVERIFY2(!settings.saveSession(QStringLiteral("https://matrix.example"), user,
+                                       QStringLiteral("DEVICE"),
+                                       QStringLiteral("access-fixture"),
+                                       QStringLiteral("refresh-fixture"),
+                                       QStringLiteral("oauth"),
+                                       QStringLiteral("client")),
+                 qPrintable(key));
+        QVERIFY(!settings.hasSavedAccount(user));
+        QVERIFY(!secrets.hasSecret(user, QStringLiteral("accessToken")));
+        QVERIFY(!secrets.hasSecret(user, QStringLiteral("refreshToken")));
+    }
+}
+
+void SettingsSessionTest::aSettingsFileThatCannotBeWrittenLeavesThePreviousSignIn()
+{
+    const QString hs = QStringLiteral("https://matrix.example");
+    const QString user = QStringLiteral("@alice:matrix.example");
+    const QString path = QSettings().fileName();
+    FakeSecretStore secrets;
+    {
+        SettingsManager settings;
+        settings.setSecretStore(&secrets);
+        QVERIFY(settings.saveSession(hs, user, QStringLiteral("OLDDEVICE"),
+                                     QStringLiteral("old-access-fixture"),
+                                     QStringLiteral("old-refresh-fixture")));
+        const QByteArray saved = settingsFileBytes(path);
+        QVERIFY(QFile::remove(path));
+        QVERIFY(QDir().mkpath(path));
+        const auto putBack = qScopeGuard([&] {
+            QDir().rmdir(path);
+            QFile file(path);
+            if (file.open(QIODevice::WriteOnly))
+                file.write(saved);
+        });
+        QVERIFY(!settings.saveSession(hs, user, QStringLiteral("NEWDEVICE"),
+                                      QStringLiteral("new-access-fixture"),
+                                      QStringLiteral("new-refresh-fixture")));
+        QCOMPARE(settings.deviceId(), QStringLiteral("OLDDEVICE"));
+        QCOMPARE(settings.accessTokenFor(user), QStringLiteral("old-access-fixture"));
+        QCOMPARE(settings.refreshTokenFor(user), QStringLiteral("old-refresh-fixture"));
+    }
+    SettingsManager restarted;
+    restarted.setSecretStore(&secrets);
+    QCOMPARE(restarted.deviceId(), QStringLiteral("OLDDEVICE"));
+    QCOMPARE(restarted.accessTokenFor(user), QStringLiteral("old-access-fixture"));
+    QCOMPARE(restarted.refreshTokenFor(user), QStringLiteral("old-refresh-fixture"));
 }
 
 QTEST_MAIN(SettingsSessionTest)

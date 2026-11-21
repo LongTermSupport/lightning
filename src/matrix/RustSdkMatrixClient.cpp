@@ -2449,7 +2449,6 @@ void RustSdkMatrixClient::adoptBrowserSession(
         const bool saved = m_settings->saveSession(identity.homeserver, identity.userId,
                                                    deviceId, accessToken, refreshToken,
                                                    authType, clientId);
-        m_persistedAccessDigest = accessTokenDigest(accessToken);
         if (!saved || !m_settings->hasSavedAccount(identity.userId)) {
             const auto fresh = std::exchange(m_freshLoginIdentity, {});
             if (!fresh.isValid())
@@ -2465,6 +2464,7 @@ void RustSdkMatrixClient::adoptBrowserSession(
                                      : keyringRefusedSignInText());
             return;
         }
+        m_persistedAccessDigest = accessTokenDigest(accessToken);
         if (!hasSavedSession)
             m_freshBrowserRecord = identity;
         m_settings->setSyncToken({});
