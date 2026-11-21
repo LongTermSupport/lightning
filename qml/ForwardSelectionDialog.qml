@@ -197,6 +197,11 @@ Dialog {
                          && app.forward.unconfirmedCount === 0
                          ? qsTr("Sent %n copy(ies).", "",
                                 app.forward.progressTotal)
+                         : app.forward.failureCount === 0
+                         ? qsTr("%1 of %2 sent.")
+                               .arg(app.forward.progressTotal
+                                    - app.forward.unconfirmedCount)
+                               .arg(app.forward.progressTotal)
                          : qsTr("%1 of %2 sent — %n failed.", "",
                                 app.forward.failureCount)
                                .arg(app.forward.progressTotal

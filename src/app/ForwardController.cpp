@@ -440,7 +440,7 @@ void ForwardController::forwardTo(const QString &targetRoomId)
         if (m_client->supportsAcknowledgedTextSend()) {
             const quint64 op = m_client->sendRoomTextAcked(targetRoomId, body);
             if (op == 0) {
-                m_busy = false;
+                m_busy = !m_inFlight.isEmpty();
                 setError(tr("Couldn't forward this message."));
                 return;
             }
