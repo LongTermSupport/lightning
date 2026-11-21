@@ -8905,9 +8905,9 @@ Signing out and signing in again is the only fix.</source>
     <message numerus="yes">
         <location line="+13"/>
         <source>%n copy(ies) not confirmed — check the room before sending again.</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%n copy not confirmed — check the room before sending again.</numerusform>
+            <numerusform>%n copies not confirmed — check the room before sending again.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
