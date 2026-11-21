@@ -1615,6 +1615,7 @@ char *mx_rust_schedule_content(void *client,
 char *mx_rust_send_room_content(void *client,
                                 const char *room_id,
                                 const char *content_json,
+                                const char *transaction_id,
                                 unsigned long long op_id);
 char *mx_rust_update_scheduled_message(void *client,
                                        const char *delay_id,
@@ -1622,8 +1623,9 @@ char *mx_rust_update_scheduled_message(void *client,
                                        unsigned long long op_id);
 /* v0.9 scheduled send: a ROOM-level message send for any joined room (the
    timeline sends need the live timeline open). `body_spec`, `mention_user_ids`,
-   `reply_to_event_id` and `thread_root_event_id` are nullable. Answers on
-   `room_send_result {op_id, room_id, ok, category}`. */
+   `reply_to_event_id`, `thread_root_event_id` and `transaction_id` are
+   nullable; a retry reuses `transaction_id` so the server deduplicates it.
+   Answers on `room_send_result {op_id, room_id, ok, category}`. */
 char *mx_rust_send_room_message(void *client,
                                 const char *room_id,
                                 const char *body,
@@ -1631,6 +1633,7 @@ char *mx_rust_send_room_message(void *client,
                                 const char *body_spec,
                                 const char *reply_to_event_id,
                                 const char *thread_root_event_id,
+                                const char *transaction_id,
                                 unsigned long long op_id);
 /* v0.9 (phase 2): the Activity Center's seed — the homeserver's highlight
    notifications (GET /notifications?only=highlight), at most `limit` (1-100).

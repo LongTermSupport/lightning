@@ -41,6 +41,10 @@ class SettingsManager;
 // Local dispatch uses the room-level sendRoomMessage, which works for any room
 // and reports a real result. An entry is marked "sending" and persisted
 // before dispatch, so a crash leaves a row reported as unsent, not re-fired.
+// It waits for a running sync (not one starting or retrying). A network or
+// rate-limit failure keeps it pending for the next reconnect (or a backoff),
+// resent under the entry id as its transaction id so the homeserver
+// deduplicates a send that did reach it; anything else is reported failed.
 class ScheduledSendController : public QObject
 {
     Q_OBJECT
@@ -106,6 +110,8 @@ private:
         QString mediaName;
         QString content;
         quint64 prepareOp = 0;
+        qint64 retryAtMs = 0;
+        int transientFailures = 0;
     };
 
     Entry newEntry(const QString &roomId, const QString &threadRootId,
@@ -118,6 +124,7 @@ private:
     void load();
     void armTimer();
     void fireDue();
+    void onConnected();
     void dispatchLocal(Entry &e);
     void submitServer(Entry &e);
     void beginServerCancel(Entry &e);

@@ -7610,13 +7610,16 @@ pub unsafe extern "C" fn mx_rust_send_room_content(
     ptr: *mut c_void,
     room_id: *const c_char,
     content_json: *const c_char,
+    transaction_id: *const c_char,
     op_id: u64,
 ) -> *mut c_char {
     ffi_string(|| {
         let bridge = unsafe { bridge(ptr)? };
         let room_id = unsafe { cstr_arg(room_id) }?;
         let content = rooms::scheduled_media_content(&unsafe { cstr_arg(content_json) }?)?;
-        rooms::send_room_content(bridge, room_id, content, op_id).map(|_| String::new())
+        let txn = unsafe { cstr_opt_arg(transaction_id) }?;
+        rooms::send_room_content(bridge, room_id, content, (!txn.is_empty()).then_some(txn), op_id)
+            .map(|_| String::new())
     })
 }
 
@@ -7644,12 +7647,14 @@ pub unsafe extern "C" fn mx_rust_send_room_message(
     body_spec: *const c_char,
     reply_to_event_id: *const c_char,
     thread_root_event_id: *const c_char,
+    transaction_id: *const c_char,
     op_id: u64,
 ) -> *mut c_char {
     ffi_string(|| {
         let bridge = unsafe { bridge(ptr)? };
         let room_id = unsafe { cstr_arg(room_id) }?;
         let body = unsafe { cstr_arg(body) }?;
+        let txn = unsafe { cstr_opt_arg(transaction_id) }?;
         let mentions = unsafe { cstr_list_arg(mention_user_ids) }?;
         let spec = timeline::parse_body_spec(&unsafe { cstr_opt_arg(body_spec) }?)?;
         let reply_to = unsafe { cstr_opt_arg(reply_to_event_id) }?;
@@ -7662,6 +7667,7 @@ pub unsafe extern "C" fn mx_rust_send_room_message(
             mentions,
             (!reply_to.is_empty()).then_some(reply_to),
             (!thread_root.is_empty()).then_some(thread_root),
+            (!txn.is_empty()).then_some(txn),
             op_id,
         )
         .map(|_| String::new())

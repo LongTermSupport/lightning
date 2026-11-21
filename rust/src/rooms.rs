@@ -4686,6 +4686,7 @@ pub(crate) fn send_room_content(
     bridge: &RustClient,
     room_id: String,
     content: serde_json::Value,
+    txn_id: Option<String>,
     op_id: u64,
 ) -> Result<(), String> {
     let client = require_client(bridge)?;
@@ -4707,7 +4708,11 @@ pub(crate) fn send_room_content(
             }
             return;
         }
-        let result = room.send_raw("m.room.message", content).await;
+        let mut send = room.send_raw("m.room.message", content);
+        if let Some(txn) = txn_id.as_deref() {
+            send = send.with_transaction_id(txn.into());
+        }
+        let result = send.await;
         if !timelines.lifecycle_current(lifecycle) {
             return;
         }
@@ -7128,6 +7133,7 @@ pub(crate) fn send_room_message(
     mention_user_ids: Vec<String>,
     reply_to: Option<String>,
     thread_root: Option<String>,
+    txn_id: Option<String>,
     op_id: u64,
 ) -> Result<(), String> {
     use matrix_sdk::ruma::events::relation::{InReplyTo, Reply, Thread};
@@ -7153,9 +7159,11 @@ pub(crate) fn send_room_message(
     let timelines = Arc::clone(&bridge.timelines);
     let lifecycle = timelines.lifecycle();
     bridge.spawn_room_action(async move {
-        let result = room
-            .send(AnyMessageLikeEventContent::RoomMessage(content))
-            .await;
+        let mut send = room.send(AnyMessageLikeEventContent::RoomMessage(content));
+        if let Some(txn) = txn_id {
+            send = send.with_transaction_id(txn.into());
+        }
+        let result = send.await;
         if !timelines.lifecycle_current(lifecycle) {
             return;
         }

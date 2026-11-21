@@ -8937,11 +8937,13 @@ quint64 RustSdkMatrixClient::sendRoomMessage(const QString &roomId,
                                              const QVariantMap &bodySpec,
                                              const QStringList &mentionUserIds,
                                              const QString &replyToEventId,
-                                             const QString &threadRootEventId)
+                                             const QString &threadRootEventId,
+                                             const QString &transactionId)
 {
     if (!m_loggedIn || !m_rustHandle || roomId.isEmpty() || body.isEmpty())
         return 0;
     const quint64 op = nextOpId();
+    const QByteArray txnBytes = transactionId.toUtf8();
     const QByteArray roomBytes = roomId.toUtf8();
     const QByteArray bodyBytes = body.toUtf8();
     const QByteArray mentionBytes = mentionUserIds.join(QLatin1Char('\n')).toUtf8();
@@ -8953,7 +8955,8 @@ quint64 RustSdkMatrixClient::sendRoomMessage(const QString &roomId,
         mentionUserIds.isEmpty() ? nullptr : mentionBytes.constData(),
         specBytes.constData(),
         replyToEventId.isEmpty() ? nullptr : replyBytes.constData(),
-        threadRootEventId.isEmpty() ? nullptr : rootBytes.constData(), op));
+        threadRootEventId.isEmpty() ? nullptr : rootBytes.constData(),
+        transactionId.isEmpty() ? nullptr : txnBytes.constData(), op));
     if (!result.isEmpty()) {
         Q_EMIT errorOccurred(result.startsWith(QLatin1String("error: "))
                                  ? result.mid(7) : result);
@@ -10589,15 +10592,18 @@ quint64 RustSdkMatrixClient::scheduleContent(const QString &roomId,
 }
 
 quint64 RustSdkMatrixClient::sendRoomContent(const QString &roomId,
-                                             const QString &contentJson)
+                                             const QString &contentJson,
+                                             const QString &transactionId)
 {
     if (!m_loggedIn || !m_rustHandle || roomId.isEmpty() || contentJson.isEmpty())
         return 0;
     const quint64 opId = nextOpId();
     const QByteArray room = roomId.toUtf8();
     const QByteArray content = contentJson.toUtf8();
+    const QByteArray txn = transactionId.toUtf8();
     const QString result = takeRustString(mx_rust_send_room_content(
-        m_rustHandle, room.constData(), content.constData(), opId));
+        m_rustHandle, room.constData(), content.constData(),
+        transactionId.isEmpty() ? nullptr : txn.constData(), opId));
     return result.isEmpty() ? opId : 0;
 }
 

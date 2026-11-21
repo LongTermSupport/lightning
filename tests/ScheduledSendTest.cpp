@@ -9,7 +9,10 @@
 //   * a due local entry is marked "sending" and persisted before the send
 //     leaves, goes through the room-level send (any room), and leaves the
 //     queue only on the room's acceptance; a refusal is reported;
-//   * nothing is dispatched while disconnected; the reconnect fires it;
+//   * nothing is dispatched until the sync runs (starting/retrying is not
+//     connected); the reconnect fires it, earliest deadline first;
+//   * a network/rate-limit failure stays pending for the next reconnect and is
+//     resent under the same transaction id; any other refusal is failed;
 //   * a row found in "sending" on the next start is reported as unsent and
 //     never re-fired on a guess;
 //   * server-side mutations are serialized on the entry's one in-flight op: a
@@ -131,18 +134,14 @@ public:
         contentSchedules.append({ roomId, content, delayMs, op });
         return op;
     }
-    quint64 sendRoomContent(const QString &roomId, const QString &content)
-    {
-        return sendRoomContent(roomId, content, QString());
-    }
     quint64 sendRoomContent(const QString &roomId, const QString &content,
-                            const QString &txnId)
+                            const QString &txnId) override
     {
         const quint64 op = nextOp++;
         contentSends.append({ roomId, content, 0, op, txnId });
         return op;
     }
-    bool syncRunning() const { return connectionState() == Syncing && running; }
+    bool syncRunning() const override { return connectionState() == Syncing && running; }
 
     QString persistedStatusFor(const QString &body) const
     {
@@ -177,15 +176,8 @@ public:
     quint64 sendRoomMessage(const QString &roomId, const QString &body,
                             const QVariantMap &spec, const QStringList &mentionIds,
                             const QString &replyToEventId,
-                            const QString &threadRootEventId)
-    {
-        return sendRoomMessage(roomId, body, spec, mentionIds, replyToEventId,
-                               threadRootEventId, QString());
-    }
-    quint64 sendRoomMessage(const QString &roomId, const QString &body,
-                            const QVariantMap &spec, const QStringList &mentionIds,
-                            const QString &replyToEventId,
-                            const QString &threadRootEventId, const QString &txnId)
+                            const QString &threadRootEventId,
+                            const QString &txnId) override
     {
         if (!roomSendSupported)
             return 0;

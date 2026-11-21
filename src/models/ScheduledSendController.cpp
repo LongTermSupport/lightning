@@ -11,6 +11,8 @@
 
 namespace {
 constexpr qint64 kMaxTimerMs = 24LL * 60 * 60 * 1000;
+constexpr qint64 kTransientRetryMs = 30 * 1000;
+constexpr int kMaxTransientFailures = 5;
 
 // The body keeps the composer's matrix.to links, so its mentions are exactly
 // the links still in it; "@room" is plain text and survives only while typed.
@@ -159,6 +161,13 @@ void ScheduledSendController::setClient(MatrixClient *client)
             e.sendOp = 0;
             if (ok) {
                 m_entries.removeAt(i);
+            } else if ((category == QLatin1String("network")
+                        || category == QLatin1String("rate_limited"))
+                       && ++e.transientFailures < kMaxTransientFailures) {
+                e.status = QStringLiteral("pending");
+                e.retryAtMs = QDateTime::currentMSecsSinceEpoch() + kTransientRetryMs;
+                e.error = tr("Not sent yet: the connection failed. Lightning "
+                             "will try again.");
             } else {
                 e.status = QStringLiteral("failed");
                 e.error = tr("The room did not accept this message. It was "
@@ -198,12 +207,11 @@ void ScheduledSendController::setClient(MatrixClient *client)
     });
     connect(m_client, &MatrixClient::connectionStateChanged, this,
             [this](MatrixClient::ConnectionState state) {
-        if (state == MatrixClient::Syncing) {
-            load();
-            probeSupport();
-            fireDue();
-        }
+        if (state == MatrixClient::Syncing)
+            onConnected();
     });
+    connect(m_client, &MatrixClient::homeserverReachable, this,
+            &ScheduledSendController::onConnected);
     connect(m_client, &MatrixClient::loggedOut, this, [this] {
         clearAll();
         m_serverScheduling = -1;
@@ -223,7 +231,18 @@ QSet<QString> ScheduledSendController::roomsSending() const
 
 bool ScheduledSendController::connected() const
 {
-    return m_client && m_client->connectionState() == MatrixClient::Syncing;
+    return m_client && m_client->syncRunning();
+}
+
+void ScheduledSendController::onConnected()
+{
+    load();
+    if (!connected())
+        return;
+    for (Entry &e : m_entries)
+        e.retryAtMs = 0;
+    probeSupport();
+    fireDue();
 }
 
 void ScheduledSendController::clearAll()
@@ -707,7 +726,7 @@ void ScheduledSendController::armTimer()
             continue;
         if (online && e.mode == QLatin1String("local")
             && e.status == QLatin1String("pending"))
-            at = e.sendAtMs;
+            at = qMax(e.sendAtMs, e.retryAtMs);
         else if (e.mode == QLatin1String("server") && !e.delayId.isEmpty()
                  && e.status == QLatin1String("pending"))
             at = e.sendAtMs + kServerRetireGraceMs;
@@ -751,7 +770,7 @@ void ScheduledSendController::fireDue()
         for (int i = 0; i < m_entries.size(); ++i) {
             const Entry &e = m_entries.at(i);
             if (e.mode == QLatin1String("local") && e.status == QLatin1String("pending")
-                && e.sendAtMs <= now && !sending.contains(e.roomId)
+                && qMax(e.sendAtMs, e.retryAtMs) <= now && !sending.contains(e.roomId)
                 && !tried.contains(e.id)
                 && (next < 0 || e.sendAtMs < m_entries.at(next).sendAtMs))
                 next = i;
@@ -785,7 +804,7 @@ void ScheduledSendController::dispatchLocal(Entry &e)
     persist();
     Q_EMIT pendingChanged();
     if (!e.content.isEmpty()) {
-        e.sendOp = m_client->sendRoomContent(e.roomId, e.content);
+        e.sendOp = m_client->sendRoomContent(e.roomId, e.content, e.id);
         if (e.sendOp == 0) {
             e.status = QStringLiteral("failed");
             e.error = tr("The attachment could not be sent.");
@@ -796,7 +815,7 @@ void ScheduledSendController::dispatchLocal(Entry &e)
     }
     const QVariantMap spec = bodySpecFor(e);
     const quint64 op = m_client->sendRoomMessage(e.roomId, e.body, spec, e.mentionIds,
-                                                 e.replyToEventId, e.threadRootId);
+                                                 e.replyToEventId, e.threadRootId, e.id);
     if (op != 0) {
         e.sendOp = op;
         return;
