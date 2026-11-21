@@ -95,7 +95,7 @@ Dialog {
                 root.ownEditPending = true
                 rebaseTimer.restart()
             }
-            root.noticeIsError = !ok
+            root.noticeIsError = !ok && category !== "cancelled"
             root.notice = root.stickers.transferMessage(
                 kind, ok, category, added, skipped, failed, name)
         }
@@ -108,7 +108,10 @@ Dialog {
         title: qsTr("Export pack")
         currentFolder: app.defaultFileDialogFolder()
         nameFilters: [qsTr("Sticker pack (*.zip)")]
-        onAccepted: root.stickers.exportPack(root.packId, selectedFile)
+        onAccepted: {
+            root.notice = ""
+            root.stickers.exportPack(root.packId, selectedFile)
+        }
     }
     NativeFileDialog {
         id: addImagesDialog
@@ -772,11 +775,47 @@ Dialog {
         RowLayout {
             Layout.fillWidth: true
             spacing: AppTheme.spacing8
-            Item { Layout.fillWidth: true }
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: AppTheme.spacing4
+                visible: root.exporting
+                Label {
+                    id: exportStatus
+                    Layout.fillWidth: true
+                    wrapMode: Text.WordWrap
+                    color: AppTheme.textMuted
+                    font.pixelSize: AppTheme.textMeta
+                    text: root.exporting
+                          ? qsTr("Exporting pack (%1 of %2)")
+                                .arg(root.stickers.transferDone)
+                                .arg(root.stickers.transferTotal)
+                          : ""
+                }
+                AppProgressBar {
+                    objectName: "stickerPackExportProgress"
+                    Layout.fillWidth: true
+                    Layout.minimumWidth: 0
+                    to: root.exporting ? root.stickers.transferTotal : 1
+                    value: root.exporting ? root.stickers.transferDone : 0
+                    Accessible.name: exportStatus.text
+                }
+            }
+            Item {
+                Layout.fillWidth: true
+                visible: !root.exporting
+            }
             AppBusyIndicator {
-                visible: root.busy || root.transferring
+                visible: !root.exporting && (root.busy || root.transferring)
                 implicitWidth: 18
                 implicitHeight: 18
+            }
+            AppButton {
+                objectName: "stickerPackCancelExportButton"
+                visible: root.exporting
+                text: qsTr("Cancel")
+                kind: "ghost"
+                size: "sm"
+                onClicked: root.stickers.cancelTransfer()
             }
             AppButton {
                 text: qsTr("Done")
@@ -835,4 +874,5 @@ Dialog {
     readonly property bool busy: root.stickers ? root.stickers.editing : false
     readonly property bool transferring:
         root.stickers ? root.stickers.transferring : false
+    readonly property bool exporting: root.transferring && root.stickers.transferKind === "export"
 }
