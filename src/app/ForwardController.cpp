@@ -163,7 +163,6 @@ void ForwardController::begin(const QString &sourceRoomId,
     m_snapshot = snapshot;
     m_previewText = buildPreview(snapshot);
     m_error.clear();
-    m_busy = false;
     m_active = true;
     Q_EMIT changed();
 }
