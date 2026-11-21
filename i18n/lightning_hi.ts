@@ -11653,8 +11653,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>डाउनलोड रद्द किया गया।</translation>
     </message>
     <message>
-        <location line="+73"/>
-        <location line="+14"/>
+        <location line="+74"/>
+        <source>The destination folder is not available.</source>
+        <translation>गंतव्य फ़ोल्डर उपलब्ध नहीं है।</translation>
+    </message>
+    <message>
+        <location line="+15"/>
         <location line="+18"/>
         <location line="+8"/>
         <source>The destination is not writable.</source>
@@ -20457,7 +20461,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>ScheduledSendController</name>
     <message>
-        <location filename="../src/models/ScheduledSendController.cpp" line="+62"/>
+        <location filename="../src/models/ScheduledSendController.cpp" line="+77"/>
         <source>Kept in Lightning instead: the server cannot hold an encrypted message.</source>
         <translation>इसकी जगह Lightning में रखा गया: सर्वर एन्क्रिप्टेड संदेश नहीं रख सकता।</translation>
     </message>
@@ -20477,7 +20481,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>सर्वर ने इस संदेश को रद्द नहीं किया।</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+34"/>
         <source>The server did not send this message.</source>
         <translation>सर्वर ने इस संदेश को नहीं भेजा।</translation>
     </message>
@@ -20502,7 +20506,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>अटैचमेंट</translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+65"/>
         <source>The server could not be asked to cancel this message.</source>
         <translation>इस संदेश को रद्द करने के लिए सर्वर से कहा नहीं जा सका।</translation>
     </message>
@@ -20512,7 +20516,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>इसे अभी भेजने के लिए Lightning सर्वर तक नहीं पहुँच सका। यह अब भी शेड्यूल है।</translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+169"/>
         <source>Waiting for the connection.</source>
         <translation>कनेक्शन की प्रतीक्षा है।</translation>
     </message>
@@ -35410,7 +35414,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2458"/>
+        <location filename="../src/main.cpp" line="+2465"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>नेटिव Qt/QML Matrix क्लाइंट। बैकएंड: --backend={mock,http,rust}। डिफ़ॉल्ट: rust (Rust SDK रहित बिल्ड में http)।</translation>
     </message>

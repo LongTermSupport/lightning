@@ -11653,8 +11653,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Transferência cancelada.</translation>
     </message>
     <message>
-        <location line="+73"/>
-        <location line="+14"/>
+        <location line="+74"/>
+        <source>The destination folder is not available.</source>
+        <translation>A pasta de destino não está disponível.</translation>
+    </message>
+    <message>
+        <location line="+15"/>
         <location line="+18"/>
         <location line="+8"/>
         <source>The destination is not writable.</source>
@@ -20457,7 +20461,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>ScheduledSendController</name>
     <message>
-        <location filename="../src/models/ScheduledSendController.cpp" line="+62"/>
+        <location filename="../src/models/ScheduledSendController.cpp" line="+77"/>
         <source>Kept in Lightning instead: the server cannot hold an encrypted message.</source>
         <translation>Guardada no Lightning em vez disso: o servidor não consegue guardar uma mensagem encriptada.</translation>
     </message>
@@ -20477,7 +20481,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>O servidor não cancelou esta mensagem.</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+34"/>
         <source>The server did not send this message.</source>
         <translation>O servidor não enviou esta mensagem.</translation>
     </message>
@@ -20502,7 +20506,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Anexo</translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+65"/>
         <source>The server could not be asked to cancel this message.</source>
         <translation>Não foi possível pedir ao servidor que cancelasse esta mensagem.</translation>
     </message>
@@ -20512,7 +20516,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>O Lightning não conseguiu contactar o servidor para enviar isto agora. Continua agendada.</translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+169"/>
         <source>Waiting for the connection.</source>
         <translation>A aguardar a ligação.</translation>
     </message>
@@ -35410,7 +35414,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2458"/>
+        <location filename="../src/main.cpp" line="+2465"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>Cliente Matrix nativo Qt/QML. Backend: --backend={mock,http,rust}. Predefinição: rust (http em compilações sem o Rust SDK).</translation>
     </message>

@@ -11610,8 +11610,12 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Unduhan dibatalkan.</translation>
     </message>
     <message>
-        <location line="+73"/>
-        <location line="+14"/>
+        <location line="+74"/>
+        <source>The destination folder is not available.</source>
+        <translation>Folder tujuan tidak tersedia.</translation>
+    </message>
+    <message>
+        <location line="+15"/>
         <location line="+18"/>
         <location line="+8"/>
         <source>The destination is not writable.</source>
@@ -20378,7 +20382,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
 <context>
     <name>ScheduledSendController</name>
     <message>
-        <location filename="../src/models/ScheduledSendController.cpp" line="+62"/>
+        <location filename="../src/models/ScheduledSendController.cpp" line="+77"/>
         <source>Kept in Lightning instead: the server cannot hold an encrypted message.</source>
         <translation>Disimpan di Lightning sebagai gantinya: server tidak dapat menyimpan pesan terenkripsi.</translation>
     </message>
@@ -20398,7 +20402,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Server tidak membatalkan pesan ini.</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+34"/>
         <source>The server did not send this message.</source>
         <translation>Server tidak mengirim pesan ini.</translation>
     </message>
@@ -20423,7 +20427,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Lampiran</translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+65"/>
         <source>The server could not be asked to cancel this message.</source>
         <translation>Server tidak dapat diminta untuk membatalkan pesan ini.</translation>
     </message>
@@ -20433,7 +20437,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Lightning tidak dapat menghubungi server untuk mengirim ini sekarang. Pesan masih dijadwalkan.</translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+169"/>
         <source>Waiting for the connection.</source>
         <translation>Menunggu koneksi.</translation>
     </message>
@@ -35249,7 +35253,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2458"/>
+        <location filename="../src/main.cpp" line="+2465"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>Klien Matrix Qt/QML asli. Backend: --backend={mock,http,rust}. Bawaan: rust (http pada build tanpa Rust SDK).</translation>
     </message>

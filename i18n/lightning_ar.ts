@@ -11825,8 +11825,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>أُلغي التنزيل.</translation>
     </message>
     <message>
-        <location line="+73"/>
-        <location line="+14"/>
+        <location line="+74"/>
+        <source>The destination folder is not available.</source>
+        <translation>مجلد الوجهة غير متاح.</translation>
+    </message>
+    <message>
+        <location line="+15"/>
         <location line="+18"/>
         <location line="+8"/>
         <source>The destination is not writable.</source>
@@ -20773,7 +20777,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>ScheduledSendController</name>
     <message>
-        <location filename="../src/models/ScheduledSendController.cpp" line="+62"/>
+        <location filename="../src/models/ScheduledSendController.cpp" line="+77"/>
         <source>Kept in Lightning instead: the server cannot hold an encrypted message.</source>
         <translation>أُبقيت في Lightning بدلًا من ذلك: لا يستطيع الخادوم الاحتفاظ برسالة معمّاة.</translation>
     </message>
@@ -20793,7 +20797,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>لم يلغِ الخادوم هذه الرسالة.</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+34"/>
         <source>The server did not send this message.</source>
         <translation>لم يرسل الخادوم هذه الرسالة.</translation>
     </message>
@@ -20818,7 +20822,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>مرفق</translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+65"/>
         <source>The server could not be asked to cancel this message.</source>
         <translation>تعذّر طلب إلغاء هذه الرسالة من الخادوم.</translation>
     </message>
@@ -20828,7 +20832,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>تعذّر على Lightning الوصول إلى الخادوم لإرسال هذه الآن. ما زالت مجدولة.</translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+169"/>
         <source>Waiting for the connection.</source>
         <translation>بانتظار الاتصال.</translation>
     </message>
@@ -36054,7 +36058,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2458"/>
+        <location filename="../src/main.cpp" line="+2465"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>عميل Matrix أصلي بـ Qt/QML. الخلفية: --backend={mock,http,rust}. الافتراضي: rust (http في النسخ الخالية من Rust SDK).</translation>
     </message>

@@ -11653,8 +11653,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Téléchargement annulé.</translation>
     </message>
     <message>
-        <location line="+73"/>
-        <location line="+14"/>
+        <location line="+74"/>
+        <source>The destination folder is not available.</source>
+        <translation>Le dossier de destination n’est pas disponible.</translation>
+    </message>
+    <message>
+        <location line="+15"/>
         <location line="+18"/>
         <location line="+8"/>
         <source>The destination is not writable.</source>
@@ -20457,7 +20461,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
 <context>
     <name>ScheduledSendController</name>
     <message>
-        <location filename="../src/models/ScheduledSendController.cpp" line="+62"/>
+        <location filename="../src/models/ScheduledSendController.cpp" line="+77"/>
         <source>Kept in Lightning instead: the server cannot hold an encrypted message.</source>
         <translation>Conservé dans Lightning à la place : le serveur ne peut pas garder un message chiffré.</translation>
     </message>
@@ -20477,7 +20481,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Le serveur n&apos;a pas annulé ce message.</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+34"/>
         <source>The server did not send this message.</source>
         <translation>Le serveur n&apos;a pas envoyé ce message.</translation>
     </message>
@@ -20502,7 +20506,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Pièce jointe</translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+65"/>
         <source>The server could not be asked to cancel this message.</source>
         <translation>Impossible de demander au serveur d&apos;annuler ce message.</translation>
     </message>
@@ -20512,7 +20516,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Lightning n&apos;a pas pu joindre le serveur pour l&apos;envoyer maintenant. Il reste programmé.</translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+169"/>
         <source>Waiting for the connection.</source>
         <translation>En attente de la connexion.</translation>
     </message>
@@ -35410,7 +35414,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2458"/>
+        <location filename="../src/main.cpp" line="+2465"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>Client Matrix natif Qt/QML. Backend : --backend={mock,http,rust}. Par défaut : rust (http dans les versions sans le Rust SDK).</translation>
     </message>
