@@ -200,10 +200,13 @@ void SessionPoolTest::cleanup()
 void SessionPoolTest::saveAccount(const QString &uid, const QString &token)
 {
     const QString server = uid.mid(uid.indexOf(QLatin1Char(':')) + 1);
+    const int readsBefore = m_store.reads(uid);
     m_settings->saveSession(QStringLiteral("https://") + server, uid,
                             QStringLiteral("DEV-") + uid.mid(1, uid.indexOf(QLatin1Char(':')) - 1),
                             token.isEmpty() ? QStringLiteral("token-of-") + uid : token,
                             QStringLiteral("refresh-of-") + uid);
+    // The save's own read-back is the fixture, not the pool reading the keyring.
+    m_store.discountReads(uid, m_store.reads(uid) - readsBefore);
 }
 
 std::unique_ptr<SessionPool> SessionPoolTest::makePool()

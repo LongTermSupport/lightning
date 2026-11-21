@@ -54,6 +54,11 @@ public:
         return out;
     }
     QList<QThread *> callThreads() const { QMutexLocker l(&m_mutex); return m_threads; }
+    void discountReads(const QString &userId, int n)
+    {
+        QMutexLocker l(&m_mutex);
+        m_reads[userId] -= n;
+    }
     void resetCounts()
     {
         QMutexLocker l(&m_mutex);

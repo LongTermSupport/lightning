@@ -122,6 +122,7 @@ class ComposerQmlTest : public QObject
     Q_OBJECT
 
 private:
+    QTemporaryDir m_config;
     AppController *m_controller = nullptr;
     QQmlEngine *m_engine = nullptr;
     QObject *m_root = nullptr;
@@ -392,6 +393,8 @@ private:
 private slots:
     void initTestCase()
     {
+        QVERIFY(m_config.isValid());
+        qputenv("XDG_CONFIG_HOME", m_config.path().toUtf8());
         m_controller = new AppController(AppController::MockBackend);
         m_engine = new QQmlEngine(this);
         connect(m_engine, &QQmlEngine::warnings, this,
