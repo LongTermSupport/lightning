@@ -1157,36 +1157,56 @@ void UpdateManagerStateTest::aFailedRollbackNamesTheBackupFolderToRestoreFrom()
 {
     QTemporaryDir root;
     QVERIFY(root.isValid());
-    const QString backup =
-        QDir(root.path()).absoluteFilePath(QStringLiteral("Lightning.lightning-previous"));
+    // The helper's target for a portable install is the application folder.
+    const QString install = QCoreApplication::applicationDirPath();
+    const QString parked = install + QStringLiteral(".lightning-unrestored-20261121-120000");
     QVERIFY(writeHelperStatus(root.path(), false, QStringLiteral("windows-portable"),
-                              QStringLiteral("rollback-failed"), backup));
+                              QStringLiteral("rollback-failed"), parked));
 
     UpdateManager manager;
     manager.setStagingRootForTest(root.path());
     QCOMPARE(manager.lastUpdateError(), QStringLiteral("rollback-failed"));
-    QCOMPARE(manager.lastUpdateBackupPath(), backup);
+    QCOMPARE(manager.lastUpdateBackupPath(), parked);
     const QString shown = UpdateManager::explainInstallError(
         manager.lastUpdateError(), manager.lastUpdateBackupPath());
-    QVERIFY2(shown.contains(QDir::toNativeSeparators(backup)), qPrintable(shown));
+    QVERIFY2(shown.contains(QDir::toNativeSeparators(parked)), qPrintable(shown));
     QVERIFY(!UpdateManager::explainInstallError(QStringLiteral("rollback-failed"))
-                 .contains(QDir::toNativeSeparators(backup)));
+                 .contains(QDir::toNativeSeparators(parked)));
 
     manager.clearLastUpdateResult();
     QVERIFY(manager.lastUpdateBackupPath().isEmpty());
 
+    const QString previous = install + QStringLiteral(".lightning-previous");
     QVERIFY(writeHelperStatus(root.path(), false, QStringLiteral("windows-portable"),
-                              QStringLiteral("promote-failed"), backup));
+                              QStringLiteral("restore-incomplete"), previous));
+    UpdateManager paused;
+    paused.setStagingRootForTest(root.path());
+    QCOMPARE(paused.lastUpdateBackupPath(), previous);
+    const QString pausedText = UpdateManager::explainInstallError(
+        paused.lastUpdateError(), paused.lastUpdateBackupPath());
+    QVERIFY2(pausedText.contains(QDir::toNativeSeparators(previous)), qPrintable(pausedText));
+    QVERIFY(!UpdateManager::explainInstallError(QStringLiteral("restore-incomplete")).isEmpty());
+    QVERIFY(pausedText != UpdateManager::explainInstallError(QStringLiteral("backup-path-unusable")));
+
+    QVERIFY(writeHelperStatus(root.path(), false, QStringLiteral("windows-portable"),
+                              QStringLiteral("promote-failed"), parked));
     UpdateManager other;
     other.setStagingRootForTest(root.path());
     QVERIFY(other.lastUpdateBackupPath().isEmpty());
 
-    QVERIFY(writeHelperStatus(root.path(), false, QStringLiteral("windows-portable"),
-                              QStringLiteral("rollback-failed"),
-                              QStringLiteral("relative/folder")));
-    UpdateManager relative;
-    relative.setStagingRootForTest(root.path());
-    QVERIFY(relative.lastUpdateBackupPath().isEmpty());
+    const QStringList forged = {
+        QStringLiteral("relative/folder"),
+        QDir(root.path()).absoluteFilePath(QStringLiteral("Lightning.lightning-previous")),
+        install + QStringLiteral(".lightning-unrestored-x/../../elsewhere"),
+        parked + QStringLiteral("\nsecond line"),
+    };
+    for (const QString &path : forged) {
+        QVERIFY(writeHelperStatus(root.path(), false, QStringLiteral("windows-portable"),
+                                  QStringLiteral("rollback-failed"), path));
+        UpdateManager refused;
+        refused.setStagingRootForTest(root.path());
+        QVERIFY2(refused.lastUpdateBackupPath().isEmpty(), qPrintable(path));
+    }
 }
 
 void UpdateManagerStateTest::unusableStatusFileIsSimplyNoResult_data()

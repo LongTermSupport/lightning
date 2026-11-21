@@ -514,13 +514,24 @@ private Q_SLOTS:
         QTemporaryDir dir;
         QFile f(dir.filePath("in.json"));
         QVERIFY(f.open(QIODevice::WriteOnly));
-        f.write("{\"format\":\"lightning-settings\",\"version\":1,\"settings\":{},"
+        f.write("{\"format\":\"lightning-settings\",\"version\":1,\"settings\":{\"theme\":12},"
                 "\"customThemes\":[7,{\"lightningTheme\":1,\"name\":\"B\"}],"
                 "\"activeCustomTheme\":0}");
         f.close();
         QVariantMap p = r.sync.previewImport(QUrl::fromLocalFile(f.fileName()));
         QVERIFY(p.value("ok").toBool());
         QVERIFY(p.value("activeThemeDropped").toBool());
+        r.sync.cancelImport();
+
+        QVERIFY(f.open(QIODevice::WriteOnly | QIODevice::Truncate));
+        f.write("{\"format\":\"lightning-settings\",\"version\":1,\"settings\":{\"theme\":2},"
+                "\"customThemes\":[7,{\"lightningTheme\":1,\"name\":\"B\"}],"
+                "\"activeCustomTheme\":0}");
+        f.close();
+        p = r.sync.previewImport(QUrl::fromLocalFile(f.fileName()));
+        QVERIFY(p.value("ok").toBool());
+        QVERIFY2(!p.value("activeThemeDropped").toBool(),
+                 "the file does not select a custom theme, so nothing is lost");
         r.sync.cancelImport();
 
         QVERIFY(f.open(QIODevice::WriteOnly | QIODevice::Truncate));

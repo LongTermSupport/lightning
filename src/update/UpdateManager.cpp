@@ -5,6 +5,7 @@
 #include "update/UpdateEndpoints.h"
 #include "update/SignatureVerifier.h"
 #include "updater/ArtifactDigest.h"
+#include "updater/AtomicReplace.h"
 
 #include <QCoreApplication>
 #include <QDir>
@@ -21,6 +22,7 @@
 #include <QStandardPaths>
 #include <QTemporaryFile>
 
+#include <algorithm>
 #include <optional>
 
 #ifdef Q_OS_WIN
@@ -603,16 +605,17 @@ void UpdateManager::consumeUpdateStatusFile()
                     result = okValue.toBool() ? InstallSucceeded : InstallFailed;
                     mode = sanitizedStatusToken(object.value(QLatin1String("mode")));
                     error = sanitizedStatusToken(object.value(QLatin1String("error")));
-                    const QJsonValue backup = object.value(QLatin1String("backupPath"));
-                    if (error == QLatin1String("rollback-failed") && backup.isString()
-                        && backup.toString().size() <= 1024) {
-                        const QString path = backup.toString();
-                        bool clean = QDir::isAbsolutePath(path);
-                        for (const QChar c : path)
-                            clean = clean && c.unicode() >= 0x20 && c.unicode() != 0x7F;
-                        if (clean)
-                            backupPath = path;
-                    }
+                    // Only ever a recovery folder beside this installation.
+                    const QString reported = object.value(QLatin1String("backupPath")).toString();
+                    if ((error == QLatin1String("rollback-failed")
+                         || error == QLatin1String("restore-incomplete"))
+                        && std::none_of(reported.cbegin(), reported.cend(),
+                                        [](QChar c) {
+                                            return c.unicode() < 0x20 || c.unicode() == 0x7F;
+                                        })
+                        && updater::isPortableRecoveryPath(
+                            QCoreApplication::applicationDirPath(), reported))
+                        backupPath = reported;
                 }
             }
         }
@@ -1122,6 +1125,20 @@ QString UpdateManager::explainInstallError(const QString &token, const QString &
     if (key == QLatin1String("promote-failed")) {
         return tr("The new version could not be put in place, so the previous "
                   "one was restored. Nothing was lost.");
+    }
+
+    if (key == QLatin1String("restore-incomplete")) {
+        if (!backupPath.isEmpty()) {
+            return tr("An earlier update could not put every file of the "
+                      "previous version back, so updating is paused. Those "
+                      "files are in %1. Move them back into the Lightning "
+                      "folder and delete that folder, or reinstall Lightning "
+                      "from the downloads page.")
+                .arg(QDir::toNativeSeparators(backupPath));
+        }
+        return tr("An earlier update could not put every file of the previous "
+                  "version back, so updating is paused. Reinstall Lightning "
+                  "from the downloads page.");
     }
 
     if (key == QLatin1String("rollback-failed")) {

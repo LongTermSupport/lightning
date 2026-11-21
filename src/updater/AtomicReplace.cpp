@@ -1,5 +1,6 @@
 #include "updater/AtomicReplace.h"
 
+#include <QDateTime>
 #include <QDir>
 #include <QRegularExpression>
 #include <QFile>
@@ -158,13 +159,34 @@ bool moveEntriesBack(const QString &from, const QString &to,
     return all;
 }
 
-ReplaceResult unrestoredBackupFailure(const QString &backup, const QString &target,
-                                      const QString &message)
+QString unrestoredBackupPath(const QString &target)
 {
+    const QString base = target + QLatin1String(kUnrestoredBackupSuffix)
+                         + QDateTime::currentDateTimeUtc().toString(
+                             QStringLiteral("yyyyMMdd-HHmmss"));
+    for (int attempt = 0; attempt < 32; ++attempt) {
+        const QString candidate =
+            attempt == 0 ? base : base + QLatin1Char('-') + QString::number(attempt);
+        if (!QFileInfo::exists(candidate))
+            return candidate;
+    }
+    return QString();
+}
+
+// Keeps a backup that still holds unrestored files: notes it, then moves it
+// where no later swap clears it. If the move fails the note keeps it.
+ReplaceResult unrestoredBackupFailure(const QString &backup, const QString &target,
+                                      const QString &message,
+                                      const EntryRenameHook &hook)
+{
+    ReplaceResult failure = replaceFail(ReplaceError::RollbackFailed, message);
+    if (directoryEntryNames(backup).isEmpty()) {
+        QDir().rmdir(backup);
+        return failure;
+    }
     QFile marker(QDir(backup).absoluteFilePath(
         QString::fromLatin1(kUnrestoredBackupMarker)));
-    if (!directoryEntryNames(backup).isEmpty()
-        && marker.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+    if (marker.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
         marker.write(QStringLiteral(
                          "A Lightning update failed and could not put every file "
                          "of the previous version back.\nThis folder holds the "
@@ -174,8 +196,9 @@ ReplaceResult unrestoredBackupFailure(const QString &backup, const QString &targ
                          .toUtf8());
         marker.close();
     }
-    ReplaceResult failure = replaceFail(ReplaceError::RollbackFailed, message);
-    failure.backupPath = backup;
+    const QString parked = unrestoredBackupPath(target);
+    failure.backupPath =
+        !parked.isEmpty() && renameEntry(backup, parked, hook) ? parked : backup;
     return failure;
 }
 
@@ -236,6 +259,7 @@ const char *replaceErrorName(ReplaceError error)
     case ReplaceError::CopyFailed: return "copy-failed";
     case ReplaceError::RollbackFailed: return "rollback-failed";
     case ReplaceError::RefusedUnsafePath: return "refused-unsafe-path";
+    case ReplaceError::RestoreIncomplete: return "restore-incomplete";
     }
     return "unknown";
 }
@@ -260,7 +284,7 @@ bool directoryIsWritable(const QString &directory)
 QString portableBackupPath(const QString &targetDir)
 {
     const QString clean = QDir::cleanPath(QDir(targetDir).absolutePath());
-    return clean + QStringLiteral(".lightning-previous");
+    return clean + QLatin1String(kPortableBackupSuffix);
 }
 
 ReplaceResult replaceFileAtomically(const QString &newFile,
@@ -440,9 +464,17 @@ ReplaceResult swapDirectory(const QString &stagedDir, const QString &targetDir,
         // A backup left by the previous update is normal on Windows (step 4
         // cannot delete the then-mapped helper). Its holder is gone now, so
         // clear it rather than fail every later update.
+        if (backupInfo.isDir() && !backupInfo.isSymLink()
+            && QFileInfo::exists(QDir(cleanBackup).absoluteFilePath(
+                QString::fromLatin1(kUnrestoredBackupMarker)))) {
+            ReplaceResult refused =
+                replaceFail(ReplaceError::RestoreIncomplete,
+                            QStringLiteral("an earlier update left files it could "
+                                           "not restore at the backup path"));
+            refused.backupPath = cleanBackup;
+            return refused;
+        }
         if (backupInfo.isSymLink() || !backupInfo.isDir()
-            || QFileInfo::exists(QDir(cleanBackup).absoluteFilePath(
-                QString::fromLatin1(kUnrestoredBackupMarker)))
             || !removeTreeGuarded(cleanBackup, cleanTarget)
             || QFileInfo::exists(cleanBackup)) {
             return replaceFail(ReplaceError::BackupPathUnusable,
@@ -511,7 +543,8 @@ true);
                 cleanBackup, cleanTarget,
                 QStringLiteral("could not move the current installation aside "
                                "AND could not put all of it back; the rest of "
-                               "the previous version is at the backup path"));
+                               "the previous version is at the backup path"),
+                hooks.beforeEntryRename);
         QDir().rmdir(cleanBackup);
         return replaceFail(ReplaceError::BackupFailed,
                            QStringLiteral("could not move the current installation "
@@ -547,7 +580,8 @@ true);
                 cleanBackup, cleanTarget,
                 QStringLiteral("the new version could not be promoted AND the "
                                "previous installation could not be restored; "
-                               "the previous version is at the backup path"));
+                               "the previous version is at the backup path"),
+                hooks.beforeEntryRename);
         return replaceFail(ReplaceError::PromoteFailed,
                            QStringLiteral("simulated failure before promoting the "
                                           "new installation"),
@@ -561,7 +595,8 @@ true);
                 cleanBackup, cleanTarget,
                 QStringLiteral("the new version could not be promoted AND the "
                                "previous installation could not be restored; "
-                               "the previous version is at the backup path"));
+                               "the previous version is at the backup path"),
+                hooks.beforeEntryRename);
         return replaceFail(ReplaceError::PromoteFailed,
                            QStringLiteral("could not promote the new installation"),
 true);

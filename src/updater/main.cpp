@@ -56,8 +56,8 @@ void writeStderr(const QString &line)
     stream << line << Qt::endl;
 }
 
-// Exactly four fields, all from our own enums or fixed strings: never a path,
-// token or process output.
+// Fields from our own enums or fixed strings, never a token or process output;
+// the one path is the recovery folder of a rollback-failed/restore-incomplete.
 void writeStatus(const QString &statusPath, bool ok, const QString &mode,
                  const QString &error, const QString &backupPath = QString())
 {
@@ -360,7 +360,8 @@ int main(int argc, char *argv[])
                               ? QString::fromLatin1(
                                     updater::replaceErrorName(swapped.error))
                               : archiveError;
-            if (swapped.error == updater::ReplaceError::RollbackFailed)
+            if (swapped.error == updater::ReplaceError::RollbackFailed
+                || swapped.error == updater::ReplaceError::RestoreIncomplete)
                 failureBackupPath = swapped.backupPath;
         }
     } else if (args.mode == updater::UpdaterMode::LinuxAppImage) {
