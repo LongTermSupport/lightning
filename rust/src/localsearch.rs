@@ -382,11 +382,11 @@ impl SearchIndex {
                 "SELECT room_id, sender, edit_ts, edit_id FROM messages WHERE event_id = ?1",
                 params![event_id],
                 |r| {
-                    let edit_id: Option<String> = r.get(3)?;
                     Ok(Original {
                         room_id: r.get(0)?,
                         sender: r.get(1)?,
-                        edit: r.get::<_, Option<i64>>(2)?.map(|ts| (ts, edit_id.unwrap_or_default())),
+                        edit_ts: r.get(2)?,
+                        edit_id: r.get(3)?,
                     })
                 },
             )
@@ -638,9 +638,10 @@ const DEEP_PAGE_SIZE: u16 = 100;
 struct Original {
     room_id: String,
     sender: String,
-    /// (ts, event id) of the edit now applied; `None` also for rows written
-    /// before it was recorded, which any valid edit may then replace once.
-    edit: Option<(i64, String)>,
+    /// `None` for rows written before it was recorded, which any valid edit
+    /// may then replace once.
+    edit_ts: Option<i64>,
+    edit_id: Option<String>,
 }
 
 #[derive(Clone)]
@@ -1154,20 +1155,30 @@ pub(crate) async fn collect_from(
         .events()
         .await
         .map_err(|e| format!("cannot read the event cache: {e}"))?;
-    let raws = events
-        .iter()
-        .filter_map(|event| event.raw().deserialize_as::<serde_json::Value>().ok());
-    Ok(batch_from(room, raws).await)
+    Ok(batch_from(room, events.iter().filter_map(with_encryption)).await)
 }
 
-async fn batch_from(room: &Room, raws: impl Iterator<Item = serde_json::Value>) -> RoomBatch {
+fn with_encryption(event: &matrix_sdk::deserialized_responses::TimelineEvent) -> Option<(serde_json::Value, bool)> {
+    let value = event.raw().deserialize_as::<serde_json::Value>().ok()?;
+    Some((value, event.encryption_info().is_some()))
+}
+
+/// Each raw event comes with whether it was encrypted.
+async fn batch_from(room: &Room, raws: impl Iterator<Item = (serde_json::Value, bool)>) -> RoomBatch {
+    // shortcut: a room-level gate, since the index does not record whether an
+    // original was encrypted; a plaintext edit of pre-encryption history is lost.
+    // Unknown counts as encrypted, so a plaintext edit waits for a later sweep.
+    let room_encrypted = !matches!(
+        room.encryption_state(),
+        matrix_sdk::EncryptionState::NotEncrypted
+    );
     let mut ordinary = Vec::new();
     let mut edits = Vec::new();
     let mut names: std::collections::HashMap<String, String> =
         std::collections::HashMap::new();
     let mut undecryptable = Vec::new();
     let mut redactions = Vec::new();
-    for raw in raws {
+    for (raw, encrypted) in raws {
         if raw.get("unsigned").and_then(|u| u.get("redacted_because")).is_some() {
             if let Some(id) = raw.get("event_id").and_then(|v| v.as_str()) {
                 redactions.push(id.to_owned());
@@ -1197,6 +1208,9 @@ async fn batch_from(room: &Room, raws: impl Iterator<Item = serde_json::Value>) 
             continue;
         }
         let is_replacement = crate::replacement::is_replacement(&raw);
+        if is_replacement && !crate::replacement::encryption_permits(encrypted, room_encrypted) {
+            continue;
+        }
         if let Some(item) = indexable_from(&raw) {
             if !names.contains_key(&item.sender) {
                 let resolved = match matrix_sdk::ruma::UserId::parse(&item.sender) {
@@ -1387,11 +1401,8 @@ async fn fill_gap(
             outcome = "request_failed";
             break;
         };
-        let raws: Vec<serde_json::Value> = page
-            .chunk
-            .iter()
-            .filter_map(|event| event.raw().deserialize_as::<serde_json::Value>().ok())
-            .collect();
+        let raws: Vec<(serde_json::Value, bool)> =
+            page.chunk.iter().filter_map(with_encryption).collect();
         let mut batch = batch_from(&room, raws.into_iter()).await;
         batch.edits.extend(carried.iter().cloned());
         carried = batch.edits.clone();
@@ -1429,7 +1440,8 @@ pub(crate) fn register_live_index_handler(
     let handle = client.add_event_handler(
         move |_ev: matrix_sdk::ruma::events::room::message::OriginalSyncRoomMessageEvent,
               room: Room,
-              raw: matrix_sdk::event_handler::RawEvent| {
+              raw: matrix_sdk::event_handler::RawEvent,
+              encryption: Option<matrix_sdk::deserialized_responses::EncryptionInfo>| {
             let index = std::sync::Arc::clone(&index);
             async move {
                 if !matches!(room.state(), matrix_sdk::RoomState::Joined) {
@@ -1444,7 +1456,7 @@ pub(crate) fn register_live_index_handler(
                 // Awaited, not spawned: the SDK runs handlers event by event, so a
                 // redaction or edit later in the same sync lands after this row.
                 let generation = current_generation(&index);
-                let batch = batch_from(&room, std::iter::once(value)).await;
+                let batch = batch_from(&room, std::iter::once((value, encryption.is_some()))).await;
                 let room_id = room.room_id().to_string();
                 let _ = tokio::task::spawn_blocking(move || {
                     write_locked(&index, generation, &room_id, &batch)
@@ -1550,7 +1562,9 @@ fn write_batch_rows(index: &SearchIndex, room_id: &str, batch: &RoomBatch) -> us
         {
             continue;
         }
-        let applied = original.edit.as_ref().map(|(ts, id)| ((*ts).max(0) as u64, id.as_str()));
+        let applied = original
+            .edit_ts
+            .map(|ts| (ts.max(0) as u64, original.edit_id.as_deref().unwrap_or("")));
         if applied.is_some_and(|applied| !crate::replacement::supersedes(edit_key(edit), applied)) {
             continue;
         }
@@ -1564,9 +1578,13 @@ fn write_batch_rows(index: &SearchIndex, room_id: &str, batch: &RoomBatch) -> us
     }
     for target in order {
         let edit = final_edits[target];
-        let display = batch.names.get(&edit.sender).cloned().unwrap_or_default();
-        if index
-            .upsert_named(
+        // A legacy row re-meeting the edit it already shows only learns its time.
+        let already_shown = originals[target].as_ref().is_some_and(|o| {
+            o.edit_ts.is_none() && o.edit_id.is_some() && o.edit_id == edit.edit_id
+        });
+        if !already_shown {
+            let display = batch.names.get(&edit.sender).cloned().unwrap_or_default();
+            match index.upsert_named(
                 target,
                 room_id,
                 &edit.sender,
@@ -1575,10 +1593,10 @@ fn write_batch_rows(index: &SearchIndex, room_id: &str, batch: &RoomBatch) -> us
                 &edit.msgtype,
                 edit.ts,
                 edit.filename.as_deref(),
-            )
-            .unwrap_or(false)
-        {
-            written += 1;
+            ) {
+                Ok(changed) => written += usize::from(changed),
+                Err(_) => continue,
+            }
         }
         let _ = index.set_edit(target, edit.edit_id.as_deref(), edit.ts);
     }
@@ -2558,6 +2576,28 @@ mod tests {
         assert_eq!(body_of(&ix, "$text"), "recorded wording");
         write_batch(&ix, "!r:x", &edits_batch(vec![], vec![edit("$older", "stale wording", 4000)]));
         assert_eq!(body_of(&ix, "$text"), "recorded wording");
+    }
+
+    #[test]
+    fn a_legacy_row_meeting_its_own_edit_only_records_the_time() {
+        let conn = Connection::open_in_memory().unwrap();
+        conn.execute_batch(LEGACY_SCHEMA).unwrap();
+        conn.execute_batch(
+            "ALTER TABLE messages ADD COLUMN edit_id TEXT;
+             UPDATE messages SET body = 'legacy edit', edit_id = '$old' WHERE event_id = '$text';",
+        )
+        .unwrap();
+        let ix = SearchIndex::from_connection(conn).unwrap();
+        let fingerprint = body_fts_fingerprint(&ix);
+        let edit = |id: &str, body: &str, ts| edit_of("$text", id, "@a:x", body, ts);
+        assert_eq!(write_batch(&ix, "!r:x", &edits_batch(vec![], vec![edit("$old", "legacy edit", 4500)])), 0);
+        assert_eq!(body_fts_fingerprint(&ix), fingerprint, "re-reading the shown edit rewrote FTS");
+        let name: String = ix.conn
+            .query_row("SELECT sender_name FROM messages WHERE event_id = '$text'", [], |r| r.get(0))
+            .unwrap();
+        assert_eq!(name, "Ann");
+        write_batch(&ix, "!r:x", &edits_batch(vec![], vec![edit("$older", "stale wording", 3000)]));
+        assert_eq!(body_of(&ix, "$text"), "legacy edit");
     }
 
     #[test]

@@ -21,7 +21,9 @@ pub(crate) fn is_replacement(event: &Value) -> bool {
 
 /// `None` when the event is not a replacement, or is one the spec says to
 /// ignore whatever it targets (no `m.new_content`, a state event, malformed).
-/// Same-room is the caller's check, exactly as in matrix-sdk's own validator.
+/// Same-room is the caller's check, exactly as in matrix-sdk's own validator,
+/// and so is encryption: see `encryption_permits`. A missing timestamp orders
+/// first here; local search never indexes an event without one.
 pub(crate) fn parse(event: &Value) -> Option<Replacement<'_>> {
     if !is_replacement(event) || event.get("state_key").is_some() {
         return None;
@@ -30,7 +32,10 @@ pub(crate) fn parse(event: &Value) -> Option<Replacement<'_>> {
     Some(Replacement {
         event_id: event.get("event_id")?.as_str()?,
         sender: event.get("sender")?.as_str()?,
-        ts: event.get("origin_server_ts").and_then(Value::as_u64).unwrap_or(0),
+        ts: event
+            .get("origin_server_ts")
+            .and_then(Value::as_u64)
+            .unwrap_or(0),
         target: content
             .pointer("/m.relates_to/event_id")?
             .as_str()
@@ -48,6 +53,12 @@ pub(crate) fn may_replace(
     original_type: &str,
 ) -> bool {
     replacement_sender == original_sender && replacement_type == original_type
+}
+
+/// An encrypted original accepts only an encrypted replacement, so a
+/// homeserver cannot rewrite it with a plaintext event.
+pub(crate) fn encryption_permits(replacement_encrypted: bool, original_encrypted: bool) -> bool {
+    replacement_encrypted || !original_encrypted
 }
 
 /// The spec's order: the newest `origin_server_ts`, ties to the greatest
@@ -102,6 +113,14 @@ mod tests {
             "m.room.message"
         ));
         assert!(!may_replace("@a:x", "m.room.message", "@a:x", "m.sticker"));
+    }
+
+    #[test]
+    fn an_encrypted_original_needs_an_encrypted_replacement() {
+        assert!(!encryption_permits(false, true));
+        assert!(encryption_permits(true, true));
+        assert!(encryption_permits(false, false));
+        assert!(encryption_permits(true, false));
     }
 
     #[test]

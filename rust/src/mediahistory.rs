@@ -32,14 +32,36 @@ pub(crate) struct MediaEdit {
     pub body: String,
     pub filename: Option<String>,
     pub spoiler: bool,
+    pub encrypted: bool,
 }
 
 /// Edits seen so far in a walk, by the id of the event they replace: the
 /// newest per sender, since who may edit is known only once the original
 /// arrives. A backward walk meets replacements before their original.
-pub(crate) type PendingEdits = HashMap<String, Vec<MediaEdit>>;
+#[derive(Debug, Clone, Default)]
+pub(crate) struct PendingEdits {
+    by_target: HashMap<String, Vec<MediaEdit>>,
+    held: usize,
+}
+
+#[cfg(test)]
+impl PendingEdits {
+    pub(crate) fn new() -> Self {
+        Self::default()
+    }
+    pub(crate) fn len(&self) -> usize {
+        self.held
+    }
+    pub(crate) fn is_empty(&self) -> bool {
+        self.held == 0
+    }
+}
+
+/// Candidates held across all targets; a new sender past it is refused.
 pub(crate) const MAX_PENDING_EDITS: usize = 4096;
-/// Further senders' edits of one event are dropped, never promoted.
+// shortcut: eight newer stranger edits of one event crowd out the owner's
+// (bounded, and a stranger is never promoted); keep senders unbounded per
+// event if that is ever seen.
 const MAX_EDITORS_PER_EVENT: usize = 8;
 
 impl MediaEntry {
@@ -223,10 +245,11 @@ fn is_gif(kind: &str, mimetype: &str, info: Option<&Value>) -> bool {
 
 #[cfg(test)]
 pub(crate) fn classify(value: &Value) -> Scanned {
-    classify_with_edits(value, &mut PendingEdits::new())
+    classify_with_edits(value, false, &mut PendingEdits::new())
 }
 
-pub(crate) fn classify_with_edits(value: &Value, edits: &mut PendingEdits) -> Scanned {
+/// `encrypted`: whether this event arrived encrypted.
+pub(crate) fn classify_with_edits(value: &Value, encrypted: bool, edits: &mut PendingEdits) -> Scanned {
     let mut out = Scanned::default();
     let type_str = value.get("type").and_then(|v| v.as_str()).unwrap_or("");
     if type_str == "m.room.encrypted" {
@@ -264,9 +287,6 @@ pub(crate) fn classify_with_edits(value: &Value, edits: &mut PendingEdits) -> Sc
         let Some(new_body) = r.new_content.get("body").and_then(|v| v.as_str()) else {
             return out;
         };
-        if edits.len() >= MAX_PENDING_EDITS && !edits.contains_key(r.target) {
-            return out;
-        }
         let candidate = MediaEdit {
             event_id: r.event_id.to_owned(),
             ts: r.ts,
@@ -274,8 +294,13 @@ pub(crate) fn classify_with_edits(value: &Value, edits: &mut PendingEdits) -> Sc
             body: new_body.to_owned(),
             filename: r.new_content.get("filename").and_then(|v| v.as_str()).map(str::to_owned),
             spoiler: crate::spoiler::spoiler_of(r.new_content).is_some(),
+            encrypted,
         };
-        let list = edits.entry(r.target.to_owned()).or_default();
+        let full = edits.held >= MAX_PENDING_EDITS;
+        if full && !edits.by_target.contains_key(r.target) {
+            return out;
+        }
+        let list = edits.by_target.entry(r.target.to_owned()).or_default();
         if let Some(held) = list.iter_mut().find(|e| e.sender == candidate.sender) {
             if crate::replacement::supersedes(
                 (candidate.ts, candidate.event_id.as_str()),
@@ -283,8 +308,9 @@ pub(crate) fn classify_with_edits(value: &Value, edits: &mut PendingEdits) -> Sc
             ) {
                 *held = candidate;
             }
-        } else if list.len() < MAX_EDITORS_PER_EVENT {
+        } else if !full && list.len() < MAX_EDITORS_PER_EVENT {
             list.push(candidate);
+            edits.held += 1;
         }
         return out;
     }
@@ -301,9 +327,11 @@ pub(crate) fn classify_with_edits(value: &Value, edits: &mut PendingEdits) -> Sc
         .and_then(|v| v.as_str())
         .unwrap_or_default()
         .to_owned();
-    let edit = edits.remove(&event_id).and_then(|list| {
+    let edit = edits.by_target.remove(&event_id).and_then(|list| {
+        edits.held -= list.len();
         list.into_iter().find(|e| {
             crate::replacement::may_replace(&e.sender, "m.room.message", &sender, type_str)
+                && crate::replacement::encryption_permits(e.encrypted, encrypted)
         })
     });
 
@@ -443,16 +471,16 @@ mod tests {
                 "m.relates_to": { "rel_type": "m.replace", "event_id": event["event_id"].clone() }
             }
         });
-        classify_with_edits(&edit, &mut edits);
-        assert!(classify_with_edits(&event, &mut edits).entries[0].spoiler);
+        classify_with_edits(&edit, false, &mut edits);
+        assert!(classify_with_edits(&event, false, &mut edits).entries[0].spoiler);
         let mut plain = image_event(false);
         let mut edits = PendingEdits::new();
         let mut marking = edit.clone();
         marking["content"]["m.new_content"][crate::spoiler::STABLE_SPOILER] = json!({});
         marking["sender"] = plain["sender"].clone();
-        classify_with_edits(&marking, &mut edits);
+        classify_with_edits(&marking, false, &mut edits);
         plain["event_id"] = event["event_id"].clone();
-        assert!(classify_with_edits(&plain, &mut edits).entries[0].spoiler);
+        assert!(classify_with_edits(&plain, false, &mut edits).entries[0].spoiler);
     }
 
     #[test]
@@ -519,10 +547,11 @@ mod tests {
         let mut edits = PendingEdits::new();
         let e = classify_with_edits(
             &edit_event("$e", "$o", "@a:example.org", "see https://new.example/b"),
+            false,
             &mut edits,
         );
         assert!(e.entries.is_empty(), "an edit is never a row of its own");
-        let o = classify_with_edits(&original, &mut edits);
+        let o = classify_with_edits(&original, false, &mut edits);
         assert_eq!(o.entries.len(), 1);
         assert_eq!(o.entries[0].event_id, "$o");
         assert_eq!(o.entries[0].url, "https://new.example/b");
@@ -538,8 +567,8 @@ mod tests {
             "content": { "msgtype": "m.text", "body": "see https://old.example/a" },
         });
         let mut edits = PendingEdits::new();
-        classify_with_edits(&edit_event("$e", "$o", "@a:example.org", "no link now"), &mut edits);
-        assert!(classify_with_edits(&original, &mut edits).entries.is_empty());
+        classify_with_edits(&edit_event("$e", "$o", "@a:example.org", "no link now"), false, &mut edits);
+        assert!(classify_with_edits(&original, false, &mut edits).entries.is_empty());
     }
 
     #[test]
@@ -547,8 +576,8 @@ mod tests {
         let mut edits = PendingEdits::new();
         let mut edit = edit_event("$e", "$1", "@a:example.org", "new caption");
         edit["content"]["msgtype"] = json!("m.image");
-        classify_with_edits(&edit, &mut edits);
-        let scanned = classify_with_edits(&image_event(false), &mut edits);
+        classify_with_edits(&edit, false, &mut edits);
+        let scanned = classify_with_edits(&image_event(false), false, &mut edits);
         assert_eq!(scanned.entries.len(), 1, "one row, not two");
         assert_eq!(scanned.entries[0].body, "new caption");
         assert_eq!(scanned.entries[0].filename, "holiday.png");
@@ -558,14 +587,14 @@ mod tests {
     #[test]
     fn only_the_original_senders_edit_counts_and_the_newest_wins() {
         let mut edits = PendingEdits::new();
-        classify_with_edits(&edit_event("$e2", "$1", "@a:example.org", "second"), &mut edits);
-        classify_with_edits(&edit_event("$e1", "$1", "@a:example.org", "first"), &mut edits);
-        let scanned = classify_with_edits(&image_event(false), &mut edits);
+        classify_with_edits(&edit_event("$e2", "$1", "@a:example.org", "second"), false, &mut edits);
+        classify_with_edits(&edit_event("$e1", "$1", "@a:example.org", "first"), false, &mut edits);
+        let scanned = classify_with_edits(&image_event(false), false, &mut edits);
         assert_eq!(scanned.entries[0].body, "second");
 
         let mut edits = PendingEdits::new();
-        classify_with_edits(&edit_event("$x", "$1", "@mallory:example.org", "hijacked"), &mut edits);
-        let scanned = classify_with_edits(&image_event(false), &mut edits);
+        classify_with_edits(&edit_event("$x", "$1", "@mallory:example.org", "hijacked"), false, &mut edits);
+        let scanned = classify_with_edits(&image_event(false), false, &mut edits);
         assert_eq!(scanned.entries[0].body, "holiday.png");
     }
 
@@ -575,6 +604,7 @@ mod tests {
         for i in 0..(MAX_PENDING_EDITS + 50) {
             classify_with_edits(
                 &edit_event(&format!("$e{i}"), &format!("$t{i}"), "@a:example.org", "x"),
+                false,
                 &mut edits,
             );
         }
@@ -611,9 +641,9 @@ mod tests {
     fn caption_after(walk: &[Value]) -> String {
         let mut edits = PendingEdits::new();
         for edit in walk {
-            assert!(classify_with_edits(edit, &mut edits).entries.is_empty());
+            assert!(classify_with_edits(edit, false, &mut edits).entries.is_empty());
         }
-        classify_with_edits(&image_event(false), &mut edits).entries[0].body.clone()
+        classify_with_edits(&image_event(false), false, &mut edits).entries[0].body.clone()
     }
 
     #[test]
@@ -635,6 +665,35 @@ mod tests {
     }
 
     #[test]
+    fn a_plaintext_edit_cannot_rewrite_an_encrypted_caption() {
+        let edit = caption_edit("$e", "@a:example.org", 2_500, "forged caption");
+        let mut edits = PendingEdits::new();
+        classify_with_edits(&edit, false, &mut edits);
+        assert_eq!(classify_with_edits(&image_event(true), true, &mut edits).entries[0].body, "holiday.png");
+        let mut edits = PendingEdits::new();
+        classify_with_edits(&edit, true, &mut edits);
+        assert_eq!(classify_with_edits(&image_event(true), true, &mut edits).entries[0].body, "forged caption");
+    }
+
+    #[test]
+    fn pending_candidates_are_bounded_across_events_and_a_held_sender_never_grows_them() {
+        let mut edits = PendingEdits::new();
+        for i in 0..MAX_PENDING_EDITS {
+            let target = format!("$t{}", i / 2);
+            let mut edit = edit_event(&format!("$e{i}"), &target, &format!("@u{}:example.org", i % 2), "x");
+            edit["origin_server_ts"] = json!(1_000u64);
+            classify_with_edits(&edit, false, &mut edits);
+        }
+        assert_eq!(edits.len(), MAX_PENDING_EDITS);
+        let newer = edit_event("$z", "$t0", "@u0:example.org", "newer");
+        classify_with_edits(&newer, false, &mut edits);
+        assert_eq!(edits.len(), MAX_PENDING_EDITS);
+        classify_with_edits(&edit_event("$n", "$t0", "@u9:example.org", "y"), false, &mut edits);
+        assert_eq!(edits.len(), MAX_PENDING_EDITS, "a new sender past the cap was held");
+        assert_eq!(edits.by_target["$t0"].iter().find(|e| e.sender == "@u0:example.org").unwrap().body, "newer");
+    }
+
+    #[test]
     fn a_message_edit_cannot_rewrite_a_sticker() {
         let sticker = json!({
             "type": "m.sticker", "event_id": "$s", "sender": "@a:example.org",
@@ -642,8 +701,8 @@ mod tests {
             "content": { "body": "waving cat", "url": "mxc://example.org/cat" },
         });
         let mut edits = PendingEdits::new();
-        classify_with_edits(&edit_event("$e", "$s", "@a:example.org", "rewritten"), &mut edits);
-        assert_eq!(classify_with_edits(&sticker, &mut edits).entries[0].body, "waving cat");
+        classify_with_edits(&edit_event("$e", "$s", "@a:example.org", "rewritten"), false, &mut edits);
+        assert_eq!(classify_with_edits(&sticker, false, &mut edits).entries[0].body, "waving cat");
     }
 
     #[test]

@@ -253,6 +253,13 @@ async fn a_gap_fill_applies_edits_paged_before_their_original() {
 
     sync(&client, vec![message("$m1", "an older line", 1000)], "1", None).await;
     wait_indexed(&index, "$m1").await;
+    server.mock_room_state_encryption().plain().mount().await;
+    client
+        .get_room(room_id!("!dm:localhost"))
+        .unwrap()
+        .latest_encryption_state()
+        .await
+        .unwrap();
     let edit = |id: &str, body: &str, ts: u64| {
         serde_json::json!({"type": "m.room.message", "event_id": id, "room_id": ROOM,
             "sender": "@friend:localhost", "origin_server_ts": ts,
@@ -284,6 +291,44 @@ async fn a_gap_fill_applies_edits_paged_before_their_original() {
     let ix = ix.as_ref().unwrap();
     assert_eq!(ix.search("corrected plan", "", 10, 0).unwrap().len(), 1, "the edit paged first was lost");
     assert!(ix.search("first plan", "", 10, 0).unwrap().is_empty());
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn a_plaintext_edit_in_an_encrypted_room_is_not_indexed() {
+    let server = MatrixMockServer::new().await;
+    let client = server.client_builder().build().await;
+    client.event_cache().subscribe().unwrap();
+    let index = Arc::new(Mutex::new(Some(SearchIndex::open_in_memory().unwrap())));
+    let _live = register_live_index_handler(&client, &index);
+
+    let mut response = v5::Response::new("0".to_owned());
+    let mut room = v5::response::Room::default();
+    room.required_state = vec![Raw::from_json_string(
+        serde_json::json!({"type": "m.room.encryption", "state_key": "", "event_id": "$enc",
+            "sender": "@friend:localhost", "origin_server_ts": 1,
+            "content": {"algorithm": "m.megolm.v1.aes-sha2"}})
+        .to_string(),
+    )
+    .unwrap()];
+    response.rooms.insert(room_id!("!dm:localhost").to_owned(), room);
+    client
+        .process_sliding_sync_test_helper(&response, &RequestedRequiredStates::default())
+        .await
+        .unwrap();
+    assert!(client.get_room(room_id!("!dm:localhost")).unwrap().encryption_state().is_encrypted());
+
+    let forged = serde_json::json!({"type": "m.room.message", "event_id": "$e", "room_id": ROOM,
+        "sender": "@friend:localhost", "origin_server_ts": 2000,
+        "content": {"msgtype": "m.text", "body": "* the forged plan",
+            "m.new_content": {"msgtype": "m.text", "body": "the forged plan"},
+            "m.relates_to": {"rel_type": "m.replace", "event_id": "$o"}}});
+    sync(&client, vec![message("$o", "the first plan", 1000), forged], "1", None).await;
+    sync(&client, vec![message("$barrier", "a later line", 3000)], "2", None).await;
+    wait_indexed(&index, "$barrier").await;
+    let ix = index.lock().unwrap();
+    let ix = ix.as_ref().unwrap();
+    assert!(ix.search("forged plan", "", 10, 0).unwrap().is_empty(), "a plaintext edit rewrote an encrypted room's row");
+    assert_eq!(ix.search("first plan", "", 10, 0).unwrap().len(), 1);
 }
 
 #[test]

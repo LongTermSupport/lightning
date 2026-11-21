@@ -7847,7 +7847,8 @@ pub unsafe extern "C" fn mx_rust_media_history_page(
                         else {
                             continue;
                         };
-                        let found = mediahistory::classify_with_edits(&value, &mut pending_edits);
+                        let found = mediahistory::classify_with_edits(
+                            &value, event.encryption_info().is_some(), &mut pending_edits);
                         if found.undecryptable {
                             undecryptable += 1;
                         }
@@ -7962,7 +7963,7 @@ pub unsafe extern "C" fn mx_rust_room_export_start(
                     else {
                         continue;
                     };
-                    let Some(row) = state.consume(&value) else {
+                    let Some(row) = state.consume(&value, event.encryption_info().is_some()) else {
                         continue;
                     };
                     if !names.contains_key(&row.sender) {

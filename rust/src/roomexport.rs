@@ -7,6 +7,9 @@ pub(crate) const MAX_ROWS: u64 = 100_000;
 pub(crate) const PAGE_SIZE: u64 = 100;
 
 const MAX_PENDING_EDITS: usize = 8192;
+// shortcut: eight newer stranger edits of one event crowd out the owner's
+// (bounded, and a stranger is never promoted); keep senders unbounded per
+// event if that is ever seen.
 const MAX_EDITORS_PER_EVENT: usize = 8;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -122,6 +125,7 @@ struct Edit {
     sender: String,
     body: String,
     formatted_body: String,
+    encrypted: bool,
 }
 
 #[derive(Debug)]
@@ -235,7 +239,7 @@ impl WalkState {
         }
     }
 
-    fn classify(&mut self, value: &Value) -> Option<ExportRow> {
+    fn classify(&mut self, value: &Value, encrypted: bool) -> Option<ExportRow> {
         let type_str = str_of(value.get("type"));
         let event_id = str_of(value.get("event_id")).to_owned();
         if event_id.is_empty() {
@@ -296,6 +300,7 @@ impl WalkState {
                     sender: sender.clone(),
                     body: str_of(r.new_content.get("body")).to_owned(),
                     formatted_body: formatted_of(r.new_content),
+                    encrypted,
                 };
                 let list = self.edits.entry(r.target.to_owned()).or_default();
                 if let Some(held) = list.iter_mut().find(|e| e.sender == sender) {
@@ -346,6 +351,7 @@ impl WalkState {
             if let Some(edit) = list.into_iter().find(|e| {
                 value.get("state_key").is_none()
                     && crate::replacement::may_replace(&e.sender, "m.room.message", &sender, type_str)
+                    && crate::replacement::encryption_permits(e.encrypted, encrypted)
             }) {
                 body = edit.body;
                 formatted_body = edit.formatted_body;
@@ -381,12 +387,13 @@ impl WalkState {
         Some(row)
     }
 
-    pub(crate) fn consume(&mut self, value: &Value) -> Option<ExportRow> {
+    /// `encrypted`: whether this event arrived encrypted.
+    pub(crate) fn consume(&mut self, value: &Value, encrypted: bool) -> Option<ExportRow> {
         if self.stop.is_some() {
             return None;
         }
         self.scanned += 1;
-        let row = self.classify(value);
+        let row = self.classify(value, encrypted);
         let ts = value
             .get("origin_server_ts")
             .and_then(|v| v.as_u64())
@@ -462,7 +469,7 @@ mod tests {
     }
 
     fn rows_of(state: &mut WalkState, page: &[Value]) -> Vec<ExportRow> {
-        page.iter().filter_map(|v| state.consume(v)).collect()
+        page.iter().filter_map(|v| state.consume(v, false)).collect()
     }
 
     #[test]
@@ -499,6 +506,16 @@ mod tests {
             text("$1", "@ann:example.org", 100, "original"),
         ]);
         assert_eq!(rows[0].body, "bee");
+    }
+
+    #[test]
+    fn a_plaintext_edit_cannot_rewrite_an_encrypted_message() {
+        for (edit_encrypted, expected) in [(false, "original"), (true, "second")] {
+            let mut state = WalkState::new(Range::All);
+            assert!(state.consume(&edit("$e", "@ann:example.org", 200, "$1", "second"), edit_encrypted).is_none());
+            let row = state.consume(&text("$1", "@ann:example.org", 100, "original"), true).unwrap();
+            assert_eq!(row.body, expected, "edit encrypted: {edit_encrypted}");
+        }
     }
 
     #[test]
@@ -698,7 +715,7 @@ mod tests {
         assert_eq!(rows.len(), 3);
         assert_eq!(rows[0].event_id, "$0", "the NEWEST rows are kept");
         assert_eq!(state.stop, Some(StopReason::Limit));
-        assert!(state.consume(&text("$x", "@a:b", 1, "late")).is_none());
+        assert!(state.consume(&text("$x", "@a:b", 1, "late"), false).is_none());
         state.end_of_page(true);
         assert_eq!(state.stop, Some(StopReason::Limit));
     }
@@ -734,7 +751,7 @@ mod tests {
     fn the_row_cap_holds_for_every_range() {
         let mut state = WalkState::new(Range::All);
         state.rows = MAX_ROWS - 1;
-        assert!(state.consume(&text("$1", "@a:b", 1, "x")).is_some());
+        assert!(state.consume(&text("$1", "@a:b", 1, "x"), false).is_some());
         assert_eq!(state.stop, Some(StopReason::Cap));
         assert_eq!(Range::from_ffi(0, 10 * MAX_ROWS, 0, 0), Ok(Range::Latest(MAX_ROWS)));
     }
