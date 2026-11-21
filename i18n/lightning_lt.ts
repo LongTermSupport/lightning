@@ -13101,7 +13101,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>MessageDelegate</name>
     <message>
-        <location filename="../qml/MessageDelegate.qml" line="+1226"/>
+        <location filename="../qml/MessageDelegate.qml" line="+1231"/>
         <source>Today</source>
         <translation>Šiandien</translation>
     </message>
@@ -13211,12 +13211,12 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Apsaugos nustatymai</translation>
     </message>
     <message>
-        <location line="-1972"/>
+        <location line="-1977"/>
         <source>Link</source>
         <translation>Nuoroda</translation>
     </message>
     <message>
-        <location line="+2037"/>
+        <location line="+2042"/>
         <source>Show preview</source>
         <translation>Rodyti peržiūrą</translation>
     </message>
@@ -13465,7 +13465,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Redaguoti</translation>
     </message>
     <message>
-        <location line="-3653"/>
+        <location line="-3658"/>
         <source>%1 B</source>
         <translation>%1 B</translation>
     </message>
@@ -13499,22 +13499,22 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     <message>
         <location line="-564"/>
         <location line="+562"/>
-        <location line="+3621"/>
+        <location line="+3626"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5106"/>
+        <location line="-5111"/>
         <location line="+53"/>
         <location line="+508"/>
-        <location line="+4170"/>
+        <location line="+4175"/>
         <source>Image</source>
         <translation>Paveikslėlis</translation>
     </message>
     <message>
-        <location line="-4729"/>
+        <location line="-4734"/>
         <source>Attachment</source>
         <translation>Priedas</translation>
     </message>
@@ -13537,7 +13537,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         </translation>
     </message>
     <message>
-        <location line="+381"/>
+        <location line="+386"/>
         <source>A reply in a thread is waiting for keys</source>
         <translation>Atsakymas gijoje laukia raktų</translation>
     </message>
@@ -13973,10 +13973,10 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Bandyti dar kartą</translation>
     </message>
     <message>
-        <location line="-6220"/>
+        <location line="-6225"/>
         <location line="+57"/>
         <location line="+511"/>
-        <location line="+4168"/>
+        <location line="+4173"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -13989,9 +13989,9 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>vaizdo įrašą</translation>
     </message>
     <message>
-        <location line="-5904"/>
+        <location line="-5909"/>
         <location line="+564"/>
-        <location line="+4271"/>
+        <location line="+4276"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -35601,7 +35601,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2465"/>
+        <location filename="../src/main.cpp" line="+2460"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>Vietinė Qt/QML Matrix programa. Posistemė: --backend={mock,http,rust}. Numatytoji: rust (versijose be Rust SDK – http).</translation>
     </message>

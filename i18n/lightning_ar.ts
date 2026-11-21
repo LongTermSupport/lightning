@@ -13245,7 +13245,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MessageDelegate</name>
     <message>
-        <location filename="../qml/MessageDelegate.qml" line="+1226"/>
+        <location filename="../qml/MessageDelegate.qml" line="+1231"/>
         <source>Today</source>
         <translation>اليوم</translation>
     </message>
@@ -13358,12 +13358,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>إعدادات الأمان</translation>
     </message>
     <message>
-        <location line="-1972"/>
+        <location line="-1977"/>
         <source>Link</source>
         <translation>رابط</translation>
     </message>
     <message>
-        <location line="+1343"/>
+        <location line="+1348"/>
         <source>Open this thread</source>
         <translation>فتح هذا الخيط</translation>
     </message>
@@ -13765,7 +13765,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>تحرير</translation>
     </message>
     <message>
-        <location line="-3653"/>
+        <location line="-3658"/>
         <source>%1 B</source>
         <translation>%1 ب</translation>
     </message>
@@ -13799,22 +13799,22 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="-564"/>
         <location line="+562"/>
-        <location line="+3621"/>
+        <location line="+3626"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5106"/>
+        <location line="-5111"/>
         <location line="+53"/>
         <location line="+508"/>
-        <location line="+4170"/>
+        <location line="+4175"/>
         <source>Image</source>
         <translation>صورة</translation>
     </message>
     <message>
-        <location line="-4729"/>
+        <location line="-4734"/>
         <source>Attachment</source>
         <translation>مرفق</translation>
     </message>
@@ -13843,7 +13843,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message>
-        <location line="+381"/>
+        <location line="+386"/>
         <source>A reply in a thread is waiting for keys</source>
         <translation>رد في خيط ينتظر المفاتيح</translation>
     </message>
@@ -14147,10 +14147,10 @@ Signing out and signing in again is the only fix.</source>
         <translation>فشل تحميل الملصق — انقر لإعادة المحاولة</translation>
     </message>
     <message>
-        <location line="-5523"/>
+        <location line="-5528"/>
         <location line="+57"/>
         <location line="+511"/>
-        <location line="+4168"/>
+        <location line="+4173"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -14163,9 +14163,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>فيديو</translation>
     </message>
     <message>
-        <location line="-5904"/>
+        <location line="-5909"/>
         <location line="+564"/>
-        <location line="+4271"/>
+        <location line="+4276"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -36087,7 +36087,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2465"/>
+        <location filename="../src/main.cpp" line="+2460"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>عميل Matrix أصلي بـ Qt/QML. الخلفية: --backend={mock,http,rust}. الافتراضي: rust (http في النسخ الخالية من Rust SDK).</translation>
     </message>

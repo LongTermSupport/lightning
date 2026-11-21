@@ -13053,7 +13053,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
 <context>
     <name>MessageDelegate</name>
     <message>
-        <location filename="../qml/MessageDelegate.qml" line="+1226"/>
+        <location filename="../qml/MessageDelegate.qml" line="+1231"/>
         <source>Today</source>
         <translation>Aujourd&apos;hui</translation>
     </message>
@@ -13162,12 +13162,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Paramètres de sécurité</translation>
     </message>
     <message>
-        <location line="-1972"/>
+        <location line="-1977"/>
         <source>Link</source>
         <translation>Lien</translation>
     </message>
     <message>
-        <location line="+1343"/>
+        <location line="+1348"/>
         <source>Open this thread</source>
         <translation>Ouvrir ce fil</translation>
     </message>
@@ -13565,7 +13565,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Modifier</translation>
     </message>
     <message>
-        <location line="-3653"/>
+        <location line="-3658"/>
         <source>%1 B</source>
         <translation>%1 o</translation>
     </message>
@@ -13599,22 +13599,22 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     <message>
         <location line="-564"/>
         <location line="+562"/>
-        <location line="+3621"/>
+        <location line="+3626"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5106"/>
+        <location line="-5111"/>
         <location line="+53"/>
         <location line="+508"/>
-        <location line="+4170"/>
+        <location line="+4175"/>
         <source>Image</source>
         <translation>Image</translation>
     </message>
     <message>
-        <location line="-4729"/>
+        <location line="-4734"/>
         <source>Attachment</source>
         <translation>Pièce jointe</translation>
     </message>
@@ -13635,7 +13635,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         </translation>
     </message>
     <message>
-        <location line="+381"/>
+        <location line="+386"/>
         <source>A reply in a thread is waiting for keys</source>
         <translation>Une réponse dans un fil attend des clés</translation>
     </message>
@@ -13935,10 +13935,10 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Échec du chargement de l&apos;autocollant — cliquez pour réessayer</translation>
     </message>
     <message>
-        <location line="-5523"/>
+        <location line="-5528"/>
         <location line="+57"/>
         <location line="+511"/>
-        <location line="+4168"/>
+        <location line="+4173"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -13951,9 +13951,9 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>vidéo</translation>
     </message>
     <message>
-        <location line="-5904"/>
+        <location line="-5909"/>
         <location line="+564"/>
-        <location line="+4271"/>
+        <location line="+4276"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -35439,7 +35439,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2465"/>
+        <location filename="../src/main.cpp" line="+2460"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>Client Matrix natif Qt/QML. Backend : --backend={mock,http,rust}. Par défaut : rust (http dans les versions sans le Rust SDK).</translation>
     </message>

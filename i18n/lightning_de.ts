@@ -13077,14 +13077,14 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="-571"/>
         <location line="+57"/>
         <location line="+511"/>
-        <location line="+4168"/>
+        <location line="+4173"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location line="-5891"/>
+        <location line="-5896"/>
         <source>Voice message</source>
         <translation>Sprachnachricht</translation>
     </message>
@@ -13097,24 +13097,24 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="-564"/>
         <location line="+562"/>
-        <location line="+3621"/>
+        <location line="+3626"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5106"/>
+        <location line="-5111"/>
         <location line="+53"/>
         <location line="+508"/>
-        <location line="+4170"/>
+        <location line="+4175"/>
         <source>Image</source>
         <translation>Bild</translation>
     </message>
     <message>
-        <location line="-4730"/>
+        <location line="-4735"/>
         <location line="+564"/>
-        <location line="+4271"/>
+        <location line="+4276"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -13122,7 +13122,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Datei</translation>
     </message>
     <message>
-        <location line="-6133"/>
+        <location line="-6138"/>
         <source>Attachment</source>
         <translation>Anhang</translation>
     </message>
@@ -13148,7 +13148,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         </translation>
     </message>
     <message>
-        <location line="+200"/>
+        <location line="+205"/>
         <source>Today</source>
         <translation>Heute</translation>
     </message>
@@ -35439,7 +35439,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2465"/>
+        <location filename="../src/main.cpp" line="+2460"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>Nativer Qt/QML-Matrix-Client. Backend: --backend={mock,http,rust}. Standard: rust (http in Versionen ohne das Rust-SDK).</translation>
     </message>
