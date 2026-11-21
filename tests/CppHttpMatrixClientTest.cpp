@@ -34,7 +34,6 @@ struct Request {
 // answered only when release() is called for that prefix.
 class FakeHomeserver : public QObject
 {
-    Q_OBJECT
 public:
     QList<Request> seen;
     QSet<QByteArray> held;
@@ -98,9 +97,11 @@ private:
         if (r.path.contains("/send/"))
             return reply(socket, 200, R"({"event_id":"$sent"})");
         if (r.path.endsWith("/messages")) {
-            return reply(socket, 200, R"({"end":"t2","chunk":[{"type":"m.room.message",
-                "event_id":"$old","sender":"@a:example.org","origin_server_ts":1,
-                "content":{"msgtype":"m.text","body":"from A"}}]})");
+            return reply(socket, 200,
+                         "{\"end\":\"t2\",\"chunk\":[{\"type\":\"m.room.message\","
+                         "\"event_id\":\"$old\",\"sender\":\"@a:example.org\","
+                         "\"origin_server_ts\":1,\"content\":{\"msgtype\":\"m.text\","
+                         "\"body\":\"from A\"}}]}");
         }
         if (r.path == "/_matrix/client/v3/logout")
             return reply(socket, 200, "{}");
