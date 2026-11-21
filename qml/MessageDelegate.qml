@@ -213,7 +213,7 @@ Item {
             body: model.body || "",
             mediaKey: model.mediaKey || "",
             mediaFilename: model.mediaFilename || "",
-            timestampMs: model.timestampMs || 0,
+            timestampMs: (model.timestamp && model.timestamp.getTime()) || 0,
             sourceRoomName: root.sourceRoomName || "",
         })
     }

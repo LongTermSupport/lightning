@@ -3,6 +3,7 @@
 #include <QDateTime>
 #include <QGuiApplication>
 #include <QJSValue>
+#include <QLocale>
 #include <QQmlComponent>
 #include <QQmlContext>
 #include <QQmlEngine>
@@ -21,6 +22,7 @@
 #include "app/ShortcutRegistry.h"
 #include "auth/AuthManager.h"
 #include "matrix/MockMatrixClient.h"
+#include "matrix/TimelineEvent.h"
 #include "models/QuickSwitcherModel.h"
 #include "models/MessageComposer.h"
 #include "models/PaginationController.h"
@@ -1338,6 +1340,85 @@ ApplicationWindow {
 
         QTest::keyClick(m_window, Qt::Key_J);
         QTRY_VERIFY(rangeIds(list).isEmpty());
+    }
+
+    void aForwardSelectionCarriesEachRowsTimeAndGoesOutInTimelineOrder()
+    {
+        openJoinedRoom();
+        auto *model = m_controller->timeline();
+        auto *forward = m_controller->forward();
+        const QString roomId = m_controller->currentRoomId();
+        forward->beginSelecting(roomId);
+        struct Row { QQuickItem *delegate = nullptr; QString body; QDateTime when; };
+        QHash<QString, Row> rows;
+        QList<QQuickItem *> stack{ m_window->contentItem() };
+        while (!stack.isEmpty()) {
+            QQuickItem *it = stack.takeLast();
+            stack.append(it->childItems());
+            if (!it->property("rowSelectable").toBool()
+                || it->property("timelineModel").value<QObject *>() != model)
+                continue;
+            QVariant id;
+            if (!QMetaObject::invokeMethod(it, "eventIdForActions",
+                                           Q_RETURN_ARG(QVariant, id)))
+                continue;
+            for (int r = 0; r < model->rowCount(); ++r) {
+                if (model->eventIdAt(r) != id.toString())
+                    continue;
+                const QModelIndex idx = model->index(r, 0);
+                const QString body =
+                    model->data(idx, TimelineModel::BodyRole).toString();
+                const QDateTime when =
+                    model->data(idx, TimelineModel::TimestampRole).toDateTime();
+                if (model->data(idx, TimelineModel::TypeRole).toInt()
+                        == TimelineEvent::TextMessage
+                    && !body.isEmpty() && when.isValid())
+                    rows.insert(id.toString(), { it, body, when });
+            }
+        }
+        QList<Row> ordered = rows.values();
+        std::sort(ordered.begin(), ordered.end(),
+                  [](const Row &a, const Row &b) { return a.when > b.when; });
+        const Row newer = ordered.value(0);
+        Row older;
+        for (const Row &row : ordered) {
+            if (row.when < newer.when && row.body != newer.body) {
+                older = row;
+                break;
+            }
+        }
+        QVERIFY2(newer.delegate && older.delegate,
+                 "no two text rows with different times to forward");
+
+        QVERIFY(QMetaObject::invokeMethod(newer.delegate,
+                                          "toggleSelectionForThisRow"));
+        QVERIFY(QMetaObject::invokeMethod(older.delegate,
+                                          "toggleSelectionForThisRow"));
+        QCOMPARE(forward->selectedCount(), 2);
+
+        QStringList sent;
+        auto *mock = m_controller->findChild<MockMatrixClient *>();
+        const auto capture = connect(mock, &MatrixClient::eventAppended, this,
+            [&sent, &roomId](const QString &room, const TimelineEvent &event) {
+                if (room == roomId)
+                    sent << event.body;
+            });
+        forward->setForwardMode(QStringLiteral("context"));
+        forward->sendSelection({ QVariantMap{
+            { QStringLiteral("roomId"), roomId } } });
+        disconnect(capture);
+        QCOMPARE(sent.size(), 2);
+        const Row expected[] = { older, newer };
+        for (int i = 0; i < 2; ++i) {
+            const QString stamp = QLocale().toString(
+                expected[i].when.toLocalTime(), QStringLiteral("d MMM yyyy hh:mm"));
+            QVERIFY2(sent.at(i).startsWith(QStringLiteral("Forwarded from"))
+                         && sent.at(i).contains(stamp)
+                         && sent.at(i).endsWith(expected[i].body),
+                     qPrintable(QStringLiteral("copy %1: %2 (expected time %3)")
+                                    .arg(i).arg(sent.at(i), stamp)));
+        }
+        forward->cancelSelecting();
     }
 
     void aMouseDragSelectsAcrossMessagesAndCopiesFromTheModel()
