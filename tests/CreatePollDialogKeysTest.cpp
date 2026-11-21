@@ -93,7 +93,8 @@ class CreatePollDialogKeysTest : public QObject
     }
     QVariant eval(const QString &js)
     {
-        QQmlExpression ex(engine->contextForObject(dialog), dialog, js);
+        // The ids live in the dialog component's context, which its contentItem was made in.
+        QQmlExpression ex(qmlContext(content), dialog, js);
         const QVariant v = ex.evaluate();
         if (ex.hasError())
             qWarning("%s", qPrintable(ex.error().toString()));
