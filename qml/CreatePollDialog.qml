@@ -78,7 +78,8 @@ Dialog {
     anchors.centerIn: parent
     modal: true
     focus: true
-    closePolicy: dirty ? Popup.CloseOnEscape
+    // Dirty: Escape reaches contentItem's handler, which asks like Cancel does.
+    closePolicy: dirty ? Popup.NoAutoClose
                        : (Popup.CloseOnEscape | Popup.CloseOnPressOutside)
     width: Math.min(680, (parent ? parent.width : 680) - AppTheme.spacing24 * 2)
     height: Math.min(implicitHeight,
@@ -147,6 +148,7 @@ Dialog {
 
     contentItem: ColumnLayout {
         spacing: AppTheme.spacing12
+        Keys.onEscapePressed: root.maybeClose()
 
         RowLayout {
             Layout.fillWidth: true

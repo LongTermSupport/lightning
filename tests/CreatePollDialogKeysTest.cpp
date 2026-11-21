@@ -89,6 +89,39 @@ class CreatePollDialogKeysTest : public QObject
         content = dialog->property("contentItem").value<QQuickItem *>();
         QVERIFY(content);
     }
+    QVariant eval(const QString &js)
+    {
+        QQmlExpression ex(engine->contextForObject(dialog), dialog, js);
+        const QVariant v = ex.evaluate();
+        if (ex.hasError())
+            qWarning("%s", qPrintable(ex.error().toString()));
+        return v;
+    }
+    void click(QQuickItem *it)
+    {
+        const QPointF c = it->mapToScene(QPointF(it->width() / 2, it->height() / 2));
+        QTest::mouseClick(window, Qt::LeftButton, {}, c.toPoint());
+    }
+    void fillValidPoll()
+    {
+        QVERIFY(eval(QStringLiteral(
+                    "questionField.text = 'Lunch?';"
+                    "answerModel.setProperty(0,'answerText','red');"
+                    "answerModel.setProperty(1,'answerText','blue');"
+                    "answerModel.append({answerText:''});"
+                    "multipleSwitch.checked = true;"
+                    "bumpAnswerRevision(); formValid")).toBool());
+        settle();
+    }
+    void verifyPollKept()
+    {
+        QVERIFY2(dialog->property("opened").toBool(), "the poll draft was retired");
+        QCOMPARE(eval(QStringLiteral("questionField.text")).toString(),
+                 QStringLiteral("Lunch?"));
+        QCOMPARE(eval(QStringLiteral("answerTexts().join('|')")).toString(),
+                 QStringLiteral("red|blue"));
+        QVERIFY(eval(QStringLiteral("multipleSwitch.checked")).toBool());
+    }
     void teardown()
     {
         windowObj.reset();
@@ -128,6 +161,62 @@ private Q_SLOTS:
         settle();
         QVERIFY2(dialog->property("opened").toBool(),
                  "a second Enter sent the poll");
+        teardown();
+    }
+
+    void escapeOnADirtyPollAsksBeforeDiscarding_data()
+    {
+        QTest::addColumn<QString>("focusName");
+        QTest::newRow("question") << QStringLiteral("pollQuestionField");
+        QTest::newRow("answer") << QStringLiteral("pollAnswerField");
+        QTest::newRow("switch") << QStringLiteral("pollMultipleSwitch");
+        QTest::newRow("add answer") << QStringLiteral("pollAddAnswerButton");
+        QTest::newRow("remove answer") << QStringLiteral("pollAnswerRemoveButton");
+        QTest::newRow("footer") << QStringLiteral("createPollCancelButton");
+    }
+
+    void escapeOnADirtyPollAsksBeforeDiscarding()
+    {
+        QFETCH(QString, focusName);
+        setup();
+        fillValidPoll();
+        QQuickItem *target = findVisual(content, focusName);
+        QVERIFY(target);
+        target->forceActiveFocus();
+        settle(50);
+        QVERIFY(target->hasActiveFocus());
+        QTest::keyClick(window, Qt::Key_Escape);
+        settle();
+        verifyPollKept();
+        QVERIFY2(eval(QStringLiteral("discardConfirm.opened")).toBool(),
+                 "Escape did not ask before discarding");
+
+        QTest::keyClick(window, Qt::Key_Escape);
+        settle();
+        QVERIFY2(!eval(QStringLiteral("discardConfirm.opened")).toBool(),
+                 "Escape in the confirmation did not mean Keep editing");
+        verifyPollKept();
+
+        click(findVisual(content, QStringLiteral("createPollCancelButton")));
+        settle();
+        QVERIFY(eval(QStringLiteral("discardConfirm.opened")).toBool());
+        QQuickItem *discard =
+            findVisual(window->contentItem(), QStringLiteral("pollDiscardConfirmButton"));
+        QVERIFY(discard);
+        click(discard);
+        settle();
+        QVERIFY(!dialog->property("opened").toBool());
+        QCOMPARE(eval(QStringLiteral("questionField.text")).toString(), QString());
+        teardown();
+    }
+
+    void escapeOnAnEmptyPollCloses()
+    {
+        setup();
+        QTest::keyClick(window, Qt::Key_Escape);
+        settle();
+        QVERIFY(!dialog->property("opened").toBool());
+        QVERIFY(!eval(QStringLiteral("discardConfirm.opened")).toBool());
         teardown();
     }
 
