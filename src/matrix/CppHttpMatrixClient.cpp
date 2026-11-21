@@ -563,12 +563,16 @@ void CppHttpMatrixClient::processStateEvent(RoomInfo &room, const QJsonObject &e
 
 void CppHttpMatrixClient::applyEdit(const QString &roomId,
                                      const QString &targetEventId,
-                                     const QString &newBody)
+                                     const QString &newBody,
+                                     const QString &editSender)
 {
     auto tlIt = m_timelines.find(roomId);
     if (tlIt == m_timelines.end()) return;
     for (auto &e : *tlIt) {
         if (e.eventId == targetEventId) {
+            // Spec: a replacement is valid only from the original's sender.
+            if (editSender.isEmpty() || e.sender != editSender || e.redacted)
+                return;
             e.body   = newBody;
             e.edited = true;
             if (m_cache) m_cache->updateEvent(e);
@@ -729,10 +733,14 @@ void CppHttpMatrixClient::processTimelineEvent(const QString &roomId,
 
     if (relType == QLatin1String("m.replace")) {
         const QString target  = relatesTo.value(QStringLiteral("event_id")).toString();
-        const auto newContent = content.value(QStringLiteral("m.new_content")).toObject();
-        const QString newBody = newContent.value(QStringLiteral("body")).toString();
-        if (!target.isEmpty())
-            applyEdit(roomId, target, newBody);
+        const QJsonValue newBody = content.value(QStringLiteral("m.new_content"))
+                                       .toObject().value(QStringLiteral("body"));
+        if (type == QLatin1String("m.room.message")
+            && !ev.contains(QStringLiteral("state_key"))
+            && !target.isEmpty() && newBody.isString()) {
+            applyEdit(roomId, target, newBody.toString(),
+                      ev.value(QStringLiteral("sender")).toString());
+        }
         return;
     }
 
@@ -1212,7 +1220,7 @@ void CppHttpMatrixClient::editMessage(const QString &roomId,
             "Cannot send to encrypted rooms yet: E2EE backend is not implemented."));
         return;
     }
-    applyEdit(roomId, targetEventId, newBody);
+    applyEdit(roomId, targetEventId, newBody, m_userId);
 
     const QJsonObject newContent{
         { QStringLiteral("msgtype"), QStringLiteral("m.text") },
