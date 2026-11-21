@@ -314,6 +314,15 @@ NOT TESTED**. Automated tests named in commits do not establish live behavior.
 
 - Joined rooms, DM detection from `m.direct`, invites, Space hierarchy, room
   membership/actions, room information, and room creation
+- **Starting a DM, and the failed-DM cleanup.** Every DM `/createRoom` carries
+  `org.lightning_matrix.dm_attempt` in its creation content: a random id
+  (`TransactionId::new()`) minted for that one attempt, with no account, device
+  or peer data in it. When the request fails with an answered Matrix error,
+  the delayed sweep may leave and forget a room only if its `m.room.create`
+  content carries THAT attempt's id (and every older guard still holds). The
+  id is the proof of ownership; looking like an orphan is not. A matching room
+  from another device or another attempt, or one whose create event did not
+  keep the key, is never touched.
 - **Two navigation layouts, chosen per account** (Settings → Appearance →
   Conversation list), plus the Spaces rail above both. Full contract in
   `docs/navigation-layouts.md`; read it before touching any of this. The
