@@ -87,6 +87,7 @@ struct RoomSend {
     QString replyToEventId;
     QVariantMap spec;
     QString persistedStatusAtSend;
+    QStringList mentionIds;
 };
 
 class FakeClient final : public MatrixClient
@@ -107,7 +108,10 @@ public:
     int probes = 0;
     QList<RoomSend> roomSends;
     QList<RoomSend> legacySends;        // the timeline lane (mock/HTTP)
-    struct ScheduleCall { QString roomId; QString body; qint64 delayMs; quint64 op; };
+    mutable int stateReads = 0;
+    struct ScheduleCall {
+        QString roomId; QString body; qint64 delayMs; quint64 op; QStringList mentionIds;
+    };
     QList<ScheduleCall> scheduleCalls;
     struct UpdateCall { QString delayId; QString action; quint64 op; };
     QList<UpdateCall> updateCalls;
@@ -143,13 +147,13 @@ public:
 
     void probeDelayedEvents() override { ++probes; }
     quint64 scheduleMessage(const QString &roomId, const QString &body,
-                            const QVariantMap &, const QStringList &,
+                            const QVariantMap &, const QStringList &mentionIds,
                             qint64 delayMs) override
     {
         if (refuseServerScheduling)
             return 0;
         const quint64 op = nextOp++;
-        scheduleCalls.append({ roomId, body, delayMs, op });
+        scheduleCalls.append({ roomId, body, delayMs, op, mentionIds });
         return op;
     }
     quint64 updateScheduledMessage(const QString &delayId,
@@ -160,7 +164,7 @@ public:
         return op;
     }
     quint64 sendRoomMessage(const QString &roomId, const QString &body,
-                            const QVariantMap &spec, const QStringList &,
+                            const QVariantMap &spec, const QStringList &mentionIds,
                             const QString &replyToEventId,
                             const QString &threadRootEventId) override
     {
@@ -168,7 +172,7 @@ public:
             return 0;
         const quint64 op = nextOp++;
         roomSends.append({ op, roomId, body, threadRootEventId, replyToEventId, spec,
-                           persistedStatusFor(body) });
+                           persistedStatusFor(body), mentionIds });
         return op;
     }
 
@@ -201,7 +205,11 @@ public:
     QString homeserverUrl() const override { return {}; }
     void startSync() override {}
     void stopSync() override {}
-    ConnectionState connectionState() const override { return state; }
+    ConnectionState connectionState() const override
+    {
+        ++stateReads;
+        return state;
+    }
     QList<RoomInfo> rooms() const override { return roomSet; }
     QList<TimelineEvent> timeline(const QString &) const override { return {}; }
     QString displayNameFor(const QString &, const QString &id) const override
@@ -240,6 +248,10 @@ RoomInfo room(const QString &id, bool encrypted, bool encryptionKnown = true)
 const QString kPlain = QStringLiteral("!plain:mock.local");
 const QString kEncrypted = QStringLiteral("!enc:mock.local");
 const QString kUnknown = QStringLiteral("!unknown:mock.local");
+const QString kAlice = QStringLiteral("@alice:mock.local");
+const QString kBob = QStringLiteral("@bob:mock.local");
+const QString kAliceLink = QStringLiteral("[Alice](https://matrix.to/#/@alice:mock.local)");
+const QString kBobLink = QStringLiteral("[Bob](https://matrix.to/#/@bob:mock.local)");
 
 QVariantMap message(const QString &roomId, const QString &body,
                     const QString &threadRootId = QString(),
@@ -254,6 +266,13 @@ QVariantMap message(const QString &roomId, const QString &body,
 }
 
 qint64 nowMs() { return QDateTime::currentMSecsSinceEpoch(); }
+
+QVariantMap mentioning(const QString &roomId, const QString &body, const QStringList &ids)
+{
+    QVariantMap m = message(roomId, body);
+    m.insert(QStringLiteral("mentionIds"), ids);
+    return m;
+}
 
 QVariantMap withMedia(QVariantMap m, const QList<quint64> &ops,
                       const QString &caption = QString())
@@ -981,6 +1000,194 @@ private Q_SLOTS:
                                          QString());
         QTRY_COMPARE_WITH_TIMEOUT(h.client.roomSends.size(), 1, 3000);
         QCOMPARE(h.client.roomSends.first().body, QStringLiteral("after"));
+    }
+    void anOverdueLocalEntryDoesNotSpinTheTimerWhileOffline()
+    {
+        Harness h;
+        const QString id = h.scheduler.schedule(
+            message(kPlain, QStringLiteral("due while offline")), nowMs() + 80);
+        QVERIFY(!id.isEmpty());
+        h.client.state = MatrixClient::Connecting;
+        Q_EMIT h.client.connectionStateChanged(MatrixClient::Connecting);
+        QTest::qWait(200);
+        const int before = h.client.stateReads;
+        QTest::qWait(300);
+        const int wakeups = h.client.stateReads - before;
+        QVERIFY2(wakeups < 5, qPrintable(QStringLiteral("woke %1 times").arg(wakeups)));
+        QVERIFY(h.client.roomSends.isEmpty());
+        QCOMPARE(h.entry(id).value(QStringLiteral("status")).toString(),
+                 QStringLiteral("pending"));
+
+        h.client.state = MatrixClient::Syncing;
+        Q_EMIT h.client.connectionStateChanged(MatrixClient::Syncing);
+        QCOMPARE(h.client.roomSends.size(), 1);
+        Q_EMIT h.client.connectionStateChanged(MatrixClient::Syncing);
+        QCOMPARE(h.client.roomSends.size(), 1);
+        h.answerRoomSend(false);
+        QCOMPARE(h.entry(id).value(QStringLiteral("status")).toString(),
+                 QStringLiteral("failed"));
+        QTest::qWait(200);
+        QCOMPARE(h.client.roomSends.size(), 1);
+    }
+
+    void aServerHeldEntryStillRetiresWhileOffline()
+    {
+        Harness h;
+        h.settings.setScheduledSends({ QVariantMap{
+            { QStringLiteral("id"), QStringLiteral("held") },
+            { QStringLiteral("roomId"), kPlain },
+            { QStringLiteral("body"), QStringLiteral("server has it") },
+            { QStringLiteral("sendAtMs"),
+              nowMs() - ScheduledSendController::kServerRetireGraceMs + 300 },
+            { QStringLiteral("mode"), QStringLiteral("server") },
+            { QStringLiteral("status"), QStringLiteral("pending") },
+            { QStringLiteral("delayId"), QStringLiteral("delay-held") },
+        } });
+        Q_EMIT h.client.connectionStateChanged(MatrixClient::Syncing);
+        QVERIFY(!h.entry(QStringLiteral("held")).isEmpty());
+        h.client.state = MatrixClient::Offline;
+        Q_EMIT h.client.connectionStateChanged(MatrixClient::Offline);
+        QTRY_VERIFY_WITH_TIMEOUT(h.entry(QStringLiteral("held")).isEmpty(), 3000);
+        QVERIFY(h.settings.scheduledSends().isEmpty());
+        QVERIFY(h.client.roomSends.isEmpty());
+    }
+
+    void overdueEntriesLeaveInDeadlineOrderNotCreationOrder()
+    {
+        Harness h;
+        h.client.state = MatrixClient::Connecting;
+        h.scheduler.schedule(message(kPlain, QStringLiteral("made first, due later")),
+                             nowMs() + 300);
+        h.scheduler.schedule(message(kPlain, QStringLiteral("made second, due earlier")),
+                             nowMs() + 100);
+        QTest::qWait(450);
+        QVERIFY(h.client.roomSends.isEmpty());
+        h.client.state = MatrixClient::Syncing;
+        Q_EMIT h.client.connectionStateChanged(MatrixClient::Syncing);
+        QCOMPARE(h.client.roomSends.size(), 1);
+        QCOMPARE(h.client.roomSends.first().body, QStringLiteral("made second, due earlier"));
+        h.answerRoomSend(true);
+        QTRY_COMPARE_WITH_TIMEOUT(h.client.roomSends.size(), 2, 3000);
+        QCOMPARE(h.client.roomSends.at(1).body, QStringLiteral("made first, due later"));
+    }
+
+    void aRescheduledEntrySendsInTheOrderTheListShows()
+    {
+        Harness h;
+        h.client.state = MatrixClient::Connecting;
+        const QString a = h.scheduler.schedule(message(kPlain, QStringLiteral("a")),
+                                               nowMs() + 60000);
+        const QString b = h.scheduler.schedule(message(kPlain, QStringLiteral("b")),
+                                               nowMs() + 120000);
+        h.scheduler.reschedule(b, nowMs() + 100);
+        h.scheduler.reschedule(a, nowMs() + 300);
+        const QVariantList rows = h.scheduler.pending();
+        QCOMPARE(rows.size(), 2);
+        QCOMPARE(rows.at(0).toMap().value(QStringLiteral("id")).toString(), b);
+        QCOMPARE(rows.at(1).toMap().value(QStringLiteral("id")).toString(), a);
+        QTest::qWait(450);
+        h.client.state = MatrixClient::Syncing;
+        Q_EMIT h.client.connectionStateChanged(MatrixClient::Syncing);
+        QCOMPARE(h.client.roomSends.size(), 1);
+        QCOMPARE(h.client.roomSends.first().body, QStringLiteral("b"));
+        h.answerRoomSend(true);
+        QTRY_COMPARE_WITH_TIMEOUT(h.client.roomSends.size(), 2, 3000);
+        QCOMPARE(h.client.roomSends.at(1).body, QStringLiteral("a"));
+    }
+
+    void attachmentsAMillisecondApartLeaveInTrayOrderAfterAnOutage()
+    {
+        Harness h;
+        h.client.state = MatrixClient::Connecting;
+        const QString first = QStringLiteral("{\"msgtype\":\"m.image\",\"body\":\"1.png\"}");
+        const QString second = QStringLiteral("{\"msgtype\":\"m.image\",\"body\":\"2.png\"}");
+        h.scheduler.schedule(withMedia(message(kPlain, QStringLiteral("text")), { 914, 915 }),
+                             nowMs() + 100);
+        Q_EMIT h.client.scheduledMediaPrepared(915, kPlain, true, false, second);
+        Q_EMIT h.client.scheduledMediaPrepared(914, kPlain, true, false, first);
+        QTest::qWait(300);
+        QVERIFY(h.client.contentSends.isEmpty());
+        h.client.state = MatrixClient::Syncing;
+        Q_EMIT h.client.connectionStateChanged(MatrixClient::Syncing);
+        QCOMPARE(h.client.contentSends.size(), 1);
+        QCOMPARE(h.client.contentSends.at(0).content, first);
+        Q_EMIT h.client.roomSendFinished(h.client.contentSends.last().op, kPlain, true,
+                                         QString());
+        QTRY_COMPARE_WITH_TIMEOUT(h.client.contentSends.size(), 2, 3000);
+        QCOMPARE(h.client.contentSends.at(1).content, second);
+        QVERIFY(h.client.roomSends.isEmpty());
+        Q_EMIT h.client.roomSendFinished(h.client.contentSends.last().op, kPlain, true,
+                                         QString());
+        QTRY_COMPARE_WITH_TIMEOUT(h.client.roomSends.size(), 1, 3000);
+        QCOMPARE(h.client.roomSends.first().body, QStringLiteral("text"));
+    }
+
+    void editingLocalTextRecomputesItsMentions()
+    {
+        Harness h;
+        const QString removed = h.scheduler.schedule(
+            mentioning(kPlain, kAliceLink + QStringLiteral(" hi"), { kAlice }),
+            nowMs() + 60000);
+        const QString swapped = h.scheduler.schedule(
+            mentioning(kPlain, kAliceLink + QStringLiteral(" there"), { kAlice }),
+            nowMs() + 60000);
+        const QString everyone = h.scheduler.schedule(
+            mentioning(kPlain, QStringLiteral("@room hey"), { QStringLiteral("@room") }),
+            nowMs() + 60000);
+        h.scheduler.updateText(removed, QStringLiteral("hi"), QString());
+        h.scheduler.updateText(swapped, kBobLink + QStringLiteral(" there"), QString());
+        h.scheduler.updateText(everyone, QStringLiteral("@room hey all"), QString());
+
+        QHash<QString, QStringList> persisted;
+        for (const QVariant &v : h.settings.scheduledSends())
+            persisted.insert(v.toMap().value(QStringLiteral("id")).toString(),
+                             v.toMap().value(QStringLiteral("mentionIds")).toStringList());
+        QCOMPARE(persisted.value(removed), QStringList());
+        QCOMPARE(persisted.value(swapped), QStringList{ kBob });
+        QCOMPARE(persisted.value(everyone), QStringList{ QStringLiteral("@room") });
+
+        h.scheduler.sendNow(removed);
+        QCOMPARE(h.client.roomSends.last().mentionIds, QStringList());
+        h.answerRoomSend(true);
+        h.scheduler.sendNow(swapped);
+        QCOMPARE(h.client.roomSends.last().mentionIds, QStringList{ kBob });
+        h.answerRoomSend(true);
+        h.scheduler.updateText(everyone, QStringLiteral("hey all"), QString());
+        h.scheduler.sendNow(everyone);
+        QCOMPARE(h.client.roomSends.last().mentionIds, QStringList());
+    }
+
+    void editingServerHeldTextResubmitsWithTheNewMentions()
+    {
+        Harness h;
+        h.enableServer();
+        const QString held = h.scheduler.schedule(
+            mentioning(kPlain, kAliceLink + QStringLiteral(" hi"), { kAlice }),
+            nowMs() + 90000);
+        QCOMPARE(h.client.scheduleCalls.last().mentionIds, QStringList{ kAlice });
+        Q_EMIT h.client.scheduledSendFinished(h.client.scheduleCalls.last().op, kPlain, true,
+                                              QStringLiteral("delay-m1"), QString());
+        h.scheduler.updateText(held, kBobLink + QStringLiteral(" hi"), QString());
+        QCOMPARE(h.client.updateCalls.last().action, QStringLiteral("cancel"));
+        Q_EMIT h.client.scheduledUpdateFinished(h.client.updateCalls.last().op,
+                                                QStringLiteral("delay-m1"),
+                                                QStringLiteral("cancel"), true, QString());
+        QCOMPARE(h.client.scheduleCalls.size(), 2);
+        QCOMPARE(h.client.scheduleCalls.last().body, kBobLink + QStringLiteral(" hi"));
+        QCOMPARE(h.client.scheduleCalls.last().mentionIds, QStringList{ kBob });
+
+        const QString flying = h.scheduler.schedule(
+            mentioning(kPlain, kAliceLink + QStringLiteral(" again"), { kAlice }),
+            nowMs() + 90000);
+        h.scheduler.updateText(flying, QStringLiteral("again"), QString());
+        Q_EMIT h.client.scheduledSendFinished(h.client.scheduleCalls.last().op, kPlain, true,
+                                              QStringLiteral("delay-m2"), QString());
+        QCOMPARE(h.client.updateCalls.last().delayId, QStringLiteral("delay-m2"));
+        Q_EMIT h.client.scheduledUpdateFinished(h.client.updateCalls.last().op,
+                                                QStringLiteral("delay-m2"),
+                                                QStringLiteral("cancel"), true, QString());
+        QCOMPARE(h.client.scheduleCalls.last().body, QStringLiteral("again"));
+        QCOMPARE(h.client.scheduleCalls.last().mentionIds, QStringList());
     }
 };
 
