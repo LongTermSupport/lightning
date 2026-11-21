@@ -1127,6 +1127,15 @@ private slots:
         QVERIFY(input);
         openMention(input, QString());
         QVERIFY(popupVisible());
+        QObject *model = m_controller->property("mentionSuggestions").value<QObject *>();
+        QVERIFY(model);
+        QTest::keyClick(m_window, Qt::Key_Down);
+        QTest::keyClick(m_window, Qt::Key_Down);
+        QVariantMap sel;
+        QMetaObject::invokeMethod(model, "get", Q_RETURN_ARG(QVariantMap, sel),
+                                  Q_ARG(int, mentionPopup()->property("currentIndex").toInt()));
+        const QString expectedId = sel.value(QStringLiteral("userId")).toString();
+        QVERIFY(expectedId.startsWith(QLatin1Char('@')) && expectedId.contains(QLatin1Char(':')));
         QTest::keyClick(m_window, Qt::Key_Return);
         QTest::qWait(20);
         const QString inserted = input->property("text").toString();
@@ -1149,7 +1158,7 @@ private slots:
         QVERIFY(mock);
         composer->send();
         QTest::qWait(20);
-        QCOMPARE(mock->lastMentionIdsForTest().size(), 1);
+        QCOMPARE(mock->lastMentionIdsForTest(), QStringList{ expectedId });
         QVERIFY(mock->lastSentBodyForTest().contains(
             QStringLiteral("https://matrix.to/#/")));
         input->setProperty("text", QString());

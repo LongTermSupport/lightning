@@ -210,7 +210,7 @@ private Q_SLOTS:
         const SendRecord &s = m_client->sends.first();
         QCOMPARE(s.kind, QStringLiteral("text"));
         QCOMPARE(s.mentionIds, QStringList{ QStringLiteral("@bob:example.org") });
-        QVERIFY2(s.body.contains(QStringLiteral("https://matrix.to/#/@bob:example.org")),
+        QVERIFY2(s.body.contains(QStringLiteral("[@Bob](https://matrix.to/#/%40bob%3Aexample.org)")),
                  qPrintable(s.body));
     }
 

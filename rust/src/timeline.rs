@@ -10442,8 +10442,14 @@ mod poll_queue_tests {
 
     const ROOM: &str = "!poll:localhost";
 
-    fn of_type(events: &Mutex<VecDeque<Value>>, kind: &str) -> Vec<Value> {
-        events.lock().unwrap().iter().filter(|e| e["type"] == kind).cloned().collect()
+    fn of_type(events: &Mutex<VecDeque<String>>, kind: &str) -> Vec<Value> {
+        events
+            .lock()
+            .unwrap()
+            .iter()
+            .filter_map(|e| serde_json::from_str::<Value>(e).ok())
+            .filter(|e| e["type"] == kind)
+            .collect()
     }
 
     #[test]
