@@ -24,7 +24,9 @@ class MediaBridge;
 //   dispatch set `error`; a send refused afterwards is reported through
 //   forwardFailed(), since the picker has already closed.
 // - A selection pair counts as sent only on the backend's acknowledgement
-//   (roomSendFinished); progressDone counts settled pairs, sent or failed.
+//   (roomSendFinished); progressDone counts settled pairs: sent, failed, or
+//   unconfirmed. An unconfirmed copy may have been sent, so it is never
+//   offered for retry.
 // - Redacted, local-echo and undecryptable content is refused in begin().
 //
 // begin() takes an immutable snapshot of the activated row instead of
@@ -43,6 +45,7 @@ class ForwardController : public QObject
     Q_PROPERTY(int progressDone READ progressDone NOTIFY changed)
     Q_PROPERTY(int progressTotal READ progressTotal NOTIFY changed)
     Q_PROPERTY(int failureCount READ failureCount NOTIFY changed)
+    Q_PROPERTY(int unconfirmedCount READ unconfirmedCount NOTIFY changed)
     Q_PROPERTY(QVariantList failures READ failures NOTIFY changed)
     Q_PROPERTY(QString forwardMode READ forwardMode NOTIFY changed)
     Q_PROPERTY(bool selecting READ selecting NOTIFY changed)
@@ -84,6 +87,7 @@ public:
     int progressDone() const { return m_progressDone; }
     int progressTotal() const { return m_progressTotal; }
     int failureCount() const { return int(m_failures.size()); }
+    int unconfirmedCount() const { return m_unconfirmed; }
     QVariantList failures() const { return m_failures; }
     QString forwardMode() const { return m_mode; }
     bool selecting() const { return m_selecting; }
@@ -134,6 +138,8 @@ private:
     };
     void pumpQueue();
     void notePairResult(const Pending &pair, bool ok, const QString &message);
+    void noteUnconfirmed(int pairs);
+    void settleInFlightAsUnconfirmed();
     QString contextPrefixFor(const QVariantMap &snapshot) const;
 
     bool m_selectionActive = false;
@@ -147,6 +153,7 @@ private:
     QList<Pending> m_failedPairs;
     QVariantList m_failures;
     int m_progressDone = 0;
+    int m_unconfirmed = 0;
     int m_progressTotal = 0;
     bool m_pumpBusy = false;
 

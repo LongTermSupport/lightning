@@ -1520,7 +1520,7 @@ impl TimelineRegistry {
     }
 
     /// With a nonzero `op_id` the server's answer arrives as
-    /// `thread_send_result`, and a failure is not also `thread_send_failed`.
+    /// `acked_send_result`, and a failure is not also `thread_send_failed`.
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn send_thread_text_op(
         self: &Arc<Self>,
@@ -1608,9 +1608,9 @@ impl TimelineRegistry {
                 );
             }
             if op_id != 0 {
-                registry.report_thread_send(
-                    client.clone(), room_id, queued, ack_updates, op_id,
-                    lifecycle,
+                let room = RoomId::parse(&room_id).ok().and_then(|id| client.get_room(&id));
+                registry.report_acked_send(
+                    room, room_id, queued, ack_updates, op_id, lifecycle,
                 );
                 return;
             }
@@ -2570,46 +2570,68 @@ impl TimelineRegistry {
         self.register_thread_auto_subscription(task.abort_handle(), lifecycle);
     }
 
-    fn report_thread_send(
+    pub(crate) fn send_room_text_op(
         self: &Arc<Self>,
-        client: Client,
+        runtime: &tokio::runtime::Runtime,
+        room: matrix_sdk::Room,
+        room_id: String,
+        body: String,
+        op_id: u64,
+    ) {
+        let lifecycle = self.lifecycle_gen.load(Ordering::SeqCst);
+        let registry = Arc::clone(self);
+        let lane = send_lane_key(&room_id, "");
+        // The lane orders the enqueue only; the wait for the answer runs apart.
+        self.spawn_ordered(runtime, lane, async move {
+            let content = AnyMessageLikeEventContent::RoomMessage(outgoing_content(
+                &body,
+                &SendBodySpec::default(),
+                Vec::new(),
+            ));
+            let (updates, handle) = crate::sendrecovery::enqueue_watched(&room, content).await;
+            registry.report_acked_send(
+                Some(room), room_id, handle.map(Some), updates, op_id, lifecycle,
+            );
+        });
+    }
+
+    /// `acked_send_result {op_id, room_id, ok, category}`; category `pending`
+    /// means the request may still go out, so it must not be offered again.
+    fn report_acked_send(
+        self: &Arc<Self>,
+        room: Option<matrix_sdk::Room>,
         room_id: String,
         queued: Option<Option<matrix_sdk::send_queue::SendHandle>>,
         updates: Option<tokio::sync::broadcast::Receiver<RoomSendQueueUpdate>>,
         op_id: u64,
         lifecycle: u64,
     ) {
+        use crate::sendrecovery::Acked;
         let registry = Arc::clone(self);
         let events = Arc::clone(&self.events);
         let task = tokio::spawn(async move {
-            let room = RoomId::parse(&room_id).ok().and_then(|id| client.get_room(&id));
+            let wait = std::time::Duration::from_secs(THREAD_SEND_WATCH_SECS);
             let outcome = match (queued, updates, room) {
+                (None, _, _) => Acked::Failed("rejected".to_owned()),
                 (Some(Some(handle)), Some(updates), Some(room)) => {
-                    crate::sendrecovery::await_queued(
-                        &room.send_queue(),
-                        updates,
-                        handle,
-                        std::time::Duration::from_secs(THREAD_SEND_WATCH_SECS),
-                    )
-                    .await
+                    crate::sendrecovery::settle_acked(&room.send_queue(), updates, handle, wait)
+                        .await
                 }
-                (None, _, _) => crate::sendrecovery::QueuedSend::Failed("rejected".to_owned()),
-                _ => crate::sendrecovery::QueuedSend::Unresolved,
+                (Some(Some(handle)), _, _) => crate::sendrecovery::abort_or_pending(handle).await,
+                (Some(None), _, _) => Acked::Pending,
             };
             if !registry.lifecycle_current(lifecycle) {
                 return;
             }
             let (ok, category) = match outcome {
-                crate::sendrecovery::QueuedSend::Sent(_) => (true, ""),
-                crate::sendrecovery::QueuedSend::Failed(err) => {
-                    (false, crate::rooms::classify_room_error(&err))
-                }
-                crate::sendrecovery::QueuedSend::Unresolved => (false, "unresolved"),
+                Acked::Sent => (true, ""),
+                Acked::Failed(err) => (false, crate::rooms::classify_room_error(&err)),
+                Acked::Pending => (false, "pending"),
             };
             enqueue(
                 &events,
                 json!({
-                    "type": "thread_send_result", "lifecycle": lifecycle,
+                    "type": "acked_send_result", "lifecycle": lifecycle,
                     "op_id": op_id, "room_id": room_id, "ok": ok,
                     "category": category,
                 }),
@@ -10377,8 +10399,8 @@ mod thread_list_tally_tests {
     }
 }
 
-/// Plain thread message through the thread-focused send path; the server's
-/// answer arrives as `thread_send_result {op_id, room_id, ok, category}`.
+/// Plain thread message through the thread-focused send path; answered by
+/// `acked_send_result`.
 #[no_mangle]
 pub unsafe extern "C" fn mx_rust_thread_send_text_acked(
     ptr: *mut std::ffi::c_void,
@@ -10405,5 +10427,32 @@ pub unsafe extern "C" fn mx_rust_thread_send_text_acked(
                 SendBodySpec::default(), op_id,
             )
             .map(|_| String::new())
+    })
+}
+
+/// Plain room message through the room's send queue; answered by
+/// `acked_send_result`.
+#[no_mangle]
+pub unsafe extern "C" fn mx_rust_send_text_acked(
+    ptr: *mut std::ffi::c_void,
+    room_id: *const std::ffi::c_char,
+    body: *const std::ffi::c_char,
+    op_id: u64,
+) -> *mut std::ffi::c_char {
+    crate::ffi_string(|| {
+        let bridge = unsafe { crate::bridge(ptr)? };
+        let room_id = unsafe { crate::cstr_arg(room_id) }?;
+        let body = unsafe { crate::cstr_arg(body) }?;
+        if op_id == 0 || body.trim().is_empty() {
+            return Err("invalid_arguments".to_owned());
+        }
+        let Some(client) = bridge.client.lock().ok().and_then(|g| g.clone()) else {
+            return Err("Rust SDK session is not logged in.".to_owned());
+        };
+        let room = crate::rooms::joined_room(&client, &room_id)?;
+        bridge
+            .timelines
+            .send_room_text_op(&bridge.runtime, room, room_id, body, op_id);
+        Ok(String::new())
     })
 }

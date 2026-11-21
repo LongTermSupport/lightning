@@ -187,6 +187,50 @@ pub(crate) async fn send_queued(
     await_queued(&queue, updates, handle, wait).await
 }
 
+pub(crate) enum Acked {
+    Sent,
+    Failed(String),
+    // Unanswered and could not be withdrawn: it may have been sent.
+    Pending,
+}
+
+/// Queues `content` with a subscription taken first, as `await_queued` needs.
+pub(crate) async fn enqueue_watched(
+    room: &matrix_sdk::Room,
+    content: matrix_sdk::ruma::events::AnyMessageLikeEventContent,
+) -> (
+    Option<tokio::sync::broadcast::Receiver<matrix_sdk::send_queue::RoomSendQueueUpdate>>,
+    Option<matrix_sdk::send_queue::SendHandle>,
+) {
+    let queue = room.send_queue();
+    queue.set_enabled(true);
+    let updates = queue.subscribe().await.ok().map(|(_, updates)| updates);
+    (updates, queue.send(content).await.ok())
+}
+
+/// `await_queued`, except that an unanswered request is withdrawn (removed,
+/// or redacted once it lands if already in flight); only one that could not
+/// be withdrawn is `Pending`.
+pub(crate) async fn settle_acked(
+    queue: &matrix_sdk::send_queue::RoomSendQueue,
+    updates: tokio::sync::broadcast::Receiver<matrix_sdk::send_queue::RoomSendQueueUpdate>,
+    handle: matrix_sdk::send_queue::SendHandle,
+    wait: Duration,
+) -> Acked {
+    match await_queued(queue, updates, handle.clone(), wait).await {
+        QueuedSend::Sent(_) => Acked::Sent,
+        QueuedSend::Failed(reason) => Acked::Failed(reason),
+        QueuedSend::Unresolved => abort_or_pending(handle).await,
+    }
+}
+
+pub(crate) async fn abort_or_pending(handle: matrix_sdk::send_queue::SendHandle) -> Acked {
+    match handle.abort().await {
+        Ok(true) => Acked::Failed("cancelled".to_owned()),
+        _ => Acked::Pending,
+    }
+}
+
 /// Waits for the server's answer to one queued request; `updates` must have
 /// been subscribed before the request was queued.
 pub(crate) async fn await_queued(
@@ -451,6 +495,83 @@ mod tests {
         }
         let echoes = queue.subscribe().await.unwrap().0;
         assert!(matches!(after_lag(&echoes, &handle), AfterLag::Wedged(_)));
+    }
+
+    async fn settled(room: &matrix_sdk::Room, wait: Duration) -> Acked {
+        let (updates, handle) =
+            enqueue_watched(room, RoomMessageEventContent::text_plain("fwd").into()).await;
+        settle_acked(&room.send_queue(), updates.unwrap(), handle.unwrap(), wait).await
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn an_acked_send_reports_the_servers_acceptance() {
+        let server = MatrixMockServer::new().await;
+        let client = server.client_builder().build().await;
+        let room = server.sync_joined_room(&client, room_id!("!ack:localhost")).await;
+        server.mock_room_state_encryption().plain().mount().await;
+        server.mock_room_send().ok(event_id!("$acked")).mount().await;
+        assert!(matches!(settled(&room, Duration::from_secs(10)).await, Acked::Sent));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn an_acked_send_the_server_refuses_is_a_failure_and_leaves_the_queue() {
+        let server = MatrixMockServer::new().await;
+        let client = server.client_builder().build().await;
+        let room = server.sync_joined_room(&client, room_id!("!nack:localhost")).await;
+        server.mock_room_state_encryption().plain().mount().await;
+        server.mock_room_send().error_too_large().mount().await;
+        assert!(matches!(settled(&room, Duration::from_secs(10)).await, Acked::Failed(_)));
+        assert!(room.send_queue().subscribe().await.unwrap().0.is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn an_unanswered_acked_send_still_queued_is_withdrawn_and_failed() {
+        let server = MatrixMockServer::new().await;
+        let client = server.client_builder().build().await;
+        let room = server.sync_joined_room(&client, room_id!("!parked:localhost")).await;
+        server.mock_room_state_encryption().plain().mount().await;
+        let queue = room.send_queue();
+        queue.set_enabled(false);
+        let (_, updates) = queue.subscribe().await.unwrap();
+        let handle = queue.send(RoomMessageEventContent::text_plain("p").into()).await.unwrap();
+        let outcome = settle_acked(&queue, updates, handle, Duration::from_millis(300)).await;
+        assert!(matches!(outcome, Acked::Failed(_)));
+        assert!(
+            queue.subscribe().await.unwrap().0.is_empty(),
+            "a send reported as failed is still queued and could go out after a retry"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn an_unanswered_acked_send_already_in_flight_is_withdrawn_and_failed() {
+        let server = MatrixMockServer::new().await;
+        let client = server.client_builder().build().await;
+        let room = server.sync_joined_room(&client, room_id!("!slow:localhost")).await;
+        server.mock_room_state_encryption().plain().mount().await;
+        server
+            .mock_room_send()
+            .ok_with_delay(event_id!("$late"), Duration::from_secs(3))
+            .mount()
+            .await;
+        assert!(matches!(settled(&room, Duration::from_millis(500)).await, Acked::Failed(_)));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn a_send_that_cannot_be_withdrawn_is_pending_not_failed() {
+        let server = MatrixMockServer::new().await;
+        let client = server.client_builder().build().await;
+        let room = server.sync_joined_room(&client, room_id!("!gone:localhost")).await;
+        server.mock_room_state_encryption().plain().mount().await;
+        server.mock_room_send().ok(event_id!("$out")).mount().await;
+        let (updates, handle) =
+            enqueue_watched(&room, RoomMessageEventContent::text_plain("out").into()).await;
+        let handle = handle.unwrap();
+        let outcome = await_queued(
+            &room.send_queue(), updates.unwrap(), handle.clone(), Duration::from_secs(10),
+        )
+        .await;
+        assert!(matches!(outcome, QueuedSend::Sent(_)));
+        assert!(matches!(abort_or_pending(handle).await, Acked::Pending));
     }
 
     #[tokio::test(flavor = "multi_thread")]

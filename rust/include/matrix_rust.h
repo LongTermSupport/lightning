@@ -632,13 +632,19 @@ char *mx_rust_thread_send_text(void *client,
                                const char *mention_user_ids,
                                const char *body_spec);
 /* Plain thread message on the same thread-focused path, answered by
- * thread_send_result {op_id, room_id, ok, category} once the server has
- * accepted or refused it. */
+ * acked_send_result {op_id, room_id, ok, category}; category "pending" means
+ * unconfirmed and possibly sent. */
 char *mx_rust_thread_send_text_acked(void *client,
                                      const char *room_id,
                                      const char *root_event_id,
                                      const char *body,
                                      unsigned long long op_id);
+/* Plain room message through the room's send queue, answered by
+ * acked_send_result like mx_rust_thread_send_text_acked. */
+char *mx_rust_send_text_acked(void *client,
+                              const char *room_id,
+                              const char *body,
+                              unsigned long long op_id);
 /* v0.6.0 checkpoint 9: list the account's devices/sessions (server list
  * merged with SDK crypto trust). Result: `device_list` poll event with
  * presentation-safe fields only — never device keys or tokens. */

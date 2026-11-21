@@ -1197,6 +1197,7 @@ void RustSdkMatrixClient::releaseRustHandle()
     clearTimelineInsertBatch();
     if (!m_rustHandle)
         return;
+    Q_EMIT sendsAbandoned();
 
     void *retiring = m_rustHandle;
     const QString typingRoom = m_typingRoom;
@@ -8962,6 +8963,20 @@ quint64 RustSdkMatrixClient::sendRoomMessage(const QString &roomId,
     return op;
 }
 
+quint64 RustSdkMatrixClient::sendRoomTextAcked(const QString &roomId,
+                                               const QString &body)
+{
+    if (!m_loggedIn || !m_rustHandle || roomId.isEmpty()
+        || body.trimmed().isEmpty())
+        return 0;
+    const quint64 op = nextOpId();
+    const QByteArray roomBytes = roomId.toUtf8();
+    const QByteArray bodyBytes = body.toUtf8();
+    const QString result = takeRustString(mx_rust_send_text_acked(
+        m_rustHandle, roomBytes.constData(), bodyBytes.constData(), op));
+    return result.isEmpty() ? op : 0;
+}
+
 quint64 RustSdkMatrixClient::sendThreadTextAcked(const QString &roomId,
                                                  const QString &threadRootId,
                                                  const QString &body)
@@ -12910,7 +12925,7 @@ bool RustSdkMatrixClient::handleRoomCommandEvent(const QString &type,
         return true;
     }
     if (type == QLatin1String("room_send_result")
-        || type == QLatin1String("thread_send_result")) {
+        || type == QLatin1String("acked_send_result")) {
         Q_EMIT roomSendFinished(
             opId(), event.value(QStringLiteral("room_id")).toString(),
             event.value(QStringLiteral("ok")).toBool(),

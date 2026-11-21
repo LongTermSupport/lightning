@@ -27,14 +27,19 @@ void ForwardController::setClient(MatrixClient *client)
         m_client->disconnect(this);
     m_client = client;
     m_queue.clear();
-    m_inFlight.clear();
+    settleInFlightAsUnconfirmed();
     m_dispatchedSends.clear();
     resetToIdle();
     if (m_client) {
         connect(m_client, &MatrixClient::loggedOut, this, [this] {
-            resetToIdle();
             m_queue.clear();
-            m_inFlight.clear();
+            settleInFlightAsUnconfirmed();
+            m_dispatchedSends.clear();
+            resetToIdle();
+            Q_EMIT changed();
+        });
+        connect(m_client, &MatrixClient::sendsAbandoned, this, [this] {
+            settleInFlightAsUnconfirmed();
             m_dispatchedSends.clear();
             Q_EMIT changed();
         });
@@ -173,6 +178,12 @@ void ForwardController::beginSelecting(const QString &sourceRoomId)
 {
     m_selecting = true;
     m_sourceRoomId = sourceRoomId;
+    if (!m_queue.isEmpty() || !m_inFlight.isEmpty()) {
+        m_queue.clear();
+        m_inFlight.clear();
+        m_busy = false;
+    }
+    m_unconfirmed = 0;
     m_selectedIds.clear();
     m_selectionSnapshots.clear();
     m_selectionActive = false;
@@ -239,6 +250,8 @@ void ForwardController::beginSelection(const QString &sourceRoomId,
     m_failedPairs.clear();
     m_queue.clear();
     m_inFlight.clear();
+    m_busy = false;
+    m_unconfirmed = 0;
     m_progressDone = 0;
     m_progressTotal = 0;
     m_sourceRoomId = sourceRoomId;
@@ -287,6 +300,7 @@ void ForwardController::sendSelection(const QVariantList &targets)
     m_inFlight.clear();
     m_failures.clear();
     m_failedPairs.clear();
+    m_unconfirmed = 0;
     m_progressDone = 0;
     for (const QVariant &snapValue : m_selectionSnapshots) {
         const QVariantMap snapshot = snapValue.toMap();
@@ -318,6 +332,7 @@ void ForwardController::retryFailures()
     m_inFlight.clear();
     m_failedPairs.clear();
     m_failures.clear();
+    m_unconfirmed = 0;
     m_progressDone = 0;
     m_progressTotal = int(m_queue.size());
     m_busy = true;
@@ -340,6 +355,24 @@ void ForwardController::notePairResult(const Pending &pair, bool ok,
     if (m_progressDone >= m_progressTotal)
         m_busy = false;
     Q_EMIT changed();
+}
+
+void ForwardController::noteUnconfirmed(int pairs)
+{
+    m_progressDone += pairs;
+    m_unconfirmed += pairs;
+    if (m_progressDone >= m_progressTotal)
+        m_busy = false;
+    Q_EMIT changed();
+}
+
+void ForwardController::settleInFlightAsUnconfirmed()
+{
+    if (m_inFlight.isEmpty())
+        return;
+    const int pairs = int(m_inFlight.size());
+    m_inFlight.clear();
+    noteUnconfirmed(pairs);
 }
 
 void ForwardController::pumpQueue()
@@ -369,8 +402,7 @@ void ForwardController::pumpQueue()
         if (m_client->supportsAcknowledgedTextSend()) {
             // A thread target stays on the thread-focused path (§8).
             const quint64 op = pair.threadRootId.isEmpty()
-                ? m_client->sendRoomMessage(pair.targetRoomId, body, {}, {},
-                                            {}, {})
+                ? m_client->sendRoomTextAcked(pair.targetRoomId, body)
                 : m_client->sendThreadTextAcked(pair.targetRoomId,
                                                 pair.threadRootId, body);
             if (op == 0)
@@ -407,8 +439,7 @@ void ForwardController::forwardTo(const QString &targetRoomId)
         // Neither send path attaches a relation.
         const QString body = m_snapshot.value(QStringLiteral("body")).toString();
         if (m_client->supportsAcknowledgedTextSend()) {
-            const quint64 op = m_client->sendRoomMessage(targetRoomId, body,
-                                                         {}, {}, {}, {});
+            const quint64 op = m_client->sendRoomTextAcked(targetRoomId, body);
             if (op == 0) {
                 m_busy = false;
                 setError(tr("Couldn't forward this message."));
@@ -566,13 +597,21 @@ void ForwardController::onRoomSendFinished(quint64 opId,
                                            const QString &roomId, bool ok,
                                            const QString &category)
 {
+    const bool unconfirmed = !ok && category == QLatin1String("pending");
     const auto pending = m_inFlight.constFind(opId);
     if (pending == m_inFlight.constEnd()) {
-        onAttachmentQueueFinished(opId, roomId, ok, category);
+        if (unconfirmed)
+            m_dispatchedSends.remove(opId);
+        else
+            onAttachmentQueueFinished(opId, roomId, ok, category);
         return;
     }
     const Pending pair = pending.value();
     m_inFlight.erase(pending);
+    if (unconfirmed) {
+        noteUnconfirmed(1);
+        return;
+    }
     notePairResult(pair, ok,
                    ok ? QString()
                    : category == QLatin1String("forbidden")
@@ -587,7 +626,7 @@ void ForwardController::resetToIdle()
     m_pendingMediaKey.clear();
     m_pendingTargetRoomId.clear();
     m_active = false;
-    m_busy = false;
+    m_busy = !m_inFlight.isEmpty();
     m_error.clear();
     m_sourceRoomId.clear();
     m_sourceEventId.clear();

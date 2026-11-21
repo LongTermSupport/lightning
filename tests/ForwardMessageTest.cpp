@@ -73,6 +73,7 @@ public:
     };
     QList<RoomSend> roomSends;
     bool refuseRoomSends = false;
+    int queuedRoomSends = 0;
     bool roomMessageSupported = true;
     bool supportsAcknowledgedTextSend() const override { return roomMessageSupported; }
     quint64 sendThreadTextAcked(const QString &roomId, const QString &rootId,
@@ -85,18 +86,14 @@ public:
         threadSends.append({ roomId, rootId, body });
         return op;
     }
-    quint64 sendRoomMessage(const QString &roomId, const QString &body,
-                            const QVariantMap &, const QStringList &,
-                            const QString &, const QString &rootId) override
+    quint64 sendRoomTextAcked(const QString &roomId, const QString &body) override
     {
         if (refuseRoomSends)
             return 0;
         const quint64 op = nextSendOp++;
-        roomSends.append({ op, roomId, body, rootId });
-        if (rootId.isEmpty())
-            textSends.append({ roomId, body });
-        else
-            threadSends.append({ roomId, rootId, body });
+        ++queuedRoomSends;
+        roomSends.append({ op, roomId, body, QString() });
+        textSends.append({ roomId, body });
         return op;
     }
     void ack(const RoomSend &send, bool ok)
@@ -104,6 +101,12 @@ public:
         Q_EMIT roomSendFinished(send.op, send.roomId, ok,
                                 ok ? QString() : QStringLiteral("forbidden"));
     }
+    void ackPending(const RoomSend &send)
+    {
+        Q_EMIT roomSendFinished(send.op, send.roomId, false,
+                                QStringLiteral("pending"));
+    }
+    void emitSendsAbandoned() { Q_EMIT sendsAbandoned(); }
     void ackAll(bool ok = true)
     {
         const QList<RoomSend> pending = roomSends;
@@ -450,21 +453,60 @@ private Q_SLOTS:
         QCOMPARE(client.roomSends.at(1).rootId, QStringLiteral("$root"));
     }
 
-    void anAnswerFromBeforeASignOutOrAccountSwitchIsIgnored()
+    void aSignOutSettlesInFlightCopiesAsUnconfirmed()
+    {
+        FakeClient client;
+        ForwardController fwd;
+        fwd.setClient(&client);
+        fwd.beginSelection(QStringLiteral("!src:example.org"),
+                           { selectedText(QStringLiteral("$a"),
+                                         QStringLiteral("hello")) });
+        fwd.sendSelection({ QVariantMap{
+            { QStringLiteral("roomId"), QStringLiteral("!x:e.org") } } });
+        QVERIFY(fwd.busy());
+
+        client.emitLoggedOut();
+        QVERIFY2(!fwd.busy(), "the dialog keeps saying Sending after sign-out");
+        QCOMPARE(fwd.progressDone(), 1);
+        QCOMPARE(fwd.unconfirmedCount(), 1);
+        QCOMPARE(fwd.failureCount(), 0);
+
+        client.ack(client.roomSends.at(0), false);
+        QCOMPARE(fwd.failureCount(), 0);
+        QCOMPARE(fwd.progressDone(), 1);
+    }
+
+    void aDroppedBackendHandleSettlesInFlightCopiesAsUnconfirmed()
+    {
+        FakeClient client;
+        ForwardController fwd;
+        fwd.setClient(&client);
+        fwd.beginSelection(QStringLiteral("!src:example.org"), {
+            selectedText(QStringLiteral("$a"), QStringLiteral("one")),
+            selectedText(QStringLiteral("$b"), QStringLiteral("two")),
+        });
+        fwd.sendSelection({ QVariantMap{
+            { QStringLiteral("roomId"), QStringLiteral("!x:e.org") } } });
+        client.ack(client.roomSends.at(0), true);
+
+        client.emitSendsAbandoned();
+        QVERIFY(!fwd.busy());
+        QCOMPARE(fwd.progressDone(), 2);
+        QCOMPARE(fwd.unconfirmedCount(), 1);
+        QCOMPARE(fwd.failureCount(), 0);
+    }
+
+    void anAccountSwitchIgnoresTheOldClientsAnswers()
     {
         FakeClient first;
         ForwardController fwd;
         fwd.setClient(&first);
+        const QVariantList target{ QVariantMap{
+            { QStringLiteral("roomId"), QStringLiteral("!x:e.org") } } };
         fwd.beginSelection(QStringLiteral("!src:example.org"),
                            { selectedText(QStringLiteral("$a"),
                                          QStringLiteral("hello")) });
-        const QVariantList target{ QVariantMap{
-            { QStringLiteral("roomId"), QStringLiteral("!x:e.org") } } };
         fwd.sendSelection(target);
-        QCOMPARE(first.roomSends.size(), 1);
-
-        first.emitLoggedOut();
-        QVERIFY(!fwd.busy());
 
         // The next account's op ids start where the first one's did.
         FakeClient second;
@@ -473,16 +515,102 @@ private Q_SLOTS:
                            { selectedText(QStringLiteral("$b"),
                                          QStringLiteral("again")) });
         fwd.sendSelection(target);
-        QCOMPARE(second.roomSends.size(), 1);
         QCOMPARE(second.roomSends.at(0).op, first.roomSends.at(0).op);
 
         first.ack(first.roomSends.at(0), false);
         QCOMPARE(fwd.progressDone(), 0);
-        QCOMPARE(fwd.failureCount(), 0);
-
         second.ack(second.roomSends.at(0), true);
         QCOMPARE(fwd.progressDone(), 1);
         QCOMPARE(fwd.failureCount(), 0);
+    }
+
+    void anUnconfirmedCopyIsNeitherSentNorOfferedForRetry()
+    {
+        FakeClient client;
+        ForwardController fwd;
+        fwd.setClient(&client);
+        fwd.beginSelection(QStringLiteral("!src:example.org"), {
+            selectedText(QStringLiteral("$a"), QStringLiteral("one")),
+            selectedText(QStringLiteral("$b"), QStringLiteral("two")),
+        });
+        fwd.sendSelection({ QVariantMap{
+            { QStringLiteral("roomId"), QStringLiteral("!x:e.org") } } });
+        client.ack(client.roomSends.at(0), true);
+        client.ackPending(client.roomSends.at(1));
+
+        QVERIFY(!fwd.busy());
+        QCOMPARE(fwd.progressDone(), 2);
+        QCOMPARE(fwd.failureCount(), 0);
+        QCOMPARE(fwd.unconfirmedCount(), 1);
+        fwd.retryFailures();
+        QCOMPARE(client.roomSends.size(), 2);
+    }
+
+    void aNewSelectionIgnoresThePreviousBatchsAnswers()
+    {
+        FakeClient client;
+        ForwardController fwd;
+        fwd.setClient(&client);
+        fwd.beginSelection(QStringLiteral("!src:example.org"),
+                           { selectedText(QStringLiteral("$a"),
+                                         QStringLiteral("hello")) });
+        fwd.sendSelection({ QVariantMap{
+            { QStringLiteral("roomId"), QStringLiteral("!x:e.org") } } });
+
+        fwd.beginSelecting(QStringLiteral("!src:example.org"));
+        QVERIFY(!fwd.busy());
+        client.ack(client.roomSends.at(0), false);
+        QCOMPARE(fwd.progressDone(), 0);
+        QCOMPARE(fwd.failureCount(), 0);
+    }
+
+    void aSingleForwardDoesNotEndARunningBatch()
+    {
+        FakeClient client;
+        ForwardController fwd;
+        fwd.setClient(&client);
+        fwd.beginSelection(QStringLiteral("!src:example.org"),
+                           { selectedText(QStringLiteral("$a"),
+                                         QStringLiteral("hello")) });
+        fwd.sendSelection({ QVariantMap{
+            { QStringLiteral("roomId"), QStringLiteral("!x:e.org") } } });
+
+        fwd.begin(kRoomA, kEventA, textSnapshot(QStringLiteral("single")));
+        QVERIFY2(fwd.busy(), "a single forward ended the running batch's progress");
+        client.ack(client.roomSends.at(0), true);
+        QCOMPARE(fwd.progressDone(), 1);
+        QVERIFY(!fwd.busy());
+    }
+
+    void aRoomTargetUsesTheQueuedAcknowledgedSend()
+    {
+        FakeClient client;
+        ForwardController fwd;
+        fwd.setClient(&client);
+        fwd.beginSelection(QStringLiteral("!src:example.org"),
+                           { selectedText(QStringLiteral("$a"),
+                                         QStringLiteral("hello")) });
+        fwd.sendSelection({ QVariantMap{
+            { QStringLiteral("roomId"), QStringLiteral("!x:e.org") } } });
+        QCOMPARE(client.queuedRoomSends, 1);
+
+        fwd.begin(kRoomA, kEventA, textSnapshot(QStringLiteral("single")));
+        client.ackAll();
+        fwd.begin(kRoomA, kEventA, textSnapshot(QStringLiteral("single")));
+        fwd.forwardTo(kRoomB);
+        QCOMPARE(client.queuedRoomSends, 2);
+    }
+
+    void anUnconfirmedSingleForwardIsNotReportedAsFailed()
+    {
+        FakeClient client;
+        ForwardController fwd;
+        fwd.setClient(&client);
+        QSignalSpy failed(&fwd, &ForwardController::forwardFailed);
+        fwd.begin(kRoomA, kEventA, textSnapshot(QStringLiteral("hi")));
+        fwd.forwardTo(kRoomB);
+        client.ackPending(client.roomSends.at(0));
+        QCOMPARE(failed.count(), 0);
     }
 
     void aSingleTextForwardTheServerRefusesIsReported()

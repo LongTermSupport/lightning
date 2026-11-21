@@ -194,14 +194,26 @@ Dialog {
                       ? qsTr("Sending %1 of %2…").arg(app.forward.progressDone)
                             .arg(app.forward.progressTotal)
                       : (app.forward.failureCount === 0
+                         && app.forward.unconfirmedCount === 0
                          ? qsTr("Sent %n copy(ies).", "",
                                 app.forward.progressTotal)
                          : qsTr("%1 of %2 sent — %n failed.", "",
                                 app.forward.failureCount)
                                .arg(app.forward.progressTotal
-                                    - app.forward.failureCount)
+                                    - app.forward.failureCount
+                                    - app.forward.unconfirmedCount)
                                .arg(app.forward.progressTotal))
                 color: AppTheme.textPrimary
+                wrapMode: Text.WordWrap
+            }
+            Label {
+                objectName: "forwardUnconfirmedLabel"
+                Layout.fillWidth: true
+                visible: root.finished && app.forward.unconfirmedCount > 0
+                text: qsTr("%n copy(ies) not confirmed — check the room before "
+                           + "sending again.", "", app.forward.unconfirmedCount)
+                color: AppTheme.textMuted
+                font.pixelSize: AppTheme.textMeta
                 wrapMode: Text.WordWrap
             }
             Repeater {

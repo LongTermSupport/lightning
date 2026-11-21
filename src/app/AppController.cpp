@@ -2451,6 +2451,10 @@ true, ringSeconds, acceptOffered,
             this, &AppController::openRoom);
     connect(m_forward.get(), &ForwardController::forwarded,
             this, &AppController::openRoom);
+    connect(m_forward.get(), &ForwardController::forwardFailed, this,
+            [this](const QString &, const QString &message) {
+        Q_EMIT noticeReported(message);
+    });
     connect(m_rtc.get(), &RtcController::availabilityChanged, this,
             [this] {
                 ++m_callGateRevision;
