@@ -3911,7 +3911,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+282"/>
+        <location filename="../qml/SpaceLobby.qml" line="+316"/>
         <source>%1, collapsed</source>
         <translation>%1, ভেঙে পড়েছে</translation>
     </message>
@@ -8663,7 +8663,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+96"/>
+        <location filename="../src/app/ForwardController.cpp" line="+97"/>
         <source>Photo</source>
         <translation>ছবি</translation>
     </message>
@@ -8737,7 +8737,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1 থেকে ফরওয়ার্ড করা</translation>
     </message>
     <message>
-        <location line="+94"/>
+        <location line="+102"/>
         <source>Not signed in.</source>
         <translation>সাইন ইন করা নেই।</translation>
     </message>
@@ -14878,7 +14878,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1953"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
         <location line="+991"/>
         <source>Open</source>
         <translation>খুলুন</translation>
@@ -15411,7 +15411,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2833"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2844"/>
         <source>(spoiler)</source>
         <translation>(স্পয়লার)</translation>
     </message>
@@ -15476,9 +15476,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>নতুন Matrix বিজ্ঞপ্তি</translation>
     </message>
     <message numerus="yes">
-        <location line="+230"/>
+        <location line="+233"/>
         <location line="+217"/>
-        <location line="+1714"/>
+        <location line="+1722"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n টি নতুন বার্তা</numerusform>
@@ -15486,7 +15486,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1927"/>
+        <location line="-1935"/>
         <location line="+211"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15495,7 +15495,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1719"/>
+        <location line="+1727"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>%n টি রুমে</numerusform>
@@ -15522,7 +15522,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+29"/>
+        <location line="+30"/>
         <source>You can close this window and return to Lightning.</source>
         <translation>আপনি এই উইন্ডো বন্ধ করে Lightning-এ ফিরতে পারেন।</translation>
     </message>
@@ -20012,12 +20012,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>আপনি সাইন ইন করেছেন, কিন্তু Lightning এই ডিভাইসে এই অ্যাকাউন্টের স্টোরেজ খুলতে পারেনি। এখানে কিছুই সংরক্ষিত হয়নি।</translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+37"/>
         <source>You signed in, but Lightning could not save this account on this device, so it did not open it.</source>
         <translation>আপনি সাইন ইন করেছেন, কিন্তু Lightning এই ডিভাইসে এই অ্যাকাউন্ট সংরক্ষণ করতে পারেনি, তাই এটি খোলেনি।</translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+110"/>
         <source>You signed in, but your system keyring is locked or did not accept the sign-in, so Lightning did not keep it. Unlock the keyring and sign in again. The server now lists an unused session from this attempt; you can sign it out under Sessions.</source>
         <translation>আপনি সাইন ইন করেছেন, কিন্তু আপনার সিস্টেম কীরিং লক করা আছে বা সাইন-ইনটি গ্রহণ করেনি, তাই Lightning এটি রাখেনি। কীরিং আনলক করে আবার সাইন ইন করুন। সার্ভার এখন এই চেষ্টার একটি অব্যবহৃত সেশন দেখাচ্ছে; সেশন অংশে গিয়ে সেটি সাইন আউট করতে পারেন।</translation>
     </message>
@@ -20317,7 +20317,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>SavedMessagesController</name>
     <message>
-        <location filename="../src/app/SavedMessagesController.cpp" line="+201"/>
+        <location filename="../src/app/SavedMessagesController.cpp" line="+247"/>
         <source>Saved messages could not be loaded. Retry.</source>
         <translation>সংরক্ষিত বার্তা লোড করা যায়নি। আবার চেষ্টা করুন।</translation>
     </message>
@@ -20329,24 +20329,29 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="-80"/>
-        <location line="+142"/>
+        <location line="+156"/>
         <source>Saved messages data is unavailable.</source>
         <translation>সংরক্ষিত বার্তা ডেটা অনুপলব্ধ।</translation>
     </message>
     <message>
-        <location line="-109"/>
-        <location line="+214"/>
+        <location line="-123"/>
+        <location line="+228"/>
         <location line="+15"/>
         <source>Saved messages are full. Remove an older item first.</source>
         <translation>সংরক্ষিত বার্তা পূর্ণ। প্রথমে একটি পুরানো আইটেম সরান।</translation>
     </message>
     <message>
-        <location line="+153"/>
+        <location line="+219"/>
         <source>Sticker</source>
         <translation>স্টিকার</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+15"/>
+        <source>Edited message. The latest version cannot be decrypted.</source>
+        <translation>সম্পাদিত বার্তা। সর্বশেষ সংস্করণটি ডিক্রিপ্ট করা যাচ্ছে না।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Image</source>
         <translation>ছবি</translation>
     </message>
@@ -20370,12 +20375,12 @@ Signing out and signing in again is the only fix.</source>
     <name>SavedMessagesPanel</name>
     <message>
         <location filename="../qml/SavedMessagesPanel.qml" line="+49"/>
-        <location line="+121"/>
+        <location line="+132"/>
         <source>Saved messages</source>
         <translation>সংরক্ষিত বার্তা</translation>
     </message>
     <message>
-        <location line="-104"/>
+        <location line="-115"/>
         <source>Undo remove</source>
         <translation>অপসারণ পূর্বাবস্থায়</translation>
     </message>
@@ -20435,18 +20440,29 @@ Signing out and signing in again is the only fix.</source>
         <translation>এখনও কোনো সংরক্ষিত বার্তা নেই। একটি যোগ করতে বার্তায় সংরক্ষণ করুন বেছে নিন।</translation>
     </message>
     <message>
-        <location line="+38"/>
-        <location line="+35"/>
+        <location line="+10"/>
+        <source>Clear filters</source>
+        <translation>ফিল্টার মুছুন</translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <location line="+36"/>
+        <source>Message could not be loaded</source>
+        <translation>বার্তা লোড করা যায়নি</translation>
+    </message>
+    <message>
+        <location line="-35"/>
+        <location line="+37"/>
         <source>Message unavailable or redacted</source>
         <translation>বার্তা অনুপলব্ধ বা সংশোধন করা হয়েছে৷</translation>
     </message>
     <message>
-        <location line="-34"/>
+        <location line="-36"/>
         <source>Loading message</source>
         <translation>বার্তা লোড হচ্ছে</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+37"/>
         <source>Loading message…</source>
         <translation>বার্তা লোড হচ্ছে…</translation>
     </message>
@@ -20456,7 +20472,17 @@ Signing out and signing in again is the only fix.</source>
         <translation>একটি থ্রেডে</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+11"/>
+        <source>Retry</source>
+        <translation>আবার চেষ্টা করুন</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Retry loading saved message</source>
+        <translation>সংরক্ষিত বার্তা আবার লোড করুন</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>Open</source>
         <translation>খুলুন</translation>
     </message>
@@ -20506,17 +20532,27 @@ Signing out and signing in again is the only fix.</source>
         <translation>সার্ভার এই বার্তা বাতিল করেনি।</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+35"/>
         <source>The server did not send this message.</source>
         <translation>সার্ভার এই বার্তা পাঠায়নি।</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+22"/>
+        <source>Not sent yet: the connection failed. Lightning will try again.</source>
+        <translation>এখনও পাঠানো হয়নি: সংযোগ ব্যর্থ হয়েছে। Lightning আবার চেষ্টা করবে।</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>This message could not be sent. Check the room before sending it again.</source>
+        <translation>এই বার্তাটি পাঠানো যায়নি। আবার পাঠানোর আগে রুমটি দেখে নিন।</translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>The room did not accept this message. It was not sent.</source>
         <translation>রুম এই বার্তা গ্রহণ করেনি। এটি পাঠানো হয়নি।</translation>
     </message>
     <message>
-        <location line="+236"/>
+        <location line="+277"/>
         <source>Lightning closed before the server confirmed this message. Check the room before scheduling it again.</source>
         <translation>সার্ভার এই বার্তা নিশ্চিত করার আগেই Lightning বন্ধ হয়ে গিয়েছিল। আবার নির্ধারণের আগে রুমটি দেখুন।</translation>
     </message>
@@ -20526,7 +20562,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>এটি পাঠানোর সময় Lightning বন্ধ হয়ে গিয়েছিল। আবার পাঠানোর আগে রুমটি দেখুন।</translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+62"/>
         <source>Attachment</source>
         <translation>সংযুক্তি</translation>
     </message>
@@ -20541,7 +20577,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>এটি এখনই পাঠাতে Lightning সার্ভারে পৌঁছাতে পারেনি। এটি এখনও নির্ধারিত আছে।</translation>
     </message>
     <message>
-        <location line="+169"/>
+        <location line="+175"/>
         <source>Waiting for the connection.</source>
         <translation>সংযোগের অপেক্ষায়।</translation>
     </message>
@@ -21255,7 +21291,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>SettingsBackupSection</name>
     <message>
-        <location filename="../qml/SettingsBackupSection.qml" line="+25"/>
+        <location filename="../qml/SettingsBackupSection.qml" line="+26"/>
         <source>Appearance</source>
         <translation>চেহারা</translation>
     </message>
@@ -21471,6 +21507,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+10"/>
         <source>This file was made by a newer Lightning. The settings this version knows are read; the rest are ignored.</source>
         <translation>এই ফাইল Lightning-এর নতুন সংস্করণে তৈরি। এই সংস্করণ যে সেটিংস জানে সেগুলো পড়া হয়; বাকিগুলো উপেক্ষা করা হয়।</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>The active custom theme in this file could not be imported, so your current custom theme stays selected.</source>
+        <translation>এই ফাইলের সক্রিয় কাস্টম থিম আমদানি করা যায়নি, তাই আপনার বর্তমান কাস্টম থিমই নির্বাচিত থাকছে।</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -26863,7 +26904,7 @@ Note: importing keys does not verify this session.</source>
         <translation>ফাইলটি পড়া যায়নি।</translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+87"/>
         <source>Choose a file first.</source>
         <translation>আগে একটি ফাইল বেছে নিন।</translation>
     </message>
@@ -28308,8 +28349,31 @@ Note: importing keys does not verify this session.</source>
 </context>
 <context>
     <name>SpaceLobby</name>
+    <message numerus="yes">
+        <location filename="../qml/SpaceLobby.qml" line="-111"/>
+        <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
+        <translation>
+            <numerusform>এই স্পেসের শুধু প্রথম %nটি রুম দেখানো হয়েছে। তালিকায় না থাকা রুম এখনও তার ঠিকানা দিয়ে খোলা যায়।</numerusform>
+            <numerusform>এই স্পেসের শুধু প্রথম %nটি রুম দেখানো হয়েছে। তালিকায় না থাকা রুম এখনও তার ঠিকানা দিয়ে খোলা যায়।</numerusform>
+        </translation>
+    </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-60"/>
+        <location line="+3"/>
+        <source>This Space could not be refreshed. Showing the rooms loaded earlier.</source>
+        <translation>এই স্পেস রিফ্রেশ করা যায়নি। আগে লোড করা রুমগুলো দেখানো হচ্ছে।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Loading stopped early, so some rooms of this Space may be missing.</source>
+        <translation>লোড হওয়া আগেই থেমে গেছে, তাই এই স্পেসের কিছু রুম অনুপস্থিত থাকতে পারে।</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Retry</source>
+        <translation>আবার চেষ্টা করুন</translation>
+    </message>
+    <message>
+        <location line="+35"/>
         <location line="+265"/>
         <source>Loading rooms…</source>
         <translation>রুম লোড হচ্ছে…</translation>
@@ -32235,7 +32299,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ThreadController</name>
     <message>
-        <location filename="../src/threads/ThreadController.cpp" line="+736"/>
+        <location filename="../src/threads/ThreadController.cpp" line="+737"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>এই ব্যাকএন্ডে সংযুক্তি সমর্থিত নয়।</translation>
@@ -32940,12 +33004,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location filename="../qml/SpaceLobby.qml" line="-521"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5396"/>
+        <location line="+5401"/>
         <source>Space</source>
         <translation>স্পেস</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5395"/>
+        <location filename="../qml/TimelinePane.qml" line="-5400"/>
         <source>Home</source>
         <translation>হোম</translation>
     </message>
@@ -33403,7 +33467,7 @@ Note: importing keys does not verify this session.</source>
         <translation>ফরওয়ার্ড করুন…</translation>
     </message>
     <message>
-        <location line="+437"/>
+        <location line="+442"/>
         <source>Room added — waiting for the server to confirm.</source>
         <translation>রুম যোগ হয়েছে — সার্ভারের নিশ্চিতকরণের অপেক্ষায়।</translation>
     </message>
@@ -33468,7 +33532,7 @@ Note: importing keys does not verify this session.</source>
         <translation>ব্যানারটি সংরক্ষণ করা যায়নি (%1)।</translation>
     </message>
     <message>
-        <location line="+571"/>
+        <location line="+574"/>
         <source>You are the only administrator. If you leave, nobody will be able to change this Space&apos;s settings or manage its rooms and members. Make someone else an administrator first.</source>
         <translation>আপনিই একমাত্র অ্যাডমিনিস্ট্রেটর। আপনি চলে গেলে কেউ এই স্পেসের সেটিংস বদলাতে বা এর রুম ও সদস্যদের পরিচালনা করতে পারবে না। আগে অন্য কাউকে অ্যাডমিনিস্ট্রেটর করুন।</translation>
     </message>
@@ -33482,7 +33546,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/TimelinePane.qml" line="-514"/>
+        <location filename="../qml/TimelinePane.qml" line="-517"/>
         <source>%n joined room(s)</source>
         <comment>joined rooms inside a Space</comment>
         <translation>
@@ -33536,7 +33600,7 @@ Note: importing keys does not verify this session.</source>
         <translation>ব্যানার দেখান</translation>
     </message>
     <message>
-        <location line="+289"/>
+        <location line="+292"/>
         <source>People in this Space</source>
         <translation>এই স্পেসের লোক</translation>
     </message>
@@ -33551,7 +33615,7 @@ Note: importing keys does not verify this session.</source>
         <translation>%1 জনের মধ্যে প্রথম ৬০ জন দেখানো হচ্ছে।</translation>
     </message>
     <message>
-        <location line="-298"/>
+        <location line="-301"/>
         <source>Choose Space avatar</source>
         <translation>স্পেসের অবতার বেছে নিন</translation>
     </message>
@@ -33612,17 +33676,17 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+27"/>
-        <location line="+297"/>
+        <location line="+300"/>
         <source>Leave Space</source>
         <translation>স্পেস ছাড়ুন</translation>
     </message>
     <message>
-        <location line="-291"/>
+        <location line="-294"/>
         <source>Leaving does not remove the rooms inside it.</source>
         <translation>ছাড়লে এর ভেতরের রুমগুলি সরে যায় না।</translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-260"/>
+        <location filename="../qml/SpaceLobby.qml" line="-290"/>
         <source>ROOMS AND SPACES</source>
         <translation>রুম ও স্পেস</translation>
     </message>
@@ -33636,24 +33700,24 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+21"/>
-        <location filename="../qml/TimelinePane.qml" line="+214"/>
+        <location filename="../qml/TimelinePane.qml" line="+217"/>
         <source>Remove</source>
         <translation>সরান</translation>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+601"/>
+        <location line="+631"/>
         <source>Mark as not suggested</source>
         <translation>প্রস্তাবিত নয় হিসেবে চিহ্নিত করুন</translation>
     </message>
     <message>
-        <location line="-600"/>
-        <location line="+601"/>
+        <location line="-630"/>
+        <location line="+631"/>
         <source>Mark as suggested</source>
         <translation>প্রস্তাবিত হিসেবে চিহ্নিত করুন</translation>
     </message>
     <message>
-        <location line="-590"/>
+        <location line="-620"/>
         <source>Search names and descriptions</source>
         <translation>নাম ও বিবরণে খুঁজুন</translation>
     </message>
@@ -33663,7 +33727,7 @@ Note: importing keys does not verify this session.</source>
         <translation>রুম ও স্পেস খুঁজুন</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+42"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>“%1”-এর সঙ্গে কোনো রুম বা স্পেস মেলে না।</translation>
     </message>
@@ -33680,8 +33744,8 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+299"/>
-        <location filename="../qml/TimelinePane.qml" line="-6691"/>
-        <location line="+6868"/>
+        <location filename="../qml/TimelinePane.qml" line="-6699"/>
+        <location line="+6876"/>
         <source>Room</source>
         <translation>রুম</translation>
     </message>
@@ -33748,21 +33812,21 @@ Note: importing keys does not verify this session.</source>
         <translation>রুমগুলি থেকেই যায় এবং আপনি সেগুলিতেই থাকেন — কেবল এই স্পেসের তালিকা থেকে সরে যায়।</translation>
     </message>
     <message>
-        <location line="-1440"/>
+        <location line="-1448"/>
         <location line="+209"/>
-        <location line="+1245"/>
+        <location line="+1253"/>
         <location line="+77"/>
         <source>Cancel</source>
         <translation>বাতিল</translation>
     </message>
     <message>
-        <location line="-5983"/>
+        <location line="-5991"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation>প্রোফাইল দেখুন</translation>
     </message>
     <message>
-        <location line="+5215"/>
+        <location line="+5220"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation>ছবি (*.png *.jpg *.jpeg *.gif *.webp *.svg)</translation>
     </message>
@@ -33777,7 +33841,7 @@ Note: importing keys does not verify this session.</source>
         <translation>শুধু স্পেস অ্যাডমিনরা এটি বদলাতে পারেন।</translation>
     </message>
     <message>
-        <location line="+344"/>
+        <location line="+347"/>
         <source>Leave %1?</source>
         <translation>%1 ছাড়বেন?</translation>
     </message>
@@ -33838,7 +33902,7 @@ Note: importing keys does not verify this session.</source>
         <translation>সংযুক্ত করতে ফাইল ছেড়ে দিন</translation>
     </message>
     <message>
-        <location line="-5431"/>
+        <location line="-5439"/>
         <source>Join space</source>
         <translation>স্পেসে যোগ দিন</translation>
     </message>
@@ -35376,7 +35440,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>lightning::update::UpdateManager</name>
     <message>
-        <location filename="../src/update/UpdateManager.cpp" line="+1042"/>
+        <location filename="../src/update/UpdateManager.cpp" line="+1058"/>
         <source>Lightning is installed for all users of this computer, so installing an update needs administrator approval, and Windows did not get it. Nothing was changed. Approve the prompt next time, or ask an administrator to install the update.</source>
         <translation>Lightning এই কম্পিউটারের সব ব্যবহারকারীর জন্য ইনস্টল করা, তাই আপডেট ইনস্টল করতে অ্যাডমিনিস্ট্রেটরের অনুমোদন লাগে, আর Windows তা পায়নি। কিছুই বদলানো হয়নি। পরের বার প্রম্পট অনুমোদন করুন, অথবা কোনো অ্যাডমিনিস্ট্রেটরকে আপডেট ইনস্টল করতে বলুন।</translation>
     </message>
@@ -35416,7 +35480,22 @@ Note: importing keys does not verify this session.</source>
         <translation>নতুন সংস্করণ বসানো যায়নি, তাই আগেরটি পুনরুদ্ধার করা হয়েছে। কিছুই হারায়নি।</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Those files are in %1. Move them back into the Lightning folder and delete that folder, or reinstall Lightning from the downloads page.</source>
+        <translation>আগের একটি আপডেট আগের সংস্করণের সব ফাইল ফেরত রাখতে পারেনি, তাই আপডেট বিরতিতে আছে। সেই ফাইলগুলো %1-এ আছে। সেগুলো আবার Lightning ফোল্ডারে সরিয়ে ওই ফোল্ডারটি মুছে দিন, অথবা ডাউনলোড পেজ থেকে Lightning আবার ইনস্টল করুন।</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Reinstall Lightning from the downloads page.</source>
+        <translation>আগের একটি আপডেট আগের সংস্করণের সব ফাইল ফেরত রাখতে পারেনি, তাই আপডেট বিরতিতে আছে। ডাউনলোড পেজ থেকে Lightning আবার ইনস্টল করুন।</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The update failed and the previous version could not be fully restored. The files that were not put back are in %1. Move them back into the Lightning folder, or reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
+        <translation>আপডেট ব্যর্থ হয়েছে এবং আগের সংস্করণ পুরোপুরি ফেরানো যায়নি। যে ফাইলগুলো ফেরত রাখা হয়নি সেগুলো %1-এ আছে। সেগুলো আবার Lightning ফোল্ডারে সরান, অথবা ডাউনলোড পেজ থেকে Lightning আবার ইনস্টল করুন। আপনার বার্তা ও অ্যাকাউন্ট সার্ভারে আছে এবং প্রভাবিত হয়নি।</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>The update failed and the previous version could not be fully restored. Please reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
         <translation>আপডেট ব্যর্থ হয়েছে এবং আগের সংস্করণ পুরোপুরি পুনরুদ্ধার করা যায়নি। অনুগ্রহ করে ডাউনলোড পেজ থেকে Lightning আবার ইনস্টল করুন। আপনার বার্তা ও অ্যাকাউন্ট সার্ভারে আছে এবং প্রভাবিত হয়নি।</translation>
     </message>

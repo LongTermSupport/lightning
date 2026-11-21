@@ -611,9 +611,9 @@ ArchiveResult streamEntry(QFile &file, const CentralEntry &entry,
         ArchiveResult failure;
 
         while (failure.ok()) {
-            if (zs.avail_in == 0) {
-                if (remaining == 0)
-                    break;
+            // With all input consumed inflate may still hold output; keep
+            // calling it until Z_STREAM_END or a call that makes no progress.
+            if (zs.avail_in == 0 && remaining > 0) {
                 inBuffer = file.read(qMin<qint64>(kChunk, remaining));
                 if (inBuffer.isEmpty()) {
                     failure = archiveFail(ArchiveError::Truncated,
@@ -628,6 +628,7 @@ ArchiveResult streamEntry(QFile &file, const CentralEntry &entry,
             }
             zs.next_out = reinterpret_cast<Bytef *>(outBuffer.data());
             zs.avail_out = static_cast<uInt>(outBuffer.size());
+            const uInt inBefore = zs.avail_in;
             status = ::inflate(&zs, Z_NO_FLUSH);
             if (status != Z_OK && status != Z_STREAM_END
                 && status != Z_BUF_ERROR) {
@@ -645,8 +646,7 @@ ArchiveResult streamEntry(QFile &file, const CentralEntry &entry,
             }
             if (status == Z_STREAM_END)
                 break;
-            if (status == Z_BUF_ERROR && got == 0 && zs.avail_in == 0
-                && remaining == 0) {
+            if (got == 0 && zs.avail_in == inBefore) {
                 failure = archiveFail(ArchiveError::Truncated,
                                       QStringLiteral("the deflate stream ended early"),
                                       entry.name);

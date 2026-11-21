@@ -85,6 +85,9 @@ public:
     virtual void startSync() = 0;
     virtual void stopSync() = 0;
     virtual ConnectionState connectionState() const = 0;
+    // Syncing can also mean starting/retrying; this is true only while the
+    // sync actually exchanges with the homeserver (Rust: "running").
+    virtual bool syncRunning() const { return connectionState() == Syncing; }
 
     virtual bool initialSyncDone() const { return true; }
     virtual QString syncMode() const { return QStringLiteral("classic_fallback"); }
@@ -808,8 +811,9 @@ public:
     virtual void requestInvitePolicySupport() {}
     virtual void requestEditHistory(const QString &roomId, const QString &eventId)
     { Q_UNUSED(roomId); Q_UNUSED(eventId); }
-    virtual void requestEventSource(const QString &roomId, const QString &eventId)
-    { Q_UNUSED(roomId); Q_UNUSED(eventId); }
+    // Returns the op id the eventSourceReceived map carries as "opId", or 0.
+    virtual quint64 requestEventSource(const QString &roomId, const QString &eventId)
+    { Q_UNUSED(roomId); Q_UNUSED(eventId); return 0; }
     virtual quint64 eventAtTimestamp(const QString &roomId, qint64 timestampMs)
     { Q_UNUSED(roomId); Q_UNUSED(timestampMs); return 0; }
 
@@ -923,9 +927,12 @@ public:
     virtual quint64 scheduleContent(const QString &roomId,
                                     const QString &contentJson, qint64 delayMs)
     { Q_UNUSED(roomId); Q_UNUSED(contentJson); Q_UNUSED(delayMs); return 0; }
+    // `transactionId` is reused on a retry so the server deduplicates a send
+    // that may already have reached it.
     virtual quint64 sendRoomContent(const QString &roomId,
-                                    const QString &contentJson)
-    { Q_UNUSED(roomId); Q_UNUSED(contentJson); return 0; }
+                                    const QString &contentJson,
+                                    const QString &transactionId)
+    { Q_UNUSED(roomId); Q_UNUSED(contentJson); Q_UNUSED(transactionId); return 0; }
     // True when sendRoomTextAcked and sendThreadTextAcked are implemented.
     // Both queue like the composer and answer on roomSendFinished, where
     // category "pending" means unconfirmed and possibly sent.
@@ -943,10 +950,11 @@ public:
                                     const QVariantMap &bodySpec,
                                     const QStringList &mentionUserIds,
                                     const QString &replyToEventId,
-                                    const QString &threadRootEventId)
+                                    const QString &threadRootEventId,
+                                    const QString &transactionId)
     { Q_UNUSED(roomId); Q_UNUSED(body); Q_UNUSED(bodySpec);
       Q_UNUSED(mentionUserIds); Q_UNUSED(replyToEventId);
-      Q_UNUSED(threadRootEventId); return 0; }
+      Q_UNUSED(threadRootEventId); Q_UNUSED(transactionId); return 0; }
     virtual void requestActivitySeed(int limit) { Q_UNUSED(limit); }
     virtual void requestActivitySeedPage(const QString &from, int limit)
     { Q_UNUSED(from); Q_UNUSED(limit); }

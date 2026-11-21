@@ -129,3 +129,32 @@ test-rust:
     when: always
     paths: [out/]
     expire_in: 1 week
+
+test-nonrust:
+  image: nixos/nix:latest
+  tags: [saas-linux-2xlarge-amd64]
+  timeout: 2h
+  rules:
+    - if: $RUN_NONRUST == "1"
+  variables:
+    NIX_CONFIG: "experimental-features = nix-command flakes"
+    CCACHE_DIR: $CI_PROJECT_DIR/.ci-ccache-nonrust
+    CCACHE_BASEDIR: $CI_PROJECT_DIR
+    CCACHE_NOHASHDIR: "true"
+    CCACHE_MAXSIZE: 4G
+  cache:
+    - key: test-ccache-nonrust
+      paths: [.ci-ccache-nonrust/]
+      when: always
+      unprotect: true
+  script:
+    - nix develop -c cmake -S . -B build-nonrust -G Ninja -DCMAKE_CXX_FLAGS=-g0 -DCMAKE_C_FLAGS=-g0 "-DCMAKE_EXE_LINKER_FLAGS=-Wl,--strip-debug" -DCMAKE_JOB_POOLS=lk=12 -DCMAKE_JOB_POOL_LINK=lk
+    - nix develop -c cmake --build build-nonrust -j32
+    - mkdir -p out
+    - !reference [.qt-test-env, script]
+    - nix develop -c dbus-run-session -- ctest --test-dir build-nonrust -j8 --timeout 1500 --repeat until-pass:2 --output-on-failure 2>&1 | tee out/ctest-nonrust.log | tail -40 || true
+    - grep -q '100% tests passed' out/ctest-nonrust.log
+  artifacts:
+    when: always
+    paths: [out/]
+    expire_in: 1 week

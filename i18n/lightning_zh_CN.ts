@@ -3888,7 +3888,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+282"/>
+        <location filename="../qml/SpaceLobby.qml" line="+316"/>
         <source>%1, collapsed</source>
         <translation>%1，折叠</translation>
     </message>
@@ -8629,7 +8629,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+96"/>
+        <location filename="../src/app/ForwardController.cpp" line="+97"/>
         <source>Photo</source>
         <translation>图片</translation>
     </message>
@@ -8703,7 +8703,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>转发自 %1</translation>
     </message>
     <message>
-        <location line="+94"/>
+        <location line="+102"/>
         <source>Not signed in.</source>
         <translation>未登录。</translation>
     </message>
@@ -14822,7 +14822,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1953"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
         <location line="+991"/>
         <source>Open</source>
         <translation>打开</translation>
@@ -15355,7 +15355,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2833"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2844"/>
         <source>(spoiler)</source>
         <translation>（剧透）</translation>
     </message>
@@ -15420,16 +15420,16 @@ Signing out and signing in again is the only fix.</source>
         <translation>新的 Matrix 通知</translation>
     </message>
     <message numerus="yes">
-        <location line="+230"/>
+        <location line="+233"/>
         <location line="+217"/>
-        <location line="+1714"/>
+        <location line="+1722"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n 条新消息</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1927"/>
+        <location line="-1935"/>
         <location line="+211"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15437,7 +15437,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1719"/>
+        <location line="+1727"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>在 %n 个房间中</numerusform>
@@ -15463,7 +15463,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+29"/>
+        <location line="+30"/>
         <source>You can close this window and return to Lightning.</source>
         <translation>你可以关闭此窗口并返回 Lightning。</translation>
     </message>
@@ -19932,12 +19932,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>你已登录，但 Lightning 无法在此设备上打开该账号的存储。此处未保存任何内容。</translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+37"/>
         <source>You signed in, but Lightning could not save this account on this device, so it did not open it.</source>
         <translation>你已登录，但 Lightning 无法在此设备上保存该账号，因此没有打开它。</translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+110"/>
         <source>You signed in, but your system keyring is locked or did not accept the sign-in, so Lightning did not keep it. Unlock the keyring and sign in again. The server now lists an unused session from this attempt; you can sign it out under Sessions.</source>
         <translation>你已登录，但你的系统密钥环已锁定或未接受该登录信息，因此 Lightning 没有保存它。请解锁密钥环并重新登录。服务器现在会列出此次尝试产生的一个未使用的会话；你可以在“会话”中将其退出。</translation>
     </message>
@@ -20237,7 +20237,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>SavedMessagesController</name>
     <message>
-        <location filename="../src/app/SavedMessagesController.cpp" line="+201"/>
+        <location filename="../src/app/SavedMessagesController.cpp" line="+247"/>
         <source>Saved messages could not be loaded. Retry.</source>
         <translation>无法加载已保存的消息。重试。</translation>
     </message>
@@ -20249,24 +20249,29 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="-80"/>
-        <location line="+142"/>
+        <location line="+156"/>
         <source>Saved messages data is unavailable.</source>
         <translation>保存的消息数据不可用。</translation>
     </message>
     <message>
-        <location line="-109"/>
-        <location line="+214"/>
+        <location line="-123"/>
+        <location line="+228"/>
         <location line="+15"/>
         <source>Saved messages are full. Remove an older item first.</source>
         <translation>保存的消息已满。首先删除旧项目。</translation>
     </message>
     <message>
-        <location line="+153"/>
+        <location line="+219"/>
         <source>Sticker</source>
         <translation>贴纸</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+15"/>
+        <source>Edited message. The latest version cannot be decrypted.</source>
+        <translation>消息已编辑。无法解密最新版本。</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Image</source>
         <translation>图片</translation>
     </message>
@@ -20290,12 +20295,12 @@ Signing out and signing in again is the only fix.</source>
     <name>SavedMessagesPanel</name>
     <message>
         <location filename="../qml/SavedMessagesPanel.qml" line="+49"/>
-        <location line="+121"/>
+        <location line="+132"/>
         <source>Saved messages</source>
         <translation>已保存的消息</translation>
     </message>
     <message>
-        <location line="-104"/>
+        <location line="-115"/>
         <source>Undo remove</source>
         <translation>撤消删除</translation>
     </message>
@@ -20355,18 +20360,29 @@ Signing out and signing in again is the only fix.</source>
         <translation>尚未保存消息。使用在消息上保存消息来添加消息。</translation>
     </message>
     <message>
-        <location line="+38"/>
-        <location line="+35"/>
+        <location line="+10"/>
+        <source>Clear filters</source>
+        <translation>清除筛选</translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <location line="+36"/>
+        <source>Message could not be loaded</source>
+        <translation>无法加载消息</translation>
+    </message>
+    <message>
+        <location line="-35"/>
+        <location line="+37"/>
         <source>Message unavailable or redacted</source>
         <translation>消息不可用或已被编辑</translation>
     </message>
     <message>
-        <location line="-34"/>
+        <location line="-36"/>
         <source>Loading message</source>
         <translation>加载消息</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+37"/>
         <source>Loading message…</source>
         <translation>正在加载消息...</translation>
     </message>
@@ -20376,7 +20392,17 @@ Signing out and signing in again is the only fix.</source>
         <translation>在一个话题中</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+11"/>
+        <source>Retry</source>
+        <translation>重试</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Retry loading saved message</source>
+        <translation>重新加载已保存的消息</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>Open</source>
         <translation>打开</translation>
     </message>
@@ -20426,17 +20452,27 @@ Signing out and signing in again is the only fix.</source>
         <translation>服务器未取消此消息。</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+35"/>
         <source>The server did not send this message.</source>
         <translation>服务器未发送此消息。</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+22"/>
+        <source>Not sent yet: the connection failed. Lightning will try again.</source>
+        <translation>尚未发送：连接失败。Lightning 将重试。</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>This message could not be sent. Check the room before sending it again.</source>
+        <translation>无法发送此消息。再次发送前请先查看房间。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>The room did not accept this message. It was not sent.</source>
         <translation>房间未接受此消息。消息未发送。</translation>
     </message>
     <message>
-        <location line="+236"/>
+        <location line="+277"/>
         <source>Lightning closed before the server confirmed this message. Check the room before scheduling it again.</source>
         <translation>在服务器确认此消息之前，Lightning 已关闭。请在再次定时发送前检查该房间。</translation>
     </message>
@@ -20446,7 +20482,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>发送此消息时 Lightning 已关闭。请在再次发送前检查该房间。</translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+62"/>
         <source>Attachment</source>
         <translation>附件</translation>
     </message>
@@ -20461,7 +20497,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Lightning 无法连接服务器以立即发送此消息。它仍处于定时状态。</translation>
     </message>
     <message>
-        <location line="+169"/>
+        <location line="+175"/>
         <source>Waiting for the connection.</source>
         <translation>正在等待连接。</translation>
     </message>
@@ -21172,7 +21208,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>SettingsBackupSection</name>
     <message>
-        <location filename="../qml/SettingsBackupSection.qml" line="+25"/>
+        <location filename="../qml/SettingsBackupSection.qml" line="+26"/>
         <source>Appearance</source>
         <translation>外观</translation>
     </message>
@@ -21385,6 +21421,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+10"/>
         <source>This file was made by a newer Lightning. The settings this version knows are read; the rest are ignored.</source>
         <translation>此文件由较新版本的 Lightning 创建。此版本会读取它所识别的设置，其余的将被忽略。</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>The active custom theme in this file could not be imported, so your current custom theme stays selected.</source>
+        <translation>无法导入此文件中当前使用的自定义主题，因此仍保留你当前的自定义主题。</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -26762,7 +26803,7 @@ Note: importing keys does not verify this session.</source>
         <translation>无法读取该文件。</translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+87"/>
         <source>Choose a file first.</source>
         <translation>请先选择一个文件。</translation>
     </message>
@@ -28207,8 +28248,30 @@ Note: importing keys does not verify this session.</source>
 </context>
 <context>
     <name>SpaceLobby</name>
+    <message numerus="yes">
+        <location filename="../qml/SpaceLobby.qml" line="-111"/>
+        <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
+        <translation>
+            <numerusform>仅列出此空间的前 %n 个房间。未列出的房间仍可通过其地址打开。</numerusform>
+        </translation>
+    </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-60"/>
+        <location line="+3"/>
+        <source>This Space could not be refreshed. Showing the rooms loaded earlier.</source>
+        <translation>无法刷新此空间。正在显示之前加载的房间。</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Loading stopped early, so some rooms of this Space may be missing.</source>
+        <translation>加载提前停止，因此此空间的部分房间可能缺失。</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Retry</source>
+        <translation>重试</translation>
+    </message>
+    <message>
+        <location line="+35"/>
         <location line="+265"/>
         <source>Loading rooms…</source>
         <translation>正在加载房间…</translation>
@@ -32088,7 +32151,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ThreadController</name>
     <message>
-        <location filename="../src/threads/ThreadController.cpp" line="+736"/>
+        <location filename="../src/threads/ThreadController.cpp" line="+737"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>此后端不支持附件。</translation>
@@ -32787,12 +32850,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location filename="../qml/SpaceLobby.qml" line="-521"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5396"/>
+        <location line="+5401"/>
         <source>Space</source>
         <translation>空间</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5395"/>
+        <location filename="../qml/TimelinePane.qml" line="-5400"/>
         <source>Home</source>
         <translation>主页</translation>
     </message>
@@ -33249,7 +33312,7 @@ Note: importing keys does not verify this session.</source>
         <translation>转发…</translation>
     </message>
     <message>
-        <location line="+437"/>
+        <location line="+442"/>
         <source>Room added — waiting for the server to confirm.</source>
         <translation>房间已添加 —— 正在等待服务器确认。</translation>
     </message>
@@ -33314,7 +33377,7 @@ Note: importing keys does not verify this session.</source>
         <translation>横幅无法保存（%1）。</translation>
     </message>
     <message>
-        <location line="+571"/>
+        <location line="+574"/>
         <source>You are the only administrator. If you leave, nobody will be able to change this Space&apos;s settings or manage its rooms and members. Make someone else an administrator first.</source>
         <translation>你是唯一的管理员。如果你离开，将没有人能够更改此空间的设置或管理其房间和成员。请先将其他人设为管理员。</translation>
     </message>
@@ -33327,7 +33390,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/TimelinePane.qml" line="-514"/>
+        <location filename="../qml/TimelinePane.qml" line="-517"/>
         <source>%n joined room(s)</source>
         <comment>joined rooms inside a Space</comment>
         <translation>
@@ -33380,7 +33443,7 @@ Note: importing keys does not verify this session.</source>
         <translation>显示横幅</translation>
     </message>
     <message>
-        <location line="+289"/>
+        <location line="+292"/>
         <source>People in this Space</source>
         <translation>此空间中的联系人</translation>
     </message>
@@ -33395,7 +33458,7 @@ Note: importing keys does not verify this session.</source>
         <translation>显示 %1 位中的前 60 位。</translation>
     </message>
     <message>
-        <location line="-298"/>
+        <location line="-301"/>
         <source>Choose Space avatar</source>
         <translation>选择空间头像</translation>
     </message>
@@ -33456,17 +33519,17 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+27"/>
-        <location line="+297"/>
+        <location line="+300"/>
         <source>Leave Space</source>
         <translation>退出空间</translation>
     </message>
     <message>
-        <location line="-291"/>
+        <location line="-294"/>
         <source>Leaving does not remove the rooms inside it.</source>
         <translation>退出不会移除其中的房间。</translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-260"/>
+        <location filename="../qml/SpaceLobby.qml" line="-290"/>
         <source>ROOMS AND SPACES</source>
         <translation>房间与空间</translation>
     </message>
@@ -33479,24 +33542,24 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+21"/>
-        <location filename="../qml/TimelinePane.qml" line="+214"/>
+        <location filename="../qml/TimelinePane.qml" line="+217"/>
         <source>Remove</source>
         <translation>移除</translation>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+601"/>
+        <location line="+631"/>
         <source>Mark as not suggested</source>
         <translation>标记为不推荐</translation>
     </message>
     <message>
-        <location line="-600"/>
-        <location line="+601"/>
+        <location line="-630"/>
+        <location line="+631"/>
         <source>Mark as suggested</source>
         <translation>标记为推荐</translation>
     </message>
     <message>
-        <location line="-590"/>
+        <location line="-620"/>
         <source>Search names and descriptions</source>
         <translation>搜索名称和描述</translation>
     </message>
@@ -33506,7 +33569,7 @@ Note: importing keys does not verify this session.</source>
         <translation>搜索房间和空间</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+42"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>没有与“%1”匹配的房间或空间。</translation>
     </message>
@@ -33523,8 +33586,8 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+299"/>
-        <location filename="../qml/TimelinePane.qml" line="-6691"/>
-        <location line="+6868"/>
+        <location filename="../qml/TimelinePane.qml" line="-6699"/>
+        <location line="+6876"/>
         <source>Room</source>
         <translation>房间</translation>
     </message>
@@ -33587,21 +33650,21 @@ Note: importing keys does not verify this session.</source>
         <translation>这些房间会继续存在，你也仍在其中 —— 它们只是离开这个空间的列表。</translation>
     </message>
     <message>
-        <location line="-1440"/>
+        <location line="-1448"/>
         <location line="+209"/>
-        <location line="+1245"/>
+        <location line="+1253"/>
         <location line="+77"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location line="-5983"/>
+        <location line="-5991"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation>查看个人资料</translation>
     </message>
     <message>
-        <location line="+5215"/>
+        <location line="+5220"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation>图片 (*.png *.jpg *.jpeg *.gif *.webp *.svg)</translation>
     </message>
@@ -33616,7 +33679,7 @@ Note: importing keys does not verify this session.</source>
         <translation>只有空间管理员可以更改此项。</translation>
     </message>
     <message>
-        <location line="+344"/>
+        <location line="+347"/>
         <source>Leave %1?</source>
         <translation>退出 %1？</translation>
     </message>
@@ -33677,7 +33740,7 @@ Note: importing keys does not verify this session.</source>
         <translation>拖放文件以添加附件</translation>
     </message>
     <message>
-        <location line="-5431"/>
+        <location line="-5439"/>
         <source>Join space</source>
         <translation>加入空间</translation>
     </message>
@@ -35214,7 +35277,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>lightning::update::UpdateManager</name>
     <message>
-        <location filename="../src/update/UpdateManager.cpp" line="+1042"/>
+        <location filename="../src/update/UpdateManager.cpp" line="+1058"/>
         <source>Lightning is installed for all users of this computer, so installing an update needs administrator approval, and Windows did not get it. Nothing was changed. Approve the prompt next time, or ask an administrator to install the update.</source>
         <translation>Lightning 为此电脑的所有用户安装，因此安装更新需要管理员批准，而 Windows 未获得该批准。未更改任何内容。下次请批准提示，或请管理员安装更新。</translation>
     </message>
@@ -35254,7 +35317,22 @@ Note: importing keys does not verify this session.</source>
         <translation>无法放置新版本，因此已恢复为之前的版本。没有任何内容丢失。</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Those files are in %1. Move them back into the Lightning folder and delete that folder, or reinstall Lightning from the downloads page.</source>
+        <translation>之前的更新未能恢复旧版本的全部文件，因此更新已暂停。这些文件位于 %1。请将它们移回 Lightning 文件夹并删除该文件夹，或从下载页面重新安装 Lightning。</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Reinstall Lightning from the downloads page.</source>
+        <translation>之前的更新未能恢复旧版本的全部文件，因此更新已暂停。请从下载页面重新安装 Lightning。</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The update failed and the previous version could not be fully restored. The files that were not put back are in %1. Move them back into the Lightning folder, or reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
+        <translation>更新失败，且未能完全恢复旧版本。未恢复的文件位于 %1。请将它们移回 Lightning 文件夹，或从下载页面重新安装 Lightning。你的消息和帐户保存在服务器上，不受影响。</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>The update failed and the previous version could not be fully restored. Please reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
         <translation>更新失败，且无法完全恢复之前的版本。请从下载页面重新安装 Lightning。你的消息和账号保存在服务器上，不受影响。</translation>
     </message>

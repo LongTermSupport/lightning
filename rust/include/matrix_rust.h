@@ -1632,6 +1632,7 @@ char *mx_rust_schedule_content(void *client,
 char *mx_rust_send_room_content(void *client,
                                 const char *room_id,
                                 const char *content_json,
+                                const char *transaction_id,
                                 unsigned long long op_id);
 char *mx_rust_update_scheduled_message(void *client,
                                        const char *delay_id,
@@ -1639,8 +1640,9 @@ char *mx_rust_update_scheduled_message(void *client,
                                        unsigned long long op_id);
 /* v0.9 scheduled send: a ROOM-level message send for any joined room (the
    timeline sends need the live timeline open). `body_spec`, `mention_user_ids`,
-   `reply_to_event_id` and `thread_root_event_id` are nullable. Answers on
-   `room_send_result {op_id, room_id, ok, category}`. */
+   `reply_to_event_id`, `thread_root_event_id` and `transaction_id` are
+   nullable; a retry reuses `transaction_id` so the server deduplicates it.
+   Answers on `room_send_result {op_id, room_id, ok, category}`. */
 char *mx_rust_send_room_message(void *client,
                                 const char *room_id,
                                 const char *body,
@@ -1648,6 +1650,7 @@ char *mx_rust_send_room_message(void *client,
                                 const char *body_spec,
                                 const char *reply_to_event_id,
                                 const char *thread_root_event_id,
+                                const char *transaction_id,
                                 unsigned long long op_id);
 /* v0.9 (phase 2): the Activity Center's seed — the homeserver's highlight
    notifications (GET /notifications?only=highlight), at most `limit` (1-100).
@@ -1661,9 +1664,14 @@ char *mx_rust_request_activity_seed_page(void *client, unsigned int limit,
 char *mx_rust_request_edit_history(void *client,
                                    const char *room_id,
                                    const char *event_id);
+/* Replies with `event_source` carrying `op_id`, the raw `json`, and
+   `effective_content`: the `m.new_content` of the latest valid replacement
+   (null when unedited), plus `edit_unreadable` when a newer replacement from
+   the sender could not be decrypted. */
 char *mx_rust_request_event_source(void *client,
                                    const char *room_id,
-                                   const char *event_id);
+                                   const char *event_id,
+                                   uint64_t op_id);
 /* A room's widgets (MSC1236 / MSC2764), resolved and validated. Lightning
    LISTS and OPENS widgets in the user's browser rather than embedding them —
    see rust/src/widgets.rs and docs/widgets.md for the evidence behind that.

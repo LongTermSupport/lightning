@@ -3934,7 +3934,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+282"/>
+        <location filename="../qml/SpaceLobby.qml" line="+316"/>
         <source>%1, collapsed</source>
         <translation>%1, sutraukta</translation>
     </message>
@@ -8697,7 +8697,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+96"/>
+        <location filename="../src/app/ForwardController.cpp" line="+97"/>
         <source>Photo</source>
         <translation>Nuotrauka</translation>
     </message>
@@ -8771,7 +8771,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Persiųsta iš %1</translation>
     </message>
     <message>
-        <location line="+94"/>
+        <location line="+102"/>
         <source>Not signed in.</source>
         <translation>Neprisijungta.</translation>
     </message>
@@ -14934,7 +14934,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1953"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
         <location line="+991"/>
         <source>Open</source>
         <translation>Atidaryti</translation>
@@ -15467,7 +15467,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2833"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2844"/>
         <source>(spoiler)</source>
         <translation>(spoileris)</translation>
     </message>
@@ -15532,9 +15532,9 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Naujas Matrix pranešimas</translation>
     </message>
     <message numerus="yes">
-        <location line="+230"/>
+        <location line="+233"/>
         <location line="+217"/>
-        <location line="+1714"/>
+        <location line="+1722"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n nauja žinutė</numerusform>
@@ -15543,7 +15543,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1927"/>
+        <location line="-1935"/>
         <location line="+211"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15553,7 +15553,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1719"/>
+        <location line="+1727"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>%n kambaryje</numerusform>
@@ -15581,7 +15581,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+29"/>
+        <location line="+30"/>
         <source>You can close this window and return to Lightning.</source>
         <translation>Galite uždaryti šį langą ir grįžti į „Lightning“.</translation>
     </message>
@@ -20092,12 +20092,12 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Prisijungėte, bet „Lightning“ nepavyko atidaryti šios paskyros saugyklos šiame įrenginyje. Čia nieko neįrašyta.</translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+37"/>
         <source>You signed in, but Lightning could not save this account on this device, so it did not open it.</source>
         <translation>Prisijungėte, bet „Lightning“ nepavyko išsaugoti šios paskyros šiame įrenginyje, todėl jos neatidarė.</translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+110"/>
         <source>You signed in, but your system keyring is locked or did not accept the sign-in, so Lightning did not keep it. Unlock the keyring and sign in again. The server now lists an unused session from this attempt; you can sign it out under Sessions.</source>
         <translation>Prisijungėte, bet jūsų sistemos raktų saugykla užrakinta arba nepriėmė prisijungimo, todėl Lightning jo neišsaugojo. Atrakinkite raktų saugyklą ir prisijunkite dar kartą. Serveris dabar rodo nenaudojamą šio bandymo seansą; jį galite atjungti skiltyje Seansai.</translation>
     </message>
@@ -20397,7 +20397,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>SavedMessagesController</name>
     <message>
-        <location filename="../src/app/SavedMessagesController.cpp" line="+201"/>
+        <location filename="../src/app/SavedMessagesController.cpp" line="+247"/>
         <source>Saved messages could not be loaded. Retry.</source>
         <translation>Nepavyko įkelti išsaugotų pranešimų. Bandykite dar kartą.</translation>
     </message>
@@ -20409,24 +20409,29 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     </message>
     <message>
         <location line="-80"/>
-        <location line="+142"/>
+        <location line="+156"/>
         <source>Saved messages data is unavailable.</source>
         <translation>Išsaugotų pranešimų duomenys nepasiekiami.</translation>
     </message>
     <message>
-        <location line="-109"/>
-        <location line="+214"/>
+        <location line="-123"/>
+        <location line="+228"/>
         <location line="+15"/>
         <source>Saved messages are full. Remove an older item first.</source>
         <translation>Išsaugotų pranešimų pilna. Pirmiausia pašalinkite senesnį elementą.</translation>
     </message>
     <message>
-        <location line="+153"/>
+        <location line="+219"/>
         <source>Sticker</source>
         <translation>Lipdukas</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+15"/>
+        <source>Edited message. The latest version cannot be decrypted.</source>
+        <translation>Redaguota žinutė. Naujausios versijos iššifruoti nepavyksta.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Image</source>
         <translation>Paveikslėlis</translation>
     </message>
@@ -20450,12 +20455,12 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     <name>SavedMessagesPanel</name>
     <message>
         <location filename="../qml/SavedMessagesPanel.qml" line="+49"/>
-        <location line="+121"/>
+        <location line="+132"/>
         <source>Saved messages</source>
         <translation>Išsaugoti pranešimai</translation>
     </message>
     <message>
-        <location line="-104"/>
+        <location line="-115"/>
         <source>Undo remove</source>
         <translation>Anuliuoti pašalinimą</translation>
     </message>
@@ -20515,18 +20520,29 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Išsaugotų pranešimų dar nėra. Jei norite pridėti pranešimą, naudokite Išsaugoti pranešimą.</translation>
     </message>
     <message>
-        <location line="+38"/>
-        <location line="+35"/>
+        <location line="+10"/>
+        <source>Clear filters</source>
+        <translation>Išvalyti filtrus</translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <location line="+36"/>
+        <source>Message could not be loaded</source>
+        <translation>Žinutės įkelti nepavyko</translation>
+    </message>
+    <message>
+        <location line="-35"/>
+        <location line="+37"/>
         <source>Message unavailable or redacted</source>
         <translation>Pranešimas nepasiekiamas arba redaguotas</translation>
     </message>
     <message>
-        <location line="-34"/>
+        <location line="-36"/>
         <source>Loading message</source>
         <translation>Įkeliamas pranešimas</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+37"/>
         <source>Loading message…</source>
         <translation>Įkeliamas pranešimas…</translation>
     </message>
@@ -20536,7 +20552,17 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Gijoje</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+11"/>
+        <source>Retry</source>
+        <translation>Bandyti dar kartą</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Retry loading saved message</source>
+        <translation>Bandyti iš naujo įkelti išsaugotą žinutę</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>Open</source>
         <translation>Atidaryti</translation>
     </message>
@@ -20586,17 +20612,27 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Serveris neatšaukė šios žinutės.</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+35"/>
         <source>The server did not send this message.</source>
         <translation>Serveris neišsiuntė šios žinutės.</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+22"/>
+        <source>Not sent yet: the connection failed. Lightning will try again.</source>
+        <translation>Dar neišsiųsta: nepavyko prisijungti. Lightning bandys dar kartą.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>This message could not be sent. Check the room before sending it again.</source>
+        <translation>Šios žinutės išsiųsti nepavyko. Prieš siųsdami dar kartą patikrinkite kambarį.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>The room did not accept this message. It was not sent.</source>
         <translation>Kambarys nepriėmė šios žinutės. Ji neišsiųsta.</translation>
     </message>
     <message>
-        <location line="+236"/>
+        <location line="+277"/>
         <source>Lightning closed before the server confirmed this message. Check the room before scheduling it again.</source>
         <translation>„Lightning“ užsidarė, kol serveris nepatvirtino šios žinutės. Prieš planuodami iš naujo patikrinkite kambarį.</translation>
     </message>
@@ -20606,7 +20642,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>„Lightning“ užsidarė siunčiant tai. Prieš siųsdami iš naujo patikrinkite kambarį.</translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+62"/>
         <source>Attachment</source>
         <translation>Priedas</translation>
     </message>
@@ -20621,7 +20657,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>„Lightning“ nepavyko susisiekti su serveriu, kad išsiųstų tai dabar. Ji vis dar suplanuota.</translation>
     </message>
     <message>
-        <location line="+169"/>
+        <location line="+175"/>
         <source>Waiting for the connection.</source>
         <translation>Laukiama ryšio.</translation>
     </message>
@@ -21338,7 +21374,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>SettingsBackupSection</name>
     <message>
-        <location filename="../qml/SettingsBackupSection.qml" line="+25"/>
+        <location filename="../qml/SettingsBackupSection.qml" line="+26"/>
         <source>Appearance</source>
         <translation>Išvaizda</translation>
     </message>
@@ -21557,6 +21593,11 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <location line="+10"/>
         <source>This file was made by a newer Lightning. The settings this version knows are read; the rest are ignored.</source>
         <translation>Šį failą sukūrė naujesnė „Lightning“. Šios versijos žinomi nustatymai nuskaitomi, likusieji ignoruojami.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>The active custom theme in this file could not be imported, so your current custom theme stays selected.</source>
+        <translation>Aktyvios pasirinktinės temos iš šio failo importuoti nepavyko, todėl lieka pasirinkta dabartinė pasirinktinė tema.</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -26964,7 +27005,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Nepavyko perskaityti to failo.</translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+87"/>
         <source>Choose a file first.</source>
         <translation>Pirmiausia pasirinkite failą.</translation>
     </message>
@@ -28409,8 +28450,32 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
 </context>
 <context>
     <name>SpaceLobby</name>
+    <message numerus="yes">
+        <location filename="../qml/SpaceLobby.qml" line="-111"/>
+        <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
+        <translation>
+            <numerusform>Rodomas tik pirmasis %n šios erdvės kambarys. Neparodytą kambarį vis tiek galima atidaryti pagal jo adresą.</numerusform>
+            <numerusform>Rodomi tik pirmieji %n šios erdvės kambariai. Neparodytą kambarį vis tiek galima atidaryti pagal jo adresą.</numerusform>
+            <numerusform>Rodoma tik pirmųjų %n šios erdvės kambarių. Neparodytą kambarį vis tiek galima atidaryti pagal jo adresą.</numerusform>
+        </translation>
+    </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-60"/>
+        <location line="+3"/>
+        <source>This Space could not be refreshed. Showing the rooms loaded earlier.</source>
+        <translation>Šios erdvės atnaujinti nepavyko. Rodomi anksčiau įkelti kambariai.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Loading stopped early, so some rooms of this Space may be missing.</source>
+        <translation>Įkėlimas sustojo per anksti, todėl kai kurių šios erdvės kambarių gali trūkti.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Retry</source>
+        <translation>Bandyti dar kartą</translation>
+    </message>
+    <message>
+        <location line="+35"/>
         <location line="+265"/>
         <source>Loading rooms…</source>
         <translation>Įkeliami kambariai…</translation>
@@ -32382,7 +32447,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
 <context>
     <name>ThreadController</name>
     <message>
-        <location filename="../src/threads/ThreadController.cpp" line="+736"/>
+        <location filename="../src/threads/ThreadController.cpp" line="+737"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>Ši posistemė nepalaiko priedų.</translation>
@@ -33093,12 +33158,12 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     <message>
         <location filename="../qml/SpaceLobby.qml" line="-521"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5396"/>
+        <location line="+5401"/>
         <source>Space</source>
         <translation>Erdvė</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5395"/>
+        <location filename="../qml/TimelinePane.qml" line="-5400"/>
         <source>Home</source>
         <translation>Pradžia</translation>
     </message>
@@ -33557,7 +33622,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Persiųsti…</translation>
     </message>
     <message>
-        <location line="+437"/>
+        <location line="+442"/>
         <source>Room added — waiting for the server to confirm.</source>
         <translation>kambarys pridėtas – laukiama, kol serveris patvirtins.</translation>
     </message>
@@ -33622,7 +33687,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Reklamjuostės išsaugoti nepavyko (%1).</translation>
     </message>
     <message>
-        <location line="+571"/>
+        <location line="+574"/>
         <source>You are the only administrator. If you leave, nobody will be able to change this Space&apos;s settings or manage its rooms and members. Make someone else an administrator first.</source>
         <translation>Jūs esate vienintelis administratorius. Jei išeisite, niekas negalės keisti šios erdvės nustatymų ar tvarkyti jos kambarių ir narių. Pirmiausia paskirkite administratoriumi ką nors kitą.</translation>
     </message>
@@ -33637,7 +33702,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/TimelinePane.qml" line="-514"/>
+        <location filename="../qml/TimelinePane.qml" line="-517"/>
         <source>%n joined room(s)</source>
         <comment>joined rooms inside a Space</comment>
         <translation>
@@ -33692,7 +33757,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Rodyti reklamjuostę</translation>
     </message>
     <message>
-        <location line="+289"/>
+        <location line="+292"/>
         <source>People in this Space</source>
         <translation>Žmonės šioje erdvėje</translation>
     </message>
@@ -33707,7 +33772,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Rodomi pirmieji 60 iš %1.</translation>
     </message>
     <message>
-        <location line="-298"/>
+        <location line="-301"/>
         <source>Choose Space avatar</source>
         <translation>Pasirinkti erdvės avatarą</translation>
     </message>
@@ -33768,17 +33833,17 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     </message>
     <message>
         <location line="+27"/>
-        <location line="+297"/>
+        <location line="+300"/>
         <source>Leave Space</source>
         <translation>Palikite erdvę</translation>
     </message>
     <message>
-        <location line="-291"/>
+        <location line="-294"/>
         <source>Leaving does not remove the rooms inside it.</source>
         <translation>Išėjus iš erdvės joje esantys kambariai nepašalinami.</translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-260"/>
+        <location filename="../qml/SpaceLobby.qml" line="-290"/>
         <source>ROOMS AND SPACES</source>
         <translation>KAMBARIAI IR ERDVĖS</translation>
     </message>
@@ -33793,24 +33858,24 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     </message>
     <message>
         <location line="+21"/>
-        <location filename="../qml/TimelinePane.qml" line="+214"/>
+        <location filename="../qml/TimelinePane.qml" line="+217"/>
         <source>Remove</source>
         <translation>Pašalinti</translation>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+601"/>
+        <location line="+631"/>
         <source>Mark as not suggested</source>
         <translation>Pažymėti kaip nesiūlomą</translation>
     </message>
     <message>
-        <location line="-600"/>
-        <location line="+601"/>
+        <location line="-630"/>
+        <location line="+631"/>
         <source>Mark as suggested</source>
         <translation>Pažymėti kaip siūlomą</translation>
     </message>
     <message>
-        <location line="-590"/>
+        <location line="-620"/>
         <source>Search names and descriptions</source>
         <translation>Ieškokite pavadinimų ir aprašymų</translation>
     </message>
@@ -33820,7 +33885,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Ieškokite kambarių ir erdvių</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+42"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>Nė vienas kambarys ar erdvė neatitinka „%1“.</translation>
     </message>
@@ -33837,8 +33902,8 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     </message>
     <message>
         <location line="+299"/>
-        <location filename="../qml/TimelinePane.qml" line="-6691"/>
-        <location line="+6868"/>
+        <location filename="../qml/TimelinePane.qml" line="-6699"/>
+        <location line="+6876"/>
         <source>Room</source>
         <translation>Kambarys</translation>
     </message>
@@ -33909,21 +33974,21 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Kambariai išlieka, o jūs juose liekate – jie tiesiog palieka šios erdvės sąrašą.</translation>
     </message>
     <message>
-        <location line="-1440"/>
+        <location line="-1448"/>
         <location line="+209"/>
-        <location line="+1245"/>
+        <location line="+1253"/>
         <location line="+77"/>
         <source>Cancel</source>
         <translation>Atšaukti</translation>
     </message>
     <message>
-        <location line="-5983"/>
+        <location line="-5991"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation>Peržiūrėti profilį</translation>
     </message>
     <message>
-        <location line="+5215"/>
+        <location line="+5220"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation>Paveikslėliai (*.png *.jpg *.jpeg *.gif *.webp *.svg)</translation>
     </message>
@@ -33938,7 +34003,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Tai keisti gali tik erdvės administratoriai.</translation>
     </message>
     <message>
-        <location line="+344"/>
+        <location line="+347"/>
         <source>Leave %1?</source>
         <translation>Išeiti iš %1?</translation>
     </message>
@@ -33999,7 +34064,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Numeskite failus, kuriuos norite pridėti</translation>
     </message>
     <message>
-        <location line="-5431"/>
+        <location line="-5439"/>
         <source>Join space</source>
         <translation>Prisijungti prie erdvės</translation>
     </message>
@@ -35538,7 +35603,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
 <context>
     <name>lightning::update::UpdateManager</name>
     <message>
-        <location filename="../src/update/UpdateManager.cpp" line="+1042"/>
+        <location filename="../src/update/UpdateManager.cpp" line="+1058"/>
         <source>Lightning is installed for all users of this computer, so installing an update needs administrator approval, and Windows did not get it. Nothing was changed. Approve the prompt next time, or ask an administrator to install the update.</source>
         <translation>„Lightning“ įdiegta visiems šio kompiuterio naudotojams, todėl naujinio diegimui reikia administratoriaus patvirtinimo, o „Windows“ jo negavo. Niekas nepakeista. Kitą kartą patvirtinkite užklausą arba paprašykite administratoriaus įdiegti naujinį.</translation>
     </message>
@@ -35578,7 +35643,22 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Naujos versijos įdiegti nepavyko, todėl atkurta ankstesnė. Niekas neprarasta.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Those files are in %1. Move them back into the Lightning folder and delete that folder, or reinstall Lightning from the downloads page.</source>
+        <translation>Ankstesnis atnaujinimas negalėjo grąžinti visų ankstesnės versijos failų, todėl atnaujinimai sustabdyti. Tie failai yra %1. Perkelkite juos atgal į Lightning aplanką ir ištrinkite tą aplanką arba iš naujo įdiekite Lightning iš atsisiuntimų puslapio.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Reinstall Lightning from the downloads page.</source>
+        <translation>Ankstesnis atnaujinimas negalėjo grąžinti visų ankstesnės versijos failų, todėl atnaujinimai sustabdyti. Iš naujo įdiekite Lightning iš atsisiuntimų puslapio.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The update failed and the previous version could not be fully restored. The files that were not put back are in %1. Move them back into the Lightning folder, or reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
+        <translation>Atnaujinti nepavyko ir ankstesnės versijos visiškai atkurti nepavyko. Negrąžinti failai yra %1. Perkelkite juos atgal į Lightning aplanką arba iš naujo įdiekite Lightning iš atsisiuntimų puslapio. Jūsų žinutės ir paskyra yra serveryje ir nepaveiktos.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>The update failed and the previous version could not be fully restored. Please reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
         <translation>Naujinimas nepavyko, o ankstesnės versijos nepavyko visiškai atkurti. Iš naujo įdiekite „Lightning“ iš atsisiuntimų puslapio. Jūsų žinutės ir paskyra yra serveryje ir nepaveiktos.</translation>
     </message>

@@ -4003,7 +4003,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+282"/>
+        <location filename="../qml/SpaceLobby.qml" line="+316"/>
         <source>%1, collapsed</source>
         <translation>%1، تم تصغيره</translation>
     </message>
@@ -8799,7 +8799,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+96"/>
+        <location filename="../src/app/ForwardController.cpp" line="+97"/>
         <source>Photo</source>
         <translation>صورة</translation>
     </message>
@@ -8873,7 +8873,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>معاد توجيهها من %1</translation>
     </message>
     <message>
-        <location line="+94"/>
+        <location line="+102"/>
         <source>Not signed in.</source>
         <translation>لم تسجّل الدخول.</translation>
     </message>
@@ -15102,7 +15102,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1953"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
         <location line="+991"/>
         <source>Open</source>
         <translation>فتح</translation>
@@ -15635,7 +15635,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2833"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2844"/>
         <source>(spoiler)</source>
         <translation>(حرق)</translation>
     </message>
@@ -15700,9 +15700,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>إشعار Matrix جديد</translation>
     </message>
     <message numerus="yes">
-        <location line="+230"/>
+        <location line="+233"/>
         <location line="+217"/>
-        <location line="+1714"/>
+        <location line="+1722"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>لا رسائل جديدة (%n)</numerusform>
@@ -15714,7 +15714,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1927"/>
+        <location line="-1935"/>
         <location line="+211"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15727,7 +15727,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1719"/>
+        <location line="+1727"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>في %n غرف</numerusform>
@@ -15758,7 +15758,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+29"/>
+        <location line="+30"/>
         <source>You can close this window and return to Lightning.</source>
         <translation>يمكنك إغلاق هذه النافذة والعودة إلى Lightning.</translation>
     </message>
@@ -20332,12 +20332,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>سجّلت الدخول، لكن تعذّر على Lightning فتح تخزين هذا الحساب على هذا الجهاز. لم يُحفظ شيء هنا.</translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+37"/>
         <source>You signed in, but Lightning could not save this account on this device, so it did not open it.</source>
         <translation>سجّلت الدخول، لكن تعذّر على Lightning حفظ هذا الحساب على هذا الجهاز، لذا لم يفتحه.</translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+110"/>
         <source>You signed in, but your system keyring is locked or did not accept the sign-in, so Lightning did not keep it. Unlock the keyring and sign in again. The server now lists an unused session from this attempt; you can sign it out under Sessions.</source>
         <translation>سجّلت الدخول، لكن حلقة مفاتيح نظامك مقفلة أو لم تقبل تسجيل الدخول، لذا لم يحتفظ به Lightning. افتح قفل حلقة المفاتيح وسجّل الدخول مجددًا. يُدرج الخادوم الآن جلسة غير مستخدمة من هذه المحاولة؛ يمكنك تسجيل خروجها من قسم الجلسات.</translation>
     </message>
@@ -20637,7 +20637,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>SavedMessagesController</name>
     <message>
-        <location filename="../src/app/SavedMessagesController.cpp" line="+201"/>
+        <location filename="../src/app/SavedMessagesController.cpp" line="+247"/>
         <source>Saved messages could not be loaded. Retry.</source>
         <translation>لا يمكن تحميل الرسائل المحفوظة. أعد المحاولة.</translation>
     </message>
@@ -20649,24 +20649,29 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="-80"/>
-        <location line="+142"/>
+        <location line="+156"/>
         <source>Saved messages data is unavailable.</source>
         <translation>بيانات الرسائل المحفوظة غير متوفرة.</translation>
     </message>
     <message>
-        <location line="-109"/>
-        <location line="+214"/>
+        <location line="-123"/>
+        <location line="+228"/>
         <location line="+15"/>
         <source>Saved messages are full. Remove an older item first.</source>
         <translation>الرسائل المحفوظة ممتلئة. قم بإزالة العنصر الأقدم أولاً.</translation>
     </message>
     <message>
-        <location line="+153"/>
+        <location line="+219"/>
         <source>Sticker</source>
         <translation>ملصق</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+15"/>
+        <source>Edited message. The latest version cannot be decrypted.</source>
+        <translation>رسالة معدّلة. لا يمكن فك تشفير أحدث نسخة.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Image</source>
         <translation>صورة</translation>
     </message>
@@ -20690,12 +20695,12 @@ Signing out and signing in again is the only fix.</source>
     <name>SavedMessagesPanel</name>
     <message>
         <location filename="../qml/SavedMessagesPanel.qml" line="+49"/>
-        <location line="+121"/>
+        <location line="+132"/>
         <source>Saved messages</source>
         <translation>الرسائل المحفوظة</translation>
     </message>
     <message>
-        <location line="-104"/>
+        <location line="-115"/>
         <source>Undo remove</source>
         <translation>التراجع عن الإزالة</translation>
     </message>
@@ -20755,18 +20760,29 @@ Signing out and signing in again is the only fix.</source>
         <translation>لا توجد رسائل محفوظة بعد. استخدم حفظ الرسالة في رسالة لإضافة واحدة.</translation>
     </message>
     <message>
-        <location line="+38"/>
-        <location line="+35"/>
+        <location line="+10"/>
+        <source>Clear filters</source>
+        <translation>مسح عوامل التصفية</translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <location line="+36"/>
+        <source>Message could not be loaded</source>
+        <translation>تعذّر تحميل الرسالة</translation>
+    </message>
+    <message>
+        <location line="-35"/>
+        <location line="+37"/>
         <source>Message unavailable or redacted</source>
         <translation>الرسالة غير متاحة أو منقحة</translation>
     </message>
     <message>
-        <location line="-34"/>
+        <location line="-36"/>
         <source>Loading message</source>
         <translation>جاري تحميل الرسالة</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+37"/>
         <source>Loading message…</source>
         <translation>جارٍ تحميل الرسالة...</translation>
     </message>
@@ -20776,7 +20792,17 @@ Signing out and signing in again is the only fix.</source>
         <translation>في الخيط</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+11"/>
+        <source>Retry</source>
+        <translation>إعادة المحاولة</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Retry loading saved message</source>
+        <translation>إعادة محاولة تحميل الرسالة المحفوظة</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>Open</source>
         <translation>فتح</translation>
     </message>
@@ -20826,17 +20852,27 @@ Signing out and signing in again is the only fix.</source>
         <translation>لم يلغِ الخادوم هذه الرسالة.</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+35"/>
         <source>The server did not send this message.</source>
         <translation>لم يرسل الخادوم هذه الرسالة.</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+22"/>
+        <source>Not sent yet: the connection failed. Lightning will try again.</source>
+        <translation>لم يُرسل بعد: فشل الاتصال. سيحاول Lightning مرة أخرى.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>This message could not be sent. Check the room before sending it again.</source>
+        <translation>تعذّر إرسال هذه الرسالة. تحقّق من الغرفة قبل إرسالها مرة أخرى.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>The room did not accept this message. It was not sent.</source>
         <translation>لم تقبل الغرفة هذه الرسالة. لم تُرسل.</translation>
     </message>
     <message>
-        <location line="+236"/>
+        <location line="+277"/>
         <source>Lightning closed before the server confirmed this message. Check the room before scheduling it again.</source>
         <translation>أُغلق Lightning قبل أن يؤكد الخادوم هذه الرسالة. تحقّق من الغرفة قبل جدولتها مجددًا.</translation>
     </message>
@@ -20846,7 +20882,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>أُغلق Lightning أثناء إرسال هذه. تحقّق من الغرفة قبل إرسالها مجددًا.</translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+62"/>
         <source>Attachment</source>
         <translation>مرفق</translation>
     </message>
@@ -20861,7 +20897,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>تعذّر على Lightning الوصول إلى الخادوم لإرسال هذه الآن. ما زالت مجدولة.</translation>
     </message>
     <message>
-        <location line="+169"/>
+        <location line="+175"/>
         <source>Waiting for the connection.</source>
         <translation>بانتظار الاتصال.</translation>
     </message>
@@ -21587,7 +21623,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>SettingsBackupSection</name>
     <message>
-        <location filename="../qml/SettingsBackupSection.qml" line="+25"/>
+        <location filename="../qml/SettingsBackupSection.qml" line="+26"/>
         <source>Appearance</source>
         <translation>المظهر</translation>
     </message>
@@ -21815,6 +21851,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+10"/>
         <source>This file was made by a newer Lightning. The settings this version knows are read; the rest are ignored.</source>
         <translation>صُنع هذا الملف بإصدار أحدث من Lightning. تُقرأ الإعدادات التي يعرفها هذا الإصدار ويُتجاهل الباقي.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>The active custom theme in this file could not be imported, so your current custom theme stays selected.</source>
+        <translation>تعذّر استيراد السمة المخصصة النشطة في هذا الملف، لذا تبقى سمتك المخصصة الحالية محددة.</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -27267,7 +27308,7 @@ Note: importing keys does not verify this session.</source>
         <translation>تعذّرت قراءة ذلك الملف.</translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+87"/>
         <source>Choose a file first.</source>
         <translation>اختر ملفًا أولًا.</translation>
     </message>
@@ -28712,8 +28753,35 @@ Note: importing keys does not verify this session.</source>
 </context>
 <context>
     <name>SpaceLobby</name>
+    <message numerus="yes">
+        <location filename="../qml/SpaceLobby.qml" line="-111"/>
+        <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
+        <translation>
+            <numerusform>لا تُعرض أي غرفة من هذه المساحة. لا يزال بالإمكان فتح الغرفة غير المدرجة بعنوانها.</numerusform>
+            <numerusform>تُعرض أول غرفة فقط من هذه المساحة. لا يزال بالإمكان فتح الغرفة غير المدرجة بعنوانها.</numerusform>
+            <numerusform>تُعرض أول غرفتين فقط من هذه المساحة. لا يزال بالإمكان فتح الغرفة غير المدرجة بعنوانها.</numerusform>
+            <numerusform>تُعرض أول %n غرف فقط من هذه المساحة. لا يزال بالإمكان فتح الغرفة غير المدرجة بعنوانها.</numerusform>
+            <numerusform>تُعرض أول %n غرفة فقط من هذه المساحة. لا يزال بالإمكان فتح الغرفة غير المدرجة بعنوانها.</numerusform>
+            <numerusform>تُعرض أول %n غرفة فقط من هذه المساحة. لا يزال بالإمكان فتح الغرفة غير المدرجة بعنوانها.</numerusform>
+        </translation>
+    </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-60"/>
+        <location line="+3"/>
+        <source>This Space could not be refreshed. Showing the rooms loaded earlier.</source>
+        <translation>تعذّر تحديث هذه المساحة. تُعرض الغرف المحمّلة سابقًا.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Loading stopped early, so some rooms of this Space may be missing.</source>
+        <translation>توقف التحميل مبكرًا، لذا قد تكون بعض غرف هذه المساحة مفقودة.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Retry</source>
+        <translation>إعادة المحاولة</translation>
+    </message>
+    <message>
+        <location line="+35"/>
         <location line="+265"/>
         <source>Loading rooms…</source>
         <translation>جارٍ تحميل الغرف…</translation>
@@ -32823,7 +32891,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ThreadController</name>
     <message>
-        <location filename="../src/threads/ThreadController.cpp" line="+736"/>
+        <location filename="../src/threads/ThreadController.cpp" line="+737"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>المرفقات غير مدعومة على هذه الخلفية.</translation>
@@ -33552,12 +33620,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location filename="../qml/SpaceLobby.qml" line="-521"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5396"/>
+        <location line="+5401"/>
         <source>Space</source>
         <translation>فضاء</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5395"/>
+        <location filename="../qml/TimelinePane.qml" line="-5400"/>
         <source>Home</source>
         <translation>الرئيسية</translation>
     </message>
@@ -34019,7 +34087,7 @@ Note: importing keys does not verify this session.</source>
         <translation>إعادة توجيه…</translation>
     </message>
     <message>
-        <location line="+437"/>
+        <location line="+442"/>
         <source>Room added — waiting for the server to confirm.</source>
         <translation>أُضيفت الغرفة — في انتظار تأكيد الخادوم.</translation>
     </message>
@@ -34084,7 +34152,7 @@ Note: importing keys does not verify this session.</source>
         <translation>تعذّر حفظ البانر (%1).</translation>
     </message>
     <message>
-        <location line="+571"/>
+        <location line="+574"/>
         <source>You are the only administrator. If you leave, nobody will be able to change this Space&apos;s settings or manage its rooms and members. Make someone else an administrator first.</source>
         <translation>أنت المدير الوحيد. إذا غادرت، فلن يتمكن أحد من تغيير إعدادات هذا الفضاء أو إدارة غرفه وأعضائه. اجعل شخصًا آخر مديرًا أولًا.</translation>
     </message>
@@ -34102,7 +34170,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/TimelinePane.qml" line="-514"/>
+        <location filename="../qml/TimelinePane.qml" line="-517"/>
         <source>%n joined room(s)</source>
         <comment>joined rooms inside a Space</comment>
         <translation>
@@ -34160,7 +34228,7 @@ Note: importing keys does not verify this session.</source>
         <translation>عرض لافتة</translation>
     </message>
     <message>
-        <location line="+289"/>
+        <location line="+292"/>
         <source>People in this Space</source>
         <translation>الأشخاص في هذا الفضاء</translation>
     </message>
@@ -34175,7 +34243,7 @@ Note: importing keys does not verify this session.</source>
         <translation>تُعرض أول 60 من %1.</translation>
     </message>
     <message>
-        <location line="-298"/>
+        <location line="-301"/>
         <source>Choose Space avatar</source>
         <translation>اختر صورة الفضاء الرمزية</translation>
     </message>
@@ -34236,17 +34304,17 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+27"/>
-        <location line="+297"/>
+        <location line="+300"/>
         <source>Leave Space</source>
         <translation>مغادرة الفضاء</translation>
     </message>
     <message>
-        <location line="-291"/>
+        <location line="-294"/>
         <source>Leaving does not remove the rooms inside it.</source>
         <translation>المغادرة لا تزيل الغرف التي بداخله.</translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-260"/>
+        <location filename="../qml/SpaceLobby.qml" line="-290"/>
         <source>ROOMS AND SPACES</source>
         <translation>الغرف والفضاءات</translation>
     </message>
@@ -34264,24 +34332,24 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+21"/>
-        <location filename="../qml/TimelinePane.qml" line="+214"/>
+        <location filename="../qml/TimelinePane.qml" line="+217"/>
         <source>Remove</source>
         <translation>إزالة</translation>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+601"/>
+        <location line="+631"/>
         <source>Mark as not suggested</source>
         <translation>تعليمها كغير مقترحة</translation>
     </message>
     <message>
-        <location line="-600"/>
-        <location line="+601"/>
+        <location line="-630"/>
+        <location line="+631"/>
         <source>Mark as suggested</source>
         <translation>تعليمها كمقترحة</translation>
     </message>
     <message>
-        <location line="-590"/>
+        <location line="-620"/>
         <source>Search names and descriptions</source>
         <translation>ابحث في الأسماء والأوصاف</translation>
     </message>
@@ -34291,7 +34359,7 @@ Note: importing keys does not verify this session.</source>
         <translation>البحث في الغرف والفضاءات</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+42"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>لا توجد غرف أو فضاءات تطابق «%1».</translation>
     </message>
@@ -34308,8 +34376,8 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+299"/>
-        <location filename="../qml/TimelinePane.qml" line="-6691"/>
-        <location line="+6868"/>
+        <location filename="../qml/TimelinePane.qml" line="-6699"/>
+        <location line="+6876"/>
         <source>Room</source>
         <translation>غرفة</translation>
     </message>
@@ -34392,21 +34460,21 @@ Note: importing keys does not verify this session.</source>
         <translation>تبقى الغرف موجودة وتبقى أنت فيها — إنما تغادر قائمة هذا الفضاء فحسب.</translation>
     </message>
     <message>
-        <location line="-1440"/>
+        <location line="-1448"/>
         <location line="+209"/>
-        <location line="+1245"/>
+        <location line="+1253"/>
         <location line="+77"/>
         <source>Cancel</source>
         <translation>إلغاء</translation>
     </message>
     <message>
-        <location line="-5983"/>
+        <location line="-5991"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation>عرض الملف الشخصي</translation>
     </message>
     <message>
-        <location line="+5215"/>
+        <location line="+5220"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation>الصور (*.png *.jpg *.jpeg *.gif *.webp *.svg)</translation>
     </message>
@@ -34421,7 +34489,7 @@ Note: importing keys does not verify this session.</source>
         <translation>مشرفو الفضاء وحدهم يمكنهم تغيير هذا.</translation>
     </message>
     <message>
-        <location line="+344"/>
+        <location line="+347"/>
         <source>Leave %1?</source>
         <translation>مغادرة %1؟</translation>
     </message>
@@ -34482,7 +34550,7 @@ Note: importing keys does not verify this session.</source>
         <translation>أفلت الملفات لإرفاقها</translation>
     </message>
     <message>
-        <location line="-5431"/>
+        <location line="-5439"/>
         <source>Join space</source>
         <translation>انضم إلى المساحة</translation>
     </message>
@@ -36024,7 +36092,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>lightning::update::UpdateManager</name>
     <message>
-        <location filename="../src/update/UpdateManager.cpp" line="+1042"/>
+        <location filename="../src/update/UpdateManager.cpp" line="+1058"/>
         <source>Lightning is installed for all users of this computer, so installing an update needs administrator approval, and Windows did not get it. Nothing was changed. Approve the prompt next time, or ask an administrator to install the update.</source>
         <translation>Lightning مثبّت لجميع مستخدمي هذا الحاسوب، لذا يتطلب تثبيت التحديث موافقة مسؤول، ولم ينلها Windows. لم يتغيّر شيء. وافق على المطالبة في المرة القادمة، أو اطلب من مسؤول تثبيت التحديث.</translation>
     </message>
@@ -36064,7 +36132,22 @@ Note: importing keys does not verify this session.</source>
         <translation>تعذّر وضع الإصدار الجديد في مكانه، فاستُعيد السابق. لم يضع شيء.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Those files are in %1. Move them back into the Lightning folder and delete that folder, or reinstall Lightning from the downloads page.</source>
+        <translation>لم يتمكن تحديث سابق من إعادة كل ملفات الإصدار السابق، لذا التحديثات متوقفة مؤقتًا. هذه الملفات موجودة في %1. انقلها مجددًا إلى مجلد Lightning واحذف ذلك المجلد، أو أعد تثبيت Lightning من صفحة التنزيلات.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Reinstall Lightning from the downloads page.</source>
+        <translation>لم يتمكن تحديث سابق من إعادة كل ملفات الإصدار السابق، لذا التحديثات متوقفة مؤقتًا. أعد تثبيت Lightning من صفحة التنزيلات.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The update failed and the previous version could not be fully restored. The files that were not put back are in %1. Move them back into the Lightning folder, or reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
+        <translation>فشل التحديث ولم يمكن استعادة الإصدار السابق بالكامل. الملفات التي لم تُعَد موجودة في %1. انقلها مجددًا إلى مجلد Lightning، أو أعد تثبيت Lightning من صفحة التنزيلات. رسائلك وحسابك على الخادم ولم تتأثر.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>The update failed and the previous version could not be fully restored. Please reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
         <translation>فشل التحديث وتعذّرت استعادة الإصدار السابق بالكامل. يُرجى إعادة تثبيت Lightning من صفحة التنزيلات. رسائلك وحسابك على الخادوم ولا يتأثران.</translation>
     </message>

@@ -584,6 +584,40 @@ else
 fi
 [[ "$($JQ -r '.version' "$UREG/latest/$MANIFEST_NAME")" == 0.6.2 ]] \
     && note "the latest slot still advertises 0.6.2" || bad "latest slot was rolled back"
+assert_latest_preserved() {
+    if grep -Eq '^PUT .*/latest/' "$MLOG" ||
+        ! cmp -s "$NEWER_LATEST" "$UREG/latest/$MANIFEST_NAME" ||
+        ! cmp -s "$NEWER_LATEST_SIG" "$UREG/latest/$SIG_NAME"; then
+        bad "failed guard modified latest ($1)"
+    else
+        note "no latest PUT and both files preserved ($1)"
+    fi
+}
+assert_latest_preserved "newer current version"
+
+test_latest_guard_refuses() {
+    local status="$1" body="$2" reason="$3"
+    local rollback
+    for rollback in false true; do
+        : >"$MLOG"
+        printf '%s' "$status" >"$MSTATE/next-latest-status"
+        printf '%s' "$body" >"$MSTATE/next-latest-body"
+        if run env UPDATE_ALLOW_LATEST_ROLLBACK="$rollback" "$ROOT/scripts/publish-update-manifest.sh"; then
+            bad "accepted $reason"
+        fi
+        [[ ! -f "$MSTATE/next-latest-status" ]] || bad "did not exercise $reason"
+        assert_latest_preserved "$reason, rollback=$rollback"
+    done
+}
+for status in 500 502 403; do
+    test_latest_guard_refuses "$status" '{}' "HTTP $status"
+done
+test_latest_guard_refuses 200 '{' 'malformed JSON'
+test_latest_guard_refuses 200 '{}' 'missing version'
+test_latest_guard_refuses 200 '{"version":0}' 'numeric version'
+test_latest_guard_refuses 200 '{"version":"0.6"}' 'incomplete version'
+test_latest_guard_refuses 200 '{"version":"0.6.1\n"}' 'newline in version'
+test_latest_guard_refuses 200 '{"version":"0.6.2"} {"version":"0.6.1"}' 'multiple JSON documents'
 # The per-release copy of the backfilled version IS published: only `latest`
 # is protected.
 [[ -f "$UREG/0.6.1/$MANIFEST_NAME" ]] && note "0.6.1 keeps its own immutable copy" || bad "0.6.1 per-release copy missing"

@@ -174,6 +174,8 @@ public:
     void startSync() override;
     void stopSync() override;
     ConnectionState connectionState() const override { return m_state; }
+    bool syncRunning() const override
+    { return m_state == Syncing && m_lastSyncState == QLatin1String("running"); }
     bool initialSyncDone() const override { return m_initialSyncDone; }
     QString syncMode() const override { return m_syncMode; }
 
@@ -489,7 +491,8 @@ public:
     quint64 scheduleContent(const QString &roomId, const QString &contentJson,
                             qint64 delayMs) override;
     quint64 sendRoomContent(const QString &roomId,
-                            const QString &contentJson) override;
+                            const QString &contentJson,
+                            const QString &transactionId) override;
     bool supportsAcknowledgedTextSend() const override { return true; }
     quint64 sendRoomTextAcked(const QString &roomId,
                               const QString &body) override;
@@ -500,11 +503,12 @@ public:
                             const QVariantMap &bodySpec,
                             const QStringList &mentionUserIds,
                             const QString &replyToEventId,
-                            const QString &threadRootEventId) override;
+                            const QString &threadRootEventId,
+                            const QString &transactionId) override;
     void requestActivitySeed(int limit) override;
     void requestActivitySeedPage(const QString &from, int limit) override;
     void requestEditHistory(const QString &roomId, const QString &eventId) override;
-    void requestEventSource(const QString &roomId, const QString &eventId) override;
+    quint64 requestEventSource(const QString &roomId, const QString &eventId) override;
     quint64 eventAtTimestamp(const QString &roomId, qint64 timestampMs) override;
     quint64 localSearch(const QString &query, const QString &roomId,
                         int limit, int offset) override;

@@ -1,6 +1,7 @@
 #include "app/SavedMessagesController.h"
 
 #include "matrix/MatrixClient.h"
+#include "matrix/TimelineEvent.h"
 
 #include <QDateTime>
 #include <QJsonDocument>
@@ -12,6 +13,7 @@ namespace {
 const QString kType = QStringLiteral("org.lightning_matrix.saved_messages");
 constexpr int kMaxRefs = 100;
 constexpr int kMaxBytes = 16 * 1024;
+constexpr qint64 kResolveTimeoutMs = 15000;
 }
 
 const QString &SavedMessagesController::eventType() { return kType; }
@@ -21,20 +23,56 @@ bool SavedMessagesController::supported() const
 
 SavedMessagesController::SavedMessagesController(QObject *parent) : QObject(parent)
 {
+    m_clock.start();
     m_resolveTimeout.setSingleShot(true);
-    m_resolveTimeout.setInterval(15000);
-    connect(&m_resolveTimeout, &QTimer::timeout, this, [this] {
-        for (Ref &ref : m_refs) {
-            if (m_resolving.contains(key(ref.roomId, ref.eventId))) {
-                ref.resolved = true;
-                ref.available = false;
-                ref.preview.clear();
-            }
-        }
-        m_resolving.clear();
+    connect(&m_resolveTimeout, &QTimer::timeout, this,
+            &SavedMessagesController::expireResolves);
+}
+
+qint64 SavedMessagesController::nowMs() const
+{ return m_nowForTest >= 0 ? m_nowForTest : m_clock.elapsed(); }
+
+void SavedMessagesController::setNowForTest(qint64 ms)
+{
+    m_nowForTest = ms;
+    expireResolves();
+}
+
+void SavedMessagesController::armResolveTimer()
+{
+    qint64 earliest = -1;
+    for (const Ref &ref : std::as_const(m_refs)) {
+        if (m_resolving.contains(key(ref.roomId, ref.eventId))
+            && (earliest < 0 || ref.deadlineMs < earliest))
+            earliest = ref.deadlineMs;
+    }
+    if (earliest < 0)
+        m_resolveTimeout.stop();
+    else
+        m_resolveTimeout.start(int(qMax<qint64>(0, earliest - nowMs())));
+}
+
+void SavedMessagesController::expireResolves()
+{
+    const qint64 now = nowMs();
+    bool expired = false;
+    for (Ref &ref : m_refs) {
+        const QString id = key(ref.roomId, ref.eventId);
+        if (!m_resolving.contains(id) || ref.deadlineMs > now)
+            continue;
+        m_resolving.remove(id);
+        ref.op = 0;
+        ref.resolved = true;
+        ref.available = false;
+        ref.failed = true;
+        ref.preview.clear();
+        ref.sender.clear();
+        ref.kind.clear();
+        expired = true;
+    }
+    if (expired)
         emitChanged();
-        pumpResolve();
-    });
+    pumpResolve();
 }
 
 QString SavedMessagesController::key(const QString &roomId, const QString &eventId)
@@ -63,6 +101,11 @@ int SavedMessagesController::indexOf(const QString &roomId, const QString &event
 
 void SavedMessagesController::emitChanged()
 {
+    if (!m_roomFilter.isEmpty()
+        && std::none_of(m_refs.cbegin(), m_refs.cend(), [this](const Ref &ref) {
+               return ref.roomId == m_roomFilter;
+           }))
+        m_roomFilter.clear();
     ++m_revision;
     Q_EMIT changed();
 }
@@ -84,6 +127,9 @@ void SavedMessagesController::reset()
     m_attempted.clear();
     m_redacted.clear();
     m_resolveTimeout.stop();
+    m_query.clear();
+    m_roomFilter.clear();
+    m_typeFilter.clear();
     emitChanged();
 }
 
@@ -234,8 +280,21 @@ void SavedMessagesController::setClient(MatrixClient *client)
     });
     connect(client, &MatrixClient::eventSourceReceived, this,
             [this](const QString &roomId, const QString &eventId, bool ok,
-                   const QString &json, const QVariantMap &) {
-        receiveSource(roomId, eventId, ok, json);
+                   const QString &json, const QVariantMap &meta) {
+        receiveSource(roomId, eventId, ok, json, meta);
+    });
+    connect(client, &MatrixClient::eventEdited, this,
+            &SavedMessagesController::invalidatePreview);
+    connect(client, &MatrixClient::eventChangedAt, this,
+            [this](const QString &timelineId, int, const TimelineEvent &event) {
+        if (!event.edited)
+            return;
+        const int i = indexOf(MatrixClient::threadTimelineRoomId(timelineId),
+                              event.eventId);
+        if (i < 0 || m_refs.at(i).timelineBody == event.body)
+            return;
+        m_refs[i].timelineBody = event.body;
+        invalidatePreview(m_refs.at(i).roomId, event.eventId);
     });
     connect(client, &MatrixClient::eventRedacted, this,
             [this](const QString &roomId, const QString &eventId) {
@@ -248,7 +307,8 @@ void SavedMessagesController::setClient(MatrixClient *client)
         ref.resolved = true;
         const QString id = key(roomId, eventId);
         m_resolving.remove(id);
-        if (m_resolving.isEmpty()) m_resolveTimeout.stop();
+        ref.op = 0;
+        ref.failed = false;
         m_attempted.insert(id);
         m_redacted.insert(id);
         emitChanged();
@@ -438,6 +498,16 @@ void SavedMessagesController::undoRemove()
     write();
 }
 
+void SavedMessagesController::clearFilters()
+{
+    if (m_query.isEmpty() && m_roomFilter.isEmpty() && m_typeFilter.isEmpty())
+        return;
+    m_query.clear();
+    m_roomFilter.clear();
+    m_typeFilter.clear();
+    emitChanged();
+}
+
 void SavedMessagesController::setQuery(const QString &value)
 { if (value != m_query) { m_query = value; emitChanged(); } }
 void SavedMessagesController::setRoomFilter(const QString &value)
@@ -479,6 +549,7 @@ QVariantList SavedMessagesController::entries() const
             { QStringLiteral("kind"), ref.kind },
             { QStringLiteral("resolved"), ref.resolved },
             { QStringLiteral("available"), ref.available },
+            { QStringLiteral("failed"), ref.failed },
         });
     }
     return out;
@@ -505,47 +576,102 @@ void SavedMessagesController::resolveVisible()
     pumpResolve();
 }
 
+void SavedMessagesController::refreshPreviews()
+{
+    const QVector<Ref> refs = m_refs;
+    for (const Ref &ref : refs)
+        if (ref.resolved)
+            invalidatePreview(ref.roomId, ref.eventId);
+    pumpResolve();
+}
+
+void SavedMessagesController::retryPreview(const QString &roomId,
+                                           const QString &eventId)
+{
+    const int i = indexOf(roomId, eventId);
+    if (i >= 0 && m_refs.at(i).failed)
+        invalidatePreview(roomId, eventId);
+}
+
+void SavedMessagesController::invalidatePreview(const QString &roomId,
+                                                const QString &eventId)
+{
+    const int i = indexOf(roomId, eventId);
+    if (i < 0)
+        return;
+    const QString id = key(roomId, eventId);
+    Ref &ref = m_refs[i];
+    if (m_redacted.contains(id) || (!ref.resolved && !m_resolving.contains(id)))
+        return;
+    // Dropping the in-flight op makes its late answer stale; the text already
+    // shown stays until the new answer replaces it.
+    m_resolving.remove(id);
+    m_attempted.remove(id);
+    ref.op = 0;
+    ref.resolved = false;
+    if (ref.failed) {
+        ref.failed = false;
+        emitChanged();
+    }
+    pumpResolve();
+}
+
 void SavedMessagesController::pumpResolve()
 {
     if (!m_client || !m_loaded || m_userId != m_client->currentUserId()) return;
+    QSet<QString> present;
+    for (const Ref &ref : std::as_const(m_refs))
+        present.insert(key(ref.roomId, ref.eventId));
+    m_resolving.intersect(present);
     while (m_resolving.size() < 4) {
-        const Ref *next = nullptr;
-        for (const Ref &ref : std::as_const(m_refs)) {
+        int next = -1;
+        for (int i = 0; i < m_refs.size(); ++i) {
+            const Ref &ref = m_refs.at(i);
             const QString id = key(ref.roomId, ref.eventId);
             if (!ref.resolved && !m_attempted.contains(id)
                 && !m_redacted.contains(id)) {
-                next = &ref;
+                next = i;
                 break;
             }
         }
-        if (!next) break;
-        const QString id = key(next->roomId, next->eventId);
+        if (next < 0) break;
+        const QString roomId = m_refs.at(next).roomId;
+        const QString eventId = m_refs.at(next).eventId;
+        const QString id = key(roomId, eventId);
         m_attempted.insert(id);
         m_resolving.insert(id);
-        m_client->requestEventSource(next->roomId, next->eventId);
+        m_refs[next].deadlineMs = nowMs() + kResolveTimeoutMs;
+        const quint64 op = m_client->requestEventSource(roomId, eventId);
+        const int i = indexOf(roomId, eventId);
+        if (i >= 0 && m_resolving.contains(id))
+            m_refs[i].op = op;
     }
-    if (!m_resolving.isEmpty() && !m_resolveTimeout.isActive())
-        m_resolveTimeout.start();
+    armResolveTimer();
 }
 
 void SavedMessagesController::receiveSource(const QString &roomId,
                                             const QString &eventId, bool ok,
-                                            const QString &json)
+                                            const QString &json,
+                                            const QVariantMap &meta)
 {
     const QString id = key(roomId, eventId);
-    if (m_redacted.contains(id)) return;
-    if (!m_resolving.remove(id)) return;
+    if (m_redacted.contains(id) || !m_resolving.contains(id)) return;
     const int i = indexOf(roomId, eventId);
+    if (i >= 0 && meta.value(QStringLiteral("opId")).toULongLong() != m_refs.at(i).op)
+        return;
+    m_resolving.remove(id);
     if (i >= 0) {
         Ref &ref = m_refs[i];
+        ref.op = 0;
         ref.resolved = true;
+        ref.failed = false;
         ref.available = false;
         ref.preview.clear();
         ref.sender.clear();
         ref.kind.clear();
         if (ok) {
             const QJsonObject object = QJsonDocument::fromJson(json.toUtf8()).object();
-            const QJsonObject content = object.value(QStringLiteral("content")).toObject();
+            QJsonObject content = object.value(QStringLiteral("content")).toObject();
             const bool redacted = object.value(QStringLiteral("unsigned"))
                 .toObject().value(QStringLiteral("redacted_because")).isObject();
             if (!redacted && object.value(QStringLiteral("type")).toString()
@@ -557,11 +683,18 @@ void SavedMessagesController::receiveSource(const QString &roomId,
             }
             if (!redacted && object.value(QStringLiteral("type")).toString()
                     == QLatin1String("m.room.message") && !content.isEmpty()) {
+                // The backend already applied the replacement validity rules.
+                const QVariantMap edited =
+                    meta.value(QStringLiteral("effectiveContent")).toMap();
+                if (!edited.isEmpty())
+                    content = QJsonObject::fromVariantMap(edited);
                 const QString msgtype = content.value(QStringLiteral("msgtype")).toString();
                 ref.sender = object.value(QStringLiteral("sender")).toString();
                 ref.kind = msgtype;
                 ref.available = true;
-                if (msgtype == QLatin1String("m.image")) ref.preview = tr("Image");
+                if (meta.value(QStringLiteral("editUnreadable")).toBool())
+                    ref.preview = tr("Edited message. The latest version cannot be decrypted.");
+                else if (msgtype == QLatin1String("m.image")) ref.preview = tr("Image");
                 else if (msgtype == QLatin1String("m.video")) ref.preview = tr("Video");
                 else if (msgtype == QLatin1String("m.audio")) ref.preview = tr("Audio");
                 else if (msgtype == QLatin1String("m.file")) ref.preview = tr("File");
@@ -571,7 +704,6 @@ void SavedMessagesController::receiveSource(const QString &roomId,
         }
         emitChanged();
     }
-    if (m_resolving.isEmpty()) m_resolveTimeout.stop();
     pumpResolve();
 }
 

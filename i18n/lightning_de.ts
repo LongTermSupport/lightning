@@ -3911,7 +3911,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+282"/>
+        <location filename="../qml/SpaceLobby.qml" line="+316"/>
         <source>%1, collapsed</source>
         <translation>%1, eingeklappt</translation>
     </message>
@@ -8663,7 +8663,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+96"/>
+        <location filename="../src/app/ForwardController.cpp" line="+97"/>
         <source>Photo</source>
         <translation>Foto</translation>
     </message>
@@ -8737,7 +8737,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Weitergeleitet von %1</translation>
     </message>
     <message>
-        <location line="+94"/>
+        <location line="+102"/>
         <source>Not signed in.</source>
         <translation>Nicht angemeldet.</translation>
     </message>
@@ -14878,7 +14878,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1953"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
         <location line="+991"/>
         <source>Open</source>
         <translation>Öffnen</translation>
@@ -15411,7 +15411,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2833"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2844"/>
         <source>(spoiler)</source>
         <translation>(Spoiler)</translation>
     </message>
@@ -15476,9 +15476,9 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Neue Matrix-Benachrichtigung</translation>
     </message>
     <message numerus="yes">
-        <location line="+230"/>
+        <location line="+233"/>
         <location line="+217"/>
-        <location line="+1714"/>
+        <location line="+1722"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n neue Nachricht</numerusform>
@@ -15486,7 +15486,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1927"/>
+        <location line="-1935"/>
         <location line="+211"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15495,7 +15495,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1719"/>
+        <location line="+1727"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>in %n Raum</numerusform>
@@ -15522,7 +15522,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+29"/>
+        <location line="+30"/>
         <source>You can close this window and return to Lightning.</source>
         <translation>Du kannst dieses Fenster schließen und zu Lightning zurückkehren.</translation>
     </message>
@@ -20037,12 +20037,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Du hast dich angemeldet, aber Lightning konnte den Speicher dieses Kontos auf diesem Gerät nicht öffnen. Hier wurde nichts gespeichert.</translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+37"/>
         <source>You signed in, but Lightning could not save this account on this device, so it did not open it.</source>
         <translation>Du hast dich angemeldet, aber Lightning konnte dieses Konto nicht auf diesem Gerät speichern und hat es daher nicht geöffnet.</translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+110"/>
         <source>You signed in, but your system keyring is locked or did not accept the sign-in, so Lightning did not keep it. Unlock the keyring and sign in again. The server now lists an unused session from this attempt; you can sign it out under Sessions.</source>
         <translation>Du hast dich angemeldet, aber dein System-Schlüsselbund ist gesperrt oder hat die Anmeldung nicht angenommen, daher hat Lightning sie nicht behalten. Entsperre den Schlüsselbund und melde dich erneut an. Der Server listet jetzt eine ungenutzte Sitzung dieses Versuchs auf; du kannst sie unter „Sitzungen“ abmelden.</translation>
     </message>
@@ -20317,7 +20317,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>SavedMessagesController</name>
     <message>
-        <location filename="../src/app/SavedMessagesController.cpp" line="+201"/>
+        <location filename="../src/app/SavedMessagesController.cpp" line="+247"/>
         <source>Saved messages could not be loaded. Retry.</source>
         <translation>Gespeicherte Nachrichten konnten nicht geladen werden. Wiederholen.</translation>
     </message>
@@ -20329,24 +20329,29 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="-80"/>
-        <location line="+142"/>
+        <location line="+156"/>
         <source>Saved messages data is unavailable.</source>
         <translation>Gespeicherte Nachrichtendaten sind nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="-109"/>
-        <location line="+214"/>
+        <location line="-123"/>
+        <location line="+228"/>
         <location line="+15"/>
         <source>Saved messages are full. Remove an older item first.</source>
         <translation>Die gespeicherten Nachrichten sind voll. Entferne zuerst ein älteres Element.</translation>
     </message>
     <message>
-        <location line="+153"/>
+        <location line="+219"/>
         <source>Sticker</source>
         <translation>Sticker</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+15"/>
+        <source>Edited message. The latest version cannot be decrypted.</source>
+        <translation>Bearbeitete Nachricht. Die neueste Version kann nicht entschlüsselt werden.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Image</source>
         <translation>Bild</translation>
     </message>
@@ -20370,12 +20375,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <name>SavedMessagesPanel</name>
     <message>
         <location filename="../qml/SavedMessagesPanel.qml" line="+49"/>
-        <location line="+121"/>
+        <location line="+132"/>
         <source>Saved messages</source>
         <translation>Gespeicherte Nachrichten</translation>
     </message>
     <message>
-        <location line="-104"/>
+        <location line="-115"/>
         <source>Undo remove</source>
         <translation>Entfernen rückgängig machen</translation>
     </message>
@@ -20435,18 +20440,29 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Noch keine gespeicherten Nachrichten. Verwende „Nachricht speichern“ bei einer Nachricht, um eine hinzuzufügen.</translation>
     </message>
     <message>
-        <location line="+38"/>
-        <location line="+35"/>
+        <location line="+10"/>
+        <source>Clear filters</source>
+        <translation>Filter zurücksetzen</translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <location line="+36"/>
+        <source>Message could not be loaded</source>
+        <translation>Nachricht konnte nicht geladen werden</translation>
+    </message>
+    <message>
+        <location line="-35"/>
+        <location line="+37"/>
         <source>Message unavailable or redacted</source>
         <translation>Nachricht nicht verfügbar oder redigiert</translation>
     </message>
     <message>
-        <location line="-34"/>
+        <location line="-36"/>
         <source>Loading message</source>
         <translation>Nachricht wird geladen</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+37"/>
         <source>Loading message…</source>
         <translation>Nachricht wird geladen…</translation>
     </message>
@@ -20456,7 +20472,17 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>In einem Thread</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+11"/>
+        <source>Retry</source>
+        <translation>Erneut versuchen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Retry loading saved message</source>
+        <translation>Gespeicherte Nachricht erneut laden</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>Open</source>
         <translation>Öffnen</translation>
     </message>
@@ -20506,17 +20532,27 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Der Server hat diese Nachricht nicht abgebrochen.</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+35"/>
         <source>The server did not send this message.</source>
         <translation>Der Server hat diese Nachricht nicht gesendet.</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+22"/>
+        <source>Not sent yet: the connection failed. Lightning will try again.</source>
+        <translation>Noch nicht gesendet: Die Verbindung ist fehlgeschlagen. Lightning versucht es erneut.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>This message could not be sent. Check the room before sending it again.</source>
+        <translation>Diese Nachricht konnte nicht gesendet werden. Prüfe den Raum, bevor du sie erneut sendest.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>The room did not accept this message. It was not sent.</source>
         <translation>Der Raum hat diese Nachricht nicht akzeptiert. Sie wurde nicht gesendet.</translation>
     </message>
     <message>
-        <location line="+236"/>
+        <location line="+277"/>
         <source>Lightning closed before the server confirmed this message. Check the room before scheduling it again.</source>
         <translation>Lightning wurde geschlossen, bevor der Server diese Nachricht bestätigt hat. Prüfe den Raum, bevor du sie erneut planst.</translation>
     </message>
@@ -20526,7 +20562,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Lightning wurde beim Senden geschlossen. Prüfe den Raum, bevor du sie erneut sendest.</translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+62"/>
         <source>Attachment</source>
         <translation>Anhang</translation>
     </message>
@@ -20541,7 +20577,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Lightning konnte den Server nicht erreichen, um dies jetzt zu senden. Es ist weiterhin geplant.</translation>
     </message>
     <message>
-        <location line="+169"/>
+        <location line="+175"/>
         <source>Waiting for the connection.</source>
         <translation>Warte auf die Verbindung.</translation>
     </message>
@@ -21255,7 +21291,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>SettingsBackupSection</name>
     <message>
-        <location filename="../qml/SettingsBackupSection.qml" line="+25"/>
+        <location filename="../qml/SettingsBackupSection.qml" line="+26"/>
         <source>Appearance</source>
         <translation>Erscheinungsbild</translation>
     </message>
@@ -21471,6 +21507,11 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="+10"/>
         <source>This file was made by a newer Lightning. The settings this version knows are read; the rest are ignored.</source>
         <translation>Diese Datei wurde von einem neueren Lightning erstellt. Die Einstellungen, die diese Version kennt, werden gelesen; der Rest wird ignoriert.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>The active custom theme in this file could not be imported, so your current custom theme stays selected.</source>
+        <translation>Das aktive benutzerdefinierte Design in dieser Datei konnte nicht importiert werden, daher bleibt dein aktuelles benutzerdefiniertes Design ausgewählt.</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -26863,7 +26904,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Diese Datei konnte nicht gelesen werden.</translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+87"/>
         <source>Choose a file first.</source>
         <translation>Wähle zuerst eine Datei aus.</translation>
     </message>
@@ -28308,8 +28349,31 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 </context>
 <context>
     <name>SpaceLobby</name>
+    <message numerus="yes">
+        <location filename="../qml/SpaceLobby.qml" line="-111"/>
+        <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
+        <translation>
+            <numerusform>Nur der erste %n Raum dieses Spaces wird angezeigt. Ein nicht aufgeführter Raum kann weiterhin über seine Adresse geöffnet werden.</numerusform>
+            <numerusform>Nur die ersten %n Räume dieses Spaces werden angezeigt. Ein nicht aufgeführter Raum kann weiterhin über seine Adresse geöffnet werden.</numerusform>
+        </translation>
+    </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-60"/>
+        <location line="+3"/>
+        <source>This Space could not be refreshed. Showing the rooms loaded earlier.</source>
+        <translation>Dieser Space konnte nicht aktualisiert werden. Es werden die zuvor geladenen Räume angezeigt.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Loading stopped early, so some rooms of this Space may be missing.</source>
+        <translation>Das Laden wurde vorzeitig beendet, daher fehlen möglicherweise einige Räume dieses Spaces.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Retry</source>
+        <translation>Erneut versuchen</translation>
+    </message>
+    <message>
+        <location line="+35"/>
         <location line="+265"/>
         <source>Loading rooms…</source>
         <translation>Räume werden geladen …</translation>
@@ -32235,7 +32299,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>ThreadController</name>
     <message>
-        <location filename="../src/threads/ThreadController.cpp" line="+736"/>
+        <location filename="../src/threads/ThreadController.cpp" line="+737"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>Anhänge werden von diesem Backend nicht unterstützt.</translation>
@@ -32920,7 +32984,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>TimelinePane</name>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-652"/>
+        <location filename="../qml/SpaceLobby.qml" line="-682"/>
         <source>ROOMS AND SPACES</source>
         <translation>RÄUME UND SPACES</translation>
     </message>
@@ -32934,24 +32998,24 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location line="+21"/>
-        <location filename="../qml/TimelinePane.qml" line="+7092"/>
+        <location filename="../qml/TimelinePane.qml" line="+7100"/>
         <source>Remove</source>
         <translation>Entfernen</translation>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+601"/>
+        <location line="+631"/>
         <source>Mark as not suggested</source>
         <translation>Als nicht empfohlen markieren</translation>
     </message>
     <message>
-        <location line="-600"/>
-        <location line="+601"/>
+        <location line="-630"/>
+        <location line="+631"/>
         <source>Mark as suggested</source>
         <translation>Als empfohlen markieren</translation>
     </message>
     <message>
-        <location line="-590"/>
+        <location line="-620"/>
         <source>Search names and descriptions</source>
         <translation>Namen und Beschreibungen durchsuchen</translation>
     </message>
@@ -32961,7 +33025,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Räume und Spaces durchsuchen</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+42"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>Keine Räume oder Spaces passen zu „%1“.</translation>
     </message>
@@ -32978,8 +33042,8 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location line="+29"/>
-        <location filename="../qml/TimelinePane.qml" line="-5876"/>
-        <location line="+5396"/>
+        <location filename="../qml/TimelinePane.qml" line="-5884"/>
+        <location line="+5401"/>
         <source>Space</source>
         <translation>Space</translation>
     </message>
@@ -33003,8 +33067,8 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location filename="../qml/SpaceLobby.qml" line="+141"/>
-        <location filename="../qml/TimelinePane.qml" line="-6231"/>
-        <location line="+6868"/>
+        <location filename="../qml/TimelinePane.qml" line="-6236"/>
+        <location line="+6876"/>
         <source>Room</source>
         <translation>Raum</translation>
     </message>
@@ -33058,7 +33122,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>%1 auswählen</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-6461"/>
+        <location filename="../qml/TimelinePane.qml" line="-6469"/>
         <source>Seen by 1 person</source>
         <translation>Von 1 Person gesehen</translation>
     </message>
@@ -33519,13 +33583,13 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     <message>
         <location line="+75"/>
         <location line="+209"/>
-        <location line="+1245"/>
+        <location line="+1253"/>
         <location line="+77"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message numerus="yes">
-        <location line="-1338"/>
+        <location line="-1346"/>
         <source>%n message(s) selected</source>
         <translation>
             <numerusform>%n Nachricht ausgewählt</numerusform>
@@ -33548,7 +33612,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Weiterleiten …</translation>
     </message>
     <message>
-        <location line="+437"/>
+        <location line="+442"/>
         <source>Room added — waiting for the server to confirm.</source>
         <translation>Raum hinzugefügt – wartet auf die Bestätigung des Servers.</translation>
     </message>
@@ -33668,7 +33732,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Nur Space-Admins können das ändern.</translation>
     </message>
     <message>
-        <location line="+219"/>
+        <location line="+222"/>
         <source>People in this Space</source>
         <translation>Personen in diesem Space</translation>
     </message>
@@ -33688,7 +33752,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Du bist der einzige Administrator. Wenn du gehst, kann niemand mehr die Einstellungen dieses Space ändern oder seine Räume und Mitglieder verwalten. Mache zuerst jemand anderen zum Administrator.</translation>
     </message>
     <message>
-        <location line="-409"/>
+        <location line="-412"/>
         <source>Choose Space avatar</source>
         <translation>Space-Avatar auswählen</translation>
     </message>
@@ -33754,17 +33818,17 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location line="+27"/>
-        <location line="+297"/>
+        <location line="+300"/>
         <source>Leave Space</source>
         <translation>Space verlassen</translation>
     </message>
     <message>
-        <location line="-291"/>
+        <location line="-294"/>
         <source>Leaving does not remove the rooms inside it.</source>
         <translation>Beim Verlassen werden die darin enthaltenen Räume nicht entfernt.</translation>
     </message>
     <message numerus="yes">
-        <location line="+185"/>
+        <location line="+188"/>
         <source>Remove %n room(s) from this Space?</source>
         <translation>
             <numerusform>%n Raum aus diesem Space entfernen?</numerusform>
@@ -33838,7 +33902,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Dateien zum Anhängen hier ablegen</translation>
     </message>
     <message>
-        <location line="-5431"/>
+        <location line="-5439"/>
         <source>Join space</source>
         <translation>Space beitreten</translation>
     </message>
@@ -35376,7 +35440,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>lightning::update::UpdateManager</name>
     <message>
-        <location filename="../src/update/UpdateManager.cpp" line="+1042"/>
+        <location filename="../src/update/UpdateManager.cpp" line="+1058"/>
         <source>Lightning is installed for all users of this computer, so installing an update needs administrator approval, and Windows did not get it. Nothing was changed. Approve the prompt next time, or ask an administrator to install the update.</source>
         <translation>Lightning ist für alle Benutzer dieses Computers installiert, daher braucht das Installieren eines Updates die Zustimmung eines Administrators, und Windows hat sie nicht erhalten. Es wurde nichts geändert. Bestätige die Aufforderung beim nächsten Mal oder bitte einen Administrator, das Update zu installieren.</translation>
     </message>
@@ -35416,7 +35480,22 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Die neue Version konnte nicht an ihren Platz gebracht werden, daher wurde die vorherige wiederhergestellt. Es ging nichts verloren.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Those files are in %1. Move them back into the Lightning folder and delete that folder, or reinstall Lightning from the downloads page.</source>
+        <translation>Ein früheres Update konnte nicht alle Dateien der vorherigen Version zurücklegen, daher sind Updates pausiert. Diese Dateien liegen in %1. Verschiebe sie zurück in den Lightning-Ordner und lösche diesen Ordner, oder installiere Lightning über die Download-Seite neu.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>An earlier update could not put every file of the previous version back, so updating is paused. Reinstall Lightning from the downloads page.</source>
+        <translation>Ein früheres Update konnte nicht alle Dateien der vorherigen Version zurücklegen, daher sind Updates pausiert. Installiere Lightning über die Download-Seite neu.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The update failed and the previous version could not be fully restored. The files that were not put back are in %1. Move them back into the Lightning folder, or reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
+        <translation>Das Update ist fehlgeschlagen und die vorherige Version konnte nicht vollständig wiederhergestellt werden. Die nicht zurückgelegten Dateien liegen in %1. Verschiebe sie zurück in den Lightning-Ordner oder installiere Lightning über die Download-Seite neu. Deine Nachrichten und dein Konto liegen auf dem Server und sind nicht betroffen.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>The update failed and the previous version could not be fully restored. Please reinstall Lightning from the downloads page. Your messages and account are on the server and are not affected.</source>
         <translation>Das Update ist fehlgeschlagen, und die vorherige Version konnte nicht vollständig wiederhergestellt werden. Bitte installiere Lightning von der Download-Seite neu. Deine Nachrichten und dein Konto liegen auf dem Server und sind nicht betroffen.</translation>
     </message>

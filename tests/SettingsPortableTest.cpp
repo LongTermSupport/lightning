@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QJsonObject>
 #include <QMetaProperty>
 #include <QRegularExpression>
 #include <QSettings>
@@ -259,6 +260,56 @@ private Q_SLOTS:
         QCOMPARE(r.doc.themes.size(), 1);
         QCOMPARE(r.themesDropped, 2);
         QCOMPARE(r.doc.activeTheme, 0);
+    }
+
+    void theActiveThemeIndexFollowsItsEntryPastDroppedOnes()
+    {
+        const auto theme = [](const QString &name) {
+            return QJsonObject{ { "lightningTheme", 1 }, { "name", name } };
+        };
+        const auto parse = [](const QJsonArray &themes, int active) {
+            const QJsonObject root{ { "format", "lightning-settings" }, { "version", 1 },
+                                    { "settings", QJsonObject() }, { "customThemes", themes },
+                                    { "activeCustomTheme", active } };
+            return parseDocument(QJsonDocument(root).toJson());
+        };
+        const auto activeName = [](const ParseResult &r) {
+            if (r.doc.activeTheme < 0 || r.doc.activeTheme >= r.doc.themes.size())
+                return QString();
+            return QJsonDocument::fromJson(r.doc.themes.at(r.doc.activeTheme).toUtf8())
+                .object().value("name").toString();
+        };
+        QJsonObject oversized = theme("big");
+        oversized.insert("pad", QString(70 * 1024, QLatin1Char('x')));
+
+        ParseResult r = parse({ QJsonValue(), theme("B"), theme("C") }, 1);
+        QVERIFY(r.ok);
+        QCOMPARE(activeName(r), QStringLiteral("B"));
+        QVERIFY(!r.activeThemeDropped);
+
+        r = parse({ theme("B"), oversized, theme("C") }, 2);
+        QCOMPARE(r.themesDropped, 1);
+        QCOMPARE(activeName(r), QStringLiteral("C"));
+        QVERIFY(!r.activeThemeDropped);
+
+        r = parse({ theme("B"), oversized, theme("C") }, 1);
+        QCOMPARE(r.doc.activeTheme, -1);
+        QVERIFY(r.activeThemeDropped);
+
+        QJsonArray many;
+        for (int i = 0; i < kMaxThemes + 2; ++i)
+            many.append(theme(QStringLiteral("T%1").arg(i)));
+        many.prepend(7);
+        r = parse(many, kMaxThemes);
+        QCOMPARE(r.doc.themes.size(), kMaxThemes);
+        QCOMPARE(activeName(r), QStringLiteral("T%1").arg(kMaxThemes - 1));
+        r = parse(many, kMaxThemes + 1);
+        QCOMPARE(r.doc.activeTheme, -1);
+        QVERIFY(r.activeThemeDropped);
+
+        r = parse({ theme("B") }, -1);
+        QCOMPARE(r.doc.activeTheme, -1);
+        QVERIFY(!r.activeThemeDropped);
     }
 
     void thePreviewListsOnlyWhatWouldChange()

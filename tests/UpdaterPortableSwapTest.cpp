@@ -84,6 +84,12 @@ private slots:
     void theBackupPathTheHelperUsesIsAcceptedBySwapDirectory();
     void aFailedPromoteRollsBackWithoutTouchingPreservedState();
     void copyFallbackStillSwapsAndRollsBack();
+    void aPartialBackupThatRestoresReportsRolledBack();
+    void aFailedRestoreKeepsTheBackupAndReportsIt();
+    void anUnparkableBackupIsMarkedAndPausesUpdates();
+    void aFailedPromoteRollbackParksTheBackup();
+    void anUnresolvedBackupIsNeverCleared();
+    void recoveryPathsAreRecognisedOnlyBesideTheTarget();
 
     void replacesAFileAndPreservesTheExecutableBit();
     void fileReplaceRollsBackOnPromotionFailure();
@@ -484,6 +490,183 @@ void UpdaterPortableSwapTest::copyFallbackStillSwapsAndRollsBack()
     QVERIFY(!result.ok());
     QVERIFY(result.rolledBack);
     QVERIFY(installationHasMarker(m_target, QByteArray("current")));
+}
+
+void UpdaterPortableSwapTest::aPartialBackupThatRestoresReportsRolledBack()
+{
+    QVERIFY(buildInstallation(m_staged, QByteArray("new")));
+    QVERIFY(buildInstallation(m_target, QByteArray("old")));
+    const QString keyPath = QDir(m_target).absoluteFilePath(QStringLiteral("data/secrets.key"));
+    QVERIFY(writeFile(keyPath, QByteArray("key")));
+
+    const QString backup = QDir::cleanPath(m_backup);
+    int backupRenames = 0;
+    ReplaceHooks hooks;
+    hooks.beforeEntryRename = [&](const QString &, const QString &to) {
+        return QFileInfo(to).absolutePath() != backup || ++backupRenames < 2;
+    };
+
+    const ReplaceResult result = swapDirectory(m_staged, m_target, m_backup, kExe,
+                                               QStringList{QStringLiteral("data")}, hooks);
+    QCOMPARE(backupRenames, 2);
+    QCOMPARE(result.error, ReplaceError::BackupFailed);
+    QVERIFY(result.rolledBack);
+    QVERIFY(installationHasMarker(m_target, QByteArray("old")));
+    QCOMPARE(readFile(keyPath), QByteArray("key"));
+    QVERIFY(!QFileInfo::exists(m_backup));
+}
+
+void UpdaterPortableSwapTest::aFailedRestoreKeepsTheBackupAndReportsIt()
+{
+    QVERIFY(buildInstallation(m_staged, QByteArray("new")));
+    QVERIFY(buildInstallation(m_target, QByteArray("old")));
+    const QString keyPath = QDir(m_target).absoluteFilePath(QStringLiteral("data/secrets.key"));
+    QVERIFY(writeFile(keyPath, QByteArray("key")));
+
+    const QString backup = QDir::cleanPath(m_backup);
+    QString firstBackedUp;
+    ReplaceHooks hooks;
+    hooks.beforeEntryRename = [&](const QString &from, const QString &to) {
+        if (QFileInfo(to).absolutePath() == backup) {
+            if (!firstBackedUp.isEmpty())
+                return false;
+            firstBackedUp = QFileInfo(to).fileName();
+            return true;
+        }
+        return !(QFileInfo(from).absolutePath() == backup
+                 && QFileInfo(from).fileName() == firstBackedUp);
+    };
+
+    const ReplaceResult result = swapDirectory(m_staged, m_target, m_backup, kExe,
+                                               QStringList{QStringLiteral("data")}, hooks);
+    QVERIFY(!firstBackedUp.isEmpty());
+    QCOMPARE(result.error, ReplaceError::RollbackFailed);
+    QVERIFY(!result.rolledBack);
+    QVERIFY2(isPortableRecoveryPath(m_target, result.backupPath)
+                 && result.backupPath.contains(QLatin1String(kUnrestoredBackupSuffix)),
+             qPrintable(result.backupPath));
+    QVERIFY(!QFileInfo::exists(m_backup));
+    const QString kept = QDir(result.backupPath).absoluteFilePath(firstBackedUp);
+    QVERIFY2(QFileInfo::exists(kept), "the only copy of an old entry was deleted");
+    QVERIFY(QFileInfo::exists(QDir(result.backupPath).absoluteFilePath(
+        QString::fromLatin1(kUnrestoredBackupMarker))));
+    QCOMPARE(readFile(keyPath), QByteArray("key"));
+
+    // The parked folder is never a later swap's backup path, so updating can
+    // repair the installation without touching it.
+    QVERIFY(buildInstallation(m_staged, QByteArray("newer")));
+    const ReplaceResult next = swapDirectory(m_staged, m_target, m_backup, kExe,
+                                             QStringList{QStringLiteral("data")});
+    QVERIFY2(next.ok(), replaceErrorName(next.error));
+    QVERIFY(installationHasMarker(m_target, QByteArray("newer")));
+    QVERIFY(QFileInfo::exists(kept));
+    QCOMPARE(readFile(keyPath), QByteArray("key"));
+}
+
+void UpdaterPortableSwapTest::anUnparkableBackupIsMarkedAndPausesUpdates()
+{
+    QVERIFY(buildInstallation(m_staged, QByteArray("new")));
+    QVERIFY(buildInstallation(m_target, QByteArray("old")));
+
+    const QString backup = QDir::cleanPath(m_backup);
+    const QString parkedPrefix =
+        QDir::cleanPath(m_target) + QLatin1String(kUnrestoredBackupSuffix);
+    QString firstBackedUp;
+    ReplaceHooks hooks;
+    hooks.beforeEntryRename = [&](const QString &from, const QString &to) {
+        if (to.startsWith(parkedPrefix))
+            return false;
+        if (QFileInfo(to).absolutePath() == backup) {
+            if (!firstBackedUp.isEmpty())
+                return false;
+            firstBackedUp = QFileInfo(to).fileName();
+            return true;
+        }
+        return QFileInfo(from).absolutePath() != backup;
+    };
+
+    const ReplaceResult result = swapDirectory(m_staged, m_target, m_backup, kExe,
+                                               QStringList(), hooks);
+    QCOMPARE(result.error, ReplaceError::RollbackFailed);
+    QCOMPARE(result.backupPath, backup);
+    const QString kept = QDir(backup).absoluteFilePath(firstBackedUp);
+    QVERIFY(QFileInfo::exists(kept));
+    QVERIFY(QFileInfo::exists(QDir(backup).absoluteFilePath(
+        QString::fromLatin1(kUnrestoredBackupMarker))));
+
+    QVERIFY(buildInstallation(m_staged, QByteArray("newer")));
+    const ReplaceResult next = swapDirectory(m_staged, m_target, m_backup, kExe);
+    QCOMPARE(next.error, ReplaceError::RestoreIncomplete);
+    QCOMPARE(next.backupPath, backup);
+    QVERIFY(QFileInfo::exists(kept));
+}
+
+void UpdaterPortableSwapTest::aFailedPromoteRollbackParksTheBackup()
+{
+    QVERIFY(buildInstallation(m_staged, QByteArray("new")));
+    QVERIFY(buildInstallation(m_target, QByteArray("old")));
+    const QString keyPath = QDir(m_target).absoluteFilePath(QStringLiteral("data/secrets.key"));
+    QVERIFY(writeFile(keyPath, QByteArray("key")));
+
+    const QString target = QDir::cleanPath(m_target);
+    const QString backup = QDir::cleanPath(m_backup);
+    bool promoteFailed = false;
+    ReplaceHooks hooks;
+    hooks.beforeEntryRename = [&](const QString &from, const QString &to) {
+        const QString fromDir = QFileInfo(from).absolutePath();
+        if (QFileInfo(to).absolutePath() == target && fromDir != backup && !promoteFailed) {
+            promoteFailed = true;
+            return false;
+        }
+        return !(fromDir == backup && QFileInfo(from).fileName() == QLatin1String("qt.conf"));
+    };
+
+    const ReplaceResult result = swapDirectory(m_staged, m_target, m_backup, kExe,
+                                               QStringList{QStringLiteral("data")}, hooks);
+    QVERIFY(promoteFailed);
+    QCOMPARE(result.error, ReplaceError::RollbackFailed);
+    QVERIFY2(isPortableRecoveryPath(m_target, result.backupPath)
+                 && result.backupPath.contains(QLatin1String(kUnrestoredBackupSuffix)),
+             qPrintable(result.backupPath));
+    QCOMPARE(readFile(QDir(result.backupPath).absoluteFilePath(QStringLiteral("qt.conf"))),
+             QByteArray("old-conf"));
+    QVERIFY(QFileInfo::exists(QDir(result.backupPath).absoluteFilePath(
+        QString::fromLatin1(kUnrestoredBackupMarker))));
+    QCOMPARE(readFile(QDir(m_target).absoluteFilePath(kExe)), QByteArray("old"));
+    QCOMPARE(readFile(keyPath), QByteArray("key"));
+    QVERIFY(!QFileInfo::exists(m_backup));
+}
+
+void UpdaterPortableSwapTest::anUnresolvedBackupIsNeverCleared()
+{
+    QVERIFY(buildInstallation(m_staged, QByteArray("new")));
+    QVERIFY(buildInstallation(m_target, QByteArray("old")));
+    const QString onlyCopy = QDir(m_backup).absoluteFilePath(QStringLiteral("old.dll"));
+    QVERIFY(writeFile(onlyCopy, QByteArray("only copy")));
+    QVERIFY(writeFile(QDir(m_backup).absoluteFilePath(
+                          QString::fromLatin1(updater::kUnrestoredBackupMarker)),
+                      QByteArray("marker")));
+
+    const ReplaceResult result = swapDirectory(m_staged, m_target, m_backup, kExe);
+    QCOMPARE(result.error, ReplaceError::RestoreIncomplete);
+    QCOMPARE(QString::fromLatin1(replaceErrorName(result.error)),
+             QStringLiteral("restore-incomplete"));
+    QCOMPARE(result.backupPath, QDir::cleanPath(m_backup));
+    QCOMPARE(readFile(onlyCopy), QByteArray("only copy"));
+    QVERIFY(installationHasMarker(m_target, QByteArray("old")));
+}
+
+void UpdaterPortableSwapTest::recoveryPathsAreRecognisedOnlyBesideTheTarget()
+{
+    const QString target = QStringLiteral("/opt/Lightning");
+    QVERIFY(isPortableRecoveryPath(target, portableBackupPath(target)));
+    QVERIFY(isPortableRecoveryPath(
+        target, target + QLatin1String(kUnrestoredBackupSuffix) + QStringLiteral("20261121-120000")));
+    QVERIFY(!isPortableRecoveryPath(target, target + QLatin1String(kUnrestoredBackupSuffix)));
+    QVERIFY(!isPortableRecoveryPath(target, QStringLiteral("/home/user/Documents")));
+    QVERIFY(!isPortableRecoveryPath(
+        target, target + QLatin1String(kUnrestoredBackupSuffix) + QStringLiteral("x/../../etc")));
+    QVERIFY(!isPortableRecoveryPath(target, QString()));
 }
 
 void UpdaterPortableSwapTest::replacesAFileAndPreservesTheExecutableBit()

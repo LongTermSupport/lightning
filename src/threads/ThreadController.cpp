@@ -1,6 +1,7 @@
 #include "threads/ThreadController.h"
 #include "matrix/EventPreview.h"
 
+#include "models/MessageHtml.h"
 #include "models/SlashCommands.h"
 
 #include "app/DraftStore.h"
@@ -1098,8 +1099,14 @@ void ThreadController::beginReply(const QString &eventId)
     if (m_replyToSender.isEmpty())
         m_replyToSender =
             m_model.data(idx, TimelineModel::SenderRole).toString();
-    m_replyToPreview = m_model.replyPreviewForEvent(eventId).left(
-        matrix::preview::kReplyPreviewMaxChars);
+    const auto &event = m_model.events().at(row);
+    QString preview = m_model.replyPreviewForEvent(eventId);
+    if (!preview.isEmpty() && !(event.type == TimelineEvent::Audio && event.mediaIsVoice)
+        && event.formattedBody.contains(QLatin1String("data-mx-spoiler"), Qt::CaseInsensitive)) {
+        preview = MessageHtml::plainTextConcealingSpoilers(
+            event.formattedBody, QStringLiteral("\u2588\u2588\u2588\u2588\u2588"));
+    }
+    m_replyToPreview = preview.left(matrix::preview::kReplyPreviewMaxChars);
     Q_EMIT replyStateChanged();
 }
 

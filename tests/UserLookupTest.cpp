@@ -168,6 +168,55 @@ private Q_SLOTS:
         QVERIFY(!queryNamesServer(QStringLiteral("admin")));
     }
 
+    void bracketedIpv6ServerNamesAreExactCandidates()
+    {
+        using namespace matrix::user_lookup;
+        const QString dns = QStringLiteral("example.org");
+        QCOMPARE(exactCandidate(QStringLiteral("@alice:[2001:db8::1]"), dns),
+                 QStringLiteral("@alice:[2001:db8::1]"));
+        QCOMPARE(exactCandidate(QStringLiteral("@Alice:[2001:DB8::1]:8448"), dns),
+                 QStringLiteral("@Alice:[2001:DB8::1]:8448"));
+        QCOMPARE(exactCandidate(QStringLiteral("bob:[::ffff:192.0.2.1]"), dns),
+                 QStringLiteral("@bob:[::ffff:192.0.2.1]"));
+        QCOMPARE(exactCandidate(QStringLiteral("carol"), QStringLiteral("[::1]:8448")),
+                 QStringLiteral("@carol:[::1]:8448"));
+        QCOMPARE(serverNameFromUserId(QStringLiteral("@me:[::1]:8448")),
+                 QStringLiteral("[::1]:8448"));
+
+        const QStringList bad = {
+            QStringLiteral("[2001:db8::1"), QStringLiteral("2001:db8::1"),
+            QStringLiteral("[2001:db8::1]x"), QStringLiteral("[2001:db8::1]:"),
+            QStringLiteral("[2001:db8::1]:65536"), QStringLiteral("[2001:db8::1]:84a"),
+            QStringLiteral("[]"), QStringLiteral("[1::2::3]"), QStringLiteral("[12345::1]"),
+            QStringLiteral("[1:2:3:4:5:6:7:8:9]"), QStringLiteral("[1:2:3:4:5:6:7]"),
+            QStringLiteral("[::1.2.3.256]"), QStringLiteral("[::g]"),
+            QStringLiteral("[ ::1]"), QStringLiteral("[fe80::1%eth0]"),
+            QStringLiteral("example.org:"), QStringLiteral("example.org:99999"),
+        };
+        for (const QString &server : bad) {
+            QVERIFY2(!isValidServerName(server), qPrintable(server));
+            QVERIFY2(exactCandidate(QStringLiteral("@a:") + server, dns).isEmpty(),
+                     qPrintable(server));
+        }
+        QVERIFY(!isValidServerName(QStringLiteral("[::1] ")));
+        QVERIFY(isValidServerName(QStringLiteral("[1:2:3:4:5:6:7:8]")));
+        QVERIFY(isValidServerName(QStringLiteral("[::]")));
+        QVERIFY(isValidServerName(QStringLiteral("example.org:8448")));
+        QVERIFY(isValidServerName(QStringLiteral("192.0.2.1:8448")));
+    }
+
+    void anIpv6IdWithNoDirectoryHitKeepsItsExplicitRow()
+    {
+        Rig rig;
+        rig.search(QStringLiteral("@alice:[2001:db8::1]:8448"));
+        QCOMPARE(rig.client.lastProfileUser,
+                 QStringLiteral("@alice:[2001:db8::1]:8448"));
+        rig.finishDirectory({});
+        QCOMPARE(rig.model.rowCount(), 1);
+        QCOMPARE(rig.model.userIdAt(0), QStringLiteral("@alice:[2001:db8::1]:8448"));
+        QCOMPARE(sourceAt(rig.model, 0), QStringLiteral("exact_mxid"));
+    }
+
     void bareLocalpartUsesAccountServerAndNeedsConfirmation()
     {
         Rig rig;
