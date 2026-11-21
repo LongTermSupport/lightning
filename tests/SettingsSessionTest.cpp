@@ -179,6 +179,7 @@ private Q_SLOTS:
     void aCredentialTheKeyringDidNotKeepLeavesThePreviousSignIn();
     void aFirstSignInWhoseCredentialsWereNotKeptIsNotSaved();
     void aSettingsFileThatCannotBeWrittenLeavesThePreviousSignIn();
+    void aFailedSaveKeepsAPendingSignOut();
 
 private:
     static void seedAccountRecord(const QString &userId,
@@ -3230,6 +3231,34 @@ void SettingsSessionTest::aSettingsFileThatCannotBeWrittenLeavesThePreviousSignI
     QCOMPARE(restarted.deviceId(), QStringLiteral("OLDDEVICE"));
     QCOMPARE(restarted.accessTokenFor(user), QStringLiteral("old-access-fixture"));
     QCOMPARE(restarted.refreshTokenFor(user), QStringLiteral("old-refresh-fixture"));
+}
+
+void SettingsSessionTest::aFailedSaveKeepsAPendingSignOut()
+{
+    const QString hs = QStringLiteral("https://matrix.example");
+    const QString user = QStringLiteral("@alice:matrix.example");
+    const QString path = QSettings().fileName();
+    FakeSecretStore secrets;
+    SettingsManager settings;
+    settings.setSecretStore(&secrets);
+    QVERIFY(settings.saveSession(hs, user, QStringLiteral("OLDDEVICE"),
+                                 QStringLiteral("old-access-fixture")));
+    matrix::app_data::AccountIdentity identity;
+    QVERIFY(settings.resolveSavedIdentity(user, &identity));
+    settings.recordPendingSignOut(identity);
+    QCOMPARE(settings.pendingSignOuts().size(), 1);
+    const QByteArray saved = settingsFileBytes(path);
+    QVERIFY(QFile::remove(path));
+    QVERIFY(QDir().mkpath(path));
+    const auto putBack = qScopeGuard([&] {
+        QDir().rmdir(path);
+        QFile file(path);
+        if (file.open(QIODevice::WriteOnly))
+            file.write(saved);
+    });
+    QVERIFY(!settings.saveSession(hs, user, QStringLiteral("NEWDEVICE"),
+                                  QStringLiteral("new-access-fixture")));
+    QCOMPARE(settings.pendingSignOuts().size(), 1);
 }
 
 QTEST_MAIN(SettingsSessionTest)

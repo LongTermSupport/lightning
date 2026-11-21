@@ -221,8 +221,9 @@ public:
     ///
     /// An empty `accountUserId` is the foreground account and is exactly the
     /// clear this class has always done: the "" table plus every process-wide
-    /// piece of state (the call card, capability waits, held and live
-    /// undecryptable messages, rooms awaiting unread, activation tokens, the
+    /// piece of state (the call card, capability waits, the foreground
+    /// account's held and live undecryptable messages, rooms awaiting unread,
+    /// activation tokens, the
     /// balloon's payload and rooms). A non-empty one touches only what is
     /// tagged with that account: its table and delivery generation, its
     /// avatar and capability waits, its held messages, and the balloon's

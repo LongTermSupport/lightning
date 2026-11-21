@@ -5322,8 +5322,6 @@ bool SettingsManager::saveSession(const QString &homeserverUrl_,
         return false;
     }
     m_store->remove(accountKey(slug, kAccountSyncToken));
-    clearPendingSignOut(uidCanonical);
-    clearPendingSignIn(uidCanonical);
     m_store->setValue(kActiveAccount, uidCanonical);
     m_store->setValue(kHomeserver, hsCanonical);
 
@@ -5349,6 +5347,9 @@ bool SettingsManager::saveSession(const QString &homeserverUrl_,
         Q_EMIT accountsChanged();
         return false;
     }
+    // Only after the record is on disk: a pending sign-out must survive a failed save.
+    clearPendingSignOut(uidCanonical);
+    clearPendingSignIn(uidCanonical);
 
     if (hsChanged)
         Q_EMIT homeserverUrlChanged();
