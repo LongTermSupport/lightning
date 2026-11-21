@@ -1376,7 +1376,7 @@ async fn fill_gap(
     let mut from = Some(token.to_owned());
     // A backward page can hold an edit whose original is on a later page.
     let mut carried: Vec<Indexable> = Vec::new();
-    let mut carried_names = std::collections::HashMap::new();
+    let mut carried_names: std::collections::HashMap<String, String> = Default::default();
     for _ in 0..GAP_PAGES {
         if stop.load(std::sync::atomic::Ordering::Relaxed) {
             break;
