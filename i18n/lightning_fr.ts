@@ -1033,7 +1033,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7354"/>
+        <location filename="../src/app/AppController.cpp" line="+7358"/>
         <source>Room invitation</source>
         <translation>Invitation au salon</translation>
     </message>
@@ -1154,7 +1154,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>Appel entrant</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5705"/>
+        <location filename="../src/app/AppController.cpp" line="-5709"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>La déconnexion a été annulée car le compte a changé. Rien n&apos;a été réinitialisé.</translation>
     </message>
@@ -1184,7 +1184,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>Le salon a été créé, mais la définition de son image a échoué.</translation>
     </message>
     <message>
-        <location line="+104"/>
+        <location line="+108"/>
         <source>Could not switch accounts — returning to the previous account.</source>
         <translation>Impossible de changer de compte — retour au compte précédent.</translation>
     </message>
@@ -1310,13 +1310,13 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>Utilisez des dates réelles au format YYYY-MM-DD, avec « Du » pas après « Au ».</translation>
     </message>
     <message>
-        <location line="-4761"/>
-        <location line="+2699"/>
+        <location line="-4765"/>
+        <location line="+2703"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
     <message>
-        <location line="-2698"/>
+        <location line="-2702"/>
         <source>This is a test notification. If you can read it, desktop notifications work.</source>
         <translation>Ceci est une notification de test. Si vous pouvez la lire, les notifications du bureau fonctionnent.</translation>
     </message>
@@ -1341,7 +1341,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>Vous avez rejoint %1</translation>
     </message>
     <message>
-        <location line="+854"/>
+        <location line="+858"/>
         <source>That notification was for a different account, so nothing was sent. Switch back to that account and try again.</source>
         <translation>Cette notification concernait un autre compte, elle n&apos;a donc pas été envoyée. Revenez sur ce compte et réessayez.</translation>
     </message>
@@ -8663,7 +8663,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+83"/>
+        <location filename="../src/app/ForwardController.cpp" line="+96"/>
         <source>Photo</source>
         <translation>Photo</translation>
     </message>
@@ -8712,7 +8712,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     </message>
     <message>
         <location line="-11"/>
-        <location line="+73"/>
+        <location line="+78"/>
         <source>Locations can&apos;t be forwarded yet.</source>
         <translation>Les positions ne peuvent pas encore être transférées.</translation>
     </message>
@@ -8722,7 +8722,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Vous pouvez transférer jusqu&apos;à %1 messages à la fois.</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+30"/>
         <source>Nothing was selected to forward.</source>
         <translation>Aucun élément sélectionné à transférer.</translation>
     </message>
@@ -8737,7 +8737,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Transféré depuis %1</translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+94"/>
         <source>Not signed in.</source>
         <translation>Non connecté.</translation>
     </message>
@@ -8752,7 +8752,13 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Rien à envoyer.</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+13"/>
+        <location line="+210"/>
+        <source>Couldn&apos;t send to this room.</source>
+        <translation>Impossible d’envoyer dans ce salon.</translation>
+    </message>
+    <message>
+        <location line="-158"/>
         <source>Media isn&apos;t available right now.</source>
         <translation>Le média n&apos;est pas disponible pour le moment.</translation>
     </message>
@@ -8777,7 +8783,13 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Ce spoiler ne peut pas être transféré avec sa couverture.</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+90"/>
+        <source>You can&apos;t send messages in that room.</source>
+        <translation>Vous ne pouvez pas envoyer de messages dans ce salon.</translation>
+    </message>
+    <message>
+        <location line="-173"/>
+        <location line="+105"/>
         <source>Couldn&apos;t forward this message.</source>
         <translation>Impossible de transférer ce message.</translation>
     </message>
@@ -8881,15 +8893,20 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Envoi de %1 sur %2…</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Sent %n copy(ies).</source>
         <translation>
             <numerusform>%n copie envoyée.</numerusform>
             <numerusform>%n copies envoyées.</numerusform>
         </translation>
     </message>
+    <message>
+        <location line="+3"/>
+        <source>%1 of %2 sent.</source>
+        <translation>%1 sur %2 envoyées.</translation>
+    </message>
     <message numerus="yes">
-        <location line="+2"/>
+        <location line="+4"/>
         <source>%1 of %2 sent — %n failed.</source>
         <translation>
             <numerusform>%1 sur %2 envoyé(s) — %n échec.</numerusform>
@@ -8897,7 +8914,15 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+29"/>
+        <location line="+13"/>
+        <source>%n copy(ies) not confirmed — check the room before sending again.</source>
+        <translation>
+            <numerusform>%n copie non confirmée — vérifiez le salon avant de renvoyer.</numerusform>
+            <numerusform>%n copies non confirmées — vérifiez le salon avant de renvoyer.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+27"/>
         <source>%n room(s) selected</source>
         <translation>
             <numerusform>%n salon sélectionné</numerusform>
@@ -19833,7 +19858,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     </message>
     <message>
         <location line="+41"/>
-        <location line="+960"/>
+        <location line="+961"/>
         <source>Failed to create Rust SDK backend handle.</source>
         <translation>Échec de la création du handle du backend Rust SDK.</translation>
     </message>
@@ -20161,7 +20186,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>L&apos;action sur le sondage n&apos;a pas pu être effectuée.</translation>
     </message>
     <message>
-        <location line="-6526"/>
+        <location line="-6527"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>Les données de ce compte sont encore utilisées par une session en arrière-plan. Patientez un instant et réessayez.</translation>
     </message>
@@ -20176,7 +20201,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>L’itinéraire réseau de ce compte n’a pas pu être appliqué, donc Lightning ne le connectera pas en direct. Vérifiez le proxy dans les paramètres.</translation>
     </message>
     <message>
-        <location line="+593"/>
+        <location line="+594"/>
         <source>Enter your username.</source>
         <translation>Saisissez votre nom d&apos;utilisateur.</translation>
     </message>

@@ -1023,7 +1023,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7354"/>
+        <location filename="../src/app/AppController.cpp" line="+7358"/>
         <source>Room invitation</source>
         <translation>Undangan ruang</translation>
     </message>
@@ -1143,7 +1143,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Panggilan masuk</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5705"/>
+        <location filename="../src/app/AppController.cpp" line="-5709"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>Keluar dibatalkan karena akun berubah. Tidak ada yang diatur ulang.</translation>
     </message>
@@ -1173,7 +1173,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Ruang berhasil dibuat, tetapi gagal mengatur gambarnya.</translation>
     </message>
     <message>
-        <location line="+104"/>
+        <location line="+108"/>
         <source>Could not switch accounts — returning to the previous account.</source>
         <translation>Tidak dapat berganti akun — kembali ke akun sebelumnya.</translation>
     </message>
@@ -1299,13 +1299,13 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Gunakan tanggal yang valid dengan format YYYY-MM-DD, dengan “Dari” tidak setelah “Sampai”.</translation>
     </message>
     <message>
-        <location line="-4761"/>
-        <location line="+2699"/>
+        <location line="-4765"/>
+        <location line="+2703"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
     <message>
-        <location line="-2698"/>
+        <location line="-2702"/>
         <source>This is a test notification. If you can read it, desktop notifications work.</source>
         <translation>Ini adalah notifikasi uji. Jika Anda dapat membacanya, notifikasi desktop berfungsi.</translation>
     </message>
@@ -1330,7 +1330,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Bergabung ke %1</translation>
     </message>
     <message>
-        <location line="+854"/>
+        <location line="+858"/>
         <source>That notification was for a different account, so nothing was sent. Switch back to that account and try again.</source>
         <translation>Notifikasi itu untuk akun yang berbeda, jadi tidak ada yang dikirim. Beralih kembali ke akun itu dan coba lagi.</translation>
     </message>
@@ -8629,7 +8629,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+83"/>
+        <location filename="../src/app/ForwardController.cpp" line="+96"/>
         <source>Photo</source>
         <translation>Foto</translation>
     </message>
@@ -8678,7 +8678,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     </message>
     <message>
         <location line="-11"/>
-        <location line="+73"/>
+        <location line="+78"/>
         <source>Locations can&apos;t be forwarded yet.</source>
         <translation>Lokasi belum dapat diteruskan.</translation>
     </message>
@@ -8688,7 +8688,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Anda dapat meneruskan hingga %1 pesan sekaligus.</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+30"/>
         <source>Nothing was selected to forward.</source>
         <translation>Tidak ada yang dipilih untuk diteruskan.</translation>
     </message>
@@ -8703,7 +8703,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Diteruskan dari %1</translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+94"/>
         <source>Not signed in.</source>
         <translation>Belum masuk.</translation>
     </message>
@@ -8718,7 +8718,13 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Tidak ada yang dikirim.</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+13"/>
+        <location line="+210"/>
+        <source>Couldn&apos;t send to this room.</source>
+        <translation>Tidak dapat mengirim ke ruangan ini.</translation>
+    </message>
+    <message>
+        <location line="-158"/>
         <source>Media isn&apos;t available right now.</source>
         <translation>Media tidak tersedia saat ini.</translation>
     </message>
@@ -8743,7 +8749,13 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Spoiler ini tidak dapat diteruskan beserta penutupnya.</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+90"/>
+        <source>You can&apos;t send messages in that room.</source>
+        <translation>Anda tidak dapat mengirim pesan di ruangan itu.</translation>
+    </message>
+    <message>
+        <location line="-173"/>
+        <location line="+105"/>
         <source>Couldn&apos;t forward this message.</source>
         <translation>Pesan ini tidak dapat diteruskan.</translation>
     </message>
@@ -8846,21 +8858,33 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Mengirim %1 dari %2…</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Sent %n copy(ies).</source>
         <translation>
             <numerusform>Mengirim %n salinan.</numerusform>
         </translation>
     </message>
+    <message>
+        <location line="+3"/>
+        <source>%1 of %2 sent.</source>
+        <translation>%1 dari %2 terkirim.</translation>
+    </message>
     <message numerus="yes">
-        <location line="+2"/>
+        <location line="+4"/>
         <source>%1 of %2 sent — %n failed.</source>
         <translation>
             <numerusform>%1 dari %2 terkirim — %n gagal.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+29"/>
+        <location line="+13"/>
+        <source>%n copy(ies) not confirmed — check the room before sending again.</source>
+        <translation>
+            <numerusform>%n salinan belum dikonfirmasi — periksa ruangan sebelum mengirim lagi.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+27"/>
         <source>%n room(s) selected</source>
         <translation>
             <numerusform>%n ruang dipilih</numerusform>
@@ -19754,7 +19778,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     </message>
     <message>
         <location line="+41"/>
-        <location line="+960"/>
+        <location line="+961"/>
         <source>Failed to create Rust SDK backend handle.</source>
         <translation>Gagal membuat handle backend Rust SDK.</translation>
     </message>
@@ -20082,7 +20106,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Tindakan jajak pendapat tidak dapat diselesaikan.</translation>
     </message>
     <message>
-        <location line="-6526"/>
+        <location line="-6527"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>Data akun ini masih digunakan oleh sesi latar belakang. Tunggu sebentar lalu coba lagi.</translation>
     </message>
@@ -20097,7 +20121,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Rute jaringan akun ini tidak dapat diterapkan, jadi Lightning tidak akan menghubungkannya secara langsung. Periksa proxy di Pengaturan.</translation>
     </message>
     <message>
-        <location line="+593"/>
+        <location line="+594"/>
         <source>Enter your username.</source>
         <translation>Masukkan nama pengguna Anda.</translation>
     </message>

@@ -495,6 +495,7 @@ const CLASSES: &[(&str, EventClass)] = {
         ("noise", Foreign),
         ("account_data_listing", UiOnly),
         ("account_pref", UiOnly),
+        ("acked_send_result", UiOnly),
         ("account_pref_changed", UiOnly),
         ("account_pref_failed", UiOnly),
         ("account_pref_written", UiOnly),

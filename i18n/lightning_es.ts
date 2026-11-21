@@ -1033,7 +1033,7 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7354"/>
+        <location filename="../src/app/AppController.cpp" line="+7358"/>
         <source>Room invitation</source>
         <translation>Invitación a una sala</translation>
     </message>
@@ -1154,7 +1154,7 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
         <translation>Llamada entrante</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5705"/>
+        <location filename="../src/app/AppController.cpp" line="-5709"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>El cierre de sesión se canceló porque la cuenta cambió. No se restableció nada.</translation>
     </message>
@@ -1184,7 +1184,7 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
         <translation>La sala se creó, pero no se pudo establecer su imagen.</translation>
     </message>
     <message>
-        <location line="+104"/>
+        <location line="+108"/>
         <source>Could not switch accounts — returning to the previous account.</source>
         <translation>No se pudo cambiar de cuenta; se vuelve a la cuenta anterior.</translation>
     </message>
@@ -1310,13 +1310,13 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
         <translation>Usa fechas reales en formato YYYY-MM-DD, con «Desde» no posterior a «Hasta».</translation>
     </message>
     <message>
-        <location line="-4761"/>
-        <location line="+2699"/>
+        <location line="-4765"/>
+        <location line="+2703"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
     <message>
-        <location line="-2698"/>
+        <location line="-2702"/>
         <source>This is a test notification. If you can read it, desktop notifications work.</source>
         <translation>Esta es una notificación de prueba. Si puedes leerla, las notificaciones de escritorio funcionan.</translation>
     </message>
@@ -1341,7 +1341,7 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
         <translation>Te uniste a %1</translation>
     </message>
     <message>
-        <location line="+854"/>
+        <location line="+858"/>
         <source>That notification was for a different account, so nothing was sent. Switch back to that account and try again.</source>
         <translation>Esa notificación era de otra cuenta, así que no se envió nada. Vuelve a esa cuenta e inténtalo de nuevo.</translation>
     </message>
@@ -8663,7 +8663,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+83"/>
+        <location filename="../src/app/ForwardController.cpp" line="+96"/>
         <source>Photo</source>
         <translation>Foto</translation>
     </message>
@@ -8712,7 +8712,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
     </message>
     <message>
         <location line="-11"/>
-        <location line="+73"/>
+        <location line="+78"/>
         <source>Locations can&apos;t be forwarded yet.</source>
         <translation>Aún no se pueden reenviar ubicaciones.</translation>
     </message>
@@ -8722,7 +8722,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Puedes reenviar hasta %1 mensajes a la vez.</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+30"/>
         <source>Nothing was selected to forward.</source>
         <translation>No se seleccionó nada para reenviar.</translation>
     </message>
@@ -8737,7 +8737,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Reenviado desde %1</translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+94"/>
         <source>Not signed in.</source>
         <translation>No has iniciado sesión.</translation>
     </message>
@@ -8752,7 +8752,13 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>No hay nada que enviar.</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+13"/>
+        <location line="+210"/>
+        <source>Couldn&apos;t send to this room.</source>
+        <translation>No se pudo enviar a esta sala.</translation>
+    </message>
+    <message>
+        <location line="-158"/>
         <source>Media isn&apos;t available right now.</source>
         <translation>El contenido multimedia no está disponible ahora mismo.</translation>
     </message>
@@ -8777,7 +8783,13 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Este spoiler no se puede reenviar con su cubierta.</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+90"/>
+        <source>You can&apos;t send messages in that room.</source>
+        <translation>No puedes enviar mensajes en esa sala.</translation>
+    </message>
+    <message>
+        <location line="-173"/>
+        <location line="+105"/>
         <source>Couldn&apos;t forward this message.</source>
         <translation>No se pudo reenviar este mensaje.</translation>
     </message>
@@ -8881,15 +8893,20 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Enviando %1 de %2…</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Sent %n copy(ies).</source>
         <translation>
             <numerusform>Se envió %n copia.</numerusform>
             <numerusform>Se enviaron %n copias.</numerusform>
         </translation>
     </message>
+    <message>
+        <location line="+3"/>
+        <source>%1 of %2 sent.</source>
+        <translation>%1 de %2 enviadas.</translation>
+    </message>
     <message numerus="yes">
-        <location line="+2"/>
+        <location line="+4"/>
         <source>%1 of %2 sent — %n failed.</source>
         <translation>
             <numerusform>%1 de %2 enviados: %n fallido.</numerusform>
@@ -8897,7 +8914,15 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+29"/>
+        <location line="+13"/>
+        <source>%n copy(ies) not confirmed — check the room before sending again.</source>
+        <translation>
+            <numerusform>%n copia sin confirmar: revisa la sala antes de volver a enviar.</numerusform>
+            <numerusform>%n copias sin confirmar: revisa la sala antes de volver a enviar.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+27"/>
         <source>%n room(s) selected</source>
         <translation>
             <numerusform>%n sala seleccionada</numerusform>
@@ -19833,7 +19858,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
     </message>
     <message>
         <location line="+41"/>
-        <location line="+960"/>
+        <location line="+961"/>
         <source>Failed to create Rust SDK backend handle.</source>
         <translation>No se pudo crear el manejador del backend del SDK de Rust.</translation>
     </message>
@@ -20161,7 +20186,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>No se pudo completar la acción de la encuesta.</translation>
     </message>
     <message>
-        <location line="-6526"/>
+        <location line="-6527"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>Los datos de esta cuenta siguen en uso por una sesión en segundo plano. Espera un momento e inténtalo de nuevo.</translation>
     </message>
@@ -20176,7 +20201,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>No se pudo aplicar la ruta de red de esta cuenta, así que Lightning no la conectará directamente. Revisa el proxy en Ajustes.</translation>
     </message>
     <message>
-        <location line="+593"/>
+        <location line="+594"/>
         <source>Enter your username.</source>
         <translation>Introduce tu nombre de usuario.</translation>
     </message>

@@ -1043,7 +1043,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7354"/>
+        <location filename="../src/app/AppController.cpp" line="+7358"/>
         <source>Room invitation</source>
         <translation>Kvietimas į kambarį</translation>
     </message>
@@ -1165,7 +1165,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Įeinantis skambutis</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5705"/>
+        <location filename="../src/app/AppController.cpp" line="-5709"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>Atsijungimas atšauktas, nes paskyra pasikeitė. Nieko iš naujo nenustatyta.</translation>
     </message>
@@ -1195,7 +1195,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Kambarys buvo sukurtas, bet nepavyko nustatyti jo paveikslo.</translation>
     </message>
     <message>
-        <location line="+104"/>
+        <location line="+108"/>
         <source>Could not switch accounts — returning to the previous account.</source>
         <translation>Nepavyko perjungti paskyrų – grįžtama į ankstesnę paskyrą.</translation>
     </message>
@@ -1321,13 +1321,13 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Naudokite tikras datas formatu YYYY-MM-DD, kai „Nuo“ nėra vėlesnė už „Iki“.</translation>
     </message>
     <message>
-        <location line="-4761"/>
-        <location line="+2699"/>
+        <location line="-4765"/>
+        <location line="+2703"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
     <message>
-        <location line="-2698"/>
+        <location line="-2702"/>
         <source>This is a test notification. If you can read it, desktop notifications work.</source>
         <translation>Tai bandomasis pranešimas. Jei jį matote, darbalaukio pranešimai veikia.</translation>
     </message>
@@ -1352,7 +1352,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Prisijungta prie %1</translation>
     </message>
     <message>
-        <location line="+854"/>
+        <location line="+858"/>
         <source>That notification was for a different account, so nothing was sent. Switch back to that account and try again.</source>
         <translation>Tas pranešimas buvo skirtas kitai paskyrai, todėl nieko neišsiųsta. Grįžkite į tą paskyrą ir bandykite dar kartą.</translation>
     </message>
@@ -8697,7 +8697,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+83"/>
+        <location filename="../src/app/ForwardController.cpp" line="+96"/>
         <source>Photo</source>
         <translation>Nuotrauka</translation>
     </message>
@@ -8746,7 +8746,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     </message>
     <message>
         <location line="-11"/>
-        <location line="+73"/>
+        <location line="+78"/>
         <source>Locations can&apos;t be forwarded yet.</source>
         <translation>Vietovių kol kas persiųsti negalima.</translation>
     </message>
@@ -8756,7 +8756,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Vienu metu galite persiųsti ne daugiau kaip %1 žinučių.</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+30"/>
         <source>Nothing was selected to forward.</source>
         <translation>Nepasirinkta nieko persiųsti.</translation>
     </message>
@@ -8771,7 +8771,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Persiųsta iš %1</translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+94"/>
         <source>Not signed in.</source>
         <translation>Neprisijungta.</translation>
     </message>
@@ -8786,7 +8786,13 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Nėra ko siųsti.</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+13"/>
+        <location line="+210"/>
+        <source>Couldn&apos;t send to this room.</source>
+        <translation>Nepavyko išsiųsti į šį kambarį.</translation>
+    </message>
+    <message>
+        <location line="-158"/>
         <source>Media isn&apos;t available right now.</source>
         <translation>Medija šiuo metu nepasiekiama.</translation>
     </message>
@@ -8811,7 +8817,13 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Šio spoilerio negalima persiųsti su jo uždanga.</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+90"/>
+        <source>You can&apos;t send messages in that room.</source>
+        <translation>Negalite siųsti žinučių tame kambaryje.</translation>
+    </message>
+    <message>
+        <location line="-173"/>
+        <location line="+105"/>
         <source>Couldn&apos;t forward this message.</source>
         <translation>Nepavyko persiųsti šios žinutės.</translation>
     </message>
@@ -8916,7 +8928,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Siunčiama %1 iš %2…</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Sent %n copy(ies).</source>
         <translation>
             <numerusform>Išsiųsta %n kopija.</numerusform>
@@ -8924,8 +8936,13 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
             <numerusform>Išsiųsta %n kopijų.</numerusform>
         </translation>
     </message>
+    <message>
+        <location line="+3"/>
+        <source>%1 of %2 sent.</source>
+        <translation>Išsiųsta %1 iš %2.</translation>
+    </message>
     <message numerus="yes">
-        <location line="+2"/>
+        <location line="+4"/>
         <source>%1 of %2 sent — %n failed.</source>
         <translation>
             <numerusform>Išsiųsta %1 iš %2 – nepavyko išsiųsti: %n.</numerusform>
@@ -8934,7 +8951,16 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+29"/>
+        <location line="+13"/>
+        <source>%n copy(ies) not confirmed — check the room before sending again.</source>
+        <translation>
+            <numerusform>%n kopija nepatvirtinta — prieš siųsdami dar kartą patikrinkite kambarį.</numerusform>
+            <numerusform>%n kopijos nepatvirtintos — prieš siųsdami dar kartą patikrinkite kambarį.</numerusform>
+            <numerusform>%n kopijų nepatvirtinta — prieš siųsdami dar kartą patikrinkite kambarį.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+27"/>
         <source>%n room(s) selected</source>
         <translation>
             <numerusform>%n kambarys pasirinktas</numerusform>
@@ -19912,7 +19938,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     </message>
     <message>
         <location line="+41"/>
-        <location line="+960"/>
+        <location line="+961"/>
         <source>Failed to create Rust SDK backend handle.</source>
         <translation>Nepavyko sukurti Rust SDK posistemės objekto.</translation>
     </message>
@@ -20240,7 +20266,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Nepavyko atlikti apklausos veiksmo.</translation>
     </message>
     <message>
-        <location line="-6526"/>
+        <location line="-6527"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>Šios paskyros duomenis vis dar naudoja fonu veikiantis seansas. Palaukite akimirką ir bandykite dar kartą.</translation>
     </message>
@@ -20255,7 +20281,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Šios paskyros tinklo maršruto nepavyko pritaikyti, todėl Lightning jos neprijungs tiesiogiai. Patikrinkite tarpinį serverį nustatymuose.</translation>
     </message>
     <message>
-        <location line="+593"/>
+        <location line="+594"/>
         <source>Enter your username.</source>
         <translation>Įveskite naudotojo vardą.</translation>
     </message>

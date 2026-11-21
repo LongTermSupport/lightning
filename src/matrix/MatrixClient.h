@@ -929,6 +929,19 @@ public:
                                     const QString &contentJson,
                                     const QString &transactionId)
     { Q_UNUSED(roomId); Q_UNUSED(contentJson); Q_UNUSED(transactionId); return 0; }
+    // True when sendRoomTextAcked and sendThreadTextAcked are implemented.
+    // Both queue like the composer and answer on roomSendFinished, where
+    // category "pending" means unconfirmed and possibly sent.
+    virtual bool supportsAcknowledgedTextSend() const { return false; }
+    // Plain room message through the room's send queue; 0 when refused.
+    virtual quint64 sendRoomTextAcked(const QString &roomId,
+                                      const QString &body)
+    { Q_UNUSED(roomId); Q_UNUSED(body); return 0; }
+    // Thread-focused send of a plain thread message; 0 when refused.
+    virtual quint64 sendThreadTextAcked(const QString &roomId,
+                                        const QString &threadRootId,
+                                        const QString &body)
+    { Q_UNUSED(roomId); Q_UNUSED(threadRootId); Q_UNUSED(body); return 0; }
     virtual quint64 sendRoomMessage(const QString &roomId, const QString &body,
                                     const QVariantMap &bodySpec,
                                     const QStringList &mentionUserIds,
@@ -1717,6 +1730,8 @@ Q_SIGNALS:
                                  const QString &category);
     void roomSendFinished(quint64 opId, const QString &roomId, bool ok,
                           const QString &category);
+    // The backend handle went away: no pending send will be answered.
+    void sendsAbandoned();
     // `encrypted`: the content carries file keys and must stay in memory.
     void scheduledMediaPrepared(quint64 opId, const QString &roomId, bool ok,
                                 bool encrypted, const QString &contentJson);

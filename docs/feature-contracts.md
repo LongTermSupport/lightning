@@ -2748,6 +2748,18 @@ The dialog stays open through the send and reports PER PAIR, with a retry for
 the failures. N×M sends can partially fail, and "sent" because one of twelve
 worked is a lie the user would act on. Capped at 50 messages.
 
+A text copy counts as SENT only when the server accepts it. Room and thread
+copies go through the SDK send queue (local echo, the SDK's own retries,
+queued while offline) and each pair waits for its own result, up to 600 s.
+A refusal is a FAILED pair and goes on the retry list. A wait that ends
+without an answer tries to withdraw the copy: withdrawn is FAILED (retry
+offered); a copy that cannot be withdrawn is NOT CONFIRMED and is never
+offered for retry, because it may still arrive. Sign-out, an account switch
+or a store reset settles every waiting pair as not confirmed. Known limit:
+withdrawing a request that is already on the wire succeeds by redacting the
+copy when it lands, so the recipients can see that copy, its redaction and
+then the retried one.
+
 The selection circle on each row follows `app.forward.selectedCount` — the
 row's `isSelected()` check is a plain call Qt cannot observe, and on its own
 it ran once (2026-09-05: the footer counted, the circles stayed empty). While

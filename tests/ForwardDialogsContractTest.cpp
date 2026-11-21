@@ -53,6 +53,15 @@ private slots:
         QVERIFY2(src.contains(QStringLiteral("activeFocusOnTab: visible")),
                  "room rows are not keyboard reachable");
     }
+    void selectionDialogNeverCountsAnUnconfirmedCopyAsSent()
+    {
+        const QString src = withoutComments(read(QStringLiteral("ForwardSelectionDialog.qml")));
+        QVERIFY2(src.contains(QRegularExpression(QStringLiteral(
+                     "-\\s*app\\.forward\\.failureCount\\s*-\\s*app\\.forward\\.unconfirmedCount"))),
+                 "an unconfirmed copy is counted as sent");
+        QVERIFY2(src.contains(QStringLiteral("objectName: \"forwardUnconfirmedLabel\"")),
+                 "an unconfirmed copy is not reported at all");
+    }
     void singleDialogScrollsFocusedRowIntoView()
     {
         const QString src = withoutComments(read(QStringLiteral("ForwardMessageDialog.qml")));
