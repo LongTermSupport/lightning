@@ -3,8 +3,9 @@ use std::{
     collections::{HashMap, VecDeque},
     sync::{
         atomic::{AtomicBool, AtomicU64, Ordering},
-        Mutex,
+        Mutex, OnceLock,
     },
+    time::Instant,
 };
 
 use matrix_sdk::ruma::{EventId, OwnedEventId, OwnedRoomId, RoomId};
@@ -12,6 +13,22 @@ use matrix_sdk::ruma::{EventId, OwnedEventId, OwnedRoomId, RoomId};
 pub(crate) const AGE_ALLOWANCE_MS: u64 = 10_000;
 
 pub(crate) const TIMESTAMP_ALLOWANCE_MS: u64 = 120_000;
+
+/// Milliseconds on a clock that never steps, for the catch-up floor.
+pub(crate) fn mono_ms() -> u64 {
+    static ORIGIN: OnceLock<Instant> = OnceLock::new();
+    ORIGIN.get_or_init(Instant::now).elapsed().as_millis() as u64
+}
+
+#[derive(Clone, Copy)]
+pub(crate) struct Now {
+    pub(crate) wall_ms: u64,
+    pub(crate) mono_ms: u64,
+}
+
+pub(crate) fn now() -> Now {
+    Now { wall_ms: crate::push_verdict::now_ms(), mono_ms: mono_ms() }
+}
 
 /// Whether a sync-handler event is history. One per bridge, driven by the sync
 /// loop:
@@ -26,6 +43,9 @@ pub(crate) const TIMESTAMP_ALLOWANCE_MS: u64 = 120_000;
 ///    ever re-delivers events from before it.
 ///
 /// Monotonic floor, so nothing an earlier edge called history becomes news.
+/// It is kept on `mono_ms`, so a wall-clock step cannot move it against
+/// `unsigned.age`; only the timestamp fallback reads the wall clock, rebased
+/// on the current one.
 pub(crate) struct CatchupClock {
     floor_ms: AtomicU64,
     catching_up: AtomicBool,
@@ -38,8 +58,8 @@ impl Default for CatchupClock {
 }
 
 impl CatchupClock {
-    pub(crate) fn begin(&self, now_ms: u64) {
-        self.floor_ms.store(now_ms, Ordering::SeqCst);
+    pub(crate) fn begin(&self, mono_ms: u64) {
+        self.floor_ms.store(mono_ms, Ordering::SeqCst);
         self.catching_up.store(true, Ordering::SeqCst);
     }
 
@@ -47,24 +67,29 @@ impl CatchupClock {
         self.catching_up.store(true, Ordering::SeqCst);
     }
 
-    pub(crate) fn running_edge(&self, now_ms: u64) {
-        self.floor_ms.fetch_max(now_ms, Ordering::SeqCst);
+    pub(crate) fn running_edge(&self, mono_ms: u64) {
+        self.floor_ms.fetch_max(mono_ms, Ordering::SeqCst);
         self.catching_up.store(false, Ordering::SeqCst);
     }
 
     /// `timestamp_ms`: `origin_server_ts`. `age_ms`: `unsigned.age` as the
     /// server sent it, which needs no clock agreement and so decides when
     /// present.
-    pub(crate) fn is_backlog(&self, timestamp_ms: u64, age_ms: Option<u64>, now_ms: u64) -> bool {
+    pub(crate) fn is_backlog(&self, timestamp_ms: u64, age_ms: Option<u64>, now: Now) -> bool {
         let floor = self.floor_ms.load(Ordering::SeqCst);
         let limit = if self.catching_up.load(Ordering::SeqCst) {
-            floor.max(now_ms)
+            floor.max(now.mono_ms)
         } else {
             floor
         };
         match age_ms {
-            Some(age) => now_ms.saturating_sub(age).saturating_add(AGE_ALLOWANCE_MS) < limit,
-            None => timestamp_ms.saturating_add(TIMESTAMP_ALLOWANCE_MS) < limit,
+            Some(age) => {
+                now.mono_ms.saturating_add(AGE_ALLOWANCE_MS) < limit.saturating_add(age)
+            }
+            None => {
+                let limit_wall = now.wall_ms.saturating_sub(now.mono_ms.saturating_sub(limit));
+                timestamp_ms.saturating_add(TIMESTAMP_ALLOWANCE_MS) < limit_wall
+            }
         }
     }
 }
@@ -137,6 +162,10 @@ mod tests {
     const MIN: u64 = 60_000;
     const HOUR: u64 = 60 * MIN;
 
+    fn at(ms: u64) -> Now {
+        Now { wall_ms: ms, mono_ms: ms }
+    }
+
     #[test]
     fn an_old_event_after_the_first_running_edge_is_backlog() {
         let clock = CatchupClock::default();
@@ -144,8 +173,8 @@ mod tests {
         clock.begin(start);
         clock.running_edge(start + 5_000);
         let month = 30 * 24 * HOUR;
-        assert!(clock.is_backlog(start - month, Some(month), start + 20_000));
-        assert!(clock.is_backlog(start - month, None, start + 20_000));
+        assert!(clock.is_backlog(start - month, Some(month), at(start + 20_000)));
+        assert!(clock.is_backlog(start - month, None, at(start + 20_000)));
     }
 
     #[test]
@@ -155,8 +184,8 @@ mod tests {
         clock.begin(start);
         clock.running_edge(start + 5_000);
         let now = start + 10 * MIN;
-        assert!(!clock.is_backlog(now - 300, Some(300), now));
-        assert!(!clock.is_backlog(now - 300, None, now));
+        assert!(!clock.is_backlog(now - 300, Some(300), at(now)));
+        assert!(!clock.is_backlog(now - 300, None, at(now)));
     }
 
     #[test]
@@ -167,11 +196,11 @@ mod tests {
         clock.running_edge(start + 5_000);
         clock.connection_lost();
         let wake = start + 8 * HOUR;
-        assert!(clock.is_backlog(wake - 5 * HOUR, Some(5 * HOUR), wake));
-        assert!(!clock.is_backlog(wake - 2_000, Some(2_000), wake));
+        assert!(clock.is_backlog(wake - 5 * HOUR, Some(5 * HOUR), at(wake)));
+        assert!(!clock.is_backlog(wake - 2_000, Some(2_000), at(wake)));
         clock.running_edge(wake + 1_000);
-        assert!(clock.is_backlog(wake - HOUR, Some(HOUR + 30_000), wake + 30_000));
-        assert!(!clock.is_backlog(wake + 20_000, Some(1_000), wake + 21_000));
+        assert!(clock.is_backlog(wake - HOUR, Some(HOUR + 30_000), at(wake + 30_000)));
+        assert!(!clock.is_backlog(wake + 20_000, Some(1_000), at(wake + 21_000)));
     }
 
     #[test]
@@ -181,7 +210,7 @@ mod tests {
         clock.begin(start);
         clock.running_edge(start);
         let now = start + HOUR;
-        assert!(!clock.is_backlog(now - HOUR, Some(500), now));
+        assert!(!clock.is_backlog(now - HOUR, Some(500), at(now)));
     }
 
     #[test]
@@ -190,7 +219,7 @@ mod tests {
         let start = 1_000 * HOUR;
         clock.begin(start);
         clock.running_edge(start);
-        assert!(!clock.is_backlog(start - MIN, None, start + 1_000));
+        assert!(!clock.is_backlog(start - MIN, None, at(start + 1_000)));
     }
 
     #[test]
@@ -199,7 +228,67 @@ mod tests {
         clock.begin(10 * HOUR);
         clock.running_edge(10 * HOUR);
         clock.running_edge(9 * HOUR);
-        assert!(clock.is_backlog(9 * HOUR + MIN, Some(HOUR - MIN), 10 * HOUR + 1));
+        assert!(clock.is_backlog(9 * HOUR + MIN, Some(HOUR - MIN), at(10 * HOUR + 1)));
+    }
+
+    fn stepped(wall_ms: u64, mono_ms: u64) -> Now {
+        Now { wall_ms, mono_ms }
+    }
+
+    #[test]
+    fn a_backward_wall_clock_step_does_not_make_a_live_event_backlog() {
+        let clock = CatchupClock::default();
+        let wall = 1_000 * HOUR;
+        let mono = 7 * MIN;
+        clock.begin(mono);
+        clock.running_edge(mono + 5_000);
+        let now = stepped(wall + MIN - 5 * MIN, mono + MIN);
+        assert!(!clock.is_backlog(now.wall_ms - 100, Some(100), now));
+        assert!(!clock.is_backlog(now.wall_ms - 100, None, now));
+        assert!(clock.is_backlog(wall - HOUR, Some(HOUR), now));
+        assert!(clock.is_backlog(wall - 5 * MIN - HOUR, None, now));
+    }
+
+    #[test]
+    fn a_forward_wall_clock_step_does_not_replay_history() {
+        let clock = CatchupClock::default();
+        let wall = 1_000 * HOUR;
+        let mono = 7 * MIN;
+        clock.begin(mono);
+        clock.running_edge(mono + 5_000);
+        let now = stepped(wall + MIN + HOUR, mono + MIN);
+        assert!(clock.is_backlog(wall - 10 * MIN, Some(11 * MIN), now));
+        assert!(clock.is_backlog(wall - 10 * MIN, None, now));
+        assert!(!clock.is_backlog(now.wall_ms - 2_000, Some(2_000), now));
+    }
+
+    #[test]
+    fn what_reached_the_server_during_a_suspend_is_backlog_after_it() {
+        let clock = CatchupClock::default();
+        let wall = 1_000 * HOUR;
+        let mono = 7 * MIN;
+        clock.begin(mono);
+        clock.running_edge(mono + 5_000);
+        clock.connection_lost();
+        let wake = stepped(wall + 8 * HOUR, mono + MIN);
+        assert!(clock.is_backlog(wake.wall_ms - 5 * HOUR, Some(5 * HOUR), wake));
+        assert!(clock.is_backlog(wake.wall_ms - 5 * HOUR, None, wake));
+        assert!(!clock.is_backlog(wake.wall_ms - 2_000, Some(2_000), wake));
+        clock.running_edge(wake.mono_ms + 1_000);
+        let later = stepped(wake.wall_ms + 30_000, wake.mono_ms + 30_000);
+        assert!(clock.is_backlog(wake.wall_ms - HOUR, Some(HOUR + 30_000), later));
+        assert!(!clock.is_backlog(later.wall_ms - 500, Some(500), later));
+    }
+
+    #[test]
+    fn a_young_process_still_calls_an_old_event_backlog() {
+        let clock = CatchupClock::default();
+        clock.begin(0);
+        clock.running_edge(2_000);
+        let now = stepped(1_000 * HOUR, 3_000);
+        assert!(clock.is_backlog(now.wall_ms - HOUR, Some(HOUR), now));
+        assert!(clock.is_backlog(now.wall_ms - HOUR, Some(u64::MAX), now));
+        assert!(!clock.is_backlog(now.wall_ms - 100, Some(100), now));
     }
 
     #[test]

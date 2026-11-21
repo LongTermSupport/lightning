@@ -11075,7 +11075,7 @@ fn mark_sync_backlog(
     timestamp_ms: u64,
     age_ms: Option<u64>,
 ) -> bool {
-    let backlog = notify.catchup.is_backlog(timestamp_ms, age_ms, push_verdict::now_ms());
+    let backlog = notify.catchup.is_backlog(timestamp_ms, age_ms, syncnotify::now());
     if let Some(object) = event.as_object_mut() {
         object.insert("backlog".to_owned(), backlog.into());
     }
@@ -11922,7 +11922,7 @@ fn install_event_handlers(
                 let backlog = notify.catchup.is_backlog(
                     u64::from(ev.origin_server_ts.get()),
                     unsigned_age_ms(ev.unsigned.age),
-                    push_verdict::now_ms(),
+                    syncnotify::now(),
                 );
                 enqueue(
                     &events,
@@ -12226,7 +12226,7 @@ async fn run_modern_sync(
     sync_notify: Arc<syncnotify::SyncNotify>,
     mut cancel: tokio::sync::oneshot::Receiver<()>,
 ) -> Option<tokio::sync::oneshot::Receiver<()>> {
-    sync_notify.catchup.begin(push_verdict::now_ms());
+    sync_notify.catchup.begin(syncnotify::mono_ms());
     let background = bgsession::for_queue(&events);
     let mut jitter = background.as_ref().map(|_| labs::Jitter::seeded(0x0dd5));
     let mut rebuilds = 0u32;
@@ -12523,7 +12523,7 @@ async fn run_modern_sync(
                         if !list_running {
                             list_running = true;
                             rebuilds = 0;
-                            sync_notify.catchup.running_edge(push_verdict::now_ms());
+                            sync_notify.catchup.running_edge(syncnotify::mono_ms());
                             auth_budget.on_running();
                             client.send_queue().set_enabled(true).await;
                         }
@@ -12944,7 +12944,7 @@ async fn run_classic_sync_with(
 ) {
     enqueue(&events, json!({ "type": "room_list_sync_state", "state": "starting" }));
     subscribe_event_cache_before_classic_sync(&client, &events);
-    sync_notify.catchup.begin(push_verdict::now_ms());
+    sync_notify.catchup.begin(syncnotify::mono_ms());
     let background = bgsession::for_queue(&events);
     let watch_cap = background
         .as_ref()
@@ -12997,7 +12997,7 @@ async fn run_classic_sync_with(
             let background = callback_background.clone();
             async move {
                 progress.touch();
-                let answered_ms = push_verdict::now_ms();
+                let answered_ms = syncnotify::mono_ms();
                 let response = match result {
                     Ok(response) => response,
                     Err(error) => {
