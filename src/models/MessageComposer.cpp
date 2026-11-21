@@ -104,8 +104,18 @@ QString MessageComposer::draftKey() const
     return MatrixClient::threadTimelineId(m_roomId, m_threadTargetRootId);
 }
 
+void MessageComposer::parkEmoticonRefs()
+{
+    const QString key = draftKey();
+    if (!key.isEmpty() && !m_emoticonRefs.isEmpty())
+        m_emoticonRefsByKey.insert(key, m_emoticonRefs);
+    m_emoticonRefs.clear();
+}
+
 void MessageComposer::restoreDraft()
 {
+    m_emoticonRefs.clear();
+    const QList<EmoticonRef> parked = m_emoticonRefsByKey.take(draftKey());
     if (!m_drafts || m_roomId.isEmpty())
         return;
     const QVariantMap draft = m_drafts->load(draftKey());
@@ -114,8 +124,7 @@ void MessageComposer::restoreDraft()
     m_restoringDraft = true;
     m_text = draft.value(QStringLiteral("text")).toString();
     m_mentionRefs.clear();
-    m_emoticonRefs.clear();
-    for (const EmoticonRef &ref : m_emoticonRefsByRoom.take(m_roomId)) {
+    for (const EmoticonRef &ref : parked) {
         if (ref.start >= 0 && ref.start + ref.length <= m_text.size()
             && m_text.mid(ref.start, ref.length) == ref.displayText)
             m_emoticonRefs.append(ref);
@@ -201,7 +210,7 @@ void MessageComposer::setClient(MatrixClient *client)
             }
             m_mentionRefs.clear();
             m_emoticonRefs.clear();
-            m_emoticonRefsByRoom.clear();
+            m_emoticonRefsByKey.clear();
             m_threadEmoticonChoices.clear();
             Q_EMIT mentionRangesChanged();
             Q_EMIT roomIdChanged();
@@ -651,6 +660,7 @@ void MessageComposer::setThreadTargetRootId(const QString &rootEventId)
     m_replyingToMediaKey.clear();
     m_replyThreadRootId.clear();
     parkAttachments();
+    parkEmoticonRefs();
     m_threadTargetRootId = rootEventId;
     m_slashJoinOp = 0;
     m_text.clear();
@@ -814,14 +824,12 @@ void MessageComposer::setRoomId(const QString &r)
     m_vim->enterInsert();
     m_threadVim->enterInsert();
     parkAttachments();
+    parkEmoticonRefs();
     if (!m_threadTargetRootId.isEmpty()) {
         m_threadTargetRootId.clear();
         Q_EMIT threadStateChanged();
     }
     m_draftDebounce.stop();
-    if (!m_roomId.isEmpty() && !m_emoticonRefs.isEmpty())
-        m_emoticonRefsByRoom.insert(m_roomId, m_emoticonRefs);
-    m_emoticonRefs.clear();
     m_roomId = r;
     m_slashJoinOp = 0;
     m_text.clear();
@@ -1713,7 +1721,7 @@ void MessageComposer::clear()
         m_drafts->clear(draftKey());
     m_mentionRefs.clear();
     m_emoticonRefs.clear();
-    m_emoticonRefsByRoom.remove(m_roomId);
+    m_emoticonRefsByKey.remove(draftKey());
     Q_EMIT mentionRangesChanged();
     if (m_text.isEmpty()) return;
     m_text.clear();
@@ -1885,8 +1893,8 @@ void MessageComposer::beginEdit(const QString &eventId,
     m_editPreview = sanitizedHtml.isEmpty()
         ? recovered.text
         : RichComposition::plainTextOfSanitizedHtml(sanitizedHtml);
-    if (!wasEditing && !m_roomId.isEmpty() && !m_emoticonRefs.isEmpty())
-        m_emoticonRefsByRoom.insert(m_roomId, m_emoticonRefs);
+    if (!wasEditing)
+        parkEmoticonRefs();
     m_emoticonRefs = emoticonRefsFromHtml(m_text, seedHtml);
     Q_EMIT editStateChanged();
     // Text first: ranges announced over the editor's old text made it write

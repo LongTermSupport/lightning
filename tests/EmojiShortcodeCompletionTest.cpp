@@ -58,8 +58,8 @@ public:
     { sentBodies.append(body); }
     void sendThreadReplyTo(const QString &, const QString &, const QString &,
                            const QString &body, const QStringList &,
-                           const QVariantMap &) override
-    { sentBodies.append(body); }
+                           const QVariantMap &spec) override
+    { sentBodies.append(body); sentSpecs.append(spec); }
     void editMessage(const QString &, const QString &, const QString &body,
                      const QStringList &, const QVariantMap &spec) override
     { sentBodies.append(body); sentSpecs.append(spec); editBodies.append(body); }
@@ -465,6 +465,52 @@ private Q_SLOTS:
                      .value(QStringLiteral(":blob_wave:")).toString(),
                  QStringLiteral("mxc://x/1"));
         QVERIFY(m_composer->selectedEmoticons().isEmpty());
+    }
+
+    void eachInlineThreadDraftKeepsItsOwnChosenImage()
+    {
+        auto *drafts = new DraftStore(m_composer);
+        drafts->setClient(m_client);
+        m_composer->setDraftStore(drafts);
+        const auto choose = [this](const QString &url) {
+            m_composer->setText(QStringLiteral(":blob"));
+            QCOMPARE(m_composer->acceptEmoticonCompletionAt(
+                         5, row(QStringLiteral("blob_wave"), url, QString())), 12);
+        };
+        const auto sentUrl = [this] {
+            return m_client->sentSpecs.last().value(QStringLiteral("emoticons")).toMap()
+                .value(QStringLiteral(":blob_wave:")).toMap()
+                .value(QStringLiteral("url")).toString();
+        };
+        m_composer->setThreadTargetRootId(QStringLiteral("$a"));
+        choose(QStringLiteral("mxc://x/a"));
+        m_composer->setThreadTargetRootId(QStringLiteral("$b"));
+        QVERIFY2(m_composer->selectedEmoticons().isEmpty(),
+                 "an empty thread draft showed another thread's choice");
+        choose(QStringLiteral("mxc://x/b"));
+        m_composer->setThreadTargetRootId(QString());
+        QVERIFY(m_composer->selectedEmoticons().isEmpty());
+        choose(QStringLiteral("mxc://x/room"));
+
+        m_composer->setThreadTargetRootId(QStringLiteral("$a"));
+        QCOMPARE(m_composer->text(), QStringLiteral(":blob_wave: "));
+        QCOMPARE(m_composer->selectedEmoticons().size(), 1);
+        m_composer->send();
+        QCOMPARE(sentUrl(), QStringLiteral("mxc://x/a"));
+
+        m_composer->setThreadTargetRootId(QStringLiteral("$b"));
+        QCOMPARE(m_composer->text(), QStringLiteral(":blob_wave: "));
+        m_composer->send();
+        QCOMPARE(sentUrl(), QStringLiteral("mxc://x/b"));
+
+        m_composer->setThreadTargetRootId(QString());
+        QCOMPARE(m_composer->text(), QStringLiteral(":blob_wave: "));
+        m_composer->send();
+        QCOMPARE(sentUrl(), QStringLiteral("mxc://x/room"));
+
+        m_composer->setThreadTargetRootId(QStringLiteral("$a"));
+        QVERIFY2(m_composer->selectedEmoticons().isEmpty(),
+                 "a sent thread draft kept its choice");
     }
 
     void anAmbiguousTypedShortcodeStaysLiteral()

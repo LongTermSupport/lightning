@@ -357,9 +357,9 @@ private:
     QString m_threadPreview;
     QList<mention::MentionRef> m_mentionRefs;
     // Custom images the user explicitly chose, by the `:shortcode:` range they
-    // occupy in m_text. Kept in memory only (per room while switching rooms,
-    // dropped at logout), so an encrypted-room draft's selections never reach
-    // disk.
+    // occupy in m_text. Kept in memory only (per draftKey() while switching
+    // rooms and inline threads, dropped at logout), so an encrypted-room
+    // draft's selections never reach disk.
     struct EmoticonRef {
         QString displayText;
         QString url;
@@ -369,7 +369,8 @@ private:
         int length = 0;
     };
     QList<EmoticonRef> m_emoticonRefs;
-    QHash<QString, QList<EmoticonRef>> m_emoticonRefsByRoom;
+    QHash<QString, QList<EmoticonRef>> m_emoticonRefsByKey;
+    void parkEmoticonRefs();
     mutable QVariantMap m_threadEmoticonChoices;
     static QList<EmoticonRef> emoticonRefsFromHtml(const QString &text,
                                                    const QString &sanitizedHtml);
