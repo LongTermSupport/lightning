@@ -8325,7 +8325,11 @@ pub unsafe extern "C" fn mx_rust_search_index_deep(
                     "ok": false, "room_id": room_id, "pages": 0,
                     "reached_start": false, "written": 0,
                     "messages": 0, "indexed_rooms": 0,
-                    "category": rooms::classify_room_error(&error),
+                    "category": if error.storage {
+                        "local_storage"
+                    } else {
+                        rooms::classify_room_error(&error.message)
+                    },
                 })),
             }
         });

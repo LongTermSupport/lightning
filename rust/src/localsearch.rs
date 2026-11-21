@@ -408,7 +408,7 @@ impl SearchIndex {
     /// Returns the messages whose shown edit this was; their rows are gone
     /// and only the event cache can say what they read before that edit.
     pub(crate) fn remove_event(&self, event_id: &str) -> Result<Vec<String>, String> {
-        let _ = self.note_redacted(event_id);
+        self.note_redacted(event_id)?;
         self.conn
             .execute("DELETE FROM messages WHERE event_id = ?1", params![event_id])
             .map_err(|e| format!("cannot remove a message from the index: {e}"))?;
@@ -440,7 +440,7 @@ impl SearchIndex {
         Ok(())
     }
 
-    pub(crate) fn redacted_among(&self, event_ids: &[String]) -> HashSet<String> {
+    pub(crate) fn redacted_among(&self, event_ids: &[String]) -> Result<HashSet<String>, String> {
         let mut out = HashSet::new();
         for slice in event_ids.chunks(500) {
             if slice.is_empty() {
@@ -448,16 +448,15 @@ impl SearchIndex {
             }
             let placeholders = vec!["?"; slice.len()].join(",");
             let sql = format!("SELECT event_id FROM redacted WHERE event_id IN ({placeholders})");
-            let Ok(mut stmt) = self.conn.prepare(&sql) else { continue };
-            let found: Vec<String> = match stmt
+            let mut stmt = self.conn.prepare(&sql).map_err(|e| e.to_string())?;
+            let rows = stmt
                 .query_map(rusqlite::params_from_iter(slice.iter()), |r| r.get::<_, String>(0))
-            {
-                Ok(rows) => rows.flatten().collect(),
-                Err(_) => Vec::new(),
-            };
-            out.extend(found);
+                .map_err(|e| e.to_string())?;
+            for row in rows {
+                out.insert(row.map_err(|e| e.to_string())?);
+            }
         }
-        out
+        Ok(out)
     }
 
     /// Evicts past the row cap once enough has been written since the last check.
@@ -727,10 +726,8 @@ pub(crate) async fn deep_index_room(
     index: &std::sync::Arc<std::sync::Mutex<Option<SearchIndex>>>,
     stop: &std::sync::atomic::AtomicBool,
     max_pages: u16,
-) -> Result<(u16, bool, usize), String> {
-    let outcome = deep_index_room_gated(room, index, &StopOnly(stop), max_pages)
-        .await
-        .map_err(|e| e.message)?;
+) -> Result<(u16, bool, usize), DeepError> {
+    let outcome = deep_index_room_gated(room, index, &StopOnly(stop), max_pages).await?;
     Ok((outcome.pages, outcome.reached_start, outcome.written))
 }
 
@@ -778,11 +775,17 @@ pub(crate) struct DeepError {
     pub message: String,
     pub rate_limited: bool,
     pub retry_after_ms: Option<u64>,
+    /// The local index refused a write: not the server, and not cleared.
+    pub storage: bool,
 }
 
 impl DeepError {
     fn plain(message: String) -> Self {
-        Self { message, rate_limited: false, retry_after_ms: None }
+        Self { message, rate_limited: false, retry_after_ms: None, storage: false }
+    }
+
+    fn storage() -> Self {
+        Self { storage: true, ..Self::plain("the local search index could not be written".to_owned()) }
     }
 
     fn from_pagination(error: &matrix_sdk::event_cache::EventCacheError) -> Self {
@@ -855,13 +858,34 @@ fn write_locked(
     generation: u64,
     room_id: &str,
     batch: &RoomBatch,
-) -> Option<usize> {
-    let mut guard = index.lock().ok()?;
-    let ix = guard.as_mut()?;
+) -> Written {
+    let Ok(mut guard) = index.lock() else { return Written::Cleared };
+    let Some(ix) = guard.as_mut() else { return Written::Cleared };
     if ix.generation() != generation {
-        return None;
+        return Written::Cleared;
     }
-    Some(write_batch(ix, room_id, batch))
+    match write_batch(ix, room_id, batch) {
+        Ok(n) => Written::Rows(n),
+        Err(StoreFault) => Written::Failed,
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum Written {
+    /// Committed; 0 is a valid page whose messages were all indexed already.
+    Rows(usize),
+    Cleared,
+    /// Rolled back: the batch is not in the index and must be written again.
+    Failed,
+}
+
+impl Written {
+    fn rows(self) -> Option<usize> {
+        match self {
+            Written::Rows(n) => Some(n),
+            Written::Cleared | Written::Failed => None,
+        }
+    }
 }
 
 const MAX_TRACKED_UNDECRYPTABLE: usize = 10_000;
@@ -895,9 +919,13 @@ pub(crate) async fn deep_index_room_gated<G: PageGate>(
     let mut outcome = DeepOutcome { utd_sessions: Some(Default::default()), ..Default::default() };
     let mut undecryptable: HashSet<String> = HashSet::new();
     if let Ok(batch) = collect_from(room, &room_cache).await {
-        let Some(written) = write_locked(index, generation, room_id, &batch) else {
-            outcome.interrupted = true;
-            return Ok(outcome);
+        let written = match write_locked(index, generation, room_id, &batch) {
+            Written::Rows(n) => n,
+            Written::Cleared => {
+                outcome.interrupted = true;
+                return Ok(outcome);
+            }
+            Written::Failed => return Err(DeepError::storage()),
         };
         outcome.written += written;
         note_undecryptable(&mut undecryptable, &mut outcome.utd_sessions, &batch);
@@ -921,9 +949,13 @@ pub(crate) async fn deep_index_room_gated<G: PageGate>(
         let page_outcome = result.map_err(|e| DeepError::from_pagination(&e))?;
         outcome.pages += 1;
         if let Ok(batch) = collect_from(room, &room_cache).await {
-            let Some(written) = write_locked(index, generation, room_id, &batch) else {
-                outcome.interrupted = true;
-                break;
+            let written = match write_locked(index, generation, room_id, &batch) {
+                Written::Rows(n) => n,
+                Written::Cleared => {
+                    outcome.interrupted = true;
+                    break;
+                }
+                Written::Failed => return Err(DeepError::storage()),
             };
             outcome.written += written;
             note_undecryptable(&mut undecryptable, &mut outcome.utd_sessions, &batch);
@@ -1100,7 +1132,7 @@ async fn sweep_room(
         let known = ix.known(&ids).unwrap_or_default();
         (ix.has_room(room_id).unwrap_or(false), ids.len() > known.len())
     };
-    let mut written = write_locked(index, generation, room_id, &batch)?;
+    let mut written = write_locked(index, generation, room_id, &batch).rows()?;
     if !indexed_before || !fresh {
         return Some(written);
     }
@@ -1128,7 +1160,7 @@ async fn sweep_room(
             !new_ids.is_empty() && ix.known(&new_ids).unwrap_or_default().len() == new_ids.len()
         };
         seen.extend(new_ids);
-        written += write_locked(index, generation, room_id, &batch)?;
+        written += write_locked(index, generation, room_id, &batch).rows()?;
         // A page made only of messages indexed earlier means the gap is closed.
         if all_known || page.reached_start {
             break;
@@ -1319,7 +1351,7 @@ pub(crate) fn spawn_gap_filler(
             let (outcome, written) =
                 fill_gap(&worker_client, &worker_index, &room_id, &token, generation, &gate.stop)
                     .await;
-            if written > 0 || outcome == "request_failed" {
+            if written > 0 || outcome == "request_failed" || outcome == "store_failed" {
                 let stats = worker_index
                     .lock()
                     .ok()
@@ -1420,11 +1452,17 @@ async fn fill_gap(
             let Some(ix) = guard.as_ref() else { break };
             !ix.known(&ids).unwrap_or_default().is_empty()
         };
-        let Some(n) = write_locked(index, generation, room_id, &batch) else {
-            outcome = "cleared";
-            break;
+        written += match write_locked(index, generation, room_id, &batch) {
+            Written::Rows(n) => n,
+            Written::Cleared => {
+                outcome = "cleared";
+                break;
+            }
+            Written::Failed => {
+                outcome = "store_failed";
+                break;
+            }
         };
-        written += n;
         if reached_indexed || page.end.is_none() {
             outcome = "closed";
             break;
@@ -1472,35 +1510,35 @@ pub(crate) fn register_live_index_handler(
     client.event_handler_drop_guard(handle)
 }
 
-pub(crate) fn write_batch(index: &SearchIndex, room_id: &str, batch: &RoomBatch) -> usize {
-    let tx = index.conn.unchecked_transaction().ok();
-    let written = write_batch_rows(index, room_id, batch);
-    match tx {
-        Some(tx) => {
-            if tx.commit().is_ok() {
-                written
-            } else {
-                0
-            }
-        }
-        None => written,
-    }
+/// A local SQLite refusal; the whole batch was rolled back.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct StoreFault;
+
+pub(crate) fn write_batch(
+    index: &SearchIndex,
+    room_id: &str,
+    batch: &RoomBatch,
+) -> Result<usize, StoreFault> {
+    let tx = index.conn.unchecked_transaction().map_err(|_| StoreFault)?;
+    let written = write_batch_rows(index, room_id, batch).map_err(|_| StoreFault)?;
+    tx.commit().map_err(|_| StoreFault)?;
+    Ok(written)
 }
 
 fn edit_key(edit: &Indexable) -> (u64, &str) {
     (edit.ts.max(0) as u64, edit.edit_id.as_deref().unwrap_or(""))
 }
 
-fn write_batch_rows(index: &SearchIndex, room_id: &str, batch: &RoomBatch) -> usize {
+fn write_batch_rows(index: &SearchIndex, room_id: &str, batch: &RoomBatch) -> Result<usize, String> {
     for id in &batch.redactions {
-        let _ = index.remove_event(id);
+        index.remove_event(id)?;
     }
     let ids: Vec<String> = batch.ordinary.iter().map(|c| c.event_id.clone()).collect();
     let mut edit_ids: Vec<String> = batch.edits.iter().map(|e| e.event_id.clone()).collect();
     edit_ids.extend(batch.edits.iter().filter_map(|e| e.edit_id.clone()));
-    let redacted = index.redacted_among(&[ids.clone(), edit_ids].concat());
-    let known = index.known(&ids).unwrap_or_default();
-    let stale = index.stale_filename_ids(&ids).unwrap_or_default();
+    let redacted = index.redacted_among(&[ids.clone(), edit_ids].concat())?;
+    let known = index.known(&ids)?;
+    let stale = index.stale_filename_ids(&ids)?;
     let mut written = 0usize;
     for item in &batch.ordinary {
         if redacted.contains(&item.event_id) {
@@ -1509,7 +1547,7 @@ fn write_batch_rows(index: &SearchIndex, room_id: &str, batch: &RoomBatch) -> us
         if known.contains(&item.event_id) {
             if stale.contains(&item.event_id) {
                 if let Some(name) = &item.filename {
-                    if index.fill_filename(&item.event_id, name).unwrap_or(false) {
+                    if index.fill_filename(&item.event_id, name)? {
                         written += 1;
                     }
                 }
@@ -1517,19 +1555,16 @@ fn write_batch_rows(index: &SearchIndex, room_id: &str, batch: &RoomBatch) -> us
             continue;
         }
         let display = batch.names.get(&item.sender).cloned().unwrap_or_default();
-        if index
-            .upsert_named(
-                &item.event_id,
-                room_id,
-                &item.sender,
-                &display,
-                &item.body,
-                &item.msgtype,
-                item.ts,
-                item.filename.as_deref(),
-            )
-            .unwrap_or(false)
-        {
+        if index.upsert_named(
+            &item.event_id,
+            room_id,
+            &item.sender,
+            &display,
+            &item.body,
+            &item.msgtype,
+            item.ts,
+            item.filename.as_deref(),
+        )? {
             written += 1;
         }
     }
@@ -1551,9 +1586,10 @@ fn write_batch_rows(index: &SearchIndex, room_id: &str, batch: &RoomBatch) -> us
         {
             continue;
         }
-        let original = originals
-            .entry(target)
-            .or_insert_with(|| index.original_of(target).ok().flatten());
+        let original = match originals.entry(target) {
+            std::collections::hash_map::Entry::Occupied(held) => held.into_mut(),
+            std::collections::hash_map::Entry::Vacant(slot) => slot.insert(index.original_of(target)?),
+        };
         let Some(original) = original else { continue };
         // Both are m.room.message: indexable_from admits no other type.
         if original.room_id != room_id
@@ -1588,7 +1624,7 @@ fn write_batch_rows(index: &SearchIndex, room_id: &str, batch: &RoomBatch) -> us
         });
         if !already_shown {
             let display = batch.names.get(&edit.sender).cloned().unwrap_or_default();
-            match index.upsert_named(
+            let changed = index.upsert_named(
                 target,
                 room_id,
                 &edit.sender,
@@ -1597,15 +1633,13 @@ fn write_batch_rows(index: &SearchIndex, room_id: &str, batch: &RoomBatch) -> us
                 &edit.msgtype,
                 edit.ts,
                 edit.filename.as_deref(),
-            ) {
-                Ok(changed) => written += usize::from(changed),
-                Err(_) => continue,
-            }
+            )?;
+            written += usize::from(changed);
         }
-        let _ = index.set_edit(target, edit.edit_id.as_deref(), edit.ts);
+        index.set_edit(target, edit.edit_id.as_deref(), edit.ts)?;
     }
     index.maybe_prune(written);
-    written
+    Ok(written)
 }
 
 pub(crate) fn register_redaction_handler(
@@ -1678,6 +1712,10 @@ async fn reindex_from_cache(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn write_batch_ok(ix: &SearchIndex, room_id: &str, batch: &RoomBatch) -> usize {
+        write_batch(ix, room_id, batch).expect("index write")
+    }
 
     fn index() -> SearchIndex {
         SearchIndex::open_in_memory().unwrap()
@@ -1844,12 +1882,12 @@ mod tests {
             undecryptable: vec![],
             redactions: vec![],
         };
-        assert_eq!(write_batch(&ix, "!r:x", &batch), 40);
+        assert_eq!(write_batch_ok(&ix, "!r:x", &batch), 40);
         assert_eq!(commits.load(Ordering::SeqCst), 1, "one commit per room batch");
         assert!(ix.conn.is_autocommit());
         assert_eq!(ix.stats().unwrap().messages, 40);
         assert_eq!(ix.search("quick", "", 100, 0).unwrap().len(), 40);
-        assert_eq!(write_batch(&ix, "!r:x", &batch), 0);
+        assert_eq!(write_batch_ok(&ix, "!r:x", &batch), 0);
         unsafe {
             rusqlite::ffi::sqlite3_commit_hook(ix.conn.handle(), None, std::ptr::null_mut());
         }
@@ -1887,9 +1925,9 @@ mod tests {
             undecryptable: vec![],
             redactions: vec![],
         };
-        write_batch(&ix, "!r:x", &batch);
+        write_batch_ok(&ix, "!r:x", &batch);
         let before = ix.conn.total_changes();
-        write_batch(&ix, "!r:x", &batch);
+        write_batch_ok(&ix, "!r:x", &batch);
         assert_eq!(ix.conn.total_changes(), before);
         assert_eq!(ix.search("final", "", 10, 0).unwrap().len(), 1);
         assert!(ix.search("intermediate", "", 10, 0).unwrap().is_empty());
@@ -1915,14 +1953,14 @@ mod tests {
             undecryptable: vec![],
             redactions: vec![],
         };
-        assert_eq!(write_batch(&ix, "!r:x", &batch), 1);
+        assert_eq!(write_batch_ok(&ix, "!r:x", &batch), 1);
         let hit = ix.search("final", "", 10, 0).unwrap().remove(0);
         assert_eq!(hit.sender, "@first:x");
         assert_eq!(hit.ts, 1000);
         assert_eq!(hit.sender_name, "Latest name");
         assert_eq!(hit.msgtype, "m.notice");
         assert!(ix.search("intermediate", "", 10, 0).unwrap().is_empty());
-        assert_eq!(write_batch(&ix, "!r:x", &batch), 0);
+        assert_eq!(write_batch_ok(&ix, "!r:x", &batch), 0);
     }
 
     #[test]
@@ -1945,7 +1983,7 @@ mod tests {
             undecryptable: vec![],
             redactions: vec![],
         };
-        write_batch(&ix, "!r:x", &batch);
+        write_batch_ok(&ix, "!r:x", &batch);
         assert_eq!(ix.search("alices caption", "", 10, 0).unwrap().len(), 1);
         assert_eq!(ix.search("alice-photo", "", 10, 0).unwrap().len(), 1);
         assert!(ix.search("pwned", "", 10, 0).unwrap().is_empty());
@@ -1956,7 +1994,7 @@ mod tests {
             undecryptable: vec![],
             redactions: vec![],
         };
-        assert_eq!(write_batch(&ix, "!r:x", &later), 0);
+        assert_eq!(write_batch_ok(&ix, "!r:x", &later), 0);
         assert!(ix.search("pwned", "", 10, 0).unwrap().is_empty());
         let orphan = RoomBatch {
             ordinary: vec![],
@@ -1965,7 +2003,7 @@ mod tests {
             undecryptable: vec![],
             redactions: vec![],
         };
-        assert_eq!(write_batch(&ix, "!r:x", &orphan), 0);
+        assert_eq!(write_batch_ok(&ix, "!r:x", &orphan), 0);
         assert!(!ix.contains("$never-seen").unwrap());
         assert_eq!(ix.stats().unwrap().messages, 1);
         let mut own = evil_edit("$img", "$own");
@@ -1977,7 +2015,7 @@ mod tests {
             undecryptable: vec![],
             redactions: vec![],
         };
-        assert_eq!(write_batch(&ix, "!r:x", &batch), 1);
+        assert_eq!(write_batch_ok(&ix, "!r:x", &batch), 1);
         assert_eq!(ix.search("pwned.png", "", 10, 0).unwrap().len(), 1);
     }
 
@@ -1996,7 +2034,7 @@ mod tests {
             undecryptable: vec![],
             redactions: vec![],
         };
-        write_batch(&ix, "!r:x", &batch);
+        write_batch_ok(&ix, "!r:x", &batch);
         assert_eq!(ix.search("alices real edit", "", 10, 0).unwrap().len(), 1);
         assert!(ix.search("evil wording", "", 10, 0).unwrap().is_empty());
         assert!(ix.search("original", "", 10, 0).unwrap().is_empty());
@@ -2032,7 +2070,7 @@ mod tests {
             undecryptable: vec![],
             redactions: vec![],
         };
-        write_batch(&ix, "!r:x", &batch);
+        write_batch_ok(&ix, "!r:x", &batch);
         assert_eq!(ix.search("regrettable", "", 10, 0).unwrap().len(), 1);
         ix.remove_event("$edit").unwrap();
         assert!(ix.search("regrettable", "", 10, 0).unwrap().is_empty());
@@ -2265,23 +2303,23 @@ mod tests {
         };
         let before = current_generation(&index);
         assert_ne!(before, 0);
-        assert_eq!(write_locked(&index, before, "!r:x", &batch), Some(1));
+        assert_eq!(write_locked(&index, before, "!r:x", &batch), Written::Rows(1));
 
         let generation = current_generation(&index);
         index.lock().unwrap().as_ref().unwrap().clear().unwrap();
         assert_eq!(
             write_locked(&index, generation, "!r:x", &batch),
-            None,
+            Written::Cleared,
             "a batch collected before the clear was written after it"
         );
         let stats = index.lock().unwrap().as_ref().unwrap().stats().unwrap();
         assert_eq!(stats.messages, 0, "the cleared index was refilled");
 
         let fresh = current_generation(&index);
-        assert_eq!(write_locked(&index, fresh, "!r:x", &batch), Some(1));
+        assert_eq!(write_locked(&index, fresh, "!r:x", &batch), Written::Rows(1));
         let closed = std::sync::Arc::new(std::sync::Mutex::new(None));
         assert_eq!(current_generation(&closed), 0);
-        assert_eq!(write_locked(&closed, 0, "!r:x", &batch), None);
+        assert_eq!(write_locked(&closed, 0, "!r:x", &batch), Written::Cleared);
         assert_ne!(SearchIndex::open_in_memory().unwrap().generation(), fresh);
     }
 
@@ -2406,7 +2444,7 @@ mod tests {
             undecryptable: vec![],
             redactions: vec![],
         };
-        assert_eq!(write_batch(&ix, "!r:x", &batch), 1);
+        assert_eq!(write_batch_ok(&ix, "!r:x", &batch), 1);
         let by_name = ix.search("IMG_2041", "", 10, 0).unwrap();
         assert_eq!(by_name.len(), 1);
         assert_eq!(by_name[0].event_id, "$img");
@@ -2426,7 +2464,7 @@ mod tests {
             undecryptable: vec![],
             redactions: vec![],
         };
-        write_batch(&ix, "!r:x", &batch);
+        write_batch_ok(&ix, "!r:x", &batch);
         assert!(ix.search("never-stored", "", 10, 0).unwrap().is_empty());
         assert!(ix.search("image/png", "", 10, 0).unwrap().is_empty());
         let columns: Vec<String> = ix
@@ -2610,9 +2648,9 @@ mod tests {
         .unwrap();
         let ix = SearchIndex::from_connection(conn).unwrap();
         let edit = |id: &str, body: &str, ts| edit_of("$text", id, "@a:x", body, ts);
-        write_batch(&ix, "!r:x", &edits_batch(vec![], vec![edit("$new", "recorded wording", 5000)]));
+        write_batch_ok(&ix, "!r:x", &edits_batch(vec![], vec![edit("$new", "recorded wording", 5000)]));
         assert_eq!(body_of(&ix, "$text"), "recorded wording");
-        write_batch(&ix, "!r:x", &edits_batch(vec![], vec![edit("$older", "stale wording", 4000)]));
+        write_batch_ok(&ix, "!r:x", &edits_batch(vec![], vec![edit("$older", "stale wording", 4000)]));
         assert_eq!(body_of(&ix, "$text"), "recorded wording");
     }
 
@@ -2628,13 +2666,13 @@ mod tests {
         let ix = SearchIndex::from_connection(conn).unwrap();
         let fingerprint = body_fts_fingerprint(&ix);
         let edit = |id: &str, body: &str, ts| edit_of("$text", id, "@a:x", body, ts);
-        assert_eq!(write_batch(&ix, "!r:x", &edits_batch(vec![], vec![edit("$old", "legacy edit", 4500)])), 0);
+        assert_eq!(write_batch_ok(&ix, "!r:x", &edits_batch(vec![], vec![edit("$old", "legacy edit", 4500)])), 0);
         assert_eq!(body_fts_fingerprint(&ix), fingerprint, "re-reading the shown edit rewrote FTS");
         let name: String = ix.conn
             .query_row("SELECT sender_name FROM messages WHERE event_id = '$text'", [], |r| r.get(0))
             .unwrap();
         assert_eq!(name, "Ann");
-        write_batch(&ix, "!r:x", &edits_batch(vec![], vec![edit("$older", "stale wording", 3000)]));
+        write_batch_ok(&ix, "!r:x", &edits_batch(vec![], vec![edit("$older", "stale wording", 3000)]));
         assert_eq!(body_of(&ix, "$text"), "legacy edit");
     }
 
@@ -2663,11 +2701,11 @@ mod tests {
         ix.conn
             .execute("UPDATE messages SET body = 'edited caption' WHERE event_id = '$img'", [])
             .unwrap();
-        assert_eq!(write_batch(&ix, "!r:x", &batch), 1);
+        assert_eq!(write_batch_ok(&ix, "!r:x", &batch), 1);
         assert_eq!(ix.search("holiday-photo", "", 10, 0).unwrap().len(), 1);
         assert_eq!(ix.search("edited caption", "", 10, 0).unwrap().len(), 1, "the edit was overwritten");
         let before = ix.conn.total_changes();
-        assert_eq!(write_batch(&ix, "!r:x", &batch), 0);
+        assert_eq!(write_batch_ok(&ix, "!r:x", &batch), 0);
         assert_eq!(ix.conn.total_changes(), before);
     }
 
@@ -2704,7 +2742,7 @@ mod tests {
             undecryptable: vec![],
             redactions: vec![],
         };
-        assert_eq!(write_batch(&ix, "!r:x", &batch), 0);
+        assert_eq!(write_batch_ok(&ix, "!r:x", &batch), 0);
         assert!(ix.search("redacted", "", 10, 0).unwrap().is_empty());
     }
 
@@ -2739,10 +2777,10 @@ mod tests {
                 edit_of("$o", "$e1", "@a:x", "obsolete wording", 2000),
             ],
         );
-        write_batch(&ix, "!r:x", &batch);
+        write_batch_ok(&ix, "!r:x", &batch);
         assert_eq!(body_of(&ix, "$o"), "final wording");
         let before = ix.conn.total_changes();
-        write_batch(&ix, "!r:x", &batch);
+        write_batch_ok(&ix, "!r:x", &batch);
         assert_eq!(ix.conn.total_changes(), before, "a repeat sweep wrote again");
         let ts: i64 = ix.conn
             .query_row("SELECT ts FROM messages WHERE event_id = '$o'", [], |r| r.get(0))
@@ -2754,9 +2792,9 @@ mod tests {
     fn a_stale_sweep_cannot_restore_an_older_edit() {
         let ix = index();
         ix.upsert("$o", "!r:x", "@a:x", "Ann", "original wording", "m.text", 1000).unwrap();
-        write_batch(&ix, "!r:x", &edits_batch(vec![], vec![edit_of("$o", "$e2", "@a:x", "final wording", 3000)]));
+        write_batch_ok(&ix, "!r:x", &edits_batch(vec![], vec![edit_of("$o", "$e2", "@a:x", "final wording", 3000)]));
         assert_eq!(
-            write_batch(&ix, "!r:x", &edits_batch(vec![], vec![edit_of("$o", "$e1", "@a:x", "obsolete wording", 2000)])),
+            write_batch_ok(&ix, "!r:x", &edits_batch(vec![], vec![edit_of("$o", "$e1", "@a:x", "obsolete wording", 2000)])),
             0
         );
         assert_eq!(body_of(&ix, "$o"), "final wording");
@@ -2774,7 +2812,7 @@ mod tests {
             if reversed {
                 edits.reverse();
             }
-            write_batch(&ix, "!r:x", &edits_batch(vec![], edits));
+            write_batch_ok(&ix, "!r:x", &edits_batch(vec![], edits));
             assert_eq!(body_of(&ix, "$o"), "bee wording", "reversed={reversed}");
         }
     }
@@ -2790,9 +2828,9 @@ mod tests {
                 edit_of("$o", "$e2", "@a:x", "regretted wording", 3000),
             ],
         );
-        write_batch(&ix, "!r:x", &batch);
+        write_batch_ok(&ix, "!r:x", &batch);
         ix.remove_event("$e2").unwrap();
-        write_batch(&ix, "!r:x", &batch);
+        write_batch_ok(&ix, "!r:x", &batch);
         assert_eq!(body_of(&ix, "$o"), "earlier wording");
         assert!(ix.search("regretted", "", 10, 0).unwrap().is_empty());
     }
@@ -2801,7 +2839,7 @@ mod tests {
     fn an_edit_sent_in_another_room_leaves_the_original_alone() {
         let ix = index();
         ix.upsert("$o", "!a:x", "@a:x", "Ann", "original wording", "m.text", 1000).unwrap();
-        write_batch(&ix, "!b:x", &edits_batch(vec![], vec![edit_of("$o", "$e", "@a:x", "cross room wording", 2000)]));
+        write_batch_ok(&ix, "!b:x", &edits_batch(vec![], vec![edit_of("$o", "$e", "@a:x", "cross room wording", 2000)]));
         assert_eq!(body_of(&ix, "$o"), "original wording");
         let room: String = ix.conn
             .query_row("SELECT room_id FROM messages WHERE event_id = '$o'", [], |r| r.get(0))
@@ -2835,7 +2873,7 @@ mod tests {
                         "m.relates_to": {"rel_type": "m.replace", "event_id": "$o"}}
         }))
         .unwrap();
-        assert_eq!(write_batch(&ix, "!r:x", &edits_batch(vec![], vec![edit])), 1);
+        assert_eq!(write_batch_ok(&ix, "!r:x", &edits_batch(vec![], vec![edit])), 1);
         let hit = ix.search("waves hello", "", 10, 0).unwrap().remove(0);
         assert_eq!(hit.msgtype, "m.emote");
     }
@@ -2861,5 +2899,77 @@ mod tests {
         set_sweep_cursor("@b:x", 7);
         assert_eq!(sweep_cursor("@a:x"), 40);
         assert_eq!(sweep_window(vec![1, 2, 3], 7, 40), vec![1, 2, 3]);
+    }
+
+    fn shared_index() -> std::sync::Arc<std::sync::Mutex<Option<SearchIndex>>> {
+        std::sync::Arc::new(std::sync::Mutex::new(Some(SearchIndex::open_in_memory().unwrap())))
+    }
+
+    fn row(id: &str, body: &str) -> Indexable {
+        Indexable {
+            event_id: id.into(), sender: "@a:x".into(), body: body.into(),
+            msgtype: "m.text".into(), ts: 1000, filename: None, edit_id: None,
+        }
+    }
+
+    fn with_ix<T>(index: &std::sync::Arc<std::sync::Mutex<Option<SearchIndex>>>, f: impl FnOnce(&SearchIndex) -> T) -> T {
+        f(index.lock().unwrap().as_ref().unwrap())
+    }
+
+    #[test]
+    fn a_refused_row_write_fails_the_batch_and_a_retry_after_repair_indexes_it() {
+        let index = shared_index();
+        let generation = current_generation(&index);
+        let batch = edits_batch(vec![row("$1", "needle one"), row("$2", "needle two")], vec![]);
+        with_ix(&index, |ix| ix.conn.execute_batch("PRAGMA query_only = ON").unwrap());
+        assert_eq!(write_locked(&index, generation, "!r:x", &batch), Written::Failed);
+        with_ix(&index, |ix| ix.conn.execute_batch("PRAGMA query_only = OFF").unwrap());
+        assert_eq!(with_ix(&index, |ix| ix.stats().unwrap().messages), 0);
+        assert_eq!(write_locked(&index, generation, "!r:x", &batch), Written::Rows(2));
+        assert_eq!(with_ix(&index, |ix| ix.search("needle", "", 10, 0).unwrap().len()), 2);
+        assert_eq!(
+            write_locked(&index, generation, "!r:x", &batch),
+            Written::Rows(0),
+            "a page of messages indexed already is a valid zero"
+        );
+    }
+
+    #[test]
+    fn a_refused_commit_fails_the_batch_rather_than_reporting_zero_rows() {
+        use std::os::raw::{c_int, c_void};
+        unsafe extern "C" fn refuse(_: *mut c_void) -> c_int {
+            1
+        }
+        let index = shared_index();
+        let generation = current_generation(&index);
+        let batch = edits_batch(vec![row("$1", "needle one")], vec![]);
+        with_ix(&index, |ix| unsafe {
+            rusqlite::ffi::sqlite3_commit_hook(ix.conn.handle(), Some(refuse), std::ptr::null_mut());
+        });
+        assert_eq!(write_locked(&index, generation, "!r:x", &batch), Written::Failed);
+        with_ix(&index, |ix| unsafe {
+            rusqlite::ffi::sqlite3_commit_hook(ix.conn.handle(), None, std::ptr::null_mut());
+        });
+        assert_eq!(with_ix(&index, |ix| ix.stats().unwrap().messages), 0);
+        assert_eq!(write_locked(&index, generation, "!r:x", &batch), Written::Rows(1));
+    }
+
+    #[test]
+    fn a_refused_redaction_fails_the_batch_and_the_clear_still_wins() {
+        let index = shared_index();
+        let generation = current_generation(&index);
+        assert_eq!(
+            write_locked(&index, generation, "!r:x", &edits_batch(vec![row("$1", "needle")], vec![])),
+            Written::Rows(1)
+        );
+        let mut redaction = edits_batch(vec![], vec![]);
+        redaction.redactions = vec!["$1".into()];
+        with_ix(&index, |ix| ix.conn.execute_batch("PRAGMA query_only = ON").unwrap());
+        assert_eq!(write_locked(&index, generation, "!r:x", &redaction), Written::Failed);
+        with_ix(&index, |ix| ix.conn.execute_batch("PRAGMA query_only = OFF").unwrap());
+        assert_eq!(write_locked(&index, generation, "!r:x", &redaction), Written::Rows(0));
+        assert!(with_ix(&index, |ix| ix.search("needle", "", 10, 0).unwrap().is_empty()));
+        with_ix(&index, |ix| ix.clear().unwrap());
+        assert_eq!(write_locked(&index, generation, "!r:x", &redaction), Written::Cleared);
     }
 }
