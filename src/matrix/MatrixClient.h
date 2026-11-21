@@ -808,8 +808,9 @@ public:
     virtual void requestInvitePolicySupport() {}
     virtual void requestEditHistory(const QString &roomId, const QString &eventId)
     { Q_UNUSED(roomId); Q_UNUSED(eventId); }
-    virtual void requestEventSource(const QString &roomId, const QString &eventId)
-    { Q_UNUSED(roomId); Q_UNUSED(eventId); }
+    // Returns the op id the eventSourceReceived map carries as "opId", or 0.
+    virtual quint64 requestEventSource(const QString &roomId, const QString &eventId)
+    { Q_UNUSED(roomId); Q_UNUSED(eventId); return 0; }
     virtual quint64 eventAtTimestamp(const QString &roomId, qint64 timestampMs)
     { Q_UNUSED(roomId); Q_UNUSED(timestampMs); return 0; }
 

@@ -1,5 +1,6 @@
 #include "app/SavedMessagesController.h"
 #include "matrix/MatrixClient.h"
+#include "matrix/TimelineEvent.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -24,8 +25,32 @@ public:
     void readAccountPref(const QString &type) override { lastType = type; ++reads; }
     void writeAccountPref(const QString &type, const QVariantMap &content) override
     { lastType = type; lastWrite = content; }
-    void requestEventSource(const QString &roomId, const QString &eventId) override
-    { requestedRoom = roomId; requestedEvent = eventId; }
+    bool useOps = false;
+    quint64 lastOp = 0;
+    QStringList requested;
+    QHash<QString, quint64> opFor;
+    quint64 requestEventSource(const QString &roomId, const QString &eventId) override
+    {
+        requestedRoom = roomId;
+        requestedEvent = eventId;
+        requested << eventId;
+        const quint64 op = useOps ? ++lastOp : 0;
+        opFor.insert(eventId, op);
+        return op;
+    }
+    void answer(const QString &eventId, quint64 op, const QString &body,
+                const QVariantMap &edited = {}, bool editUnreadable = false)
+    {
+        const QString json = QStringLiteral(
+            "{\"type\":\"m.room.message\",\"sender\":\"@bob:example.org\","
+            "\"content\":{\"msgtype\":\"m.text\",\"body\":\"%1\"}}").arg(body);
+        Q_EMIT eventSourceReceived(QStringLiteral("!room:example.org"), eventId, true,
+                                   json, QVariantMap{
+                                       { QStringLiteral("opId"), op },
+                                       { QStringLiteral("effectiveContent"), edited },
+                                       { QStringLiteral("editUnreadable"), editUnreadable },
+                                   });
+    }
     void login(const QString &, const QString &, const QString &) override {}
     void logout() override { user.clear(); Q_EMIT loggedOut(); }
     bool restoreSession() override { return false; }
@@ -54,6 +79,33 @@ public:
     bool canPaginate(const QString &) const override { return false; }
     bool paginating(const QString &) const override { return false; }
 };
+
+namespace {
+QVariantMap savedRef(const QString &room, const QString &event, qint64 at)
+{
+    return {{QStringLiteral("room_id"), room}, {QStringLiteral("event_id"), event},
+            {QStringLiteral("thread_root_id"), QString()},
+            {QStringLiteral("saved_at_ms"), at}};
+}
+
+QVariantMap savedList(const QVariantList &entries)
+{
+    return {{QStringLiteral("version"), 1}, {QStringLiteral("entries"), entries}};
+}
+
+QVariantMap entryFor(const SavedMessagesController &saved, const QString &event)
+{
+    for (const QVariant &v : saved.entries())
+        if (v.toMap().value(QStringLiteral("eventId")) == event)
+            return v.toMap();
+    return {};
+}
+
+bool setNow(SavedMessagesController &saved, qint64 ms)
+{
+    return QMetaObject::invokeMethod(&saved, "setNowForTest", Q_ARG(qint64, ms));
+}
+}
 
 class SavedMessagesControllerTest : public QObject
 {
@@ -330,6 +382,196 @@ private Q_SLOTS:
         QVERIFY(ref.value(QStringLiteral("resolved")).toBool());
         QVERIFY(!ref.value(QStringLiteral("available")).toBool());
         QVERIFY(ref.value(QStringLiteral("preview")).toString().isEmpty());
+    }
+
+    void aReplacementRequestGetsItsOwnTimeoutBudget()
+    {
+        SavedFakeClient client;
+        client.useOps = true;
+        SavedMessagesController saved;
+        saved.setClient(&client);
+        QVERIFY(setNow(saved, 0));
+        const QString room = QStringLiteral("!room:example.org");
+        QVariantList refs;
+        for (int i = 1; i <= 5; ++i)
+            refs << savedRef(room, QStringLiteral("$%1").arg(i), 100 - i);
+        Q_EMIT client.accountPrefRead(client.lastType, true, savedList(refs));
+        saved.resolveVisible();
+        QCOMPARE(client.requested, (QStringList{QStringLiteral("$1"), QStringLiteral("$2"),
+                                                QStringLiteral("$3"), QStringLiteral("$4")}));
+
+        QVERIFY(setNow(saved, 14000));
+        client.answer(QStringLiteral("$1"), client.opFor.value(QStringLiteral("$1")),
+                      QStringLiteral("one"));
+        QCOMPARE(client.requested.last(), QStringLiteral("$5"));
+
+        QVERIFY(setNow(saved, 15000));
+        QVERIFY(entryFor(saved, QStringLiteral("$2")).value(QStringLiteral("failed")).toBool());
+        QVERIFY(!entryFor(saved, QStringLiteral("$5")).value(QStringLiteral("resolved")).toBool());
+
+        QVERIFY(setNow(saved, 16000));
+        client.answer(QStringLiteral("$5"), client.opFor.value(QStringLiteral("$5")),
+                      QStringLiteral("five"));
+        QCOMPARE(entryFor(saved, QStringLiteral("$5")).value(QStringLiteral("preview")).toString(),
+                 QStringLiteral("five"));
+
+        const quint64 expiredOp = client.opFor.value(QStringLiteral("$2"));
+        client.answer(QStringLiteral("$2"), expiredOp, QStringLiteral("too late"));
+        QVERIFY(!entryFor(saved, QStringLiteral("$2")).value(QStringLiteral("available")).toBool());
+        QVERIFY(entryFor(saved, QStringLiteral("$2")).value(QStringLiteral("failed")).toBool());
+
+        const int before = client.requested.size();
+        QVERIFY(QMetaObject::invokeMethod(&saved, "retryPreview", Q_ARG(QString, room),
+                                          Q_ARG(QString, QStringLiteral("$2"))));
+        QCOMPARE(client.requested.size(), before + 1);
+        QVERIFY(!entryFor(saved, QStringLiteral("$2")).value(QStringLiteral("failed")).toBool());
+        client.answer(QStringLiteral("$2"), expiredOp, QStringLiteral("too late"));
+        QVERIFY(!entryFor(saved, QStringLiteral("$2")).value(QStringLiteral("available")).toBool());
+        client.answer(QStringLiteral("$2"), client.opFor.value(QStringLiteral("$2")),
+                      QStringLiteral("two"));
+        QCOMPARE(entryFor(saved, QStringLiteral("$2")).value(QStringLiteral("preview")).toString(),
+                 QStringLiteral("two"));
+    }
+
+    void anAccountSwitchMidResolveDropsLateAnswersAndPreviews()
+    {
+        SavedFakeClient client;
+        client.useOps = true;
+        SavedMessagesController saved;
+        saved.setClient(&client);
+        Q_EMIT client.accountPrefRead(client.lastType, true,
+            savedList({savedRef(QStringLiteral("!room:example.org"), QStringLiteral("$1"), 9)}));
+        saved.resolveVisible();
+        const quint64 op = client.opFor.value(QStringLiteral("$1"));
+        client.user = QStringLiteral("@two:example.org");
+        Q_EMIT client.loginSucceeded(client.user);
+        Q_EMIT client.accountPrefRead(client.lastType, true,
+            savedList({savedRef(QStringLiteral("!room:example.org"), QStringLiteral("$1"), 9)}));
+        client.answer(QStringLiteral("$1"), op, QStringLiteral("account one secret"));
+        QVERIFY(entryFor(saved, QStringLiteral("$1")).value(QStringLiteral("preview"))
+                    .toString().isEmpty());
+    }
+
+    void filtersFollowTheAccountAndTheRoomsThatAreStillSaved()
+    {
+        SavedFakeClient client;
+        SavedMessagesController saved;
+        saved.setClient(&client);
+        const QVariantMap both = savedList({
+            savedRef(QStringLiteral("!a:example.org"), QStringLiteral("$1"), 9),
+            savedRef(QStringLiteral("!b:example.org"), QStringLiteral("$2"), 8)});
+        Q_EMIT client.accountPrefRead(client.lastType, true, both);
+        saved.setRoomFilter(QStringLiteral("!a:example.org"));
+        saved.setTypeFilter(QStringLiteral("media"));
+        saved.setQuery(QStringLiteral("x"));
+        saved.refresh();
+        Q_EMIT client.accountPrefRead(client.lastType, true, both);
+        QCOMPARE(saved.roomFilter(), QStringLiteral("!a:example.org"));
+        QCOMPARE(saved.query(), QStringLiteral("x"));
+
+        saved.setTypeFilter(QString());
+        saved.setQuery(QString());
+        saved.refresh();
+        Q_EMIT client.accountPrefRead(client.lastType, true, savedList({
+            savedRef(QStringLiteral("!b:example.org"), QStringLiteral("$2"), 8)}));
+        QCOMPARE(saved.roomFilter(), QString());
+        QCOMPARE(saved.entries().size(), 1);
+
+        saved.setRoomFilter(QStringLiteral("!b:example.org"));
+        saved.setTypeFilter(QStringLiteral("text"));
+        saved.setQuery(QStringLiteral("y"));
+        client.user = QStringLiteral("@two:example.org");
+        Q_EMIT client.loginSucceeded(client.user);
+        QCOMPARE(saved.roomFilter(), QString());
+        QCOMPARE(saved.typeFilter(), QString());
+        QCOMPARE(saved.query(), QString());
+        Q_EMIT client.accountPrefRead(client.lastType, true, savedList({
+            savedRef(QStringLiteral("!c:example.org"), QStringLiteral("$3"), 7)}));
+        QCOMPARE(saved.entries().size(), 1);
+
+        saved.setQuery(QStringLiteral("nothing matches"));
+        QCOMPARE(saved.entries().size(), 0);
+        QVERIFY(QMetaObject::invokeMethod(&saved, "clearFilters"));
+        QCOMPARE(saved.entries().size(), 1);
+    }
+
+    void anEditReplacesTheResolvedPreviewAndItsFilterMatch()
+    {
+        SavedFakeClient client;
+        client.useOps = true;
+        SavedMessagesController saved;
+        saved.setClient(&client);
+        const QString room = QStringLiteral("!room:example.org");
+        Q_EMIT client.accountPrefRead(client.lastType, true,
+                                      savedList({savedRef(room, QStringLiteral("$1"), 9)}));
+        saved.resolveVisible();
+        const quint64 first = client.opFor.value(QStringLiteral("$1"));
+        client.answer(QStringLiteral("$1"), first, QStringLiteral("teh typo"));
+        saved.setQuery(QStringLiteral("typo"));
+        QCOMPARE(saved.entries().size(), 1);
+
+        Q_EMIT client.eventEdited(room, QStringLiteral("$1"));
+        QCOMPARE(client.requested.size(), 2);
+        QCOMPARE(entryFor(saved, QStringLiteral("$1")).value(QStringLiteral("preview")).toString(),
+                 QStringLiteral("teh typo"));
+        const quint64 second = client.opFor.value(QStringLiteral("$1"));
+        client.answer(QStringLiteral("$1"), second, QStringLiteral("teh typo"),
+                      QVariantMap{{QStringLiteral("msgtype"), QStringLiteral("m.text")},
+                                  {QStringLiteral("body"), QStringLiteral("the fix")}});
+        QCOMPARE(saved.entries().size(), 0);
+        saved.setQuery(QStringLiteral("fix"));
+        QCOMPARE(entryFor(saved, QStringLiteral("$1")).value(QStringLiteral("preview")).toString(),
+                 QStringLiteral("the fix"));
+
+        client.answer(QStringLiteral("$1"), first, QStringLiteral("teh typo"));
+        QCOMPARE(entryFor(saved, QStringLiteral("$1")).value(QStringLiteral("preview")).toString(),
+                 QStringLiteral("the fix"));
+
+        TimelineEvent edited;
+        edited.eventId = QStringLiteral("$1");
+        edited.edited = true;
+        edited.body = QStringLiteral("encrypted edit");
+        Q_EMIT client.eventChangedAt(MatrixClient::threadTimelineId(room, QStringLiteral("$root")),
+                                     0, edited);
+        QCOMPARE(client.requested.size(), 3);
+        Q_EMIT client.eventChangedAt(room, 0, edited);
+        QCOMPARE(client.requested.size(), 3);
+        saved.setQuery(QString());
+        client.answer(QStringLiteral("$1"), client.opFor.value(QStringLiteral("$1")),
+                      QStringLiteral("teh typo"), {}, true);
+        const QString unreadable =
+            entryFor(saved, QStringLiteral("$1")).value(QStringLiteral("preview")).toString();
+        QVERIFY(!unreadable.isEmpty());
+        QVERIFY(!unreadable.contains(QStringLiteral("typo")));
+
+        Q_EMIT client.eventEdited(room, QStringLiteral("$1"));
+        Q_EMIT client.eventRedacted(room, QStringLiteral("$1"));
+        client.answer(QStringLiteral("$1"), client.opFor.value(QStringLiteral("$1")),
+                      QStringLiteral("resurrected"));
+        QVERIFY(saved.entries().first().toMap().value(QStringLiteral("preview"))
+                    .toString().isEmpty());
+        QVERIFY(!saved.entries().first().toMap().value(QStringLiteral("available")).toBool());
+    }
+
+    void reopeningRereadsPreviewsAndKeepsTheirTextMeanwhile()
+    {
+        SavedFakeClient client;
+        client.useOps = true;
+        SavedMessagesController saved;
+        saved.setClient(&client);
+        Q_EMIT client.accountPrefRead(client.lastType, true,
+            savedList({savedRef(QStringLiteral("!room:example.org"), QStringLiteral("$1"), 9)}));
+        saved.resolveVisible();
+        client.answer(QStringLiteral("$1"), client.opFor.value(QStringLiteral("$1")),
+                      QStringLiteral("before"));
+        QVERIFY(QMetaObject::invokeMethod(&saved, "refreshPreviews"));
+        QCOMPARE(client.requested.size(), 2);
+        QCOMPARE(entryFor(saved, QStringLiteral("$1")).value(QStringLiteral("preview")).toString(),
+                 QStringLiteral("before"));
+        client.answer(QStringLiteral("$1"), client.opFor.value(QStringLiteral("$1")),
+                      QStringLiteral("after"));
+        QCOMPARE(entryFor(saved, QStringLiteral("$1")).value(QStringLiteral("preview")).toString(),
+                 QStringLiteral("after"));
     }
 
     void malformedAccountDataCannotBecomeABookmark()

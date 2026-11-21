@@ -17,6 +17,49 @@ QStringList names(const QuickSwitcherModel &m)
     return out;
 }
 
+class ManyRoomsClient final : public MockMatrixClient
+{
+public:
+    QList<RoomInfo> fixture;
+    QList<RoomInfo> rooms() const override { return fixture; }
+};
+
+RoomInfo fixtureRoom(const QString &id, const QString &name,
+                     const QString &category)
+{
+    RoomInfo r;
+    r.id = id;
+    r.name = name;
+    r.isDirect = category == QLatin1String("dm");
+    r.isSpace = category == QLatin1String("space");
+    if (category == QLatin1String("invite"))
+        r.membership = RoomInfo::Invited;
+    return r;
+}
+
+QList<RoomInfo> fiftyFiveWeakRooms()
+{
+    QList<RoomInfo> out;
+    for (int i = 0; i < 55; ++i)
+        out << fixtureRoom(QStringLiteral("!r%1:x").arg(i, 2, 10, QLatin1Char('0')),
+                           QStringLiteral("Chat with alice %1").arg(i),
+                           QStringLiteral("room"));
+    return out;
+}
+
+QString idAt(const QuickSwitcherModel &m, int row)
+{
+    return m.resultAt(row).value(QStringLiteral("roomId")).toString();
+}
+
+int rowOf(const QuickSwitcherModel &m, const QString &roomId)
+{
+    for (int row = 0; row < m.rowCount(); ++row)
+        if (idAt(m, row) == roomId)
+            return row;
+    return -1;
+}
+
 QString categoryFor(const QuickSwitcherModel &m, const QString &name)
 {
     for (int row = 0; row < m.rowCount(); ++row) {
@@ -175,6 +218,77 @@ private Q_SLOTS:
         client.logout();
         QCOMPARE(model.rowCount(), 0);
         QVERIFY(model.query().isEmpty());
+    }
+
+    void anExactDmIsNotCrowdedOutByFiftyWeakRoomMatches()
+    {
+        ManyRoomsClient client;
+        client.fixture = fiftyFiveWeakRooms();
+        client.fixture << fixtureRoom(QStringLiteral("!dm:x"),
+                                      QStringLiteral("Alice"),
+                                      QStringLiteral("dm"));
+        QuickSwitcherModel model;
+        model.setClient(&client);
+        model.setQuery(QStringLiteral("alice"));
+        const int row = rowOf(model, QStringLiteral("!dm:x"));
+        QVERIFY(row >= 0);
+        QCOMPARE(model.resultAt(row).value(QStringLiteral("category")).toString(),
+                 QStringLiteral("dm"));
+        int rooms = 0;
+        for (int i = 0; i < model.rowCount(); ++i)
+            rooms += model.resultAt(i).value(QStringLiteral("category"))
+                         == QStringLiteral("room");
+        QCOMPARE(rooms, 50);
+    }
+
+    void anEmptyQueryStillListsPeopleSpacesAndInvitesPastFiftyRooms()
+    {
+        ManyRoomsClient client;
+        client.fixture = fiftyFiveWeakRooms();
+        client.fixture << fixtureRoom(QStringLiteral("!dm:x"), QStringLiteral("Bob"),
+                                      QStringLiteral("dm"))
+                       << fixtureRoom(QStringLiteral("!sp:x"), QStringLiteral("Team"),
+                                      QStringLiteral("space"))
+                       << fixtureRoom(QStringLiteral("!inv:x"), QStringLiteral("Party"),
+                                      QStringLiteral("invite"));
+        QuickSwitcherModel model;
+        model.setClient(&client);
+        model.refresh();
+        QVERIFY(rowOf(model, QStringLiteral("!dm:x")) >= 0);
+        QVERIFY(rowOf(model, QStringLiteral("!sp:x")) >= 0);
+        QVERIFY(rowOf(model, QStringLiteral("!inv:x")) >= 0);
+        QCOMPARE(model.rowCount(), 53);
+        QStringList order;
+        for (int i = 0; i < model.rowCount(); ++i) {
+            const QString cat =
+                model.resultAt(i).value(QStringLiteral("category")).toString();
+            if (order.isEmpty() || order.last() != cat)
+                order << cat;
+        }
+        QCOMPARE(order, (QStringList{ QStringLiteral("room"), QStringLiteral("dm"),
+                                      QStringLiteral("space"),
+                                      QStringLiteral("invite") }));
+
+        model.setQuery(QStringLiteral("team"));
+        QCOMPARE(idAt(model, 0), QStringLiteral("!sp:x"));
+        model.setQuery(QStringLiteral("party"));
+        QCOMPARE(idAt(model, 0), QStringLiteral("!inv:x"));
+        QVERIFY(model.resultAt(0).value(QStringLiteral("isInvite")).toBool());
+    }
+
+    void exactMatchesOutrankWeakOnesAndEqualNamesOrderByRoomId()
+    {
+        ManyRoomsClient client;
+        client.fixture = fiftyFiveWeakRooms();
+        client.fixture << fixtureRoom(QStringLiteral("!b:x"), QStringLiteral("Alice"),
+                                      QStringLiteral("room"))
+                       << fixtureRoom(QStringLiteral("!a:x"), QStringLiteral("Alice"),
+                                      QStringLiteral("room"));
+        QuickSwitcherModel model;
+        model.setClient(&client);
+        model.setQuery(QStringLiteral("alice"));
+        QCOMPARE(idAt(model, 0), QStringLiteral("!a:x"));
+        QCOMPARE(idAt(model, 1), QStringLiteral("!b:x"));
     }
 };
 

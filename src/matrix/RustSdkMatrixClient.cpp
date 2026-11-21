@@ -9030,15 +9030,17 @@ void RustSdkMatrixClient::requestEditHistory(const QString &roomId,
                                                 ev.constData()));
 }
 
-void RustSdkMatrixClient::requestEventSource(const QString &roomId,
-                                             const QString &eventId)
+quint64 RustSdkMatrixClient::requestEventSource(const QString &roomId,
+                                                const QString &eventId)
 {
     if (!m_rustHandle || roomId.isEmpty() || eventId.isEmpty())
-        return;
+        return 0;
+    const quint64 opId = nextOpId();
     const QByteArray room = roomId.toUtf8();
     const QByteArray ev = eventId.toUtf8();
     takeRustString(mx_rust_request_event_source(m_rustHandle, room.constData(),
-                                                ev.constData()));
+                                                ev.constData(), opId));
+    return opId;
 }
 
 quint64 RustSdkMatrixClient::eventAtTimestamp(const QString &roomId,
@@ -13001,6 +13003,12 @@ bool RustSdkMatrixClient::handleRoomCommandEvent(const QString &type,
                   enc.value(QStringLiteral("algorithm")).toString() },
                 { QStringLiteral("verification"),
                   enc.value(QStringLiteral("verification")).toString() },
+                { QStringLiteral("opId"), opId() },
+                { QStringLiteral("effectiveContent"),
+                  event.value(QStringLiteral("effective_content"))
+                      .toObject().toVariantMap() },
+                { QStringLiteral("editUnreadable"),
+                  event.value(QStringLiteral("edit_unreadable")).toBool() },
             });
         return true;
     }
