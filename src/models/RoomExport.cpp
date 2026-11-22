@@ -179,6 +179,11 @@ QString renderPlainText(const QList<TimelineEvent> &events,
         lines.append(QStringLiteral("Messages that could not be decrypted: %1")
                          .arg(options.undecryptableCount));
     }
+    if (options.editsUnresolved > 0) {
+        lines.append(QStringLiteral("Edits that could not be applied: %1 (those "
+                                    "messages are shown in their original form)")
+                         .arg(options.editsUnresolved));
+    }
     if (options.encrypted) {
         lines.append(options.allowEncryptedPlaintext
             ? QStringLiteral(
@@ -249,6 +254,10 @@ QString renderJson(const QList<TimelineEvent> &events, const Options &options)
     if (options.undecryptableCount >= 0) {
         root.insert(QStringLiteral("undecryptable_count"),
                     options.undecryptableCount);
+    }
+    if (options.editsUnresolved >= 0) {
+        root.insert(QStringLiteral("edits_unresolved"),
+                    options.editsUnresolved);
     }
     root.insert(QStringLiteral("includes_attachments"), false);
 
