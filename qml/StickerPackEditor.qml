@@ -86,7 +86,7 @@ Dialog {
     Connections {
         target: root.stickers
         function onTransferFinished(kind, ok, category, added, skipped, failed, name,
-                                    unconfirmed) {
+                                    unconfirmed, cancelled) {
             if (kind === "emoji" || !root.visible)
                 return
             // Our own "Add images" wrote the pack once per image: like an own
@@ -98,7 +98,8 @@ Dialog {
             }
             root.noticeIsError = !ok && category !== "cancelled"
             root.notice = root.stickers.transferMessage(
-                kind, ok, category, added, skipped, failed, name, unconfirmed || 0)
+                kind, ok, category, added, skipped, failed, name, unconfirmed || 0,
+                cancelled || 0)
         }
     }
 

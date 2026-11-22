@@ -69,6 +69,19 @@ public:
     quint64 nextOp = 100;
 };
 
+class NamedClient : public MockMatrixClient
+{
+public:
+    QString displayNameFor(const QString &roomId,
+                           const QString &userId) const override
+    {
+        return roomId == QLatin1String("!r:example.org")
+                && userId == QLatin1String("@a:example.org")
+            ? QStringLiteral("Alice")
+            : QString();
+    }
+};
+
 class MediaHistoryModelTest : public QObject
 {
     Q_OBJECT
@@ -336,6 +349,27 @@ private Q_SLOTS:
         QCOMPARE(model.imageIndexForRow(3), -1);
         QCOMPARE(model.imageIndexForRow(99), -1);
         QCOMPARE(model.imageIndexForRow(-1), -1);
+    }
+
+    void theViewerNamesTheSenderLikeTheTimelineViewer()
+    {
+        NamedClient client;
+        QVERIFY(login(client));
+        MediaHistoryModel model;
+        model.setClient(&client);
+        model.setRoomId(QStringLiteral("!r:example.org"));
+        Q_EMIT client.mediaHistoryPage(
+            0, QStringLiteral("!r:example.org"),
+            { keyedEntry(QStringLiteral("$img1"), QStringLiteral("image")),
+              keyedEntry(QStringLiteral("$img2"), QStringLiteral("image"),
+                         QStringLiteral("@b:example.org")) },
+            2, 2, 0, true, false);
+        const QVariantList images = model.imageEntries();
+        QCOMPARE(images.size(), 2);
+        QCOMPARE(images.at(0).toMap().value(QStringLiteral("sender")).toString(),
+                 QStringLiteral("Alice"));
+        QCOMPARE(images.at(1).toMap().value(QStringLiteral("sender")).toString(),
+                 QStringLiteral("@b:example.org"));
     }
 
     void theImageIndexFollowsTheFilteredView()

@@ -179,7 +179,8 @@ public:
                                         const QString &category, int added,
                                         int skipped, int failed,
                                         const QString &name,
-                                        int unconfirmed = 0) const;
+                                        int unconfirmed = 0,
+                                        int cancelled = 0) const;
 
     Q_INVOKABLE QVariantList emoticonsInHtml(const QString &html) const;
     Q_INVOKABLE void saveEmoticons(const QVariantList &emoticons);
@@ -221,7 +222,7 @@ Q_SIGNALS:
     void transferFinished(const QString &kind, bool ok,
                           const QString &category, int added, int skipped,
                           int failed, const QString &name,
-                          int unconfirmed = 0);
+                          int unconfirmed = 0, int cancelled = 0);
 
 private:
     struct BatchItem {
@@ -247,6 +248,7 @@ private:
         int failed = 0;
         // Of `failed`: the state write went out and its outcome is unknown.
         int unconfirmed = 0;
+        int cancelled = 0;
         QString category;
         QString firstCode;
         QList<BatchItem> items;
@@ -351,6 +353,9 @@ private:
     quint64 m_republishOp = 0;
     void dropRepublishScratch();
     QString m_failedUploadsAccount;
+    // Per pack: images this session's own uploads wrote, so their sync echo
+    // is not reported as a change made elsewhere.
+    QHash<QString, QSet<QString>> m_ownAddedKeys;
     QString m_failedUploadsPackId;
     static QString localGroupFor(const QString &userId);
     bool m_refreshOwed = false;

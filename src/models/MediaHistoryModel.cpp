@@ -1,5 +1,7 @@
 #include "models/MediaHistoryModel.h"
 
+#include "matrix/PresentableName.h"
+
 #include <algorithm>
 
 #include <QDate>
@@ -327,7 +329,12 @@ QVariantList MediaHistoryModel::imageEntries() const
                      e.filename.isEmpty() ? e.body : e.filename);
         entry.insert(QStringLiteral("eventId"), e.eventId);
         entry.insert(QStringLiteral("spoiler"), e.spoiler);
-        entry.insert(QStringLiteral("sender"), e.sender);
+        const QString name = m_client
+            ? matrix::presentable_name::withoutDirectionalControls(
+                  m_client->displayNameFor(m_roomId, e.sender))
+            : QString();
+        entry.insert(QStringLiteral("sender"),
+                     name.isEmpty() ? e.sender : name);
         entry.insert(QStringLiteral("timestamp"),
                      QDateTime::fromMSecsSinceEpoch(e.timestampMs));
         entry.insert(QStringLiteral("mime"), e.mimetype);
