@@ -31,6 +31,7 @@
 #include "app/SettingsManager.h"
 #include "auth/AuthManager.h"
 #include "media/MediaBridge.h"
+#include "media/MediaImageProvider.h"
 #include "presence/PresenceManager.h"
 #include "matrix/MockMatrixClient.h"
 #include "profile/ProfileBioManager.h"
@@ -196,7 +197,9 @@ private:
         QVERIFY(avatar);
         auto *action = findItem(avatar, QStringLiteral("avatarViewAction"));
         QVERIFY(action);
-        QTRY_VERIFY(action->property("available").toBool());
+        QTRY_COMPARE(avatar->property("presentationState").toString(),
+                     QStringLiteral("ready"));
+        QVERIFY(action->property("available").toBool());
         QVERIFY(QMetaObject::invokeMethod(action, "activate"));
         QObject *viewer = nullptr;
         QTRY_VERIFY((viewer = openViewer(root)) != nullptr);
@@ -628,6 +631,9 @@ private slots:
         mock->setAvatarBytesForTest(roomMxc, roomPng, QStringLiteral("image/png"));
         mock->setAvatarBytesForTest(userMxc, userPng, QStringLiteral("image/png"));
 
+        if (!m_engine->imageProvider(QStringLiteral("lightning-media")))
+            m_engine->addImageProvider(QStringLiteral("lightning-media"),
+                                       new MediaImageProvider(m_controller->mediaBridge()));
         QQmlComponent component(m_engine);
         component.setData(QByteArray(kAvatarScene),
                           QUrl(QStringLiteral("avatar-scene.qml")));
