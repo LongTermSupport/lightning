@@ -8,6 +8,7 @@
 #include "spaces/SpaceManager.h"
 
 #include <QFile>
+#include <algorithm>
 #include <QRegularExpression>
 #include <QScopeGuard>
 #include <QSettings>
@@ -122,7 +123,8 @@ public:
     void startSync() override {}
     void stopSync() override {}
     ConnectionState connectionState() const override { return Syncing; }
-    QList<RoomInfo> rooms() const override { return mirror; }
+    mutable int roomsCalls = 0;
+    QList<RoomInfo> rooms() const override { ++roomsCalls; return mirror; }
     QList<TimelineEvent> timeline(const QString &) const override { return {}; }
     QString displayNameFor(const QString &, const QString &id) const override
     { return id; }
@@ -1252,6 +1254,71 @@ private Q_SLOTS:
                  "the search result has no inline switch");
         QVERIFY2(screen.contains(QStringLiteral("app.settings.keepRoomListOrderStill = checked")),
                  "the control does not write the setting");
+    }
+
+    void aBulkReconcileTakesOneRoomSnapshotAtAnySize_data()
+    {
+        QTest::addColumn<int>("count");
+        QTest::newRow("10") << 10;
+        QTest::newRow("100") << 100;
+        QTest::newRow("1000") << 1000;
+    }
+
+    void aBulkReconcileTakesOneRoomSnapshotAtAnySize()
+    {
+        QFETCH(int, count);
+        FakeClient client;
+        RoomListModel model;
+        model.setClient(&client);
+        QStringList newestFirst;
+        for (int i = 0; i < count; ++i) {
+            const QString id = QStringLiteral("!bulk%1:x").arg(i);
+            client.mirror.append(room(id, QStringLiteral("room %1").arg(i), i + 1));
+            newestFirst.append(id);
+        }
+        QList<int> snapshots;
+        const auto measure = [&] {
+            client.roomsCalls = 0;
+            client.announce();
+            snapshots.append(client.roomsCalls);
+        };
+
+        measure();
+        QCOMPARE(idsOf(model), newestFirst);
+
+        for (RoomInfo &r : client.mirror) {
+            r.unreadCount = 1;
+            r.hasUnreadMessages = true;
+            r.lastMessagePreview = QStringLiteral("new");
+        }
+        measure();
+        QCOMPARE(model.unreadRoomCount(), count);
+
+        for (int i = 0; i < count; ++i)
+            client.mirror[i].lastActivity = minutesAgo(count - i);
+        measure();
+        QStringList oldestFirst = newestFirst;
+        std::reverse(oldestFirst.begin(), oldestFirst.end());
+        QCOMPARE(idsOf(model), oldestFirst);
+
+        for (int i = 0; i < count; i += 2)
+            client.mirror[i].membership = RoomInfo::Left;
+        for (RoomInfo &r : client.mirror)
+            r.unreadCount = r.membership == RoomInfo::Joined ? 1 : 0;
+        measure();
+        QCOMPARE(model.unreadRoomCount(), count / 2);
+
+        client.mirror.erase(std::remove_if(client.mirror.begin(), client.mirror.end(),
+                                           [](const RoomInfo &r) {
+                                               return r.membership == RoomInfo::Left;
+                                           }),
+                            client.mirror.end());
+        measure();
+        QCOMPARE(model.rowCount(), count / 2);
+
+        qInfo().noquote() << "room snapshots per reconcile at" << count
+                          << "rooms (insert, change, move, change, remove):" << snapshots;
+        QCOMPARE(snapshots, (QList<int>{1, 1, 1, 1, 1}));
     }
 
 private:

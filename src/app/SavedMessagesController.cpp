@@ -14,6 +14,7 @@ const QString kType = QStringLiteral("org.lightning_matrix.saved_messages");
 constexpr int kMaxRefs = 100;
 constexpr int kMaxBytes = 16 * 1024;
 constexpr qint64 kResolveTimeoutMs = 15000;
+constexpr int kPrefetchRows = 8;
 }
 
 const QString &SavedMessagesController::eventType() { return kType; }
@@ -130,6 +131,9 @@ void SavedMessagesController::reset()
     m_query.clear();
     m_roomFilter.clear();
     m_typeFilter.clear();
+    m_searchPaused = false;
+    m_visibleFirst = 0;
+    m_visibleLast = 0;
     emitChanged();
 }
 
@@ -505,36 +509,86 @@ void SavedMessagesController::clearFilters()
     m_query.clear();
     m_roomFilter.clear();
     m_typeFilter.clear();
+    m_searchPaused = false;
     emitChanged();
+    pumpResolve();
 }
 
 void SavedMessagesController::setQuery(const QString &value)
-{ if (value != m_query) { m_query = value; emitChanged(); } }
+{
+    if (value == m_query) return;
+    m_query = value;
+    m_searchPaused = false;
+    emitChanged();
+    pumpResolve();
+}
 void SavedMessagesController::setRoomFilter(const QString &value)
-{ if (value != m_roomFilter) { m_roomFilter = value; emitChanged(); } }
+{ if (value != m_roomFilter) { m_roomFilter = value; emitChanged(); pumpResolve(); } }
 void SavedMessagesController::setTypeFilter(const QString &value)
-{ if (value != m_typeFilter) { m_typeFilter = value; emitChanged(); } }
+{
+    if (value == m_typeFilter) return;
+    m_typeFilter = value;
+    m_searchPaused = false;
+    emitChanged();
+    pumpResolve();
+}
+
+void SavedMessagesController::setSearchPaused(bool paused)
+{
+    if (paused == m_searchPaused) return;
+    m_searchPaused = paused;
+    emitChanged();
+    pumpResolve();
+}
+
+bool SavedMessagesController::searching() const
+{ return !m_query.isEmpty() || !m_typeFilter.isEmpty(); }
+
+QString SavedMessagesController::roomNameOf(const Ref &ref) const
+{
+    const RoomInfo room = m_client ? m_client->roomInfo(ref.roomId) : RoomInfo{};
+    return room.name.isEmpty() ? ref.roomId : room.name;
+}
+
+bool SavedMessagesController::shown(const Ref &ref, const QString &roomName) const
+{
+    if (!m_roomFilter.isEmpty() && ref.roomId != m_roomFilter) return false;
+    if (m_typeFilter == QLatin1String("text")
+        && ref.kind != QLatin1String("m.text")
+        && ref.kind != QLatin1String("m.notice")
+        && ref.kind != QLatin1String("m.emote")) return false;
+    if (m_typeFilter == QLatin1String("media")
+        && (ref.kind.isEmpty() || ref.kind == QLatin1String("m.text")
+            || ref.kind == QLatin1String("m.notice")
+            || ref.kind == QLatin1String("m.emote"))) return false;
+    return m_query.isEmpty()
+        || roomName.contains(m_query, Qt::CaseInsensitive)
+        || ref.preview.contains(m_query, Qt::CaseInsensitive)
+        || ref.sender.contains(m_query, Qt::CaseInsensitive);
+}
+
+int SavedMessagesController::unsearchedCount() const
+{
+    return int(std::count_if(m_refs.cbegin(), m_refs.cend(), [this](const Ref &ref) {
+        return (m_roomFilter.isEmpty() || ref.roomId == m_roomFilter)
+            && (!ref.resolved || ref.failed);
+    }));
+}
+
+bool SavedMessagesController::searchLoading() const
+{
+    if (!m_active || m_searchPaused || !searching()) return false;
+    return std::any_of(m_refs.cbegin(), m_refs.cend(), [this](const Ref &ref) {
+        return (m_roomFilter.isEmpty() || ref.roomId == m_roomFilter) && !ref.resolved;
+    });
+}
 
 QVariantList SavedMessagesController::entries() const
 {
     QVariantList out;
     for (const Ref &ref : m_refs) {
-        const RoomInfo room = m_client ? m_client->roomInfo(ref.roomId) : RoomInfo{};
-        const QString roomName = room.name.isEmpty() ? ref.roomId : room.name;
-        if (!m_roomFilter.isEmpty() && ref.roomId != m_roomFilter) continue;
-        if (m_typeFilter == QLatin1String("text")
-            && ref.kind != QLatin1String("m.text")
-            && ref.kind != QLatin1String("m.notice")
-            && ref.kind != QLatin1String("m.emote")) continue;
-        if (m_typeFilter == QLatin1String("media")
-            && (ref.kind.isEmpty() || ref.kind == QLatin1String("m.text")
-                || ref.kind == QLatin1String("m.notice")
-                || ref.kind == QLatin1String("m.emote"))) continue;
-        if (!m_query.isEmpty()
-            && !roomName.contains(m_query, Qt::CaseInsensitive)
-            && !ref.preview.contains(m_query, Qt::CaseInsensitive)
-            && !ref.sender.contains(m_query, Qt::CaseInsensitive))
-            continue;
+        const QString roomName = roomNameOf(ref);
+        if (!shown(ref, roomName)) continue;
         out.append(QVariantMap{
             { QStringLiteral("roomId"), ref.roomId },
             { QStringLiteral("roomName"), roomName },
@@ -571,9 +625,18 @@ QVariantList SavedMessagesController::rooms() const
     return out;
 }
 
-void SavedMessagesController::resolveVisible()
+void SavedMessagesController::resolveVisible(int first, int last)
 {
+    m_active = true;
+    m_visibleFirst = qMax(0, first);
+    m_visibleLast = qMax(m_visibleFirst, last);
     pumpResolve();
+}
+
+void SavedMessagesController::pauseResolving()
+{
+    // Requests already sent retire through their answer or their deadline.
+    m_active = false;
 }
 
 void SavedMessagesController::refreshPreviews()
@@ -623,12 +686,19 @@ void SavedMessagesController::pumpResolve()
     for (const Ref &ref : std::as_const(m_refs))
         present.insert(key(ref.roomId, ref.eventId));
     m_resolving.intersect(present);
-    while (m_resolving.size() < 4) {
+    const bool everything = searching() && !m_searchPaused;
+    const int windowEnd = m_visibleLast + kPrefetchRows;
+    while (m_active && m_resolving.size() < 4) {
         int next = -1;
-        for (int i = 0; i < m_refs.size(); ++i) {
+        int row = 0;
+        for (int i = 0; i < m_refs.size() && (everything || row <= windowEnd); ++i) {
             const Ref &ref = m_refs.at(i);
+            bool wanted = everything
+                && (m_roomFilter.isEmpty() || ref.roomId == m_roomFilter);
+            if (shown(ref, roomNameOf(ref)))
+                wanted = (row++ >= m_visibleFirst) || wanted;
             const QString id = key(ref.roomId, ref.eventId);
-            if (!ref.resolved && !m_attempted.contains(id)
+            if (wanted && !ref.resolved && !m_attempted.contains(id)
                 && !m_redacted.contains(id)) {
                 next = i;
                 break;

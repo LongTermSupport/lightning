@@ -102,7 +102,18 @@ public:
     void startSync() override {}
     void stopSync() override {}
     ConnectionState connectionState() const override { return Syncing; }
-    QList<RoomInfo> rooms() const override { return roomInfos; }
+    mutable int roomsCalls = 0;
+    mutable int roomLookups = 0;
+    QList<RoomInfo> rooms() const override { ++roomsCalls; return roomInfos; }
+    RoomInfo roomInfo(const QString &roomId) const override
+    {
+        ++roomLookups;
+        for (const auto &room : roomInfos) {
+            if (room.id == roomId)
+                return room;
+        }
+        return {};
+    }
     QString displayNameFor(const QString &, const QString &id) const override { return id; }
     QString avatarMxcFor(const QString &, const QString &) const override { return {}; }
     QStringList typingUsersFor(const QString &) const override { return {}; }
@@ -797,6 +808,50 @@ private Q_SLOTS:
         rig.makeEligible();
         QTest::qWait(20);
         QCOMPARE(rig.client.receiptEvents.size(), 0);
+    }
+
+    void aReevaluationTakesNoRoomSnapshotHoweverManyCountsAreTracked_data()
+    {
+        QTest::addColumn<int>("total");
+        QTest::newRow("10") << 10;
+        QTest::newRow("100") << 100;
+        QTest::newRow("1000") << 1000;
+    }
+
+    void aReevaluationTakesNoRoomSnapshotHoweverManyCountsAreTracked()
+    {
+        QFETCH(int, total);
+        Rig rig;
+        for (int i = 0; i < total; ++i) {
+            RoomInfo room;
+            room.id = QStringLiteral("!r%1:example.org").arg(i);
+            room.membership = RoomInfo::Joined;
+            room.unreadCount = 1;
+            rig.client.roomInfos.append(room);
+        }
+        rig.makeEligible();
+        const int tracked = qMin(total, 20);
+        for (int i = 0; i < tracked; ++i) {
+            const QString id = rig.client.roomInfos.at(i).id;
+            rig.client.timelines[id] = { makeEvent(id, QStringLiteral("$e%1").arg(i), 1000 + i) };
+            rig.model.setRoomId(id);
+            QTRY_COMPARE(rig.client.receiptEvents.size(), i + 1);
+        }
+
+        rig.client.roomsCalls = 0;
+        rig.client.roomLookups = 0;
+        rig.coordinator.reevaluate();
+        qInfo().noquote() << "rooms() snapshots per reevaluation with" << tracked
+                          << "tracked of" << total << "rooms:" << rig.client.roomsCalls
+                          << "lookups:" << rig.client.roomLookups;
+        QCOMPARE(rig.client.roomsCalls, 0);
+        QVERIFY(rig.client.roomLookups <= tracked + 2);
+
+        const QString open = rig.client.roomInfos.at(tracked - 1).id;
+        rig.client.roomInfos[tracked - 1].unreadCount = 2;
+        rig.coordinator.reevaluate();
+        QTRY_COMPARE(rig.client.receiptEvents.size(), tracked + 1);
+        QCOMPARE(rig.client.receiptRooms.last(), open);
     }
 };
 
