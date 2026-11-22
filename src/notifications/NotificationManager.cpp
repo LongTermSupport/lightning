@@ -2191,17 +2191,20 @@ void NotificationManager::deliverNow(Card card)
 {
     noteCardFor(card.accountKey);
     if (card.replacement && !replacementStillOwned(card)) {
-        // The group's first card may still be waiting for the capability probe.
-        for (Card &waiting : m_capabilityWaits) {
-            if (waiting.accountKey == card.accountKey
-                && waiting.payload.value(QStringLiteral("group"))
-                    == card.payload.value(QStringLiteral("group"))
-                && waiting.payload.value(QStringLiteral("eventId"))
-                    == card.payload.value(QStringLiteral("eventId"))) {
-                waiting.title = card.title;
-                waiting.body = card.body;
-                waiting.payload = card.payload;
-                return;
+        // The group's first card may still be waiting for its avatar or for
+        // the capability probe.
+        for (QList<Card> *waits : { &m_avatarWaits, &m_capabilityWaits }) {
+            for (Card &waiting : *waits) {
+                if (waiting.accountKey == card.accountKey
+                    && waiting.payload.value(QStringLiteral("group"))
+                        == card.payload.value(QStringLiteral("group"))
+                    && waiting.payload.value(QStringLiteral("eventId"))
+                        == card.payload.value(QStringLiteral("eventId"))) {
+                    waiting.title = card.title;
+                    waiting.body = card.body;
+                    waiting.payload = card.payload;
+                    return;
+                }
             }
         }
         ++m_droppedReplacements;

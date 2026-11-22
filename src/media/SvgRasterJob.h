@@ -130,6 +130,8 @@ inline void startProcess(Job job)
         return;
     }
     source.close();
+    if (hooks().holdScratchDir)
+        hooks().holdScratchDir(dir->path());
 
     QString program = hooks().program;
     QStringList args;
@@ -208,6 +210,8 @@ inline void startProcess(Job job)
         } else {
             deliver(job, result);
         }
+        if (hooks().releaseScratchDir)
+            hooks().releaseScratchDir(dir->path());
         process->deleteLater();
         --running();
         pump();

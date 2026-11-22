@@ -11,6 +11,7 @@
 #include <QSize>
 
 #include "matrix/EventPreview.h"
+#include "models/MessageHtml.h"
 #include "matrix/MatrixClient.h"
 #include "media/ImageFormatSupport.h"
 #include "media/MediaBridge.h"
@@ -111,8 +112,14 @@ QString ForwardController::buildPreview(const QVariantMap &snapshot)
         if (!filename.isEmpty())
             kind = tr("%1 (%2)").arg(kind, filename);
     } else {
-        QString body =
-            snapshot.value(QStringLiteral("body")).toString().trimmed();
+        const QString html =
+            snapshot.value(QStringLiteral("formattedBody")).toString();
+        QString body = html.contains(QLatin1String("data-mx-spoiler"),
+                                     Qt::CaseInsensitive)
+            ? MessageHtml::plainTextConcealingSpoilers(
+                  html, QStringLiteral("\u2588\u2588\u2588\u2588\u2588"))
+                  .trimmed()
+            : snapshot.value(QStringLiteral("body")).toString().trimmed();
         body.replace(QLatin1Char('\n'), QLatin1Char(' '));
         if (body.size() > 140) {
             body.truncate(140);

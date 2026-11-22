@@ -5,6 +5,8 @@
 #include <QDirIterator>
 #include <QFile>
 #include <QFileInfo>
+#include <QProcess>
+#include <QTextStream>
 #include <QSet>
 #include <QSettings>
 #include <QStandardPaths>
@@ -13,9 +15,38 @@
 #include <QUuid>
 #include <QtTest>
 
+#include <utility>
+
 #ifdef Q_OS_UNIX
+#include <sys/time.h>
 #include <unistd.h>
 #endif
+
+namespace {
+constexpr char kOwnerEnv[] = "LIGHTNING_TEST_SCRATCH_OWNER";
+
+// A stand-in for a Lightning process that owns a scratch directory and is then
+// killed before it can remove it.
+int runScratchOwner(int argc, char **argv)
+{
+    QCoreApplication app(argc, argv);
+    QCoreApplication::setApplicationName(QStringLiteral("matrix-client"));
+    const QString dir = qEnvironmentVariable(kOwnerEnv);
+    if (!QDir().mkpath(dir))
+        return 2;
+    for (const char *name : {"in.svg", "out.bin"}) {
+        QFile file(dir + QLatin1Char('/') + QLatin1String(name));
+        if (!file.open(QIODevice::WriteOnly) || file.write("synthetic") != 9)
+            return 3;
+    }
+    lightning::portable::holdScratchDirLive(dir);
+    if (!QFileInfo::exists(dir + QLatin1Char('/')
+                           + QLatin1String(lightning::portable::kScratchLiveLockName)))
+        return 4;
+    QTextStream(stdout) << "ready" << Qt::endl;
+    return app.exec();
+}
+}
 
 class PortableModeTest : public QObject
 {
@@ -44,6 +75,7 @@ private Q_SLOTS:
     void relocationKeepsSettingsWithNoReferenceToTheOldRoot();
     void staleScratchIsSweptOnAnOrdinaryInstallToo();
     void aLiveScratchDirectoryIsNeverSwept();
+    void everyScratchFamilyIsSweptOnlyWhenNothingOwnsIt();
 
 private:
     static bool copyTree(const QString &from, const QString &to);
@@ -587,5 +619,111 @@ void PortableModeTest::aLiveScratchDirectoryIsNeverSwept()
     QVERIFY(!QFileInfo::exists(live));
 }
 
-QTEST_MAIN(PortableModeTest)
+void PortableModeTest::everyScratchFamilyIsSweptOnlyWhenNothingOwnsIt()
+{
+#ifndef Q_OS_UNIX
+    QSKIP("ages directories with utimes()");
+#else
+    const auto age = [](const QString &path) {
+        struct timeval times[2];
+        ::gettimeofday(&times[0], nullptr);
+        times[0].tv_sec -= 2 * 60 * 60;
+        times[1] = times[0];
+        return ::utimes(QFile::encodeName(path).constData(), times) == 0;
+    };
+    const QStringList families = {
+        QStringLiteral("lightning-voice-"),   QStringLiteral("lightning-animated-"),
+        QStringLiteral("lightning-playable-"), QStringLiteral("lightning-crop-"),
+        QStringLiteral("lightning-svg-"),     QStringLiteral("lightning-svgsend-"),
+    };
+    QTemporaryDir exeDir;
+    QVERIFY(exeDir.isValid());
+    QTemporaryDir installedRoot;
+    QVERIFY(installedRoot.isValid());
+    QTemporaryDir outside;
+    QVERIFY(outside.isValid());
+    QFile precious(outside.filePath(QStringLiteral("precious.txt")));
+    QVERIFY(precious.open(QIODevice::WriteOnly));
+    precious.write("keep");
+    precious.close();
+
+    for (const bool portable : {false, true}) {
+        lightning::portable::setPortableOverrideForTest(portable, exeDir.path());
+        lightning::portable::setMediaScratchRootOverrideForTest(
+            portable ? QString() : installedRoot.path());
+        const QString root = lightning::portable::mediaScratchRoot();
+        QVERIFY(!root.isEmpty());
+        QVERIFY(QDir().mkpath(root));
+        QVERIFY(root != QDir::tempPath());
+
+        QStringList stale;
+        for (const QString &family : families) {
+            const QString dir = root + QLatin1Char('/') + family + QStringLiteral("dead");
+            QVERIFY(QDir().mkpath(dir));
+            QFile leftover(dir + QStringLiteral("/out.bin"));
+            QVERIFY(leftover.open(QIODevice::WriteOnly));
+            leftover.write("synthetic");
+            leftover.close();
+            QVERIFY(age(dir));
+            stale << dir;
+        }
+        const QString unrelated = root + QStringLiteral("/other-app-dead");
+        QVERIFY(QDir().mkpath(unrelated));
+        QVERIFY(age(unrelated));
+        const QString recent = root + QStringLiteral("/lightning-svg-recent");
+        QVERIFY(QDir().mkpath(recent));
+        const QString link = root + QStringLiteral("/lightning-svg-link");
+        QVERIFY(QFile::link(outside.path(), link));
+
+        const QString owned = root + QStringLiteral("/lightning-svg-owned");
+        QProcess owner;
+        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+        env.insert(QLatin1String(kOwnerEnv), owned);
+        owner.setProcessEnvironment(env);
+        owner.start(QCoreApplication::applicationFilePath(), {});
+        QVERIFY(owner.waitForStarted(5000));
+        QByteArray said;
+        while (!said.contains("ready") && owner.waitForReadyRead(10000))
+            said += owner.readAllStandardOutput();
+        QVERIFY2(said.contains("ready"), said.constData());
+        QCOMPARE(owner.state(), QProcess::Running);
+        QVERIFY(age(owned));
+
+        QCOMPARE(lightning::portable::cleanStaleTempDirs(QDateTime::currentDateTimeUtc()),
+                 int(families.size()));
+        for (const QString &dir : std::as_const(stale))
+            QVERIFY2(!QFileInfo::exists(dir), qPrintable(dir));
+        QVERIFY2(QFileInfo(owned + QStringLiteral("/in.svg")).isFile(),
+                 "the sweep removed a directory a live process holds");
+        QVERIFY(QFileInfo(unrelated).isDir());
+        QVERIFY2(QFileInfo(recent).isDir(), "the sweep removed a recent unmarked directory");
+        QVERIFY(QFileInfo(link).isSymLink());
+        QVERIFY(QFileInfo::exists(outside.filePath(QStringLiteral("precious.txt"))));
+
+        owner.kill();
+        QVERIFY(owner.waitForFinished(5000));
+        QCOMPARE(lightning::portable::cleanStaleTempDirs(QDateTime::currentDateTimeUtc()), 1);
+        QVERIFY2(!QFileInfo::exists(owned), "a killed owner's in.svg/out.bin were left behind");
+        QVERIFY(QFileInfo(unrelated).isDir());
+        QVERIFY(QFileInfo(recent).isDir());
+        QVERIFY(QFileInfo(link).isSymLink());
+        QVERIFY(QFileInfo::exists(outside.filePath(QStringLiteral("precious.txt"))));
+
+        QVERIFY(QFile::remove(link));
+        QVERIFY(QDir(unrelated).removeRecursively());
+        QVERIFY(QDir(recent).removeRecursively());
+    }
+    lightning::portable::setMediaScratchRootOverrideForTest(QString());
+#endif
+}
+
+int main(int argc, char **argv)
+{
+    if (qEnvironmentVariableIsSet(kOwnerEnv))
+        return runScratchOwner(argc, argv);
+    QCoreApplication app(argc, argv);
+    PortableModeTest test;
+    QTEST_SET_MAIN_SOURCE_PATH
+    return QTest::qExec(&test, argc, argv);
+}
 #include "PortableModeTest.moc"

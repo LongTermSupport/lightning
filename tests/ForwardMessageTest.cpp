@@ -797,6 +797,39 @@ private Q_SLOTS:
         QVERIFY(!fwd.isSelected(QStringLiteral("$loc")));
     }
 
+    void aSpoilerTextIsConcealedInThePreview()
+    {
+        FakeClient client;
+        ForwardController fwd;
+        fwd.setClient(&client);
+
+        QVariantMap snap = textSnapshot(QStringLiteral("the butler did it"));
+        snap.insert(QStringLiteral("formattedBody"),
+                    QStringLiteral("whodunnit: <span data-mx-spoiler>the butler "
+                                   "did it</span>"));
+        fwd.begin(kRoomA, kEventA, snap);
+        QVERIFY(fwd.active());
+        QVERIFY2(!fwd.previewText().contains(QStringLiteral("butler")),
+                 qPrintable(fwd.previewText()));
+        QVERIFY2(fwd.previewText().contains(QStringLiteral("whodunnit")),
+                 qPrintable(fwd.previewText()));
+        QVERIFY(fwd.previewText().contains(QStringLiteral("█")));
+
+        fwd.begin(kRoomA, kEventA, textSnapshot(QStringLiteral("plain words")));
+        QCOMPARE(fwd.previewText(), QStringLiteral("Alice — plain words"));
+
+        QFile file(QStringLiteral(QML_DIR "/MessageDelegate.qml"));
+        QVERIFY(file.open(QIODevice::ReadOnly | QIODevice::Text));
+        const QString qml = QString::fromUtf8(file.readAll());
+        const int begin = qml.indexOf(QStringLiteral("app.forward.begin("));
+        QVERIFY(begin > 0);
+        const int close = qml.indexOf(QStringLiteral("})"), begin);
+        QVERIFY2(qml.mid(begin, close - begin)
+                     .contains(QStringLiteral("formattedBody: model.formattedBody")),
+                 "the forward snapshot omits formattedBody, so a spoiler cannot "
+                 "be concealed");
+    }
+
     void beginRefusesEmptyTextBody()
     {
         FakeClient client;

@@ -397,6 +397,8 @@ int cleanStaleTempDirs(const QDateTime &now)
         QStringLiteral("lightning-animated-*"),
         QStringLiteral("lightning-playable-*"),
         QStringLiteral("lightning-crop-*"),
+        QStringLiteral("lightning-svg-*"),
+        QStringLiteral("lightning-svgsend-*"),
     };
     int removed = 0;
     QDir dir(root);
