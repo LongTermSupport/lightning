@@ -1298,8 +1298,6 @@ async fn encrypted_original_and_plaintext_edit(server: &MatrixMockServer) -> Cli
     let client = server.client_builder().build().await;
     client.encryption().wait_for_e2ee_initialization_tasks().await;
     client.event_cache().subscribe().unwrap();
-    let receiver = client.olm_machine_for_testing().await;
-    let receiver = receiver.as_ref().unwrap();
     let room_id = room_id!("!edits:localhost");
     let sender = OlmMachine::new(user_id!("@alice:localhost"), device_id!("FIRST")).await;
     sender
@@ -1315,7 +1313,11 @@ async fn encrypted_original_and_plaintext_edit(server: &MatrixMockServer) -> Cli
     original["type"] = json!("m.room.encrypted");
     original["content"] = serde_json::from_str(sealed.content.json().get()).unwrap();
     let keys = sender.store().export_room_keys(|_| true).await.unwrap();
-    receiver.store().import_exported_room_keys(keys, |_, _| {}).await.unwrap();
+    {
+        let machine = client.olm_machine_for_testing().await;
+        let receiver = machine.as_ref().unwrap();
+        receiver.store().import_exported_room_keys(keys, |_, _| {}).await.unwrap();
+    }
     sync(
         &client,
         vec![original, edit("$forged", "$original", "FORGED caption", 2000)],
