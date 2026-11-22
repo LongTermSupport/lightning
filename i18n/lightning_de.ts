@@ -4831,7 +4831,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
 <context>
     <name>CppHttpMatrixClient</name>
     <message>
-        <location filename="../src/matrix/CppHttpMatrixClient.cpp" line="+165"/>
+        <location filename="../src/matrix/CppHttpMatrixClient.cpp" line="+177"/>
         <source>Homeserver URL is empty or invalid.</source>
         <translation>Die Homeserver-URL ist leer oder ungültig.</translation>
     </message>
@@ -4841,7 +4841,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Ein Benutzername ist erforderlich.</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+33"/>
         <source>Invalid username or password.</source>
         <translation>Ungültiger Benutzername oder ungültiges Passwort.</translation>
     </message>
@@ -4856,22 +4856,17 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>In der Anmeldeantwort fehlen erforderliche Felder.</translation>
     </message>
     <message>
-        <location line="+77"/>
+        <location line="+88"/>
         <source>Session expired — please sign in again.</source>
         <translation>Sitzung abgelaufen – bitte melde dich erneut an.</translation>
     </message>
     <message>
-        <location line="+11"/>
-        <source>Invalid /whoami response.</source>
-        <translation>Ungültige /whoami-Antwort.</translation>
-    </message>
-    <message>
-        <location line="+140"/>
+        <location line="+161"/>
         <source>Session expired during sync.</source>
         <translation>Sitzung während der Synchronisierung abgelaufen.</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+11"/>
         <source>Sync error (%1): %2</source>
         <translation>Synchronisierungsfehler (%1): %2</translation>
     </message>
@@ -4881,19 +4876,19 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Fehlerhafte /sync-Antwort.</translation>
     </message>
     <message>
-        <location line="+284"/>
-        <location line="+908"/>
+        <location line="+292"/>
+        <location line="+919"/>
         <source>[encrypted message - E2EE not implemented yet]</source>
         <translation>[verschlüsselte Nachricht – E2EE noch nicht implementiert]</translation>
     </message>
     <message>
-        <location line="-890"/>
-        <location line="+912"/>
+        <location line="-901"/>
+        <location line="+923"/>
         <source>[encrypted media - E2EE not implemented yet]</source>
         <translation>[verschlüsselte Medien – E2EE noch nicht implementiert]</translation>
     </message>
     <message>
-        <location line="-627"/>
+        <location line="-635"/>
         <source>Send failed: %1</source>
         <translation>Senden fehlgeschlagen: %1</translation>
     </message>
@@ -4903,66 +4898,66 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <location line="+35"/>
         <location line="+55"/>
         <location line="+31"/>
-        <location line="+50"/>
+        <location line="+52"/>
         <location line="+98"/>
-        <location line="+100"/>
+        <location line="+102"/>
         <source>Not signed in.</source>
         <translation>Nicht angemeldet.</translation>
     </message>
     <message>
-        <location line="-394"/>
+        <location line="-398"/>
         <location line="+27"/>
         <location line="+35"/>
-        <location line="+234"/>
-        <location line="+100"/>
+        <location line="+236"/>
+        <location line="+102"/>
         <source>Unknown room: %1</source>
         <translation>Unbekannter Raum: %1</translation>
     </message>
     <message>
-        <location line="-393"/>
+        <location line="-397"/>
         <location line="+27"/>
         <location line="+35"/>
         <location line="+52"/>
-        <location line="+81"/>
+        <location line="+83"/>
         <source>Cannot send to encrypted rooms yet: E2EE backend is not implemented.</source>
         <translation>An verschlüsselte Räume kann noch nicht gesendet werden: Das E2EE-Backend ist nicht implementiert.</translation>
     </message>
     <message>
-        <location line="-128"/>
+        <location line="-130"/>
         <source>Cannot send thread reply: no thread root.</source>
         <translation>Thread-Antwort kann nicht gesendet werden: kein Thread-Ursprung.</translation>
     </message>
     <message>
-        <location line="+98"/>
+        <location line="+100"/>
         <source>Redaction failed: %1</source>
         <translation>Entfernen fehlgeschlagen: %1</translation>
     </message>
     <message>
         <location line="+131"/>
-        <location line="+100"/>
+        <location line="+102"/>
         <source>Cannot send media to encrypted rooms yet: E2EE backend is not implemented.</source>
         <translation>Medien können noch nicht an verschlüsselte Räume gesendet werden: Das E2EE-Backend ist nicht implementiert.</translation>
     </message>
     <message>
-        <location line="-94"/>
-        <location line="+100"/>
+        <location line="-96"/>
+        <location line="+102"/>
         <source>Cannot read %1</source>
         <translation>%1 kann nicht gelesen werden</translation>
     </message>
     <message>
         <location line="-47"/>
-        <location line="+94"/>
+        <location line="+96"/>
         <source>Upload failed: %1</source>
         <translation>Upload fehlgeschlagen: %1</translation>
     </message>
     <message>
-        <location line="-87"/>
-        <location line="+94"/>
+        <location line="-89"/>
+        <location line="+96"/>
         <source>Upload response missing content_uri.</source>
         <translation>In der Upload-Antwort fehlt content_uri.</translation>
     </message>
     <message>
-        <location line="+54"/>
+        <location line="+56"/>
         <source>Failed to load more history.</source>
         <translation>Weiterer Verlauf konnte nicht geladen werden.</translation>
     </message>
@@ -8060,7 +8055,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+4"/>
-        <location filename="../src/models/TimelineModel.cpp" line="+2814"/>
+        <location filename="../src/models/TimelineModel.cpp" line="+2817"/>
         <source>Voice message</source>
         <translation>Sprachnachricht</translation>
     </message>
@@ -14879,12 +14874,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <name>NotificationManager</name>
     <message>
         <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
-        <location line="+991"/>
+        <location line="+1004"/>
         <source>Open</source>
         <translation>Öffnen</translation>
     </message>
     <message>
-        <location line="-989"/>
+        <location line="-1002"/>
         <source>Mark as read</source>
         <translation>Als gelesen markieren</translation>
     </message>
@@ -14894,7 +14889,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Antworten</translation>
     </message>
     <message>
-        <location line="+309"/>
+        <location line="+322"/>
         <source>Reply…</source>
         <translation>Antworten …</translation>
     </message>
@@ -15411,7 +15406,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2844"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2857"/>
         <source>(spoiler)</source>
         <translation>(Spoiler)</translation>
     </message>
@@ -15478,7 +15473,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message numerus="yes">
         <location line="+233"/>
         <location line="+217"/>
-        <location line="+1722"/>
+        <location line="+1735"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n neue Nachricht</numerusform>
@@ -15486,7 +15481,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1935"/>
+        <location line="-1948"/>
         <location line="+211"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15495,7 +15490,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1727"/>
+        <location line="+1740"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>in %n Raum</numerusform>
@@ -17945,7 +17940,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>RoomExportController</name>
     <message>
-        <location filename="../src/models/RoomExportController.cpp" line="+173"/>
+        <location filename="../src/models/RoomExportController.cpp" line="+177"/>
         <source>An export is already running.</source>
         <translation>Ein Export läuft bereits.</translation>
     </message>
@@ -32916,7 +32911,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>TimelineModel</name>
     <message>
-        <location filename="../src/models/TimelineModel.cpp" line="-1665"/>
+        <location filename="../src/models/TimelineModel.cpp" line="-1668"/>
         <source>%1 changed their display name from “%2” to “%3” and changed their avatar.</source>
         <translation>%1 hat den Anzeigenamen von „%2“ in „%3“ geändert und den Avatar geändert.</translation>
     </message>
@@ -32966,7 +32961,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>%1 hat einen Anruf gestartet.</translation>
     </message>
     <message>
-        <location line="+1317"/>
+        <location line="+1320"/>
         <source>%1 is typing…</source>
         <translation>%1 schreibt …</translation>
     </message>

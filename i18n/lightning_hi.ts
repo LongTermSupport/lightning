@@ -4831,7 +4831,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>CppHttpMatrixClient</name>
     <message>
-        <location filename="../src/matrix/CppHttpMatrixClient.cpp" line="+165"/>
+        <location filename="../src/matrix/CppHttpMatrixClient.cpp" line="+177"/>
         <source>Homeserver URL is empty or invalid.</source>
         <translation>होमसर्वर URL खाली या अमान्य है।</translation>
     </message>
@@ -4841,7 +4841,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>उपयोगकर्ता नाम ज़रूरी है।</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+33"/>
         <source>Invalid username or password.</source>
         <translation>उपयोगकर्ता नाम या पासवर्ड गलत है।</translation>
     </message>
@@ -4856,22 +4856,17 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>लॉगिन प्रतिक्रिया में ज़रूरी फ़ील्ड नहीं हैं।</translation>
     </message>
     <message>
-        <location line="+77"/>
+        <location line="+88"/>
         <source>Session expired — please sign in again.</source>
         <translation>सत्र समाप्त हो गया — कृपया दोबारा साइन इन करें।</translation>
     </message>
     <message>
-        <location line="+11"/>
-        <source>Invalid /whoami response.</source>
-        <translation>/whoami की प्रतिक्रिया अमान्य है।</translation>
-    </message>
-    <message>
-        <location line="+140"/>
+        <location line="+161"/>
         <source>Session expired during sync.</source>
         <translation>सिंक के दौरान सत्र समाप्त हो गया।</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+11"/>
         <source>Sync error (%1): %2</source>
         <translation>सिंक त्रुटि (%1): %2</translation>
     </message>
@@ -4881,19 +4876,19 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>/sync की प्रतिक्रिया खराब है।</translation>
     </message>
     <message>
-        <location line="+284"/>
-        <location line="+908"/>
+        <location line="+292"/>
+        <location line="+919"/>
         <source>[encrypted message - E2EE not implemented yet]</source>
         <translation>[एन्क्रिप्टेड संदेश - E2EE अभी लागू नहीं है]</translation>
     </message>
     <message>
-        <location line="-890"/>
-        <location line="+912"/>
+        <location line="-901"/>
+        <location line="+923"/>
         <source>[encrypted media - E2EE not implemented yet]</source>
         <translation>[एन्क्रिप्टेड मीडिया - E2EE अभी लागू नहीं है]</translation>
     </message>
     <message>
-        <location line="-627"/>
+        <location line="-635"/>
         <source>Send failed: %1</source>
         <translation>भेजना विफल: %1</translation>
     </message>
@@ -4903,66 +4898,66 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <location line="+35"/>
         <location line="+55"/>
         <location line="+31"/>
-        <location line="+50"/>
+        <location line="+52"/>
         <location line="+98"/>
-        <location line="+100"/>
+        <location line="+102"/>
         <source>Not signed in.</source>
         <translation>साइन इन नहीं है।</translation>
     </message>
     <message>
-        <location line="-394"/>
+        <location line="-398"/>
         <location line="+27"/>
         <location line="+35"/>
-        <location line="+234"/>
-        <location line="+100"/>
+        <location line="+236"/>
+        <location line="+102"/>
         <source>Unknown room: %1</source>
         <translation>अज्ञात रूम: %1</translation>
     </message>
     <message>
-        <location line="-393"/>
+        <location line="-397"/>
         <location line="+27"/>
         <location line="+35"/>
         <location line="+52"/>
-        <location line="+81"/>
+        <location line="+83"/>
         <source>Cannot send to encrypted rooms yet: E2EE backend is not implemented.</source>
         <translation>एन्क्रिप्टेड रूम में अभी नहीं भेजा जा सकता: E2EE बैकएंड लागू नहीं है।</translation>
     </message>
     <message>
-        <location line="-128"/>
+        <location line="-130"/>
         <source>Cannot send thread reply: no thread root.</source>
         <translation>थ्रेड उत्तर नहीं भेजा जा सकता: कोई थ्रेड रूट नहीं है।</translation>
     </message>
     <message>
-        <location line="+98"/>
+        <location line="+100"/>
         <source>Redaction failed: %1</source>
         <translation>संदेश हटाना विफल: %1</translation>
     </message>
     <message>
         <location line="+131"/>
-        <location line="+100"/>
+        <location line="+102"/>
         <source>Cannot send media to encrypted rooms yet: E2EE backend is not implemented.</source>
         <translation>एन्क्रिप्टेड रूम में अभी मीडिया नहीं भेजा जा सकता: E2EE बैकएंड लागू नहीं है।</translation>
     </message>
     <message>
-        <location line="-94"/>
-        <location line="+100"/>
+        <location line="-96"/>
+        <location line="+102"/>
         <source>Cannot read %1</source>
         <translation>%1 पढ़ा नहीं जा सकता</translation>
     </message>
     <message>
         <location line="-47"/>
-        <location line="+94"/>
+        <location line="+96"/>
         <source>Upload failed: %1</source>
         <translation>अपलोड विफल: %1</translation>
     </message>
     <message>
-        <location line="-87"/>
-        <location line="+94"/>
+        <location line="-89"/>
+        <location line="+96"/>
         <source>Upload response missing content_uri.</source>
         <translation>अपलोड प्रतिक्रिया में content_uri नहीं है।</translation>
     </message>
     <message>
-        <location line="+54"/>
+        <location line="+56"/>
         <source>Failed to load more history.</source>
         <translation>और इतिहास लोड नहीं हो सका।</translation>
     </message>
@@ -8060,7 +8055,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+4"/>
-        <location filename="../src/models/TimelineModel.cpp" line="+2814"/>
+        <location filename="../src/models/TimelineModel.cpp" line="+2817"/>
         <source>Voice message</source>
         <translation>वॉइस संदेश</translation>
     </message>
@@ -14879,12 +14874,12 @@ Signing out and signing in again is the only fix.</source>
     <name>NotificationManager</name>
     <message>
         <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
-        <location line="+991"/>
+        <location line="+1004"/>
         <source>Open</source>
         <translation>खोलें</translation>
     </message>
     <message>
-        <location line="-989"/>
+        <location line="-1002"/>
         <source>Mark as read</source>
         <translation>पढ़ा हुआ चिह्नित करें</translation>
     </message>
@@ -14894,7 +14889,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>उत्तर दें</translation>
     </message>
     <message>
-        <location line="+309"/>
+        <location line="+322"/>
         <source>Reply…</source>
         <translation>उत्तर दें…</translation>
     </message>
@@ -15411,7 +15406,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2844"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2857"/>
         <source>(spoiler)</source>
         <translation>(स्पॉइलर)</translation>
     </message>
@@ -15478,7 +15473,7 @@ Signing out and signing in again is the only fix.</source>
     <message numerus="yes">
         <location line="+233"/>
         <location line="+217"/>
-        <location line="+1722"/>
+        <location line="+1735"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n नया संदेश</numerusform>
@@ -15486,7 +15481,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1935"/>
+        <location line="-1948"/>
         <location line="+211"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15495,7 +15490,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1727"/>
+        <location line="+1740"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>%n रूम में</numerusform>
@@ -17945,7 +17940,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RoomExportController</name>
     <message>
-        <location filename="../src/models/RoomExportController.cpp" line="+173"/>
+        <location filename="../src/models/RoomExportController.cpp" line="+177"/>
         <source>An export is already running.</source>
         <translation>एक निर्यात पहले से चल रहा है।</translation>
     </message>
@@ -32916,7 +32911,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>TimelineModel</name>
     <message>
-        <location filename="../src/models/TimelineModel.cpp" line="-1665"/>
+        <location filename="../src/models/TimelineModel.cpp" line="-1668"/>
         <source>%1 changed their display name from “%2” to “%3” and changed their avatar.</source>
         <translation>%1 ने अपना प्रदर्शित नाम “%2” से बदलकर “%3” किया और अवतार बदला।</translation>
     </message>
@@ -32966,7 +32961,7 @@ Note: importing keys does not verify this session.</source>
         <translation>%1 ने कॉल प्रारंभ की.</translation>
     </message>
     <message>
-        <location line="+1317"/>
+        <location line="+1320"/>
         <source>%1 is typing…</source>
         <translation>%1 लिख रहे हैं…</translation>
     </message>

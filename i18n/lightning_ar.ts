@@ -4939,7 +4939,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>CppHttpMatrixClient</name>
     <message>
-        <location filename="../src/matrix/CppHttpMatrixClient.cpp" line="+165"/>
+        <location filename="../src/matrix/CppHttpMatrixClient.cpp" line="+177"/>
         <source>Homeserver URL is empty or invalid.</source>
         <translation>عنوان الخادوم المنزلي فارغ أو غير صالح.</translation>
     </message>
@@ -4949,7 +4949,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>اسم المستخدم مطلوب.</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+33"/>
         <source>Invalid username or password.</source>
         <translation>اسم مستخدم أو كلمة مرور غير صالحة.</translation>
     </message>
@@ -4964,22 +4964,17 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>استجابة تسجيل الدخول تفتقد حقولًا مطلوبة.</translation>
     </message>
     <message>
-        <location line="+77"/>
+        <location line="+88"/>
         <source>Session expired — please sign in again.</source>
         <translation>انتهت صلاحية الجلسة — يرجى تسجيل الدخول مجددًا.</translation>
     </message>
     <message>
-        <location line="+11"/>
-        <source>Invalid /whoami response.</source>
-        <translation>استجابة /whoami غير صالحة.</translation>
-    </message>
-    <message>
-        <location line="+140"/>
+        <location line="+161"/>
         <source>Session expired during sync.</source>
         <translation>انتهت صلاحية الجلسة أثناء المزامنة.</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+11"/>
         <source>Sync error (%1): %2</source>
         <translation>خطأ مزامنة (%1): %2</translation>
     </message>
@@ -4989,19 +4984,19 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>استجابة /sync مشوّهة.</translation>
     </message>
     <message>
-        <location line="+284"/>
-        <location line="+908"/>
+        <location line="+292"/>
+        <location line="+919"/>
         <source>[encrypted message - E2EE not implemented yet]</source>
         <translation>[رسالة معمّاة — التعمية طرفًا إلى طرف غير مطبّقة بعد]</translation>
     </message>
     <message>
-        <location line="-890"/>
-        <location line="+912"/>
+        <location line="-901"/>
+        <location line="+923"/>
         <source>[encrypted media - E2EE not implemented yet]</source>
         <translation>[وسائط معمّاة — التعمية طرفًا إلى طرف غير مطبّقة بعد]</translation>
     </message>
     <message>
-        <location line="-627"/>
+        <location line="-635"/>
         <source>Send failed: %1</source>
         <translation>فشل الإرسال: %1</translation>
     </message>
@@ -5011,66 +5006,66 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <location line="+35"/>
         <location line="+55"/>
         <location line="+31"/>
-        <location line="+50"/>
+        <location line="+52"/>
         <location line="+98"/>
-        <location line="+100"/>
+        <location line="+102"/>
         <source>Not signed in.</source>
         <translation>لم تسجّل الدخول.</translation>
     </message>
     <message>
-        <location line="-394"/>
+        <location line="-398"/>
         <location line="+27"/>
         <location line="+35"/>
-        <location line="+234"/>
-        <location line="+100"/>
+        <location line="+236"/>
+        <location line="+102"/>
         <source>Unknown room: %1</source>
         <translation>غرفة غير معروفة: %1</translation>
     </message>
     <message>
-        <location line="-393"/>
+        <location line="-397"/>
         <location line="+27"/>
         <location line="+35"/>
         <location line="+52"/>
-        <location line="+81"/>
+        <location line="+83"/>
         <source>Cannot send to encrypted rooms yet: E2EE backend is not implemented.</source>
         <translation>لا يمكن الإرسال إلى الغرف المعمّاة بعد: خلفية التعمية غير مطبّقة.</translation>
     </message>
     <message>
-        <location line="-128"/>
+        <location line="-130"/>
         <source>Cannot send thread reply: no thread root.</source>
         <translation>تعذّر إرسال رد الخيط: لا يوجد جذر للخيط.</translation>
     </message>
     <message>
-        <location line="+98"/>
+        <location line="+100"/>
         <source>Redaction failed: %1</source>
         <translation>فشل الحذف: %1</translation>
     </message>
     <message>
         <location line="+131"/>
-        <location line="+100"/>
+        <location line="+102"/>
         <source>Cannot send media to encrypted rooms yet: E2EE backend is not implemented.</source>
         <translation>لا يمكن إرسال وسائط إلى الغرف المعمّاة بعد: خلفية التعمية غير مطبّقة.</translation>
     </message>
     <message>
-        <location line="-94"/>
-        <location line="+100"/>
+        <location line="-96"/>
+        <location line="+102"/>
         <source>Cannot read %1</source>
         <translation>تعذّرت قراءة %1</translation>
     </message>
     <message>
         <location line="-47"/>
-        <location line="+94"/>
+        <location line="+96"/>
         <source>Upload failed: %1</source>
         <translation>فشل الرفع: %1</translation>
     </message>
     <message>
-        <location line="-87"/>
-        <location line="+94"/>
+        <location line="-89"/>
+        <location line="+96"/>
         <source>Upload response missing content_uri.</source>
         <translation>استجابة الرفع تفتقد content_uri.</translation>
     </message>
     <message>
-        <location line="+54"/>
+        <location line="+56"/>
         <source>Failed to load more history.</source>
         <translation>تعذّر تحميل مزيد من السجل.</translation>
     </message>
@@ -8196,7 +8191,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+4"/>
-        <location filename="../src/models/TimelineModel.cpp" line="+2814"/>
+        <location filename="../src/models/TimelineModel.cpp" line="+2817"/>
         <source>Voice message</source>
         <translation>رسالة صوتية</translation>
     </message>
@@ -15103,12 +15098,12 @@ Signing out and signing in again is the only fix.</source>
     <name>NotificationManager</name>
     <message>
         <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
-        <location line="+991"/>
+        <location line="+1004"/>
         <source>Open</source>
         <translation>فتح</translation>
     </message>
     <message>
-        <location line="-989"/>
+        <location line="-1002"/>
         <source>Mark as read</source>
         <translation>تعليم كمقروء</translation>
     </message>
@@ -15118,7 +15113,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>رد</translation>
     </message>
     <message>
-        <location line="+309"/>
+        <location line="+322"/>
         <source>Reply…</source>
         <translation>رد…</translation>
     </message>
@@ -15635,7 +15630,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2844"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2857"/>
         <source>(spoiler)</source>
         <translation>(حرق)</translation>
     </message>
@@ -15702,7 +15697,7 @@ Signing out and signing in again is the only fix.</source>
     <message numerus="yes">
         <location line="+233"/>
         <location line="+217"/>
-        <location line="+1722"/>
+        <location line="+1735"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>لا رسائل جديدة (%n)</numerusform>
@@ -15714,7 +15709,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1935"/>
+        <location line="-1948"/>
         <location line="+211"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15727,7 +15722,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1727"/>
+        <location line="+1740"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>في %n غرف</numerusform>
@@ -18213,7 +18208,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RoomExportController</name>
     <message>
-        <location filename="../src/models/RoomExportController.cpp" line="+173"/>
+        <location filename="../src/models/RoomExportController.cpp" line="+177"/>
         <source>An export is already running.</source>
         <translation>هناك تصدير قيد التنفيذ بالفعل.</translation>
     </message>
@@ -33528,7 +33523,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>TimelineModel</name>
     <message>
-        <location filename="../src/models/TimelineModel.cpp" line="-1665"/>
+        <location filename="../src/models/TimelineModel.cpp" line="-1668"/>
         <source>%1 changed their display name from “%2” to “%3” and changed their avatar.</source>
         <translation>غيّر %1 اسمه الظاهر من «%2» إلى «%3» وغيّر صورته الرمزية.</translation>
     </message>
@@ -33578,7 +33573,7 @@ Note: importing keys does not verify this session.</source>
         <translation>بدأ %1مكالمة.</translation>
     </message>
     <message>
-        <location line="+1317"/>
+        <location line="+1320"/>
         <source>%1 is typing…</source>
         <translation>%1 يكتب…</translation>
     </message>

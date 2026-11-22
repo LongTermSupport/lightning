@@ -4831,7 +4831,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>CppHttpMatrixClient</name>
     <message>
-        <location filename="../src/matrix/CppHttpMatrixClient.cpp" line="+165"/>
+        <location filename="../src/matrix/CppHttpMatrixClient.cpp" line="+177"/>
         <source>Homeserver URL is empty or invalid.</source>
         <translation>হোমসার্ভার URL ফাঁকা বা অবৈধ।</translation>
     </message>
@@ -4841,7 +4841,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>ব্যবহারকারীর নাম আবশ্যক।</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+33"/>
         <source>Invalid username or password.</source>
         <translation>ব্যবহারকারীর নাম বা পাসওয়ার্ড অবৈধ।</translation>
     </message>
@@ -4856,22 +4856,17 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>লগইন প্রতিক্রিয়ায় আবশ্যক ক্ষেত্র নেই।</translation>
     </message>
     <message>
-        <location line="+77"/>
+        <location line="+88"/>
         <source>Session expired — please sign in again.</source>
         <translation>সেশনের মেয়াদ শেষ — আবার সাইন ইন করুন।</translation>
     </message>
     <message>
-        <location line="+11"/>
-        <source>Invalid /whoami response.</source>
-        <translation>অবৈধ /whoami প্রতিক্রিয়া।</translation>
-    </message>
-    <message>
-        <location line="+140"/>
+        <location line="+161"/>
         <source>Session expired during sync.</source>
         <translation>সিঙ্কের সময় সেশনের মেয়াদ শেষ হয়েছে।</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+11"/>
         <source>Sync error (%1): %2</source>
         <translation>সিঙ্ক ত্রুটি (%1): %2</translation>
     </message>
@@ -4881,19 +4876,19 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>ত্রুটিপূর্ণ /sync প্রতিক্রিয়া।</translation>
     </message>
     <message>
-        <location line="+284"/>
-        <location line="+908"/>
+        <location line="+292"/>
+        <location line="+919"/>
         <source>[encrypted message - E2EE not implemented yet]</source>
         <translation>[এনক্রিপ্টেড বার্তা — E2EE এখনও প্রয়োগ করা হয়নি]</translation>
     </message>
     <message>
-        <location line="-890"/>
-        <location line="+912"/>
+        <location line="-901"/>
+        <location line="+923"/>
         <source>[encrypted media - E2EE not implemented yet]</source>
         <translation>[এনক্রিপ্টেড মিডিয়া — E2EE এখনও প্রয়োগ করা হয়নি]</translation>
     </message>
     <message>
-        <location line="-627"/>
+        <location line="-635"/>
         <source>Send failed: %1</source>
         <translation>পাঠানো ব্যর্থ: %1</translation>
     </message>
@@ -4903,66 +4898,66 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <location line="+35"/>
         <location line="+55"/>
         <location line="+31"/>
-        <location line="+50"/>
+        <location line="+52"/>
         <location line="+98"/>
-        <location line="+100"/>
+        <location line="+102"/>
         <source>Not signed in.</source>
         <translation>সাইন ইন করা নেই।</translation>
     </message>
     <message>
-        <location line="-394"/>
+        <location line="-398"/>
         <location line="+27"/>
         <location line="+35"/>
-        <location line="+234"/>
-        <location line="+100"/>
+        <location line="+236"/>
+        <location line="+102"/>
         <source>Unknown room: %1</source>
         <translation>অজানা রুম: %1</translation>
     </message>
     <message>
-        <location line="-393"/>
+        <location line="-397"/>
         <location line="+27"/>
         <location line="+35"/>
         <location line="+52"/>
-        <location line="+81"/>
+        <location line="+83"/>
         <source>Cannot send to encrypted rooms yet: E2EE backend is not implemented.</source>
         <translation>এনক্রিপ্টেড রুমে এখনও পাঠানো যায় না: E2EE ব্যাকএন্ড প্রয়োগ করা হয়নি।</translation>
     </message>
     <message>
-        <location line="-128"/>
+        <location line="-130"/>
         <source>Cannot send thread reply: no thread root.</source>
         <translation>থ্রেড উত্তর পাঠানো যাচ্ছে না: কোনো থ্রেড মূল নেই।</translation>
     </message>
     <message>
-        <location line="+98"/>
+        <location line="+100"/>
         <source>Redaction failed: %1</source>
         <translation>মোছা ব্যর্থ: %1</translation>
     </message>
     <message>
         <location line="+131"/>
-        <location line="+100"/>
+        <location line="+102"/>
         <source>Cannot send media to encrypted rooms yet: E2EE backend is not implemented.</source>
         <translation>এনক্রিপ্টেড রুমে এখনও মিডিয়া পাঠানো যায় না: E2EE ব্যাকএন্ড প্রয়োগ করা হয়নি।</translation>
     </message>
     <message>
-        <location line="-94"/>
-        <location line="+100"/>
+        <location line="-96"/>
+        <location line="+102"/>
         <source>Cannot read %1</source>
         <translation>%1 পড়া যাচ্ছে না</translation>
     </message>
     <message>
         <location line="-47"/>
-        <location line="+94"/>
+        <location line="+96"/>
         <source>Upload failed: %1</source>
         <translation>আপলোড ব্যর্থ: %1</translation>
     </message>
     <message>
-        <location line="-87"/>
-        <location line="+94"/>
+        <location line="-89"/>
+        <location line="+96"/>
         <source>Upload response missing content_uri.</source>
         <translation>আপলোড প্রতিক্রিয়ায় content_uri নেই।</translation>
     </message>
     <message>
-        <location line="+54"/>
+        <location line="+56"/>
         <source>Failed to load more history.</source>
         <translation>আরও ইতিহাস লোড করা যায়নি।</translation>
     </message>
@@ -8060,7 +8055,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+4"/>
-        <location filename="../src/models/TimelineModel.cpp" line="+2814"/>
+        <location filename="../src/models/TimelineModel.cpp" line="+2817"/>
         <source>Voice message</source>
         <translation>ভয়েস বার্তা</translation>
     </message>
@@ -14879,12 +14874,12 @@ Signing out and signing in again is the only fix.</source>
     <name>NotificationManager</name>
     <message>
         <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
-        <location line="+991"/>
+        <location line="+1004"/>
         <source>Open</source>
         <translation>খুলুন</translation>
     </message>
     <message>
-        <location line="-989"/>
+        <location line="-1002"/>
         <source>Mark as read</source>
         <translation>পঠিত চিহ্নিত করুন</translation>
     </message>
@@ -14894,7 +14889,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>উত্তর</translation>
     </message>
     <message>
-        <location line="+309"/>
+        <location line="+322"/>
         <source>Reply…</source>
         <translation>উত্তর দিন…</translation>
     </message>
@@ -15411,7 +15406,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2844"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2857"/>
         <source>(spoiler)</source>
         <translation>(স্পয়লার)</translation>
     </message>
@@ -15478,7 +15473,7 @@ Signing out and signing in again is the only fix.</source>
     <message numerus="yes">
         <location line="+233"/>
         <location line="+217"/>
-        <location line="+1722"/>
+        <location line="+1735"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n টি নতুন বার্তা</numerusform>
@@ -15486,7 +15481,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1935"/>
+        <location line="-1948"/>
         <location line="+211"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15495,7 +15490,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1727"/>
+        <location line="+1740"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>%n টি রুমে</numerusform>
@@ -17945,7 +17940,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RoomExportController</name>
     <message>
-        <location filename="../src/models/RoomExportController.cpp" line="+173"/>
+        <location filename="../src/models/RoomExportController.cpp" line="+177"/>
         <source>An export is already running.</source>
         <translation>একটি এক্সপোর্ট ইতিমধ্যে চলছে।</translation>
     </message>
@@ -32916,7 +32911,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>TimelineModel</name>
     <message>
-        <location filename="../src/models/TimelineModel.cpp" line="-1665"/>
+        <location filename="../src/models/TimelineModel.cpp" line="-1668"/>
         <source>%1 changed their display name from “%2” to “%3” and changed their avatar.</source>
         <translation>%1 তাঁর প্রদর্শিত নাম “%2” থেকে “%3” করেছেন এবং অবতার বদলেছেন।</translation>
     </message>
@@ -32966,7 +32961,7 @@ Note: importing keys does not verify this session.</source>
         <translation>%1একটি কল শুরু করেছে৷</translation>
     </message>
     <message>
-        <location line="+1317"/>
+        <location line="+1320"/>
         <source>%1 is typing…</source>
         <translation>%1 লিখছেন…</translation>
     </message>

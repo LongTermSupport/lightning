@@ -4804,7 +4804,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
 <context>
     <name>CppHttpMatrixClient</name>
     <message>
-        <location filename="../src/matrix/CppHttpMatrixClient.cpp" line="+165"/>
+        <location filename="../src/matrix/CppHttpMatrixClient.cpp" line="+177"/>
         <source>Homeserver URL is empty or invalid.</source>
         <translation>URL homeserver kosong atau tidak valid.</translation>
     </message>
@@ -4814,7 +4814,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Nama pengguna wajib diisi.</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+33"/>
         <source>Invalid username or password.</source>
         <translation>Nama pengguna atau kata sandi tidak valid.</translation>
     </message>
@@ -4829,22 +4829,17 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Respons masuk kehilangan bidang yang wajib.</translation>
     </message>
     <message>
-        <location line="+77"/>
+        <location line="+88"/>
         <source>Session expired — please sign in again.</source>
         <translation>Sesi kedaluwarsa — silakan masuk lagi.</translation>
     </message>
     <message>
-        <location line="+11"/>
-        <source>Invalid /whoami response.</source>
-        <translation>Respons /whoami tidak valid.</translation>
-    </message>
-    <message>
-        <location line="+140"/>
+        <location line="+161"/>
         <source>Session expired during sync.</source>
         <translation>Sesi kedaluwarsa saat sinkronisasi.</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+11"/>
         <source>Sync error (%1): %2</source>
         <translation>Kesalahan sinkronisasi (%1): %2</translation>
     </message>
@@ -4854,19 +4849,19 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Respons /sync rusak.</translation>
     </message>
     <message>
-        <location line="+284"/>
-        <location line="+908"/>
+        <location line="+292"/>
+        <location line="+919"/>
         <source>[encrypted message - E2EE not implemented yet]</source>
         <translation>[pesan terenkripsi — E2EE belum diimplementasikan]</translation>
     </message>
     <message>
-        <location line="-890"/>
-        <location line="+912"/>
+        <location line="-901"/>
+        <location line="+923"/>
         <source>[encrypted media - E2EE not implemented yet]</source>
         <translation>[media terenkripsi — E2EE belum diimplementasikan]</translation>
     </message>
     <message>
-        <location line="-627"/>
+        <location line="-635"/>
         <source>Send failed: %1</source>
         <translation>Gagal mengirim: %1</translation>
     </message>
@@ -4876,66 +4871,66 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <location line="+35"/>
         <location line="+55"/>
         <location line="+31"/>
-        <location line="+50"/>
+        <location line="+52"/>
         <location line="+98"/>
-        <location line="+100"/>
+        <location line="+102"/>
         <source>Not signed in.</source>
         <translation>Belum masuk.</translation>
     </message>
     <message>
-        <location line="-394"/>
+        <location line="-398"/>
         <location line="+27"/>
         <location line="+35"/>
-        <location line="+234"/>
-        <location line="+100"/>
+        <location line="+236"/>
+        <location line="+102"/>
         <source>Unknown room: %1</source>
         <translation>Ruang tidak dikenal: %1</translation>
     </message>
     <message>
-        <location line="-393"/>
+        <location line="-397"/>
         <location line="+27"/>
         <location line="+35"/>
         <location line="+52"/>
-        <location line="+81"/>
+        <location line="+83"/>
         <source>Cannot send to encrypted rooms yet: E2EE backend is not implemented.</source>
         <translation>Belum dapat mengirim ke ruang terenkripsi: backend E2EE belum diimplementasikan.</translation>
     </message>
     <message>
-        <location line="-128"/>
+        <location line="-130"/>
         <source>Cannot send thread reply: no thread root.</source>
         <translation>Tidak dapat mengirim balasan utas: tidak ada akar utas.</translation>
     </message>
     <message>
-        <location line="+98"/>
+        <location line="+100"/>
         <source>Redaction failed: %1</source>
         <translation>Gagal menghapus: %1</translation>
     </message>
     <message>
         <location line="+131"/>
-        <location line="+100"/>
+        <location line="+102"/>
         <source>Cannot send media to encrypted rooms yet: E2EE backend is not implemented.</source>
         <translation>Belum dapat mengirim media ke ruang terenkripsi: backend E2EE belum diimplementasikan.</translation>
     </message>
     <message>
-        <location line="-94"/>
-        <location line="+100"/>
+        <location line="-96"/>
+        <location line="+102"/>
         <source>Cannot read %1</source>
         <translation>Tidak dapat membaca %1</translation>
     </message>
     <message>
         <location line="-47"/>
-        <location line="+94"/>
+        <location line="+96"/>
         <source>Upload failed: %1</source>
         <translation>Gagal mengunggah: %1</translation>
     </message>
     <message>
-        <location line="-87"/>
-        <location line="+94"/>
+        <location line="-89"/>
+        <location line="+96"/>
         <source>Upload response missing content_uri.</source>
         <translation>Respons unggahan kehilangan content_uri.</translation>
     </message>
     <message>
-        <location line="+54"/>
+        <location line="+56"/>
         <source>Failed to load more history.</source>
         <translation>Gagal memuat riwayat lainnya.</translation>
     </message>
@@ -8026,7 +8021,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     </message>
     <message>
         <location line="+4"/>
-        <location filename="../src/models/TimelineModel.cpp" line="+2814"/>
+        <location filename="../src/models/TimelineModel.cpp" line="+2817"/>
         <source>Voice message</source>
         <translation>Pesan suara</translation>
     </message>
@@ -14823,12 +14818,12 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     <name>NotificationManager</name>
     <message>
         <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
-        <location line="+991"/>
+        <location line="+1004"/>
         <source>Open</source>
         <translation>Buka</translation>
     </message>
     <message>
-        <location line="-989"/>
+        <location line="-1002"/>
         <source>Mark as read</source>
         <translation>Tandai sudah dibaca</translation>
     </message>
@@ -14838,7 +14833,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Balas</translation>
     </message>
     <message>
-        <location line="+309"/>
+        <location line="+322"/>
         <source>Reply…</source>
         <translation>Balas…</translation>
     </message>
@@ -15355,7 +15350,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2844"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2857"/>
         <source>(spoiler)</source>
         <translation>(spoiler)</translation>
     </message>
@@ -15422,14 +15417,14 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     <message numerus="yes">
         <location line="+233"/>
         <location line="+217"/>
-        <location line="+1722"/>
+        <location line="+1735"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n pesan baru</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1935"/>
+        <location line="-1948"/>
         <location line="+211"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15437,7 +15432,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1727"/>
+        <location line="+1740"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>di %n ruang</numerusform>
@@ -17878,7 +17873,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
 <context>
     <name>RoomExportController</name>
     <message>
-        <location filename="../src/models/RoomExportController.cpp" line="+173"/>
+        <location filename="../src/models/RoomExportController.cpp" line="+177"/>
         <source>An export is already running.</source>
         <translation>Ekspor sedang berjalan.</translation>
     </message>
@@ -32763,7 +32758,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
 <context>
     <name>TimelineModel</name>
     <message>
-        <location filename="../src/models/TimelineModel.cpp" line="-1665"/>
+        <location filename="../src/models/TimelineModel.cpp" line="-1668"/>
         <source>%1 changed their display name from “%2” to “%3” and changed their avatar.</source>
         <translation>%1 mengubah nama tampilannya dari “%2” menjadi “%3” dan mengubah avatarnya.</translation>
     </message>
@@ -32813,7 +32808,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>%1 memulai panggilan.</translation>
     </message>
     <message>
-        <location line="+1317"/>
+        <location line="+1320"/>
         <source>%1 is typing…</source>
         <translation>%1 sedang mengetik…</translation>
     </message>
