@@ -1044,6 +1044,8 @@ private:
                         quint64 eventGeneration, bool handleBound);
     void noteRoomsChanged();
     void flushRoomsChanged();
+    void requestRoomListReset();
+    void resetRoomListDrainState();
     void armPaginationPoll(quint64 chain, int ticksLeft, int quietTicks);
     void handleRustEvent(const QJsonObject &event, quint64 eventGeneration);
 
@@ -1223,6 +1225,7 @@ private:
     bool m_coalesceRoomsChanged = false;
     bool m_roomsChangedPending = false;
     bool m_roomListAwaitingReset = false;
+    QTimer m_roomListResetTimer;
     QString m_timelineInsertBatchRoom;
     quint64 m_timelineInsertBatchGeneration = 0;
     int m_timelineInsertBatchFirst = -1;

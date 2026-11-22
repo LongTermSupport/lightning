@@ -232,6 +232,12 @@ RustSdkMatrixClient::RustSdkMatrixClient(SettingsManager *settings, QObject *par
 {
     m_pollTimer.setInterval(100);
     connect(&m_pollTimer, &QTimer::timeout, this, &RustSdkMatrixClient::pollRustEvents);
+    m_roomListResetTimer.setSingleShot(true);
+    m_roomListResetTimer.setInterval(2000);
+    connect(&m_roomListResetTimer, &QTimer::timeout, this, [this] {
+        if (m_roomListAwaitingReset)
+            requestRoomListReset();
+    });
     m_tokenWriteRetry.setSingleShot(true);
     connect(&m_tokenWriteRetry, &QTimer::timeout, this,
             &RustSdkMatrixClient::retryRotatedTokenWrite);
@@ -493,6 +499,7 @@ void RustSdkMatrixClient::clearLocalState()
     m_rooms.clear();
     m_memberListRecency.clear();
     m_roomOrder.clear();
+    resetRoomListDrainState();
     m_lastReceiptSent.clear();
     m_syncMode = QStringLiteral("stopped");
     m_lastSyncState.clear();
@@ -1537,6 +1544,7 @@ void RustSdkMatrixClient::login(const QString &homeserver,
     m_rooms.clear();
     m_memberListRecency.clear();
     m_roomOrder.clear();
+    resetRoomListDrainState();
     m_timelines.clear();
     m_forwardedEditIds.clear();
     resetNotificationProducerState();
@@ -2456,6 +2464,7 @@ void RustSdkMatrixClient::adoptBrowserSession(
     m_rooms.clear();
     m_memberListRecency.clear();
     m_roomOrder.clear();
+    resetRoomListDrainState();
     m_timelines.clear();
     m_forwardedEditIds.clear();
     resetNotificationProducerState();
@@ -2778,6 +2787,7 @@ bool RustSdkMatrixClient::restoreSession()
     m_rooms.clear();
     m_memberListRecency.clear();
     m_roomOrder.clear();
+    resetRoomListDrainState();
     m_timelines.clear();
     m_forwardedEditIds.clear();
     resetNotificationProducerState();
@@ -2852,6 +2862,7 @@ bool RustSdkMatrixClient::restoreSessionFromFile(const QString &homeserver,
     m_rooms.clear();
     m_memberListRecency.clear();
     m_roomOrder.clear();
+    resetRoomListDrainState();
     m_timelines.clear();
     m_forwardedEditIds.clear();
     resetNotificationProducerState();
@@ -5727,6 +5738,8 @@ void RustSdkMatrixClient::drainSdkEvents(const std::function<QByteArray()> &next
     if (backlog && !m_backlogPollPending) {
         m_backlogPollPending = true;
         QTimer::singleShot(0, this, [this] {
+            if (!m_backlogPollPending)
+                return;
             m_backlogPollPending = false;
             pollRustEvents();
         });
@@ -7264,10 +7277,13 @@ void RustSdkMatrixClient::handleRustEvent(const QJsonObject &event,
                           << "— resyncing rooms and reloading the open room";
         Q_EMIT errorOccurred(event.value(QStringLiteral("message")).toString(
             tr("Rust SDK event queue overflowed.")));
-        m_roomListAwaitingReset = true;
-        ++m_roomListResyncRequests;
-        if (m_rustHandle)
-            takeRustString(mx_rust_resync_rooms(m_rustHandle));
+        if (!m_roomListAwaitingReset) {
+            m_roomListAwaitingReset = true;
+            ++m_roomListResyncRequests;
+            if (m_rustHandle)
+                takeRustString(mx_rust_resync_rooms(m_rustHandle));
+            m_roomListResetTimer.start();
+        }
         const QString openRoom = m_timelineTracker.activeRoom();
         if (!openRoom.isEmpty()
             && admitRecoveryReopen(
@@ -7291,6 +7307,7 @@ void RustSdkMatrixClient::handleRoomsEvent(const QJsonArray &rooms, qint64 *pars
     if (parseMs)
         *parseMs = timed.elapsed();
     m_roomListAwaitingReset = false;
+    m_roomListResetTimer.stop();
     if (!modelMs) {
         noteRoomsChanged();
         return;
@@ -7416,10 +7433,26 @@ void RustSdkMatrixClient::handleRoomListDiff(const QJsonObject &event)
                       << "indexed=" << (!roomId.isEmpty() && m_roomOrder.contains(roomId))
                       << "registry=" << m_roomOrder.size()
                       << "— asking the room list to re-emit its index base";
+    requestRoomListReset();
+}
+
+// The reset can itself be lost to a queue overflow; without the re-request the
+// gate would hold the list for the rest of the session.
+void RustSdkMatrixClient::requestRoomListReset()
+{
     m_roomListAwaitingReset = true;
     ++m_roomListResyncRequests;
     if (m_rustHandle)
         takeRustString(mx_rust_resync_rooms(m_rustHandle));
+    m_roomListResetTimer.start();
+}
+
+void RustSdkMatrixClient::resetRoomListDrainState()
+{
+    m_roomListAwaitingReset = false;
+    m_roomListResetTimer.stop();
+    m_roomsChangedPending = false;
+    m_backlogPollPending = false;
 }
 
 void RustSdkMatrixClient::handleSpacesEvent(const QJsonArray &spaces)
