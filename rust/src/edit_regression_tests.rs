@@ -1291,3 +1291,56 @@ async fn the_thread_list_shows_the_latest_edit_of_its_root() {
     assert_eq!(last["items"][0]["root_sender"], SENDER);
     task.abort();
 }
+
+async fn encrypted_original_and_plaintext_edit(server: &MatrixMockServer) -> Client {
+    use matrix_sdk::ruma::{device_id, user_id};
+    use matrix_sdk_base::crypto::{olm::EncryptionSettings, OlmMachine};
+    let client = server.client_builder().build().await;
+    client.encryption().wait_for_e2ee_initialization_tasks().await;
+    client.event_cache().subscribe().unwrap();
+    let receiver = client.olm_machine_for_testing().await;
+    let receiver = receiver.as_ref().unwrap();
+    let room_id = room_id!("!edits:localhost");
+    let sender = OlmMachine::new(user_id!("@alice:localhost"), device_id!("FIRST")).await;
+    sender
+        .share_room_key(room_id, std::iter::empty(), EncryptionSettings::default())
+        .await
+        .unwrap();
+    let mut original = message("$original", "original words", 1000);
+    let content = Raw::from_json_string(original["content"].to_string()).unwrap();
+    let sealed = sender
+        .encrypt_room_event_raw(room_id, "m.room.message", &content)
+        .await
+        .unwrap();
+    original["type"] = json!("m.room.encrypted");
+    original["content"] = serde_json::from_str(sealed.content.json().get()).unwrap();
+    let keys = sender.store().export_room_keys(|_| true).await.unwrap();
+    receiver.store().import_exported_room_keys(keys, |_, _| {}).await.unwrap();
+    sync(
+        &client,
+        vec![original, edit("$forged", "$original", "FORGED caption", 2000)],
+        "1",
+    )
+    .await;
+    client
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn a_plaintext_edit_of_an_encrypted_message_is_not_the_room_preview() {
+    let server = MatrixMockServer::new().await;
+    let client = encrypted_original_and_plaintext_edit(&server).await;
+    let room_id = room_id!("!edits:localhost");
+    client.latest_events().await.listen_to_room(room_id).await.unwrap();
+    let room = client.get_room(room_id).unwrap();
+    let deadline = Instant::now() + Duration::from_secs(5);
+    while room.latest_event().event_id().as_deref().map(|id| id.as_str()) != Some("$forged") {
+        assert!(
+            Instant::now() < deadline,
+            "matrix-sdk no longer offers the plaintext edit as the latest event: {:?}",
+            room.latest_event().event_id()
+        );
+        tokio::time::sleep(Duration::from_millis(10)).await;
+    }
+    let payload = crate::room_payload(&room).await;
+    assert_eq!(payload["last_message_preview"], "original words");
+}
