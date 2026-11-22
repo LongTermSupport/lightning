@@ -32594,7 +32594,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Pažymėti šią giją kaip perskaitytą</translation>
     </message>
     <message>
-        <location line="+1318"/>
+        <location line="+1332"/>
         <source>Jump to the newest reply</source>
         <translation>Pereiti prie naujausio atsakymo</translation>
     </message>
@@ -32608,7 +32608,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         </translation>
     </message>
     <message>
-        <location line="-1713"/>
+        <location line="-1727"/>
         <source>This room has been replaced.</source>
         <translation>Šis kambarys buvo pakeistas.</translation>
     </message>
@@ -32712,13 +32712,13 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     <message>
         <location line="-90"/>
         <location line="+92"/>
-        <location line="+362"/>
+        <location line="+376"/>
         <location line="+72"/>
         <source>Replies</source>
         <translation>Atsakymai</translation>
     </message>
     <message>
-        <location line="-524"/>
+        <location line="-538"/>
         <source>Unread</source>
         <translation>Neskaityta</translation>
     </message>
@@ -32768,7 +32768,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>[Spoileris]</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+28"/>
         <source>Loading the original message…</source>
         <translation>Įkeliama originali žinutė…</translation>
     </message>

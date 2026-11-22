@@ -32443,7 +32443,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Diesen Thread als gelesen markieren</translation>
     </message>
     <message>
-        <location line="+1318"/>
+        <location line="+1332"/>
         <source>Jump to the newest reply</source>
         <translation>Zur neuesten Antwort springen</translation>
     </message>
@@ -32456,7 +32456,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         </translation>
     </message>
     <message>
-        <location line="-1713"/>
+        <location line="-1727"/>
         <source>This room has been replaced.</source>
         <translation>Dieser Raum wurde ersetzt.</translation>
     </message>
@@ -32559,13 +32559,13 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     <message>
         <location line="-90"/>
         <location line="+92"/>
-        <location line="+362"/>
+        <location line="+376"/>
         <location line="+72"/>
         <source>Replies</source>
         <translation>Antworten</translation>
     </message>
     <message>
-        <location line="-524"/>
+        <location line="-538"/>
         <source>Unread</source>
         <translation>Ungelesen</translation>
     </message>
@@ -32615,7 +32615,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>[Spoiler]</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+28"/>
         <source>Loading the original message…</source>
         <translation>Ursprüngliche Nachricht wird geladen …</translation>
     </message>

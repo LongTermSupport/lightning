@@ -32443,7 +32443,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Marquer ce fil comme lu</translation>
     </message>
     <message>
-        <location line="+1318"/>
+        <location line="+1332"/>
         <source>Jump to the newest reply</source>
         <translation>Aller à la réponse la plus récente</translation>
     </message>
@@ -32456,7 +32456,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         </translation>
     </message>
     <message>
-        <location line="-1713"/>
+        <location line="-1727"/>
         <source>This room has been replaced.</source>
         <translation>Ce salon a été remplacé.</translation>
     </message>
@@ -32559,13 +32559,13 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
     <message>
         <location line="-90"/>
         <location line="+92"/>
-        <location line="+362"/>
+        <location line="+376"/>
         <location line="+72"/>
         <source>Replies</source>
         <translation>Réponses</translation>
     </message>
     <message>
-        <location line="-524"/>
+        <location line="-538"/>
         <source>Unread</source>
         <translation>Non lu</translation>
     </message>
@@ -32615,7 +32615,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>[Spoiler]</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+28"/>
         <source>Loading the original message…</source>
         <translation>Chargement du message d&apos;origine…</translation>
     </message>

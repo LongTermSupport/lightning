@@ -32292,7 +32292,7 @@ Note: importing keys does not verify this session.</source>
         <translation>将此话题标为已读</translation>
     </message>
     <message>
-        <location line="+1318"/>
+        <location line="+1332"/>
         <source>Jump to the newest reply</source>
         <translation>跳到最新回复</translation>
     </message>
@@ -32304,7 +32304,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message>
-        <location line="-1713"/>
+        <location line="-1727"/>
         <source>This room has been replaced.</source>
         <translation>此房间已被替换。</translation>
     </message>
@@ -32406,13 +32406,13 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="-90"/>
         <location line="+92"/>
-        <location line="+362"/>
+        <location line="+376"/>
         <location line="+72"/>
         <source>Replies</source>
         <translation>回复</translation>
     </message>
     <message>
-        <location line="-524"/>
+        <location line="-538"/>
         <source>Unread</source>
         <translation>未读</translation>
     </message>
@@ -32462,7 +32462,7 @@ Note: importing keys does not verify this session.</source>
         <translation>[剧透]</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+28"/>
         <source>Loading the original message…</source>
         <translation>正在加载原始消息…</translation>
     </message>

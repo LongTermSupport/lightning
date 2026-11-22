@@ -32423,7 +32423,7 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1318"/>
+        <location line="+1332"/>
         <source>Jump to the newest reply</source>
         <translation type="unfinished"></translation>
     </message>
@@ -32436,7 +32436,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message>
-        <location line="-1713"/>
+        <location line="-1727"/>
         <source>This room has been replaced.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -32539,13 +32539,13 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="-90"/>
         <location line="+92"/>
-        <location line="+362"/>
+        <location line="+376"/>
         <location line="+72"/>
         <source>Replies</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-524"/>
+        <location line="-538"/>
         <source>Unread</source>
         <translation type="unfinished"></translation>
     </message>
@@ -32595,7 +32595,7 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+28"/>
         <source>Loading the original message…</source>
         <translation type="unfinished"></translation>
     </message>

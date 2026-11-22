@@ -32443,7 +32443,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Marcar este tópico como lido</translation>
     </message>
     <message>
-        <location line="+1318"/>
+        <location line="+1332"/>
         <source>Jump to the newest reply</source>
         <translation>Ir para a resposta mais recente</translation>
     </message>
@@ -32456,7 +32456,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         </translation>
     </message>
     <message>
-        <location line="-1713"/>
+        <location line="-1727"/>
         <source>This room has been replaced.</source>
         <translation>Esta sala foi substituída.</translation>
     </message>
@@ -32559,13 +32559,13 @@ Nota: importar chaves não verifica esta sessão.</translation>
     <message>
         <location line="-90"/>
         <location line="+92"/>
-        <location line="+362"/>
+        <location line="+376"/>
         <location line="+72"/>
         <source>Replies</source>
         <translation>Respostas</translation>
     </message>
     <message>
-        <location line="-524"/>
+        <location line="-538"/>
         <source>Unread</source>
         <translation>Não lido</translation>
     </message>
@@ -32615,7 +32615,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>[Spoiler]</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+28"/>
         <source>Loading the original message…</source>
         <translation>A carregar a mensagem original…</translation>
     </message>
