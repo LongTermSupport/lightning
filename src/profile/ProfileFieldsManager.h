@@ -9,6 +9,20 @@
 
 #include "matrix/MatrixClient.h"
 
+namespace profile_requests {
+constexpr int kMaxInFlight = 16;
+// Op IDs start at one. Slot zero holds the latest request waiting for a read slot.
+constexpr quint64 kDeferred = 0;
+
+inline bool deferIfBusy(QHash<quint64, QString> &requests, const QString &id)
+{
+    if (requests.size() < kMaxInFlight)
+        return false;
+    requests.insert(kDeferred, id);
+    return true;
+}
+}
+
 // Time zone (MSC4175), pronouns (MSC4247) and the display-only Sable fields;
 // see rust/src/profilefields.rs for the keys.
 class ProfileFieldsManager : public QObject

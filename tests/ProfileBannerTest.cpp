@@ -61,6 +61,55 @@ class ProfileBannerTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
+    void delayedBannerReadsReserveCapacityForTheOpenedProfile()
+    {
+        FakeBannerClient client;
+        ProfileBannerManager manager;
+        manager.setClient(&client);
+        const auto user = [](int i) { return QStringLiteral("@p%1:example.org").arg(i); };
+        const auto answer = QStringLiteral("mxc://example.org/banner");
+        const auto complete = [&](quint64 op, const QString &id) {
+            Q_EMIT client.profileBannerReceived(op, id, answer, true);
+        };
+        for (int i = 0; i < 250; ++i) {
+            manager.request(user(i));
+            complete(client.fetches.last().opId, user(i));
+        }
+        QList<QPair<quint64, QString>> delayed;
+        for (int i = 250; i < 550; ++i) {
+            const auto before = client.fetches.size();
+            manager.request(user(i));
+            if (client.fetches.size() != before)
+                delayed.append({client.fetches.last().opId, user(i)});
+        }
+        QCOMPARE(delayed.size(), 16);
+        manager.setOwnBanner("/tmp/banner.png");
+        Q_EMIT client.profileBannerSet(client.lastWriteOp, true, answer, {});
+        for (auto it = delayed.crbegin(); it != delayed.crend(); ++it)
+            complete(it->first, it->second);
+        const QString latest = user(549);
+        QCOMPARE(client.fetches.last().userId, latest);
+        complete(client.fetches.last().opId, latest);
+        QVERIFY(!manager.bannerFor(latest).isEmpty());
+        QVERIFY(!manager.bannerFor(client.self).isEmpty());
+        int retained = 1;
+        for (int i = 0; i < 550; ++i)
+            retained += !manager.bannerFor(user(i)).isEmpty();
+        QVERIFY(retained <= 256);
+        manager.request(user(600));
+        const auto stale = client.fetches.last().opId;
+        for (int i = 601; i < 640; ++i)
+            manager.request(user(i));
+        Q_EMIT client.loggedOut();
+        const auto dispatched = client.fetches.size();
+        manager.request(user(600));
+        QCOMPARE(client.fetches.size(), dispatched + 1);
+        complete(stale, user(600));
+        QVERIFY(manager.bannerFor(user(600)).isEmpty());
+        complete(client.fetches.last().opId, user(600));
+        QVERIFY(!manager.bannerFor(user(600)).isEmpty());
+    }
+
     void anUnknownUserRendersNothingAndIsAskedExactlyOnce()
     {
         FakeBannerClient client;
@@ -275,6 +324,37 @@ false);
         const int before = client.roomFetches.size();
         banners.refreshRoom(room);
         QCOMPARE(client.roomFetches.size(), before + 1);
+    }
+
+    void roomBannerReservationsIncludeRefreshesAndWritableFlags()
+    {
+        FakeBannerClient client;
+        ProfileBannerManager banners;
+        banners.setClient(&client);
+        const auto room = [](int i) { return QStringLiteral("!r%1:example.org").arg(i); };
+        for (int i = 0; i < 255; ++i) {
+            banners.requestRoom(room(i));
+            Q_EMIT client.roomBannerReceived(client.roomFetches.last().opId, room(i),
+                                             "mxc://example.org/banner", true);
+        }
+        for (int i = 255; i < 550; ++i) {
+            banners.requestRoom(room(i));
+            banners.refreshRoom(room(i));
+        }
+        const auto held = client.roomFetches.mid(255);
+        QCOMPARE(held.size(), 16);
+        for (auto it = held.crbegin(); it != held.crend(); ++it)
+            Q_EMIT client.roomBannerReceived(it->opId, it->userId, "mxc://example.org/new", true);
+        QCOMPARE(client.roomFetches.last().userId, room(549));
+        Q_EMIT client.roomBannerReceived(client.roomFetches.last().opId, room(549),
+                                         "mxc://example.org/new", true);
+        QVERIFY(banners.canSetRoomBanner(room(549)));
+        int writable = 0;
+        for (int i = 0; i < 550; ++i) {
+            QCOMPARE(banners.canSetRoomBanner(room(i)), !banners.roomBannerFor(room(i)).isEmpty());
+            writable += banners.canSetRoomBanner(room(i));
+        }
+        QVERIFY(writable <= 256);
     }
 
     void aStaleRoomAnswerFromAPreviousSessionIsDropped()

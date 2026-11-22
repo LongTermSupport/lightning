@@ -213,6 +213,89 @@ private Q_SLOTS:
         QCOMPARE(skipped, 4);
         QVERIFY(!zip.contains("<svg"));
         QVERIFY(!zip.contains("script"));
+
+        pack.images.removeFirst();
+        QVERIFY(buildArchive(pack, &skipped).isEmpty());
+        QCOMPARE(skipped, 4);
+    }
+
+    void roundTripBudgetIncludesManifestAndZipHeaders_data()
+    {
+        QTest::addColumn<int>("delta");
+        QTest::newRow("one byte below") << -1;
+        QTest::newRow("exactly 96 MiB") << 0;
+        QTest::newRow("one byte above") << 1;
+    }
+
+    void roundTripBudgetIncludesManifestAndZipHeaders()
+    {
+        QFETCH(int, delta);
+        Pack pack;
+        for (int i = 0; i < 24; ++i) {
+            Image image;
+            image.shortcode = QStringLiteral("image%1").arg(i);
+            image.data = kPng;
+            pack.images << image;
+        }
+        const qint64 overhead = buildArchive(pack).size() - 24 * kPng.size();
+        QVERIFY(overhead > 0 && overhead < kMaxImageBytes);
+        const QByteArray full = kPng.leftJustified(kMaxImageBytes, 'p');
+        for (Image &image : pack.images)
+            image.data = full;
+        pack.images.last().data.chop(overhead - delta);
+        const QByteArray zip = buildArchive(pack);
+        if (delta > 0) {
+            QVERIFY(zip.isEmpty());
+            return;
+        }
+        QCOMPARE(zip.size(), 96LL * 1024 * 1024 + delta);
+        QTemporaryDir dir, work;
+        const auto read = readArchive(writeTemp(dir, "bounded.zip", zip), work.path());
+        QCOMPARE(read.error, ReadError::None);
+        QCOMPARE(read.refused, 0);
+        QCOMPARE(read.pack.images.size(), pack.images.size());
+    }
+
+    void maximumImageCountRoundTripsWithDistinctExportedKeys()
+    {
+        Pack pack;
+        for (int i = 0; i < kMaxImages; ++i) {
+            Image image;
+            image.shortcode = QStringLiteral("image%1").arg(i);
+            image.data = kGif;
+            pack.images << image;
+        }
+        Image duplicate = pack.images.first();
+        duplicate.shortcode += QLatin1Char('!');
+        pack.images.insert(1, duplicate);
+        int skipped = 0;
+        QTemporaryDir dir, work;
+        const auto path = writeTemp(dir, "full.zip", buildArchive(pack, &skipped));
+        QCOMPARE(skipped, 1);
+        const auto read = readArchive(path, work.path());
+        QCOMPARE(read.error, ReadError::None);
+        QCOMPARE(read.refused, 0);
+        QCOMPARE(read.pack.images.size(), kMaxImages);
+        QCOMPARE(read.pack.images.last().shortcode, pack.images.last().shortcode);
+    }
+
+    void shortDiskWriteFailsTheExport()
+    {
+        class FullDisk : public QIODevice {
+            qint64 readData(char *, qint64) override { return -1; }
+            qint64 writeData(const char *, qint64 size) override {
+                const auto written = qMin(remaining, size);
+                remaining -= written;
+                return written;
+            }
+            qint64 remaining = 64;
+        } disk;
+        QVERIFY(disk.open(QIODevice::WriteOnly | QIODevice::Unbuffered));
+        Writer writer(disk);
+        Image image;
+        image.shortcode = QStringLiteral("cat");
+        image.data = kPng;
+        QCOMPARE(writer.append(0, image), WriteResult::WriteFailed);
     }
 
     void aNonZipIsUnreadable()

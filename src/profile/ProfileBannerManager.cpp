@@ -1,7 +1,32 @@
 #include "profile/ProfileBannerManager.h"
+#include "profile/ProfileFieldsManager.h"
 
 #include <QRegularExpression>
 #include <QUrl>
+
+namespace {
+bool reserveBanner(const QString &id, const QString &pinned, int capacity,
+                   QSet<QString> &asked, QHash<QString, QString> &cache,
+                   const QHash<quint64, QString> &inFlight, QSet<QString> *writable = nullptr)
+{
+    if (asked.contains(id))
+        return false;
+    const bool evict = asked.size() >= capacity;
+    if (evict) {
+        for (auto it = cache.begin(); it != cache.end(); ++it) {
+            if (it.key() == pinned || inFlight.key(it.key()))
+                continue;
+            asked.remove(it.key());
+            if (writable)
+                writable->remove(it.key());
+            cache.erase(it);
+            break;
+        }
+    }
+    asked.insert(id);
+    return evict;
+}
+}
 
 ProfileBannerManager::ProfileBannerManager(QObject *parent)
     : QObject(parent)
@@ -61,12 +86,17 @@ void ProfileBannerManager::request(const QString &userId)
         return;
     if (m_asked.contains(userId))
         return;
-    if (m_cache.size() >= kMaxCached)
+    if (profile_requests::deferIfBusy(m_inFlight, userId))
         return;
-    m_asked.insert(userId);
+    const bool evicted = reserveBanner(userId, m_client->currentUserId(), kMaxCached,
+                                       m_asked, m_cache, m_inFlight);
     const quint64 opId = m_nextOpId++;
     m_inFlight.insert(opId, userId);
     m_client->fetchProfileBanner(userId, opId);
+    if (evicted) {
+        ++m_revision;
+        Q_EMIT revisionChanged();
+    }
 }
 
 // Converts a picked file URL to a path via QUrl: stripping "file://" by hand
@@ -109,16 +139,19 @@ void ProfileBannerManager::handleReceived(quint64 opId, const QString &userId,
                                           const QString &mxc, bool supported)
 {
     const auto it = m_inFlight.constFind(opId);
-    if (it == m_inFlight.constEnd())
+    if (!opId || it == m_inFlight.constEnd() || *it != userId)
         return;
     m_inFlight.erase(it);
+    const auto deferred = m_inFlight.take(profile_requests::kDeferred);
 
-    if (!supported && m_supported) {
+    const bool lostSupport = !supported && m_supported;
+    if (lostSupport)
         m_supported = false;
-        Q_EMIT supportedChanged();
-    }
     const QString previous = m_cache.value(userId);
     m_cache.insert(userId, mxc);
+    request(deferred);
+    if (lostSupport)
+        Q_EMIT supportedChanged();
     if (previous == mxc)
         return;
     ++m_revision;
@@ -146,8 +179,8 @@ void ProfileBannerManager::handleSet(quint64 opId, bool ok, const QString &mxc,
     const QString self = m_client->currentUserId();
     if (self.isEmpty())
         return;
+    reserveBanner(self, self, kMaxCached, m_asked, m_cache, m_inFlight);
     m_cache.insert(self, mxc);
-    m_asked.insert(self);
     ++m_revision;
     Q_EMIT revisionChanged();
 }
@@ -173,12 +206,17 @@ void ProfileBannerManager::refreshRoom(const QString &roomId)
 {
     if (!roomBannersAvailable() || roomId.isEmpty())
         return;
-    if (!m_roomCache.contains(roomId) && m_roomCache.size() >= kMaxCached)
+    if (m_roomInFlight.key(roomId) || profile_requests::deferIfBusy(m_roomInFlight, roomId))
         return;
-    m_roomAsked.insert(roomId);
+    const bool evicted = reserveBanner(roomId, {}, kMaxCached, m_roomAsked, m_roomCache,
+                                       m_roomInFlight, &m_roomWritable);
     const quint64 opId = m_nextOpId++;
     m_roomInFlight.insert(opId, roomId);
     m_client->fetchRoomBanner(roomId, opId);
+    if (evicted) {
+        ++m_revision;
+        Q_EMIT revisionChanged();
+    }
 }
 
 void ProfileBannerManager::setRoomBanner(const QString &roomId,
@@ -209,9 +247,10 @@ void ProfileBannerManager::handleRoomReceived(quint64 opId,
                                               const QString &mxc, bool canSet)
 {
     const auto it = m_roomInFlight.constFind(opId);
-    if (it == m_roomInFlight.constEnd())
+    if (!opId || it == m_roomInFlight.constEnd() || *it != roomId)
         return;
     m_roomInFlight.erase(it);
+    const auto deferred = m_roomInFlight.take(profile_requests::kDeferred);
 
     const QString previous = m_roomCache.value(roomId);
     const bool couldSet = m_roomWritable.contains(roomId);
@@ -220,6 +259,7 @@ void ProfileBannerManager::handleRoomReceived(quint64 opId,
         m_roomWritable.insert(roomId);
     else
         m_roomWritable.remove(roomId);
+    refreshRoom(deferred);
     if (previous == mxc && couldSet == canSet)
         return;
     ++m_revision;
@@ -239,8 +279,9 @@ void ProfileBannerManager::handleRoomSet(quint64 opId, const QString &roomId,
         return;
     }
     setLastError({});
+    reserveBanner(roomId, {}, kMaxCached, m_roomAsked, m_roomCache, m_roomInFlight,
+                  &m_roomWritable);
     m_roomCache.insert(roomId, mxc);
-    m_roomAsked.insert(roomId);
     ++m_revision;
     Q_EMIT revisionChanged();
 }

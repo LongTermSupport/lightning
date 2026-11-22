@@ -155,16 +155,15 @@ constexpr Excluded kNotLoadable[] = {
     { "Main", "the application window; StartupSessionTest loads it" },
 };
 
-}
-
-class QmlComponentLoadTest : public QObject
+struct PackEditorFixture
 {
-    Q_OBJECT
+    QQmlApplicationEngine engine;
+    std::unique_ptr<QObject> root;
+    QObject *editor = nullptr;
+    QQuickItem *content = nullptr;
 
-private Q_SLOTS:
-    void everyPackEditorActionStaysInsideTheDialogWhileConfirming()
+    void open()
     {
-        QQmlApplicationEngine engine;
         QQmlComponent component(&engine);
         component.setData(R"QML(
 import QtQuick
@@ -173,6 +172,7 @@ import MatrixClient
 ApplicationWindow {
     width: 700; height: 760
     visible: true
+    property QtObject app: QtObject { function defaultFileDialogFolder() { return "" } }
     property alias editor: ed
     StickerPackEditor {
         id: ed
@@ -183,6 +183,10 @@ ApplicationWindow {
             property string editorPackId: ""
             property bool editing: false
             property bool transferring: false
+            property string transferKind: ""
+            property int transferDone: 0
+            property int transferTotal: 4
+            property int cancelCalls: 0
             property bool migrating: false
             property int revision: 0
             property var editorImages: ListModel {}
@@ -194,17 +198,27 @@ ApplicationWindow {
             function copyShareText(id) { return true }
             function removePack(id) {}
             function deletePack(id) {}
+            function cancelTransfer() {
+                ++cancelCalls
+                finishExport(false, "cancelled")
+            }
+            function finishExport(ok, category) {
+                transferring = false
+                transferKind = ""
+                transferFinished("export", ok, category, ok ? transferTotal : 0, 0, 0, "Cats")
+            }
+            function transferMessage(kind, ok, category, added, skipped, failed, name) {
+                return ok ? "Saved " + added : "Result " + category
+            }
         }
     }
 }
 )QML", QUrl());
         QTRY_VERIFY(component.status() != QQmlComponent::Loading);
         QVERIFY2(component.isReady(), qPrintable(component.errorString()));
-        std::unique_ptr<QObject> root(component.create());
+        root.reset(component.create());
         QVERIFY(root);
-        auto *window = qobject_cast<QQuickWindow *>(root.get());
-        QVERIFY(window);
-        QObject *editor = root->property("editor").value<QObject *>();
+        editor = root->property("editor").value<QObject *>();
         QVERIFY(editor);
 
         QVERIFY(QMetaObject::invokeMethod(
@@ -212,7 +226,23 @@ ApplicationWindow {
             Q_ARG(QVariant, QStringLiteral("Cats")), Q_ARG(QVariant, true)));
         QTRY_VERIFY(editor->property("opened").toBool());
 
-        auto *content = editor->property("contentItem").value<QQuickItem *>();
+        content = editor->property("contentItem").value<QQuickItem *>();
+    }
+};
+
+}
+
+class QmlComponentLoadTest : public QObject
+{
+    Q_OBJECT
+
+private Q_SLOTS:
+    void everyPackEditorActionStaysInsideTheDialogWhileConfirming()
+    {
+        PackEditorFixture fixture;
+        fixture.open();
+        auto *content = fixture.content;
+        auto *editor = fixture.editor;
         QVERIFY(content);
         const QStringList states = { QString(), QStringLiteral("confirmingDelete"),
                                      QStringLiteral("confirmingRemove") };
@@ -240,6 +270,59 @@ ApplicationWindow {
         }
         QVERIFY2(content->findChild<QQuickItem *>(QStringLiteral("stickerPackRemoveButton")),
                  "a manageable room pack has no Remove pack button");
+    }
+
+    void packEditorShowsExportProgressAndResult_data()
+    {
+        QTest::addColumn<QString>("category");
+        QTest::newRow("cancel") << QStringLiteral("cancelled");
+        QTest::newRow("archive-limit") << QStringLiteral("too_large");
+        QTest::newRow("success") << QString();
+    }
+
+    void packEditorShowsExportProgressAndResult()
+    {
+        QFETCH(QString, category);
+        PackEditorFixture fixture;
+        fixture.open();
+        QVERIFY(fixture.content);
+        auto *manager = fixture.editor->property("stickers").value<QObject *>();
+        QVERIFY(manager);
+        auto *progress = fixture.content->findChild<QQuickItem *>("stickerPackExportProgress");
+        auto *cancel = fixture.content->findChild<QQuickItem *>("stickerPackCancelExportButton");
+        auto *notice = fixture.content->findChild<QQuickItem *>("stickerPackEditorNotice");
+        QVERIFY(progress && cancel && notice);
+        QVERIFY(!progress->isVisible() && !cancel->isVisible());
+        manager->setProperty("transferKind", "upload");
+        manager->setProperty("transferring", true);
+        QVERIFY(!progress->isVisible() && !cancel->isVisible());
+        manager->setProperty("transferring", false);
+        manager->setProperty("transferKind", "export");
+        manager->setProperty("transferring", true);
+        QTRY_VERIFY(progress->isVisible() && cancel->isVisible() && cancel->isEnabled());
+        QCOMPARE(progress->property("to").toInt(), 4);
+        QCOMPARE(progress->property("value").toInt(), 0);
+        manager->setProperty("transferDone", 2);
+        QTRY_COMPARE(progress->property("value").toInt(), 2);
+
+        const bool cancelled = category == QLatin1String("cancelled");
+        if (cancelled) {
+            auto *window = cancel->window();
+            QVERIFY(window && QTest::qWaitForWindowExposed(window));
+            cancel->parentItem()->ensurePolished();
+            QTest::mouseClick(window, Qt::LeftButton, Qt::NoModifier,
+                              cancel->mapToScene(cancel->boundingRect().center()).toPoint());
+        } else {
+            QVERIFY(QMetaObject::invokeMethod(manager, "finishExport",
+                                              Q_ARG(QVariant, category.isEmpty()),
+                                              Q_ARG(QVariant, category)));
+        }
+        QCOMPARE(manager->property("cancelCalls").toInt(), cancelled ? 1 : 0);
+        QTRY_VERIFY(!progress->isVisible() && !cancel->isVisible() && notice->isVisible());
+        QCOMPARE(notice->property("text").toString(), category.isEmpty()
+                 ? QStringLiteral("Saved 4") : QStringLiteral("Result ") + category);
+        QCOMPARE(fixture.editor->property("noticeIsError").toBool(),
+                 !category.isEmpty() && !cancelled);
     }
 
     void streamInfoPollsOnlyWhileTheSurfaceIsVisible()

@@ -171,6 +171,8 @@ void ProfileFieldsManager::request(const QString &userId)
     const auto asked = m_askedAt.constFind(userId);
     if (asked != m_askedAt.constEnd() && now - *asked < kFreshSeconds)
         return;
+    if (m_inFlight.key(userId) || profile_requests::deferIfBusy(m_inFlight, userId))
+        return;
     makeRoomFor(userId);
     m_askedAt.insert(userId, now);
     const quint64 opId = m_nextOpId++;
@@ -181,17 +183,20 @@ void ProfileFieldsManager::request(const QString &userId)
 // At the cap the longest-held answer gives way, never this account's own.
 void ProfileFieldsManager::makeRoomFor(const QString &userId)
 {
-    if (m_cache.size() < kMaxCached || m_cache.contains(userId))
+    if (m_order.contains(userId))
         return;
-    const QString own = m_client ? m_client->currentUserId() : QString();
-    for (qsizetype i = 0; i < m_order.size(); ++i) {
-        if (m_order.at(i) == own)
-            continue;
-        const QString oldest = m_order.takeAt(i);
-        m_cache.remove(oldest);
-        m_askedAt.remove(oldest);
-        return;
+    if (m_order.size() >= kMaxCached) {
+        const QString own = m_client->currentUserId();
+        for (qsizetype i = 0; i < m_order.size(); ++i) {
+            if (m_order.at(i) == own || m_inFlight.key(m_order.at(i)))
+                continue;
+            const QString oldest = m_order.takeAt(i);
+            m_cache.remove(oldest);
+            m_askedAt.remove(oldest);
+            break;
+        }
     }
+    m_order.append(userId);
 }
 
 void ProfileFieldsManager::requestOwn()
@@ -228,11 +233,20 @@ void ProfileFieldsManager::handleReceived(quint64 opId, const QString &userId,
                                           bool ok, const QVariantMap &fields)
 {
     const auto it = m_inFlight.constFind(opId);
-    if (it == m_inFlight.constEnd() || *it != userId)
+    if (!opId || it == m_inFlight.constEnd() || *it != userId)
         return;
     m_inFlight.erase(it);
+    const auto deferred = m_inFlight.take(profile_requests::kDeferred);
+    if (!m_askedAt.contains(userId)) {
+        request(userId);
+        request(deferred);
+        return;
+    }
     if (!ok) {
         m_askedAt.remove(userId);
+        if (!m_cache.contains(userId))
+            m_order.removeOne(userId);
+        request(deferred);
         return;
     }
 
@@ -252,9 +266,8 @@ void ProfileFieldsManager::handleReceived(quint64 opId, const QString &userId,
         m_canEditTimezone = tz;
         m_canEditPronouns = pronouns;
     }
-    if (!m_cache.contains(userId))
-        m_order.append(userId);
     m_cache.insert(userId, cleaned);
+    request(deferred);
     if (!changed)
         return;
     ++m_revision;

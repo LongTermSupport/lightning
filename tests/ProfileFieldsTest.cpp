@@ -62,6 +62,55 @@ class ProfileFieldsTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
+    void delayedFieldsReadsReserveCapacityForTheOpenedProfile()
+    {
+        FakeFieldsClient client;
+        ProfileFieldsManager manager;
+        manager.setClient(&client);
+        const auto user = [](int i) { return QStringLiteral("@p%1:example.org").arg(i); };
+        const auto answer = QVariantMap{{"pronouns", "answer"}};
+        const auto complete = [&](quint64 op, const QString &id) {
+            Q_EMIT client.profileFieldsReceived(op, id, true, answer);
+        };
+        for (int i = 0; i < 250; ++i) {
+            manager.request(user(i));
+            complete(client.lastFetchOp, user(i));
+        }
+        manager.requestOwn();
+        complete(client.lastFetchOp, client.self);
+        QList<QPair<quint64, QString>> delayed;
+        for (int i = 250; i < 550; ++i) {
+            const auto before = client.fetches.size();
+            manager.request(user(i));
+            if (client.fetches.size() != before)
+                delayed.append({client.lastFetchOp, user(i)});
+        }
+        QCOMPARE(delayed.size(), 16);
+        for (auto it = delayed.crbegin(); it != delayed.crend(); ++it)
+            complete(it->first, it->second);
+        const QString latest = user(549);
+        QCOMPARE(client.fetches.last(), latest);
+        complete(client.lastFetchOp, latest);
+        QVERIFY(!manager.fieldsFor(latest).isEmpty());
+        QVERIFY(!manager.fieldsFor(client.self).isEmpty());
+        int retained = 1;
+        for (int i = 0; i < 550; ++i)
+            retained += !manager.fieldsFor(user(i)).isEmpty();
+        QVERIFY(retained <= 256);
+        manager.request(user(600));
+        const auto stale = client.lastFetchOp;
+        for (int i = 601; i < 640; ++i)
+            manager.request(user(i));
+        Q_EMIT client.loggedOut();
+        const auto dispatched = client.fetches.size();
+        manager.request(user(600));
+        QCOMPARE(client.fetches.size(), dispatched + 1);
+        complete(stale, user(600));
+        QVERIFY(manager.fieldsFor(user(600)).isEmpty());
+        complete(client.lastFetchOp, user(600));
+        QVERIFY(!manager.fieldsFor(user(600)).isEmpty());
+    }
+
     void initTestCase()
     {
         ensureZoneDataForTests();
