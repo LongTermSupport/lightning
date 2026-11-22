@@ -2114,11 +2114,7 @@ quint64 SfuCallController::connectFocusPlan()
             engine->setTestSourceMode(m_engine->testSourceMode());
         }
         engine->setOutputMuted(m_deafened);
-        for (auto ring = m_inboundRingKeys.cbegin();
-             ring != m_inboundRingKeys.cend(); ++ring) {
-            for (auto key = ring.value().cbegin(); key != ring.value().cend(); ++key)
-                engine->setInboundKey(ring.key(), key.key(), key.value());
-        }
+        replayInboundKeys(engine);
         const quint64 callGeneration = m_callGeneration;
         connect(engine, &SfuMediaEngine::localDescription, this,
                 [this, engine, id, callGeneration](int target,
@@ -3344,8 +3340,22 @@ void SfuCallController::onMediaKeyReceived(const QString &roomId,
     const QString ringName = mediaKeyRingName(sender, claimedDeviceId);
     if (!m_inboundRingKeys.contains(ringName)
         && m_inboundRingKeys.size() >= kMaxParticipants)
+        pruneDepartedInboundRings();
+    if (!m_inboundRingKeys.contains(ringName)
+        && m_inboundRingKeys.size() >= kMaxParticipants) {
+        qCWarning(lcSfuCall) << "media key refused: every one of"
+                             << kMaxParticipants
+                             << "key rings belongs to a current or recent "
+                                "sender";
         return;
-    m_inboundRingKeys[ringName].insert(keyIndex, raw);
+    }
+    if (!m_ringClock.isValid())
+        m_ringClock.start();
+    InboundRing &ring = m_inboundRingKeys[ringName];
+    ring.userId = sender;
+    ring.deviceId = claimedDeviceId;
+    ring.keys.insert(keyIndex, raw);
+    ring.lastKeyMs = m_ringClock.elapsed();
     m_engine->setInboundKey(ringName, keyIndex, raw);
     for (const auto &receiver : std::as_const(m_subscriberEngines)) {
         if (!receiver.isNull())
@@ -3375,6 +3385,55 @@ void SfuCallController::onMediaKeyReceived(const QString &roomId,
     Q_UNUSED(sender);
     Q_UNUSED(claimedDeviceId);
     Q_UNUSED(raw);
+#endif
+}
+
+void SfuCallController::pruneDepartedInboundRings()
+{
+    // Without a membership view nobody can be shown to have left.
+    if (!m_rtc || !m_rtc->hasLiveSession(m_roomId) || !m_ringClock.isValid())
+        return;
+    const qint64 now = m_ringClock.elapsed();
+    int pruned = 0;
+    for (auto it = m_inboundRingKeys.begin(); it != m_inboundRingKeys.end();) {
+        // The grace covers a key that arrives before its sender's membership.
+        if (now - it->lastKeyMs < m_inboundRingGraceMs
+            || !m_rtc->rtcIdentityFor(m_roomId, it->userId, it->deviceId)
+                    .isEmpty()) {
+            ++it;
+            continue;
+        }
+        it = m_inboundRingKeys.erase(it);
+        ++pruned;
+    }
+    if (pruned > 0)
+        qCInfo(lcSfuCall) << "media key rings of departed senders retired count="
+                          << pruned;
+}
+
+void SfuCallController::replayInboundKeys(SfuMediaEngine *engine) const
+{
+#ifdef HAVE_LIGHTNING_WEBRTC
+    for (auto ring = m_inboundRingKeys.cbegin(); ring != m_inboundRingKeys.cend();
+         ++ring) {
+        for (auto key = ring->keys.cbegin(); key != ring->keys.cend(); ++key)
+            engine->setInboundKey(ring.key(), key.key(), key.value());
+    }
+#else
+    Q_UNUSED(engine);
+#endif
+}
+
+void SfuCallController::attachSubscriberEngineForTest(int connectionId,
+                                                      SfuMediaEngine *engine)
+{
+#ifdef HAVE_LIGHTNING_WEBRTC
+    m_subscriberEngines.insert(connectionId, engine);
+    engine->setReceiveNamespace(QStringLiteral("c%1:").arg(connectionId));
+    replayInboundKeys(engine);
+#else
+    Q_UNUSED(connectionId);
+    Q_UNUSED(engine);
 #endif
 }
 
@@ -3627,6 +3686,19 @@ void SfuCallController::noteParticipantIdentities()
         for (const QVariantMap &row : it.value())
             allRows.append(row);
     }
+    // Names every engine keeps: each keyed sender's ring and the aliases a key
+    // arrival binds to it, since its stream may not be listed yet.
+    QSet<QString> keyed;
+    for (auto it = m_inboundRingKeys.cbegin(); it != m_inboundRingKeys.cend();
+         ++it) {
+        keyed.insert(it.key());
+        keyed.insert(it->userId + QLatin1Char(':') + it->deviceId);
+        const QString rtcIdentity =
+            m_rtc->rtcIdentityFor(m_roomId, it->userId, it->deviceId);
+        if (!rtcIdentity.isEmpty())
+            keyed.insert(rtcIdentity);
+    }
+    QHash<SfuMediaEngine *, QSet<QString>> live;
     for (const QVariant &row : std::as_const(allRows)) {
         const QVariantMap participant = row.toMap();
         const QString identity =
@@ -3648,6 +3720,9 @@ void SfuCallController::noteParticipantIdentities()
         if (!receiver)
             continue;
         receiver->noteParticipantIdentity(rawSid, identity);
+        QSet<QString> &names = live[receiver];
+        names.insert(rawSid);
+        names.insert(identity);
         const QVariantMap person =
             m_rtc->participantForIdentity(m_roomId, identity);
         const QString name = mediaKeyRingName(
@@ -3655,9 +3730,17 @@ void SfuCallController::noteParticipantIdentities()
             person.value(QStringLiteral("deviceId")).toString());
         if (!name.isEmpty()) {
             receiver->noteParticipantIdentity(rawSid, name);
+            names.insert(name);
             continue;
         }
         m_rtc->refreshFromServer(m_roomId);
+    }
+    // Stream ids change on every reconnect; without this the aliases of
+    // departed streams and senders accumulate for the whole call.
+    m_engine->retainReceiveNames(keyed | live.value(m_engine.data()));
+    for (const auto &receiver : std::as_const(m_subscriberEngines)) {
+        if (!receiver.isNull())
+            receiver->retainReceiveNames(keyed | live.value(receiver.data()));
     }
 #endif
 }
