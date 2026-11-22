@@ -190,12 +190,11 @@ bool ReadReceiptCoordinator::clearsMarkedUnread() const
 
 int ReadReceiptCoordinator::roomCount(const QString &roomId) const
 {
-    for (const auto &room : m_client->rooms()) {
-        if (room.id == roomId)
-            return qMax(0, room.unreadCount) + qMax(0, room.highlightCount)
-                + (room.hasUnreadMessages ? 1 : 0);
-    }
-    return 0;
+    const RoomInfo room = m_client->roomInfo(roomId);
+    if (room.id != roomId)
+        return 0;
+    return qMax(0, room.unreadCount) + qMax(0, room.highlightCount)
+        + (room.hasUnreadMessages ? 1 : 0);
 }
 
 // A reaction or an ended poll is not a timeline row, so the newest READABLE
@@ -226,11 +225,9 @@ void ReadReceiptCoordinator::forgetClearedCounts()
 
 bool ReadReceiptCoordinator::roomIsMarkedUnread() const
 {
-    for (const auto &room : m_client->rooms()) {
-        if (room.id == m_model->roomId())
-            return room.markedUnread;
-    }
-    return false;
+    const QString roomId = m_model->roomId();
+    const RoomInfo room = m_client->roomInfo(roomId);
+    return room.id == roomId && room.markedUnread;
 }
 
 void ReadReceiptCoordinator::sendNow(const QString &eventId, qint64 timestampMs)
