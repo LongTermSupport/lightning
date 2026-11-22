@@ -312,6 +312,11 @@ private slots:
         f.key(a, aDev, 1);
         QVERIFY(f.engine.recvCryptorFor(QStringLiteral("PA_A"))->hasKey(1));
         QVERIFY(subscriber->recvCryptorFor(ringOf(a, aDev))->hasKey(1));
+        QVERIFY2(f.engine.receiveNameCountForTest() <= 2 * 64 + 4,
+                 qPrintable(QString::number(f.engine.receiveNameCountForTest())));
+        QVERIFY2(subscriber->receiveNameCountForTest() <= 2 * 64 + 4,
+                 qPrintable(QString::number(
+                     subscriber->receiveNameCountForTest())));
     }
 
     void aRecentKeyIsNotRetiredToAdmitAStranger()
@@ -347,6 +352,55 @@ private slots:
         QVERIFY2(f.engine.recvCryptorFor(ringOf(early, QStringLiteral("E")))
                      ->hasKey(0),
                  "a key that arrived before its membership was retired");
+    }
+
+    void reconnectsDoNotGrowTheReceiveRingMap()
+    {
+        KeyedCall f;
+        const QString a = QStringLiteral("@a:x");
+        const QString identity = QStringLiteral("@a:x:ADEV");
+        f.members({{a, QStringLiteral("ADEV")}});
+        f.key(a, QStringLiteral("ADEV"), 0);
+        QString sid;
+        QLoggingCategory::setFilterRules(
+            QStringLiteral("lightning.calls.group.warning=false\n"
+                           "lightning.calls.group.info=false"));
+        for (int i = 0; i < 2000; ++i) {
+            const QString previous = sid;
+            sid = QStringLiteral("PA_%1").arg(i);
+            if (i % 2 && !previous.isEmpty())
+                f.call.ingestParticipantsForTest({sfuRow(identity, previous, true)});
+            f.call.ingestParticipantsForTest({sfuRow(identity, sid)});
+        }
+        QLoggingCategory::setFilterRules(QString());
+        QVERIFY2(f.engine.receiveNameCountForTest() <= 8,
+                 qPrintable(QString::number(f.engine.receiveNameCountForTest())));
+        QVERIFY2(f.engine.recvCryptorFor(sid)->hasKey(0),
+                 "the active sender lost its key after its stream was rebound");
+
+        const QString b = QStringLiteral("@b:x");
+        f.members({{a, QStringLiteral("ADEV")}, {b, QStringLiteral("BDEV")}});
+        f.key(b, QStringLiteral("BDEV"), 0);
+        f.call.ingestParticipantsForTest(
+            {sfuRow(QStringLiteral("@b:x:BDEV"), QStringLiteral("PB_1"))});
+        QVERIFY2(f.engine.recvCryptorFor(QStringLiteral("PB_1"))->hasKey(0),
+                 "a new sender got a detached ring after the reconnects");
+    }
+
+    void bindingAStreamRespectsTheRingCap()
+    {
+        SfuMediaEngine engine;
+        for (int i = 0; i < SfuMediaEngine::kMaxReceiveRings + 50; ++i)
+            engine.noteParticipantIdentity(QStringLiteral("PA_%1").arg(i),
+                                           QStringLiteral("ring%1").arg(i));
+        QCOMPARE(engine.receiveNameCountForTest(),
+                 SfuMediaEngine::kMaxReceiveRings);
+        engine.setInboundKey(QStringLiteral("ring0"), 0, QByteArray(16, 'k'));
+        QVERIFY(engine.recvCryptorFor(QStringLiteral("PA_0"))->hasKey(0));
+        engine.retainReceiveNames({QStringLiteral("ring0"),
+                                   QStringLiteral("PA_0")});
+        QCOMPARE(engine.receiveNameCountForTest(), 2);
+        QVERIFY(engine.recvCryptorFor(QStringLiteral("PA_0"))->hasKey(0));
     }
 };
 

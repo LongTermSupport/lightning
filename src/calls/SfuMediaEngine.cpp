@@ -8376,7 +8376,6 @@ SfuMediaEngine::recvCryptorFor(const QString &name)
     // Bounded, since names come from remote input and each ring holds up to
     // kMaxKeysPerRing keys. Past the cap a new name gets a detached ring that
     // is never stored and decrypts nothing.
-    constexpr int kMaxReceiveRings = 1024;
     auto cryptor = std::make_shared<CallFrameCryptor>();
     if (m_recvCryptors.size() >= kMaxReceiveRings) {
         static bool warned = false;
@@ -8416,22 +8415,52 @@ void SfuMediaEngine::noteParticipantIdentity(const QString &streamId,
         }
         return;
     }
-    QMutexLocker lock(&m_recvMutex);
-    auto byName = m_recvCryptors.constFind(senderName);
-    auto byStream = m_recvCryptors.constFind(streamId);
-    if (byName != m_recvCryptors.cend()
-        && byStream != m_recvCryptors.cend()
-        && byName.value() == byStream.value()) {
-        return;
+    {
+        QMutexLocker lock(&m_recvMutex);
+        auto byName = m_recvCryptors.constFind(senderName);
+        auto byStream = m_recvCryptors.constFind(streamId);
+        if (byName != m_recvCryptors.cend()
+            && byStream != m_recvCryptors.cend()
+            && byName.value() == byStream.value()) {
+            return;
+        }
+        const int added = (byName == m_recvCryptors.cend() ? 1 : 0)
+            + (byStream == m_recvCryptors.cend() ? 1 : 0);
+        if (m_recvCryptors.size() + added <= kMaxReceiveRings) {
+            std::shared_ptr<CallFrameCryptor> shared =
+                byName != m_recvCryptors.cend()
+                    ? byName.value()
+                    : (byStream != m_recvCryptors.cend()
+                           ? byStream.value()
+                           : std::make_shared<CallFrameCryptor>());
+            m_recvCryptors.insert(senderName, shared);
+            m_recvCryptors.insert(streamId, shared);
+            return;
+        }
     }
-    std::shared_ptr<CallFrameCryptor> shared =
-        byName != m_recvCryptors.cend()
-            ? byName.value()
-            : (byStream != m_recvCryptors.cend()
-                   ? byStream.value()
-                   : std::make_shared<CallFrameCryptor>());
-    m_recvCryptors.insert(senderName, shared);
-    m_recvCryptors.insert(streamId, shared);
+    if (noteDiagnosisOnce(QStringLiteral("bind-cap"))) {
+        qCWarning(lcSfuMedia)
+            << "call diagnosis: the receive key ring cap of"
+            << kMaxReceiveRings
+            << "is full — a sending stream could not be bound to its key ring";
+    }
+}
+
+void SfuMediaEngine::retainReceiveNames(const QSet<QString> &live)
+{
+    QMutexLocker lock(&m_recvMutex);
+    for (auto it = m_recvCryptors.begin(); it != m_recvCryptors.end();) {
+        if (live.contains(it.key()))
+            ++it;
+        else
+            it = m_recvCryptors.erase(it);
+    }
+}
+
+int SfuMediaEngine::receiveNameCountForTest() const
+{
+    QMutexLocker lock(&m_recvMutex);
+    return int(m_recvCryptors.size());
 }
 
 bool SfuMediaEngine::encryptionActive() const

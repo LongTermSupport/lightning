@@ -3686,6 +3686,19 @@ void SfuCallController::noteParticipantIdentities()
         for (const QVariantMap &row : it.value())
             allRows.append(row);
     }
+    // Names every engine keeps: each keyed sender's ring and the aliases a key
+    // arrival binds to it, since its stream may not be listed yet.
+    QSet<QString> keyed;
+    for (auto it = m_inboundRingKeys.cbegin(); it != m_inboundRingKeys.cend();
+         ++it) {
+        keyed.insert(it.key());
+        keyed.insert(it->userId + QLatin1Char(':') + it->deviceId);
+        const QString rtcIdentity =
+            m_rtc->rtcIdentityFor(m_roomId, it->userId, it->deviceId);
+        if (!rtcIdentity.isEmpty())
+            keyed.insert(rtcIdentity);
+    }
+    QHash<SfuMediaEngine *, QSet<QString>> live;
     for (const QVariant &row : std::as_const(allRows)) {
         const QVariantMap participant = row.toMap();
         const QString identity =
@@ -3707,6 +3720,9 @@ void SfuCallController::noteParticipantIdentities()
         if (!receiver)
             continue;
         receiver->noteParticipantIdentity(rawSid, identity);
+        QSet<QString> &names = live[receiver];
+        names.insert(rawSid);
+        names.insert(identity);
         const QVariantMap person =
             m_rtc->participantForIdentity(m_roomId, identity);
         const QString name = mediaKeyRingName(
@@ -3714,9 +3730,17 @@ void SfuCallController::noteParticipantIdentities()
             person.value(QStringLiteral("deviceId")).toString());
         if (!name.isEmpty()) {
             receiver->noteParticipantIdentity(rawSid, name);
+            names.insert(name);
             continue;
         }
         m_rtc->refreshFromServer(m_roomId);
+    }
+    // Stream ids change on every reconnect; without this the aliases of
+    // departed streams and senders accumulate for the whole call.
+    m_engine->retainReceiveNames(keyed | live.value(m_engine.data()));
+    for (const auto &receiver : std::as_const(m_subscriberEngines)) {
+        if (!receiver.isNull())
+            receiver->retainReceiveNames(keyed | live.value(receiver.data()));
     }
 #endif
 }
