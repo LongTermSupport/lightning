@@ -4023,7 +4023,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+348"/>
+        <location filename="../qml/SpaceLobby.qml" line="+349"/>
         <source>%1, collapsed</source>
         <translation>%1، تم تصغيره</translation>
     </message>
@@ -16727,7 +16727,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>QuickSwitcher</name>
     <message>
-        <location filename="../qml/QuickSwitcher.qml" line="+103"/>
+        <location filename="../qml/QuickSwitcher.qml" line="+107"/>
         <source>Open Settings</source>
         <translation>فتح الإعدادات</translation>
     </message>
@@ -16968,7 +16968,34 @@ Signing out and signing in again is the only fix.</source>
         <translation>جرّب %1</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+122"/>
+        <source>%1 is no longer listed.</source>
+        <translation>لم يعد %1 مدرجًا.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1"/>
+        <source>%n result(s).</source>
+        <translation>
+            <numerusform>لا نتائج (%n).</numerusform>
+            <numerusform>نتيجة واحدة (%n).</numerusform>
+            <numerusform>نتيجتان (%n).</numerusform>
+            <numerusform>%n نتائج.</numerusform>
+            <numerusform>%n نتيجة.</numerusform>
+            <numerusform>%n نتيجة.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>No results.</source>
+        <translation>لا توجد نتائج.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 selected.</source>
+        <translation>تم تحديد %1.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>ROOMS</source>
         <translation>الغرف</translation>
     </message>
@@ -20249,38 +20276,38 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RustSdkMatrixClient</name>
     <message>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+577"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+603"/>
         <source>Lightning could not create its local storage directory for this account. Check filesystem permissions and free space.</source>
         <translation>تعذّر على Lightning إنشاء مجلد التخزين المحلي لهذا الحساب. تحقّق من أذونات نظام الملفات والمساحة الحرة.</translation>
     </message>
     <message>
         <location line="+41"/>
-        <location line="+961"/>
+        <location line="+962"/>
         <source>Failed to create Rust SDK backend handle.</source>
         <translation>فشل إنشاء مقبض خلفية Rust SDK.</translation>
     </message>
     <message>
-        <location line="-238"/>
-        <location line="+995"/>
+        <location line="-239"/>
+        <location line="+996"/>
         <source>This account&apos;s local storage name collides with a different account already saved on this device. Remove that account first if you want to sign in with this one.</source>
         <translation>اسم التخزين المحلي لهذا الحساب يتعارض مع حساب آخر محفوظ على هذا الجهاز. أزل ذلك الحساب أولًا إن أردت تسجيل الدخول بهذا.</translation>
     </message>
     <message>
-        <location line="+251"/>
+        <location line="+252"/>
         <source>An unusable local store for this account could not be moved aside. Check filesystem permissions and try again.</source>
         <translation>تعذّر تنحية مخزن محلي غير صالح لهذا الحساب. تحقّق من أذونات نظام الملفات وأعد المحاولة.</translation>
     </message>
     <message>
-        <location line="-1081"/>
-        <location line="+147"/>
+        <location line="-1083"/>
+        <location line="+148"/>
         <location line="+152"/>
-        <location line="+935"/>
-        <location line="+83"/>
+        <location line="+936"/>
+        <location line="+84"/>
         <source>Rust SDK backend could not be initialized.</source>
         <translation>تعذّرت تهيئة خلفية Rust SDK.</translation>
     </message>
     <message>
-        <location line="-1178"/>
+        <location line="-1180"/>
         <location line="+153"/>
         <source>A homeserver is required.</source>
         <translation>الخادوم المنزلي مطلوب.</translation>
@@ -20369,7 +20396,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>فشل تسجيل الدخول. تحقّق من بياناتك وعنوان الخادوم، ثم حاول مجددًا.</translation>
     </message>
     <message>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="-598"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="-599"/>
         <source>Enter a server, for example matrix.org.</source>
         <translation>أدخل خادومًا، مثل matrix.org.</translation>
     </message>
@@ -20379,7 +20406,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>هذا ليس عنوان خادوم. أدخل عنوانًا مثل matrix.org.</translation>
     </message>
     <message>
-        <location line="+1018"/>
+        <location line="+1019"/>
         <source>This sign-in belongs to another copy of Lightning on this computer. Sign in again.</source>
         <translation>هذا تسجيل الدخول يخص نسخة أخرى من Lightning على هذا الحاسوب. سجّل الدخول مجددًا.</translation>
     </message>
@@ -20409,7 +20436,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>سجّلت الدخول، لكن تعذّر على Lightning فتح تخزين هذا الحساب على هذا الجهاز. لم يُحفظ شيء هنا.</translation>
     </message>
     <message>
-        <location line="+37"/>
+        <location line="+38"/>
         <source>You signed in, but Lightning could not save this account on this device, so it did not open it.</source>
         <translation>سجّلت الدخول، لكن تعذّر على Lightning حفظ هذا الحساب على هذا الجهاز، لذا لم يفتحه.</translation>
     </message>
@@ -20434,7 +20461,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>سجّلت الدخول، لكن تعذّر على Lightning فتح هذا الحساب على هذا الجهاز، وتعذّرت إزالة كل ما بدأ حفظه هنا. راجع السجلّ قبل المحاولة مجددًا. (%1)</translation>
     </message>
     <message>
-        <location line="+363"/>
+        <location line="+365"/>
         <source>Enter a valid homeserver and Matrix user ID before resetting the local Lightning session.</source>
         <translation>أدخل خادومًا منزليًا ومعرّف مستخدم Matrix صالحين قبل إعادة ضبط جلسة Lightning المحلية.</translation>
     </message>
@@ -20442,12 +20469,12 @@ Signing out and signing in again is the only fix.</source>
         <location line="+7"/>
         <location line="+10"/>
         <location line="+50"/>
-        <location line="+2697"/>
+        <location line="+2784"/>
         <source>Lightning could not completely reset the local session for this account. Check the application logs and filesystem permissions, then try again.</source>
         <translation>تعذّر على Lightning إعادة ضبط الجلسة المحلية لهذا الحساب بالكامل. تحقّق من سجلات التطبيق وأذونات نظام الملفات ثم أعد المحاولة.</translation>
     </message>
     <message>
-        <location line="-2711"/>
+        <location line="-2798"/>
         <source>Local Lightning session rebuilt. The previous encryption store was moved aside, not deleted, and is still in this account&apos;s data directory. You can sign in again.</source>
         <translation>أُعيد بناء جلسة Lightning المحلية. نُحّي مخزن التعمية السابق جانبًا ولم يُحذف، وما زال في مجلد بيانات هذا الحساب. يمكنك تسجيل الدخول مجددًا.</translation>
     </message>
@@ -20460,7 +20487,7 @@ Signing out and signing in again is the only fix.</source>
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4592"/>
+        <location line="+4707"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -20469,15 +20496,15 @@ Signing out and signing in again is the only fix.</source>
         <translation>لم تسجّل الدخول.</translation>
     </message>
     <message>
-        <location line="-4948"/>
+        <location line="-5063"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4755"/>
+        <location line="+4870"/>
         <source>Unknown room: %1</source>
         <translation>غرفة غير معروفة: %1</translation>
     </message>
     <message>
-        <location line="-4950"/>
+        <location line="-5065"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
@@ -20485,13 +20512,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+772"/>
-        <location line="+2621"/>
+        <location line="+2705"/>
         <location line="+64"/>
         <source>The sticker could not be sent.</source>
         <translation>لا يمكن إرسال الملصق.</translation>
     </message>
     <message>
-        <location line="-1360"/>
+        <location line="-1444"/>
         <source>Lightning cannot send that yet.</source>
         <translation>لا يستطيع Lightning إرسال ذلك بعد.</translation>
     </message>
@@ -20501,7 +20528,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>لا تزال هذه الغرفة قيد التحميل. حاول ذلك مجددًا بعد قليل.</translation>
     </message>
     <message>
-        <location line="+197"/>
+        <location line="+284"/>
         <source>Local Lightning session reset. You can sign in again.</source>
         <translation>أُعيد ضبط جلسة Lightning المحلية. يمكنك تسجيل الدخول مجددًا.</translation>
     </message>
@@ -20531,7 +20558,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>لم ينجح تسجيل الدخول مجددًا بصفة هذا الجهاز. لم يتغيّر شيء على هذا الجهاز. حاول مجددًا، أو أزل هذا الحساب أدناه.</translation>
     </message>
     <message>
-        <location line="+158"/>
+        <location line="+155"/>
         <source>Matrix session is no longer authorized.</source>
         <translation>لم تعد جلسة Matrix مصرّحًا بها.</translation>
     </message>
@@ -20583,7 +20610,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>تعذّر إكمال إجراء الاستطلاع.</translation>
     </message>
     <message>
-        <location line="-6530"/>
+        <location line="-6619"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>بيانات هذا الحساب ما زالت قيد الاستخدام من جلسة في الخلفية. انتظر قليلًا ثم حاول مرة أخرى.</translation>
     </message>
@@ -20593,7 +20620,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>بيانات هذا الحساب ما زالت قيد الاستخدام. انتظر قليلًا ثم حاول مرة أخرى.</translation>
     </message>
     <message>
-        <location line="+249"/>
+        <location line="+250"/>
         <source>This account&apos;s network route could not be applied, so Lightning will not connect it directly. Check the proxy in Settings.</source>
         <translation>تعذّر تطبيق مسار الشبكة لهذا الحساب، لذا لن يوصله Lightning مباشرةً. تحقّق من الوكيل في الإعدادات.</translation>
     </message>
@@ -20613,7 +20640,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>أدخل كلمة المرور.</translation>
     </message>
     <message>
-        <location line="+5660"/>
+        <location line="+5748"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>تعذّر إرسال الرسالة. يمكنك إعادة المحاولة من إجراء «إعادة المحاولة» الخاص بالرسالة.</translation>
     </message>
@@ -20644,7 +20671,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location filename="../src/accounts/BackgroundSessionHost.cpp" line="+487"/>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+252"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+283"/>
         <location line="+36"/>
         <source>[unable to decrypt yet]</source>
         <translation>[تعذّر فك التعمية بعد]</translation>
@@ -28862,7 +28889,7 @@ Note: importing keys does not verify this session.</source>
         <translation>ردهة</translation>
     </message>
     <message>
-        <location line="+81"/>
+        <location line="+82"/>
         <source>People</source>
         <translation>الأشخاص</translation>
     </message>
@@ -28898,8 +28925,8 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+9"/>
-        <source>This Space has too many members to check them all, so Lightning cannot tell which of your direct messages are with its members. Your room list may show direct messages with people outside it.</source>
-        <translation>هذه المساحة فيها أعضاء أكثر من أن يُتحقَّق منهم جميعًا، لذا لا يستطيع Lightning معرفة أي رسائلك المباشرة مع أعضائها. قد تعرض قائمة غرفك رسائل مباشرة مع أشخاص من خارجها.</translation>
+        <source>This Space has too many members to list, and Lightning could not confirm whether some of your direct-message contacts belong to it. Your room list may show direct messages with people outside it.</source>
+        <translation>هذه المساحة فيها أعضاء أكثر من أن يُدرَجوا، ولم يتمكن Lightning من التأكد مما إذا كان بعض جهات اتصال رسائلك المباشرة ينتمون إليها. قد تعرض قائمة غرفك رسائل مباشرة مع أشخاص من خارجها.</translation>
     </message>
     <message>
         <location line="+42"/>
@@ -28936,7 +28963,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+264"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+381"/>
         <source>All rooms</source>
         <translation>كل الغرف</translation>
     </message>

@@ -3908,7 +3908,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+348"/>
+        <location filename="../qml/SpaceLobby.qml" line="+349"/>
         <source>%1, collapsed</source>
         <translation>%1，折叠</translation>
     </message>
@@ -16417,7 +16417,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>QuickSwitcher</name>
     <message>
-        <location filename="../qml/QuickSwitcher.qml" line="+103"/>
+        <location filename="../qml/QuickSwitcher.qml" line="+107"/>
         <source>Open Settings</source>
         <translation>打开设置</translation>
     </message>
@@ -16658,7 +16658,29 @@ Signing out and signing in again is the only fix.</source>
         <translation>试试 %1</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+122"/>
+        <source>%1 is no longer listed.</source>
+        <translation>%1 已不在列表中。</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1"/>
+        <source>%n result(s).</source>
+        <translation>
+            <numerusform>%n 个结果。</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>No results.</source>
+        <translation>没有结果。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 selected.</source>
+        <translation>已选择 %1。</translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>ROOMS</source>
         <translation>房间</translation>
     </message>
@@ -19834,38 +19856,38 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RustSdkMatrixClient</name>
     <message>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+577"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+603"/>
         <source>Lightning could not create its local storage directory for this account. Check filesystem permissions and free space.</source>
         <translation>Lightning 无法为此账号创建本地存储目录。请检查文件系统权限和可用空间。</translation>
     </message>
     <message>
         <location line="+41"/>
-        <location line="+961"/>
+        <location line="+962"/>
         <source>Failed to create Rust SDK backend handle.</source>
         <translation>无法创建 Rust SDK 后端句柄。</translation>
     </message>
     <message>
-        <location line="-238"/>
-        <location line="+995"/>
+        <location line="-239"/>
+        <location line="+996"/>
         <source>This account&apos;s local storage name collides with a different account already saved on this device. Remove that account first if you want to sign in with this one.</source>
         <translation>此账号的本地存储名称与本设备上已保存的另一个账号冲突。如果要用此账号登录，请先移除那个账号。</translation>
     </message>
     <message>
-        <location line="+251"/>
+        <location line="+252"/>
         <source>An unusable local store for this account could not be moved aside. Check filesystem permissions and try again.</source>
         <translation>无法移开此账号中不可用的本地存储。请检查文件系统权限后重试。</translation>
     </message>
     <message>
-        <location line="-1081"/>
-        <location line="+147"/>
+        <location line="-1083"/>
+        <location line="+148"/>
         <location line="+152"/>
-        <location line="+935"/>
-        <location line="+83"/>
+        <location line="+936"/>
+        <location line="+84"/>
         <source>Rust SDK backend could not be initialized.</source>
         <translation>无法初始化 Rust SDK 后端。</translation>
     </message>
     <message>
-        <location line="-1178"/>
+        <location line="-1180"/>
         <location line="+153"/>
         <source>A homeserver is required.</source>
         <translation>必须填写主服务器。</translation>
@@ -19954,7 +19976,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>登录失败。请检查你的登录信息和服务器地址，然后重试。</translation>
     </message>
     <message>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="-598"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="-599"/>
         <source>Enter a server, for example matrix.org.</source>
         <translation>请输入服务器，例如 matrix.org。</translation>
     </message>
@@ -19964,7 +19986,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>这不是服务器地址。请输入类似 matrix.org 的地址。</translation>
     </message>
     <message>
-        <location line="+1018"/>
+        <location line="+1019"/>
         <source>This sign-in belongs to another copy of Lightning on this computer. Sign in again.</source>
         <translation>此登录属于这台电脑上的另一个 Lightning 副本。请重新登录。</translation>
     </message>
@@ -19994,7 +20016,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>你已登录，但 Lightning 无法在此设备上打开该账号的存储。此处未保存任何内容。</translation>
     </message>
     <message>
-        <location line="+37"/>
+        <location line="+38"/>
         <source>You signed in, but Lightning could not save this account on this device, so it did not open it.</source>
         <translation>你已登录，但 Lightning 无法在此设备上保存该账号，因此没有打开它。</translation>
     </message>
@@ -20019,7 +20041,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>你已登录，但 Lightning 无法在此设备上打开该账号，并且无法移除它已开始在此保存的全部内容。请先查看日志再重试。（%1）</translation>
     </message>
     <message>
-        <location line="+363"/>
+        <location line="+365"/>
         <source>Enter a valid homeserver and Matrix user ID before resetting the local Lightning session.</source>
         <translation>重置本地 Lightning 会话前，请输入有效的主服务器和 Matrix 用户 ID。</translation>
     </message>
@@ -20027,12 +20049,12 @@ Signing out and signing in again is the only fix.</source>
         <location line="+7"/>
         <location line="+10"/>
         <location line="+50"/>
-        <location line="+2697"/>
+        <location line="+2784"/>
         <source>Lightning could not completely reset the local session for this account. Check the application logs and filesystem permissions, then try again.</source>
         <translation>Lightning 无法完全重置此账号的本地会话。请检查应用日志和文件系统权限后重试。</translation>
     </message>
     <message>
-        <location line="-2711"/>
+        <location line="-2798"/>
         <source>Local Lightning session rebuilt. The previous encryption store was moved aside, not deleted, and is still in this account&apos;s data directory. You can sign in again.</source>
         <translation>本地 Lightning 会话已重建。之前的加密存储只是被移开，并未删除，仍保留在此账号的数据目录中。你可以重新登录。</translation>
     </message>
@@ -20045,7 +20067,7 @@ Signing out and signing in again is the only fix.</source>
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4592"/>
+        <location line="+4707"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -20054,15 +20076,15 @@ Signing out and signing in again is the only fix.</source>
         <translation>未登录。</translation>
     </message>
     <message>
-        <location line="-4948"/>
+        <location line="-5063"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4755"/>
+        <location line="+4870"/>
         <source>Unknown room: %1</source>
         <translation>未知房间：%1</translation>
     </message>
     <message>
-        <location line="-4950"/>
+        <location line="-5065"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
@@ -20070,13 +20092,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+772"/>
-        <location line="+2621"/>
+        <location line="+2705"/>
         <location line="+64"/>
         <source>The sticker could not be sent.</source>
         <translation>无法发送贴纸。</translation>
     </message>
     <message>
-        <location line="-1360"/>
+        <location line="-1444"/>
         <source>Lightning cannot send that yet.</source>
         <translation>Lightning 目前无法发送该内容。</translation>
     </message>
@@ -20086,7 +20108,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>此房间仍在加载。请稍后再试。</translation>
     </message>
     <message>
-        <location line="+197"/>
+        <location line="+284"/>
         <source>Local Lightning session reset. You can sign in again.</source>
         <translation>本地 Lightning 会话已重置。你可以重新登录。</translation>
     </message>
@@ -20116,7 +20138,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>以此设备重新登录失败。此设备上的任何内容都未被更改。请重试，或在下方移除此账号。</translation>
     </message>
     <message>
-        <location line="+158"/>
+        <location line="+155"/>
         <source>Matrix session is no longer authorized.</source>
         <translation>Matrix 会话已失去授权。</translation>
     </message>
@@ -20168,7 +20190,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>无法完成投票操作。</translation>
     </message>
     <message>
-        <location line="-6530"/>
+        <location line="-6619"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>此账号的数据仍被后台会话使用。请稍候再试。</translation>
     </message>
@@ -20178,7 +20200,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>此账号的数据仍在使用中。请稍候再试。</translation>
     </message>
     <message>
-        <location line="+249"/>
+        <location line="+250"/>
         <source>This account&apos;s network route could not be applied, so Lightning will not connect it directly. Check the proxy in Settings.</source>
         <translation>无法应用此账号的网络路由，因此 Lightning 不会直接连接它。请在设置中检查代理。</translation>
     </message>
@@ -20198,7 +20220,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>请输入你的密码。</translation>
     </message>
     <message>
-        <location line="+5660"/>
+        <location line="+5748"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>消息发送失败。你可以通过该消息的“重试”操作再次发送。</translation>
     </message>
@@ -20229,7 +20251,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location filename="../src/accounts/BackgroundSessionHost.cpp" line="+487"/>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+252"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+283"/>
         <location line="+36"/>
         <source>[unable to decrypt yet]</source>
         <translation>[暂时无法解密]</translation>
@@ -28332,7 +28354,7 @@ Note: importing keys does not verify this session.</source>
         <translation>大堂</translation>
     </message>
     <message>
-        <location line="+81"/>
+        <location line="+82"/>
         <source>People</source>
         <translation>人</translation>
     </message>
@@ -28363,8 +28385,8 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+9"/>
-        <source>This Space has too many members to check them all, so Lightning cannot tell which of your direct messages are with its members. Your room list may show direct messages with people outside it.</source>
-        <translation>此空间成员太多，无法逐一检查，因此 Lightning 无法判断你的哪些私聊对象是其成员。你的房间列表可能显示与空间外用户的私聊。</translation>
+        <source>This Space has too many members to list, and Lightning could not confirm whether some of your direct-message contacts belong to it. Your room list may show direct messages with people outside it.</source>
+        <translation>此空间成员太多，无法列出，Lightning 也无法确认你的部分私聊联系人是否属于该空间。你的房间列表可能显示与空间外用户的私聊。</translation>
     </message>
     <message>
         <location line="+42"/>
@@ -28401,7 +28423,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+264"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+381"/>
         <source>All rooms</source>
         <translation>所有房间</translation>
     </message>

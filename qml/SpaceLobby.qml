@@ -19,14 +19,14 @@ ColumnLayout {
     property string coverage: ""
     property int loadedCount: 0
     property var loadingIds: ({})
-    // The active Space's member list came back capped, so which of the user's
-    // direct-message contacts belong to it cannot be told.
+    // The active Space's member list came back capped and some direct-message
+    // peers are still unconfirmed, so its People scope may include outsiders.
     property bool membershipLimited: false
     readonly property var spacesSource:
         typeof app !== "undefined" && app ? app.spaces : null
     function refreshMembershipLimited() {
         membershipLimited = !!spacesSource
-            && spacesSource.spaceRosterLimited(spacesSource.activeSpaceId)
+            && spacesSource.spaceMembershipUncertain(spacesSource.activeSpaceId)
     }
     onSpacesSourceChanged: refreshMembershipLimited()
     Connections {
@@ -34,6 +34,7 @@ ColumnLayout {
         ignoreUnknownSignals: true
         function onSpaceRosterChanged(spaceId) { root.refreshMembershipLimited() }
         function onActiveSpaceIdChanged() { root.refreshMembershipLimited() }
+        function onSpacesChanged() { root.refreshMembershipLimited() }
     }
 
     signal filterEdited(string text)
@@ -249,9 +250,9 @@ ColumnLayout {
         objectName: "spaceLobbyMembershipNote"
         visible: root.membershipLimited
         Layout.fillWidth: true
-        text: qsTr("This Space has too many members to check them all, so Lightning cannot "
-                   + "tell which of your direct messages are with its members. Your room "
-                   + "list may show direct messages with people outside it.")
+        text: qsTr("This Space has too many members to list, and Lightning could not "
+                   + "confirm whether some of your direct-message contacts belong to it. "
+                   + "Your room list may show direct messages with people outside it.")
         textFormat: Text.PlainText
         color: AppTheme.textMuted
         font.family: AppTheme.uiFont

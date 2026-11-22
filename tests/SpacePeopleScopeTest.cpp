@@ -90,6 +90,23 @@ public:
         Q_EMIT roomMembersReceived(op, roomId, snapshot);
     }
 
+    struct MemberCheck { quint64 op; QString roomId; QStringList users; };
+    QList<MemberCheck> memberChecks;
+    quint64 nextCheckOp = 10000;
+
+    quint64 requestRoomMemberCheck(const QString &roomId,
+                                   const QStringList &userIds) override
+    {
+        memberChecks.append(MemberCheck{ ++nextCheckOp, roomId, userIds });
+        return nextCheckOp;
+    }
+
+    void deliverCheck(quint64 op, const QString &roomId,
+                      const QStringList &members, const QStringList &absent)
+    {
+        Q_EMIT roomMemberCheckFinished(op, roomId, members, absent);
+    }
+
     void deliverPermissions(quint64 op, const QString &roomId, bool allowed,
                             bool ok = true, bool partial = false,
                             bool truncated = false)
@@ -484,6 +501,121 @@ true);
 
         f.client.logout();
         QVERIFY(!limited(f.spaces, kWork));
+    }
+
+    void aCappedSpaceAsksAboutEachDirectMessagePeerAndScopesOnTheAnswers()
+    {
+        Classic f;
+        f.build();
+        f.select(kWork);
+        f.model.setFilterMode(1);
+        QVERIFY(f.client.memberChecks.isEmpty());
+        f.client.deliverRoster(1, kWork, { kAda }, false, true);
+        QCOMPARE(f.client.memberChecks.size(), 1);
+        QStringList asked = f.client.memberChecks.first().users;
+        asked.sort();
+        QCOMPARE(f.client.memberChecks.first().roomId, kWork);
+        QCOMPARE(asked, (QStringList{ kAda, kZoe }));
+        QVERIFY(f.spaces.spaceMembershipUncertain(kWork));
+        QCOMPARE(idsOf(f.model), (QStringList{ kDmIn, kDmOut }));
+
+        const quint64 op = f.client.memberChecks.first().op;
+        f.client.deliverCheck(op + 7, kWork, { kAda }, { kZoe });
+        f.client.deliverCheck(op, kGeneral, { kAda }, { kZoe });
+        QCOMPARE(idsOf(f.model), (QStringList{ kDmIn, kDmOut }));
+
+        f.client.deliverCheck(op, kWork, { kAda }, { kZoe });
+        QTRY_COMPARE(idsOf(f.model), QStringList{ kDmIn });
+        QVERIFY(!f.spaces.spaceMembershipUncertain(kWork));
+        QVERIFY(!f.spaces.spaceRosterKnown(kWork));
+
+        // A member event re-asks, and the confirmed answers hold meanwhile.
+        Q_EMIT f.client.roomMemberEventSeen(kWork);
+        f.client.deliverRoster(2, kWork, { kAda }, false, true);
+        QCOMPARE(f.client.memberChecks.size(), 2);
+        QCOMPARE(idsOf(f.model), QStringList{ kDmIn });
+
+        f.client.logout();
+        QVERIFY(!f.spaces.spaceMembershipUncertain(kWork));
+        QCOMPARE(f.spaces.directScope(kWork, { kZoe }), -1);
+    }
+
+    void anUnansweredPeerCheckStaysUnknownAndIsNotRepeated()
+    {
+        Classic f;
+        f.build();
+        f.select(kWork);
+        f.model.setFilterMode(1);
+        f.client.deliverRoster(1, kWork, { kAda }, false, true);
+        QCOMPARE(f.client.memberChecks.size(), 1);
+        f.client.deliverCheck(f.client.memberChecks.first().op, kWork, { kAda }, {});
+        QCOMPARE(idsOf(f.model), (QStringList{ kDmIn, kDmOut }));
+        QVERIFY(f.spaces.spaceMembershipUncertain(kWork));
+        QCOMPARE(f.spaces.directScope(kWork, { kZoe }), -1);
+        QCOMPARE(f.spaces.directScope(kWork, { kAda }), 1);
+
+        f.client.announce();
+        f.spaces.setActiveSpaceId(SpaceManager::allRoomsId());
+        f.spaces.setActiveSpaceId(kWork);
+        QCOMPARE(f.client.memberChecks.size(), 1);
+
+        // Only a peer nobody has asked about yet is asked about.
+        const QString kEve = QStringLiteral("@eve:x");
+        f.client.mirror.append(dm(QStringLiteral("!dm-eve:x"), QStringLiteral("Eve"), kEve));
+        f.client.announce();
+        QCOMPARE(f.client.memberChecks.size(), 2);
+        QCOMPARE(f.client.memberChecks.last().users, QStringList{ kEve });
+    }
+
+    void peerChecksGoOutInBoundedBatchesOneAtATime()
+    {
+        Classic f;
+        f.client.mirror = workspace();
+        for (int i = 0; i < 120; ++i) {
+            const QString peer = QStringLiteral("@p%1:x").arg(i);
+            f.client.mirror.append(dm(QStringLiteral("!dm-p%1:x").arg(i),
+                                      peer, peer));
+        }
+        f.spaces.setClient(&f.client);
+        f.model.setSpaceManager(&f.spaces);
+        f.model.setClient(&f.client);
+        f.select(kWork);
+        f.client.deliverRoster(1, kWork, {}, false, true);
+        QCOMPARE(f.client.memberChecks.size(), 1);
+        QCOMPARE(f.client.memberChecks.last().users.size(), 50);
+        f.client.announce();
+        QCOMPARE(f.client.memberChecks.size(), 1);
+
+        QSet<QString> seen;
+        for (int batch = 0; batch < 3; ++batch) {
+            const auto check = f.client.memberChecks.last();
+            for (const QString &u : check.users)
+                QVERIFY2(!seen.contains(u), "a peer was asked about twice");
+            seen.unite(QSet<QString>(check.users.begin(), check.users.end()));
+            f.client.deliverCheck(check.op, kWork, {}, check.users);
+        }
+        QCOMPARE(f.client.memberChecks.size(), 3);
+        QCOMPARE(seen.size(), 122);
+        QVERIFY(!f.spaces.spaceMembershipUncertain(kWork));
+    }
+
+    void theChannelsSpaceViewListsConfirmedPeopleOfACappedSpace()
+    {
+        Channels f;
+        f.build();
+        f.select(kWork);
+        f.model.setFilterMode(1);
+        f.client.deliverRoster(1, kWork, { kAda }, false, true);
+        QTRY_VERIFY(!namesOf(f.model).contains(QStringLiteral("People")));
+        QCOMPARE(f.client.memberChecks.size(), 1);
+        f.client.deliverCheck(f.client.memberChecks.first().op, kWork,
+                              { kAda }, {});
+        QTRY_VERIFY2(namesOf(f.model).contains(QStringLiteral("People")),
+                     "a confirmed member of a capped Space was not listed");
+        const QStringList names = namesOf(f.model);
+        QVERIFY(names.contains(QStringLiteral("Ada")));
+        QVERIFY2(!names.contains(QStringLiteral("Zoe")),
+                 "an unconfirmed peer was listed as a member");
     }
 
     void theChannelsSpaceViewGainsThePeopleOfThatSpace()

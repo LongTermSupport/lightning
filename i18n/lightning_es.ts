@@ -3931,7 +3931,7 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+348"/>
+        <location filename="../qml/SpaceLobby.qml" line="+349"/>
         <source>%1, collapsed</source>
         <translation>%1, colapsado</translation>
     </message>
@@ -16479,7 +16479,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
 <context>
     <name>QuickSwitcher</name>
     <message>
-        <location filename="../qml/QuickSwitcher.qml" line="+103"/>
+        <location filename="../qml/QuickSwitcher.qml" line="+107"/>
         <source>Open Settings</source>
         <translation>Abrir los ajustes</translation>
     </message>
@@ -16720,7 +16720,30 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Prueba %1</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+122"/>
+        <source>%1 is no longer listed.</source>
+        <translation>%1 ya no aparece en la lista.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1"/>
+        <source>%n result(s).</source>
+        <translation>
+            <numerusform>%n resultado.</numerusform>
+            <numerusform>%n resultados.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>No results.</source>
+        <translation>No hay resultados.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 selected.</source>
+        <translation>%1 seleccionado.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>ROOMS</source>
         <translation>SALAS</translation>
     </message>
@@ -19917,38 +19940,38 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
 <context>
     <name>RustSdkMatrixClient</name>
     <message>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+577"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+603"/>
         <source>Lightning could not create its local storage directory for this account. Check filesystem permissions and free space.</source>
         <translation>Lightning no pudo crear su carpeta de almacenamiento local para esta cuenta. Comprueba los permisos del sistema de archivos y el espacio libre.</translation>
     </message>
     <message>
         <location line="+41"/>
-        <location line="+961"/>
+        <location line="+962"/>
         <source>Failed to create Rust SDK backend handle.</source>
         <translation>No se pudo crear el manejador del backend del SDK de Rust.</translation>
     </message>
     <message>
-        <location line="-238"/>
-        <location line="+995"/>
+        <location line="-239"/>
+        <location line="+996"/>
         <source>This account&apos;s local storage name collides with a different account already saved on this device. Remove that account first if you want to sign in with this one.</source>
         <translation>El nombre de almacenamiento local de esta cuenta coincide con el de otra cuenta ya guardada en este dispositivo. Elimina esa cuenta antes de iniciar sesión con esta.</translation>
     </message>
     <message>
-        <location line="+251"/>
+        <location line="+252"/>
         <source>An unusable local store for this account could not be moved aside. Check filesystem permissions and try again.</source>
         <translation>No se pudo apartar un almacén local inutilizable de esta cuenta. Comprueba los permisos del sistema de archivos y vuelve a intentarlo.</translation>
     </message>
     <message>
-        <location line="-1081"/>
-        <location line="+147"/>
+        <location line="-1083"/>
+        <location line="+148"/>
         <location line="+152"/>
-        <location line="+935"/>
-        <location line="+83"/>
+        <location line="+936"/>
+        <location line="+84"/>
         <source>Rust SDK backend could not be initialized.</source>
         <translation>No se pudo inicializar el backend del SDK de Rust.</translation>
     </message>
     <message>
-        <location line="-1178"/>
+        <location line="-1180"/>
         <location line="+153"/>
         <source>A homeserver is required.</source>
         <translation>Hace falta un servidor doméstico.</translation>
@@ -20037,7 +20060,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Error al iniciar sesión. Revisa tus datos y la dirección del servidor, e inténtalo de nuevo.</translation>
     </message>
     <message>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="-598"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="-599"/>
         <source>Enter a server, for example matrix.org.</source>
         <translation>Introduce un servidor, por ejemplo matrix.org.</translation>
     </message>
@@ -20047,7 +20070,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Eso no es una dirección de servidor. Escribe una como matrix.org.</translation>
     </message>
     <message>
-        <location line="+1018"/>
+        <location line="+1019"/>
         <source>This sign-in belongs to another copy of Lightning on this computer. Sign in again.</source>
         <translation>Este inicio de sesión pertenece a otra copia de Lightning en este equipo. Inicia sesión de nuevo.</translation>
     </message>
@@ -20077,7 +20100,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Has iniciado sesión, pero Lightning no pudo abrir el almacenamiento de esta cuenta en este dispositivo. No se guardó nada aquí.</translation>
     </message>
     <message>
-        <location line="+37"/>
+        <location line="+38"/>
         <source>You signed in, but Lightning could not save this account on this device, so it did not open it.</source>
         <translation>Has iniciado sesión, pero Lightning no pudo guardar esta cuenta en este dispositivo, así que no la abrió.</translation>
     </message>
@@ -20102,7 +20125,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Has iniciado sesión, pero Lightning no pudo abrir esta cuenta en este dispositivo, y no pudo eliminar todo lo que había empezado a guardar aquí. Revisa el registro antes de volver a intentarlo. (%1)</translation>
     </message>
     <message>
-        <location line="+363"/>
+        <location line="+365"/>
         <source>Enter a valid homeserver and Matrix user ID before resetting the local Lightning session.</source>
         <translation>Introduce un servidor doméstico y un ID de usuario de Matrix válidos antes de restablecer la sesión local de Lightning.</translation>
     </message>
@@ -20110,12 +20133,12 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <location line="+7"/>
         <location line="+10"/>
         <location line="+50"/>
-        <location line="+2697"/>
+        <location line="+2784"/>
         <source>Lightning could not completely reset the local session for this account. Check the application logs and filesystem permissions, then try again.</source>
         <translation>Lightning no pudo restablecer por completo la sesión local de esta cuenta. Revisa los registros de la aplicación y los permisos del sistema de archivos, y vuelve a intentarlo.</translation>
     </message>
     <message>
-        <location line="-2711"/>
+        <location line="-2798"/>
         <source>Local Lightning session rebuilt. The previous encryption store was moved aside, not deleted, and is still in this account&apos;s data directory. You can sign in again.</source>
         <translation>Se ha reconstruido la sesión local de Lightning. El almacén de cifrado anterior se ha apartado, no se ha eliminado, y sigue en la carpeta de datos de esta cuenta. Ya puedes iniciar sesión de nuevo.</translation>
     </message>
@@ -20128,7 +20151,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4592"/>
+        <location line="+4707"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -20137,15 +20160,15 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>No has iniciado sesión.</translation>
     </message>
     <message>
-        <location line="-4948"/>
+        <location line="-5063"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4755"/>
+        <location line="+4870"/>
         <source>Unknown room: %1</source>
         <translation>Sala desconocida: %1</translation>
     </message>
     <message>
-        <location line="-4950"/>
+        <location line="-5065"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
@@ -20153,13 +20176,13 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
     </message>
     <message>
         <location line="+772"/>
-        <location line="+2621"/>
+        <location line="+2705"/>
         <location line="+64"/>
         <source>The sticker could not be sent.</source>
         <translation>No se pudo enviar la pegatina.</translation>
     </message>
     <message>
-        <location line="-1360"/>
+        <location line="-1444"/>
         <source>Lightning cannot send that yet.</source>
         <translation>Lightning todavía no puede enviar eso.</translation>
     </message>
@@ -20169,7 +20192,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Esta sala todavía se está cargando. Vuelve a intentarlo en un momento.</translation>
     </message>
     <message>
-        <location line="+197"/>
+        <location line="+284"/>
         <source>Local Lightning session reset. You can sign in again.</source>
         <translation>Se ha restablecido la sesión local de Lightning. Ya puedes iniciar sesión de nuevo.</translation>
     </message>
@@ -20199,7 +20222,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Volver a iniciar sesión como este dispositivo no funcionó. No se cambió nada en este dispositivo. Inténtalo de nuevo o elimina esta cuenta más abajo.</translation>
     </message>
     <message>
-        <location line="+158"/>
+        <location line="+155"/>
         <source>Matrix session is no longer authorized.</source>
         <translation>La sesión de Matrix ya no está autorizada.</translation>
     </message>
@@ -20251,7 +20274,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>No se pudo completar la acción de la encuesta.</translation>
     </message>
     <message>
-        <location line="-6530"/>
+        <location line="-6619"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>Los datos de esta cuenta siguen en uso por una sesión en segundo plano. Espera un momento e inténtalo de nuevo.</translation>
     </message>
@@ -20261,7 +20284,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Los datos de esta cuenta siguen en uso. Espera un momento e inténtalo de nuevo.</translation>
     </message>
     <message>
-        <location line="+249"/>
+        <location line="+250"/>
         <source>This account&apos;s network route could not be applied, so Lightning will not connect it directly. Check the proxy in Settings.</source>
         <translation>No se pudo aplicar la ruta de red de esta cuenta, así que Lightning no la conectará directamente. Revisa el proxy en Ajustes.</translation>
     </message>
@@ -20281,7 +20304,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Introduce tu contraseña.</translation>
     </message>
     <message>
-        <location line="+5660"/>
+        <location line="+5748"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>No se pudo enviar el mensaje. Puedes volver a intentarlo con la acción Reintentar del mensaje.</translation>
     </message>
@@ -20312,7 +20335,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
     </message>
     <message>
         <location filename="../src/accounts/BackgroundSessionHost.cpp" line="+487"/>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+252"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+283"/>
         <location line="+36"/>
         <source>[unable to decrypt yet]</source>
         <translation>[todavía no se puede descifrar]</translation>
@@ -28438,7 +28461,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>vestíbulo</translation>
     </message>
     <message>
-        <location line="+81"/>
+        <location line="+82"/>
         <source>People</source>
         <translation>Personas</translation>
     </message>
@@ -28470,8 +28493,8 @@ Nota: importar claves no verifica esta sesión.</translation>
     </message>
     <message>
         <location line="+9"/>
-        <source>This Space has too many members to check them all, so Lightning cannot tell which of your direct messages are with its members. Your room list may show direct messages with people outside it.</source>
-        <translation>Este espacio tiene demasiados miembros para comprobarlos todos, así que Lightning no puede saber cuáles de tus mensajes directos son con sus miembros. Tu lista de salas puede mostrar mensajes directos con personas de fuera.</translation>
+        <source>This Space has too many members to list, and Lightning could not confirm whether some of your direct-message contacts belong to it. Your room list may show direct messages with people outside it.</source>
+        <translation>Este espacio tiene demasiados miembros para listarlos, y Lightning no pudo confirmar si algunos de tus contactos de mensajes directos pertenecen a él. Tu lista de salas puede mostrar mensajes directos con personas de fuera.</translation>
     </message>
     <message>
         <location line="+42"/>
@@ -28508,7 +28531,7 @@ Nota: importar claves no verifica esta sesión.</translation>
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+264"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+381"/>
         <source>All rooms</source>
         <translation>Todas las salas</translation>
     </message>

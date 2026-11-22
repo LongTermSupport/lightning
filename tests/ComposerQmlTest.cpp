@@ -38,6 +38,7 @@
 #include "models/MessageComposer.h"
 #include "models/RichComposition.h"
 #include "models/RoomListModel.h"
+#include "support/SettledClick.h"
 
 namespace {
 
@@ -2063,10 +2064,7 @@ private slots:
             auto *row = qobject_cast<QQuickItem *>(formatting);
             QVERIFY(row);
             QVERIFY(row->width() > 0 && row->height() > 0);
-            const QPointF centre = row->mapToScene(
-                QPointF(row->width() / 2.0, row->height() / 2.0));
-            QTest::mouseClick(m_window, Qt::LeftButton, Qt::NoModifier,
-                              centre.toPoint());
+            QVERIFY(testsupport::clickWhenSettled(m_window, row));
             QTest::qWait(120);
             QVERIFY(!overflow->property("visible").toBool());
         };

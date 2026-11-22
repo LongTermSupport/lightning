@@ -29,6 +29,7 @@
 #include "profile/ProfileBioManager.h"
 #include "profile/ProfileFieldsManager.h"
 #include "ZoneDataForTests.h"
+#include "support/SettledClick.h"
 
 namespace {
 
@@ -217,9 +218,9 @@ private slots:
         auto *id = item("profileUserId");
         QVERIFY(id);
         QTRY_VERIFY(id->isVisible() && id->width() > 0);
-        const QPoint p = id->mapToScene(QPointF(id->width() / 2, id->height() / 2))
-                             .toPoint();
-        QTest::mouseDClick(m_window, Qt::LeftButton, Qt::NoModifier, p);
+        QPointF p;
+        QVERIFY(testsupport::settledScenePoint(m_window, id, &p));
+        QTest::mouseDClick(m_window, Qt::LeftButton, Qt::NoModifier, p.toPoint());
         QTRY_COMPARE(QGuiApplication::clipboard()->text(),
                      QStringLiteral("@bob:mock.local"));
         auto *notice = item("profileCopiedNotice");

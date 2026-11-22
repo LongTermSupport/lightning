@@ -3908,7 +3908,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+348"/>
+        <location filename="../qml/SpaceLobby.qml" line="+349"/>
         <source>%1, collapsed</source>
         <translation>%1, roboh</translation>
     </message>
@@ -16417,7 +16417,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
 <context>
     <name>QuickSwitcher</name>
     <message>
-        <location filename="../qml/QuickSwitcher.qml" line="+103"/>
+        <location filename="../qml/QuickSwitcher.qml" line="+107"/>
         <source>Open Settings</source>
         <translation>Buka Pengaturan</translation>
     </message>
@@ -16658,7 +16658,29 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Coba %1</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+122"/>
+        <source>%1 is no longer listed.</source>
+        <translation>%1 tidak lagi tercantum.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1"/>
+        <source>%n result(s).</source>
+        <translation>
+            <numerusform>%n hasil.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>No results.</source>
+        <translation>Tidak ada hasil.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 selected.</source>
+        <translation>%1 dipilih.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>ROOMS</source>
         <translation>RUANG</translation>
     </message>
@@ -19834,38 +19856,38 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
 <context>
     <name>RustSdkMatrixClient</name>
     <message>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+577"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+603"/>
         <source>Lightning could not create its local storage directory for this account. Check filesystem permissions and free space.</source>
         <translation>Lightning tidak dapat membuat direktori penyimpanan lokalnya untuk akun ini. Periksa izin sistem berkas dan ruang kosong.</translation>
     </message>
     <message>
         <location line="+41"/>
-        <location line="+961"/>
+        <location line="+962"/>
         <source>Failed to create Rust SDK backend handle.</source>
         <translation>Gagal membuat handle backend Rust SDK.</translation>
     </message>
     <message>
-        <location line="-238"/>
-        <location line="+995"/>
+        <location line="-239"/>
+        <location line="+996"/>
         <source>This account&apos;s local storage name collides with a different account already saved on this device. Remove that account first if you want to sign in with this one.</source>
         <translation>Nama penyimpanan lokal akun ini bertabrakan dengan akun lain yang sudah tersimpan di perangkat ini. Hapus akun itu dulu jika Anda ingin masuk dengan akun ini.</translation>
     </message>
     <message>
-        <location line="+251"/>
+        <location line="+252"/>
         <source>An unusable local store for this account could not be moved aside. Check filesystem permissions and try again.</source>
         <translation>Penyimpanan lokal yang tidak dapat dipakai untuk akun ini tidak dapat disingkirkan. Periksa izin sistem berkas dan coba lagi.</translation>
     </message>
     <message>
-        <location line="-1081"/>
-        <location line="+147"/>
+        <location line="-1083"/>
+        <location line="+148"/>
         <location line="+152"/>
-        <location line="+935"/>
-        <location line="+83"/>
+        <location line="+936"/>
+        <location line="+84"/>
         <source>Rust SDK backend could not be initialized.</source>
         <translation>Backend Rust SDK tidak dapat diinisialisasi.</translation>
     </message>
     <message>
-        <location line="-1178"/>
+        <location line="-1180"/>
         <location line="+153"/>
         <source>A homeserver is required.</source>
         <translation>Homeserver wajib diisi.</translation>
@@ -19954,7 +19976,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Gagal masuk. Periksa data Anda dan alamat server, lalu coba lagi.</translation>
     </message>
     <message>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="-598"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="-599"/>
         <source>Enter a server, for example matrix.org.</source>
         <translation>Masukkan server, misalnya matrix.org.</translation>
     </message>
@@ -19964,7 +19986,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Itu bukan alamat server. Masukkan yang seperti matrix.org.</translation>
     </message>
     <message>
-        <location line="+1018"/>
+        <location line="+1019"/>
         <source>This sign-in belongs to another copy of Lightning on this computer. Sign in again.</source>
         <translation>Info masuk ini milik salinan Lightning lain di komputer ini. Masuk lagi.</translation>
     </message>
@@ -19994,7 +20016,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Anda sudah masuk, tetapi Lightning tidak dapat membuka penyimpanan akun ini di perangkat ini. Tidak ada yang disimpan di sini.</translation>
     </message>
     <message>
-        <location line="+37"/>
+        <location line="+38"/>
         <source>You signed in, but Lightning could not save this account on this device, so it did not open it.</source>
         <translation>Anda sudah masuk, tetapi Lightning tidak dapat menyimpan akun ini di perangkat ini, sehingga tidak membukanya.</translation>
     </message>
@@ -20019,7 +20041,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Anda sudah masuk, tetapi Lightning tidak dapat membuka akun ini di perangkat ini, dan tidak dapat menghapus semua yang sudah mulai disimpannya di sini. Periksa log sebelum mencoba lagi. (%1)</translation>
     </message>
     <message>
-        <location line="+363"/>
+        <location line="+365"/>
         <source>Enter a valid homeserver and Matrix user ID before resetting the local Lightning session.</source>
         <translation>Masukkan homeserver dan ID pengguna Matrix yang valid sebelum mereset sesi Lightning lokal.</translation>
     </message>
@@ -20027,12 +20049,12 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <location line="+7"/>
         <location line="+10"/>
         <location line="+50"/>
-        <location line="+2697"/>
+        <location line="+2784"/>
         <source>Lightning could not completely reset the local session for this account. Check the application logs and filesystem permissions, then try again.</source>
         <translation>Lightning tidak dapat mereset sepenuhnya sesi lokal untuk akun ini. Periksa log aplikasi dan izin sistem berkas, lalu coba lagi.</translation>
     </message>
     <message>
-        <location line="-2711"/>
+        <location line="-2798"/>
         <source>Local Lightning session rebuilt. The previous encryption store was moved aside, not deleted, and is still in this account&apos;s data directory. You can sign in again.</source>
         <translation>Sesi Lightning lokal telah dibangun ulang. Penyimpanan enkripsi sebelumnya disingkirkan, bukan dihapus, dan masih ada di direktori data akun ini. Anda dapat masuk lagi.</translation>
     </message>
@@ -20045,7 +20067,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4592"/>
+        <location line="+4707"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -20054,15 +20076,15 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Belum masuk.</translation>
     </message>
     <message>
-        <location line="-4948"/>
+        <location line="-5063"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4755"/>
+        <location line="+4870"/>
         <source>Unknown room: %1</source>
         <translation>Ruang tidak dikenal: %1</translation>
     </message>
     <message>
-        <location line="-4950"/>
+        <location line="-5065"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
@@ -20070,13 +20092,13 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     </message>
     <message>
         <location line="+772"/>
-        <location line="+2621"/>
+        <location line="+2705"/>
         <location line="+64"/>
         <source>The sticker could not be sent.</source>
         <translation>Stiker tidak dapat dikirim.</translation>
     </message>
     <message>
-        <location line="-1360"/>
+        <location line="-1444"/>
         <source>Lightning cannot send that yet.</source>
         <translation>Lightning belum dapat mengirim itu.</translation>
     </message>
@@ -20086,7 +20108,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Ruang ini masih dimuat. Coba lagi sebentar lagi.</translation>
     </message>
     <message>
-        <location line="+197"/>
+        <location line="+284"/>
         <source>Local Lightning session reset. You can sign in again.</source>
         <translation>Sesi Lightning lokal telah direset. Anda dapat masuk lagi.</translation>
     </message>
@@ -20116,7 +20138,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Masuk lagi sebagai perangkat ini tidak berhasil. Tidak ada yang di perangkat ini diubah. Coba lagi, atau hapus akun ini di bawah.</translation>
     </message>
     <message>
-        <location line="+158"/>
+        <location line="+155"/>
         <source>Matrix session is no longer authorized.</source>
         <translation>Sesi Matrix tidak lagi diotorisasi.</translation>
     </message>
@@ -20168,7 +20190,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Tindakan jajak pendapat tidak dapat diselesaikan.</translation>
     </message>
     <message>
-        <location line="-6530"/>
+        <location line="-6619"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>Data akun ini masih digunakan oleh sesi latar belakang. Tunggu sebentar lalu coba lagi.</translation>
     </message>
@@ -20178,7 +20200,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Data akun ini masih digunakan. Tunggu sebentar lalu coba lagi.</translation>
     </message>
     <message>
-        <location line="+249"/>
+        <location line="+250"/>
         <source>This account&apos;s network route could not be applied, so Lightning will not connect it directly. Check the proxy in Settings.</source>
         <translation>Rute jaringan akun ini tidak dapat diterapkan, jadi Lightning tidak akan menghubungkannya secara langsung. Periksa proxy di Pengaturan.</translation>
     </message>
@@ -20198,7 +20220,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Masukkan kata sandi Anda.</translation>
     </message>
     <message>
-        <location line="+5660"/>
+        <location line="+5748"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>Pesan tidak dapat dikirim. Anda dapat mencoba lagi dari tindakan Coba lagi pada pesan.</translation>
     </message>
@@ -20229,7 +20251,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     </message>
     <message>
         <location filename="../src/accounts/BackgroundSessionHost.cpp" line="+487"/>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+252"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+283"/>
         <location line="+36"/>
         <source>[unable to decrypt yet]</source>
         <translation>[belum dapat didekripsi]</translation>
@@ -28332,7 +28354,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Lobi</translation>
     </message>
     <message>
-        <location line="+81"/>
+        <location line="+82"/>
         <source>People</source>
         <translation>Orang</translation>
     </message>
@@ -28363,8 +28385,8 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
     </message>
     <message>
         <location line="+9"/>
-        <source>This Space has too many members to check them all, so Lightning cannot tell which of your direct messages are with its members. Your room list may show direct messages with people outside it.</source>
-        <translation>Space ini punya terlalu banyak anggota untuk diperiksa semua, jadi Lightning tidak bisa tahu pesan langsung mana yang dengan anggotanya. Daftar ruangan Anda mungkin menampilkan pesan langsung dengan orang di luarnya.</translation>
+        <source>This Space has too many members to list, and Lightning could not confirm whether some of your direct-message contacts belong to it. Your room list may show direct messages with people outside it.</source>
+        <translation>Space ini punya terlalu banyak anggota untuk dicantumkan, dan Lightning tidak bisa memastikan apakah beberapa kontak pesan langsung Anda termasuk di dalamnya. Daftar ruangan Anda mungkin menampilkan pesan langsung dengan orang di luarnya.</translation>
     </message>
     <message>
         <location line="+42"/>
@@ -28401,7 +28423,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+264"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+381"/>
         <source>All rooms</source>
         <translation>Semua ruang</translation>
     </message>
