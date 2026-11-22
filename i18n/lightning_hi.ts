@@ -3931,7 +3931,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+348"/>
+        <location filename="../qml/SpaceLobby.qml" line="+349"/>
         <source>%1, collapsed</source>
         <translation>%1, ढह गया</translation>
     </message>
@@ -16479,7 +16479,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>QuickSwitcher</name>
     <message>
-        <location filename="../qml/QuickSwitcher.qml" line="+103"/>
+        <location filename="../qml/QuickSwitcher.qml" line="+107"/>
         <source>Open Settings</source>
         <translation>सेटिंग्स खोलें</translation>
     </message>
@@ -16720,7 +16720,30 @@ Signing out and signing in again is the only fix.</source>
         <translation>आज़माएँ %1</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+122"/>
+        <source>%1 is no longer listed.</source>
+        <translation>%1 अब सूची में नहीं है।</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1"/>
+        <source>%n result(s).</source>
+        <translation>
+            <numerusform>%n परिणाम।</numerusform>
+            <numerusform>%n परिणाम।</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>No results.</source>
+        <translation>कोई परिणाम नहीं।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 selected.</source>
+        <translation>%1 चुना गया।</translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>ROOMS</source>
         <translation>रूम</translation>
     </message>
@@ -19917,38 +19940,38 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RustSdkMatrixClient</name>
     <message>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+577"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+603"/>
         <source>Lightning could not create its local storage directory for this account. Check filesystem permissions and free space.</source>
         <translation>Lightning इस खाते के लिए अपनी स्थानीय स्टोरेज डायरेक्टरी नहीं बना सका। फ़ाइल सिस्टम की अनुमतियाँ और खाली जगह जाँचें।</translation>
     </message>
     <message>
         <location line="+41"/>
-        <location line="+961"/>
+        <location line="+962"/>
         <source>Failed to create Rust SDK backend handle.</source>
         <translation>Rust SDK बैकएंड हैंडल नहीं बनाया जा सका।</translation>
     </message>
     <message>
-        <location line="-238"/>
-        <location line="+995"/>
+        <location line="-239"/>
+        <location line="+996"/>
         <source>This account&apos;s local storage name collides with a different account already saved on this device. Remove that account first if you want to sign in with this one.</source>
         <translation>इस खाते की स्थानीय स्टोरेज का नाम इस डिवाइस पर पहले से सहेजे गए किसी दूसरे खाते से टकरा रहा है। इसी खाते से साइन इन करना है तो पहले वह खाता हटाएँ।</translation>
     </message>
     <message>
-        <location line="+251"/>
+        <location line="+252"/>
         <source>An unusable local store for this account could not be moved aside. Check filesystem permissions and try again.</source>
         <translation>इस खाते के अनुपयोगी स्थानीय स्टोर को अलग नहीं किया जा सका। फ़ाइल सिस्टम की अनुमतियाँ जाँचें और फिर कोशिश करें।</translation>
     </message>
     <message>
-        <location line="-1081"/>
-        <location line="+147"/>
+        <location line="-1083"/>
+        <location line="+148"/>
         <location line="+152"/>
-        <location line="+935"/>
-        <location line="+83"/>
+        <location line="+936"/>
+        <location line="+84"/>
         <source>Rust SDK backend could not be initialized.</source>
         <translation>Rust SDK बैकएंड शुरू नहीं किया जा सका।</translation>
     </message>
     <message>
-        <location line="-1178"/>
+        <location line="-1180"/>
         <location line="+153"/>
         <source>A homeserver is required.</source>
         <translation>होमसर्वर ज़रूरी है।</translation>
@@ -20037,7 +20060,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>साइन-इन विफल रहा। अपना विवरण और सर्वर का पता जाँचें, फिर दोबारा कोशिश करें।</translation>
     </message>
     <message>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="-598"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="-599"/>
         <source>Enter a server, for example matrix.org.</source>
         <translation>कोई सर्वर दर्ज करें, उदाहरण के लिए matrix.org।</translation>
     </message>
@@ -20047,7 +20070,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>यह सर्वर का पता नहीं है। matrix.org जैसा कोई पता दर्ज करें।</translation>
     </message>
     <message>
-        <location line="+1018"/>
+        <location line="+1019"/>
         <source>This sign-in belongs to another copy of Lightning on this computer. Sign in again.</source>
         <translation>यह साइन-इन इस कंप्यूटर पर Lightning की किसी दूसरी कॉपी का है। फिर से साइन इन करें।</translation>
     </message>
@@ -20077,7 +20100,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>आप साइन इन हो गए, लेकिन Lightning इस डिवाइस पर इस खाते का स्टोरेज नहीं खोल सका। यहाँ कुछ भी सहेजा नहीं गया।</translation>
     </message>
     <message>
-        <location line="+37"/>
+        <location line="+38"/>
         <source>You signed in, but Lightning could not save this account on this device, so it did not open it.</source>
         <translation>आप साइन इन हो गए, लेकिन Lightning इस डिवाइस पर यह खाता सहेज नहीं सका, इसलिए उसने इसे नहीं खोला।</translation>
     </message>
@@ -20102,7 +20125,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>आप साइन इन हो गए, लेकिन Lightning इस डिवाइस पर यह खाता खोल नहीं सका, और जो कुछ वह यहाँ सहेजने लगा था उसे पूरा हटा भी नहीं सका। फिर कोशिश करने से पहले लॉग जाँचें। (%1)</translation>
     </message>
     <message>
-        <location line="+363"/>
+        <location line="+365"/>
         <source>Enter a valid homeserver and Matrix user ID before resetting the local Lightning session.</source>
         <translation>स्थानीय Lightning सेशन रीसेट करने से पहले सही होमसर्वर और Matrix यूज़र आईडी डालें।</translation>
     </message>
@@ -20110,12 +20133,12 @@ Signing out and signing in again is the only fix.</source>
         <location line="+7"/>
         <location line="+10"/>
         <location line="+50"/>
-        <location line="+2697"/>
+        <location line="+2784"/>
         <source>Lightning could not completely reset the local session for this account. Check the application logs and filesystem permissions, then try again.</source>
         <translation>Lightning इस खाते का स्थानीय सेशन पूरी तरह रीसेट नहीं कर सका। ऐप्लिकेशन लॉग और फ़ाइल सिस्टम की अनुमतियाँ जाँचें, फिर दोबारा कोशिश करें।</translation>
     </message>
     <message>
-        <location line="-2711"/>
+        <location line="-2798"/>
         <source>Local Lightning session rebuilt. The previous encryption store was moved aside, not deleted, and is still in this account&apos;s data directory. You can sign in again.</source>
         <translation>स्थानीय Lightning सेशन फिर से बना दिया गया। पिछला एन्क्रिप्शन स्टोर हटाया नहीं गया, सिर्फ़ अलग रख दिया गया है और अब भी इस खाते की डेटा डायरेक्टरी में है। आप दोबारा साइन इन कर सकते हैं।</translation>
     </message>
@@ -20128,7 +20151,7 @@ Signing out and signing in again is the only fix.</source>
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4592"/>
+        <location line="+4707"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -20137,15 +20160,15 @@ Signing out and signing in again is the only fix.</source>
         <translation>साइन इन नहीं हैं।</translation>
     </message>
     <message>
-        <location line="-4948"/>
+        <location line="-5063"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4755"/>
+        <location line="+4870"/>
         <source>Unknown room: %1</source>
         <translation>अज्ञात रूम: %1</translation>
     </message>
     <message>
-        <location line="-4950"/>
+        <location line="-5065"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
@@ -20153,13 +20176,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+772"/>
-        <location line="+2621"/>
+        <location line="+2705"/>
         <location line="+64"/>
         <source>The sticker could not be sent.</source>
         <translation>स्टीकर नहीं भेजा जा सका.</translation>
     </message>
     <message>
-        <location line="-1360"/>
+        <location line="-1444"/>
         <source>Lightning cannot send that yet.</source>
         <translation>Lightning अभी वह भेज नहीं सकता।</translation>
     </message>
@@ -20169,7 +20192,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>यह रूम अब भी लोड हो रहा है। थोड़ी देर बाद फिर कोशिश करें।</translation>
     </message>
     <message>
-        <location line="+197"/>
+        <location line="+284"/>
         <source>Local Lightning session reset. You can sign in again.</source>
         <translation>स्थानीय Lightning सेशन रीसेट कर दिया गया। आप दोबारा साइन इन कर सकते हैं।</translation>
     </message>
@@ -20199,7 +20222,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>इसी डिवाइस के रूप में दोबारा साइन इन करना काम नहीं आया। इस डिवाइस पर कुछ नहीं बदला। फिर कोशिश करें, या नीचे इस खाते को हटाएँ।</translation>
     </message>
     <message>
-        <location line="+158"/>
+        <location line="+155"/>
         <source>Matrix session is no longer authorized.</source>
         <translation>Matrix सेशन अब अधिकृत नहीं है।</translation>
     </message>
@@ -20251,7 +20274,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>पोल की कार्रवाई पूरी नहीं हो सकी।</translation>
     </message>
     <message>
-        <location line="-6530"/>
+        <location line="-6619"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>इस खाते का डेटा अभी किसी बैकग्राउंड सेशन में उपयोग में है। थोड़ी देर रुककर दोबारा कोशिश करें।</translation>
     </message>
@@ -20261,7 +20284,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>इस खाते का डेटा अभी उपयोग में है। थोड़ी देर रुककर दोबारा कोशिश करें।</translation>
     </message>
     <message>
-        <location line="+249"/>
+        <location line="+250"/>
         <source>This account&apos;s network route could not be applied, so Lightning will not connect it directly. Check the proxy in Settings.</source>
         <translation>इस खाते का नेटवर्क रूट लागू नहीं किया जा सका, इसलिए Lightning इसे सीधे कनेक्ट नहीं करेगा। सेटिंग्स में प्रॉक्सी जाँचें।</translation>
     </message>
@@ -20281,7 +20304,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>अपना पासवर्ड दर्ज करें।</translation>
     </message>
     <message>
-        <location line="+5660"/>
+        <location line="+5748"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>संदेश भेजा नहीं जा सका। आप संदेश के “फिर कोशिश करें” विकल्प से दोबारा भेज सकते हैं।</translation>
     </message>
@@ -20312,7 +20335,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location filename="../src/accounts/BackgroundSessionHost.cpp" line="+487"/>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+252"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+283"/>
         <location line="+36"/>
         <source>[unable to decrypt yet]</source>
         <translation>[अभी डिक्रिप्ट नहीं हो सका]</translation>
@@ -28438,7 +28461,7 @@ Note: importing keys does not verify this session.</source>
         <translation>लॉबी</translation>
     </message>
     <message>
-        <location line="+81"/>
+        <location line="+82"/>
         <source>People</source>
         <translation>लोग</translation>
     </message>
@@ -28470,8 +28493,8 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+9"/>
-        <source>This Space has too many members to check them all, so Lightning cannot tell which of your direct messages are with its members. Your room list may show direct messages with people outside it.</source>
-        <translation>इस स्पेस में इतने सदस्य हैं कि सबकी जाँच नहीं हो सकती, इसलिए Lightning नहीं बता सकता कि आपके कौन-से सीधे संदेश इसके सदस्यों से हैं। आपकी रूम सूची में बाहर के लोगों से सीधे संदेश दिख सकते हैं।</translation>
+        <source>This Space has too many members to list, and Lightning could not confirm whether some of your direct-message contacts belong to it. Your room list may show direct messages with people outside it.</source>
+        <translation>इस स्पेस में इतने सदस्य हैं कि उन्हें सूचीबद्ध नहीं किया जा सकता, और Lightning पुष्टि नहीं कर सका कि आपके कुछ सीधे संदेश संपर्क इसके सदस्य हैं या नहीं। आपकी रूम सूची में बाहर के लोगों से सीधे संदेश दिख सकते हैं।</translation>
     </message>
     <message>
         <location line="+42"/>
@@ -28508,7 +28531,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+264"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+381"/>
         <source>All rooms</source>
         <translation>सभी रूम</translation>
     </message>
