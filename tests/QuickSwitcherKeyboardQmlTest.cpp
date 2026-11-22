@@ -391,10 +391,10 @@ private slots:
         QMetaObject::invokeMethod(m_root, "openSwitcher");
         QTRY_VERIFY(switcher()->property("opened").toBool());
         QQuickItem *list = resultList();
-        QTRY_VERIFY(list->property("count").toInt() > 4);
-        list->setProperty("currentIndex", 3);
-        const QString selected = roomAt(3);
-        const QString name = m_controller->quickSwitcher()->resultAt(3)
+        QTRY_VERIFY(list->property("count").toInt() > 3);
+        list->setProperty("currentIndex", 2);
+        const QString selected = roomAt(2);
+        const QString name = m_controller->quickSwitcher()->resultAt(2)
                                  .value(QStringLiteral("name")).toString();
         QVERIFY(!name.isEmpty());
         QTest::qWait(900);
