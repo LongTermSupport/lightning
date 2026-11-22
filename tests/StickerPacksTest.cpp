@@ -18,9 +18,13 @@
 #include <QSignalSpy>
 #include <QTemporaryDir>
 #include <limits>
+#include <memory>
 #include <utility>
 #include <QElapsedTimer>
 #include <QtTest/QtTest>
+#ifdef Q_OS_LINUX
+#include <unistd.h>
+#endif
 
 namespace {
 
@@ -1684,6 +1688,29 @@ private Q_SLOTS:
         QCOMPARE(manager.failedUploadCount(), 0);
     }
 
+    void aFailedUploadRetriesAgainstTheCurrentPack()
+    {
+        FakeClient client;
+        StickerPackManager manager;
+        manager.setClient(&client);
+        QVariantMap target = pack("S", "room", "Animals", {});
+        target.insert("roomId", kRoom);
+        target.insert("canManage", true);
+        manager.applySnapshotForTest(kRoom, true, {target});
+        manager.uploadImagesToPack("S", {QUrl::fromLocalFile("/tmp/a.png"),
+                                         QUrl::fromLocalFile("/tmp/b.png")});
+        Q_EMIT client.stickerPackAddFinished(client.lastRoomUploadOp, true, {}, "a");
+        QCOMPARE(client.roomUploadCode, QStringLiteral("b"));
+        Q_EMIT client.stickerPackAddFinished(client.lastRoomUploadOp, false, "network", "b");
+        QCOMPARE(manager.failedUploadCount(), 1);
+        target.insert("images", QVariantList{image("a", kMxcA, true, false),
+                                             image("b", kMxcB, true, false)});
+        manager.applySnapshotForTest(kRoom, true, {target});
+        manager.retryFailedUploads();
+        QCOMPARE(client.roomUploadCalls, 3);
+        QCOMPARE(client.roomUploadCode, QStringLiteral("b-2"));
+    }
+
     void addingImagesToARoomPackUploadsEachAndRetriesWithoutReuploading()
     {
         FakeClient client;
@@ -2396,6 +2423,53 @@ private Q_SLOTS:
         QVERIFY(!finished.first().at(1).toBool());
         QCOMPARE(finished.first().at(2).toString(), QStringLiteral("too_large"));
         QCOMPARE(finished.first().at(3).toInt(), 0);
+        QVERIFY(destination.open(QIODevice::ReadOnly));
+        QCOMPARE(destination.readAll(), QByteArray("previous"));
+    }
+
+    void destroyingTheManagerMidExportDiscardsTheUnfinishedArchive()
+    {
+        FakeClient client;
+        auto manager = std::make_unique<StickerPackManager>();
+        manager->setClient(&client);
+        QVariantList images;
+        for (int i = 0; i < 6; ++i)
+            images << image(QString::number(i), QStringLiteral("mxc://example.org/%1").arg(i),
+                            true, false);
+        manager->applySnapshotForTest(kRoom, false, {pack("user", "user", "Pack", images)});
+        QTemporaryDir dir;
+        const QString root = QDir(dir.path()).canonicalPath();
+        QFile destination(dir.filePath("pack.zip"));
+        QVERIFY(destination.open(QIODevice::WriteOnly));
+        QCOMPARE(destination.write("previous"), 8);
+        destination.close();
+        const auto entries = [&] {
+            return QDir(root).entryList(QDir::Files | QDir::Hidden | QDir::System).size();
+        };
+        const auto openUnderRoot = [&] {
+            int count = 0;
+#ifdef Q_OS_LINUX
+            const QDir fds(QStringLiteral("/proc/self/fd"));
+            for (const QString &fd : fds.entryList(QDir::AllEntries | QDir::System
+                                                   | QDir::NoDotAndDotDot)) {
+                char target[4096];
+                const auto n = ::readlink(QFile::encodeName(fds.filePath(fd)).constData(),
+                                          target, sizeof target);
+                count += n > 0 && QString::fromLocal8Bit(target, n).startsWith(root + '/');
+            }
+#endif
+            return count;
+        };
+        manager->exportPack("user", QUrl::fromLocalFile(destination.fileName()));
+        const auto first = client.mxcFetches.at(0);
+        Q_EMIT client.mediaReady(first.first, first.second, 0, QByteArray("GIF89a"), {}, {});
+        QTRY_VERIFY(openUnderRoot() + entries() > 1);
+        const auto second = client.mxcFetches.at(1);
+        Q_EMIT client.mediaReady(second.first, second.second, 0,
+            QByteArray("GIF89a").leftJustified(stickers::archive::kMaxImageBytes, 'g'), {}, {});
+        manager.reset();
+        QCOMPARE(openUnderRoot(), 0);
+        QCOMPARE(entries(), 1);
         QVERIFY(destination.open(QIODevice::ReadOnly));
         QCOMPARE(destination.readAll(), QByteArray("previous"));
     }

@@ -83,8 +83,12 @@ private Q_SLOTS:
         QVERIFY(retained <= 256);
         manager.request(user(600));
         const auto stale = client.fetches.last().opId;
+        for (int i = 601; i < 640; ++i)
+            manager.request(user(i));
         Q_EMIT client.loggedOut();
+        const auto dispatched = client.fetches.size();
         manager.request(user(600));
+        QCOMPARE(client.fetches.size(), dispatched + 1);
         complete(stale, user(600));
         QVERIFY(manager.bioFor(user(600)).isEmpty());
         complete(client.fetches.last().opId, user(600));

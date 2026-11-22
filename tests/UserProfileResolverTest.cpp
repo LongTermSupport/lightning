@@ -79,6 +79,25 @@ private Q_SLOTS:
         QCOMPARE(resolver.failedCount(), 0);
     }
 
+    void aClientSwitchReleasesEveryReservedRead()
+    {
+        DelayedProfiles first, second;
+        UserProfileResolver resolver;
+        resolver.setClient(&first);
+        for (int i = 0; i < 60; ++i)
+            resolver.request(profileId(i));
+        QCOMPARE(resolver.inFlightCount(), 16);
+        resolver.setClient(&second);
+        QCOMPARE(resolver.inFlightCount(), 0);
+        resolver.request(profileId(0));
+        QCOMPARE(second.requests, QStringList{profileId(0)});
+        first.complete(0, true);
+        QVERIFY(!resolver.profile(profileId(0)).known);
+        second.complete(0, true);
+        QVERIFY(resolver.profile(profileId(0)).known);
+        QCOMPARE(second.requests.size(), 1);
+    }
+
     void negativeEntriesAreBoundedAndExpireWithoutAnotherLookup()
     {
         DelayedProfiles client;

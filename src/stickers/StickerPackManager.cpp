@@ -26,6 +26,7 @@
 
 #include <QLoggingCategory>
 
+#include <atomic>
 #include <utility>
 
 Q_LOGGING_CATEGORY(lcStickers, "lightning.stickers")
@@ -101,10 +102,12 @@ public:
     {
     }
 
+    void cancel() { m_cancelled = true; }
+
     void append(int index, stickers::archive::Image image)
     {
         using stickers::archive::WriteResult;
-        if (m_failed)
+        if (m_failed || m_cancelled)
             return;
         const auto result = m_file->isOpen() || m_file->open(QIODevice::WriteOnly)
             ? m_writer.append(index, image) : WriteResult::WriteFailed;
@@ -115,7 +118,7 @@ public:
 
     void finish(const QString &name, const QString &attribution)
     {
-        if (m_failed || !check(m_writer.finish(name, attribution)))
+        if (m_failed || m_cancelled || !check(m_writer.finish(name, attribution)))
             return;
         if (!m_file->flush()) {
             Q_EMIT failed(QStringLiteral("write_failed"));
@@ -124,7 +127,7 @@ public:
         // Only the current account's controller may publish the prepared file.
         m_file->setParent(nullptr);
         m_file->moveToThread(m_ownerThread);
-        Q_EMIT prepared(QSharedPointer<QSaveFile>(m_file, &QObject::deleteLater));
+        Q_EMIT prepared(QSharedPointer<QSaveFile>(m_file));
     }
 
 Q_SIGNALS:
@@ -147,6 +150,7 @@ private:
     stickers::archive::Writer m_writer;
     QThread *m_ownerThread;
     bool m_failed = false;
+    std::atomic_bool m_cancelled = false;
 };
 
 StickerPackManager::StickerPackManager(QObject *parent)
@@ -176,7 +180,12 @@ void StickerPackManager::stopExportWorker()
     cancelExportDownloads();
     m_exportClient.clear();
     if (m_exportWorker) {
-        m_exportWorker->thread()->quit();
+        // Deleting the worker at thread exit discards an uncommitted QSaveFile.
+        m_exportWorker->cancel();
+        QThread *worker = m_exportWorker->thread();
+        worker->quit();
+        if (!worker->wait(QDeadlineTimer(5000)))
+            qCWarning(lcStickers) << "sticker export worker did not stop within 5 s";
         m_exportWorker = nullptr;
     }
 }
