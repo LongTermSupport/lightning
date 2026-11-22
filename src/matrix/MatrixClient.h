@@ -1708,7 +1708,7 @@ Q_SIGNALS:
                         const QVariantList &rows, qint64 rowsTotal,
                         qint64 scannedTotal, qint64 undecryptableTotal,
                         bool done, const QString &stopReason,
-                        bool encryptedRoom);
+                        bool encryptedRoom, qint64 editsUnresolved);
     void roomExportFailed(quint64 opId, const QString &roomId,
                           const QString &message);
     void roomProfileResult(quint64 opId, const QString &roomId,

@@ -223,7 +223,7 @@ void RoomExportController::onPage(quint64 opId, const QString &roomId,
                                   const QVariantList &rows, qint64 rowsTotal,
                                   qint64 scannedTotal, qint64 undecryptable,
                                   bool done, const QString &stopReason,
-                                  bool encryptedRoom)
+                                  bool encryptedRoom, qint64 editsUnresolved)
 {
     Q_UNUSED(scannedTotal);
     Q_UNUSED(encryptedRoom);
@@ -242,6 +242,7 @@ void RoomExportController::onPage(quint64 opId, const QString &roomId,
 
     m_walkOp = 0;
     m_stopReason = stopReason;
+    m_editsUnresolved = editsUnresolved;
     m_events.reserve(m_newestFirst.size());
     for (auto it = m_newestFirst.crbegin(); it != m_newestFirst.crend(); ++it)
         m_events.append(*it);
@@ -539,8 +540,10 @@ void RoomExportController::succeed()
                          << (!m_job.options.encrypted
                              || m_job.options.allowEncryptedPlaintext)
                          << "attachments_embedded=" << m_attachmentsEmbedded
-                         << "of" << m_attachmentsTotal;
+                         << "of" << m_attachmentsTotal
+                         << "edits_unresolved=" << m_editsUnresolved;
     const int written = m_written;
+    const int editsUnresolved = int(m_editsUnresolved);
     const QString path = m_job.filePath;
     reset();
     m_resultOk = true;
@@ -549,6 +552,11 @@ void RoomExportController::succeed()
     m_resultMessage = written == 1
         ? tr("Exported 1 event to %1.").arg(name)
         : tr("Exported %1 events to %2.").arg(written).arg(name);
+    if (editsUnresolved > 0) {
+        m_resultMessage += QLatin1Char(' ')
+            + tr("%n edit(s) could not be applied; the edited message(s) are "
+                 "shown in their original form.", nullptr, editsUnresolved);
+    }
     Q_EMIT stateChanged();
     Q_EMIT finished(true, m_resultMessage);
 }
@@ -614,6 +622,7 @@ void RoomExportController::reset()
     m_newestFirst.clear();
     m_events.clear();
     m_stopReason.clear();
+    m_editsUnresolved = 0;
     m_index = 0;
     m_written = 0;
     m_writingPayload = false;

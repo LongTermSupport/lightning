@@ -12678,7 +12678,9 @@ bool RustSdkMatrixClient::handleRoomCommandEvent(const QString &type,
                 event.value(QStringLiteral("undecryptable_total")).toDouble()),
             event.value(QStringLiteral("done")).toBool(),
             event.value(QStringLiteral("stop_reason")).toString(),
-            event.value(QStringLiteral("encrypted_room")).toBool());
+            event.value(QStringLiteral("encrypted_room")).toBool(),
+            static_cast<qint64>(
+                event.value(QStringLiteral("edits_unresolved")).toDouble()));
         return true;
     }
     if (type == QLatin1String("room_export_failed")) {
