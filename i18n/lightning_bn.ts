@@ -1770,17 +1770,17 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AttachmentImageEditDialog</name>
     <message>
-        <location filename="../qml/AttachmentImageEditDialog.qml" line="+25"/>
+        <location filename="../qml/AttachmentImageEditDialog.qml" line="+26"/>
         <source>Edit image before sending</source>
         <translation>পাঠানোর আগে ছবি সম্পাদনা করুন</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+37"/>
         <source>The image edit failed.</source>
         <translation>চিত্র সম্পাদনা ব্যর্থ হয়েছে.</translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+70"/>
         <source>Editing this animation sends one still PNG frame.</source>
         <translation>এই অ্যানিমেশনটি সম্পাদনা করলে একটি স্থির PNG ফ্রেম পাঠানো হয়।</translation>
     </message>
@@ -1850,7 +1850,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>সম্পাদিত ছবি ব্যবহার করুন</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>The edited image could not be queued.</source>
         <translation>সম্পাদিত ছবিটি সারিবদ্ধ করা যায়নি।</translation>
     </message>
@@ -1858,7 +1858,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AttachmentQueueModel</name>
     <message>
-        <location filename="../src/models/AttachmentQueueModel.cpp" line="+79"/>
+        <location filename="../src/models/AttachmentQueueModel.cpp" line="+81"/>
         <source>The file is larger than the server&apos;s upload limit (%1).</source>
         <translation>ফাইলটি সার্ভারের আপলোড সীমার চেয়ে বড় (%1)।</translation>
     </message>
@@ -1893,7 +1893,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>ওই ফাইলটি ইতিমধ্যেই সংযুক্ত।</translation>
     </message>
     <message>
-        <location line="+151"/>
+        <location line="+260"/>
         <source>The converted picture couldn&apos;t be saved.</source>
         <translation>রূপান্তরিত ছবিটি সংরক্ষণ করা যায়নি।</translation>
     </message>
@@ -1908,7 +1908,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>ছবিটি সার্ভারের আপলোড সীমার চেয়ে বড় (%1)।</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+215"/>
         <source>The attachment is no longer available.</source>
         <translation>সংযুক্তি আর উপলব্ধ নেই৷</translation>
     </message>
@@ -1923,35 +1923,35 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>অবৈধ চিত্র সম্পাদনা।</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <location line="+31"/>
+        <location line="-113"/>
+        <location line="+144"/>
         <source>This image is too large to edit.</source>
         <translation>এই ছবিটি সম্পাদনা করার জন্য খুব বড়।</translation>
     </message>
     <message>
-        <location line="-17"/>
+        <location line="-162"/>
         <source>This image format cannot be edited.</source>
         <translation>এই চিত্র বিন্যাস সম্পাদনা করা যাবে না.</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+26"/>
         <source>This image could not be decoded safely.</source>
         <translation>এই ছবিটি নিরাপদে ডিকোড করা যায়নি।</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+16"/>
         <source>The crop is empty.</source>
         <translation>ফসল খালি।</translation>
     </message>
     <message>
-        <location line="-7"/>
-        <location line="+11"/>
-        <location line="+51"/>
+        <location line="-8"/>
+        <location line="+12"/>
+        <location line="+34"/>
         <source>The image edit failed.</source>
         <translation>চিত্র সম্পাদনা ব্যর্থ হয়েছে.</translation>
     </message>
     <message>
-        <location line="-36"/>
+        <location line="+63"/>
         <source>Too many annotation points.</source>
         <translation>অনেক বেশি টীকা পয়েন্ট।</translation>
     </message>
@@ -1961,11 +1961,11 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>অবৈধ টীকা বিন্দু।</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+4"/>
-        <location line="+18"/>
+        <location line="-64"/>
         <location line="+5"/>
-        <location line="+4"/>
+        <location line="+5"/>
+        <location line="+8"/>
+        <location line="+59"/>
         <source>The image edit could not be saved.</source>
         <translation>চিত্র সম্পাদনা সংরক্ষণ করা যায়নি.</translation>
     </message>
@@ -11703,7 +11703,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>ডাউনলোড বাতিল করা হয়েছে।</translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+178"/>
         <source>The destination folder is not available.</source>
         <translation>গন্তব্য ফোল্ডারটি উপলব্ধ নয়।</translation>
     </message>
@@ -12509,7 +12509,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MessageComposer</name>
     <message>
-        <location filename="../src/models/MessageComposer.cpp" line="+245"/>
+        <location filename="../src/models/MessageComposer.cpp" line="+258"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>এই ব্যাকএন্ডে সংযুক্তি সমর্থিত নয়।</translation>
@@ -12525,17 +12525,17 @@ Signing out and signing in again is the only fix.</source>
         <translation>ক্লিপবোর্ডের ছবি পড়া যায়নি।</translation>
     </message>
     <message>
-        <location line="+192"/>
+        <location line="+206"/>
         <source>Photo details could not be removed from this image, so it was not sent. You can change this under Settings, Privacy.</source>
         <translation>এই ছবি থেকে ছবির বিবরণ সরানো যায়নি, তাই এটি পাঠানো হয়নি। সেটিংস, গোপনীয়তায় এটি বদলাতে পারেন।</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+77"/>
         <source>The attachment could not be queued.</source>
         <translation>সংযুক্তিটি সারিতে দেওয়া যায়নি।</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+16"/>
         <location line="+30"/>
         <location line="+81"/>
         <source>The voice message could not be sent.</source>
@@ -12548,12 +12548,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+122"/>
-        <location line="+54"/>
+        <location line="+78"/>
         <source>Upload failed. Retry or remove.</source>
         <translation>আপলোড ব্যর্থ। আবার চেষ্টা করুন বা সরান।</translation>
     </message>
     <message>
-        <location line="+89"/>
+        <location line="+90"/>
         <source>An edit cannot be empty. Delete the message instead.</source>
         <translation>সম্পাদনা খালি হতে পারে না। পরিবর্তে বার্তাটি মুছে ফেলুন।</translation>
     </message>
@@ -32407,7 +32407,7 @@ Note: importing keys does not verify this session.</source>
         <translation>ক্লিপবোর্ডের ছবি পড়া যায়নি।</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+82"/>
         <source>Photo details could not be removed from this image, so it was not sent. You can change this under Settings, Privacy.</source>
         <translation>এই ছবি থেকে ছবির বিবরণ সরানো যায়নি, তাই এটি পাঠানো হয়নি। সেটিংস, গোপনীয়তায় এটি বদলাতে পারেন।</translation>
     </message>

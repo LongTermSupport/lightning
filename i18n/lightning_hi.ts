@@ -1770,17 +1770,17 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AttachmentImageEditDialog</name>
     <message>
-        <location filename="../qml/AttachmentImageEditDialog.qml" line="+25"/>
+        <location filename="../qml/AttachmentImageEditDialog.qml" line="+26"/>
         <source>Edit image before sending</source>
         <translation>भेजने से पहले छवि संपादित करें</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+37"/>
         <source>The image edit failed.</source>
         <translation>छवि संपादन विफल रहा।</translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+70"/>
         <source>Editing this animation sends one still PNG frame.</source>
         <translation>इस एनीमेशन को संपादित करने से एक स्थिर PNG फ्रेम भेजा जाता है।</translation>
     </message>
@@ -1850,7 +1850,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>संपादित छवि का उपयोग करें</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>The edited image could not be queued.</source>
         <translation>संपादित छवि को कतारबद्ध नहीं किया जा सका।</translation>
     </message>
@@ -1858,7 +1858,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AttachmentQueueModel</name>
     <message>
-        <location filename="../src/models/AttachmentQueueModel.cpp" line="+79"/>
+        <location filename="../src/models/AttachmentQueueModel.cpp" line="+81"/>
         <source>The file is larger than the server&apos;s upload limit (%1).</source>
         <translation>फ़ाइल सर्वर की अपलोड सीमा (%1) से बड़ी है।</translation>
     </message>
@@ -1893,7 +1893,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>वह फ़ाइल पहले से अटैच है।</translation>
     </message>
     <message>
-        <location line="+151"/>
+        <location line="+260"/>
         <source>The converted picture couldn&apos;t be saved.</source>
         <translation>बदली हुई तस्वीर सहेजी नहीं जा सकी।</translation>
     </message>
@@ -1908,7 +1908,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>इमेज सर्वर की अपलोड सीमा (%1) से बड़ी है।</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+215"/>
         <source>The attachment is no longer available.</source>
         <translation>अनुलग्नक अब उपलब्ध नहीं है।</translation>
     </message>
@@ -1923,35 +1923,35 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>अमान्य छवि संपादन।</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <location line="+31"/>
+        <location line="-113"/>
+        <location line="+144"/>
         <source>This image is too large to edit.</source>
         <translation>यह छवि संपादित करने के लिए बहुत बड़ी है।</translation>
     </message>
     <message>
-        <location line="-17"/>
+        <location line="-162"/>
         <source>This image format cannot be edited.</source>
         <translation>इस छवि प्रारूप को संपादित नहीं किया जा सकता।</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+26"/>
         <source>This image could not be decoded safely.</source>
         <translation>इस छवि को सुरक्षित रूप से डिकोड नहीं किया जा सका।</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+16"/>
         <source>The crop is empty.</source>
         <translation>फसल खाली है।</translation>
     </message>
     <message>
-        <location line="-7"/>
-        <location line="+11"/>
-        <location line="+51"/>
+        <location line="-8"/>
+        <location line="+12"/>
+        <location line="+34"/>
         <source>The image edit failed.</source>
         <translation>छवि संपादन विफल रहा।</translation>
     </message>
     <message>
-        <location line="-36"/>
+        <location line="+63"/>
         <source>Too many annotation points.</source>
         <translation>बहुत अधिक एनोटेशन बिंदु।</translation>
     </message>
@@ -1961,11 +1961,11 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>अमान्य एनोटेशन बिंदु।</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+4"/>
-        <location line="+18"/>
+        <location line="-64"/>
         <location line="+5"/>
-        <location line="+4"/>
+        <location line="+5"/>
+        <location line="+8"/>
+        <location line="+59"/>
         <source>The image edit could not be saved.</source>
         <translation>छवि संपादन सहेजा नहीं जा सका।</translation>
     </message>
@@ -11703,7 +11703,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>डाउनलोड रद्द किया गया।</translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+178"/>
         <source>The destination folder is not available.</source>
         <translation>गंतव्य फ़ोल्डर उपलब्ध नहीं है।</translation>
     </message>
@@ -12509,7 +12509,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MessageComposer</name>
     <message>
-        <location filename="../src/models/MessageComposer.cpp" line="+245"/>
+        <location filename="../src/models/MessageComposer.cpp" line="+258"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>इस बैकएंड पर अटैचमेंट समर्थित नहीं हैं।</translation>
@@ -12525,17 +12525,17 @@ Signing out and signing in again is the only fix.</source>
         <translation>क्लिपबोर्ड की इमेज पढ़ी नहीं जा सकी।</translation>
     </message>
     <message>
-        <location line="+192"/>
+        <location line="+206"/>
         <source>Photo details could not be removed from this image, so it was not sent. You can change this under Settings, Privacy.</source>
         <translation>इस तस्वीर से फ़ोटो विवरण हटाए नहीं जा सके, इसलिए यह नहीं भेजी गई। आप इसे सेटिंग्स, गोपनीयता में बदल सकते हैं।</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+77"/>
         <source>The attachment could not be queued.</source>
         <translation>अटैचमेंट कतार में नहीं लगाया जा सका।</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+16"/>
         <location line="+30"/>
         <location line="+81"/>
         <source>The voice message could not be sent.</source>
@@ -12548,12 +12548,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+122"/>
-        <location line="+54"/>
+        <location line="+78"/>
         <source>Upload failed. Retry or remove.</source>
         <translation>अपलोड विफल। फिर कोशिश करें या हटाएं।</translation>
     </message>
     <message>
-        <location line="+89"/>
+        <location line="+90"/>
         <source>An edit cannot be empty. Delete the message instead.</source>
         <translation>संपादन खाली नहीं हो सकता। इसके बजाय संदेश हटाएँ।</translation>
     </message>
@@ -32407,7 +32407,7 @@ Note: importing keys does not verify this session.</source>
         <translation>क्लिपबोर्ड की इमेज पढ़ी नहीं जा सकी।</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+82"/>
         <source>Photo details could not be removed from this image, so it was not sent. You can change this under Settings, Privacy.</source>
         <translation>इस तस्वीर से फ़ोटो विवरण हटाए नहीं जा सके, इसलिए यह नहीं भेजी गई। आप इसे सेटिंग्स, गोपनीयता में बदल सकते हैं।</translation>
     </message>
