@@ -16,6 +16,7 @@
 #include <QSignalSpy>
 
 #include "app/AppController.h"
+#include "app/SettingsManager.h"
 #include "auth/AuthManager.h"
 #include "models/MessageComposer.h"
 #include "matrix/MockMatrixClient.h"
@@ -1421,6 +1422,114 @@ QtObject {
                  "the action bar must overlap the bubble for this to mean anything");
         QTest::mouseDClick(b.window.get(), Qt::LeftButton, {},
                            barPoint.toPoint());
+        QTest::qWait(50);
+        QCOMPARE(controller.composer()->replyingToEventId(), QString());
+    }
+
+    static QString repliableMockEvent(AppController &controller)
+    {
+        auto *tl = controller.timeline();
+        for (int row = 0; row < tl->rowCount(); ++row) {
+            const QModelIndex idx = tl->index(row, 0);
+            const QString id = tl->data(idx, TimelineModel::EventIdRole).toString();
+            if (!id.isEmpty() && !id.startsWith(QLatin1String("local:"))
+                && !tl->data(idx, TimelineModel::RedactedRole).toBool()
+                && !tl->data(idx, TimelineModel::IsVirtualRole).toBool()
+                && !tl->messagePermalink(id).isEmpty())
+                return id;
+        }
+        return {};
+    }
+
+    static bool loginToGeneral(AppController &controller)
+    {
+        QSignalSpy loginSpy(controller.auth(), &AuthManager::loginSucceeded);
+        controller.auth()->login(QStringLiteral("https://mock.local"),
+                                 QStringLiteral("alice"),
+                                 QStringLiteral("unused"));
+        if (!loginSpy.wait(kSignalTimeoutMs))
+            return false;
+        controller.setCurrentRoomId(QStringLiteral("!general:mock.local"));
+        return true;
+    }
+
+    void doubleClickBesideTheBubbleStartsAReplyInEveryLayout_data()
+    {
+        QTest::addColumn<int>("layout");
+        QTest::addColumn<bool>("direct");
+        QTest::addColumn<bool>("own");
+        QTest::newRow("modern-room") << 0 << false << false;
+        QTest::newRow("modern-dm") << 0 << true << false;
+        QTest::newRow("bubbles-public-room") << 1 << false << false;
+        QTest::newRow("bubbles-dm") << 1 << true << false;
+        QTest::newRow("bubbles-dm-own") << 1 << true << true;
+        QTest::newRow("compact-dm") << 2 << true << false;
+    }
+
+    void doubleClickBesideTheBubbleStartsAReplyInEveryLayout()
+    {
+        QFETCH(int, layout);
+        QFETCH(bool, direct);
+        QFETCH(bool, own);
+        AppController controller(AppController::MockBackend);
+        QVERIFY(loginToGeneral(controller));
+        const QString id = repliableMockEvent(controller);
+        QVERIFY2(!id.isEmpty(), "the mock room has no repliable event");
+        const int previousLayout = controller.settings()->messageLayout();
+        const auto restore = qScopeGuard([&] {
+            controller.settings()->setMessageLayout(previousLayout);
+        });
+        controller.settings()->setMessageLayout(layout);
+
+        QVariantMap fixture = baseFixture(controller);
+        fixture.insert(QStringLiteral("eventId"), id);
+        fixture.insert(QStringLiteral("body"), QStringLiteral("hi there"));
+        fixture.insert(QStringLiteral("isOwn"), own);
+        Delegate d;
+        QVERIFY(createDelegate(controller, fixture, d,
+                               {{QStringLiteral("isDirectRoom"), direct}}));
+        QCOMPARE(d.root->property("bubbleMode").toBool(), layout == 1 && direct);
+        auto *row = d.root->findChild<QQuickItem *>(
+            QStringLiteral("messagePresentationRow"));
+        auto *bubble = d.root->findChild<QQuickItem *>(
+            QStringLiteral("messageContentColumn"));
+        auto *body = d.root->findChild<QQuickItem *>(
+            QStringLiteral("messageBody"));
+        QVERIFY(row && bubble && body && body->isVisible());
+
+        // The empty side of the row: right of the text (or of an others'
+        // bubble), left of an own bubble.
+        const QPointF bodyInRow = body->mapToItem(row, QPointF(0, body->height() / 2));
+        const QPointF bubbleInRow = bubble->mapToItem(row, QPointF(0, 0));
+        const qreal x = own ? bubbleInRow.x() - 30
+                            : bodyInRow.x() + body->width() + 40;
+        const qreal gutter = d.root->property("avatarGutterWidth").toReal();
+        QVERIFY2(x > gutter && x < row->width() - 200,
+                 qPrintable(QStringLiteral("probe x=%1 outside the empty side")
+                                .arg(x)));
+        const QPoint probe = row->mapToScene(QPointF(x, bodyInRow.y())).toPoint();
+        QTest::mouseDClick(d.window.get(), Qt::LeftButton, {}, probe);
+        QTRY_COMPARE_WITH_TIMEOUT(controller.composer()->replyingToEventId(),
+                                  id, kSignalTimeoutMs);
+        controller.composer()->clearReplyTarget();
+
+        // Not where a reply cannot be sent.
+        auto *mock = controller.findChild<MockMatrixClient *>();
+        QVERIFY(mock != nullptr);
+        const QString room = QStringLiteral("!general:mock.local");
+        const auto unmute = qScopeGuard([&] {
+            mock->setOwnPermissionsForTest(room, {});
+        });
+        QVariantMap muted;
+        muted.insert(QStringLiteral("ownMembership"), QStringLiteral("joined"));
+        muted.insert(QStringLiteral("canSendMessages"), false);
+        mock->setOwnPermissionsForTest(room, muted);
+        QTRY_VERIFY_WITH_TIMEOUT(
+            controller.openRoomPermissions()->roomId() == room
+                && !controller.openRoomPermissions()->canSendMessages(),
+            kSignalTimeoutMs);
+        QTest::qWait(400);
+        QTest::mouseDClick(d.window.get(), Qt::LeftButton, {}, probe);
         QTest::qWait(50);
         QCOMPARE(controller.composer()->replyingToEventId(), QString());
     }

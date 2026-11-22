@@ -939,6 +939,10 @@ Item {
         if (!root.replyEligible
                 || root.timelineModel.messagePermalink(id).length === 0)
             return false
+        var perms = app.openRoomPermissions
+        if (perms && perms.canSendMessages === false
+                && perms.roomId === root.timelineModel.realRoomIdForEvent(id))
+            return false
         if (root.pointTakesInput(host, pos))
             return false
         root.beginReply(id)
@@ -1561,8 +1565,7 @@ Item {
                 objectName: "rowEmptySideTap"
                 enabled: root.rowActionsEnabled
                 acceptedButtons: Qt.LeftButton
-                onTapped: (eventPoint) => {
-                    var pos = eventPoint.position
+                function inOwnedBand(pos) {
                     var skip = [bubble, avatarSlot.visible ? avatarSlot : null,
                                 receiptStripLoader.row,
                                 messageActionBarLoader.visible
@@ -1573,9 +1576,19 @@ Item {
                         var m = bubbleRow.mapToItem(b, pos.x, pos.y)
                         if (m.x >= 0 && m.x <= b.width
                             && m.y >= 0 && m.y <= b.height)
-                            return
+                            return true
                     }
-                    root.toggleActionsPin()
+                    return false
+                }
+                onTapped: (eventPoint) => {
+                    if (!inOwnedBand(eventPoint.position))
+                        root.toggleActionsPin()
+                }
+                // A hugging bubble (Bubbles layout) has almost no empty part
+                // of its own, so the row beside it is the double-click target.
+                onDoubleTapped: (eventPoint, button) => {
+                    if (!inOwnedBand(eventPoint.position))
+                        root.replyOnDoubleTap(bubbleRow, eventPoint.position)
                 }
             }
             TapHandler {
