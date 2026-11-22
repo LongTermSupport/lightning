@@ -2,6 +2,7 @@
 #include "calls/CaptureClock.h"
 
 #include "calls/CallFrameCryptor.h"
+#include "calls/RgbaVideoFrame.h"
 #include "calls/RtpH264Payloader.h"
 #include "calls/RtpVp8Payloader.h"
 #include "calls/ShareAudioSources.h"
@@ -1250,6 +1251,80 @@ static void keyed(CallFrameCryptor &cryptor, int index, char fill)
 }
 
 
+namespace {
+
+uchar rgbaPattern(int row, int column, int channel)
+{
+    return uchar((row * 31 + column * 7 + channel * 3 + 1) & 0xff);
+}
+
+// An RGBA sample whose rows are `stride` bytes apart (padding 0xEE), with a
+// GstVideoMeta when the stride is not the packed one. `trim` drops bytes off
+// the end; an empty `format` leaves the caps out.
+GstSample *rgbaSample(int width, int height, int stride, int trim = 0,
+                      const char *format = "RGBA")
+{
+    const gsize size = gsize(stride) * gsize(height) - gsize(trim);
+    GstBuffer *buffer = gst_buffer_new_allocate(nullptr, size, nullptr);
+    GstMapInfo map;
+    gst_buffer_map(buffer, &map, GST_MAP_WRITE);
+    std::memset(map.data, 0xEE, map.size);
+    for (int row = 0; row < height; ++row) {
+        for (int column = 0; column < width; ++column) {
+            for (int channel = 0; channel < 4; ++channel) {
+                const gsize at = gsize(row) * gsize(stride)
+                    + gsize(column) * 4 + gsize(channel);
+                if (at < map.size)
+                    map.data[at] = rgbaPattern(row, column, channel);
+            }
+        }
+    }
+    gst_buffer_unmap(buffer, &map);
+    if (stride != width * 4) {
+        gsize offset[GST_VIDEO_MAX_PLANES] = {0};
+        gint strides[GST_VIDEO_MAX_PLANES] = {stride};
+        gst_buffer_add_video_meta_full(buffer, GST_VIDEO_FRAME_FLAG_NONE,
+                                       GST_VIDEO_FORMAT_RGBA, guint(width),
+                                       guint(height), 1, offset, strides);
+    }
+    GstCaps *caps = format
+        ? gst_caps_new_simple("video/x-raw", "format", G_TYPE_STRING, format,
+                              "width", G_TYPE_INT, width, "height",
+                              G_TYPE_INT, height, "framerate",
+                              GST_TYPE_FRACTION, 30, 1, nullptr)
+        : nullptr;
+    GstSample *sample = gst_sample_new(buffer, caps, nullptr, nullptr);
+    gst_buffer_unref(buffer);
+    if (caps)
+        gst_caps_unref(caps);
+    return sample;
+}
+
+// Empty when every pixel matches the pattern; otherwise the first mismatch.
+QString rgbaMismatch(QVideoFrame frame, int width, int height)
+{
+    if (!frame.isValid() || frame.width() != width || frame.height() != height)
+        return QStringLiteral("frame invalid or wrong size");
+    if (!frame.map(QVideoFrame::ReadOnly))
+        return QStringLiteral("frame not readable");
+    QString mismatch;
+    const uchar *bits = frame.bits(0);
+    for (int row = 0; row < height && mismatch.isEmpty(); ++row) {
+        for (int column = 0; column < width * 4 && mismatch.isEmpty();
+             ++column) {
+            const uchar want = rgbaPattern(row, column / 4, column % 4);
+            const uchar got = bits[row * frame.bytesPerLine(0) + column];
+            if (got != want)
+                mismatch = QStringLiteral("row %1 byte %2: %3 != %4")
+                               .arg(row).arg(column).arg(got).arg(want);
+        }
+    }
+    frame.unmap();
+    return mismatch;
+}
+
+}
+
 class SfuMediaEngineTest : public QObject
 {
     Q_OBJECT
@@ -1262,6 +1337,58 @@ private slots:
             QSKIP(qPrintable(
                 QStringLiteral("no SFU media runtime: %1").arg(whyNot)));
         }
+    }
+
+    void aVideoSampleIsCopiedWithItsOwnStride_data()
+    {
+        QTest::addColumn<int>("width");
+        QTest::addColumn<int>("height");
+        QTest::addColumn<int>("stride");
+        QTest::newRow("packed") << 4 << 3 << 16;
+        QTest::newRow("odd size") << 5 << 7 << 20;
+        QTest::newRow("padded rows") << 5 << 3 << 32;
+        QTest::newRow("padded odd rows") << 3 << 5 << 13 * 4;
+    }
+
+    void aVideoSampleIsCopiedWithItsOwnStride()
+    {
+        QFETCH(int, width);
+        QFETCH(int, height);
+        QFETCH(int, stride);
+        GstSample *sample = rgbaSample(width, height, stride);
+        const QVideoFrame frame = lightning::calls::rgbaFrameFromSample(sample);
+        gst_sample_unref(sample);
+        const QString mismatch = rgbaMismatch(frame, width, height);
+        QVERIFY2(mismatch.isEmpty(), qPrintable(mismatch));
+    }
+
+    void anIncompleteVideoSampleIsNeverAFrame_data()
+    {
+        QTest::addColumn<int>("width");
+        QTest::addColumn<int>("height");
+        QTest::addColumn<int>("trim");
+        QTest::addColumn<QByteArray>("format");
+        QTest::newRow("short last row") << 4 << 3 << 1 << QByteArray("RGBA");
+        QTest::newRow("half a picture") << 6 << 6 << 6 * 4 * 3
+                                        << QByteArray("RGBA");
+        QTest::newRow("no caps") << 4 << 3 << 0 << QByteArray();
+        QTest::newRow("not rgba") << 4 << 4 << 0 << QByteArray("I420");
+        QTest::newRow("too wide") << 8193 << 1 << 0 << QByteArray("RGBA");
+    }
+
+    void anIncompleteVideoSampleIsNeverAFrame()
+    {
+        QFETCH(int, width);
+        QFETCH(int, height);
+        QFETCH(int, trim);
+        QFETCH(QByteArray, format);
+        GstSample *sample = rgbaSample(width, height, width * 4, trim,
+                                       format.isEmpty() ? nullptr
+                                                        : format.constData());
+        const QVideoFrame frame = lightning::calls::rgbaFrameFromSample(sample);
+        gst_sample_unref(sample);
+        QVERIFY(!frame.isValid());
+        QVERIFY(!lightning::calls::rgbaFrameFromSample(nullptr).isValid());
     }
 
     void aChosenMicrophoneThatCannotBeBoundSaysSo()

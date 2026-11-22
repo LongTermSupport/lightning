@@ -34,6 +34,7 @@
 #include "calls/CaptureClock.h"
 #include "calls/CaptureDeviceSelection.h"
 #include "calls/GstBootstrap.h"
+#include "calls/RgbaVideoFrame.h"
 #include "calls/RtpH264Payloader.h"
 #include "calls/RtpVp8Payloader.h"
 #include "calls/SerialSinkSwap.h"
@@ -725,52 +726,14 @@ GstFlowReturn onVideoSample(GstElement *sink, void *userData)
         return GST_FLOW_OK;
     }
 
-    GstCaps *caps = gst_sample_get_caps(sample);
-    GstBuffer *buffer = gst_sample_get_buffer(sample);
-    int width = 0;
-    int height = 0;
-    if (caps) {
-        const GstStructure *structure = gst_caps_get_structure(caps, 0);
-        if (structure) {
-            gst_structure_get_int(structure, "width", &width);
-            gst_structure_get_int(structure, "height", &height);
-        }
-    }
-    if (!buffer || width <= 0 || height <= 0 || width > 8192
-        || height > 8192) {
-        gst_sample_unref(sample);
-        return GST_FLOW_OK;
-    }
-
     // The copy runs unlocked: a lowered self-view thread must not hold the
     // gate the encrypt probe and the GUI also take.
     if (gateLock.owns_lock())
         gateLock.unlock();
-    GstMapInfo map;
-    if (!gst_buffer_map(buffer, &map, GST_MAP_READ)) {
-        gst_sample_unref(sample);
-        return GST_FLOW_OK;
-    }
-
-    QVideoFrame frame(QVideoFrameFormat(QSize(width, height),
-                                        QVideoFrameFormat::Format_RGBA8888));
-    if (frame.map(QVideoFrame::WriteOnly)) {
-        const int sourceStride = width * 4;
-        const int targetStride = frame.bytesPerLine(0);
-        const qsizetype available = static_cast<qsizetype>(map.size);
-        uchar *target = frame.bits(0);
-        for (int row = 0; row < height; ++row) {
-            const qsizetype offset =
-                static_cast<qsizetype>(row) * sourceStride;
-            if (offset + sourceStride > available)
-                break;
-            memcpy(target + static_cast<qsizetype>(row) * targetStride,
-                   map.data + offset, static_cast<size_t>(sourceStride));
-        }
-        frame.unmap();
-    }
-    gst_buffer_unmap(buffer, &map);
+    const QVideoFrame frame = lightning::calls::rgbaFrameFromSample(sample);
     gst_sample_unref(sample);
+    if (!frame.isValid())
+        return GST_FLOW_OK;
 
     if (gateLock.mutex()) {
         gateLock.lock();
