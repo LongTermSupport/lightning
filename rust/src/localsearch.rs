@@ -661,7 +661,6 @@ struct Indexable {
 fn indexable_from(raw: &serde_json::Value) -> Option<Indexable> {
     let event_id = raw.get("event_id")?.as_str()?.to_owned();
     let sender = raw.get("sender")?.as_str()?.to_owned();
-    let ts = raw.get("origin_server_ts")?.as_i64()?;
     if raw.get("type")?.as_str()? != "m.room.message" || raw.get("state_key").is_some() {
         return None;
     }
@@ -680,11 +679,12 @@ fn indexable_from(raw: &serde_json::Value) -> Option<Indexable> {
 
     let is_replacement = crate::replacement::is_replacement(raw);
     let own_id = event_id.clone();
-    let (target_id, body_source) = if is_replacement {
-        let replacement = crate::replacement::parse(raw)?;
-        (replacement.target.to_owned(), replacement.new_content)
+    let (target_id, body_source, ts) = if is_replacement {
+        let replacement = crate::replacement::parse(raw)
+            .filter(|r| crate::replacement::complete_message(r.new_content))?;
+        (replacement.target.to_owned(), replacement.new_content, i64::try_from(replacement.ts).ok()?)
     } else {
-        (event_id, content)
+        (event_id, content, raw.get("origin_server_ts")?.as_i64()?)
     };
 
     let msgtype = body_source

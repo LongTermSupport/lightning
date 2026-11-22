@@ -511,7 +511,7 @@ async fn search_index_matches_derived_fixtures() {
             let hit = &hits[0];
             assert_eq!(hit.event_id, ORIGINAL, "{}", case.name);
             assert_eq!(hit.room_id, HOME_ROOM, "{}", case.name);
-            assert_eq!(hit.body, content["body"].as_str().unwrap(), "{} {}", case.name, case.reason());
+            assert_eq!(hit.body, content["body"].as_str().unwrap(), "{}", case.name);
             assert_eq!(hit.msgtype, content["msgtype"].as_str().unwrap(), "{}", case.name);
             assert_eq!(hit.filename, content["filename"].as_str().unwrap_or(""), "{}", case.name);
         }

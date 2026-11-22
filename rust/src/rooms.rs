@@ -4723,6 +4723,7 @@ fn effective_revision(
         }
         let Some(r) = replacement::parse(candidate) else { continue };
         if r.target != original_id
+            || !replacement::complete_message(r.new_content)
             || !replacement::may_replace(r.sender, &field(candidate, "type"),
                                          &original_sender, &original_type)
             || !replacement::encryption_permits(*encrypted, original_encrypted)
@@ -6213,7 +6214,7 @@ mod tests {
                 effective_revision(original, case.original_encrypted, &candidates);
             assert!(!unreadable, "{}", case.name);
             let shown = effective.unwrap_or_else(|| original["content"].clone());
-            assert_eq!(Some(&shown), want, "{} {}", case.name, case.reason());
+            assert_eq!(Some(&shown), want, "{}", case.name);
         }
     }
 

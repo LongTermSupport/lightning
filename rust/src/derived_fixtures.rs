@@ -13,12 +13,6 @@ pub(crate) enum Projection {
     Preview,
 }
 
-pub(crate) struct Divergence {
-    projections: &'static [Projection],
-    pub reason: &'static str,
-    content: Value,
-}
-
 pub(crate) struct Scenario {
     pub name: &'static str,
     pub original: Option<Value>,
@@ -26,7 +20,6 @@ pub(crate) struct Scenario {
     pub edits: Vec<Value>,
     pub before_redaction: Option<Value>,
     pub expected: Option<Value>,
-    pub expected_divergence: Option<Divergence>,
 }
 
 impl Scenario {
@@ -51,16 +44,7 @@ impl Scenario {
                 return None;
             }
         }
-        if let Some(divergence) = &self.expected_divergence {
-            if divergence.projections.contains(&projection) {
-                return Some(&divergence.content);
-            }
-        }
         self.expected.as_ref()
-    }
-
-    pub fn reason(&self) -> &str {
-        self.expected_divergence.as_ref().map_or("", |d| d.reason)
     }
 }
 
@@ -86,7 +70,7 @@ pub(crate) fn scenarios() -> Vec<Scenario> {
     let owner = edit("$edit", 20, &updated);
     let case = |name, edits, expected: &Value| Scenario {
         name, original: Some(original.clone()), original_encrypted: false, edits,
-        before_redaction: None, expected: Some(expected.clone()), expected_divergence: None,
+        before_redaction: None, expected: Some(expected.clone()),
     };
 
     let mut stranger = edit("$stranger", 40, &other);
@@ -106,7 +90,8 @@ pub(crate) fn scenarios() -> Vec<Scenario> {
     undated.as_object_mut().unwrap().remove("origin_server_ts");
     let winner = edit("$winner", 30, &other);
     let mut redacted = winner.clone();
-    redacted["content"] = json!({});
+    // As a server keeping relations through redaction (MSC3389) serves it; otherwise nothing marks it an edit.
+    redacted["content"] = json!({"m.relates_to": winner["content"]["m.relates_to"]});
     redacted["unsigned"] = json!({"redacted_because": {
         "type": "m.room.redaction", "room_id": ROOM, "sender": OWNER, "event_id": "$redaction",
         "origin_server_ts": 40, "content": {"redacts": "$winner"}, "redacts": "$winner"
@@ -120,7 +105,6 @@ pub(crate) fn scenarios() -> Vec<Scenario> {
         "info": {"mimetype": "image/png", "size": 33}});
     let incomplete = json!({"msgtype": "m.image", "body": "fixture missing file", "filename": "absent.png"});
 
-    use Projection::*;
     vec![
         case("valid owner edit", vec![owner.clone()], &updated),
         case("stranger edit", vec![stranger.clone()], &old),
@@ -138,13 +122,7 @@ pub(crate) fn scenarios() -> Vec<Scenario> {
         case("older edit arrives first", vec![owner.clone(), winner.clone()], &other),
         case("equal timestamps", vec![edit("$z", 20, &other), owner.clone()], &other),
         case("equal timestamps reversed", vec![owner.clone(), edit("$z", 20, &other)], &other),
-        Scenario {
-            expected_divergence: Some(Divergence {
-                projections: &[Search], content: old.clone(),
-                reason: "Search requires origin_server_ts even for the only edit.",
-            }),
-            ..case("missing timestamp", vec![undated.clone()], &updated)
-        },
+        case("missing timestamp", vec![undated.clone()], &updated),
         case("dated edit outranks undated edit", vec![edit("$a", 1, &other), undated], &other),
         Scenario { before_redaction: Some(winner),
             ..case("redacted winning edit", vec![redacted, owner.clone()], &updated) },
@@ -152,13 +130,7 @@ pub(crate) fn scenarios() -> Vec<Scenario> {
             ..case("missing original", vec![owner], &old) },
         Scenario { original: Some(message(ORIGINAL, 10, &first_file)),
             ..case("attachment edit swaps the file", vec![edit("$file", 20, &next_file)], &next_file) },
-        Scenario {
-            original: Some(message(ORIGINAL, 10, &first_file)),
-            expected_divergence: Some(Divergence {
-                projections: &[Search, Preview], content: incomplete.clone(),
-                reason: "Search and saved preview accept replacement attachment content without a source.",
-            }),
-            ..case("incomplete attachment edit", vec![edit("$file", 20, &incomplete)], &first_file)
-        },
+        Scenario { original: Some(message(ORIGINAL, 10, &first_file)),
+            ..case("incomplete attachment edit", vec![edit("$file", 20, &incomplete)], &first_file) },
     ]
 }
