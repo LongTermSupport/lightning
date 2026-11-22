@@ -103,6 +103,7 @@ AppDialog {
     }
     Connections {
         target: root.queue
+        ignoreUnknownSignals: true
         function onImageEditRendered(request, result) {
             if (request !== root.pendingRender) return
             root.pendingRender = 0

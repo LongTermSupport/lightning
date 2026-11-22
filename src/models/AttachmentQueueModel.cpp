@@ -454,11 +454,18 @@ void AttachmentQueueModel::startPosterJob(int row)
 {
     if (row < 0 || row >= m_entries.size())
         return;
-    const Entry &entry = m_entries.at(row);
-    if (!entry.stripMode.isEmpty()) {
-        startStripJob(entry);
+    if (!m_entries.at(row).stripMode.isEmpty()) {
+        // The first job may still be running: a restart shares neither its
+        // tag nor its directory.
+        Entry &restarted = m_entries[row];
+        const quint64 serial = m_nextPosterTag++;
+        restarted.posterTag = QStringLiteral("send:%1").arg(serial);
+        if (!restarted.strip.sub.isEmpty())
+            restarted.strip.sub += QStringLiteral("-%1").arg(serial);
+        startStripJob(restarted);
         return;
     }
+    const Entry &entry = m_entries.at(row);
     if (entry.isSvg) {
         startSvgConversion(row);
         return;

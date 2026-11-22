@@ -408,7 +408,7 @@ QByteArray largePngWithText()
     return png;
 }
 
-// A two-frame 1100x1100 GIF (~2.7 MiB).
+// A two-frame 1100x1100 GIF (~1.4 MiB).
 QByteArray largeAnimatedGif()
 {
     const int edge = 1100;
@@ -520,7 +520,7 @@ int strippedCopies(const QString &root)
     for (const QString &owner : owners)
         count += QDir(QDir(root).filePath(owner))
                      .entryList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot)
-                     .filter(QRegularExpression(QStringLiteral("^[0-9]+$")))
+                     .filter(QRegularExpression(QStringLiteral("^[0-9]")))
                      .size();
     return count;
 }
@@ -2380,7 +2380,7 @@ private Q_SLOTS:
         // A format with no editable metadata goes out as it is.
         const QString gif =
             writeFile(dir, QStringLiteral("loop.gif"), largeAnimatedGif());
-        QVERIFY(QFileInfo(gif).size() > 2 * 1024 * 1024);
+        QVERIFY(QFileInfo(gif).size() > ImageSendPrep::kBackgroundBytes);
         composer.addAttachment(QUrl::fromLocalFile(gif));
         stalltrace::resetGuiWork();
         composer.send();
@@ -2437,6 +2437,26 @@ private Q_SLOTS:
         QCOMPARE(strippedCopies(root.path()), 0);
         composer.setRoomId(roomA);
         QTRY_COMPARE_WITH_TIMEOUT(client.fileSends, 1, 30000);
+        QVERIFY(!readAll(client.lastFilePath).contains(kGpsMarker));
+        QCOMPARE(strippedCopies(root.path()), 1);
+        Q_EMIT client.attachmentQueueFinished(client.lastOpId, roomA, true, {});
+        QCOMPARE(strippedCopies(root.path()), 0);
+
+        // Back before the first strip ran: the restarted strip and the stale
+        // one never share a copy, and the stale one never deletes the sent one.
+        composer.addAttachment(QUrl::fromLocalFile(big));
+        {
+            PoolHold hold;
+            QVERIFY(hold.held());
+            composer.send();
+            composer.setRoomId(roomB);
+            composer.setRoomId(roomA);
+        }
+        settlePool();
+        QTRY_COMPARE_WITH_TIMEOUT(client.fileSends, 2, 30000);
+        settlePool();
+        QCOMPARE(client.fileSends, 2);
+        QVERIFY(QFileInfo::exists(client.lastFilePath));
         QVERIFY(!readAll(client.lastFilePath).contains(kGpsMarker));
         QCOMPARE(strippedCopies(root.path()), 1);
     }
