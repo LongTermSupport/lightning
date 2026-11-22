@@ -30002,7 +30002,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+18"/>
+        <location line="+21"/>
         <source>Sticker pack (*.zip)</source>
         <translation>Lipdukų rinkinys (*.zip)</translation>
     </message>
@@ -30203,11 +30203,12 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     </message>
     <message>
         <location line="+11"/>
+        <location line="+464"/>
         <source>Cancel</source>
         <translation>Atšaukti</translation>
     </message>
     <message numerus="yes">
-        <location line="+30"/>
+        <location line="-434"/>
         <source>%n added</source>
         <translation>
             <numerusform>%n pridėtas</numerusform>
@@ -30321,12 +30322,17 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Patvirtinti ištuštinimą</translation>
     </message>
     <message>
-        <location line="+129"/>
+        <location line="+104"/>
+        <source>Exporting pack (%1 of %2)</source>
+        <translation>Eksportuojamas paketas (%1 iš %2)</translation>
+    </message>
+    <message>
+        <location line="+61"/>
         <source>This deletes the pack from the room for everyone and turns it off for you. Messages already sent keep their images, and the images themselves are not deleted from the server.</source>
         <translation>Tai ištrina rinkinį iš kambario visiems ir išjungia jį jums. Jau išsiųstos žinutės išlaiko savo paveikslėlius, o patys paveikslėliai iš serverio neištrinami.</translation>
     </message>
     <message>
-        <location line="-128"/>
+        <location line="-164"/>
         <source>Empty pack</source>
         <translation>Ištuštinti paketą</translation>
     </message>
@@ -30376,7 +30382,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Importuoti…</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+53"/>
         <source>Done</source>
         <translation>Atlikta</translation>
     </message>
@@ -30394,7 +30400,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
 <context>
     <name>StickerPackManager</name>
     <message>
-        <location filename="../src/stickers/StickerPackManager.cpp" line="+1083"/>
+        <location filename="../src/stickers/StickerPackManager.cpp" line="+1192"/>
         <source>Enter a name.</source>
         <translation>Įveskite pavadinimą.</translation>
     </message>
@@ -30414,7 +30420,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Kitas šio rinkinio paveikslėlis jau naudoja šį pavadinimą.</translation>
     </message>
     <message>
-        <location line="+312"/>
+        <location line="+347"/>
         <source>You do not have permission to change this pack.</source>
         <translation>Neturite leidimo keisti šio rinkinio.</translation>
     </message>
@@ -30440,6 +30446,16 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     </message>
     <message>
         <location line="+3"/>
+        <source>The sticker pack exceeds the 96 MiB archive limit.</source>
+        <translation>Lipdukų paketas viršija 96 MiB archyvo ribą.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Export cancelled.</source>
+        <translation>Eksportavimas atšauktas.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The file could not be written.</source>
         <translation>Nepavyko įrašyti failo.</translation>
     </message>
@@ -30584,7 +30600,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         </translation>
     </message>
     <message>
-        <location line="+315"/>
+        <location line="+334"/>
         <source>A pack</source>
         <translation>Rinkinys</translation>
     </message>

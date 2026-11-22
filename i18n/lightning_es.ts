@@ -29897,7 +29897,7 @@ Nota: importar claves no verifica esta sesión.</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+18"/>
+        <location line="+21"/>
         <source>Sticker pack (*.zip)</source>
         <translation>Paquete de pegatinas (*.zip)</translation>
     </message>
@@ -30092,11 +30092,12 @@ Nota: importar claves no verifica esta sesión.</translation>
     </message>
     <message>
         <location line="+11"/>
+        <location line="+464"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message numerus="yes">
-        <location line="+30"/>
+        <location line="-434"/>
         <source>%n added</source>
         <translation>
             <numerusform>%n añadida</numerusform>
@@ -30207,12 +30208,17 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>Confirmar vaciado</translation>
     </message>
     <message>
-        <location line="+129"/>
+        <location line="+104"/>
+        <source>Exporting pack (%1 of %2)</source>
+        <translation>Exportando paquete (%1 de %2)</translation>
+    </message>
+    <message>
+        <location line="+61"/>
         <source>This deletes the pack from the room for everyone and turns it off for you. Messages already sent keep their images, and the images themselves are not deleted from the server.</source>
         <translation>Esto elimina el paquete de la sala para todos y lo desactiva para ti. Los mensajes ya enviados conservan sus imágenes, y las imágenes en sí no se eliminan del servidor.</translation>
     </message>
     <message>
-        <location line="-128"/>
+        <location line="-164"/>
         <source>Empty pack</source>
         <translation>Vaciar paquete</translation>
     </message>
@@ -30262,7 +30268,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>Importar…</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+53"/>
         <source>Done</source>
         <translation>Listo</translation>
     </message>
@@ -30280,7 +30286,7 @@ Nota: importar claves no verifica esta sesión.</translation>
 <context>
     <name>StickerPackManager</name>
     <message>
-        <location filename="../src/stickers/StickerPackManager.cpp" line="+1083"/>
+        <location filename="../src/stickers/StickerPackManager.cpp" line="+1192"/>
         <source>Enter a name.</source>
         <translation>Escribe un nombre.</translation>
     </message>
@@ -30300,7 +30306,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>Otra imagen de este paquete ya usa ese nombre.</translation>
     </message>
     <message>
-        <location line="+312"/>
+        <location line="+347"/>
         <source>You do not have permission to change this pack.</source>
         <translation>No tienes permiso para cambiar este paquete.</translation>
     </message>
@@ -30326,6 +30332,16 @@ Nota: importar claves no verifica esta sesión.</translation>
     </message>
     <message>
         <location line="+3"/>
+        <source>The sticker pack exceeds the 96 MiB archive limit.</source>
+        <translation>El paquete de stickers supera el límite de archivo de 96 MiB.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Export cancelled.</source>
+        <translation>Exportación cancelada.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The file could not be written.</source>
         <translation>No se pudo escribir el archivo.</translation>
     </message>
@@ -30460,7 +30476,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         </translation>
     </message>
     <message>
-        <location line="+315"/>
+        <location line="+334"/>
         <source>A pack</source>
         <translation>Un paquete</translation>
     </message>

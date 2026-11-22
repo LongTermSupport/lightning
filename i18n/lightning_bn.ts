@@ -29897,7 +29897,7 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+18"/>
+        <location line="+21"/>
         <source>Sticker pack (*.zip)</source>
         <translation>স্টিকার প্যাক (*.zip)</translation>
     </message>
@@ -30092,11 +30092,12 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+11"/>
+        <location line="+464"/>
         <source>Cancel</source>
         <translation>বাতিল</translation>
     </message>
     <message numerus="yes">
-        <location line="+30"/>
+        <location line="-434"/>
         <source>%n added</source>
         <translation>
             <numerusform>%nটি যোগ হয়েছে</numerusform>
@@ -30207,12 +30208,17 @@ Note: importing keys does not verify this session.</source>
         <translation>খালি করা নিশ্চিত করুন</translation>
     </message>
     <message>
-        <location line="+129"/>
+        <location line="+104"/>
+        <source>Exporting pack (%1 of %2)</source>
+        <translation>প্যাক রপ্তানি হচ্ছে (%2-এর মধ্যে %1)</translation>
+    </message>
+    <message>
+        <location line="+61"/>
         <source>This deletes the pack from the room for everyone and turns it off for you. Messages already sent keep their images, and the images themselves are not deleted from the server.</source>
         <translation>এটি রুম থেকে সবার জন্য প্যাকটি মুছে দেয় এবং আপনার জন্য এটি বন্ধ করে। ইতিমধ্যে পাঠানো বার্তাগুলোর ছবি থেকে যায়, এবং ছবিগুলো নিজে সার্ভার থেকে মোছা হয় না।</translation>
     </message>
     <message>
-        <location line="-128"/>
+        <location line="-164"/>
         <source>Empty pack</source>
         <translation>প্যাক খালি করুন</translation>
     </message>
@@ -30262,7 +30268,7 @@ Note: importing keys does not verify this session.</source>
         <translation>ইমপোর্ট করুন…</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+53"/>
         <source>Done</source>
         <translation>সম্পন্ন</translation>
     </message>
@@ -30280,7 +30286,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>StickerPackManager</name>
     <message>
-        <location filename="../src/stickers/StickerPackManager.cpp" line="+1083"/>
+        <location filename="../src/stickers/StickerPackManager.cpp" line="+1192"/>
         <source>Enter a name.</source>
         <translation>একটি নাম দিন।</translation>
     </message>
@@ -30300,7 +30306,7 @@ Note: importing keys does not verify this session.</source>
         <translation>এই প্যাকের অন্য একটি ছবি ইতিমধ্যে ওই নাম ব্যবহার করছে।</translation>
     </message>
     <message>
-        <location line="+312"/>
+        <location line="+347"/>
         <source>You do not have permission to change this pack.</source>
         <translation>এই প্যাক বদলানোর অনুমতি আপনার নেই।</translation>
     </message>
@@ -30326,6 +30332,16 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+3"/>
+        <source>The sticker pack exceeds the 96 MiB archive limit.</source>
+        <translation>স্টিকার প্যাকটি 96 MiB আর্কাইভ সীমা ছাড়িয়ে গেছে।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Export cancelled.</source>
+        <translation>রপ্তানি বাতিল হয়েছে।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The file could not be written.</source>
         <translation>ফাইলটি লেখা যায়নি।</translation>
     </message>
@@ -30460,7 +30476,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message>
-        <location line="+315"/>
+        <location line="+334"/>
         <source>A pack</source>
         <translation>একটি প্যাক</translation>
     </message>

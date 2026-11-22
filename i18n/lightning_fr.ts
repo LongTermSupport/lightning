@@ -29897,7 +29897,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+18"/>
+        <location line="+21"/>
         <source>Sticker pack (*.zip)</source>
         <translation>Pack d&apos;autocollants (*.zip)</translation>
     </message>
@@ -30092,11 +30092,12 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
     </message>
     <message>
         <location line="+11"/>
+        <location line="+464"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message numerus="yes">
-        <location line="+30"/>
+        <location line="-434"/>
         <source>%n added</source>
         <translation>
             <numerusform>%n ajoutée</numerusform>
@@ -30207,12 +30208,17 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Confirmer le vidage</translation>
     </message>
     <message>
-        <location line="+129"/>
+        <location line="+104"/>
+        <source>Exporting pack (%1 of %2)</source>
+        <translation>Export du pack (%1 sur %2)</translation>
+    </message>
+    <message>
+        <location line="+61"/>
         <source>This deletes the pack from the room for everyone and turns it off for you. Messages already sent keep their images, and the images themselves are not deleted from the server.</source>
         <translation>Cela supprime le pack du salon pour tout le monde et le désactive pour vous. Les messages déjà envoyés gardent leurs images, et les images elles-mêmes ne sont pas supprimées du serveur.</translation>
     </message>
     <message>
-        <location line="-128"/>
+        <location line="-164"/>
         <source>Empty pack</source>
         <translation>Vider le pack</translation>
     </message>
@@ -30262,7 +30268,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Importer…</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+53"/>
         <source>Done</source>
         <translation>Terminé</translation>
     </message>
@@ -30280,7 +30286,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
 <context>
     <name>StickerPackManager</name>
     <message>
-        <location filename="../src/stickers/StickerPackManager.cpp" line="+1083"/>
+        <location filename="../src/stickers/StickerPackManager.cpp" line="+1192"/>
         <source>Enter a name.</source>
         <translation>Saisissez un nom.</translation>
     </message>
@@ -30300,7 +30306,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Une autre image de ce pack utilise déjà ce nom.</translation>
     </message>
     <message>
-        <location line="+312"/>
+        <location line="+347"/>
         <source>You do not have permission to change this pack.</source>
         <translation>Vous n’avez pas l’autorisation de modifier ce pack.</translation>
     </message>
@@ -30326,6 +30332,16 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
     </message>
     <message>
         <location line="+3"/>
+        <source>The sticker pack exceeds the 96 MiB archive limit.</source>
+        <translation>Le pack d’autocollants dépasse la limite d’archive de 96 Mio.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Export cancelled.</source>
+        <translation>Export annulé.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The file could not be written.</source>
         <translation>Le fichier n&apos;a pas pu être écrit.</translation>
     </message>
@@ -30460,7 +30476,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         </translation>
     </message>
     <message>
-        <location line="+315"/>
+        <location line="+334"/>
         <source>A pack</source>
         <translation>Un pack</translation>
     </message>

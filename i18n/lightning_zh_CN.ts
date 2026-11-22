@@ -29792,7 +29792,7 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+18"/>
+        <location line="+21"/>
         <source>Sticker pack (*.zip)</source>
         <translation>表情包 (*.zip)</translation>
     </message>
@@ -29981,11 +29981,12 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+11"/>
+        <location line="+464"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message numerus="yes">
-        <location line="+30"/>
+        <location line="-434"/>
         <source>%n added</source>
         <translation>
             <numerusform>已添加 %n 个</numerusform>
@@ -30093,12 +30094,17 @@ Note: importing keys does not verify this session.</source>
         <translation>确认清空</translation>
     </message>
     <message>
-        <location line="+129"/>
+        <location line="+104"/>
+        <source>Exporting pack (%1 of %2)</source>
+        <translation>正在导出贴纸包（%1/%2）</translation>
+    </message>
+    <message>
+        <location line="+61"/>
         <source>This deletes the pack from the room for everyone and turns it off for you. Messages already sent keep their images, and the images themselves are not deleted from the server.</source>
         <translation>这将为所有人从房间中删除此包，并为你关闭它。已发送的消息会保留其图片，图片本身也不会从服务器上删除。</translation>
     </message>
     <message>
-        <location line="-128"/>
+        <location line="-164"/>
         <source>Empty pack</source>
         <translation>清空包</translation>
     </message>
@@ -30148,7 +30154,7 @@ Note: importing keys does not verify this session.</source>
         <translation>导入…</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+53"/>
         <source>Done</source>
         <translation>完成</translation>
     </message>
@@ -30166,7 +30172,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>StickerPackManager</name>
     <message>
-        <location filename="../src/stickers/StickerPackManager.cpp" line="+1083"/>
+        <location filename="../src/stickers/StickerPackManager.cpp" line="+1192"/>
         <source>Enter a name.</source>
         <translation>请输入名称。</translation>
     </message>
@@ -30186,7 +30192,7 @@ Note: importing keys does not verify this session.</source>
         <translation>此表情包中的另一张图片已使用该名称。</translation>
     </message>
     <message>
-        <location line="+312"/>
+        <location line="+347"/>
         <source>You do not have permission to change this pack.</source>
         <translation>您无权更改此包。</translation>
     </message>
@@ -30212,6 +30218,16 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+3"/>
+        <source>The sticker pack exceeds the 96 MiB archive limit.</source>
+        <translation>贴纸包超出 96 MiB 的归档上限。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Export cancelled.</source>
+        <translation>导出已取消。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The file could not be written.</source>
         <translation>无法写入该文件。</translation>
     </message>
@@ -30336,7 +30352,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message>
-        <location line="+315"/>
+        <location line="+334"/>
         <source>A pack</source>
         <translation>一个包</translation>
     </message>
