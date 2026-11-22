@@ -1535,7 +1535,7 @@ QtObject {
         QCOMPARE(controller.composer()->replyingToEventId(), QString());
     }
 
-    void messageMenuKeysForwardCopyTheImageAndViewSource()
+    void messageMenuLetterKeysRunTheirItems()
     {
         AppController controller(AppController::MockBackend);
         auto *mock = controller.findChild<MockMatrixClient *>();
@@ -1603,6 +1603,18 @@ QtObject {
             kSignalTimeoutMs);
         QTRY_VERIFY(!menu->property("opened").toBool());
         QCOMPARE(copies.count(), 1);
+
+        Delegate i;
+        QVERIFY(createDelegate(controller, image, i));
+        menu = openMenu(i);
+        QVERIFY(menu != nullptr);
+        QCOMPARE(menu->findChild<QObject *>(QStringLiteral("viewDetailsMenuItem"))
+                     ->property("accel").toString(), QStringLiteral("I"));
+        QTest::keyClick(i.window.get(), Qt::Key_I);
+        QTRY_VERIFY_WITH_TIMEOUT(
+            i.root->property("detailsDialogItem").value<QObject *>() != nullptr,
+            kSignalTimeoutMs);
+        QTRY_VERIFY(!menu->property("opened").toBool());
 
         // C on a row with no image does nothing and leaves the menu open.
         QVariantMap text = baseFixture(controller);

@@ -4101,6 +4101,18 @@ Item {
                     }
                 }
             }
+            Shortcut {
+                sequence: "I"
+                enabled: moreMenu.opened
+                context: Qt.ApplicationShortcut
+                onActivated: {
+                    if (root.menuEventId !== "") {
+                        root.openMessageDetails(
+                            root.timelineModel.messageDetails(root.menuEventId))
+                        moreMenu.close()
+                    }
+                }
+            }
             QuickReactionStrip {
                 objectName: "quickReactionStrip"
                 emojis: app.emojiCatalog.recentEmoji || []
@@ -4391,8 +4403,10 @@ Item {
                 onTriggered: root.openSenderProfileForRow()
             }
             AppMenuItem {
+                objectName: "viewDetailsMenuItem"
                 iconName: "info"
                 text: qsTr("View details")
+                accel: "I"
                 enabled: root.menuEventId !== ""
                 onTriggered: root.openMessageDetails(
                     root.timelineModel.messageDetails(
