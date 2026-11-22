@@ -30,13 +30,17 @@ pub(crate) struct Scenario {
 }
 
 impl Scenario {
+    /// Newest first, as a backward walk meets them: edits, then the original.
     pub fn history<'a>(&'a self, room: &'a str) -> impl Iterator<Item = (&'a Value, bool)> + 'a {
+        let encrypted = self.original_encrypted;
         self.edits.iter().map(|e| (e, false))
-            .chain(self.original.iter().map(|e| (e, self.original_encrypted)))
+            .chain(self.original.iter().map(move |e| (e, encrypted)))
             .filter(move |(e, _)| e["room_id"] == room)
     }
 
+    /// What the projection should show for the original; `None` when it has no row.
     pub fn content_for(&self, projection: Projection) -> Option<&Value> {
+        // Scope, not divergence: search and media history never list state events, and search only messages.
         if let Some(original) = &self.original {
             if matches!(projection, Projection::Search | Projection::Media)
                 && original.get("state_key").is_some()

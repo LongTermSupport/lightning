@@ -568,7 +568,7 @@ mod tests {
                 for (event, encrypted) in case.history(room) {
                     if let Some(row) = walk.consume(event, encrypted) {
                         if row.kind == "redacted" {
-                            let winner = case.before_redaction.as_ref().expect("unexpected tombstone");
+                            let winner = case.before_redaction.as_ref().unwrap_or_else(|| panic!("{}: unexpected tombstone", case.name));
                             assert_eq!(row.event_id, winner["event_id"].as_str().unwrap(), "{}", case.name);
                             assert!(row.body.is_empty() && !row.is_attachment(), "{}", case.name);
                         } else {
