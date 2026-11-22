@@ -1040,8 +1040,22 @@ private:
     bool m_ssoInFlight = false;
     QString rustStorePathForUser(const QString &userIdForStore) const;
     void pollRustEvents();
+    void drainSdkEvents(const std::function<QByteArray()> &next,
+                        quint64 eventGeneration);
+    void requestRoomListResync();
     void armPaginationPoll(quint64 chain, int ticksLeft, int quietTicks);
     void handleRustEvent(const QJsonObject &event, quint64 eventGeneration);
+
+    int drainEventsForTest(QList<QByteArray> events)
+    {
+        if (!m_lifecycle.acceptsActive(m_lifecycle.activeGeneration()))
+            m_lifecycle.beginSession();
+        m_handleGeneration = m_lifecycle.activeGeneration();
+        drainSdkEvents([&events] {
+            return events.isEmpty() ? QByteArray() : events.takeFirst();
+        }, m_handleGeneration);
+        return int(events.size());
+    }
 
     void handleRustEventForTest(const QJsonObject &event)
     {
@@ -1057,6 +1071,7 @@ private:
     friend class SyncMessageRowTest;
     friend class E2eeBridgeTest;
     friend class NotificationProducerTest;
+    friend class RoomListDrainTest;
 
     void finishSignOut(const QString &serverResult, const QString &serverMessage);
     bool clearPersistedAccount(const matrix::app_data::AccountIdentity &identity,
@@ -1203,6 +1218,8 @@ private:
     matrix::notification_producer::HighlightGapTracker m_highlightGaps;
     QTimer m_highlightGapTimer;
     bool m_coalesceTimelineInserts = false;
+    int m_roomListResyncRequests = 0;
+    bool m_backlogPollPending = false;
     QString m_timelineInsertBatchRoom;
     quint64 m_timelineInsertBatchGeneration = 0;
     int m_timelineInsertBatchFirst = -1;

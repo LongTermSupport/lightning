@@ -5683,6 +5683,16 @@ if(BUILD_TESTING)
         set_tests_properties(sync-message-row PROPERTIES
             ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
+        # Counts the work a burst of room-list diffs causes per poll drain.
+        qt_add_executable(room-list-drain-test
+            tests/RoomListDrainTest.cpp
+        )
+        lightning_configure_qml_test(room-list-drain-test)
+        target_include_directories(room-list-drain-test PRIVATE src)
+        add_test(NAME room-list-drain COMMAND room-list-drain-test)
+        set_tests_properties(room-list-drain PROPERTIES
+            ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
         # The Rust backend's notification-path signals (live observations,
         # late decryptions, redactions, receipt outcomes, highlight gaps).
         # Drives the real dispatcher.

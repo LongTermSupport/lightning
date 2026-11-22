@@ -5599,13 +5599,42 @@ void RustSdkMatrixClient::pollRustEvents()
             return;
     }
 
+    drainSdkEvents([this] {
+        return m_rustHandle ? takeRustBytes(mx_rust_poll_event(m_rustHandle))
+                            : QByteArray();
+    }, eventGeneration);
+}
+
+void RustSdkMatrixClient::drainSdkEvents(const std::function<QByteArray()> &next,
+                                         quint64 eventGeneration)
+{
     const bool traceSync = synctrace::enabled();
+    static const bool tracePoll = qEnvironmentVariableIsSet("LIGHTNING_POLL_TRACE");
+    QElapsedTimer drainClock;
+    QElapsedTimer eventClock;
+    QHash<QString, QPair<int, qint64>> costByType;
+    int drained = 0;
+    if (tracePoll)
+        drainClock.start();
+    const auto reportDrain = [&] {
+        if (!tracePoll || drainClock.elapsed() < 20)
+            return;
+        QStringList parts;
+        for (auto it = costByType.cbegin(); it != costByType.cend(); ++it)
+            parts.append(QStringLiteral("%1:%2/%3ms").arg(it.key())
+                             .arg(it->first).arg(it->second / 1000000));
+        parts.sort();
+        qCInfo(lcRust) << "poll drain events=" << drained
+                       << "ms=" << drainClock.elapsed()
+                       << "rooms=" << m_roomOrder.size()
+                       << "types=" << parts.join(QLatin1Char(' '));
+    };
 
     m_coalesceTimelineInserts = true;
     constexpr int kSoftDrainCap = 64;
     constexpr int kHardDrainCap = 256;
     for (int i = 0; i < kHardDrainCap; ++i) {
-        const QByteArray raw = takeRustBytes(mx_rust_poll_event(m_rustHandle));
+        const QByteArray raw = next();
         if (raw.isEmpty())
             break;
         if (rustPollFailed(raw))
@@ -5618,6 +5647,16 @@ void RustSdkMatrixClient::pollRustEvents()
         }
         const QJsonObject event = doc.object();
         const QString type = event.value(QStringLiteral("type")).toString();
+        ++drained;
+        if (tracePoll)
+            eventClock.start();
+        const auto noteCost = [&] {
+            if (!tracePoll)
+                return;
+            auto &cost = costByType[type];
+            ++cost.first;
+            cost.second += eventClock.nsecsElapsed();
+        };
         if (type != QLatin1String("timeline_diff"))
             flushTimelineInsertBatch();
         if (m_lifecycle.acceptsActive(eventGeneration)) {
@@ -5634,15 +5673,24 @@ void RustSdkMatrixClient::pollRustEvents()
                            << "active_generation="
                            << m_lifecycle.activeGeneration();
         }
+        noteCost();
         if (traceSync)
             synctrace::noteSyncResponse();
-        if (!m_rustHandle || m_handleGeneration != eventGeneration)
+        if (m_handleGeneration != eventGeneration)
             break;
         if (i >= kSoftDrainCap - 1 && type != QLatin1String("timeline_diff"))
             break;
     }
     flushTimelineInsertBatch();
     m_coalesceTimelineInserts = false;
+    reportDrain();
+}
+
+void RustSdkMatrixClient::requestRoomListResync()
+{
+    ++m_roomListResyncRequests;
+    if (m_rustHandle)
+        takeRustString(mx_rust_resync_rooms(m_rustHandle));
 }
 
 void RustSdkMatrixClient::requireLocalReset(
@@ -7163,8 +7211,7 @@ void RustSdkMatrixClient::handleRustEvent(const QJsonObject &event,
                           << "— resyncing rooms and reloading the open room";
         Q_EMIT errorOccurred(event.value(QStringLiteral("message")).toString(
             tr("Rust SDK event queue overflowed.")));
-        if (m_rustHandle)
-            takeRustString(mx_rust_resync_rooms(m_rustHandle));
+        requestRoomListResync();
         const QString openRoom = m_timelineTracker.activeRoom();
         if (!openRoom.isEmpty()
             && admitRecoveryReopen(
@@ -7306,8 +7353,7 @@ void RustSdkMatrixClient::handleRoomListDiff(const QJsonObject &event)
                       << "indexed=" << (!roomId.isEmpty() && m_roomOrder.contains(roomId))
                       << "registry=" << m_roomOrder.size()
                       << "— asking the room list to re-emit its index base";
-    if (m_rustHandle)
-        takeRustString(mx_rust_resync_rooms(m_rustHandle));
+    requestRoomListResync();
 }
 
 void RustSdkMatrixClient::handleSpacesEvent(const QJsonArray &spaces)
