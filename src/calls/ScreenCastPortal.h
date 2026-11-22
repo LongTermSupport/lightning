@@ -39,7 +39,8 @@ private:
     void reset();
     void armAnswerWatchdog(int ms);
 #ifdef HAVE_QT_DBUS
-    void selectSources(int types);
+    void negotiateSources(int types);
+    void selectSources(int types, uint cursorMode);
     void startSession();
     void handleStreams(const QVariantMap &results);
     void openRemote(unsigned nodeId);

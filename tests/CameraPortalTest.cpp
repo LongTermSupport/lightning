@@ -254,6 +254,9 @@ private Q_SLOTS:
     void cancellingAPendingCameraRequestClosesItOnce_data();
     void cancellingAPendingCameraRequestClosesItOnce();
     void aCameraRequestThatTimesOutIsClosed();
+    void aScreenShareOnlyAsksForWhatThePortalAdvertises_data();
+    void aScreenShareOnlyAsksForWhatThePortalAdvertises();
+    void theCursorModeIsReadAgainForEveryShare();
     void aSessionCreatedAfterCancellingIsClosed();
     void cancellingAnOpenPickerClosesItsRequestAndSession();
 
@@ -525,6 +528,86 @@ void CameraPortalTest::aCameraRequestThatTimesOutIsClosed()
     QCOMPARE(failed.takeFirst().at(0).toString(), QStringLiteral("timeout"));
     QTRY_COMPARE(m_fake->closedRequests.count(m_fake->lastRequestPath), 1);
     m_fake->answer = FakeCameraPortal::Answer::InstantGrant;
+}
+
+void CameraPortalTest::aScreenShareOnlyAsksForWhatThePortalAdvertises_data()
+{
+    QTest::addColumn<QVariantMap>("properties");
+    QTest::addColumn<int>("cursorMode");
+    QTest::addColumn<int>("types");
+    const auto props = [](uint cursors, uint sources) {
+        return QVariantMap{{QStringLiteral("version"), 4u},
+                           {QStringLiteral("AvailableCursorModes"), cursors},
+                           {QStringLiteral("AvailableSourceTypes"), sources}};
+    };
+    QTest::newRow("hidden only") << props(1, 3) << 1 << 3;
+    QTest::newRow("embedded only") << props(2, 3) << 2 << 3;
+    QTest::newRow("hidden and embedded") << props(3, 3) << 2 << 3;
+    QTest::newRow("metadata only") << props(4, 3) << 4 << 3;
+    QTest::newRow("hidden and metadata") << props(5, 3) << 1 << 3;
+    QTest::newRow("no cursor mode") << props(0, 3) << 0 << 3;
+    QTest::newRow("version 1") << QVariantMap{{QStringLiteral("version"), 1u}}
+                               << 0 << 3;
+    QTest::newRow("monitors only") << props(2, 1) << 2 << 1;
+    QTest::newRow("windows only") << props(2, 2) << 2 << 2;
+    QTest::newRow("virtual only") << props(2, 4) << -1 << 0;
+}
+
+void CameraPortalTest::aScreenShareOnlyAsksForWhatThePortalAdvertises()
+{
+    QFETCH(QVariantMap, properties);
+    QFETCH(int, cursorMode);
+    QFETCH(int, types);
+    m_fake->cast = FakeCameraPortal::Cast::HoldSelectResponse;
+    m_fake->castProperties = properties;
+    const int selectsBefore = m_fake->selectCalls;
+    ScreenCastPortal portal;
+    QSignalSpy failed(&portal, &ScreenCastPortal::failed);
+
+    portal.requestShare(ScreenCastPortal::Monitor | ScreenCastPortal::Window);
+
+    if (cursorMode < 0) {
+        QVERIFY(failed.wait(5000));
+        QCOMPARE(failed.takeFirst().at(0).toString(),
+                 QStringLiteral("no_source_type"));
+        QCOMPARE(m_fake->selectCalls, selectsBefore);
+        QTRY_VERIFY(m_fake->closedSessions.contains(m_fake->lastSessionPath));
+        return;
+    }
+    QTRY_COMPARE(m_fake->selectCalls, selectsBefore + 1);
+    const QVariantMap options = m_fake->lastSelectOptions;
+    QCOMPARE(options.value(QStringLiteral("types")).toInt(), types);
+    if (cursorMode == 0) {
+        QVERIFY2(!options.contains(QStringLiteral("cursor_mode")),
+                 qPrintable(options.value(QStringLiteral("cursor_mode"))
+                                .toString()));
+    } else {
+        QCOMPARE(options.value(QStringLiteral("cursor_mode")).toInt(),
+                 cursorMode);
+    }
+    QCOMPARE(failed.count(), 0);
+}
+
+void CameraPortalTest::theCursorModeIsReadAgainForEveryShare()
+{
+    m_fake->cast = FakeCameraPortal::Cast::HoldSelectResponse;
+    const auto shareWith = [this](uint cursors) {
+        m_fake->castProperties = {
+            {QStringLiteral("version"), 4u},
+            {QStringLiteral("AvailableCursorModes"), cursors},
+            {QStringLiteral("AvailableSourceTypes"), 3u}};
+        const int selectsBefore = m_fake->selectCalls;
+        ScreenCastPortal portal;
+        portal.requestShare(ScreenCastPortal::Monitor
+                            | ScreenCastPortal::Window);
+        if (!QTest::qWaitFor([&] { return m_fake->selectCalls > selectsBefore; },
+                             5000))
+            return -2;
+        return m_fake->lastSelectOptions.value(QStringLiteral("cursor_mode"),
+                                               -1).toInt();
+    };
+    QCOMPARE(shareWith(2), 2);
+    QCOMPARE(shareWith(1), 1);
 }
 
 void CameraPortalTest::aSessionCreatedAfterCancellingIsClosed()
