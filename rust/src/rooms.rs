@@ -4723,6 +4723,7 @@ fn effective_revision(
         }
         let Some(r) = replacement::parse(candidate) else { continue };
         if r.target != original_id
+            || !replacement::complete_message(r.new_content)
             || !replacement::may_replace(r.sender, &field(candidate, "type"),
                                          &original_sender, &original_type)
             || !replacement::encryption_permits(*encrypted, original_encrypted)
@@ -6191,6 +6192,30 @@ mod tests {
         older["origin_server_ts"] = json!(2);
         let got = effective_revision(&o, true, &[(readable, true), (older, false)]);
         assert_eq!((body(&got), got.1), (Some("readable".to_owned()), false));
+    }
+
+    #[test]
+    fn saved_preview_matches_derived_fixtures() {
+        use crate::derived_fixtures::{scenarios, Projection, ORIGINAL, ROOM};
+
+        for case in scenarios() {
+            let want = case.content_for(Projection::Preview);
+            let Some(original) = &case.original else {
+                assert_eq!(want, None, "{}", case.name);
+                continue;
+            };
+            // The relations API answers only from the original's room.
+            let candidates: Vec<(serde_json::Value, bool)> = case
+                .history(ROOM)
+                .filter(|(e, _)| e["event_id"] != ORIGINAL)
+                .map(|(e, encrypted)| (e.clone(), encrypted))
+                .collect();
+            let (effective, unreadable) =
+                effective_revision(original, case.original_encrypted, &candidates);
+            assert!(!unreadable, "{}", case.name);
+            let shown = effective.unwrap_or_else(|| original["content"].clone());
+            assert_eq!(Some(&shown), want, "{}", case.name);
+        }
     }
 
     // A pasted image replying to someone, or in a thread, goes through these;

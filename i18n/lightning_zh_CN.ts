@@ -1023,7 +1023,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7373"/>
+        <location filename="../src/app/AppController.cpp" line="+7379"/>
         <source>Room invitation</source>
         <translation>房间邀请</translation>
     </message>
@@ -1143,7 +1143,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>来电</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5720"/>
+        <location filename="../src/app/AppController.cpp" line="-5725"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>因账号已变更，退出登录已取消。未重置任何内容。</translation>
     </message>
@@ -1195,13 +1195,13 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4292"/>
+        <location line="+4297"/>
         <location line="+821"/>
         <source>Not connected</source>
         <translation>未连接</translation>
     </message>
     <message>
-        <location line="-5154"/>
+        <location line="-5159"/>
         <source>Connecting…</source>
         <translation>正在连接…</translation>
     </message>
@@ -1262,24 +1262,24 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+4"/>
-        <location line="+3088"/>
+        <location line="+3093"/>
         <location line="+9"/>
         <source>Lightning could not read the selected file.</source>
         <translation>Lightning 无法读取所选文件。</translation>
     </message>
     <message>
-        <location line="-3094"/>
+        <location line="-3099"/>
         <source>A room-key import is already in progress.</source>
         <translation>已有房间密钥导入正在进行中。</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4087"/>
+        <location line="+4092"/>
         <source>Not signed in.</source>
         <translation>尚未登录。</translation>
     </message>
     <message>
-        <location line="-4085"/>
+        <location line="-4090"/>
         <source>Room-key import failed.</source>
         <translation>房间密钥导入失败。</translation>
     </message>
@@ -1401,14 +1401,14 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+8"/>
-        <location line="+1842"/>
+        <location line="+1847"/>
         <location line="+41"/>
         <location line="+201"/>
         <source>This build has no Rust SDK backend.</source>
         <translation>此版本不包含 Rust SDK 后端。</translation>
     </message>
     <message>
-        <location line="-1795"/>
+        <location line="-1800"/>
         <source>Choose a local image file.</source>
         <translation>请选择一个本地图片文件。</translation>
     </message>
@@ -1478,7 +1478,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>这不是可复制的图片。</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+10"/>
         <source>Couldn&apos;t decode the image.</source>
         <translation>无法解码该图片。</translation>
     </message>
@@ -1847,7 +1847,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AttachmentQueueModel</name>
     <message>
-        <location filename="../src/models/AttachmentQueueModel.cpp" line="+81"/>
+        <location filename="../src/models/AttachmentQueueModel.cpp" line="+82"/>
         <source>The file is larger than the server&apos;s upload limit (%1).</source>
         <translation>该文件超过服务器的上传大小限制（%1）。</translation>
     </message>
@@ -1882,7 +1882,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>该文件已添加。</translation>
     </message>
     <message>
-        <location line="+260"/>
+        <location line="+276"/>
         <source>The converted picture couldn&apos;t be saved.</source>
         <translation>无法保存转换后的图片。</translation>
     </message>
@@ -8661,7 +8661,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+98"/>
+        <location filename="../src/app/ForwardController.cpp" line="+99"/>
         <source>Photo</source>
         <translation>图片</translation>
     </message>
@@ -11639,7 +11639,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1363"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1365"/>
         <location line="+689"/>
         <source>The file could not be downloaded.</source>
         <translation>无法下载该文件。</translation>
@@ -12479,7 +12479,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>无法读取该文件。</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+41"/>
         <source>The clipboard image could not be read.</source>
         <translation>无法读取剪贴板中的图片。</translation>
     </message>
@@ -32375,7 +32375,7 @@ Note: importing keys does not verify this session.</source>
         <translation>无法读取该文件。</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+41"/>
         <source>The clipboard image could not be read.</source>
         <translation>无法读取剪贴板中的图片。</translation>
     </message>

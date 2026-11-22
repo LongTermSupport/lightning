@@ -1033,7 +1033,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7373"/>
+        <location filename="../src/app/AppController.cpp" line="+7379"/>
         <source>Room invitation</source>
         <translation>रूम का आमंत्रण</translation>
     </message>
@@ -1154,7 +1154,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>आने वाली कॉल</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5720"/>
+        <location filename="../src/app/AppController.cpp" line="-5725"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>खाता बदलने के कारण साइन-आउट रद्द कर दिया गया। कुछ भी रीसेट नहीं हुआ।</translation>
     </message>
@@ -1206,13 +1206,13 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4292"/>
+        <location line="+4297"/>
         <location line="+821"/>
         <source>Not connected</source>
         <translation>कनेक्ट नहीं है</translation>
     </message>
     <message>
-        <location line="-5154"/>
+        <location line="-5159"/>
         <source>Connecting…</source>
         <translation>कनेक्ट हो रहा है…</translation>
     </message>
@@ -1273,24 +1273,24 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+4"/>
-        <location line="+3088"/>
+        <location line="+3093"/>
         <location line="+9"/>
         <source>Lightning could not read the selected file.</source>
         <translation>Lightning चुनी गई फ़ाइल पढ़ नहीं सका।</translation>
     </message>
     <message>
-        <location line="-3094"/>
+        <location line="-3099"/>
         <source>A room-key import is already in progress.</source>
         <translation>रूम-कुंजी आयात पहले से चल रहा है।</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4087"/>
+        <location line="+4092"/>
         <source>Not signed in.</source>
         <translation>साइन इन नहीं है।</translation>
     </message>
     <message>
-        <location line="-4085"/>
+        <location line="-4090"/>
         <source>Room-key import failed.</source>
         <translation>रूम-कुंजी आयात विफल रहा।</translation>
     </message>
@@ -1412,14 +1412,14 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+8"/>
-        <location line="+1842"/>
+        <location line="+1847"/>
         <location line="+41"/>
         <location line="+201"/>
         <source>This build has no Rust SDK backend.</source>
         <translation>इस बिल्ड में Rust SDK बैकएंड नहीं है।</translation>
     </message>
     <message>
-        <location line="-1795"/>
+        <location line="-1800"/>
         <source>Choose a local image file.</source>
         <translation>कोई स्थानीय इमेज फ़ाइल चुनें।</translation>
     </message>
@@ -1489,7 +1489,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>यह ऐसी इमेज नहीं है जिसे कॉपी किया जा सके।</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+10"/>
         <source>Couldn&apos;t decode the image.</source>
         <translation>इमेज डिकोड नहीं की जा सकी।</translation>
     </message>
@@ -1858,7 +1858,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AttachmentQueueModel</name>
     <message>
-        <location filename="../src/models/AttachmentQueueModel.cpp" line="+81"/>
+        <location filename="../src/models/AttachmentQueueModel.cpp" line="+82"/>
         <source>The file is larger than the server&apos;s upload limit (%1).</source>
         <translation>फ़ाइल सर्वर की अपलोड सीमा (%1) से बड़ी है।</translation>
     </message>
@@ -1893,7 +1893,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>वह फ़ाइल पहले से अटैच है।</translation>
     </message>
     <message>
-        <location line="+260"/>
+        <location line="+276"/>
         <source>The converted picture couldn&apos;t be saved.</source>
         <translation>बदली हुई तस्वीर सहेजी नहीं जा सकी।</translation>
     </message>
@@ -8696,7 +8696,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+98"/>
+        <location filename="../src/app/ForwardController.cpp" line="+99"/>
         <source>Photo</source>
         <translation>फ़ोटो</translation>
     </message>
@@ -11684,7 +11684,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1363"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1365"/>
         <location line="+689"/>
         <source>The file could not be downloaded.</source>
         <translation>फ़ाइल डाउनलोड नहीं हो सकी।</translation>
@@ -12528,7 +12528,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>वह फ़ाइल पढ़ी नहीं जा सकती।</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+41"/>
         <source>The clipboard image could not be read.</source>
         <translation>क्लिपबोर्ड की इमेज पढ़ी नहीं जा सकी।</translation>
     </message>
@@ -32529,7 +32529,7 @@ Note: importing keys does not verify this session.</source>
         <translation>वह फ़ाइल पढ़ी नहीं जा सकती।</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+41"/>
         <source>The clipboard image could not be read.</source>
         <translation>क्लिपबोर्ड की इमेज पढ़ी नहीं जा सकी।</translation>
     </message>

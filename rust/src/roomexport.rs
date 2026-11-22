@@ -336,6 +336,10 @@ impl WalkState {
                 .map(|o| o.is_empty())
                 .unwrap_or(true);
         if redacted {
+            // Only a server that keeps relations through redaction can tell a redacted edit from a deleted message.
+            if crate::replacement::is_replacement(value) {
+                return None;
+            }
             return Some(ExportRow { kind: "redacted".to_owned(), ..base });
         }
         if type_str == "m.room.encrypted" {
@@ -555,6 +559,35 @@ mod tests {
 
     fn rows_of(state: &mut WalkState, page: &[Value]) -> Vec<ExportRow> {
         page.iter().filter_map(|v| state.consume(v, false)).collect()
+    }
+
+    #[test]
+    fn room_export_matches_derived_fixtures() {
+        use crate::derived_fixtures::{scenarios, Projection, ORIGINAL, OTHER_ROOM, ROOM};
+
+        for case in scenarios() {
+            let mut rows = Vec::new();
+            for room in [ROOM, OTHER_ROOM] {
+                let mut walk = WalkState::new(Range::All);
+                for (event, encrypted) in case.history(room) {
+                    rows.extend(walk.consume(event, encrypted));
+                }
+            }
+            let want = case.content_for(Projection::Export);
+            assert_eq!(rows.len(), usize::from(want.is_some()), "{}", case.name);
+            if let Some(content) = want {
+                let row = &rows[0];
+                assert_eq!(row.event_id, ORIGINAL, "{}", case.name);
+                assert_eq!(&row.content, content, "{}", case.name);
+                let body = content["body"].as_str().unwrap();
+                assert_eq!(row.body, body, "{}", case.name);
+                assert_eq!(row.edited, case.original.as_ref().unwrap()["content"] != *content, "{}", case.name);
+                assert_eq!(row.is_attachment(), content.get("url").is_some(), "{}", case.name);
+                if row.is_attachment() {
+                    assert_eq!(row.filename, content["filename"].as_str().unwrap_or(body), "{}", case.name);
+                }
+            }
+        }
     }
 
     #[test]

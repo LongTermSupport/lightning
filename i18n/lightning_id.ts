@@ -1023,7 +1023,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7373"/>
+        <location filename="../src/app/AppController.cpp" line="+7379"/>
         <source>Room invitation</source>
         <translation>Undangan ruang</translation>
     </message>
@@ -1143,7 +1143,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Panggilan masuk</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5720"/>
+        <location filename="../src/app/AppController.cpp" line="-5725"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>Keluar dibatalkan karena akun berubah. Tidak ada yang diatur ulang.</translation>
     </message>
@@ -1195,13 +1195,13 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4292"/>
+        <location line="+4297"/>
         <location line="+821"/>
         <source>Not connected</source>
         <translation>Tidak terhubung</translation>
     </message>
     <message>
-        <location line="-5154"/>
+        <location line="-5159"/>
         <source>Connecting…</source>
         <translation>Menghubungkan…</translation>
     </message>
@@ -1262,24 +1262,24 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
     </message>
     <message>
         <location line="+4"/>
-        <location line="+3088"/>
+        <location line="+3093"/>
         <location line="+9"/>
         <source>Lightning could not read the selected file.</source>
         <translation>Lightning tidak dapat membaca berkas yang dipilih.</translation>
     </message>
     <message>
-        <location line="-3094"/>
+        <location line="-3099"/>
         <source>A room-key import is already in progress.</source>
         <translation>Impor kunci ruang sedang berlangsung.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4087"/>
+        <location line="+4092"/>
         <source>Not signed in.</source>
         <translation>Belum masuk.</translation>
     </message>
     <message>
-        <location line="-4085"/>
+        <location line="-4090"/>
         <source>Room-key import failed.</source>
         <translation>Impor kunci ruang gagal.</translation>
     </message>
@@ -1401,14 +1401,14 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
     </message>
     <message>
         <location line="+8"/>
-        <location line="+1842"/>
+        <location line="+1847"/>
         <location line="+41"/>
         <location line="+201"/>
         <source>This build has no Rust SDK backend.</source>
         <translation>Build ini tidak memiliki backend Rust SDK.</translation>
     </message>
     <message>
-        <location line="-1795"/>
+        <location line="-1800"/>
         <source>Choose a local image file.</source>
         <translation>Pilih berkas gambar lokal.</translation>
     </message>
@@ -1478,7 +1478,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Ini bukan gambar yang dapat disalin.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+10"/>
         <source>Couldn&apos;t decode the image.</source>
         <translation>Gambar tidak dapat didekode.</translation>
     </message>
@@ -1847,7 +1847,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
 <context>
     <name>AttachmentQueueModel</name>
     <message>
-        <location filename="../src/models/AttachmentQueueModel.cpp" line="+81"/>
+        <location filename="../src/models/AttachmentQueueModel.cpp" line="+82"/>
         <source>The file is larger than the server&apos;s upload limit (%1).</source>
         <translation>Berkas melebihi batas unggah server (%1).</translation>
     </message>
@@ -1882,7 +1882,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Berkas itu sudah dilampirkan.</translation>
     </message>
     <message>
-        <location line="+260"/>
+        <location line="+276"/>
         <source>The converted picture couldn&apos;t be saved.</source>
         <translation>Gambar hasil konversi tidak dapat disimpan.</translation>
     </message>
@@ -8661,7 +8661,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+98"/>
+        <location filename="../src/app/ForwardController.cpp" line="+99"/>
         <source>Photo</source>
         <translation>Foto</translation>
     </message>
@@ -11639,7 +11639,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1363"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1365"/>
         <location line="+689"/>
         <source>The file could not be downloaded.</source>
         <translation>Berkas tidak dapat diunduh.</translation>
@@ -12479,7 +12479,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Berkas itu tidak dapat dibaca.</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+41"/>
         <source>The clipboard image could not be read.</source>
         <translation>Gambar papan klip tidak dapat dibaca.</translation>
     </message>
@@ -32375,7 +32375,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Berkas itu tidak dapat dibaca.</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+41"/>
         <source>The clipboard image could not be read.</source>
         <translation>Gambar papan klip tidak dapat dibaca.</translation>
     </message>
