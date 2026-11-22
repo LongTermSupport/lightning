@@ -1,6 +1,7 @@
 #include "models/UserLookup.h"
 
 #include <QRegularExpression>
+#include <QUrl>
 
 namespace matrix::user_lookup {
 
@@ -25,6 +26,16 @@ bool isValidLocalpart(const QString &localpart)
     static const QRegularExpression re(
         QStringLiteral("^[a-zA-Z0-9._=/+\\-]+$"));
     return !localpart.isEmpty() && re.match(localpart).hasMatch();
+}
+
+bool isValidHistoricalLocalpart(const QString &localpart)
+{
+    if (localpart.isEmpty())
+        return false;
+    for (const QChar c : localpart)
+        if (c.unicode() < 0x21 || c.unicode() > 0x7E || c == QLatin1Char(':'))
+            return false;
+    return true;
 }
 
 namespace {
@@ -135,7 +146,8 @@ QString exactCandidate(const QString &rawQuery, const QString &ownServerName)
     if (colon >= 0) {
         const QString localpart = query.left(colon);
         const QString server = query.mid(colon + 1);
-        if (!isValidLocalpart(localpart) || !isValidServerName(server))
+        if (!isValidHistoricalLocalpart(localpart) || !isValidServerName(server)
+            || localpart.size() + server.size() + 2 > 255)
             return {};
         return QLatin1Char('@') + localpart + QLatin1Char(':') + server;
     }
@@ -151,6 +163,91 @@ bool queryNamesServer(const QString &rawQuery)
     if (query.startsWith(QLatin1Char('@')))
         query.remove(0, 1);
     return query.contains(QLatin1Char(':'));
+}
+
+namespace {
+
+bool isOpaqueIdPart(const QString &text)
+{
+    if (text.isEmpty())
+        return false;
+    for (const QChar c : text)
+        if (c.unicode() < 0x21 || c.unicode() > 0x7E)
+            return false;
+    return true;
+}
+
+// A server-less room id is room v12's: a 43-character unpadded base64url
+// hash. Aliases always name a server.
+bool isValidRoomIdOrAlias(const QString &id)
+{
+    if (id.size() < 2 || id.size() > 255)
+        return false;
+    const QChar sigil = id.front();
+    if (sigil != QLatin1Char('!') && sigil != QLatin1Char('#'))
+        return false;
+    const qsizetype colon = id.indexOf(QLatin1Char(':'));
+    if (colon < 0) {
+        static const QRegularExpression v12(QStringLiteral("^![A-Za-z0-9_-]{43}$"));
+        return v12.match(id).hasMatch();
+    }
+    return isOpaqueIdPart(id.mid(1, colon - 1)) && isValidServerName(id.mid(colon + 1));
+}
+
+QString decoded(QStringView segment)
+{
+    return QUrl::fromPercentEncoding(segment.toUtf8());
+}
+
+}
+
+RoomTarget parseRoomTarget(const QString &text)
+{
+    const QString t = text.trimmed();
+    RoomTarget target;
+    QString id;
+    QString eventId;
+    static const QRegularExpression matrixTo(
+        QStringLiteral("^(?:https?://)?matrix\\.to/#/"),
+        QRegularExpression::CaseInsensitiveOption);
+    const QRegularExpressionMatch link = matrixTo.match(t);
+    if (link.hasMatch()) {
+        const QString path = t.mid(link.capturedLength()).section(QLatin1Char('?'), 0, 0);
+        const QStringList parts = path.split(QLatin1Char('/'));
+        if (parts.size() > 2)
+            return {};
+        id = decoded(parts.at(0));
+        if (parts.size() == 2)
+            eventId = decoded(parts.at(1));
+        target.isLink = true;
+    } else if (t.startsWith(QLatin1String("matrix:"), Qt::CaseInsensitive)) {
+        const QStringList parts =
+            t.mid(7).section(QLatin1Char('?'), 0, 0).split(QLatin1Char('/'));
+        if (parts.size() != 2 && parts.size() != 4)
+            return {};
+        if (parts.at(0) == QLatin1String("roomid"))
+            id = QLatin1Char('!') + decoded(parts.at(1));
+        else if (parts.at(0) == QLatin1String("r"))
+            id = QLatin1Char('#') + decoded(parts.at(1));
+        else
+            return {};
+        if (parts.size() == 4) {
+            if (parts.at(2) != QLatin1String("e"))
+                return {};
+            eventId = QLatin1Char('$') + decoded(parts.at(3));
+        }
+        target.isLink = true;
+    } else {
+        id = t;
+    }
+    if (!isValidRoomIdOrAlias(id))
+        return {};
+    if (!eventId.isEmpty()
+        && (!eventId.startsWith(QLatin1Char('$')) || !isOpaqueIdPart(eventId.mid(1))))
+        return {};
+    target.id = id;
+    target.eventId = eventId;
+    return target;
 }
 
 }

@@ -7,6 +7,7 @@
 #include "spaces/SpaceManager.h"
 
 #include <QSettings>
+#include <QSignalSpy>
 #include <QTemporaryDir>
 #include <QtTest/QtTest>
 
@@ -459,6 +460,30 @@ true);
         capped.client.deliverRoster(99, kGeneral, { kZoe });
         QVERIFY(!capped.spaces.spaceRosterKnown(kGeneral));
         QCOMPARE(idsOf(capped.model), (QStringList{ kDmIn, kDmOut }));
+    }
+
+    void aCappedRosterIsReportedAsLimitedNotAsLoading()
+    {
+        const auto limited = [](SpaceManager &spaces, const QString &id) {
+            bool answer = false;
+            QMetaObject::invokeMethod(&spaces, "spaceRosterLimited",
+                                      Q_RETURN_ARG(bool, answer), Q_ARG(QString, id));
+            return answer;
+        };
+        Classic f;
+        f.build();
+        f.select(kWork);
+        QVERIFY(!limited(f.spaces, kWork));
+        QSignalSpy changed(&f.spaces, &SpaceManager::spaceRosterChanged);
+        f.client.deliverRoster(1, kWork, { kAda }, false, true);
+        QVERIFY(limited(f.spaces, kWork));
+        QVERIFY(!f.spaces.spaceRosterKnown(kWork));
+        QCOMPARE(changed.count(), 1);
+        f.client.deliverRoster(1, kWork, { kAda }, false, true);
+        QCOMPARE(changed.count(), 1);
+
+        f.client.logout();
+        QVERIFY(!limited(f.spaces, kWork));
     }
 
     void theChannelsSpaceViewGainsThePeopleOfThatSpace()

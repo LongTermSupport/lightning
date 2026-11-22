@@ -137,6 +137,10 @@ public:
     /// failed roster is never "known": filtering on a partial one would hide
     /// conversations at random.
     Q_INVOKABLE bool spaceRosterKnown(const QString &spaceId) const;
+    /// True when the roster came back capped: membership stays unknown for
+    /// good, not merely not loaded yet.
+    Q_INVOKABLE bool spaceRosterLimited(const QString &spaceId) const
+    { return m_rosterLimited.contains(spaceId); }
     Q_INVOKABLE bool spaceHasMember(const QString &spaceId,
                                     const QString &userId) const;
     int directScope(const QString &spaceId, const QStringList &peerIds) const;
@@ -220,6 +224,7 @@ private:
     // guard. Both are cleared with the client.
     QHash<QString, QSet<QString>> m_spaceMembers;
     QSet<QString> m_rosterRequested;
+    QSet<QString> m_rosterLimited;
     QSet<QString> m_permissionTracked;
     QHash<QString, bool> m_manageChildren;
     QHash<QString, quint64> m_permissionRequests;

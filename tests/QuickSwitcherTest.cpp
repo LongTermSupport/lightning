@@ -290,6 +290,128 @@ private Q_SLOTS:
         QCOMPARE(idAt(model, 0), QStringLiteral("!a:x"));
         QCOMPARE(idAt(model, 1), QStringLiteral("!b:x"));
     }
+
+    void anExactNameWithAccentsIsNotCrowdedOutByPrefixMatches()
+    {
+        ManyRoomsClient client;
+        for (int i = 0; i < 55; ++i)
+            client.fixture << fixtureRoom(
+                QStringLiteral("!p%1:x").arg(i, 2, 10, QLatin1Char('0')),
+                QStringLiteral("Alice chat %1").arg(i), QStringLiteral("room"));
+        client.fixture << fixtureRoom(QStringLiteral("!exact:x"),
+                                      QStringLiteral("Ålice"),
+                                      QStringLiteral("room"));
+        QuickSwitcherModel model;
+        model.setClient(&client);
+        model.setQuery(QStringLiteral("alice"));
+        QCOMPARE(idAt(model, 0), QStringLiteral("!exact:x"));
+    }
+
+    void eachCategoryReportsTheMatchesItsCapLeftOut()
+    {
+        ManyRoomsClient client;
+        client.fixture = fiftyFiveWeakRooms();
+        client.fixture << fixtureRoom(QStringLiteral("!dm:x"), QStringLiteral("Alice"),
+                                      QStringLiteral("dm"));
+        QuickSwitcherModel model;
+        model.setClient(&client);
+        model.setQuery(QStringLiteral("alice"));
+        const QVariantMap hidden = model.property("hiddenByCategory").toMap();
+        QCOMPARE(hidden.value(QStringLiteral("room")).toInt(), 5);
+        QVERIFY(!hidden.contains(QStringLiteral("dm")));
+
+        model.setQuery(QStringLiteral("alice 7"));
+        QVERIFY(model.property("hiddenByCategory").toMap().isEmpty());
+    }
+
+    void aPastedRoomIdAliasOrLinkFindsTheRoomLocally()
+    {
+        ManyRoomsClient client;
+        client.fixture = fiftyFiveWeakRooms();
+        RoomInfo lounge = fixtureRoom(QStringLiteral("!named:x"),
+                                      QStringLiteral("Lounge"), QStringLiteral("room"));
+        lounge.canonicalAlias = QStringLiteral("#lounge:x");
+        client.fixture << lounge;
+        QuickSwitcherModel model;
+        model.setClient(&client);
+
+        const QStringList local = {
+            QStringLiteral("!named:x"), QStringLiteral("  #lounge:x "),
+            QStringLiteral("https://matrix.to/#/%23lounge%3Ax"),
+            QStringLiteral("https://matrix.to/#/!named:x?via=x"),
+            QStringLiteral("matrix:r/lounge:x"),
+        };
+        for (const QString &query : local) {
+            model.setQuery(query);
+            QCOMPARE(model.rowCount(), 1);
+            QCOMPARE(idAt(model, 0), QStringLiteral("!named:x"));
+            QVERIFY2(model.resultAt(0).value(QStringLiteral("link")).toString().isEmpty(),
+                     qPrintable(query));
+        }
+
+        const QStringList toEvent = {
+            QStringLiteral("https://matrix.to/#/!named:x/$ev1?via=x"),
+            QStringLiteral("matrix:roomid/named:x/e/ev1"),
+        };
+        for (const QString &query : toEvent) {
+            model.setQuery(query);
+            QCOMPARE(model.rowCount(), 1);
+            QCOMPARE(idAt(model, 0), QStringLiteral("!named:x"));
+            QCOMPARE(model.resultAt(0).value(QStringLiteral("link")).toString(), query);
+        }
+
+        model.setQuery(QStringLiteral("!named"));
+        QCOMPARE(model.rowCount(), 0);
+        model.setQuery(QStringLiteral("lounge"));
+        QCOMPARE(idAt(model, 0), QStringLiteral("!named:x"));
+    }
+
+    void anUnknownAddressOffersAPreviewRowAndNeverARoomJump()
+    {
+        ManyRoomsClient client;
+        client.fixture << fixtureRoom(QStringLiteral("!named:x"),
+                                      QStringLiteral("Lounge"), QStringLiteral("room"));
+        QuickSwitcherModel model;
+        model.setClient(&client);
+        for (const QString &query : { QStringLiteral("#elsewhere:example.org"),
+                                      QStringLiteral("!other:[::1]:8448") }) {
+            model.setQuery(query);
+            QCOMPARE(model.rowCount(), 1);
+            const QVariantMap row = model.resultAt(0);
+            QCOMPARE(row.value(QStringLiteral("category")).toString(),
+                     QStringLiteral("address"));
+            QCOMPARE(row.value(QStringLiteral("link")).toString(), query);
+            QVERIFY(!row.value(QStringLiteral("isSpace")).toBool());
+        }
+    }
+
+    void anOpenPaletteFollowsRoomChangesAndAClosedOneDoesNot()
+    {
+        ManyRoomsClient client;
+        client.fixture << fixtureRoom(QStringLiteral("!a:x"), QStringLiteral("Alpha"),
+                                      QStringLiteral("room"))
+                       << fixtureRoom(QStringLiteral("!b:x"), QStringLiteral("Beta"),
+                                      QStringLiteral("room"));
+        QuickSwitcherModel model;
+        model.setClient(&client);
+        model.refresh();
+        QCOMPARE(model.rowCount(), 2);
+        QSignalSpy changed(&model, &QuickSwitcherModel::resultsChanged);
+
+        Q_EMIT client.roomsChanged();
+        QCOMPARE(changed.count(), 0);
+
+        client.fixture.removeFirst();
+        Q_EMIT client.roomsChanged();
+        QCOMPARE(model.rowCount(), 1);
+        QCOMPARE(idAt(model, 0), QStringLiteral("!b:x"));
+
+        model.reset();
+        client.fixture << fixtureRoom(QStringLiteral("!c:x"), QStringLiteral("Gamma"),
+                                      QStringLiteral("room"));
+        Q_EMIT client.roomsChanged();
+        QCOMPARE(model.rowCount(), 0);
+    }
 };
 
 QTEST_MAIN(QuickSwitcherTest)

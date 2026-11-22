@@ -91,9 +91,47 @@ private Q_SLOTS:
                  QStringLiteral("!pub:mock.local"));
         QVERIFY(model.canLoadMore());
 
+        client.mockPublicRooms = { directoryRow(
+            QStringLiteral("!pub2:mock.local"), QStringLiteral("Second room"),
+            QStringLiteral("public")) };
         model.loadMore();
         QTRY_COMPARE(model.rowCount(), 2);
         QVERIFY(!model.canLoadMore());
+    }
+
+    void overlappingPagesAreDeduplicatedAndTheEstimateIsKept()
+    {
+        MockMatrixClient client;
+        QVERIFY(login(client));
+        RoomDirectorySearchModel model;
+        model.setDebounceMs(0);
+        model.setClient(&client);
+        client.mockPublicRooms = {
+            directoryRow(QStringLiteral("!a:mock.local"), QStringLiteral("A"),
+                         QStringLiteral("public")),
+            directoryRow(QStringLiteral("!b:mock.local"), QStringLiteral("B"),
+                         QStringLiteral("public")) };
+        client.mockPublicRoomsNextBatch = QStringLiteral("page2");
+        model.setQuery(QStringLiteral("room"));
+        QTRY_COMPARE(model.state(), QStringLiteral("results"));
+        QCOMPARE(model.property("totalEstimate").toInt(), 2);
+
+        client.mockPublicRooms = {
+            directoryRow(QStringLiteral("!b:mock.local"), QStringLiteral("B"),
+                         QStringLiteral("public")),
+            directoryRow(QStringLiteral("!c:mock.local"), QStringLiteral("C"),
+                         QStringLiteral("public")) };
+        model.loadMore();
+        QTRY_VERIFY(!model.canLoadMore());
+        QStringList ids;
+        for (int i = 0; i < model.rowCount(); ++i)
+            ids << model.rowAt(i).value(QStringLiteral("roomId")).toString();
+        QCOMPARE(ids, (QStringList{ QStringLiteral("!a:mock.local"),
+                                    QStringLiteral("!b:mock.local"),
+                                    QStringLiteral("!c:mock.local") }));
+
+        model.clear();
+        QCOMPARE(model.property("totalEstimate").toInt(), 0);
     }
 
     void directoryEmptyAnswerIsNoResults()

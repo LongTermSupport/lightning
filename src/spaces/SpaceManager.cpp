@@ -124,8 +124,12 @@ bool SpaceManager::isRealSpaceId(const QString &spaceId)
 
 void SpaceManager::dropSpaceRosters()
 {
-    const QStringList had = m_spaceMembers.keys();
+    QStringList had = m_spaceMembers.keys();
+    for (const QString &spaceId : std::as_const(m_rosterLimited))
+        if (!had.contains(spaceId))
+            had.append(spaceId);
     m_spaceMembers.clear();
+    m_rosterLimited.clear();
     m_rosterRequested.clear();
     m_permissionTracked.clear();
     m_manageChildren.clear();
@@ -185,8 +189,13 @@ void SpaceManager::onRoomMembersReceived(quint64 opId, const QString &roomId,
         // The bridge caps a roster at 500 active members. A capped list
         // cannot answer membership, so the roster stays unknown. Still
         // marked requested: asking again returns the same cap.
+        if (!m_rosterLimited.contains(spaceId)) {
+            m_rosterLimited.insert(spaceId);
+            Q_EMIT spaceRosterChanged(spaceId);
+        }
         return;
     }
+    m_rosterLimited.remove(spaceId);
     QSet<QString> members;
     for (const QVariant &value :
          snapshot.value(QStringLiteral("members")).toList()) {
