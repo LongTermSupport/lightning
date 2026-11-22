@@ -18,7 +18,7 @@ Popup {
         if (key.length === 0)
             return
         var name = viewer.current.filename || ""
-        var mime = viewer.current.mime || ""
+        var mime = viewer.current.mime || app.mediaBridge.cachedRasterMime(key)
         if (ask)
             app.downloads.saveAs(key, name, mime)
         else

@@ -2285,6 +2285,14 @@ void MediaBridge::fetchFullForStar(const QString &mediaKey)
     dispatch(request);
 }
 
+QString MediaBridge::cachedRasterMime(const QString &mediaKey) const
+{
+    if (mediaKey.isEmpty())
+        return {};
+    return lightning::imagefmt::sniffRasterMime(
+        cachedBytes(fullContentCacheKey(mediaKey)));
+}
+
 QString MediaBridge::cachedFullContentHash(const QString &mediaKey) const
 {
     if (mediaKey.isEmpty())
