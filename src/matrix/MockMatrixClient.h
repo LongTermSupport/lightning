@@ -565,6 +565,8 @@ public:
     QStringList forgottenIndexRooms;
     int indexSweeps = 0;
     QStringList deepIndexedRooms;
+    // The next walk ends as the Rust bridge reports a refused index write.
+    QString deepIndexFailureForTest;
     bool indexCleared = false;
     quint64 searchMessages(const QString &term, const QString &roomId,
                            const QString &nextBatch, int limit,

@@ -18,6 +18,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <utility>
 
 MockMatrixClient::MockMatrixClient(QObject *parent)
     : MatrixClient(parent)
@@ -3213,8 +3214,12 @@ quint64 MockMatrixClient::deepenSearchIndex(const QString &roomId)
         return 0;
     const quint64 op = ++m_opCounter;
     deepIndexedRooms.append(roomId);
-    QTimer::singleShot(0, this, [this, op, roomId] {
-        Q_EMIT searchIndexDeepened(op, true, roomId, 1, true, 0, 0, QString());
+    const QString failure = std::exchange(deepIndexFailureForTest, QString());
+    QTimer::singleShot(0, this, [this, op, roomId, failure] {
+        if (!failure.isEmpty())
+            Q_EMIT searchIndexDeepened(op, false, roomId, 0, false, 0, 0, failure);
+        else
+            Q_EMIT searchIndexDeepened(op, true, roomId, 1, true, 0, 0, QString());
     });
     return op;
 }
