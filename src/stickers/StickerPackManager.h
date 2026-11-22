@@ -311,7 +311,8 @@ private:
     QString freshStateKey(const QString &roomId) const;
     void onLoggedOut();
     void applySnapshot(const QString &roomId, bool roomCanManage,
-                       const QVariantList &packs);
+                       const QVariantList &packs,
+                       bool keepRoomPacks = false);
     void rebuildImages(bool keepUnchangedRows = false);
     void emitStateChanged();
     QVariantList collectEmoticons(const QString &prefix, int limit,

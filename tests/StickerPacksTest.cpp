@@ -777,6 +777,31 @@ private Q_SLOTS:
         QCOMPARE(client.lastFetchRoom, kOther);
     }
 
+    void aFailedRoomScanKeepsTheRoomPacksItCouldNotSee()
+    {
+        FakeClient client;
+        StickerPackManager manager;
+        manager.setClient(&client);
+        const QString room = QStringLiteral("!r:example.org");
+        manager.setActiveRoomId(room);
+        manager.refresh();
+        Q_EMIT client.stickerPacksReceived(client.lastFetchOp, room, false, twoPacks());
+        QCOMPARE(manager.packs()->count(), 2);
+
+        const QVariantList userOnly{ twoPacks().first() };
+        manager.refresh();
+        Q_EMIT client.stickerPackSnapshotMeta(
+            client.lastFetchOp, QVariantMap{ { QStringLiteral("roomScanFailed"), true } });
+        Q_EMIT client.stickerPacksReceived(client.lastFetchOp, room, false, userOnly);
+        QCOMPARE(manager.packs()->count(), 2);
+        QVERIFY(manager.packs()->indexOfPack(QStringLiteral("room:!r:example.org:")) >= 0);
+
+        manager.refresh();
+        Q_EMIT client.stickerPackSnapshotMeta(client.lastFetchOp, QVariantMap{});
+        Q_EMIT client.stickerPacksReceived(client.lastFetchOp, room, false, userOnly);
+        QCOMPARE(manager.packs()->count(), 1);
+    }
+
     void aRefreshWhileOneIsInFlightIsOwedNotDropped()
     {
         FakeClient client;

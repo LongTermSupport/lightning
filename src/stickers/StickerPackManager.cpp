@@ -1,5 +1,7 @@
 #include "stickers/StickerPackManager.h"
 
+#include <algorithm>
+
 #include <QCryptographicHash>
 #include <QElapsedTimer>
 #include <QDir>
@@ -988,7 +990,9 @@ void StickerPackManager::onPacksReceived(quint64 opId, const QString &roomId,
     m_snapshotAncestors = m_snapshotMeta.value(QStringLiteral("canonicalAncestorIds"))
                               .toStringList();
     m_pendingMeta.clear();
-    applySnapshot(roomId, roomCanManage, packs);
+    // A failed /state scan drops packs only the server knows of; they did not go.
+    applySnapshot(roomId, roomCanManage, packs,
+                  m_snapshotMeta.value(QStringLiteral("roomScanFailed")).toBool());
     if (m_refreshOwed) {
         const bool deep = m_refreshOwedDeep;
         m_refreshOwed = false;
@@ -1070,7 +1074,8 @@ void StickerPackManager::onLoggedOut()
 
 void StickerPackManager::applySnapshot(const QString &roomId,
                                        bool roomCanManage,
-                                       const QVariantList &packs)
+                                       const QVariantList &packs,
+                                       bool keepRoomPacks)
 {
     stalltrace::Scope stallScope("pack-snapshot");
     QElapsedTimer timer;
@@ -1094,6 +1099,15 @@ void StickerPackManager::applySnapshot(const QString &roomId,
                 m_savedUrls.insert(image.url);
         }
         rows.append(pack);
+    }
+    if (keepRoomPacks && !roomId.isEmpty() && roomId == m_snapshotRoomId) {
+        for (const stickers::Pack &old : m_packs->packs()) {
+            if (old.source != QLatin1String("room") || old.roomId != roomId)
+                continue;
+            if (std::none_of(rows.cbegin(), rows.cend(),
+                             [&](const stickers::Pack &p) { return p.id == old.id; }))
+                rows.append(old);
+        }
     }
     const qint64 parseMs = packsTraceEnabled() ? timer.elapsed() : 0;
     qsizetype imageCount = 0;
