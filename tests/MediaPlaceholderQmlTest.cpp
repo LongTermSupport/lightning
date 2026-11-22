@@ -1505,10 +1505,10 @@ QtObject {
         // bubble), left of an own bubble.
         const QPointF bodyInRow = body->mapToItem(row, QPointF(0, body->height() / 2));
         const QPointF bubbleInRow = bubble->mapToItem(row, QPointF(0, 0));
-        const qreal x = own ? bubbleInRow.x() - 30
-                            : bodyInRow.x() + body->width() + 40;
         const qreal gutter = d.root->property("avatarGutterWidth").toReal();
-        QVERIFY2(x > gutter && x < row->width() - 200,
+        const qreal x = own ? (gutter + bubbleInRow.x()) / 2
+                            : bodyInRow.x() + body->width() + 40;
+        QVERIFY2(x > gutter && x < (own ? bubbleInRow.x() : row->width() - 200),
                  qPrintable(QStringLiteral("probe x=%1 outside the empty side")
                                 .arg(x)));
         const QPoint probe = row->mapToScene(QPointF(x, bodyInRow.y())).toPoint();
@@ -1654,6 +1654,8 @@ QtObject {
                      ->property("visible").toBool());
         QVERIFY(!menu->findChild<QObject *>(QStringLiteral("viewProfileMenuItem"))
                      ->property("visible").toBool());
+        QMetaObject::invokeMethod(menu, "close");
+        QTRY_VERIFY(!menu->property("opened").toBool());
 
         // A rebound key is what the menu shows and answers.
         auto *shortcuts = controller.shortcuts();

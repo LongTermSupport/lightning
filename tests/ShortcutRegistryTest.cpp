@@ -216,8 +216,9 @@ private Q_SLOTS:
             const QString seq =
                 registry.data(idx, ShortcutRegistry::CurrentSequenceRole).toString();
             const QString id = registry.data(idx, ShortcutRegistry::IdRole).toString();
-            if (registry.data(idx, ShortcutRegistry::ContextRole).toInt()
-                == ShortcutRegistry::DialogContext)
+            const int ctx = registry.data(idx, ShortcutRegistry::ContextRole).toInt();
+            if (ctx == ShortcutRegistry::DialogContext
+                || ctx == ShortcutRegistry::MessageMenuContext)
                 continue;
             bySequence[seq].append(id);
             if (registry.data(idx, ShortcutRegistry::ContextRole).toInt()

@@ -494,7 +494,8 @@ private Q_SLOTS:
         QVERIFY2(block.mid(item, 300).contains(
                      QStringLiteral("enabled: root.copyableText")),
                  "Copy text is not gated on root.copyableText");
-        QVERIFY2(block.contains(QStringLiteral("if (root.copyableText) {")),
+        QVERIFY2(block.contains(QStringLiteral("runItem(copyTextMenuItem)"))
+                     && block.contains(QStringLiteral("if (item.visible && item.enabled) {")),
                  "the Ctrl+C shortcut does not share Copy text's gate");
 
         const int gate = delegate.indexOf(
@@ -516,7 +517,7 @@ private Q_SLOTS:
         static const QRegularExpression maskedCopy(QStringLiteral(
             "copyToClipboard\\(\\s*root\\.timelineModel\\.copyTextForEvent\\("
             "\\s*root\\.menuEventId\\)"));
-        QCOMPARE(delegate.count(maskedCopy), 2);
+        QCOMPARE(delegate.count(maskedCopy), 1);
         const int gate = delegate.indexOf(
             QStringLiteral("readonly property bool copyableText:"));
         QVERIFY(gate >= 0);
