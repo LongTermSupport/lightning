@@ -8634,7 +8634,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+97"/>
+        <location filename="../src/app/ForwardController.cpp" line="+98"/>
         <source>Photo</source>
         <translation>Foto</translation>
     </message>
@@ -8669,7 +8669,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>%1 (%2)</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+18"/>
         <source>%1 — %2</source>
         <translation>%1 — %2</translation>
     </message>
@@ -13059,12 +13059,12 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     <message>
         <location line="+91"/>
         <location line="+924"/>
-        <location line="+1122"/>
+        <location line="+1123"/>
         <source>Reply</source>
         <translation>Balas</translation>
     </message>
     <message>
-        <location line="-2031"/>
+        <location line="-2032"/>
         <source>(original message not loaded)</source>
         <translation>(pesan asli belum dimuat)</translation>
     </message>
@@ -13164,30 +13164,30 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2288"/>
+        <location line="+2289"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>Coba lagi</translation>
     </message>
     <message>
-        <location line="-3304"/>
-        <location line="+1225"/>
+        <location line="-3305"/>
+        <location line="+1226"/>
         <source>Cancel</source>
         <translation>Batal</translation>
     </message>
     <message>
-        <location line="-1220"/>
+        <location line="-1221"/>
         <source>Cancel sending this message</source>
         <translation>Batalkan pengiriman pesan ini</translation>
     </message>
     <message>
         <location line="+188"/>
-        <location line="+1379"/>
+        <location line="+1380"/>
         <source>Hide image</source>
         <translation>Sembunyikan gambar</translation>
     </message>
     <message>
-        <location line="-1375"/>
+        <location line="-1376"/>
         <source>Hide</source>
         <translation>Sembunyikan</translation>
     </message>
@@ -13278,19 +13278,19 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Dibaca oleh %1, %2 dan %3 lainnya</translation>
     </message>
     <message>
-        <location line="+565"/>
+        <location line="+566"/>
         <source>Message · %1 · %2</source>
         <translation>Pesan · %1 · %2</translation>
     </message>
     <message>
-        <location line="-995"/>
+        <location line="-996"/>
         <location line="+4"/>
-        <location line="+1107"/>
+        <location line="+1108"/>
         <source>Reply in thread</source>
         <translation>Balas di utas</translation>
     </message>
     <message>
-        <location line="-2043"/>
+        <location line="-2044"/>
         <source>Original message removed</source>
         <translation>Pesan asli dihapus</translation>
     </message>
@@ -13312,7 +13312,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         </translation>
     </message>
     <message>
-        <location line="+940"/>
+        <location line="+941"/>
         <source>Open in room</source>
         <translation>Buka di ruang</translation>
     </message>
@@ -13514,13 +13514,13 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Coba lagi</translation>
     </message>
     <message>
-        <location line="-3695"/>
-        <location line="+1105"/>
+        <location line="-3696"/>
+        <location line="+1106"/>
         <source>Edit</source>
         <translation>Sunting</translation>
     </message>
     <message>
-        <location line="-3658"/>
+        <location line="-3659"/>
         <source>%1 B</source>
         <translation>%1 B</translation>
     </message>
@@ -13554,22 +13554,22 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     <message>
         <location line="-564"/>
         <location line="+562"/>
-        <location line="+3626"/>
+        <location line="+3627"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5111"/>
+        <location line="-5112"/>
         <location line="+53"/>
         <location line="+508"/>
-        <location line="+4175"/>
+        <location line="+4176"/>
         <source>Image</source>
         <translation>Gambar</translation>
     </message>
     <message>
-        <location line="-4734"/>
+        <location line="-4735"/>
         <source>Attachment</source>
         <translation>Lampiran</translation>
     </message>
@@ -13633,7 +13633,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>(disunting)</translation>
     </message>
     <message>
-        <location line="+1597"/>
+        <location line="+1598"/>
         <source>Add :%1: to my emoji</source>
         <translation>Tambahkan :%1: ke emoji saya</translation>
     </message>
@@ -13770,12 +13770,12 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Target balasan</translation>
     </message>
     <message>
-        <location line="-1945"/>
+        <location line="-1946"/>
         <source>Show preview</source>
         <translation>Tampilkan pratinjau</translation>
     </message>
     <message>
-        <location line="+1803"/>
+        <location line="+1804"/>
         <source>Remove edits?</source>
         <translation>Hapus suntingan?</translation>
     </message>
@@ -13887,10 +13887,10 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Stiker gagal dimuat — klik untuk mencoba lagi</translation>
     </message>
     <message>
-        <location line="-5528"/>
+        <location line="-5529"/>
         <location line="+57"/>
         <location line="+511"/>
-        <location line="+4173"/>
+        <location line="+4174"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -13903,9 +13903,9 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>video</translation>
     </message>
     <message>
-        <location line="-5909"/>
+        <location line="-5910"/>
         <location line="+564"/>
-        <location line="+4276"/>
+        <location line="+4277"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -14828,12 +14828,12 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     <name>NotificationManager</name>
     <message>
         <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
-        <location line="+1004"/>
+        <location line="+1007"/>
         <source>Open</source>
         <translation>Buka</translation>
     </message>
     <message>
-        <location line="-1002"/>
+        <location line="-1005"/>
         <source>Mark as read</source>
         <translation>Tandai sudah dibaca</translation>
     </message>
@@ -14843,7 +14843,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Balas</translation>
     </message>
     <message>
-        <location line="+322"/>
+        <location line="+325"/>
         <source>Reply…</source>
         <translation>Balas…</translation>
     </message>
@@ -15360,7 +15360,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2857"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2860"/>
         <source>(spoiler)</source>
         <translation>(spoiler)</translation>
     </message>
@@ -15427,14 +15427,14 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     <message numerus="yes">
         <location line="+233"/>
         <location line="+217"/>
-        <location line="+1735"/>
+        <location line="+1738"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n pesan baru</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1948"/>
+        <location line="-1951"/>
         <location line="+211"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15442,7 +15442,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1740"/>
+        <location line="+1743"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>di %n ruang</numerusform>
@@ -17923,7 +17923,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Mengambil %1 pesan…</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+27"/>
         <source>Could not read the room&apos;s history. Try again later.</source>
         <translation>Tidak dapat membaca riwayat ruang. Coba lagi nanti.</translation>
     </message>
@@ -17956,7 +17956,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Mengunduh lampiran %1 dari %2…</translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+151"/>
         <source>Exported 1 event to %1.</source>
         <translation>1 peristiwa diekspor ke %1.</translation>
     </message>
@@ -17965,8 +17965,15 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <source>Exported %1 events to %2.</source>
         <translation>%1 peristiwa diekspor ke %2.</translation>
     </message>
+    <message numerus="yes">
+        <location line="+3"/>
+        <source>%n edit(s) could not be applied; the edited message(s) are shown in their original form.</source>
+        <translation>
+            <numerusform>%n suntingan tidak dapat diterapkan; pesan yang disunting ditampilkan dalam bentuk aslinya.</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+22"/>
+        <location line="+24"/>
         <source>Export cancelled. No file was written.</source>
         <translation>Ekspor dibatalkan. Tidak ada file yang ditulis.</translation>
     </message>

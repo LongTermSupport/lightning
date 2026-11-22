@@ -8668,7 +8668,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+97"/>
+        <location filename="../src/app/ForwardController.cpp" line="+98"/>
         <source>Photo</source>
         <translation>Foto</translation>
     </message>
@@ -8703,7 +8703,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>%1 (%2)</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+18"/>
         <source>%1 — %2</source>
         <translation>%1 – %2</translation>
     </message>
@@ -13082,14 +13082,14 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="-571"/>
         <location line="+57"/>
         <location line="+511"/>
-        <location line="+4173"/>
+        <location line="+4174"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location line="-5896"/>
+        <location line="-5897"/>
         <source>Voice message</source>
         <translation>Sprachnachricht</translation>
     </message>
@@ -13102,24 +13102,24 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="-564"/>
         <location line="+562"/>
-        <location line="+3626"/>
+        <location line="+3627"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5111"/>
+        <location line="-5112"/>
         <location line="+53"/>
         <location line="+508"/>
-        <location line="+4175"/>
+        <location line="+4176"/>
         <source>Image</source>
         <translation>Bild</translation>
     </message>
     <message>
-        <location line="-4735"/>
+        <location line="-4736"/>
         <location line="+564"/>
-        <location line="+4276"/>
+        <location line="+4277"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -13127,7 +13127,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Datei</translation>
     </message>
     <message>
-        <location line="-6138"/>
+        <location line="-6139"/>
         <source>Attachment</source>
         <translation>Anhang</translation>
     </message>
@@ -13233,12 +13233,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="+91"/>
         <location line="+924"/>
-        <location line="+1122"/>
+        <location line="+1123"/>
         <source>Reply</source>
         <translation>Antworten</translation>
     </message>
     <message>
-        <location line="-2033"/>
+        <location line="-2034"/>
         <source>Original message removed</source>
         <translation>Ursprüngliche Nachricht entfernt</translation>
     </message>
@@ -13363,30 +13363,30 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2288"/>
+        <location line="+2289"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>Wiederholen</translation>
     </message>
     <message>
-        <location line="-3304"/>
-        <location line="+1225"/>
+        <location line="-3305"/>
+        <location line="+1226"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location line="-1220"/>
+        <location line="-1221"/>
         <source>Cancel sending this message</source>
         <translation>Senden dieser Nachricht abbrechen</translation>
     </message>
     <message>
         <location line="+188"/>
-        <location line="+1379"/>
+        <location line="+1380"/>
         <source>Hide image</source>
         <translation>Bild ausblenden</translation>
     </message>
     <message>
-        <location line="-1375"/>
+        <location line="-1376"/>
         <source>Hide</source>
         <translation>Ausblenden</translation>
     </message>
@@ -13408,23 +13408,23 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="+25"/>
         <location line="+4"/>
-        <location line="+1107"/>
+        <location line="+1108"/>
         <source>Reply in thread</source>
         <translation>Im Thread antworten</translation>
     </message>
     <message>
-        <location line="-1090"/>
+        <location line="-1091"/>
         <source>Edit message</source>
         <translation>Nachricht bearbeiten</translation>
     </message>
     <message>
         <location line="+4"/>
-        <location line="+1105"/>
+        <location line="+1106"/>
         <source>Edit</source>
         <translation>Bearbeiten</translation>
     </message>
     <message>
-        <location line="-1084"/>
+        <location line="-1085"/>
         <source>More message actions</source>
         <translation>Weitere Nachrichtenaktionen</translation>
     </message>
@@ -13490,7 +13490,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Gelesen von %1, %2 und %3 weiteren</translation>
     </message>
     <message>
-        <location line="+565"/>
+        <location line="+566"/>
         <source>Message · %1 · %2</source>
         <translation>Nachricht · %1 · %2</translation>
     </message>
@@ -13677,7 +13677,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-2577"/>
+        <location line="-2578"/>
         <source>Open this thread</source>
         <translation>Diesen Thread öffnen</translation>
     </message>
@@ -13690,7 +13690,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         </translation>
     </message>
     <message>
-        <location line="+629"/>
+        <location line="+630"/>
         <source>Delete message?</source>
         <translation>Nachricht löschen?</translation>
     </message>
@@ -14884,12 +14884,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <name>NotificationManager</name>
     <message>
         <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
-        <location line="+1004"/>
+        <location line="+1007"/>
         <source>Open</source>
         <translation>Öffnen</translation>
     </message>
     <message>
-        <location line="-1002"/>
+        <location line="-1005"/>
         <source>Mark as read</source>
         <translation>Als gelesen markieren</translation>
     </message>
@@ -14899,7 +14899,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Antworten</translation>
     </message>
     <message>
-        <location line="+322"/>
+        <location line="+325"/>
         <source>Reply…</source>
         <translation>Antworten …</translation>
     </message>
@@ -15416,7 +15416,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2857"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2860"/>
         <source>(spoiler)</source>
         <translation>(Spoiler)</translation>
     </message>
@@ -15483,7 +15483,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message numerus="yes">
         <location line="+233"/>
         <location line="+217"/>
-        <location line="+1735"/>
+        <location line="+1738"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n neue Nachricht</numerusform>
@@ -15491,7 +15491,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1948"/>
+        <location line="-1951"/>
         <location line="+211"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15500,7 +15500,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1740"/>
+        <location line="+1743"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>in %n Raum</numerusform>
@@ -17990,7 +17990,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>%1 Nachrichten abgerufen …</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+27"/>
         <source>Could not read the room&apos;s history. Try again later.</source>
         <translation>Der Raumverlauf konnte nicht gelesen werden. Versuche es später erneut.</translation>
     </message>
@@ -18023,7 +18023,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Anhänge werden heruntergeladen %1 von %2 …</translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+151"/>
         <source>Exported 1 event to %1.</source>
         <translation>1 Ereignis nach %1 exportiert.</translation>
     </message>
@@ -18032,8 +18032,16 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <source>Exported %1 events to %2.</source>
         <translation>%1 Ereignisse nach %2 exportiert.</translation>
     </message>
+    <message numerus="yes">
+        <location line="+3"/>
+        <source>%n edit(s) could not be applied; the edited message(s) are shown in their original form.</source>
+        <translation>
+            <numerusform>%n Bearbeitung konnte nicht angewendet werden; die Nachricht wird in ihrer ursprünglichen Form gezeigt.</numerusform>
+            <numerusform>%n Bearbeitungen konnten nicht angewendet werden; die Nachrichten werden in ihrer ursprünglichen Form gezeigt.</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+22"/>
+        <location line="+24"/>
         <source>Export cancelled. No file was written.</source>
         <translation>Export abgebrochen. Es wurde keine Datei geschrieben.</translation>
     </message>

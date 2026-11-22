@@ -8634,7 +8634,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+97"/>
+        <location filename="../src/app/ForwardController.cpp" line="+98"/>
         <source>Photo</source>
         <translation>图片</translation>
     </message>
@@ -8669,7 +8669,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1（%2）</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+18"/>
         <source>%1 — %2</source>
         <translation>%1 — %2</translation>
     </message>
@@ -13059,12 +13059,12 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="+91"/>
         <location line="+924"/>
-        <location line="+1122"/>
+        <location line="+1123"/>
         <source>Reply</source>
         <translation>回复</translation>
     </message>
     <message>
-        <location line="-2031"/>
+        <location line="-2032"/>
         <source>(original message not loaded)</source>
         <translation>（原消息未加载）</translation>
     </message>
@@ -13164,30 +13164,30 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2288"/>
+        <location line="+2289"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>重试</translation>
     </message>
     <message>
-        <location line="-3304"/>
-        <location line="+1225"/>
+        <location line="-3305"/>
+        <location line="+1226"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location line="-1220"/>
+        <location line="-1221"/>
         <source>Cancel sending this message</source>
         <translation>取消发送这条消息</translation>
     </message>
     <message>
         <location line="+188"/>
-        <location line="+1379"/>
+        <location line="+1380"/>
         <source>Hide image</source>
         <translation>隐藏图像</translation>
     </message>
     <message>
-        <location line="-1375"/>
+        <location line="-1376"/>
         <source>Hide</source>
         <translation>隐藏</translation>
     </message>
@@ -13278,19 +13278,19 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1、%2 和另外 %3 人已读</translation>
     </message>
     <message>
-        <location line="+565"/>
+        <location line="+566"/>
         <source>Message · %1 · %2</source>
         <translation>消息 · %1 · %2</translation>
     </message>
     <message>
-        <location line="-995"/>
+        <location line="-996"/>
         <location line="+4"/>
-        <location line="+1107"/>
+        <location line="+1108"/>
         <source>Reply in thread</source>
         <translation>在消息列中回复</translation>
     </message>
     <message>
-        <location line="-2043"/>
+        <location line="-2044"/>
         <source>Original message removed</source>
         <translation>原始消息已删除</translation>
     </message>
@@ -13312,7 +13312,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message>
-        <location line="+940"/>
+        <location line="+941"/>
         <source>Open in room</source>
         <translation>在房间中打开</translation>
     </message>
@@ -13514,13 +13514,13 @@ Signing out and signing in again is the only fix.</source>
         <translation>重试</translation>
     </message>
     <message>
-        <location line="-3695"/>
-        <location line="+1105"/>
+        <location line="-3696"/>
+        <location line="+1106"/>
         <source>Edit</source>
         <translation>编辑</translation>
     </message>
     <message>
-        <location line="-3658"/>
+        <location line="-3659"/>
         <source>%1 B</source>
         <translation>%1 B</translation>
     </message>
@@ -13554,22 +13554,22 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="-564"/>
         <location line="+562"/>
-        <location line="+3626"/>
+        <location line="+3627"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5111"/>
+        <location line="-5112"/>
         <location line="+53"/>
         <location line="+508"/>
-        <location line="+4175"/>
+        <location line="+4176"/>
         <source>Image</source>
         <translation>图片</translation>
     </message>
     <message>
-        <location line="-4734"/>
+        <location line="-4735"/>
         <source>Attachment</source>
         <translation>附件</translation>
     </message>
@@ -13633,7 +13633,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>（已编辑）</translation>
     </message>
     <message>
-        <location line="+1597"/>
+        <location line="+1598"/>
         <source>Add :%1: to my emoji</source>
         <translation>将 :%1: 添加到我的表情</translation>
     </message>
@@ -13770,12 +13770,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>回复对象</translation>
     </message>
     <message>
-        <location line="-1945"/>
+        <location line="-1946"/>
         <source>Show preview</source>
         <translation>显示预览</translation>
     </message>
     <message>
-        <location line="+1803"/>
+        <location line="+1804"/>
         <source>Remove edits?</source>
         <translation>移除编辑？</translation>
     </message>
@@ -13887,10 +13887,10 @@ Signing out and signing in again is the only fix.</source>
         <translation>贴纸加载失败 — 点击重试</translation>
     </message>
     <message>
-        <location line="-5528"/>
+        <location line="-5529"/>
         <location line="+57"/>
         <location line="+511"/>
-        <location line="+4173"/>
+        <location line="+4174"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -13903,9 +13903,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>视频</translation>
     </message>
     <message>
-        <location line="-5909"/>
+        <location line="-5910"/>
         <location line="+564"/>
-        <location line="+4276"/>
+        <location line="+4277"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -14828,12 +14828,12 @@ Signing out and signing in again is the only fix.</source>
     <name>NotificationManager</name>
     <message>
         <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
-        <location line="+1004"/>
+        <location line="+1007"/>
         <source>Open</source>
         <translation>打开</translation>
     </message>
     <message>
-        <location line="-1002"/>
+        <location line="-1005"/>
         <source>Mark as read</source>
         <translation>标记为已读</translation>
     </message>
@@ -14843,7 +14843,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>回复</translation>
     </message>
     <message>
-        <location line="+322"/>
+        <location line="+325"/>
         <source>Reply…</source>
         <translation>回复…</translation>
     </message>
@@ -15360,7 +15360,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2857"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2860"/>
         <source>(spoiler)</source>
         <translation>（剧透）</translation>
     </message>
@@ -15427,14 +15427,14 @@ Signing out and signing in again is the only fix.</source>
     <message numerus="yes">
         <location line="+233"/>
         <location line="+217"/>
-        <location line="+1735"/>
+        <location line="+1738"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n 条新消息</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1948"/>
+        <location line="-1951"/>
         <location line="+211"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15442,7 +15442,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1740"/>
+        <location line="+1743"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>在 %n 个房间中</numerusform>
@@ -17923,7 +17923,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>已获取 %1 条消息…</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+27"/>
         <source>Could not read the room&apos;s history. Try again later.</source>
         <translation>无法读取房间历史记录。请稍后再试。</translation>
     </message>
@@ -17956,7 +17956,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>正在下载附件 %1/%2…</translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+151"/>
         <source>Exported 1 event to %1.</source>
         <translation>已将 1 条事件导出到 %1。</translation>
     </message>
@@ -17965,8 +17965,15 @@ Signing out and signing in again is the only fix.</source>
         <source>Exported %1 events to %2.</source>
         <translation>已将 %1 条事件导出到 %2。</translation>
     </message>
+    <message numerus="yes">
+        <location line="+3"/>
+        <source>%n edit(s) could not be applied; the edited message(s) are shown in their original form.</source>
+        <translation>
+            <numerusform>有 %n 处编辑无法应用；相关消息以原始形式显示。</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+22"/>
+        <location line="+24"/>
         <source>Export cancelled. No file was written.</source>
         <translation>导出已取消。未写入任何文件。</translation>
     </message>
