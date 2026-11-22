@@ -28,6 +28,9 @@ class SavedMessagesController : public QObject
     Q_PROPERTY(QString roomFilter READ roomFilter WRITE setRoomFilter NOTIFY changed)
     Q_PROPERTY(QString typeFilter READ typeFilter WRITE setTypeFilter NOTIFY changed)
     Q_PROPERTY(int revision READ revision NOTIFY changed)
+    Q_PROPERTY(int unsearchedCount READ unsearchedCount NOTIFY changed)
+    Q_PROPERTY(bool searchLoading READ searchLoading NOTIFY changed)
+    Q_PROPERTY(bool searchPaused READ searchPaused WRITE setSearchPaused NOTIFY changed)
 public:
     static const QString &eventType();
     explicit SavedMessagesController(QObject *parent = nullptr);
@@ -47,6 +50,10 @@ public:
     QString typeFilter() const { return m_typeFilter; }
     void setTypeFilter(const QString &value);
     int revision() const { return m_revision; }
+    int unsearchedCount() const;
+    bool searchLoading() const;
+    bool searchPaused() const { return m_searchPaused; }
+    void setSearchPaused(bool paused);
 
     Q_INVOKABLE bool isSaved(const QString &roomId, const QString &eventId) const;
     Q_INVOKABLE void save(const QString &roomId, const QString &eventId,
@@ -54,7 +61,10 @@ public:
     Q_INVOKABLE void remove(const QString &roomId, const QString &eventId);
     Q_INVOKABLE void undoRemove();
     Q_INVOKABLE void refresh();
-    Q_INVOKABLE void resolveVisible();
+    // Fetches previews for the rows the view shows plus a prefetch margin; a
+    // text or type filter widens it to every reference in the room filter.
+    Q_INVOKABLE void resolveVisible(int first = 0, int last = 0);
+    Q_INVOKABLE void pauseResolving();
     // Re-reads every preview, keeping the shown text until each answer lands.
     Q_INVOKABLE void refreshPreviews();
     Q_INVOKABLE void retryPreview(const QString &roomId, const QString &eventId);
@@ -96,6 +106,9 @@ private:
     bool parseRefs(const QVariantMap &content, bool present, QVector<Ref> &refs) const;
     void failWrite(const QString &message);
     void pumpResolve();
+    bool searching() const;
+    QString roomNameOf(const Ref &ref) const;
+    bool shown(const Ref &ref, const QString &roomName) const;
     void armResolveTimer();
     void expireResolves();
     void invalidatePreview(const QString &roomId, const QString &eventId);
@@ -129,6 +142,10 @@ private:
     QTimer m_resolveTimeout;
     QElapsedTimer m_clock;
     qint64 m_nowForTest = -1;
+    bool m_active = false;
+    bool m_searchPaused = false;
+    int m_visibleFirst = 0;
+    int m_visibleLast = 0;
 
 private Q_SLOTS:
     void setNowForTest(qint64 ms);
