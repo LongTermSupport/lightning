@@ -11454,6 +11454,9 @@ async fn held_event_json(
         ),
         _ => return None,
     };
+    if !replacement_admitted(Some(room), &raw, cached.encryption_info().map(|i| &**i)).await {
+        return None;
+    }
     hide_spoiler_caption(&mut event, raw.json().get());
     if let Some(object) = event.as_object_mut() {
         object.insert("backlog".to_owned(), backlog.into());
@@ -11796,6 +11799,18 @@ fn install_event_handlers(
             let verdicts = plaintext_verdicts.clone();
             let notify = Arc::clone(&plaintext_notify);
             async move {
+                if matches!(
+                    ev.content.relates_to,
+                    Some(matrix_sdk::ruma::events::room::message::Relation::Replacement(_))
+                ) && !replacement_admitted(
+                    Some(&room),
+                    &matrix_sdk::ruma::serde::Raw::from_json(raw.0.clone()),
+                    encryption_info.as_ref(),
+                )
+                .await
+                {
+                    return;
+                }
                 let Some(mut event) = room_message_event_json(
                     &ev.content,
                     &ev.event_id,
@@ -14505,6 +14520,51 @@ pub(crate) fn room_preview_line(
 fn room_known_plain(room: &Room) -> bool {
     let state = room.encryption_state();
     !state.is_encrypted() && !state.is_unknown()
+}
+
+/// Whether a live or fetched `m.replace` may stand for its target: the spec's
+/// validity rules against the cached original. Without the original, only an
+/// encrypted edit, or one in a room known to be unencrypted. A rejected edit
+/// must be dropped whole, mentions included.
+pub(crate) async fn replacement_admitted(
+    room: Option<&Room>,
+    edit: &matrix_sdk::ruma::serde::Raw<matrix_sdk::ruma::events::AnySyncTimelineEvent>,
+    edit_encryption: Option<&matrix_sdk::deserialized_responses::EncryptionInfo>,
+) -> bool {
+    let Some(target) = replaced_event_id(edit) else { return true };
+    let Some(room) = room else { return edit_encryption.is_some() };
+    let original = match room.event_cache().await {
+        Ok((cache, _handles)) => cache.find_event(&target).await.ok().flatten(),
+        Err(_) => None,
+    };
+    replacement_admitted_against(original.as_ref(), edit, edit_encryption, room_known_plain(room))
+}
+
+fn replacement_admitted_against(
+    original: Option<&matrix_sdk::deserialized_responses::TimelineEvent>,
+    edit: &matrix_sdk::ruma::serde::Raw<matrix_sdk::ruma::events::AnySyncTimelineEvent>,
+    edit_encryption: Option<&matrix_sdk::deserialized_responses::EncryptionInfo>,
+    room_plain: bool,
+) -> bool {
+    let Some(original) = original else { return edit_encryption.is_some() || room_plain };
+    let field = |raw: &matrix_sdk::ruma::serde::Raw<_>, name: &str| {
+        raw.get_field::<serde_json::Value>(name).ok().flatten()
+    };
+    if field(original.raw(), "unsigned").is_some_and(|u| u.get("redacted_because").is_some()) {
+        return false;
+    }
+    // Not decrypted yet: encrypted all the same, and its sender is in the clear.
+    if field(original.raw(), "type").is_some_and(|t| t == "m.room.encrypted") {
+        return edit_encryption.is_some()
+            && field(original.raw(), "sender") == field(edit, "sender");
+    }
+    matrix_sdk::check_validity_of_replacement_events(
+        original.raw(),
+        original.encryption_info().map(|i| &**i),
+        edit,
+        edit_encryption,
+    )
+    .is_ok()
 }
 
 pub(crate) const PREVIEW_KIND_MARK: char = '\u{1}';
@@ -22066,3 +22126,6 @@ mod ignore_preview_wiring_tests {
         drop(run);
     }
 }
+
+#[cfg(test)]
+mod forged_edit_tests;

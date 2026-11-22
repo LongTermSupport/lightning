@@ -23,7 +23,7 @@ pub(crate) fn is_replacement(event: &Value) -> bool {
 /// ignore whatever it targets (no `m.new_content`, a state event, malformed).
 /// Same-room is the caller's check, exactly as in matrix-sdk's own validator,
 /// and so is encryption: see `encryption_permits`. A missing timestamp orders
-/// first here; local search never indexes an event without one.
+/// first.
 pub(crate) fn parse(event: &Value) -> Option<Replacement<'_>> {
     if !is_replacement(event) || event.get("state_key").is_some() {
         return None;
