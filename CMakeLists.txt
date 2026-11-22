@@ -4671,6 +4671,8 @@ if(BUILD_TESTING)
         # The quick switcher shows the same unread count as the other surfaces.
         src/models/QuickSwitcherModel.h
         src/models/QuickSwitcherModel.cpp
+        src/models/UserLookup.h
+        src/models/UserLookup.cpp
         # Rooms come from the client, not RoomListModel, which is scoped to the
         # active Space and filtered.
         src/spaces/SpaceManager.h
@@ -6260,6 +6262,8 @@ if(BUILD_TESTING)
         tests/QuickSwitcherTest.cpp
         src/models/QuickSwitcherModel.h
         src/models/QuickSwitcherModel.cpp
+        src/models/UserLookup.h
+        src/models/UserLookup.cpp
         src/matrix/MatrixClient.h
         src/matrix/MatrixClient.cpp
         src/matrix/MockMatrixClient.h
