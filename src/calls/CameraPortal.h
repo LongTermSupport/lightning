@@ -48,6 +48,7 @@ public:
     static QString failureCategory(const QString &errorName,
                                    bool openingRemote);
     bool busy() const { return m_busy; }
+    void setRequestTimeoutMsForTest(int ms) { m_requestTimeout.setInterval(ms); }
 
 Q_SIGNALS:
     void ready(int pipewireFd);
@@ -61,6 +62,8 @@ private:
 #endif
 
     bool m_busy = false;
+    // The portal Request still awaiting its Response; closed on cancel.
+    QString m_requestPath;
     QTimer m_requestTimeout;
     quint64 m_generation = 0;
 };

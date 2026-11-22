@@ -56,6 +56,15 @@ QString freshToken()
     return QStringLiteral("lightning_%1")
         .arg(QRandomGenerator::system()->generate64(), 0, 16);
 }
+
+void closePortalObject(const QString &path, const char *interface)
+{
+    if (path.isEmpty())
+        return;
+    QDBusConnection::sessionBus().send(QDBusMessage::createMethodCall(
+        kService, path, QString::fromLatin1(interface),
+        QStringLiteral("Close")));
+}
 #endif
 }
 
@@ -156,14 +165,11 @@ void ScreenCastPortal::cancel()
     m_requestTimeout.stop();
     m_answerWatchdog.stop();
 #ifdef HAVE_QT_DBUS
-    if (!m_sessionHandle.isEmpty()) {
-        QDBusMessage close = QDBusMessage::createMethodCall(
-            kService, m_sessionHandle, "org.freedesktop.portal.Session",
-            QStringLiteral("Close"));
-        QDBusConnection::sessionBus().asyncCall(close);
-        m_sessionHandle.clear();
-    }
+    closePortalObject(m_requestPath, kRequest);
+    closePortalObject(m_sessionHandle, "org.freedesktop.portal.Session");
 #endif
+    m_requestPath.clear();
+    m_sessionHandle.clear();
 }
 
 void ScreenCastPortal::reset()
@@ -171,6 +177,7 @@ void ScreenCastPortal::reset()
     m_busy = false;
     m_answerWatchdog.stop();
     m_sessionHandle.clear();
+    m_requestPath.clear();
 }
 
 #if defined(Q_OS_WIN) || defined(Q_OS_MACOS)
@@ -238,8 +245,15 @@ void ScreenCastPortal::requestShare(int types, int preparationBoundMs,
 
     const auto onAnswer = [this, types, stale](uint response,
                                                const QVariantMap &results) {
-        if (stale())
+        const QString session =
+            results.value(QStringLiteral("session_handle")).toString();
+        if (stale()) {
+            // A session created after cancel() is ours to close.
+            if (response == 0)
+                closePortalObject(session, "org.freedesktop.portal.Session");
             return;
+        }
+        m_requestPath.clear();
         if (response != 0) {
             qCWarning(lcPortal) << "screen share session refused response="
                                 << response;
@@ -247,8 +261,7 @@ void ScreenCastPortal::requestShare(int types, int preparationBoundMs,
             Q_EMIT failed(QStringLiteral("session_refused"));
             return;
         }
-        m_sessionHandle =
-            results.value(QStringLiteral("session_handle")).toString();
+        m_sessionHandle = session;
         if (m_sessionHandle.isEmpty()) {
             reset();
             Q_EMIT failed(QStringLiteral("no_session"));
@@ -258,6 +271,7 @@ void ScreenCastPortal::requestShare(int types, int preparationBoundMs,
     };
     auto subscription = portal::subscribeBeforeCall<PortalStep>(
         this, QDBusConnection::sessionBus().baseService(), token, onAnswer);
+    m_requestPath = subscription.path;
 
     auto *createWatcher = new QDBusPendingCallWatcher(
         QDBusConnection::sessionBus().asyncCall(create), this);
@@ -267,7 +281,20 @@ void ScreenCastPortal::requestShare(int types, int preparationBoundMs,
                 watcher->deleteLater();
                 QDBusPendingReply<QDBusObjectPath> reply = *watcher;
                 if (stale()) {
-                    portal::dropSubscription(subscription);
+                    if (reply.isError()) {
+                        portal::dropSubscription(subscription);
+                        return;
+                    }
+                    // Keep listening: the session may still be created.
+                    if (reply.value().path() != subscription.path)
+                        closePortalObject(reply.value().path(), kRequest);
+                    portal::reconcileRequestPath(this, subscription,
+                                                 reply.value().path(),
+                                                 onAnswer);
+                    if (subscription.step)
+                        QTimer::singleShot(kRequestTimeoutMs,
+                                           subscription.step.data(),
+                                           &QObject::deleteLater);
                     return;
                 }
                 if (reply.isError()) {
@@ -279,6 +306,8 @@ void ScreenCastPortal::requestShare(int types, int preparationBoundMs,
                 }
                 portal::reconcileRequestPath(this, subscription,
                                              reply.value().path(), onAnswer);
+                if (!m_requestPath.isEmpty())
+                    m_requestPath = subscription.path;
             });
 }
 
@@ -302,6 +331,7 @@ void ScreenCastPortal::selectSources(int types)
     const auto onAnswer = [this, stale](uint response, const QVariantMap &) {
         if (stale())
             return;
+        m_requestPath.clear();
         if (response == 1) {
             cancel();
             Q_EMIT cancelled();
@@ -318,6 +348,7 @@ void ScreenCastPortal::selectSources(int types)
     };
     auto subscription = portal::subscribeBeforeCall<PortalStep>(
         this, QDBusConnection::sessionBus().baseService(), token, onAnswer);
+    m_requestPath = subscription.path;
 
     auto *watcher = new QDBusPendingCallWatcher(
         QDBusConnection::sessionBus().asyncCall(select), this);
@@ -327,11 +358,15 @@ void ScreenCastPortal::selectSources(int types)
                 w->deleteLater();
                 QDBusPendingReply<QDBusObjectPath> reply = *w;
                 if (stale()) {
+                    if (!reply.isError()
+                        && reply.value().path() != subscription.path)
+                        closePortalObject(reply.value().path(), kRequest);
                     portal::dropSubscription(subscription);
                     return;
                 }
                 if (reply.isError()) {
                     portal::dropSubscription(subscription);
+                    m_requestPath.clear();
                     cancel();
                     Q_EMIT failed(errorCategory(
                         reply.error(), QStringLiteral("select_failed")));
@@ -339,6 +374,8 @@ void ScreenCastPortal::selectSources(int types)
                 }
                 portal::reconcileRequestPath(this, subscription,
                                              reply.value().path(), onAnswer);
+                if (!m_requestPath.isEmpty())
+                    m_requestPath = subscription.path;
             });
 }
 
@@ -362,6 +399,7 @@ void ScreenCastPortal::startSession()
                                         const QVariantMap &results) {
         if (stale())
             return;
+        m_requestPath.clear();
         if (response != 0) {
             cancel();
             Q_EMIT cancelled();
@@ -371,6 +409,7 @@ void ScreenCastPortal::startSession()
     };
     auto subscription = portal::subscribeBeforeCall<PortalStep>(
         this, QDBusConnection::sessionBus().baseService(), token, onAnswer);
+    m_requestPath = subscription.path;
 
     auto *watcher = new QDBusPendingCallWatcher(
         QDBusConnection::sessionBus().asyncCall(start), this);
@@ -380,11 +419,15 @@ void ScreenCastPortal::startSession()
                 w->deleteLater();
                 QDBusPendingReply<QDBusObjectPath> reply = *w;
                 if (stale()) {
+                    if (!reply.isError()
+                        && reply.value().path() != subscription.path)
+                        closePortalObject(reply.value().path(), kRequest);
                     portal::dropSubscription(subscription);
                     return;
                 }
                 if (reply.isError()) {
                     portal::dropSubscription(subscription);
+                    m_requestPath.clear();
                     cancel();
                     Q_EMIT failed(errorCategory(
                         reply.error(), QStringLiteral("start_failed")));
@@ -392,6 +435,8 @@ void ScreenCastPortal::startSession()
                 }
                 portal::reconcileRequestPath(this, subscription,
                                              reply.value().path(), onAnswer);
+                if (!m_requestPath.isEmpty())
+                    m_requestPath = subscription.path;
             });
 }
 
