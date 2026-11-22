@@ -82,7 +82,10 @@ private:
 };
 #endif
 
-CameraPortal::CameraPortal(QObject *parent) : QObject(parent)
+CameraPortal::CameraPortal(QObject *parent)
+    : QObject(parent),
+      m_capability(this, "org.freedesktop.portal.Camera",
+                   [this] { Q_EMIT capabilityChanged(); })
 {
     m_requestTimeout.setSingleShot(true);
     m_requestTimeout.setInterval(kRequestTimeoutMs);
@@ -101,44 +104,31 @@ CameraPortal::~CameraPortal()
     cancel();
 }
 
-bool CameraPortal::available()
+portal::Capability CameraPortal::capability()
 {
 #if defined(Q_OS_WIN) || defined(Q_OS_MACOS)
-    return false;
-#elif defined(HAVE_QT_DBUS)
-    if (!QDBusConnection::sessionBus().isConnected())
-        return false;
-    QDBusMessage probe = QDBusMessage::createMethodCall(
-        kService, kPath, "org.freedesktop.DBus.Properties",
-        QStringLiteral("Get"));
-    probe << QString::fromLatin1(kCamera) << QStringLiteral("version");
-    const QDBusMessage reply =
-        QDBusConnection::sessionBus().call(probe, QDBus::Block, 2000);
-    return reply.type() == QDBusMessage::ReplyMessage;
+    return portal::Capability::Unavailable;
 #else
-    return false;
+    return m_capability.state();
 #endif
 }
 
-bool CameraPortal::cameraPresent()
+portal::Capability CameraPortal::cameraPresence()
 {
-#if defined(HAVE_QT_DBUS) && !defined(Q_OS_WIN) && !defined(Q_OS_MACOS)
-    if (!QDBusConnection::sessionBus().isConnected())
-        return false;
-    QDBusMessage probe = QDBusMessage::createMethodCall(
-        kService, kPath, "org.freedesktop.DBus.Properties",
-        QStringLiteral("Get"));
-    probe << QString::fromLatin1(kCamera)
-          << QStringLiteral("IsCameraPresent");
-    const QDBusMessage reply =
-        QDBusConnection::sessionBus().call(probe, QDBus::Block, 2000);
-    if (reply.type() != QDBusMessage::ReplyMessage
-        || reply.arguments().isEmpty())
-        return false;
-    return reply.arguments().constFirst().value<QDBusVariant>()
-        .variant().toBool();
-#else
-    return false;
+    const portal::Capability state = capability();
+    if (state != portal::Capability::Available)
+        return state;
+    return m_capability.properties()
+                   .value(QStringLiteral("IsCameraPresent"))
+                   .toBool()
+        ? portal::Capability::Available
+        : portal::Capability::Unavailable;
+}
+
+void CameraPortal::refreshCapability()
+{
+#if !defined(Q_OS_WIN) && !defined(Q_OS_MACOS)
+    m_capability.refresh();
 #endif
 }
 

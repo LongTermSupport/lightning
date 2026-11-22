@@ -827,7 +827,16 @@ bool SfuCallController::cameraPortalUsable() const
         return false;
     if (m_cameraPortalUsableForTest >= 0)
         return m_cameraPortalUsableForTest == 1;
-    return CameraPortal::available() && CameraPortal::cameraPresent();
+    return m_cameraPortal->cameraPresence() == portal::Capability::Available;
+}
+
+bool SfuCallController::cameraPortalWired() const
+{
+    if (m_cameraPortal.isNull())
+        return false;
+    if (m_cameraPortalUsableForTest >= 0)
+        return true;
+    return m_cameraPortal->capability() != portal::Capability::Unavailable;
 }
 
 void SfuCallController::requestCameraAccess()
@@ -1173,8 +1182,10 @@ void SfuCallController::requestScreenShare()
         Q_EMIT callFailed(shareWhileReconnectingMessage());
         return;
     }
-    const bool portalUsable =
-        !m_portal.isNull() && ScreenCastPortal::available();
+    // Unknown counts as usable: the request itself is bounded and a missing
+    // portal fails it with a category.
+    const bool portalUsable = !m_portal.isNull()
+        && m_portal->capability() != portal::Capability::Unavailable;
 #if defined(Q_OS_WIN) || defined(Q_OS_MACOS)
     if (!portalUsable) {
         qCWarning(lcSfuCall) << "screen share unavailable portal="
@@ -3188,7 +3199,7 @@ void SfuCallController::onEnginePublishFailed(const QString &cid,
         }
         if (!cameraChosen()
             && directCameraFallsBackToPortal(category, viaPortal,
-                                             !m_cameraPortal.isNull(),
+                                             cameraPortalWired(),
                                              hopped)) {
             fallBackToPortalCamera(category);
             return;
@@ -4643,7 +4654,7 @@ void SfuCallController::startCameraCapture()
 
     const bool sandboxed = cameraSandboxed();
     const bool deviceNode = cameraDeviceNodeVisible();
-    const bool portalWired = !m_cameraPortal.isNull();
+    const bool portalWired = cameraPortalWired();
     const bool portalUsable = cameraPortalUsable();
     LinuxCameraRoute route =
         linuxCameraRoute(sandboxed, portalUsable, deviceNode, cameraChosen());
