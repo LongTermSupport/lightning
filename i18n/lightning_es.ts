@@ -14899,7 +14899,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+1973"/>
         <location line="+1007"/>
         <source>Open</source>
         <translation>Abrir</translation>
@@ -15432,7 +15432,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2860"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2863"/>
         <source>(spoiler)</source>
         <translation>(spoiler)</translation>
     </message>
@@ -15498,8 +15498,8 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
     </message>
     <message numerus="yes">
         <location line="+233"/>
-        <location line="+217"/>
-        <location line="+1738"/>
+        <location line="+218"/>
+        <location line="+1740"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n mensaje nuevo</numerusform>
@@ -15507,8 +15507,8 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1951"/>
-        <location line="+211"/>
+        <location line="-1954"/>
+        <location line="+212"/>
         <source>%n new Matrix notifications</source>
         <translation>
             <numerusform>%n notificación nueva de Matrix</numerusform>
@@ -15516,7 +15516,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1743"/>
+        <location line="+1745"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>en %n sala</numerusform>
@@ -18006,7 +18006,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Obtenidos %1 mensajes…</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+28"/>
         <source>Could not read the room&apos;s history. Try again later.</source>
         <translation>No se pudo leer el historial de la sala. Inténtalo de nuevo más tarde.</translation>
     </message>

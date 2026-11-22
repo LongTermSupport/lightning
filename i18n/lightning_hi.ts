@@ -14899,7 +14899,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+1973"/>
         <location line="+1007"/>
         <source>Open</source>
         <translation>खोलें</translation>
@@ -15432,7 +15432,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2860"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2863"/>
         <source>(spoiler)</source>
         <translation>(स्पॉइलर)</translation>
     </message>
@@ -15498,8 +15498,8 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message numerus="yes">
         <location line="+233"/>
-        <location line="+217"/>
-        <location line="+1738"/>
+        <location line="+218"/>
+        <location line="+1740"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n नया संदेश</numerusform>
@@ -15507,8 +15507,8 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1951"/>
-        <location line="+211"/>
+        <location line="-1954"/>
+        <location line="+212"/>
         <source>%n new Matrix notifications</source>
         <translation>
             <numerusform>%n नई Matrix सूचना</numerusform>
@@ -15516,7 +15516,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1743"/>
+        <location line="+1745"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>%n रूम में</numerusform>
@@ -18006,7 +18006,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1 संदेश लाए गए…</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+28"/>
         <source>Could not read the room&apos;s history. Try again later.</source>
         <translation>रूम का इतिहास नहीं पढ़ा जा सका। बाद में फिर कोशिश करें।</translation>
     </message>
