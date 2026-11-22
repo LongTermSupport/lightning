@@ -299,12 +299,13 @@ async fn walk_once(
         None => None,
     };
     let subscriber = Arc::new(tokio::sync::Mutex::new(subscriber));
+    let deadline = tokio::time::Instant::now() + budget.max_time;
     walk_filtered_run(budget, still_wanted, || {
         let timeline = Arc::clone(timeline);
         let subscriber = Arc::clone(&subscriber);
         let rules = rules.clone();
         async move {
-            let hit_start = timeline.paginate_backwards(count).await?;
+            let hit_start = paginate_within(&timeline, count, deadline, still_wanted).await?;
             let mut guard = subscriber.lock().await;
             let grew = match guard.as_mut() {
                 Some(subscriber) => drain_shows_something(subscriber, &rules),
@@ -314,6 +315,41 @@ async fn walk_once(
         }
     })
     .await
+}
+
+const STILL_WANTED_POLL: Duration = Duration::from_millis(100);
+
+// matrix-sdk-ui restarts a back-pagination inside ONE `paginate_backwards` call
+// for as long as its pages bring no event (an empty chunk with an `end`, or a
+// page of duplicates), so a single call can walk a whole room and outlive the
+// room being open. A call is cut once the walk is past its deadline and the SDK
+// has finished at least one page in it, or as soon as the room is left; the
+// page in flight completes in the SDK's own task.
+async fn paginate_within(
+    timeline: &Timeline,
+    count: u16,
+    deadline: tokio::time::Instant,
+    still_wanted: &impl Fn() -> bool,
+) -> Result<bool, matrix_sdk_ui::timeline::Error> {
+    use futures_util::StreamExt;
+    let status = timeline.live_back_pagination_status().await;
+    let paginate = timeline.paginate_backwards(count);
+    tokio::pin!(paginate);
+    let Some((_, status)) = status else { return paginate.await };
+    tokio::pin!(status);
+    let mut changes = 0u32;
+    let mut poll = tokio::time::interval(STILL_WANTED_POLL);
+    loop {
+        tokio::select! {
+            result = &mut paginate => return result,
+            Some(_) = status.next() => changes += 1,
+            _ = poll.tick() => {}
+        }
+        // Paginating then Idle: one page is done, so the call is now restarting.
+        if !still_wanted() || (changes >= 2 && tokio::time::Instant::now() >= deadline) {
+            return Ok(false);
+        }
+    }
 }
 
 #[cfg(test)]
@@ -646,6 +682,43 @@ mod sdk_tests {
         format!("{}:{}", addr.ip(), addr.port())
     }
 
+    async fn churn_timeline(addr: &str) -> Arc<Timeline> {
+        let client = matrix_sdk::Client::builder()
+            .homeserver_url(format!("http://{addr}"))
+            .build()
+            .await
+            .expect("client");
+        client
+            .matrix_auth()
+            .restore_session(
+                MatrixSession {
+                    meta: SessionMeta {
+                        user_id: OwnedUserId::try_from(ME).expect("user id"),
+                        device_id: OwnedDeviceId::from("TESTDEVICE"),
+                    },
+                    tokens: SessionTokens {
+                        access_token: "test-token".to_owned(),
+                        refresh_token: None,
+                    },
+                },
+                RoomLoadSettings::default(),
+            )
+            .await
+            .expect("restore");
+        client.event_cache().subscribe().expect("event cache");
+        client.sync_once(SyncSettings::default()).await.expect("sync");
+        let room_id = OwnedRoomId::try_from(ROOM).expect("room id");
+        let room = client.get_room(&room_id).expect("the synced room");
+        Arc::new(
+            TimelineBuilder::new(&room)
+                .event_filter(crate::timeline::lightning_event_filter)
+                .with_focus(TimelineFocus::Live { hide_threaded_events: true })
+                .build()
+                .await
+                .expect("timeline"),
+        )
+    }
+
     #[test]
     fn a_churn_run_is_crossed_in_one_request_and_the_walk_stops_at_the_message() {
         let tokens: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
@@ -656,40 +729,7 @@ mod sdk_tests {
             .expect("runtime");
         let registry = TimelineRegistry::new(Arc::new(Mutex::new(VecDeque::new())));
         let outcome = runtime.block_on(async {
-            let client = matrix_sdk::Client::builder()
-                .homeserver_url(format!("http://{addr}"))
-                .build()
-                .await
-                .expect("client");
-            client
-                .matrix_auth()
-                .restore_session(
-                    MatrixSession {
-                        meta: SessionMeta {
-                            user_id: OwnedUserId::try_from(ME).expect("user id"),
-                            device_id: OwnedDeviceId::from("TESTDEVICE"),
-                        },
-                        tokens: SessionTokens {
-                            access_token: "test-token".to_owned(),
-                            refresh_token: None,
-                        },
-                    },
-                    RoomLoadSettings::default(),
-                )
-                .await
-                .expect("restore");
-            client.event_cache().subscribe().expect("event cache");
-            client.sync_once(SyncSettings::default()).await.expect("sync");
-            let room_id = OwnedRoomId::try_from(ROOM).expect("room id");
-            let room = client.get_room(&room_id).expect("the synced room");
-            let timeline = Arc::new(
-                TimelineBuilder::new(&room)
-                    .event_filter(crate::timeline::lightning_event_filter)
-                    .with_focus(TimelineFocus::Live { hide_threaded_events: true })
-                    .build()
-                    .await
-                    .expect("timeline"),
-            );
+            let timeline = churn_timeline(&addr).await;
             walk_backwards(
                 &timeline,
                 20,
@@ -710,6 +750,67 @@ mod sdk_tests {
                 "the walk went past a page that brought a message: {asked:?}");
         assert!(!outcome.hit_start, "{outcome:?}");
         assert!(outcome.pages >= 3, "{outcome:?}");
+    }
+
+    // Every page is empty and names an older one, which matrix-sdk-ui answers by
+    // restarting inside the same `paginate_backwards` call.
+    fn endless_empty_messages(from: &str) -> String {
+        thread::sleep(Duration::from_millis(20));
+        let n = from.strip_prefix('e').and_then(|n| n.parse::<u64>().ok()).unwrap_or(0);
+        json!({ "start": from, "chunk": [], "end": format!("e{}", n + 1), "state": [] })
+            .to_string()
+    }
+
+    fn endless_walk(budget: WalkBudget, wanted: Arc<AtomicBool>) -> (bool, usize, usize) {
+        let tokens: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
+        let addr = serve_room(Arc::clone(&tokens), sync_body, endless_empty_messages,
+                              context_before_join);
+        let runtime = tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()
+            .expect("runtime");
+        let registry = TimelineRegistry::new(Arc::new(Mutex::new(VecDeque::new())));
+        let returned = runtime.block_on(async {
+            let timeline = churn_timeline(&addr).await;
+            let walk = walk_backwards(
+                &timeline,
+                20,
+                budget,
+                || wanted.load(Ordering::SeqCst),
+                &registry.start_check_claim(ROOM, 1),
+            );
+            tokio::time::timeout(Duration::from_secs(15), walk).await.is_ok()
+        });
+        let at_return = tokens.lock().unwrap().len();
+        thread::sleep(Duration::from_millis(500));
+        let later = tokens.lock().unwrap().len();
+        drop(runtime);
+        (returned, at_return, later)
+    }
+
+    #[test]
+    fn a_room_whose_pages_bring_nothing_is_walked_within_the_budget() {
+        let (returned, at_return, later) =
+            endless_walk(super::FILTERED_RUN_WALK, Arc::new(AtomicBool::new(true)));
+        assert!(returned, "one request walked the room without end ({at_return} pages)");
+        assert!(at_return <= 100, "{at_return} pages for one request");
+        assert!(later <= at_return + 1, "the walk went on after it returned: {at_return} -> {later}");
+    }
+
+    #[test]
+    fn a_walk_through_pages_that_bring_nothing_stops_when_the_room_is_left() {
+        let wanted = Arc::new(AtomicBool::new(true));
+        let leave = Arc::clone(&wanted);
+        thread::spawn(move || {
+            thread::sleep(Duration::from_millis(800));
+            leave.store(false, Ordering::SeqCst);
+        });
+        let (returned, at_return, later) = endless_walk(
+            WalkBudget { max_pages: 1000, max_time: Duration::from_secs(600) },
+            wanted,
+        );
+        assert!(returned, "leaving the room did not stop the walk ({at_return} pages)");
+        assert!(later <= at_return + 1, "the walk went on after the room was left: {at_return} -> {later}");
     }
 
     const JOINED: &str = "!joined:example.org";
