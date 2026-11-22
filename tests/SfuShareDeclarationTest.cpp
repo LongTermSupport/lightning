@@ -1,3 +1,4 @@
+#include "calls/CallFrameCryptor.h"
 #include "calls/RtcController.h"
 #include "calls/SfuCallController.h"
 #include "calls/SfuMediaEngine.h"
