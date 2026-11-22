@@ -425,6 +425,8 @@ public:
     }
     QString shareAudioCidForTest() const { return m_shareAudioCid; }
     int parkedKeyCountForTest() const { return m_parkedKeys.size(); }
+    void setInboundRingGraceMsForTest(qint64 ms) { m_inboundRingGraceMs = ms; }
+    void attachSubscriberEngineForTest(int connectionId, SfuMediaEngine *engine);
     bool hasParkedKeyForTest(const QString &sender) const
     {
         for (const ParkedKey &k : m_parkedKeys) {
@@ -749,7 +751,18 @@ private:
     quint64 m_sfuGeneration = 0;
     quint64 m_callGeneration = 0;
     bool m_publishFallbackTried = false;
-    QHash<QString, QHash<int, QByteArray>> m_inboundRingKeys;
+    // Media keys by sending device, replayed into each new subscriber engine.
+    struct InboundRing {
+        QString userId;
+        QString deviceId;
+        QHash<int, QByteArray> keys;
+        qint64 lastKeyMs = 0;
+    };
+    QHash<QString, InboundRing> m_inboundRingKeys;
+    QElapsedTimer m_ringClock;
+    qint64 m_inboundRingGraceMs = kParkedKeyTtlMs;
+    void pruneDepartedInboundRings();
+    void replayInboundKeys(SfuMediaEngine *engine) const;
     QPointer<ScreenCastPortal> m_portal;
     QPointer<CameraPortal> m_cameraPortal;
     bool m_cameraAwaitingPortal = false;

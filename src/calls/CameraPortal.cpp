@@ -34,6 +34,14 @@ QString freshToken()
     return QStringLiteral("lightning_%1")
         .arg(QRandomGenerator::system()->generate64(), 0, 16);
 }
+
+void closeRequest(const QString &requestPath)
+{
+    if (requestPath.isEmpty())
+        return;
+    QDBusConnection::sessionBus().send(QDBusMessage::createMethodCall(
+        kService, requestPath, kRequest, QStringLiteral("Close")));
+}
 #endif
 }
 
@@ -158,6 +166,10 @@ void CameraPortal::cancel()
     ++m_generation;
     m_busy = false;
     m_requestTimeout.stop();
+#ifdef HAVE_QT_DBUS
+    closeRequest(m_requestPath);
+#endif
+    m_requestPath.clear();
 }
 
 void CameraPortal::reset()
@@ -193,6 +205,7 @@ void CameraPortal::requestAccess()
     const auto onAnswer = [this, stale](uint response, const QVariantMap &) {
         if (stale())
             return;
+        m_requestPath.clear();
         if (response != 0) {
             cancel();
             Q_EMIT cancelled();
@@ -202,6 +215,7 @@ void CameraPortal::requestAccess()
     };
     auto subscription = portal::subscribeBeforeCall<CameraPortalStep>(
         this, QDBusConnection::sessionBus().baseService(), token, onAnswer);
+    m_requestPath = subscription.path;
 
     QDBusMessage access = QDBusMessage::createMethodCall(
         kService, kPath, kCamera, QStringLiteral("AccessCamera"));
@@ -217,6 +231,11 @@ void CameraPortal::requestAccess()
                 w->deleteLater();
                 QDBusPendingReply<QDBusObjectPath> reply = *w;
                 if (stale()) {
+                    // cancel() closed the predicted path; an older portal's
+                    // own path is still open.
+                    if (!reply.isError()
+                        && reply.value().path() != subscription.path)
+                        closeRequest(reply.value().path());
                     portal::dropSubscription(subscription);
                     return;
                 }
@@ -229,6 +248,7 @@ void CameraPortal::requestAccess()
                         << "camera AccessCamera failed error="
                         << reply.error().name() << "category=" << category;
                     portal::dropSubscription(subscription);
+                    m_requestPath.clear();
                     reset();
                     m_requestTimeout.stop();
                     Q_EMIT failed(category);
@@ -236,6 +256,8 @@ void CameraPortal::requestAccess()
                 }
                 portal::reconcileRequestPath(this, subscription,
                                              reply.value().path(), onAnswer);
+                if (!m_requestPath.isEmpty())
+                    m_requestPath = subscription.path;
             });
 }
 
