@@ -7249,6 +7249,21 @@ pub unsafe extern "C" fn mx_rust_room_members(
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn mx_rust_room_member_check(
+    ptr: *mut c_void,
+    room_id: *const c_char,
+    users_json: *const c_char,
+    op_id: u64,
+) -> *mut c_char {
+    ffi_string(|| {
+        let bridge = unsafe { bridge(ptr)? };
+        let room_id = unsafe { cstr_arg(room_id) }?;
+        let users = unsafe { cstr_arg(users_json) }?;
+        rooms::room_member_check(bridge, room_id, users, op_id).map(|_| String::new())
+    })
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn mx_rust_room_own_permissions(
     ptr: *mut c_void,
     room_id: *const c_char,
@@ -12389,6 +12404,8 @@ async fn run_modern_sync(
         let mut watched_latest: BTreeSet<OwnedRoomId> = BTreeSet::new();
         let mut room_updates_sub = client.subscribe_to_all_room_updates();
         let mut room_updates_live = background.is_none();
+        let mut invited_seen: BTreeSet<OwnedRoomId> =
+            client.invited_rooms().iter().map(|room| room.room_id().to_owned()).collect();
         let mut activity_stamps: HashMap<OwnedRoomId, u64> = HashMap::new();
 
         publication.set(Some(Arc::clone(&room_list_service)));
@@ -12424,7 +12441,8 @@ async fn run_modern_sync(
                 }
                 _ = &mut watchdog => {}
                 batch = entries.next() => {
-                    let Some(batch) = batch else { break; };
+                    let Some(mut batch) = batch else { break; };
+                    extend_with_ready(&mut batch, &mut entries, 256);
                     if let Some(bg) = &background {
                         watch_room_list_diffs(batch, latest_events, &mut watched_latest,
                                               &mut watch_stamps, &mut watch_order,
@@ -12475,6 +12493,23 @@ async fn run_modern_sync(
                                         &mut backfill_tasks, &mut forced_looks, true);
                 }
                 updates = room_updates_sub.recv(), if room_updates_live => {
+                    let settled = match &updates {
+                        Ok(updates) => settled_invites(&mut invited_seen, updates),
+                        Err(tokio::sync::broadcast::error::RecvError::Lagged(_)) => {
+                            let gone: Vec<OwnedRoomId> = invited_seen.iter()
+                                .filter(|id| client.get_room(id)
+                                    .is_none_or(|room| room.state() != matrix_sdk::RoomState::Invited))
+                                .cloned().collect();
+                            invited_seen.retain(|id| !gone.contains(id));
+                            gone
+                        }
+                        Err(_) => Vec::new(),
+                    };
+                    for room in settled.iter().filter_map(|id| client.get_room(id)) {
+                        enqueue(&events, json!({
+                            "type": "room_refreshed", "room": room_payload(&room).await
+                        }));
+                    }
                     match updates {
                         Ok(updates) => {
                             let moved = harvest_room_activity(
@@ -13266,6 +13301,21 @@ async fn run_classic_sync_with(
     }
 }
 
+// A first sync yields one diff per batch, and each batch costs a spaces
+// snapshot over every joined room.
+fn extend_with_ready<T, S>(batch: &mut Vec<T>, stream: &mut S, cap: usize)
+where
+    S: futures_util::Stream<Item = Vec<T>> + Unpin,
+{
+    use futures_util::FutureExt;
+    while batch.len() < cap {
+        match stream.next().now_or_never() {
+            Some(Some(more)) => batch.extend(more),
+            _ => break,
+        }
+    }
+}
+
 async fn forward_room_list_diffs(
     events: &Arc<Mutex<VecDeque<String>>>,
     batches: Vec<VectorDiff<RoomListItem>>,
@@ -13815,7 +13865,7 @@ async fn carry_previews_across_ignore_change(
             let (snapshot, original) = match &latest {
                 LatestEventValue::Remote(event) => (
                     Some(LatestSnapshot {
-                        preview: latest_event_preview_line(&latest),
+                        preview: room_preview_line(&latest, None, room_known_plain(&room)),
                         ts: latest.timestamp().map_or(0, |ts| u64::from(ts.get())),
                         sender: event.raw().get_field::<OwnedUserId>("sender").ok().flatten(),
                     }),
@@ -13834,7 +13884,9 @@ async fn carry_previews_across_ignore_change(
             let (changed, own, touched) = (&changed, &own, &*touched);
             async move {
                 if let (Some(snapshot), Some(original)) = (snapshot.as_mut(), original) {
-                    if let Some(ts) = edited_event_timestamp_ms(&room, &original).await {
+                    if let Some(ts) =
+                        cached_event(&room, &original).await.as_ref().and_then(origin_server_ts_ms)
+                    {
                         snapshot.ts = ts;
                     }
                 }
@@ -13885,9 +13937,15 @@ async fn carry_previews_across_ignore_change(
     (kept, refreshed, blank, started.elapsed().as_millis() as u64, recovered)
 }
 
-async fn edited_event_timestamp_ms(room: &Room, event_id: &EventId) -> Option<u64> {
+async fn cached_event(
+    room: &Room,
+    event_id: &EventId,
+) -> Option<matrix_sdk::deserialized_responses::TimelineEvent> {
     let (cache, _drop_handles) = room.event_cache().await.ok()?;
-    let event = cache.find_event(event_id).await.ok()??;
+    cache.find_event(event_id).await.ok()?
+}
+
+fn origin_server_ts_ms(event: &matrix_sdk::deserialized_responses::TimelineEvent) -> Option<u64> {
     let ts = u64::from(event.raw().get_field::<UInt>("origin_server_ts").ok()??);
     if ts == 0 { None } else { Some(ts) }
 }
@@ -13943,6 +14001,40 @@ pub(crate) fn event_ordering_stamp_ms(
     let raw_ts = conversation_timestamp_ms(event.raw())?;
     let own = event.timestamp_raw().map(|ts| u64::from(ts.get())).filter(|ts| *ts != 0);
     Some(own.map_or(raw_ts, |ts| ts.min(raw_ts)))
+}
+
+/// Invitations `updates` settled. matrix-sdk's room list retires an invite
+/// only through a room-info broadcast that drops updates when it lags.
+fn settled_invites(
+    invited: &mut BTreeSet<OwnedRoomId>,
+    updates: &matrix_sdk::sync::RoomUpdates,
+) -> Vec<OwnedRoomId> {
+    invited.extend(updates.invited.keys().cloned());
+    updates.joined.keys().chain(updates.left.keys()).chain(updates.knocked.keys())
+        .filter(|id| invited.remove(*id))
+        .cloned()
+        .collect()
+}
+
+#[cfg(test)]
+mod settled_invite_tests {
+    use super::*;
+
+    #[test]
+    fn a_join_or_leave_settles_a_seen_invitation_once() {
+        let id = |s: &str| OwnedRoomId::try_from(s).unwrap();
+        let mut seen = BTreeSet::from([id("!a:x")]);
+        let mut updates = matrix_sdk::sync::RoomUpdates::default();
+        updates.invited.insert(id("!b:x"), Default::default());
+        updates.joined.insert(id("!c:x"), Default::default());
+        assert!(settled_invites(&mut seen, &updates).is_empty());
+        let mut updates = matrix_sdk::sync::RoomUpdates::default();
+        updates.joined.insert(id("!a:x"), Default::default());
+        updates.left.insert(id("!b:x"), Default::default());
+        assert_eq!(settled_invites(&mut seen, &updates), [id("!a:x"), id("!b:x")]);
+        assert!(seen.is_empty());
+        assert!(settled_invites(&mut seen, &updates).is_empty());
+    }
 }
 
 fn harvest_room_activity(
@@ -14209,15 +14301,16 @@ async fn room_payload(room: &Room) -> serde_json::Value {
     } else { (String::new(), String::new()) };
 
     let latest_event = room.latest_event();
-    let edited_ts = match &latest_event {
+    let edited_original = match &latest_event {
         matrix_sdk_base::latest_event::LatestEventValue::Remote(event) => {
             match replaced_event_id(event.raw()) {
-                Some(original) => edited_event_timestamp_ms(room, &original).await,
+                Some(original) => cached_event(room, &original).await,
                 None => None,
             }
         }
         _ => None,
     };
+    let edited_ts = edited_original.as_ref().and_then(origin_server_ts_ms);
     let remembered = previewbackfill::remembered(room.own_user_id(), room.room_id());
     let latest_event_id = latest_event.event_id();
     let utd_now = match &remembered {
@@ -14247,7 +14340,7 @@ async fn room_payload(room: &Room) -> serde_json::Value {
     let latest_line = if latest_sender_ignored(room, &latest_event) {
         String::new()
     } else {
-        latest_event_preview_line(&latest_event)
+        room_preview_line(&latest_event, edited_original.as_ref(), room_known_plain(room))
     };
     if let Some(sender) = latest_sender.filter(|_| !latest_line.is_empty() || latest_ts > 0) {
         previewbackfill::note_shown(room.own_user_id(), room.room_id(), previewbackfill::LatestSnapshot {
@@ -14357,15 +14450,61 @@ pub(crate) fn latest_event_preview_text(
     preview_english(&latest_event_preview_line(value))
 }
 
+#[cfg(test)]
 pub(crate) fn latest_event_preview_line(
     value: &matrix_sdk_base::latest_event::LatestEventValue,
 ) -> String {
+    room_preview_line(value, None, true)
+}
+
+/// matrix-sdk's latest-event builder checks a replacement's encryption against
+/// the original's own, so a plaintext edit of an encrypted message arrives
+/// here as valid: check it against `original`, or without it refuse a
+/// plaintext one unless the room is known to be unencrypted.
+pub(crate) fn room_preview_line(
+    value: &matrix_sdk_base::latest_event::LatestEventValue,
+    original: Option<&matrix_sdk::deserialized_responses::TimelineEvent>,
+    room_plain: bool,
+) -> String {
     use matrix_sdk_base::latest_event::LatestEventValue;
 
-    match value {
-        LatestEventValue::Remote(event) => raw_event_preview_line(event.raw()),
-        _ => String::new(),
+    let LatestEventValue::Remote(event) = value else {
+        return String::new();
+    };
+    if replaced_event_id(event.raw()).is_none() {
+        return raw_event_preview_line(event.raw());
     }
+    fn info(
+        event: &matrix_sdk::deserialized_responses::TimelineEvent,
+    ) -> Option<&matrix_sdk::deserialized_responses::EncryptionInfo> {
+        event.encryption_info().map(|info| &**info)
+    }
+    match original {
+        Some(original)
+            if matrix_sdk::check_validity_of_replacement_events(
+                original.raw(),
+                info(original),
+                event.raw(),
+                info(event),
+            )
+            .is_ok() =>
+        {
+            raw_event_preview_line(event.raw())
+        }
+        Some(original) if replaced_event_id(original.raw()).is_none() => {
+            raw_event_preview_line(original.raw())
+        }
+        Some(_) => String::new(),
+        None if room_plain || event.encryption_info().is_some() => {
+            raw_event_preview_line(event.raw())
+        }
+        None => String::new(),
+    }
+}
+
+fn room_known_plain(room: &Room) -> bool {
+    let state = room.encryption_state();
+    !state.is_encrypted() && !state.is_unknown()
 }
 
 pub(crate) const PREVIEW_KIND_MARK: char = '\u{1}';
@@ -15333,6 +15472,24 @@ mod thread_subscription_reason_tests {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn ready_room_list_batches_join_the_one_being_forwarded() {
+        let mut ready = futures_util::stream::iter((1..=1000).map(|n| vec![n]));
+        let mut batch = vec![0];
+        super::extend_with_ready(&mut batch, &mut ready, 256);
+        assert_eq!(batch, (0..256).collect::<Vec<_>>());
+
+        let mut short = futures_util::stream::iter([vec![1], vec![2, 3]]);
+        let mut batch = vec![0];
+        super::extend_with_ready(&mut batch, &mut short, 256);
+        assert_eq!(batch, vec![0, 1, 2, 3]);
+
+        let mut idle = futures_util::stream::pending::<Vec<i32>>();
+        let mut batch = vec![0];
+        super::extend_with_ready(&mut batch, &mut idle, 256);
+        assert_eq!(batch, vec![0]);
+    }
+
     #[test]
     fn mark_read_target_does_not_depend_on_latest_event() {
         let id = |s: &str| super::EventId::parse(s).unwrap();

@@ -967,6 +967,20 @@ Rectangle {
                         onLinkActivated: function(link) {
                             panel.openRootLink(link)
                         }
+                        QuoteBars {
+                            id: rootQuotes
+                            document: rootBody.textDocument
+                        }
+                        Repeater {
+                            model: rootQuotes.bars
+                            Rectangle {
+                                x: modelData.x
+                                y: modelData.y
+                                width: 3
+                                height: modelData.height
+                                color: modelData.color
+                            }
+                        }
                     }
                     ScrollBar.vertical: AppScrollBar { policy: ScrollBar.AsNeeded }
                 }
@@ -2191,11 +2205,36 @@ Rectangle {
                             iconName: "add_circle"
                             iconSize: 18
                             enabled: app.thread.attachmentsSupported
-                            Accessible.name: qsTr("Attach files")
+                            Accessible.name: app.thread.attachmentsSupported && app.thread.pollsSupported()
+                                             ? qsTr("Attach files or create a poll")
+                                             : qsTr("Attach files")
                             ToolTip.text: qsTr("Attach")
-                            ToolTip.visible: hovered
+                            ToolTip.visible: hovered && !threadAttachMenu.visible
                             ToolTip.delay: 500
-                            onClicked: threadAttachDialog.open()
+                            onClicked: {
+                                if (app.thread.pollsSupported())
+                                    threadAttachMenu.open()
+                                else
+                                    threadAttachDialog.open()
+                            }
+
+                            AppMenu {
+                                id: threadAttachMenu
+                                objectName: "threadAttachMenu"
+                                y: -height - 4
+                                AppMenuItem {
+                                    iconName: "attach_file"
+                                    text: qsTr("Attach files…")
+                                    onTriggered: threadAttachDialog.open()
+                                }
+                                AppMenuItem {
+                                    objectName: "threadCreatePollMenuItem"
+                                    iconName: "check_circle"
+                                    text: qsTr("Create poll…")
+                                    enabled: !panel.threadPostBlocked
+                                    onTriggered: threadCreatePollDialog.openDialog()
+                                }
+                            }
                         }
                         Flickable {
                             id: threadRichFlick
@@ -2954,6 +2993,12 @@ Rectangle {
                 }
             }
         }
+    }
+
+    CreatePollDialog {
+        id: threadCreatePollDialog
+        objectName: "threadCreatePollDialog"
+        target: app.thread
     }
 
     NativeFileDialog {

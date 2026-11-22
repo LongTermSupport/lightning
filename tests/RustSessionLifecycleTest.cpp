@@ -281,7 +281,10 @@ void RustSessionLifecycleTest::theEventDrainStopsWithTheHandleItPolls()
     const qsizetype start = source.indexOf(
         QLatin1String("void RustSdkMatrixClient::pollRustEvents()"));
     QVERIFY(start >= 0);
-    const qsizetype end = source.indexOf(QLatin1String("\nvoid RustSdkMatrixClient::"), start + 1);
+    const qsizetype drain = source.indexOf(
+        QLatin1String("void RustSdkMatrixClient::drainSdkEvents("), start);
+    QVERIFY(drain > start);
+    const qsizetype end = source.indexOf(QLatin1String("\nvoid RustSdkMatrixClient::"), drain + 1);
     QVERIFY(end > start);
     const QString body = source.mid(start, end - start);
 

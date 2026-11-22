@@ -1,6 +1,7 @@
 
 #include <QtTest/QtTest>
 
+#include <QAccessible>
 #include <QFile>
 #include <QGuiApplication>
 #include <QClipboard>
@@ -16,8 +17,18 @@
 #include "app/SettingsManager.h"
 #include "app/ShortcutRegistry.h"
 #include "auth/AccountManager.h"
+#include "matrix/MockMatrixClient.h"
+#include "models/QuickSwitcherModel.h"
 
 namespace {
+
+QStringList s_announcements;
+
+void captureAnnouncement(QAccessibleEvent *event)
+{
+    if (event->type() == QAccessible::Announcement)
+        s_announcements.append(static_cast<QAccessibleAnnouncementEvent *>(event)->message());
+}
 
 const char *kScene = R"QML(
 import QtQuick
@@ -313,6 +324,182 @@ private slots:
                      list->property("originY").toReal());
         QVERIFY(currentRowVisible());
         QMetaObject::invokeMethod(switcher(), "close");
+    }
+
+    MockMatrixClient *mock() const
+    {
+        return qobject_cast<MockMatrixClient *>(m_controller->findChild<MatrixClient *>());
+    }
+
+    QString roomAt(int row) const
+    {
+        return m_controller->quickSwitcher()->resultAt(row).value(QStringLiteral("roomId"))
+            .toString();
+    }
+
+    int rowOfRoom(const QString &roomId) const
+    {
+        for (int row = 0; row < m_controller->quickSwitcher()->rowCount(); ++row)
+            if (roomAt(row) == roomId)
+                return row;
+        return -1;
+    }
+
+    void liveRoomChangesKeepEnterOnTheSelectedRoom()
+    {
+        QVERIFY(mock());
+        QStringList left;
+        const auto restore = qScopeGuard([&] {
+            for (const QString &id : left)
+                mock()->setRoomMembershipForTest(id, RoomInfo::Joined);
+            QMetaObject::invokeMethod(switcher(), "close");
+        });
+        QMetaObject::invokeMethod(m_root, "openSwitcher");
+        QTRY_VERIFY(switcher()->property("opened").toBool());
+        QQuickItem *list = resultList();
+        QTRY_VERIFY(list->property("count").toInt() > 3);
+        list->setProperty("currentIndex", 2);
+        const QString selected = roomAt(2);
+        const QString above = roomAt(0);
+
+        left << above;
+        mock()->setRoomMembershipForTest(above, RoomInfo::Left);
+        QTRY_COMPARE(rowOfRoom(above), -1);
+        QCOMPARE(roomAt(list->property("currentIndex").toInt()), selected);
+
+        const int at = list->property("currentIndex").toInt();
+        left << selected;
+        mock()->setRoomMembershipForTest(selected, RoomInfo::Left);
+        QTRY_COMPARE(rowOfRoom(selected), -1);
+        QCOMPARE(list->property("currentIndex").toInt(), at);
+    }
+
+    void liveResultChangesAreAnnouncedOnceAndNameAVanishedSelection()
+    {
+        QVERIFY(mock());
+        QStringList left;
+        s_announcements.clear();
+        QAccessible::setActive(true);
+        const auto previous = QAccessible::installUpdateHandler(captureAnnouncement);
+        const auto restore = qScopeGuard([&] {
+            QAccessible::installUpdateHandler(previous);
+            QAccessible::setActive(false);
+            for (const QString &id : left)
+                mock()->setRoomMembershipForTest(id, RoomInfo::Joined);
+            QMetaObject::invokeMethod(switcher(), "close");
+        });
+        QMetaObject::invokeMethod(m_root, "openSwitcher");
+        QTRY_VERIFY(switcher()->property("opened").toBool());
+        QQuickItem *list = resultList();
+        QTRY_VERIFY(list->property("count").toInt() > 3);
+        list->setProperty("currentIndex", 2);
+        const QString selected = roomAt(2);
+        const QString name = m_controller->quickSwitcher()->resultAt(2)
+                                 .value(QStringLiteral("name")).toString();
+        QVERIFY(!name.isEmpty());
+        QTest::qWait(900);
+        QVERIFY2(s_announcements.isEmpty(), qPrintable(s_announcements.join(" | ")));
+
+        const QString first = roomAt(0);
+        const QString second = roomAt(1);
+        left << first << second;
+        mock()->setRoomMembershipForTest(first, RoomInfo::Left);
+        mock()->setRoomMembershipForTest(second, RoomInfo::Left);
+        QTRY_COMPARE(s_announcements.size(), 1);
+        QTest::qWait(900);
+        QCOMPARE(s_announcements.size(), 1);
+        QVERIFY2(s_announcements.first().contains(name), qPrintable(s_announcements.first()));
+        QVERIFY(!s_announcements.first().contains(QStringLiteral("no longer listed")));
+        QCOMPARE(switcher()->property("lastResultAnnouncement").toString(),
+                 s_announcements.first());
+
+        left << selected;
+        mock()->setRoomMembershipForTest(selected, RoomInfo::Left);
+        QTRY_COMPARE(s_announcements.size(), 2);
+        QVERIFY2(s_announcements.last().startsWith(name + QStringLiteral(" is no longer listed.")),
+                 qPrintable(s_announcements.last()));
+
+        field()->setProperty("text", QStringLiteral("zz"));
+        field()->setProperty("text", QStringLiteral("zzq-no-such-room"));
+        QTRY_COMPARE(s_announcements.size(), 3);
+        QTest::qWait(900);
+        QCOMPARE(s_announcements.size(), 3);
+        QVERIFY2(!s_announcements.last().contains(QStringLiteral("no longer listed")),
+                 qPrintable(s_announcements.last()));
+    }
+
+    void aCommandRebuildKeepsEnterOnTheSelectedAction()
+    {
+        SettingsManager *settings = m_controller->settings();
+        const int preset = settings->layoutPreset();
+        const auto restore = qScopeGuard([&] {
+            settings->setLayoutPreset(preset);
+            QMetaObject::invokeMethod(switcher(), "close");
+        });
+        QMetaObject::invokeMethod(m_root, "openCommand");
+        QTRY_VERIFY(switcher()->property("opened").toBool());
+        auto *commands = m_root->findChild<QQuickItem *>(
+            QStringLiteral("quickSwitcherCommandList"));
+        QTRY_VERIFY(commands->property("count").toInt() > 4);
+        const auto idAt = [this](int row) {
+            return switcher()->property("commandRows").value<QVariantList>().value(row)
+                .toMap().value(QStringLiteral("id")).toString();
+        };
+        commands->setProperty("currentIndex", 4);
+        const QString selected = idAt(4);
+        QVERIFY(!selected.isEmpty());
+
+        settings->setLayoutPreset(preset == 1 ? 0 : 1);
+        QTRY_VERIFY(commandTitles().contains(preset == 1 ? QStringLiteral("Use compact layout")
+                                                         : QStringLiteral("Use Lightning layout")));
+        QCOMPARE(commands->property("currentIndex").toInt(), 4);
+        QCOMPARE(idAt(4), selected);
+
+        field()->setProperty("text", QStringLiteral("theme"));
+        QTRY_COMPARE(commands->property("currentIndex").toInt(), 0);
+    }
+
+    void aPastedRoomIdOpensItAndAnUnknownAddressOnlyPreviews()
+    {
+        QVERIFY(mock());
+        const auto restore = qScopeGuard([&] {
+            QMetaObject::invokeMethod(switcher(), "close");
+        });
+        QMetaObject::invokeMethod(m_root, "openSwitcher");
+        QTRY_VERIFY(switcher()->property("opened").toBool());
+        QQuickItem *list = resultList();
+        QTRY_VERIFY(list->property("count").toInt() > 0);
+        QString target;
+        for (int row = 0; row < m_controller->quickSwitcher()->rowCount(); ++row) {
+            const QVariantMap r = m_controller->quickSwitcher()->resultAt(row);
+            if (r.value(QStringLiteral("category")).toString() == QStringLiteral("room")
+                && r.value(QStringLiteral("name")).toString() != r.value(QStringLiteral("roomId"))) {
+                target = r.value(QStringLiteral("roomId")).toString();
+                break;
+            }
+        }
+        QVERIFY(!target.isEmpty());
+        field()->setProperty("text", target);
+        QTRY_COMPARE(list->property("count").toInt(), 1);
+        QCOMPARE(roomAt(0), target);
+        QTest::keyClick(m_window, Qt::Key_Return);
+        QTRY_VERIFY(!switcher()->property("visible").toBool());
+        QTRY_COMPARE(m_controller->currentRoomId(), target);
+
+        QSignalSpy links(m_controller, SIGNAL(matrixLinkRequested(QString)));
+        const QStringList joinsBefore = mock()->joinedTargets;
+        QMetaObject::invokeMethod(m_root, "openSwitcher");
+        QTRY_VERIFY(switcher()->property("opened").toBool());
+        field()->setProperty("text", QStringLiteral("#nowhere:example.org"));
+        QTRY_COMPARE(list->property("count").toInt(), 1);
+        QCOMPARE(m_controller->quickSwitcher()->resultAt(0).value(QStringLiteral("category"))
+                     .toString(), QStringLiteral("address"));
+        QTest::keyClick(m_window, Qt::Key_Return);
+        QTRY_VERIFY(!switcher()->property("visible").toBool());
+        QCOMPARE(links.count(), 1);
+        QCOMPARE(links.first().first().toString(), QStringLiteral("#nowhere:example.org"));
+        QCOMPARE(m_controller->currentRoomId(), target);
+        QCOMPARE(mock()->joinedTargets, joinsBefore);
     }
 
     void pageKeysMoveTheSelectionAndKeepItVisible()

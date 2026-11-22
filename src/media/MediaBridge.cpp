@@ -2320,6 +2320,7 @@ SaveWriteResult writeSaveFileBlocking(const QString &folder, const QString &leaf
                                       const QByteArray &bytes, bool uniquify,
                                       const std::atomic<bool> &cancelled)
 {
+    stalltrace::noteGuiWork("media-save", bytes.size());
     const auto result = [](Outcome outcome, const QString &path = {}) {
         return SaveWriteResult{outcome, path};
     };

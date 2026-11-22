@@ -145,12 +145,30 @@ ColumnLayout {
             var s = app.conversations.userSearch.state
             if (s === "loading") return qsTr("Searching…")
             if (s === "no_results") return qsTr("No results")
-            if (s === "error") return qsTr("Search failed. Check your connection and try again.")
+            if (s === "error")
+                return app.conversations.userSearch.notice
+                       || qsTr("Search failed. Check your connection and try again.")
             return ""
         }
         color: app.conversations.userSearch.state === "error"
                ? AppTheme.stormDanger : AppTheme.stormTextMuted
         font.pixelSize: AppTheme.textBody
+        wrapMode: Text.Wrap
+    }
+
+    Label {
+        objectName: root.objectName.length > 0
+                    ? root.objectName + "Notice" : "userPickerNotice"
+        visible: text.length > 0 && !root.showingSuggestions
+        Layout.fillWidth: true
+        text: app.conversations.userSearch.state === "error"
+              ? "" : app.conversations.userSearch.notice
+        textFormat: Text.PlainText
+        color: AppTheme.stormTextMuted
+        font.pixelSize: AppTheme.textMeta
+        wrapMode: Text.Wrap
+        Accessible.role: Accessible.StaticText
+        Accessible.name: text
     }
 
     Label {
@@ -349,7 +367,9 @@ ColumnLayout {
                     tone: "info"
                     visible: src !== "directory"
                     label: src === "exact_local" ? qsTr("From your server")
-                         : src === "exact_mxid"  ? qsTr("Exact Matrix ID")
+                         : src === "exact_mxid"
+                           ? (model.confirmed ? qsTr("Exact Matrix ID")
+                                              : qsTr("Exact Matrix ID, not confirmed"))
                          : ""
                 }
             }

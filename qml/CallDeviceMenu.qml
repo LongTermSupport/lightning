@@ -80,6 +80,18 @@ AppMenu {
         }
     }
     Loader {
+        objectName: "callMenuMicrophoneUnusable"
+        active: root.isMicrophone
+                && app.callDevices.preferredMicrophoneUnusable
+                && !app.callDevices.preferredMicrophoneMissing
+        visible: active
+        sourceComponent: AppMenuItem {
+            text: qsTr("Your chosen microphone couldn't be opened. The call "
+                       + "uses the system default.")
+            enabled: false
+        }
+    }
+    Loader {
         objectName: "callMenuCameraMissing"
         active: root.kind === "camera"
                 && app.callDevices.preferredCameraMissing

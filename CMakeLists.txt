@@ -3666,6 +3666,8 @@ if(BUILD_TESTING)
         src/models/RichComposition.cpp
         src/media/ImageSendPrep.h
         src/media/ImageSendPrep.cpp
+        src/app/GuiStallTracer.h
+        src/app/GuiStallTracer.cpp
         src/media/ImageMetadata.h
         src/media/ImageMetadata.cpp
         # The composer's draft hooks pull in the store.
@@ -3710,6 +3712,8 @@ if(BUILD_TESTING)
         src/models/RichComposition.cpp
         src/media/ImageSendPrep.h
         src/media/ImageSendPrep.cpp
+        src/app/GuiStallTracer.h
+        src/app/GuiStallTracer.cpp
         src/media/ImageMetadata.h
         src/media/ImageMetadata.cpp
         # The composer's draft hooks pull in the store.
@@ -4348,6 +4352,8 @@ if(BUILD_TESTING)
         src/models/RichComposition.cpp
         src/media/ImageSendPrep.h
         src/media/ImageSendPrep.cpp
+        src/app/GuiStallTracer.h
+        src/app/GuiStallTracer.cpp
         src/media/ImageMetadata.h
         src/media/ImageMetadata.cpp
         src/models/MentionTokenizer.h
@@ -4671,6 +4677,8 @@ if(BUILD_TESTING)
         # The quick switcher shows the same unread count as the other surfaces.
         src/models/QuickSwitcherModel.h
         src/models/QuickSwitcherModel.cpp
+        src/models/UserLookup.h
+        src/models/UserLookup.cpp
         # Rooms come from the client, not RoomListModel, which is scoped to the
         # active Space and filtered.
         src/spaces/SpaceManager.h
@@ -5219,6 +5227,8 @@ if(BUILD_TESTING)
         src/media/ImageMetadata.cpp
         src/media/ImageSendPrep.h
         src/media/ImageSendPrep.cpp
+        src/app/GuiStallTracer.h
+        src/app/GuiStallTracer.cpp
         src/models/SlashCommands.h
         src/models/SlashCommands.cpp
         src/threads/ThreadManager.h
@@ -5294,6 +5304,12 @@ if(BUILD_TESTING)
         src/models/UserLookup.cpp
         src/models/AttachmentQueueModel.h
         src/models/AttachmentQueueModel.cpp
+        src/media/ImageSendPrep.h
+        src/media/ImageSendPrep.cpp
+        src/media/ImageMetadata.h
+        src/media/ImageMetadata.cpp
+        src/app/GuiStallTracer.h
+        src/app/GuiStallTracer.cpp
         src/media/StagedImageStore.h
         src/media/StagedImageStore.cpp
         # The poster hook keeps this suite free of a real media backend.
@@ -5667,6 +5683,16 @@ if(BUILD_TESTING)
         target_include_directories(sync-message-row-test PRIVATE src)
         add_test(NAME sync-message-row COMMAND sync-message-row-test)
         set_tests_properties(sync-message-row PROPERTIES
+            ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
+        # Counts the work a burst of room-list diffs causes per poll drain.
+        qt_add_executable(room-list-drain-test
+            tests/RoomListDrainTest.cpp
+        )
+        lightning_configure_qml_test(room-list-drain-test)
+        target_include_directories(room-list-drain-test PRIVATE src)
+        add_test(NAME room-list-drain COMMAND room-list-drain-test)
+        set_tests_properties(room-list-drain PROPERTIES
             ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
         # The Rust backend's notification-path signals (live observations,
@@ -6260,6 +6286,8 @@ if(BUILD_TESTING)
         tests/QuickSwitcherTest.cpp
         src/models/QuickSwitcherModel.h
         src/models/QuickSwitcherModel.cpp
+        src/models/UserLookup.h
+        src/models/UserLookup.cpp
         src/matrix/MatrixClient.h
         src/matrix/MatrixClient.cpp
         src/matrix/MockMatrixClient.h

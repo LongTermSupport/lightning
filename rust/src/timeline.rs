@@ -5532,6 +5532,11 @@ fn event_item_to_json(
                         Some(event_id) if !event_id.is_empty() => event_id.to_owned(),
                         _ => unique_id.to_owned(),
                     };
+                    let key = if message.is_edited() {
+                        swapped_media_key(event, &key).unwrap_or(key)
+                    } else {
+                        key
+                    };
                     let mut sources = fill_message_media(&mut out, message.msgtype(), &key);
                     if matches!(message.msgtype(), MessageType::Audio(_)) {
                         let wire = event
@@ -5859,6 +5864,29 @@ fn fill_spoiler(
             out["media_spoiler_reason"] = reason.into();
         }
     }
+}
+
+/// The bridge caches bytes per media key, so an edit that swaps the file needs
+/// a key of its own or the row keeps drawing the original.
+fn swapped_media_key(event: &EventTimelineItem, key: &str) -> Option<String> {
+    let parse = |raw: &matrix_sdk::ruma::serde::Raw<AnySyncTimelineEvent>| {
+        raw.deserialize_as::<serde_json::Value>().ok()
+    };
+    let url = |content: &serde_json::Value| {
+        content
+            .get("url")
+            .or_else(|| content.get("file")?.get("url"))
+            .and_then(|v| v.as_str())
+            .map(str::to_owned)
+    };
+    let edit = event.latest_edit_json().and_then(parse)?;
+    let original = event.original_json().and_then(parse)?;
+    let swapped = url(edit.get("content")?.get("m.new_content")?)?;
+    if url(original.get("content")?).as_deref() == Some(swapped.as_str()) {
+        return None;
+    }
+    let edit_id = edit.get("event_id")?.as_str()?;
+    Some(format!("{key}#edit:{edit_id}"))
 }
 
 fn raw_displayed_formatted_body(

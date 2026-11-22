@@ -1,5 +1,7 @@
 #pragma once
 
+#include "calls/PortalCapability.h"
+
 #include <QObject>
 #include <QTimer>
 #include <QVariantMap>
@@ -19,7 +21,10 @@ public:
     explicit ScreenCastPortal(QObject *parent = nullptr);
     ~ScreenCastPortal() override;
 
-    static bool available();
+    /// Never blocks: Unknown until the portal has answered. On Windows and
+    /// macOS, whether there is a screen.
+    portal::Capability capability();
+    void refreshCapability();
 
     void requestShare(int types = Monitor | Window, int preparationBoundMs = 0,
                       int pickerBoundMs = 0);
@@ -34,6 +39,7 @@ Q_SIGNALS:
     void ready(unsigned pipewireNodeId, int pipewireFd);
     void cancelled();
     void failed(const QString &category);
+    void capabilityChanged();
 
 private:
     void reset();
@@ -54,4 +60,5 @@ private:
     // The portal Request still awaiting its Response; closed on cancel.
     QString m_requestPath;
     quint64 m_generation = 0;
+    portal::CapabilityProbe m_capability;
 };

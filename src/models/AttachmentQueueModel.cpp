@@ -1,5 +1,6 @@
 #include "models/AttachmentQueueModel.h"
 
+#include "app/GuiStallTracer.h"
 #include "media/StagedImageStore.h"
 #include "media/AnimatedImageSniff.h"
 
@@ -27,6 +28,7 @@
 #include <QSize>
 #include <QSysInfo>
 #include <QTemporaryDir>
+#include <QThreadPool>
 #include <QTimer>
 
 #if defined(HAVE_QT_DBUS) && defined(Q_OS_LINUX)
@@ -452,6 +454,17 @@ void AttachmentQueueModel::startPosterJob(int row)
 {
     if (row < 0 || row >= m_entries.size())
         return;
+    if (!m_entries.at(row).stripMode.isEmpty()) {
+        // The first job may still be running: a restart shares neither its
+        // tag nor its directory.
+        Entry &restarted = m_entries[row];
+        const quint64 serial = m_nextPosterTag++;
+        restarted.posterTag = QStringLiteral("send:%1").arg(serial);
+        if (!restarted.strip.sub.isEmpty())
+            restarted.strip.sub += QStringLiteral("-%1").arg(serial);
+        startStripJob(restarted);
+        return;
+    }
     const Entry &entry = m_entries.at(row);
     if (entry.isSvg) {
         startSvgConversion(row);
@@ -471,12 +484,110 @@ void AttachmentQueueModel::startPosterJob(int row)
 
 void AttachmentQueueModel::cancelPosterJob(const Entry &entry)
 {
-    if (!entry.posterPending || entry.isSvg || entry.posterTag.isEmpty())
+    if (!entry.posterPending || entry.posterTag.isEmpty())
+        return;
+    if (!entry.stripMode.isEmpty()) {
+        if (const auto flag = m_stripJobs.take(entry.posterTag))
+            flag->store(true);
+        return;
+    }
+    if (entry.isSvg)
         return;
     if (m_posterCancelHook)
         m_posterCancelHook(entry.posterTag);
     else if (m_posterExtractor)
         m_posterExtractor->cancel(entry.posterTag);
+}
+
+AttachmentQueueModel::SendImage AttachmentQueueModel::prepareImageForSend(
+    Entry &entry, ImageSendPrep &prep, const QString &mode, bool allowDefer,
+    QString &path, QByteArray &data, QString &sub)
+{
+    path = entry.localPath;
+    data = entry.data;
+    sub.clear();
+    if (entry.isVideo || entry.isSvg
+        || !ImageSendPrep::needsStrip(mode, entry.mime)) {
+        dropStrip(entry);
+        return SendImage::Ready;
+    }
+    if (entry.stripDone && entry.stripMode == mode) {
+        const ImageSendPrep::Prepared done = std::exchange(entry.strip, {});
+        entry.stripDone = false;
+        entry.stripMode.clear();
+        if (!done.ok)
+            return SendImage::Refused;
+        path = done.path;
+        data = done.data;
+        sub = done.sub;
+        return SendImage::Ready;
+    }
+    dropStrip(entry);
+    const qint64 size = entry.localPath.isEmpty()
+        ? entry.data.size() : QFileInfo(entry.localPath).size();
+    if (!allowDefer || size < ImageSendPrep::kBackgroundBytes)
+        return prep.prepare(mode, entry.mime, path, data, &sub)
+            ? SendImage::Ready : SendImage::Refused;
+    entry.stripMode = mode;
+    entry.strip.sub = entry.localPath.isEmpty() ? QString() : prep.nextSub();
+    entry.posterPending = true;
+    entry.posterTag = QStringLiteral("send:%1").arg(m_nextPosterTag++);
+    startStripJob(entry);
+    return SendImage::Deferred;
+}
+
+void AttachmentQueueModel::startStripJob(const Entry &entry)
+{
+    auto cancelled = std::make_shared<std::atomic<bool>>(false);
+    m_stripJobs.insert(entry.posterTag, cancelled);
+    QPointer<AttachmentQueueModel> self(this);
+    QThreadPool::globalInstance()->start(
+        [self, tag = entry.posterTag, mode = entry.stripMode,
+         path = entry.localPath, data = entry.data, sub = entry.strip.sub,
+         cancelled] {
+            const ImageSendPrep::Prepared result =
+                ImageSendPrep::run(mode, path, data, sub, cancelled.get());
+            QMetaObject::invokeMethod(
+                QCoreApplication::instance(),
+                [self, tag, result] {
+                    if (self)
+                        self->finishStrip(tag, result);
+                    else
+                        ImageSendPrep::discard(result.sub);
+                },
+                Qt::QueuedConnection);
+        });
+}
+
+void AttachmentQueueModel::finishStrip(const QString &tag,
+                                       const ImageSendPrep::Prepared &result)
+{
+    m_stripJobs.remove(tag);
+    int row = -1;
+    Entry *entry = entryForTag(tag, &row);
+    // Removed, cancelled, retargeted or restarted: the copy belongs to no row.
+    if (!entry || !entry->posterPending || entry->stripMode.isEmpty()) {
+        ImageSendPrep::discard(result.sub);
+        return;
+    }
+    entry->posterPending = false;
+    entry->stripDone = true;
+    entry->strip = result;
+    notifyPrepared(row);
+}
+
+void AttachmentQueueModel::dropStrip(Entry &entry)
+{
+    if (entry.stripMode.isEmpty())
+        return;
+    if (entry.posterPending) {
+        cancelPosterJob(entry);
+        entry.posterPending = false;
+    }
+    ImageSendPrep::discard(entry.strip.sub);
+    entry.strip = {};
+    entry.stripDone = false;
+    entry.stripMode.clear();
 }
 
 QString AttachmentQueueModel::convertedDirectory()
@@ -673,11 +784,175 @@ void removeOwnedRendition(const QString &path)
 void AttachmentQueueModel::releaseStaged(const Entry &entry)
 {
     cancelPosterJob(entry);
+    if (!entry.stripMode.isEmpty())
+        ImageSendPrep::discard(entry.strip.sub);
     if (m_stagedImages && !entry.stagedToken.isEmpty())
         m_stagedImages->remove(entry.stagedToken);
     if (entry.converted)
         removeOwnedRendition(entry.localPath);
     removeOwnedRendition(entry.editPreviewPath);
+}
+
+namespace {
+
+struct EditJob {
+    QString localPath;
+    QByteArray data;
+    QString fileName;
+    QString mime;
+    qreal left = 0;
+    qreal top = 0;
+    qreal right = 1;
+    qreal bottom = 1;
+    int quarterTurns = 0;
+    bool mirror = false;
+    QList<QList<QPointF>> strokes;
+    QString workDir;
+};
+
+struct EditResult {
+    QString error;
+    QString path;
+    QSize size;
+    bool animated = false;
+};
+
+// Touches no model state, so it may run on any thread.
+EditResult renderEdit(const EditJob &job)
+{
+    qint64 work = 0;
+    const auto fail = [&work](const QString &reason) {
+        stalltrace::noteGuiWork("image-edit", work);
+        return EditResult{reason, {}, {}, false};
+    };
+    constexpr int maxEdge = 4096;
+    QByteArray bytes = job.data;
+    QBuffer buffer(&bytes);
+    QImageReader reader;
+    if (job.localPath.isEmpty()) {
+        buffer.open(QIODevice::ReadOnly);
+        reader.setDevice(&buffer);
+        work += bytes.size();
+    } else {
+        reader.setFileName(job.localPath);
+        work += QFileInfo(job.localPath).size();
+    }
+    const QByteArray format = reader.format().toLower();
+    if (format != "png" && format != "jpeg" && format != "jpg"
+        && format != "gif" && format != "webp" && format != "bmp"
+        && format != "jxl")
+        return fail(AttachmentQueueModel::tr("This image format cannot be edited."));
+    reader.setAutoTransform(true);
+    bool wasAnimated = reader.imageCount() > 1;
+    if (!wasAnimated && (format == "gif" || format == "webp")) {
+        QByteArray animationBytes = bytes;
+        if (!job.localPath.isEmpty()) {
+            QFile sourceFile(job.localPath);
+            if (sourceFile.open(QIODevice::ReadOnly))
+                animationBytes = sourceFile.readAll();
+            work += animationBytes.size();
+        }
+        wasAnimated = lightning::animsniff::isAnimation(animationBytes);
+    }
+    const QSize sourceSize = reader.size();
+    if (!sourceSize.isValid() || sourceSize.width() > 8192
+        || sourceSize.height() > 8192
+        || qint64(sourceSize.width()) * sourceSize.height()
+               > 32LL * 1024 * 1024)
+        return fail(AttachmentQueueModel::tr("This image is too large to edit."));
+    if (qMax(sourceSize.width(), sourceSize.height()) > maxEdge)
+        reader.setScaledSize(sourceSize.scaled(maxEdge, maxEdge,
+                                              Qt::KeepAspectRatio));
+    QImage source = reader.read();
+    if (source.isNull() || source.width() > maxEdge
+        || source.height() > maxEdge || qint64(source.width()) * source.height()
+                                     > 16LL * 1024 * 1024)
+        return fail(AttachmentQueueModel::tr("This image could not be decoded safely."));
+    QTransform transform;
+    if (job.mirror)
+        transform.scale(-1, 1);
+    transform.rotate(job.quarterTurns * 90);
+    QImage output = source.transformed(transform, Qt::FastTransformation);
+    source = QImage();
+    if (output.isNull())
+        return fail(AttachmentQueueModel::tr("The image edit failed."));
+    const QRect bounds(QPoint(), output.size());
+    const QRect crop(qRound(job.left * output.width()),
+                     qRound(job.top * output.height()),
+                     qRound((job.right - job.left) * output.width()),
+                     qRound((job.bottom - job.top) * output.height()));
+    const QRect clipped = crop.intersected(bounds);
+    if (clipped.isEmpty())
+        return fail(AttachmentQueueModel::tr("The crop is empty."));
+    output = output.copy(clipped);
+    QImage clean(output.size(), QImage::Format_ARGB32_Premultiplied);
+    if (clean.isNull())
+        return fail(AttachmentQueueModel::tr("The image edit failed."));
+    clean.fill(Qt::transparent);
+    {
+        QPainter flatten(&clean);
+        flatten.drawImage(QPoint(), output);
+    }
+    output = std::move(clean);
+    if (!job.strokes.isEmpty()) {
+        QPainter painter(&output);
+        painter.setRenderHint(QPainter::Antialiasing);
+        painter.setPen(QPen(QColor(255, 45, 45), qMax(2, output.width() / 180),
+                            Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        for (const QList<QPointF> &points : job.strokes) {
+            QPainterPath path;
+            bool first = true;
+            for (const QPointF &point : points) {
+                const QPointF pixel(point.x() * output.width(),
+                                    point.y() * output.height());
+                if (first) { path.moveTo(pixel); first = false; }
+                else path.lineTo(pixel);
+            }
+            if (points.size() == 1)
+                painter.drawPoint(path.currentPosition());
+            else
+                painter.drawPath(path);
+        }
+    }
+    QString base = QFileInfo(job.fileName).completeBaseName();
+    if (base.isEmpty())
+        base = QStringLiteral("image");
+    const bool jpeg = job.mime == QLatin1String("image/jpeg");
+    if (jpeg) {
+        QImage opaque(output.size(), QImage::Format_RGB32);
+        if (opaque.isNull())
+            return fail(AttachmentQueueModel::tr("The image edit failed."));
+        opaque.fill(Qt::white);
+        QPainter(&opaque).drawImage(QPoint(), output);
+        output = std::move(opaque);
+    }
+    QByteArray encoded;
+    QBuffer encodeBuffer(&encoded);
+    if (!encodeBuffer.open(QIODevice::WriteOnly))
+        return fail(AttachmentQueueModel::tr("The image edit could not be saved."));
+    QImageWriter writer(&encodeBuffer, jpeg ? "jpeg" : "png");
+    if (jpeg)
+        writer.setQuality(90);
+    if (!writer.write(output))
+        return fail(AttachmentQueueModel::tr("The image edit could not be saved."));
+    work += encoded.size();
+    // mkdir, not mkpath: a scratch directory removed underneath must not be
+    // recreated.
+    if (!QDir().mkdir(job.workDir))
+        return fail(AttachmentQueueModel::tr("The image edit could not be saved."));
+    const QString path = QDir(job.workDir).filePath(
+        base + (jpeg ? QStringLiteral(".jpg") : QStringLiteral(".png")));
+    lightning::scratch::ScratchFile file(path);
+    if (!file.open() || file.write(encoded) != encoded.size()
+        || !file.commit()) {
+        file.cancelWriting();
+        QDir().rmdir(job.workDir);
+        return fail(AttachmentQueueModel::tr("The image edit could not be saved."));
+    }
+    stalltrace::noteGuiWork("image-edit", work);
+    return EditResult{{}, path, output.size(), wasAnimated};
+}
+
 }
 
 QVariantMap AttachmentQueueModel::renderImageEdit(
@@ -699,149 +974,113 @@ QVariantMap AttachmentQueueModel::renderImageEdit(
         || quarterTurns < 0 || quarterTurns > 3 || strokes.size() > 128)
         return fail(tr("Invalid image edit."));
 
+    EditJob job;
+    job.left = left;
+    job.top = top;
+    job.right = right;
+    job.bottom = bottom;
+    job.quarterTurns = quarterTurns;
+    job.mirror = mirror;
+    for (const QVariant &strokeValue : strokes) {
+        const QVariantList points = strokeValue.toList();
+        if (points.size() > 2048)
+            return fail(tr("Too many annotation points."));
+        QList<QPointF> stroke;
+        stroke.reserve(points.size());
+        for (const QVariant &pointValue : points) {
+            const QVariantMap point = pointValue.toMap();
+            const qreal x = point.value(QStringLiteral("x")).toDouble();
+            const qreal y = point.value(QStringLiteral("y")).toDouble();
+            if (!std::isfinite(x) || !std::isfinite(y) || x < 0 || x > 1
+                || y < 0 || y > 1)
+                return fail(tr("Invalid annotation point."));
+            stroke.append(QPointF(x, y));
+        }
+        job.strokes.append(stroke);
+    }
+
     constexpr qint64 maxInput = 64LL * 1024 * 1024;
-    constexpr int maxEdge = 4096;
-    if (entry.data.size() > maxInput
-        || (!entry.localPath.isEmpty()
-            && QFileInfo(entry.localPath).size() > maxInput))
+    const qint64 inputBytes = entry.localPath.isEmpty()
+        ? entry.data.size() : QFileInfo(entry.localPath).size();
+    if (inputBytes > maxInput)
         return fail(tr("This image is too large to edit."));
-    QByteArray bytes = entry.data;
-    QBuffer buffer(&bytes);
-    QImageReader reader;
-    if (entry.localPath.isEmpty()) {
-        buffer.open(QIODevice::ReadOnly);
-        reader.setDevice(&buffer);
-    } else {
-        reader.setFileName(entry.localPath);
-    }
-    const QByteArray format = reader.format().toLower();
-    if (format != "png" && format != "jpeg" && format != "jpg"
-        && format != "gif" && format != "webp" && format != "bmp"
-        && format != "jxl")
-        return fail(tr("This image format cannot be edited."));
-    reader.setAutoTransform(true);
-    bool wasAnimated = reader.imageCount() > 1;
-    if (!wasAnimated && (format == "gif" || format == "webp")) {
-        QByteArray animationBytes = bytes;
-        if (!entry.localPath.isEmpty()) {
-            QFile sourceFile(entry.localPath);
-            if (sourceFile.open(QIODevice::ReadOnly))
-                animationBytes = sourceFile.readAll();
-        }
-        wasAnimated = lightning::animsniff::isAnimation(animationBytes);
-    }
-    const QSize sourceSize = reader.size();
-    if (!sourceSize.isValid() || sourceSize.width() > 8192
-        || sourceSize.height() > 8192
-        || qint64(sourceSize.width()) * sourceSize.height()
-               > 32LL * 1024 * 1024)
-        return fail(tr("This image is too large to edit."));
-    if (qMax(sourceSize.width(), sourceSize.height()) > maxEdge)
-        reader.setScaledSize(sourceSize.scaled(maxEdge, maxEdge,
-                                              Qt::KeepAspectRatio));
-    QImage source = reader.read();
-    if (source.isNull() || source.width() > maxEdge
-        || source.height() > maxEdge || qint64(source.width()) * source.height()
-                                     > 16LL * 1024 * 1024)
-        return fail(tr("This image could not be decoded safely."));
-    QTransform transform;
-    if (mirror)
-        transform.scale(-1, 1);
-    transform.rotate(quarterTurns * 90);
-    QImage output = source.transformed(transform, Qt::FastTransformation);
-    source = QImage();
-    if (output.isNull())
-        return fail(tr("The image edit failed."));
-    const QRect bounds(QPoint(), output.size());
-    const QRect crop(qRound(left * output.width()), qRound(top * output.height()),
-                     qRound((right - left) * output.width()),
-                     qRound((bottom - top) * output.height()));
-    const QRect clipped = crop.intersected(bounds);
-    if (clipped.isEmpty())
-        return fail(tr("The crop is empty."));
-    output = output.copy(clipped);
-    QImage clean(output.size(), QImage::Format_ARGB32_Premultiplied);
-    if (clean.isNull())
-        return fail(tr("The image edit failed."));
-    clean.fill(Qt::transparent);
-    {
-        QPainter flatten(&clean);
-        flatten.drawImage(QPoint(), output);
-    }
-    output = std::move(clean);
-    if (!strokes.isEmpty()) {
-        QPainter painter(&output);
-        painter.setRenderHint(QPainter::Antialiasing);
-        painter.setPen(QPen(QColor(255, 45, 45), qMax(2, output.width() / 180),
-                            Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-        for (const QVariant &strokeValue : strokes) {
-            const QVariantList points = strokeValue.toList();
-            if (points.size() > 2048)
-                return fail(tr("Too many annotation points."));
-            QPainterPath path;
-            bool first = true;
-            for (const QVariant &pointValue : points) {
-                const QVariantMap point = pointValue.toMap();
-                const qreal x = point.value(QStringLiteral("x")).toDouble();
-                const qreal y = point.value(QStringLiteral("y")).toDouble();
-                if (!std::isfinite(x) || !std::isfinite(y) || x < 0 || x > 1
-                    || y < 0 || y > 1)
-                    return fail(tr("Invalid annotation point."));
-                const QPointF pixel(x * output.width(), y * output.height());
-                if (first) { path.moveTo(pixel); first = false; }
-                else path.lineTo(pixel);
-            }
-            if (points.size() == 1)
-                painter.drawPoint(path.currentPosition());
-            else
-                painter.drawPath(path);
-        }
-    }
     const QString dir = convertedDirectory();
     if (dir.isEmpty())
         return fail(tr("The image edit could not be saved."));
-    const QString workDir = QDir(dir).filePath(
+    job.localPath = entry.localPath;
+    job.data = entry.data;
+    job.fileName = entry.fileName;
+    job.mime = entry.mime;
+    job.workDir = QDir(dir).filePath(
         QStringLiteral("edit-%1").arg(m_nextPosterTag++));
-    if (!QDir().mkpath(workDir))
-        return fail(tr("The image edit could not be saved."));
-    QString base = QFileInfo(entry.fileName).completeBaseName();
-    if (base.isEmpty())
-        base = QStringLiteral("image");
-    const bool jpeg = entry.mime == QLatin1String("image/jpeg");
-    const QString path = QDir(workDir).filePath(
-        base + (jpeg ? QStringLiteral(".jpg") : QStringLiteral(".png")));
-    if (jpeg) {
-        QImage opaque(output.size(), QImage::Format_RGB32);
-        if (opaque.isNull())
-            return fail(tr("The image edit failed."));
-        opaque.fill(Qt::white);
-        QPainter(&opaque).drawImage(QPoint(), output);
-        output = std::move(opaque);
+
+    // A pending render this one supersedes is discarded when it lands.
+    entry.editRequest = 0;
+    QSize pixels(entry.width, entry.height);
+    if (!pixels.isValid() || pixels.isEmpty()) {
+        QImageReader header(entry.localPath);
+        pixels = header.size();
     }
-    QByteArray encoded;
-    QBuffer encodeBuffer(&encoded);
-    if (!encodeBuffer.open(QIODevice::WriteOnly))
-        return fail(tr("The image edit could not be saved."));
-    QImageWriter writer(&encodeBuffer, jpeg ? "jpeg" : "png");
-    if (jpeg)
-        writer.setQuality(90);
-    if (!writer.write(output))
-        return fail(tr("The image edit could not be saved."));
-    lightning::scratch::ScratchFile file(path);
-    if (!file.open() || file.write(encoded) != encoded.size()
-        || !file.commit()) {
-        return fail(tr("The image edit could not be saved."));
+    if (inputBytes < ImageSendPrep::kBackgroundBytes && pixels.isValid()
+        && qint64(pixels.width()) * pixels.height() < kBackgroundEditPixels) {
+        const EditResult result = renderEdit(job);
+        return finishImageEdit(entry, result.error, result.path, result.size,
+                               result.animated);
     }
+    const int request = m_nextEditRequest++;
+    entry.editRequest = request;
+    QPointer<AttachmentQueueModel> self(this);
+    QThreadPool::globalInstance()->start([self, request, job] {
+        const EditResult result = renderEdit(job);
+        QMetaObject::invokeMethod(
+            QCoreApplication::instance(),
+            [self, request, result] {
+                if (self)
+                    self->applyImageEdit(request, result.error, result.path,
+                                         result.size, result.animated);
+                else
+                    removeOwnedRendition(result.path);
+            },
+            Qt::QueuedConnection);
+    });
+    return {{QStringLiteral("pending"), true},
+            {QStringLiteral("request"), request}};
+}
+
+void AttachmentQueueModel::applyImageEdit(int request, const QString &error,
+                                          const QString &path,
+                                          const QSize &size, bool animated)
+{
+    for (Entry &entry : m_entries) {
+        if (entry.editRequest != request)
+            continue;
+        entry.editRequest = 0;
+        Q_EMIT imageEditRendered(
+            request, finishImageEdit(entry, error, path, size, animated));
+        return;
+    }
+    // Removed, cancelled, moved out with the tray or superseded.
+    removeOwnedRendition(path);
+}
+
+QVariantMap AttachmentQueueModel::finishImageEdit(Entry &entry,
+                                                  const QString &error,
+                                                  const QString &path,
+                                                  const QSize &size,
+                                                  bool animated)
+{
+    if (!error.isEmpty())
+        return {{QStringLiteral("error"), error}};
     if (exceedsUploadLimit(QFileInfo(path).size())) {
         removeOwnedRendition(path);
-        return fail(uploadLimitMessage());
+        return {{QStringLiteral("error"), uploadLimitMessage()}};
     }
     removeOwnedRendition(entry.editPreviewPath);
     entry.editPreviewPath = path;
     return {{QStringLiteral("url"), QUrl::fromLocalFile(path)},
-            {QStringLiteral("width"), output.width()},
-            {QStringLiteral("height"), output.height()},
-            {QStringLiteral("animated"), wasAnimated}};
+            {QStringLiteral("width"), size.width()},
+            {QStringLiteral("height"), size.height()},
+            {QStringLiteral("animated"), animated}};
 }
 
 bool AttachmentQueueModel::commitImageEdit(int row)
@@ -850,8 +1089,10 @@ bool AttachmentQueueModel::commitImageEdit(int row)
         return false;
     Entry &entry = m_entries[row];
     if (entry.editPreviewPath.isEmpty() || !QFileInfo::exists(entry.editPreviewPath)
-        || entry.state == QLatin1String("dispatching"))
+        || entry.state == QLatin1String("dispatching") || entry.editRequest != 0
+        || entry.posterPending)
         return false;
+    dropStrip(entry);
     if (entry.converted)
         removeOwnedRendition(entry.localPath);
     if (!entry.stagedToken.isEmpty() && m_stagedImages)
@@ -886,6 +1127,7 @@ void AttachmentQueueModel::cancelImageEdit(int row)
     if (row < 0 || row >= m_entries.size())
         return;
     Entry &entry = m_entries[row];
+    entry.editRequest = 0;
     removeOwnedRendition(entry.editPreviewPath);
     entry.editPreviewPath.clear();
 }

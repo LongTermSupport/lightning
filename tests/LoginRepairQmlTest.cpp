@@ -20,6 +20,7 @@
 #include "auth/AccountManager.h"
 #include "auth/AuthManager.h"
 #include "matrix/MockMatrixClient.h"
+#include "support/SettledClick.h"
 
 namespace {
 constexpr int kSignalTimeoutMs = 5000;
@@ -84,13 +85,7 @@ private:
     void clickItem(QQuickItem *target)
     {
         QVERIFY(target);
-        QCoreApplication::processEvents();
-        QTest::qWait(1);
-        QCoreApplication::processEvents();
-        const QPointF center = target->mapToScene(
-            QPointF(target->width() / 2, target->height() / 2));
-        QTest::mouseClick(m_window, Qt::LeftButton, Qt::NoModifier,
-                          center.toPoint());
+        testsupport::clickWhenSettled(m_window, target);
         QCoreApplication::processEvents();
     }
 

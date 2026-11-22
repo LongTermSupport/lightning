@@ -3,6 +3,7 @@
 #include "matrix/RoomInfo.h"
 
 #include <QAbstractListModel>
+#include <QDeadlineTimer>
 #include <functional>
 #include <QHash>
 #include <QList>
@@ -137,6 +138,13 @@ public:
     /// failed roster is never "known": filtering on a partial one would hide
     /// conversations at random.
     Q_INVOKABLE bool spaceRosterKnown(const QString &spaceId) const;
+    /// True when the roster came back capped: membership stays unknown for
+    /// good, not merely not loaded yet.
+    Q_INVOKABLE bool spaceRosterLimited(const QString &spaceId) const
+    { return m_rosterLimited.contains(spaceId); }
+    /// True while some direct-message peer's membership of a capped Space is
+    /// still unconfirmed, so its People scope may include outsiders.
+    Q_INVOKABLE bool spaceMembershipUncertain(const QString &spaceId) const;
     Q_INVOKABLE bool spaceHasMember(const QString &spaceId,
                                     const QString &userId) const;
     int directScope(const QString &spaceId, const QStringList &peerIds) const;
@@ -174,6 +182,9 @@ private Q_SLOTS:
     void rebuild();
     void onRoomMembersReceived(quint64 opId, const QString &roomId,
                                const QVariantMap &snapshot);
+    void onRoomMemberCheckFinished(quint64 opId, const QString &roomId,
+                                   const QStringList &members,
+                                   const QStringList &absent);
 
 private:
     /// One rebuild per event-loop turn. rebuild() is a full model reset plus
@@ -220,6 +231,15 @@ private:
     // guard. Both are cleared with the client.
     QHash<QString, QSet<QString>> m_spaceMembers;
     QSet<QString> m_rosterRequested;
+    QSet<QString> m_rosterLimited;
+    // Per-peer answers for a capped Space: 1 member, 0 absent, -1 unknown.
+    // Re-asked once expired; one batch in flight per Space.
+    struct PeerCheck { int state = -1; QDeadlineTimer fresh; };
+    QHash<QString, QHash<QString, PeerCheck>> m_peerChecks;
+    QHash<quint64, QPair<QString, QStringList>> m_peerCheckOps;
+    QStringList directPeers() const;
+    void requestPeerChecks(const QString &spaceId);
+    int checkedScope(const QString &spaceId, const QStringList &peerIds) const;
     QSet<QString> m_permissionTracked;
     QHash<QString, bool> m_manageChildren;
     QHash<QString, quint64> m_permissionRequests;

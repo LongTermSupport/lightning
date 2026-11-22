@@ -1,4 +1,5 @@
 
+#include "app/GuiStallTracer.h"
 #include "matrix/MatrixClient.h"
 #include "media/ImageFormatSupport.h"
 #include "media/ImageMetadata.h"
@@ -11,6 +12,7 @@
 #include <QBuffer>
 #include <QImage>
 #include <QMimeData>
+#include <QRegularExpression>
 #include <QScopeGuard>
 #include <QSemaphore>
 #include <QSignalSpy>
@@ -20,6 +22,12 @@
 
 #include <memory>
 #include <tuple>
+
+#ifdef Q_OS_UNIX
+#include <csignal>
+#include <sys/resource.h>
+#include <unistd.h>
+#endif
 
 namespace {
 
@@ -71,9 +79,10 @@ public:
     bool supportsAttachmentSend() const override { return true; }
     qint64 maxUploadSize() const override { return serverLimit; }
     QString lastFilePath;
+    QStringList sent;
     int lastFileWidth = 0;
     int lastFileHeight = 0;
-    quint64 sendAttachment(const QString &, const QString &path,
+    quint64 sendAttachment(const QString &room, const QString &path,
                            const QString &mime, const QString &caption,
                            int width, int height, bool, qint64 durationMs,
                            const QString &replyTo) override
@@ -81,6 +90,7 @@ public:
         if (rejectSends)
             return 0;
         ++fileSends;
+        sent << room + QLatin1Char('|') + path;
         lastFilePath = path;
         lastFileWidth = width;
         lastFileHeight = height;
@@ -340,6 +350,215 @@ QByteArray readAll(const QString &path)
     QFile f(path);
     return f.open(QIODevice::ReadOnly) ? f.readAll() : QByteArray();
 }
+
+// A camera-sized photo: 24 MP, ~8 MiB (comment padding stands in for the
+// entropy a real photo carries), with the GPS block of jpegWithGps().
+QByteArray largeJpegWithGps()
+{
+    static const QByteArray bytes = [] {
+        QImage image(6000, 4000, QImage::Format_RGB32);
+        image.fill(Qt::darkCyan);
+        QByteArray jpeg;
+        QBuffer buffer(&jpeg);
+        buffer.open(QIODevice::WriteOnly);
+        image.save(&buffer, "JPG", 85);
+        const QByteArray small = jpegWithGps();
+        const int gpsLength = 2 + ((uchar(small.at(4)) << 8) | uchar(small.at(5)));
+        QByteArray inserted = small.mid(2, gpsLength);
+        const QByteArray comment(65533, 'x');
+        for (int i = 0; i < 128; ++i)
+            inserted += QByteArray("\xFF\xFE\xFF\xFF", 4) + comment;
+        jpeg.insert(2, inserted);
+        return jpeg;
+    }();
+    return bytes;
+}
+
+quint32 pngCrc(const QByteArray &bytes)
+{
+    quint32 crc = 0xFFFFFFFFu;
+    for (const char c : bytes) {
+        crc ^= uchar(c);
+        for (int k = 0; k < 8; ++k)
+            crc = (crc >> 1) ^ (0xEDB88320u & (0u - (crc & 1u)));
+    }
+    return crc ^ 0xFFFFFFFFu;
+}
+
+const QByteArray kPngTextMarker("Comment\0large-png-text", 22);
+
+// A PNG made large by a 2 MiB text chunk, which "all" removes.
+QByteArray largePngWithText()
+{
+    QImage image(64, 48, QImage::Format_ARGB32);
+    image.fill(QColor(20, 120, 220, 200));
+    QByteArray png;
+    QBuffer buffer(&png);
+    buffer.open(QIODevice::WriteOnly);
+    image.save(&buffer, "PNG");
+    const QByteArray body = QByteArray("tEXt") + kPngTextMarker
+        + QByteArray(2 * 1024 * 1024, 'p');
+    QByteArray chunk;
+    const quint32 length = quint32(body.size() - 4);
+    for (int shift = 24; shift >= 0; shift -= 8)
+        chunk.append(char((length >> shift) & 0xFF));
+    chunk += body;
+    const quint32 crc = pngCrc(body);
+    for (int shift = 24; shift >= 0; shift -= 8)
+        chunk.append(char((crc >> shift) & 0xFF));
+    png.insert(8 + 25, chunk);
+    return png;
+}
+
+// A two-frame 1100x1100 GIF (~1.4 MiB).
+QByteArray largeAnimatedGif()
+{
+    const int edge = 1100;
+    QByteArray g("GIF89a");
+    const auto le16 = [&g](int v) {
+        g.append(char(v & 0xff));
+        g.append(char((v >> 8) & 0xff));
+    };
+    le16(edge);
+    le16(edge);
+    g.append(char(0x81));
+    g.append('\0');
+    g.append('\0');
+    for (const QColor c : {QColor(Qt::red), QColor(Qt::blue), QColor(Qt::black),
+                           QColor(Qt::black)}) {
+        g.append(char(c.red()));
+        g.append(char(c.green()));
+        g.append(char(c.blue()));
+    }
+    g.append(QByteArray("\x21\xff\x0bNETSCAPE2.0\x03\x01\x00\x00\x00", 19));
+    for (int f = 0; f < 2; ++f) {
+        g.append(QByteArray("\x21\xf9\x04\x00\x0a\x00\x00\x00", 8));
+        g.append(char(0x2c));
+        le16(0);
+        le16(0);
+        le16(edge);
+        le16(edge);
+        g.append('\0');
+        g.append(char(0x02));
+        QByteArray data;
+        quint32 acc = 0;
+        int bits = 0;
+        const auto put = [&](int code) {
+            acc |= quint32(code) << bits;
+            bits += 3;
+            while (bits >= 8) {
+                data.append(char(acc & 0xff));
+                acc >>= 8;
+                bits -= 8;
+            }
+        };
+        for (int p = 0; p < edge * edge; ++p) {
+            if (p % 2 == 0)
+                put(4);
+            put(f);
+        }
+        put(5);
+        if (bits > 0)
+            data.append(char(acc & 0xff));
+        for (qsizetype off = 0; off < data.size(); off += 255) {
+            const QByteArray block = data.mid(off, 255);
+            g.append(char(block.size()));
+            g.append(block);
+        }
+        g.append('\0');
+    }
+    g.append(char(0x3b));
+    return g;
+}
+
+// Holds every global pool thread so a background job cannot start until
+// release().
+class PoolHold
+{
+public:
+    PoolHold()
+        : m_threads(QThreadPool::globalInstance()->maxThreadCount())
+    {
+        for (int i = 0; i < m_threads; ++i)
+            QThreadPool::globalInstance()->start([this] {
+                m_started.release();
+                m_gate.acquire();
+            });
+        m_held = m_started.tryAcquire(m_threads, 10000);
+    }
+    ~PoolHold() { release(); }
+    bool held() const { return m_held; }
+    // Lets the queued jobs run, waits for them, then delivers their results.
+    void release()
+    {
+        if (m_released)
+            return;
+        m_released = true;
+        m_gate.release(m_threads);
+        QThreadPool::globalInstance()->waitForDone();
+        QCoreApplication::processEvents();
+    }
+
+private:
+    int m_threads;
+    QSemaphore m_started;
+    QSemaphore m_gate;
+    bool m_held = false;
+    bool m_released = false;
+};
+
+void settlePool()
+{
+    QThreadPool::globalInstance()->waitForDone();
+    QCoreApplication::processEvents();
+}
+
+// Stripped copies left under a media scratch root (one subdirectory each).
+int strippedCopies(const QString &root)
+{
+    int count = 0;
+    const QStringList owners = QDir(root).entryList(
+        {QStringLiteral("lightning-stripped-*")}, QDir::Dirs | QDir::NoDotAndDotDot);
+    for (const QString &owner : owners)
+        count += QDir(QDir(root).filePath(owner))
+                     .entryList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot)
+                     .filter(QRegularExpression(QStringLiteral("^[0-9]")))
+                     .size();
+    return count;
+}
+
+void logGuiWork(const char *category)
+{
+    qInfo("gui-thread work %s: calls=%d bytes=%lld", category,
+          stalltrace::guiWorkCalls(category),
+          static_cast<long long>(stalltrace::guiWorkBytes(category)));
+}
+
+#ifdef Q_OS_UNIX
+// Writes past `bytes` fail with EFBIG, as on a full disk.
+class FileSizeLimit
+{
+public:
+    explicit FileSizeLimit(rlim_t bytes)
+    {
+        std::signal(SIGXFSZ, SIG_IGN);
+        m_ok = ::getrlimit(RLIMIT_FSIZE, &m_old) == 0;
+        rlimit limited = m_old;
+        limited.rlim_cur = bytes;
+        m_ok = m_ok && ::setrlimit(RLIMIT_FSIZE, &limited) == 0;
+    }
+    ~FileSizeLimit()
+    {
+        if (m_ok)
+            ::setrlimit(RLIMIT_FSIZE, &m_old);
+    }
+    bool ok() const { return m_ok; }
+
+private:
+    rlimit m_old{};
+    bool m_ok = false;
+};
+#endif
 
 QByteArray redSquareSvg()
 {
@@ -2078,6 +2297,358 @@ private Q_SLOTS:
         pending(true, {exported});
         QCOMPARE(composer.attachments()->rowCount(), 1);
         QCOMPARE(resolved.count(), 1);
+    }
+
+    void aLargePhotoIsStrippedOffTheGuiThreadAndKeepsTheTrayOrder()
+    {
+        QTemporaryDir root;
+        QTemporaryDir dir;
+        QVERIFY(root.isValid() && dir.isValid());
+        lightning::portable::setMediaScratchRootOverrideForTest(root.path());
+        const auto restore = qScopeGuard(
+            [] { lightning::portable::setMediaScratchRootOverrideForTest({}); });
+        FakeClient client;
+        MessageComposer composer;
+        composer.setClient(&client);
+        composer.setRoomId(QStringLiteral("!room:example.org"));
+        const QByteArray original = largeJpegWithGps();
+        QVERIFY(original.size() > 8 * 1024 * 1024);
+        const QString big = writeFile(dir, QStringLiteral("camera.jpg"), original);
+        const QString small =
+            writeFile(dir, QStringLiteral("small.jpg"), jpegWithGps());
+        composer.addAttachment(QUrl::fromLocalFile(big));
+        composer.addAttachment(QUrl::fromLocalFile(small));
+
+        stalltrace::resetGuiWork();
+        composer.send();
+        logGuiWork("image-send-prep");
+        QCOMPARE(stalltrace::guiWorkCalls("image-send-prep"), 0);
+        QCOMPARE(stalltrace::guiWorkBytes("image-send-prep"), qint64(0));
+        // The small photo waits behind the large one.
+        QCOMPARE(client.fileSends, 0);
+        QTRY_COMPARE_WITH_TIMEOUT(client.fileSends, 1, 30000);
+        QCOMPARE(stalltrace::guiWorkCalls("image-send-prep"), 0);
+        QCOMPARE(QFileInfo(client.lastFilePath).fileName(),
+                 QStringLiteral("camera.jpg"));
+        QVERIFY(client.lastFilePath != big);
+        const QByteArray sent = readAll(client.lastFilePath);
+        QVERIFY(!sent.contains(kGpsMarker));
+        QVERIFY(!imagemeta::containsLocation(sent));
+        QCOMPARE(readAll(big), original);
+
+        const QString copy = client.lastFilePath;
+        Q_EMIT client.attachmentQueueFinished(
+            client.lastOpId, QStringLiteral("!room:example.org"), true, {});
+        QVERIFY(!QFileInfo::exists(copy));
+        QCOMPARE(client.fileSends, 2);
+        QCOMPARE(QFileInfo(client.lastFilePath).fileName(),
+                 QStringLiteral("small.jpg"));
+        // Below the threshold the strip stays inline.
+        QCOMPARE(stalltrace::guiWorkCalls("image-send-prep"), 1);
+    }
+
+    void aLargePastedPngAndALargeAnimatedGifAreReadOffTheGuiThread()
+    {
+        QTemporaryDir root;
+        QTemporaryDir dir;
+        QVERIFY(root.isValid() && dir.isValid());
+        lightning::portable::setMediaScratchRootOverrideForTest(root.path());
+        const auto restore = qScopeGuard(
+            [] { lightning::portable::setMediaScratchRootOverrideForTest({}); });
+        FakeClient client;
+        MessageComposer composer;
+        composer.setClient(&client);
+        composer.setRoomId(QStringLiteral("!room:example.org"));
+        composer.setImageMetadataMode(QStringLiteral("all"));
+
+        const QByteArray png = largePngWithText();
+        QVERIFY(png.size() > 2 * 1024 * 1024);
+        QVERIFY(composer.attachments()
+                    ->addImageData(png, QStringLiteral("image/png"), 64, 48)
+                    .isEmpty());
+        stalltrace::resetGuiWork();
+        composer.send();
+        logGuiWork("image-send-prep");
+        QCOMPARE(stalltrace::guiWorkBytes("image-send-prep"), qint64(0));
+        QTRY_COMPARE_WITH_TIMEOUT(client.byteSends, 1, 30000);
+        QVERIFY(!client.lastBytes.contains(kPngTextMarker));
+        QVERIFY(client.lastBytes.size() < 64 * 1024);
+        QImage decoded;
+        QVERIFY(decoded.loadFromData(client.lastBytes));
+        QCOMPARE(decoded.size(), QSize(64, 48));
+        Q_EMIT client.attachmentQueueFinished(
+            client.lastOpId, QStringLiteral("!room:example.org"), true, {});
+
+        // A format with no editable metadata goes out as it is.
+        const QString gif =
+            writeFile(dir, QStringLiteral("loop.gif"), largeAnimatedGif());
+        QVERIFY(QFileInfo(gif).size() > ImageSendPrep::kBackgroundBytes);
+        composer.addAttachment(QUrl::fromLocalFile(gif));
+        stalltrace::resetGuiWork();
+        composer.send();
+        logGuiWork("image-send-prep");
+        QCOMPARE(stalltrace::guiWorkBytes("image-send-prep"), qint64(0));
+        QTRY_COMPARE_WITH_TIMEOUT(client.fileSends, 1, 30000);
+        QCOMPARE(client.lastFilePath, gif);
+        QCOMPARE(strippedCopies(root.path()), 0);
+    }
+
+    void aStripThatOutlivesItsRowIsDeletedAndNeverSent()
+    {
+        QTemporaryDir root;
+        QTemporaryDir dir;
+        QVERIFY(root.isValid() && dir.isValid());
+        lightning::portable::setMediaScratchRootOverrideForTest(root.path());
+        const auto restore = qScopeGuard(
+            [] { lightning::portable::setMediaScratchRootOverrideForTest({}); });
+        FakeClient client;
+        MessageComposer composer;
+        composer.setClient(&client);
+        const QString roomA = QStringLiteral("!a:example.org");
+        const QString roomB = QStringLiteral("!b:example.org");
+        composer.setRoomId(roomA);
+        const QString big =
+            writeFile(dir, QStringLiteral("camera.jpg"), largeJpegWithGps());
+
+        // Removed while stripping.
+        composer.addAttachment(QUrl::fromLocalFile(big));
+        {
+            PoolHold hold;
+            QVERIFY(hold.held());
+            composer.send();
+            QCOMPARE(composer.attachments()->rowCount(), 1);
+            composer.attachments()->removeAt(0);
+            QCOMPARE(composer.attachments()->rowCount(), 0);
+        }
+        settlePool();
+        QCOMPARE(client.fileSends, 0);
+        QCOMPARE(strippedCopies(root.path()), 0);
+
+        // The room changes while stripping: the row was sent, so it goes to
+        // the room it was sent from without the user returning, ahead of the
+        // row queued behind it, and nothing leaves before the strip lands.
+        const QString small =
+            writeFile(dir, QStringLiteral("small.jpg"), jpegWithGps());
+        composer.addAttachment(QUrl::fromLocalFile(big));
+        composer.addAttachment(QUrl::fromLocalFile(small));
+        {
+            PoolHold hold;
+            QVERIFY(hold.held());
+            composer.send();
+            composer.setRoomId(roomB);
+            QCOMPARE(composer.attachments()->rowCount(), 0);
+            QCOMPARE(client.fileSends, 0);
+        }
+        settlePool();
+        QCOMPARE(client.fileSends, 2);
+        QCOMPARE(client.sent.size(), 2);
+        QVERIFY(client.sent.at(0).startsWith(roomA + QLatin1Char('|')));
+        QVERIFY(client.sent.at(1).startsWith(roomA + QLatin1Char('|')));
+        QVERIFY(client.sent.at(0).endsWith(QStringLiteral("/camera.jpg")));
+        QVERIFY(client.sent.at(1).endsWith(QStringLiteral("/small.jpg")));
+        QVERIFY(!client.sent.contains(roomA + QLatin1Char('|') + big));
+        QVERIFY(!client.sent.contains(roomA + QLatin1Char('|') + small));
+        const QString bigCopy = client.sent.at(0).section(QLatin1Char('|'), 1);
+        QVERIFY(!readAll(bigCopy).contains(kGpsMarker));
+        QCOMPARE(strippedCopies(root.path()), 2);
+        for (quint64 op = client.lastOpId - 1; op <= client.lastOpId; ++op)
+            Q_EMIT client.attachmentQueueFinished(op, roomA, true, {});
+        QCOMPARE(strippedCopies(root.path()), 0);
+        composer.setRoomId(roomA);
+        QCOMPARE(composer.attachments()->rowCount(), 0);
+        QCOMPARE(client.fileSends, 2);
+        client.sent.clear();
+        client.fileSends = 0;
+
+        // Back before the first strip ran: the restarted strip and the stale
+        // one never share a copy, and the stale one never deletes the sent one.
+        composer.addAttachment(QUrl::fromLocalFile(big));
+        {
+            PoolHold hold;
+            QVERIFY(hold.held());
+            composer.send();
+            composer.setRoomId(roomB);
+            composer.setRoomId(roomA);
+        }
+        settlePool();
+        QTRY_COMPARE_WITH_TIMEOUT(client.fileSends, 1, 30000);
+        settlePool();
+        QCOMPARE(client.fileSends, 1);
+        QVERIFY(QFileInfo::exists(client.lastFilePath));
+        QVERIFY(!readAll(client.lastFilePath).contains(kGpsMarker));
+        QCOMPARE(strippedCopies(root.path()), 1);
+    }
+
+    void aStripThatCannotWriteFailsHonestlyAndLeavesNothing()
+    {
+        QTemporaryDir root;
+        QTemporaryDir dir;
+        QVERIFY(root.isValid() && dir.isValid());
+        lightning::portable::setMediaScratchRootOverrideForTest(root.path());
+        const auto restore = qScopeGuard(
+            [] { lightning::portable::setMediaScratchRootOverrideForTest({}); });
+        FakeClient client;
+        MessageComposer composer;
+        composer.setClient(&client);
+        composer.setRoomId(QStringLiteral("!room:example.org"));
+        const QString big =
+            writeFile(dir, QStringLiteral("camera.jpg"), largeJpegWithGps());
+        const auto expectFailed = [&](const char *why) {
+            QTRY_VERIFY2_WITH_TIMEOUT(
+                composer.attachments()->entries().value(0).state
+                    == QLatin1String("failed"),
+                why, 30000);
+            QVERIFY2(composer.attachments()->entries().at(0).error.contains(
+                         QStringLiteral("Photo details could not be removed")),
+                     why);
+            QVERIFY2(client.fileSends == 0, why);
+            QVERIFY2(strippedCopies(root.path()) == 0, why);
+        };
+
+#ifdef Q_OS_UNIX
+        composer.addAttachment(QUrl::fromLocalFile(big));
+        {
+            FileSizeLimit full(64 * 1024);
+            QVERIFY(full.ok());
+            composer.send();
+            settlePool();
+        }
+        expectFailed("disk full");
+        if (QTest::currentTestFailed())
+            return;
+        composer.attachments()->removeAt(0);
+#endif
+
+        // The scratch directory vanishes while the strip is queued.
+        composer.addAttachment(QUrl::fromLocalFile(big));
+        {
+            PoolHold hold;
+            QVERIFY(hold.held());
+            composer.send();
+            const QStringList owners = QDir(root.path()).entryList(
+                {QStringLiteral("lightning-stripped-*")}, QDir::Dirs);
+            QCOMPARE(owners.size(), 1);
+            QVERIFY(QDir(QDir(root.path()).filePath(owners.at(0)))
+                        .removeRecursively());
+        }
+        expectFailed("scratch directory removed");
+        if (QTest::currentTestFailed())
+            return;
+        QCOMPARE(QDir(root.path()).entryList(QDir::Dirs | QDir::NoDotAndDotDot),
+                 QStringList());
+
+        // Retrying once the storage is back sends the stripped copy.
+        composer.attachments()->retryAt(0);
+        composer.send();
+        QTRY_COMPARE_WITH_TIMEOUT(client.fileSends, 1, 30000);
+        QVERIFY(!readAll(client.lastFilePath).contains(kGpsMarker));
+    }
+
+    void aLargeImageEditRendersOffTheGuiThread()
+    {
+        FakeClient client;
+        MessageComposer composer;
+        composer.setClient(&client);
+        composer.setRoomId(QStringLiteral("!room:example.org"));
+        QTemporaryDir dir;
+        const QString big =
+            writeFile(dir, QStringLiteral("camera.jpg"), largeJpegWithGps());
+        composer.addAttachment(QUrl::fromLocalFile(big));
+        auto *queue = composer.attachments();
+        QSignalSpy rendered(queue, SIGNAL(imageEditRendered(int,QVariantMap)));
+
+        stalltrace::resetGuiWork();
+        const QVariantMap first = queue->renderImageEdit(
+            0, 0.0, 0.0, 1.0, 1.0, 1, false, {});
+        const QVariantMap second = queue->renderImageEdit(
+            0, 0.0, 0.0, 0.5, 1.0, 0, false, {});
+        logGuiWork("image-edit");
+        QCOMPARE(stalltrace::guiWorkCalls("image-edit"), 0);
+        QCOMPARE(stalltrace::guiWorkBytes("image-edit"), qint64(0));
+        QVERIFY(first.value(QStringLiteral("pending")).toBool());
+        QVERIFY(second.value(QStringLiteral("pending")).toBool());
+        // Nothing can be committed until the latest render lands.
+        QVERIFY(!queue->commitImageEdit(0));
+        settlePool();
+        QCOMPARE(stalltrace::guiWorkCalls("image-edit"), 0);
+        // The superseded render is dropped with its file.
+        QCOMPARE(rendered.count(), 1);
+        QCOMPARE(rendered.at(0).at(0).toInt(),
+                 second.value(QStringLiteral("request")).toInt());
+        const QVariantMap result = rendered.at(0).at(1).toMap();
+        const QString preview =
+            result.value(QStringLiteral("url")).toUrl().toLocalFile();
+        QVERIFY(QFileInfo::exists(preview));
+        QCOMPARE(result.value(QStringLiteral("width")).toInt(), 2048);
+        QVERIFY(result.value(QStringLiteral("height")).toInt() > 2700);
+        const QDir converted = QFileInfo(preview).dir().absolutePath()
+            + QStringLiteral("/..");
+        QCOMPARE(converted.entryList({QStringLiteral("edit-*")}, QDir::Dirs).size(), 1);
+        QVERIFY(!readAll(preview).contains(kGpsMarker));
+
+        // Cancelled while rendering: the late file is deleted.
+        QVERIFY(queue->renderImageEdit(0, 0.1, 0.1, 0.9, 0.9, 0, true, {})
+                    .value(QStringLiteral("pending")).toBool());
+        queue->cancelImageEdit(0);
+        settlePool();
+        QCOMPARE(rendered.count(), 1);
+        QCOMPARE(converted.entryList({QStringLiteral("edit-*")}, QDir::Dirs).size(), 0);
+
+        // An animated GIF renders off the thread too and says it was animated.
+        const QString gif =
+            writeFile(dir, QStringLiteral("loop.gif"), largeAnimatedGif());
+        composer.addAttachment(QUrl::fromLocalFile(gif));
+        QVERIFY(queue->renderImageEdit(1, 0.0, 0.0, 1.0, 1.0, 0, false, {})
+                    .value(QStringLiteral("pending")).toBool());
+        settlePool();
+        QCOMPARE(rendered.count(), 2);
+        QCOMPARE(rendered.at(1).at(1).toMap().value(QStringLiteral("animated")).toBool(),
+                 true);
+        QVERIFY(queue->commitImageEdit(1));
+        QCOMPARE(stalltrace::guiWorkCalls("image-edit"), 0);
+    }
+
+    void anEditThatCannotBeSavedFailsHonestlyAndLeavesNothing()
+    {
+#ifndef Q_OS_UNIX
+        QSKIP("needs RLIMIT_FSIZE");
+#else
+        FakeClient client;
+        MessageComposer composer;
+        composer.setClient(&client);
+        composer.setRoomId(QStringLiteral("!room:example.org"));
+        QTemporaryDir dir;
+        composer.addAttachment(QUrl::fromLocalFile(
+            writeFile(dir, QStringLiteral("small.png"), decodablePng())));
+        composer.addAttachment(QUrl::fromLocalFile(
+            writeFile(dir, QStringLiteral("camera.jpg"), largeJpegWithGps())));
+        auto *queue = composer.attachments();
+        const QVariantMap small = queue->renderImageEdit(0, 0, 0, 1, 1, 0, false, {});
+        const QString smallPreview =
+            small.value(QStringLiteral("url")).toUrl().toLocalFile();
+        QVERIFY(QFileInfo::exists(smallPreview));
+        const QDir converted = QFileInfo(smallPreview).dir().absolutePath()
+            + QStringLiteral("/..");
+        queue->cancelImageEdit(0);
+        QCOMPARE(converted.entryList(QDir::AllEntries | QDir::NoDotAndDotDot),
+                 QStringList());
+
+        QSignalSpy rendered(queue, SIGNAL(imageEditRendered(int,QVariantMap)));
+        {
+            FileSizeLimit full(64 * 1024);
+            QVERIFY(full.ok());
+            QVERIFY(queue->renderImageEdit(1, 0, 0, 1, 1, 0, false, {})
+                        .value(QStringLiteral("pending")).toBool());
+            settlePool();
+        }
+        QCOMPARE(rendered.count(), 1);
+        QCOMPARE(rendered.at(0).at(1).toMap().value(QStringLiteral("error")).toString(),
+                 QStringLiteral("The image edit could not be saved."));
+        QCOMPARE(converted.entryList(QDir::AllEntries | QDir::NoDotAndDotDot),
+                 QStringList());
+        QVERIFY(!queue->commitImageEdit(1));
+        QCOMPARE(queue->entries().at(1).state, QStringLiteral("queued"));
+#endif
     }
 };
 

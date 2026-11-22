@@ -21,9 +21,11 @@
 // Choosing between cameras in a sandbox is therefore not implemented (Qt sees
 // no `/dev/video*` there either, so the settings picker offers nothing).
 //
-// Without Qt DBus (HAVE_QT_DBUS), available() is false and requestAccess()
-// fails with a category, so callers keep their fallback.
+// Without Qt DBus (HAVE_QT_DBUS), capability() is Unavailable and
+// requestAccess() fails with a category, so callers keep their fallback.
 #pragma once
+
+#include "calls/PortalCapability.h"
 
 #include <QObject>
 #include <QString>
@@ -37,9 +39,12 @@ public:
     explicit CameraPortal(QObject *parent = nullptr);
     ~CameraPortal() override;
 
-    static bool available();
-
-    static bool cameraPresent();
+    /// Never blocks: Unknown until the portal has answered.
+    portal::Capability capability();
+    /// Unknown while capability() is; Available when the portal reports a
+    /// camera.
+    portal::Capability cameraPresence();
+    void refreshCapability();
 
     void requestAccess();
 
@@ -54,6 +59,7 @@ Q_SIGNALS:
     void ready(int pipewireFd);
     void cancelled();
     void failed(const QString &category);
+    void capabilityChanged();
 
 private:
     void reset();
@@ -66,4 +72,5 @@ private:
     QString m_requestPath;
     QTimer m_requestTimeout;
     quint64 m_generation = 0;
+    portal::CapabilityProbe m_capability;
 };

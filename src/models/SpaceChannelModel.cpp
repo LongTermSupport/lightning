@@ -1021,7 +1021,8 @@ int SpaceChannelModel::appendSpacePeople(QVector<Row> &rows,
         return 0;
     const QString spaceId = m_scopeSpaceId;
     if (!SpaceManager::isRealSpaceId(spaceId)
-        || !m_spaces->spaceRosterKnown(spaceId)) {
+        || (!m_spaces->spaceRosterKnown(spaceId)
+            && !m_spaces->spaceRosterLimited(spaceId))) {
         return 0;
     }
     QVector<Row> people;

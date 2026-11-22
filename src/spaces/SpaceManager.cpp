@@ -5,6 +5,11 @@
 
 #include <algorithm>
 
+namespace {
+constexpr int kPeerCheckBatch = 50;
+constexpr qint64 kPeerCheckTtlMs = 10 * 60 * 1000;
+}
+
 SpaceManager::SpaceManager(QObject *parent)
     : QAbstractListModel(parent)
 {
@@ -52,11 +57,16 @@ void SpaceManager::setClient(MatrixClient *client)
                 return;
             m_manageChildren.remove(roomId);
             Q_EMIT spacePermissionsChanged();
+            // Keep the answers on screen, but ask again.
+            for (PeerCheck &check : m_peerChecks[roomId])
+                check.fresh = QDeadlineTimer(0);
             m_rosterRequested.remove(roomId);
             ensureSpaceRoster(roomId);
         });
         connect(m_client, &MatrixClient::roomMembersReceived,
                 this, &SpaceManager::onRoomMembersReceived);
+        connect(m_client, &MatrixClient::roomMemberCheckFinished,
+                this, &SpaceManager::onRoomMemberCheckFinished);
         connect(m_client, &MatrixClient::spaceChildFinished,
                 this, [this](quint64 opId, const QString &spaceId,
                              const QString &roomId, bool ok) {
@@ -106,6 +116,7 @@ void SpaceManager::setActiveSpaceId(const QString &spaceId)
         return;
     m_activeSpaceId = spaceId;
     ensureSpaceRoster(m_activeSpaceId);
+    requestPeerChecks(m_activeSpaceId);
     Q_EMIT activeSpaceIdChanged();
     Q_EMIT spacePermissionsChanged();
 }
@@ -124,8 +135,14 @@ bool SpaceManager::isRealSpaceId(const QString &spaceId)
 
 void SpaceManager::dropSpaceRosters()
 {
-    const QStringList had = m_spaceMembers.keys();
+    QStringList had = m_spaceMembers.keys();
+    for (const QString &spaceId : std::as_const(m_rosterLimited))
+        if (!had.contains(spaceId))
+            had.append(spaceId);
     m_spaceMembers.clear();
+    m_rosterLimited.clear();
+    m_peerChecks.clear();
+    m_peerCheckOps.clear();
     m_rosterRequested.clear();
     m_permissionTracked.clear();
     m_manageChildren.clear();
@@ -185,8 +202,15 @@ void SpaceManager::onRoomMembersReceived(quint64 opId, const QString &roomId,
         // The bridge caps a roster at 500 active members. A capped list
         // cannot answer membership, so the roster stays unknown. Still
         // marked requested: asking again returns the same cap.
+        if (!m_rosterLimited.contains(spaceId)) {
+            m_rosterLimited.insert(spaceId);
+            Q_EMIT spaceRosterChanged(spaceId);
+        }
+        requestPeerChecks(spaceId);
         return;
     }
+    m_rosterLimited.remove(spaceId);
+    m_peerChecks.remove(spaceId);
     QSet<QString> members;
     for (const QVariant &value :
          snapshot.value(QStringLiteral("members")).toList()) {
@@ -222,16 +246,118 @@ int SpaceManager::directScope(const QString &spaceId,
 {
     if (!isRealSpaceId(spaceId))
         return -1;
-    const auto it = m_spaceMembers.constFind(spaceId);
-    if (it == m_spaceMembers.constEnd())
-        return -1;
     if (peerIds.isEmpty())
         return -1;
+    const auto it = m_spaceMembers.constFind(spaceId);
+    if (it == m_spaceMembers.constEnd())
+        return checkedScope(spaceId, peerIds);
     for (const QString &peer : peerIds) {
         if (!peer.isEmpty() && it->contains(peer))
             return 1;
     }
     return 0;
+}
+
+int SpaceManager::checkedScope(const QString &spaceId,
+                               const QStringList &peerIds) const
+{
+    if (!m_rosterLimited.contains(spaceId))
+        return -1;
+    const auto checks = m_peerChecks.constFind(spaceId);
+    if (checks == m_peerChecks.constEnd())
+        return -1;
+    bool allAbsent = true;
+    for (const QString &peer : peerIds) {
+        const int state = checks->value(peer).state;
+        if (state == 1)
+            return 1;
+        if (state != 0)
+            allAbsent = false;
+    }
+    return allAbsent ? 0 : -1;
+}
+
+bool SpaceManager::spaceMembershipUncertain(const QString &spaceId) const
+{
+    if (!m_rosterLimited.contains(spaceId) || !m_client)
+        return false;
+    const QList<RoomInfo> rooms = m_client->rooms();
+    for (const RoomInfo &r : rooms) {
+        if (r.isSpace || !r.isDirect)
+            continue;
+        QStringList peers = r.directUserIds;
+        if (peers.isEmpty() && !r.directUserId.isEmpty())
+            peers.append(r.directUserId);
+        if (!peers.isEmpty() && checkedScope(spaceId, peers) == -1)
+            return true;
+    }
+    return false;
+}
+
+QStringList SpaceManager::directPeers() const
+{
+    QStringList peers;
+    if (!m_client)
+        return peers;
+    const QString self = m_client->currentUserId();
+    const QList<RoomInfo> rooms = m_client->rooms();
+    for (const RoomInfo &r : rooms) {
+        if (r.isSpace || !r.isDirect)
+            continue;
+        QStringList ids = r.directUserIds;
+        if (ids.isEmpty() && !r.directUserId.isEmpty())
+            ids.append(r.directUserId);
+        for (const QString &id : std::as_const(ids)) {
+            if (!id.isEmpty() && id != self && !peers.contains(id))
+                peers.append(id);
+        }
+    }
+    return peers;
+}
+
+void SpaceManager::requestPeerChecks(const QString &spaceId)
+{
+    if (!m_client || !m_rosterLimited.contains(spaceId))
+        return;
+    for (const auto &op : std::as_const(m_peerCheckOps))
+        if (op.first == spaceId)
+            return;
+    const auto &checks = m_peerChecks[spaceId];
+    QStringList batch;
+    for (const QString &peer : directPeers()) {
+        const auto it = checks.constFind(peer);
+        if (it == checks.constEnd() || it->fresh.hasExpired())
+            batch.append(peer);
+        if (batch.size() == kPeerCheckBatch)
+            break;
+    }
+    if (batch.isEmpty())
+        return;
+    const quint64 opId = m_client->requestRoomMemberCheck(spaceId, batch);
+    if (opId != 0)
+        m_peerCheckOps.insert(opId, { spaceId, batch });
+}
+
+void SpaceManager::onRoomMemberCheckFinished(quint64 opId,
+                                             const QString &roomId,
+                                             const QStringList &members,
+                                             const QStringList &absent)
+{
+    const auto it = m_peerCheckOps.constFind(opId);
+    if (it == m_peerCheckOps.constEnd() || it->first != roomId)
+        return;
+    const QStringList asked = it->second;
+    m_peerCheckOps.erase(it);
+    if (!m_rosterLimited.contains(roomId))
+        return;
+    auto &checks = m_peerChecks[roomId];
+    for (const QString &peer : asked) {
+        PeerCheck &check = checks[peer];
+        check.state = members.contains(peer) ? 1 : absent.contains(peer) ? 0 : -1;
+        check.fresh = QDeadlineTimer(kPeerCheckTtlMs);
+    }
+    Q_EMIT spaceRosterChanged(roomId);
+    requestPeerChecks(roomId);
 }
 
 int SpaceManager::rowCount(const QModelIndex &parent) const
@@ -972,6 +1098,8 @@ void SpaceManager::rebuild()
 
     endResetModel();
     Q_EMIT spacesChanged();
+    // A new direct message brings a peer nobody has asked about yet.
+    requestPeerChecks(m_activeSpaceId);
 }
 
 void SpaceManager::setDirectMessagesHaveOwnTile(bool own)

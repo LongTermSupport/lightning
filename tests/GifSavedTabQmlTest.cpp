@@ -20,6 +20,7 @@
 #include "gif/GifSearchController.h"
 #include "gif/GifStarredStore.h"
 #include "gif/GifTransport.h"
+#include "support/SettledClick.h"
 
 namespace {
 constexpr int kSignalTimeoutMs = 3000;
@@ -730,7 +731,8 @@ private Q_SLOTS:
             auto *panel2 =
                 p2->findChild<QQuickItem *>(QStringLiteral("gifPickerPanel"));
             QVERIFY(panel2 != nullptr);
-            const QPointF origin = panel2->mapToScene(QPointF(0, 0));
+            QPointF origin;
+            QVERIFY(testsupport::settledScenePoint(win2, panel2, &origin, QPointF(0, 0)));
             const qreal wBefore = p2->property("width").toReal();
             const QPoint s = (origin + QPointF(d, d)).toPoint();
             QTest::mousePress(win2, Qt::LeftButton, Qt::NoModifier, s);

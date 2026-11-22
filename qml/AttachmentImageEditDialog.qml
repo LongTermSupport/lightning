@@ -21,6 +21,7 @@ AppDialog {
     property var strokes: []
     property var activeStroke: []
     property var history: []
+    property int pendingRender: 0
 
     title: qsTr("Edit image before sending")
     modal: true
@@ -49,6 +50,14 @@ AppDialog {
         var result = queue.renderImageEdit(row, cropLeft, cropTop,
                                            cropRight, cropBottom,
                                            turns, flipped, strokes)
+        if (result && result.pending) {
+            pendingRender = result.request
+            return
+        }
+        pendingRender = 0
+        showRender(result)
+    }
+    function showRender(result) {
         if (!result || !result.url) {
             errorText = result && result.error ? result.error
                                                : qsTr("The image edit failed.")
@@ -92,10 +101,20 @@ AppDialog {
         row = -1
         close()
     }
+    Connections {
+        target: root.queue ? root.queue : null
+        ignoreUnknownSignals: true
+        function onImageEditRendered(request, result) {
+            if (request !== root.pendingRender) return
+            root.pendingRender = 0
+            root.showRender(result)
+        }
+    }
     onClosed: {
         if (queue) queue.modelAboutToBeReset.disconnect(trayReset)
         if (queue && row >= 0) queue.cancelImageEdit(row)
         previewUrl = ""
+        pendingRender = 0
         queue = null
         row = -1
     }
@@ -238,6 +257,7 @@ AppDialog {
             Button {
                 text: qsTr("Use edited image")
                 enabled: root.errorText.length === 0 && root.previewUrl.length > 0
+                         && root.pendingRender === 0
                 onClicked: {
                     if (root.queue.commitImageEdit(root.row)) root.close()
                     else root.errorText = qsTr("The edited image could not be queued.")

@@ -715,6 +715,11 @@ public:
     { Q_UNUSED(roomId); Q_UNUSED(userIds); return 0; }
     virtual quint64 requestRoomMembers(const QString &roomId)
     { Q_UNUSED(roomId); return 0; }
+    /// Whether each user is a member of the room, asked per user without its
+    /// roster; answered by roomMemberCheckFinished. 0 when unsupported.
+    virtual quint64 requestRoomMemberCheck(const QString &roomId,
+                                           const QStringList &userIds)
+    { Q_UNUSED(roomId); Q_UNUSED(userIds); return 0; }
     virtual quint64 requestRoomOwnPermissions(const QString &roomId)
     { Q_UNUSED(roomId); return 0; }
     virtual quint64 setRoomName(const QString &roomId, const QString &name)
@@ -1574,6 +1579,10 @@ Q_SIGNALS:
                              const QVariantMap &snapshot);
     void roomOwnPermissionsReceived(quint64 opId, const QString &roomId,
                                     const QVariantMap &facts);
+    /// Users in neither list are unknown.
+    void roomMemberCheckFinished(quint64 opId, const QString &roomId,
+                                 const QStringList &members,
+                                 const QStringList &absent);
     void threadParticipantsReceived(const QString &roomId,
                                     const QString &rootEventId,
                                     const QVariantList &participants,

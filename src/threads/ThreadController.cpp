@@ -21,6 +21,7 @@
 #include <QMimeData>
 
 #include <algorithm>
+#include <utility>
 
 namespace {
 constexpr int kMaxPasteEdge = 4096;
@@ -211,6 +212,8 @@ void ThreadController::setClient(MatrixClient *client)
     m_pendingThreadReads.clear();
     m_client = client;
     m_slashJoinOp = 0;
+    if (std::exchange(m_pendingPollOp, 0) != 0)
+        Q_EMIT pollCreateFinished(false);
     refreshRoomThreadUnread();
     m_model.setClient(client);
     m_attachments->setClient(client);
@@ -228,6 +231,17 @@ void ThreadController::setClient(MatrixClient *client)
                 });
         connect(m_client, &MatrixClient::attachmentQueueFinished, this,
                 &ThreadController::onAttachmentQueueFinished);
+        connect(m_client, &MatrixClient::roomSendFinished, this,
+                [this](quint64 opId, const QString &, bool ok, const QString &) {
+                    if (opId == 0 || opId != m_pendingPollOp)
+                        return;
+                    m_pendingPollOp = 0;
+                    Q_EMIT pollCreateFinished(ok);
+                });
+        connect(m_client, &MatrixClient::sendsAbandoned, this, [this] {
+            if (std::exchange(m_pendingPollOp, 0) != 0)
+                Q_EMIT pollCreateFinished(false);
+        });
         // The room timeline's root summary is the count when the thread
         // model has not loaded the root row.
         connect(m_client, &MatrixClient::eventChangedAt, this,
@@ -724,6 +738,23 @@ int ThreadController::insertMention(const QString &userId,
     return res.cursorPos;
 }
 
+bool ThreadController::pollsSupported() const
+{
+    return m_client && m_client->supportsPolls() && supported();
+}
+
+bool ThreadController::createPoll(const QString &question,
+                                  const QStringList &answers,
+                                  bool undisclosed, int maxSelections)
+{
+    if (!m_client || m_state != Ready || m_roomId.isEmpty()
+        || m_rootEventId.isEmpty() || m_pendingPollOp != 0)
+        return false;
+    m_pendingPollOp = m_client->createPoll(m_roomId, m_rootEventId, question,
+                                           answers, undisclosed, maxSelections);
+    return m_pendingPollOp != 0;
+}
+
 bool ThreadController::attachmentsSupported() const
 {
     return m_client && m_client->supportsAttachmentSend() && supported()
@@ -857,7 +888,8 @@ void ThreadController::pumpAttachments()
         if (entries[row].posterPending)
             return;
         dispatchAttachment(row);
-        if (entries[row].state == QLatin1String("dispatching"))
+        if (entries[row].state == QLatin1String("dispatching")
+            || entries[row].posterPending)
             return;
     }
 }
@@ -880,12 +912,15 @@ void ThreadController::dispatchEntry(AttachmentQueueModel::Entry &entry,
     quint64 opId = 0;
     // The same metadata policy as the room composer, at this send path's own
     // choke point (a thread image used to leave with its GPS block intact).
-    QString sendPath = entry.localPath;
-    QByteArray sendData = entry.data;
+    QString sendPath;
+    QByteArray sendData;
     QString strippedSub;
-    if (!entry.isVideo && !entry.isSvg
-        && !m_imagePrep.prepare(m_imageMetadataMode, entry.mime, sendPath,
-                                sendData, &strippedSub)) {
+    const auto prepared = m_attachments->prepareImageForSend(
+        entry, m_imagePrep, m_imageMetadataMode, true, sendPath, sendData,
+        strippedSub);
+    if (prepared == AttachmentQueueModel::SendImage::Deferred)
+        return;
+    if (prepared == AttachmentQueueModel::SendImage::Refused) {
         entry.state = QStringLiteral("failed");
         entry.error = tr("Photo details could not be removed from this image, "
                          "so it was not sent. You can change this under "
@@ -1067,7 +1102,7 @@ void ThreadController::pumpParked(const QString &key)
         if (entry.posterPending)
             return;
         dispatchEntry(entry, roomId, rootEventId);
-        if (entry.state == QLatin1String("dispatching"))
+        if (entry.state == QLatin1String("dispatching") || entry.posterPending)
             return;
     }
 }

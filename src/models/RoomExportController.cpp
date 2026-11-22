@@ -249,6 +249,7 @@ void RoomExportController::onPage(quint64 opId, const QString &roomId,
     m_newestFirst.clear();
     m_job.options.undecryptableCount = int(undecryptable);
     m_job.options.reachesStartOfRoom = stopReason == QLatin1String("start");
+    m_job.options.editsUnresolved = editsUnresolved;
     beginWriting();
 }
 

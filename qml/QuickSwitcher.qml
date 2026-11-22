@@ -42,6 +42,10 @@ Popup {
         commandMode = switcher._pendingCommandMode
         switcher._pendingCommandMode = false
         commandScope = "actions"
+        resultAnnounceTimer.stop()
+        switcher._goneResultName = ""
+        switcher._resultsQuery = app.quickSwitcher.query
+        switcher._announcedState = switcher.resultAnnounceState()
     }
     onClosed: {
         app.quickSwitcher.reset()
@@ -65,6 +69,13 @@ Popup {
         if (row < 0 || row >= app.quickSwitcher.count) return
         var r = app.quickSwitcher.resultAt(row)
         if (!r.roomId) return
+        if (r.link) {
+            // An event target or a room we are not in: the link flow previews
+            // it and only an explicit Join joins.
+            switcher.close()
+            app.openMatrixLink(r.link)
+            return
+        }
         if (r.isSpace) {
             if (app.spaces) app.spaces.activeSpaceId = r.roomId
         } else {
@@ -424,19 +435,114 @@ Popup {
     readonly property var commandRows:
         commandScope === "actions" ? filteredCommandActions : scopedEntityRows
     ListModel { id: commandRowModel }
+    function commandRowKey(r) {
+        return r.kind === "action" ? "action:" + r.actionId : "room:" + r.roomId
+    }
+    property string _commandRowsContext: ""
+    // A new query or scope starts at the top; any other rebuild (an action
+    // becoming available, an account changing) keeps Enter on the same entity,
+    // or on the row that took its place if it is gone.
     function syncCommandRows() {
+        const context = switcher.commandScope + "\n" + queryField.text
+        const keptIndex = commandList.currentIndex
+        const keptKey = context === switcher._commandRowsContext && keptIndex >= 0
+                        && keptIndex < commandRowModel.count
+                        ? switcher.commandRowKey(commandRowModel.get(keptIndex)) : ""
+        switcher._commandRowsContext = context
         commandRowModel.clear()
+        var next = commandRows.length > 0 ? 0 : -1
         for (var i = 0; i < commandRows.length; ++i) {
             var r = commandRows[i]
-            commandRowModel.append({
+            var row = {
                 kind: r.kind || "", label: r.label || "",
+                actionId: r.kind === "action" ? (r.id || "") : "",
                 name: r.name || "", subtitle: r.subtitle || "",
                 iconName: r.iconName || "", category: r.category || "",
                 roomId: r.roomId || "", avatarUrl: r.avatarUrl || "",
                 accountUserId: r.accountUserId || "",
-                enabled: r.enabled !== false })
+                enabled: r.enabled !== false }
+            commandRowModel.append(row)
+            if (keptKey !== "" && switcher.commandRowKey(row) === keptKey)
+                next = i
         }
-        commandList.currentIndex = commandRows.length > 0 ? 0 : -1
+        if (keptKey !== "" && next >= 0
+                && switcher.commandRowKey(commandRowModel.get(next)) !== keptKey)
+            next = Math.min(keptIndex, commandRows.length - 1)
+        commandList.currentIndex = next
+    }
+
+    property string _keptResultRoomId: ""
+    property int _keptResultIndex: -1
+    // Rooms change under an open palette; Enter must stay on the room the user
+    // selected, not on whatever now occupies its row.
+    Connections {
+        target: app.quickSwitcher
+        function onResultsAboutToChange() {
+            const kept = resultList.currentIndex >= 0
+                ? app.quickSwitcher.resultAt(resultList.currentIndex) : ({})
+            switcher._keptResultIndex = resultList.currentIndex
+            switcher._keptResultRoomId = kept.roomId || ""
+            switcher._keptResultName = kept.name || kept.roomId || ""
+        }
+        function onResultsChanged() {
+            const count = app.quickSwitcher.count
+            var next = count > 0 ? 0 : -1
+            const found = switcher._keptResultRoomId !== ""
+                ? app.quickSwitcher.indexOfRoom(switcher._keptResultRoomId) : -1
+            if (count > 0 && switcher._keptResultIndex >= 0) {
+                next = found >= 0 ? found
+                                  : Math.min(switcher._keptResultIndex, count - 1)
+            }
+            resultList.currentIndex = next
+            if (next >= 0)
+                resultList.positionViewAtIndex(next, ListView.Contain)
+            // Narrowing by typing is not a disappearance worth naming.
+            if (switcher._keptResultRoomId !== "" && found < 0
+                    && switcher._resultsQuery === app.quickSwitcher.query)
+                switcher._goneResultName = switcher._keptResultName
+            switcher._resultsQuery = app.quickSwitcher.query
+            if (switcher.opened)
+                resultAnnounceTimer.restart()
+        }
+    }
+    property string _keptResultName: ""
+    property string _resultsQuery: ""
+    property string _goneResultName: ""
+    property string _announcedState: ""
+    // What the screen reader was last told about the results; tests read it.
+    property string lastResultAnnouncement: ""
+    function resultAnnounceState() {
+        const current = resultList.currentIndex >= 0
+            ? app.quickSwitcher.resultAt(resultList.currentIndex) : ({})
+        return app.quickSwitcher.count + "\n" + (current.roomId || "")
+    }
+    // Debounced so typing produces one announcement once results settle.
+    Timer {
+        id: resultAnnounceTimer
+        interval: 700
+        onTriggered: switcher.announceResults()
+    }
+    function announceResults() {
+        if (!switcher.opened || switcher.commandMode)
+            return
+        const state = switcher.resultAnnounceState()
+        if (state === switcher._announcedState && switcher._goneResultName === "")
+            return
+        switcher._announcedState = state
+        const count = app.quickSwitcher.count
+        const current = resultList.currentIndex >= 0
+            ? app.quickSwitcher.resultAt(resultList.currentIndex) : ({})
+        var parts = []
+        if (switcher._goneResultName !== "")
+            parts.push(qsTr("%1 is no longer listed.").arg(switcher._goneResultName))
+        parts.push(count > 0 ? qsTr("%n result(s).", "", count) : qsTr("No results."))
+        if (current.roomId)
+            parts.push(qsTr("%1 selected.").arg(current.name || current.roomId))
+        switcher._goneResultName = ""
+        switcher.lastResultAnnouncement = parts.join(" ")
+        // Accessible.announce needs Qt 6.8.
+        if (typeof resultList.Accessible.announce === "function")
+            resultList.Accessible.announce(switcher.lastResultAnnouncement)
     }
     onCommandRowsChanged: syncCommandRows()
     Component.onCompleted: {
@@ -449,6 +555,7 @@ Popup {
         if (category === "dm") return qsTr("PEOPLE")
         if (category === "space") return qsTr("SPACES")
         if (category === "invite") return qsTr("INVITES")
+        if (category === "address") return qsTr("MATRIX ADDRESS")
         return category.toUpperCase()
     }
     function sectionStarts() {
@@ -787,7 +894,7 @@ Popup {
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
                 text: queryField.text.length > 0
-                      ? qsTr("No matching rooms")
+                      ? qsTr("No matching rooms, people or Spaces")
                       : qsTr("Type to search your rooms")
                 color: AppTheme.stormTextMuted
                 font.pixelSize: AppTheme.textBody
@@ -837,7 +944,9 @@ Popup {
             Layout.fillWidth: true
             Layout.margins: AppTheme.spacing16
             horizontalAlignment: Text.AlignHCenter
-            text: qsTr("No matching actions")
+            text: switcher.commandScope === "rooms" ? qsTr("No matching rooms")
+                  : switcher.commandScope === "people" ? qsTr("No matching people")
+                  : qsTr("No matching actions")
             color: AppTheme.stormTextMuted
             font.pixelSize: AppTheme.textBody
         }
@@ -875,7 +984,14 @@ Popup {
                 section.property: "category"
                 section.criteria: ViewSection.FullString
                 section.delegate: MenuSectionLabel {
-                    text: switcher.sectionLabelFor(section)
+                    objectName: "quickSwitcherSection_" + section
+                    width: resultList.width
+                    readonly property int more:
+                        app.quickSwitcher.hiddenByCategory[section] || 0
+                    text: more > 0
+                          ? switcher.sectionLabelFor(section) + "  \u00b7  "
+                            + qsTr("%n MORE, TYPE TO NARROW", "", more)
+                          : switcher.sectionLabelFor(section)
                     leftPadding: AppTheme.spacing16
                     topPadding: AppTheme.spacing8
                     bottomPadding: AppTheme.spacing4

@@ -21,6 +21,7 @@ command -v nix >/dev/null 2>&1 && die "validation image must not provide nix"
 
 chmod +x "$app"
 file "$app" | grep -q 'ELF 64-bit' || die "not an ELF AppImage"
+"$SCRIPT_DIR/check-elf-stacks.sh" "$app"
 export APPIMAGE_EXTRACT_AND_RUN=1
 
 version_output=$(cd /tmp && "$ROOT/$app" --version)
@@ -114,6 +115,7 @@ cleanup() { rm -rf "$audit" "$desktop_home"; }
 trap cleanup EXIT
 ( cd "$audit" && "$ROOT/$app" --appimage-extract >/dev/null )
 tree="$audit/squashfs-root"
+"$SCRIPT_DIR/check-elf-stacks.sh" "$tree/usr/bin/lightning-matrix" "$tree/usr/bin/lightning-updater" "$tree"
 test -x "$tree/usr/bin/lightning-matrix" || die "binary missing in payload"
 
 # The C/C++ runtime floor the host must meet: nothing here bundles libc or

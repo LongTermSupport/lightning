@@ -7,6 +7,8 @@
 #include <QBuffer>
 #include <QDir>
 #include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QSet>
 #include <QSignalSpy>
 #include <QTemporaryDir>
@@ -719,6 +721,42 @@ private Q_SLOTS:
         QTRY_COMPARE(again.size(), 1);
         QVERIFY2(!again.first().at(1).toString().contains(QStringLiteral("edit")),
                  qPrintable(again.first().at(1).toString()));
+    }
+
+    void theFileItselfRecordsTheEditsItCouldNotApply()
+    {
+        QTemporaryDir dir;
+        const QList<roomexport::Format> formats = { roomexport::Format::Json,
+                                                    roomexport::Format::PlainText,
+                                                    roomexport::Format::Html };
+        for (const roomexport::Format format : formats) {
+            const QString path = dir.filePath(QStringLiteral("out%1").arg(int(format)));
+            FakeClient client;
+            RoomExportController controller;
+            controller.setClient(&client);
+            QSignalSpy finished(&controller, &RoomExportController::finished);
+            RoomExportController::Job job = htmlJob(path);
+            job.format = format;
+            QCOMPARE(controller.start(job), QString());
+            client.pageWithUnresolvedEdits(
+                client.walkOp,
+                { walkRow(QStringLiteral("$1"), QStringLiteral("text"), 1000,
+                          QStringLiteral("hello")) },
+                118);
+            QTRY_COMPARE(finished.size(), 1);
+            QVERIFY(finished.first().at(0).toBool());
+            QFile file(path);
+            QVERIFY(file.open(QIODevice::ReadOnly));
+            const QByteArray bytes = file.readAll();
+            if (format == roomexport::Format::Json) {
+                const QJsonObject root = QJsonDocument::fromJson(bytes).object();
+                QCOMPARE(root.value(QStringLiteral("edits_unresolved")).toInteger(), 118);
+            } else {
+                QVERIFY2(QString::fromUtf8(bytes).contains(
+                             QStringLiteral("Edits that could not be applied: 118")),
+                         bytes.left(2000).constData());
+            }
+        }
     }
 
     void theLoadedRangeNeedsNoWalk()

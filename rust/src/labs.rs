@@ -639,6 +639,7 @@ const CLASSES: &[(&str, EventClass)] = {
         ("room_list_reset", UiOnly),
         ("room_list_set", UiOnly),
         ("room_list_truncate", UiOnly),
+        ("room_member_check", UiOnly),
         ("room_members", UiOnly),
         ("room_members_changed", UiOnly),
         ("room_moderation_result", UiOnly),

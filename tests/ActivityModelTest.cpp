@@ -2221,6 +2221,42 @@ private Q_SLOTS:
         QCOMPARE(h.kindOf(QStringLiteral("$k1")), QStringLiteral("keyword"));
     }
 
+    void aPlaintextEditInAnEncryptedRoomChangesNothing()
+    {
+        Harness h;
+        RoomInfo room;
+        room.id = kRoom;
+        room.name = QStringLiteral("Ops");
+        room.encrypted = true;
+        h.client.roomSet = { h.fresh(room) };
+        TimelineEvent orig = text(QStringLiteral("$o1"), QStringLiteral("@bob:mock.local"),
+                                  QStringLiteral("hey @me"), 1000);
+        orig.mentionsMe = true;
+        orig.isEncrypted = true;
+        QVERIFY(h.model.ingest(orig, QStringLiteral("Ops")));
+        TimelineEvent forged = text(QStringLiteral("$e1"), QStringLiteral("@bob:mock.local"),
+                                    QStringLiteral("* forged words @me"), 1100);
+        forged.isEdit = true;
+        forged.replacesEventId = QStringLiteral("$o1");
+        forged.editNewBody = QStringLiteral("forged words @me");
+        forged.mentionsMe = true;
+        QVERIFY(!h.model.ingest(forged, QStringLiteral("Ops")));
+        forged.eventId = QStringLiteral("$e2");
+        forged.replacesEventId = QStringLiteral("$unseen");
+        QVERIFY(!h.model.ingest(forged, QStringLiteral("Ops")));
+        QCOMPARE(h.model.count(), 1);
+        QCOMPARE(h.row(0).value(QStringLiteral("preview")).toString(), QStringLiteral("hey @me"));
+
+        TimelineEvent sealed = forged;
+        sealed.eventId = QStringLiteral("$e3");
+        sealed.replacesEventId = QStringLiteral("$o1");
+        sealed.editNewBody = QStringLiteral("real words @me");
+        sealed.isEncrypted = true;
+        QVERIFY(!h.model.ingest(sealed, QStringLiteral("Ops")));
+        QCOMPARE(h.row(0).value(QStringLiteral("preview")).toString(),
+                 QStringLiteral("real words @me"));
+    }
+
     void aForgedEditCannotHoldTheOriginalsRow()
     {
         Harness h;

@@ -9,6 +9,9 @@
 #include <QUrl>
 #include <QVariantList>
 
+#include "media/ImageSendPrep.h"
+
+#include <atomic>
 #include <functional>
 #include <memory>
 
@@ -79,6 +82,13 @@ public:
         QString replyToEventId;
         QString threadRootId;
         bool spoiler = false;
+        // A metadata strip for this send: held like a poster job (posterPending)
+        // while it runs on a worker.
+        QString stripMode;
+        bool stripDone = false;
+        ImageSendPrep::Prepared strip;
+        // The render the edit dialog waits for; 0 when none is outstanding.
+        int editRequest = 0;
     };
 
     explicit AttachmentQueueModel(QObject *parent = nullptr);
@@ -121,9 +131,12 @@ public:
     Q_INVOKABLE void retryAt(int row);
     Q_INVOKABLE void setSpoilerAt(int row, bool spoiler);
     bool spoilerAllowed(const Entry &entry) const;
+    // A large image renders on a worker: the result is {pending, request} and
+    // imageEditRendered delivers the real one.
     Q_INVOKABLE QVariantMap renderImageEdit(int row, qreal left, qreal top,
         qreal right, qreal bottom, int quarterTurns, bool mirror,
         const QVariantList &strokes);
+    static constexpr qint64 kBackgroundEditPixels = 1024 * 1024;
     Q_INVOKABLE bool commitImageEdit(int row);
     Q_INVOKABLE void cancelImageEdit(int row);
 
@@ -136,6 +149,15 @@ public:
     void discardEntries(const QList<Entry> &entries);
 
     static QString humanSize(qint64 bytes);
+
+    enum class SendImage { Ready, Deferred, Refused };
+    // What to send for an image under `mode`. A large one is stripped on a
+    // worker (Deferred: the row resumes through entryPrepared or
+    // takenEntryPrepared); a small one, or any when !allowDefer, inline. On
+    // Ready, `sub` holds the stripped copy and is now the caller's to track.
+    SendImage prepareImageForSend(Entry &entry, ImageSendPrep &prep,
+                                  const QString &mode, bool allowDefer,
+                                  QString &path, QByteArray &data, QString &sub);
 
     qint64 uploadLimit() const;
     bool exceedsUploadLimit(qint64 bytes) const;
@@ -157,10 +179,19 @@ Q_SIGNALS:
     void countChanged();
     void entryPrepared(int row);
     void takenEntryPrepared();
+    void imageEditRendered(int request, const QVariantMap &result);
 
 private:
     void startPosterJob(int row);
     void cancelPosterJob(const Entry &entry);
+    void startStripJob(const Entry &entry);
+    void finishStrip(const QString &tag, const ImageSendPrep::Prepared &result);
+    void dropStrip(Entry &entry);
+    void applyImageEdit(int request, const QString &error, const QString &path,
+                        const QSize &size, bool animated);
+    QVariantMap finishImageEdit(Entry &entry, const QString &error,
+                                const QString &path, const QSize &size,
+                                bool animated);
     void startSvgConversion(int row);
     void finishSvgConversion(const QString &tag,
                              const lightning::svgraster::Result &result);
@@ -183,4 +214,6 @@ private:
     quint64 m_nextPosterTag = 1;
     std::unique_ptr<QTemporaryDir> m_convertedDir;
     quint64 m_nextConverted = 1;
+    QHash<QString, std::shared_ptr<std::atomic<bool>>> m_stripJobs;
+    int m_nextEditRequest = 1;
 };

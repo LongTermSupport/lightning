@@ -18,6 +18,8 @@ class RoomDirectorySearchModel : public QAbstractListModel
     Q_PROPERTY(bool supported READ supported NOTIFY stateChanged)
     Q_PROPERTY(bool canLoadMore READ canLoadMore NOTIFY stateChanged)
     Q_PROPERTY(QString errorCategory READ errorCategory NOTIFY stateChanged)
+    // The server's own estimate of how many rooms match; 0 when it gave none.
+    Q_PROPERTY(int totalEstimate READ totalEstimate NOTIFY stateChanged)
 
 public:
     enum Roles {
@@ -45,6 +47,7 @@ public:
     QString errorCategory() const { return m_errorCategory; }
     bool supported() const;
     bool canLoadMore() const { return !m_nextBatch.isEmpty(); }
+    int totalEstimate() const { return m_totalEstimate; }
 
     int rowCount(const QModelIndex &parent = {}) const override;
     QVariant data(const QModelIndex &index, int role) const override;
@@ -80,6 +83,7 @@ private:
     QTimer m_debounce;
     QList<QVariantMap> m_rows;
     QString m_nextBatch;
+    int m_totalEstimate = 0;
     QString m_pendingServer;
     quint64 m_pendingOp = 0;
     bool m_pendingIsNextPage = false;

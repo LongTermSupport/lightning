@@ -32,6 +32,10 @@ class CallDeviceController : public QObject
                    NOTIFY selectionChanged)
     Q_PROPERTY(bool preferredMicrophoneMissing READ preferredMicrophoneMissing
                    NOTIFY selectionChanged)
+    /// A capture pipeline could not open the chosen microphone and used the
+    /// system default instead. Says nothing about whether it is connected.
+    Q_PROPERTY(bool preferredMicrophoneUnusable
+                   READ preferredMicrophoneUnusable NOTIFY selectionChanged)
     Q_PROPERTY(bool preferredCameraMissing READ preferredCameraMissing
                    NOTIFY selectionChanged)
     Q_PROPERTY(bool hasMicrophone READ hasMicrophone NOTIFY devicesChanged)
@@ -52,6 +56,9 @@ public:
     QString activeCameraId() const;
     bool preferredMicrophoneMissing() const;
     bool preferredCameraMissing() const;
+    bool preferredMicrophoneUnusable() const;
+    /// What a capture pipeline did with microphone `chosenId`; any thread.
+    void noteMicrophoneBinding(const QString &chosenId, bool fellBack);
     bool hasMicrophone() const;
     bool hasCamera() const;
     bool hasSpeaker() const;
@@ -88,4 +95,5 @@ private:
     QString m_lastActiveSpeaker;
     QString m_lastActiveCamera;
     bool m_lastCameraMissing = false;
+    QString m_microphoneFellBackFrom;
 };

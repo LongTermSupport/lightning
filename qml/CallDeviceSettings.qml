@@ -129,6 +129,21 @@ ColumnLayout {
         }
     }
 
+    Loader {
+        objectName: "callDeviceMicrophoneUnusable"
+        active: root.activated
+                && app.callDevices.preferredMicrophoneUnusable
+                && !app.callDevices.preferredMicrophoneMissing
+        visible: active
+        Layout.fillWidth: true
+        sourceComponent: Label {
+            wrapMode: Text.WordWrap
+            color: AppTheme.warning
+            font.pixelSize: AppTheme.textMeta
+            text: qsTr("Your chosen microphone couldn't be opened, so the " + "system default was used. Choose it again or reconnect it.")
+        }
+    }
+
     ColumnLayout {
         Layout.fillWidth: true
         Layout.topMargin: AppTheme.spacing4

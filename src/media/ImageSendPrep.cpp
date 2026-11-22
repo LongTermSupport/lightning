@@ -1,5 +1,6 @@
 #include "media/ImageSendPrep.h"
 
+#include "app/GuiStallTracer.h"
 #include "media/ImageMetadata.h"
 #include "storage/PortableMode.h"
 
@@ -34,36 +35,71 @@ void ImageSendPrep::purgeOld()
     }
 }
 
-bool ImageSendPrep::prepare(const QString &modeString, const QString &mime,
-                            QString &path, QByteArray &data, QString *tempSub)
+bool ImageSendPrep::needsStrip(const QString &mode, const QString &mime)
 {
-    if (tempSub)
-        tempSub->clear();
-    const imagemeta::Mode mode = imagemeta::modeFromString(modeString);
-    if (mode == imagemeta::Mode::Keep
-        || !mime.startsWith(QLatin1String("image/")))
-        return true;
+    return imagemeta::modeFromString(mode) != imagemeta::Mode::Keep
+        && mime.startsWith(QLatin1String("image/"));
+}
 
+ImageSendPrep::Prepared ImageSendPrep::run(const QString &modeString,
+                                           const QString &path,
+                                           const QByteArray &data,
+                                           const QString &sub,
+                                           const std::atomic<bool> *cancelled)
+{
+    Prepared out{true, path, data, {}};
     QByteArray bytes = data;
     if (!path.isEmpty()) {
         QFile file(path);
         if (!file.open(QIODevice::ReadOnly))
-            return false;
+            return {false, path, data, {}};
         bytes = file.readAll();
     }
-    const imagemeta::Result r = imagemeta::strip(bytes, mode);
+    qint64 work = bytes.size();
+    const auto done = [&work](Prepared result) {
+        stalltrace::noteGuiWork("image-send-prep", work);
+        return result;
+    };
+    const imagemeta::Result r =
+        imagemeta::strip(bytes, imagemeta::modeFromString(modeString));
     switch (r.status) {
     case imagemeta::Status::Unchanged:
     case imagemeta::Status::Unsupported:
-        return true;
+        return done(out);
     case imagemeta::Status::Failed:
-        return false;
+        out.ok = false;
+        return done(out);
     case imagemeta::Status::Stripped:
         break;
     }
     if (path.isEmpty()) {
-        data = r.bytes;
-        return true;
+        out.data = r.bytes;
+        return done(out);
+    }
+    work += r.bytes.size();
+    // mkdir, not mkpath: a scratch root removed underneath must not be
+    // recreated without its live lock.
+    if (sub.isEmpty() || (cancelled && cancelled->load()) || !QDir().mkdir(sub))
+        return done({false, path, data, {}});
+    const QString target = sub + QLatin1Char('/') + QFileInfo(path).fileName();
+    QFile file(target);
+    if (!file.open(QIODevice::WriteOnly)
+        || file.write(r.bytes) != r.bytes.size() || !file.flush()) {
+        file.close();
+        QDir(sub).removeRecursively();
+        return done({false, path, data, {}});
+    }
+    file.close();
+    out.path = target;
+    out.sub = sub;
+    return done(out);
+}
+
+QString ImageSendPrep::nextSub()
+{
+    if (m_dir && m_dir->isValid() && !QFileInfo::exists(m_dir->path())) {
+        lightning::portable::releaseScratchDir(m_dir->path());
+        m_dir.reset();
     }
     if (!m_dir) {
         // Crash leftovers are swept at startup by cleanStaleTempDirs().
@@ -74,21 +110,25 @@ bool ImageSendPrep::prepare(const QString &modeString, const QString &mime,
             lightning::portable::holdScratchDirLive(m_dir->path());
     }
     if (!m_dir->isValid())
-        return false;
-    const QString sub = m_dir->filePath(QString::number(m_next++));
-    if (!QDir().mkpath(sub))
-        return false;
-    const QString target = sub + QLatin1Char('/') + QFileInfo(path).fileName();
-    QFile out(target);
-    if (!out.open(QIODevice::WriteOnly)
-        || out.write(r.bytes) != r.bytes.size()) {
-        QDir(sub).removeRecursively();
-        return false;
-    }
-    out.close();
-    path = target;
+        return {};
+    return m_dir->filePath(QString::number(m_next++));
+}
+
+bool ImageSendPrep::prepare(const QString &mode, const QString &mime,
+                            QString &path, QByteArray &data, QString *tempSub)
+{
     if (tempSub)
-        *tempSub = sub;
+        tempSub->clear();
+    if (!needsStrip(mode, mime))
+        return true;
+    const Prepared r =
+        run(mode, path, data, path.isEmpty() ? QString() : nextSub());
+    if (!r.ok)
+        return false;
+    path = r.path;
+    data = r.data;
+    if (tempSub)
+        *tempSub = r.sub;
     return true;
 }
 
