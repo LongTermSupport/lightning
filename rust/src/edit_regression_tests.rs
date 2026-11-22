@@ -1344,3 +1344,40 @@ async fn a_plaintext_edit_of_an_encrypted_message_is_not_the_room_preview() {
     let payload = crate::room_payload(&room).await;
     assert_eq!(payload["last_message_preview"], "original words");
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn a_plaintext_edit_of_an_encrypted_message_is_not_in_its_edit_history() {
+    use matrix_sdk::test_utils::mocks::RoomRelationsResponseTemplate;
+    let server = MatrixMockServer::new().await;
+    let client = encrypted_original_and_plaintext_edit(&server).await;
+    let mut forged = edit("$forged", "$original", "FORGED caption", 2000);
+    forged["room_id"] = json!(ROOM);
+    server
+        .mock_room_relations()
+        .match_target_event(matrix_sdk::ruma::EventId::parse("$original").unwrap())
+        .ok(RoomRelationsResponseTemplate::default()
+            .events(vec![Raw::from_json_string(forged.to_string()).unwrap()]))
+        .mount()
+        .await;
+    let dir = std::env::temp_dir().join(format!("lightning-edit-history-{}", std::process::id()));
+    let bridge = crate::RustClient::new(dir).expect("bridge");
+    *bridge.client.lock().unwrap() = Some(client);
+    crate::rooms::request_edit_history(&bridge, ROOM.to_owned(), "$original".to_owned()).unwrap();
+    let deadline = Instant::now() + Duration::from_secs(5);
+    let answer = loop {
+        let found = bridge.events.lock().unwrap().iter()
+            .map(|raw| serde_json::from_str::<serde_json::Value>(raw).unwrap())
+            .find(|event| event["type"] == "message_edit_history");
+        if found.is_some() || Instant::now() >= deadline {
+            break found;
+        }
+        tokio::time::sleep(Duration::from_millis(10)).await;
+    };
+    // Dropping the bridge's runtime on this one would panic.
+    tokio::task::spawn_blocking(move || drop(bridge)).await.unwrap();
+    let answer = answer.expect("no edit history arrived");
+    assert_eq!(answer["ok"], true, "{answer}");
+    let bodies: Vec<&str> = answer["revisions"].as_array().unwrap().iter()
+        .map(|row| row["body"].as_str().unwrap()).collect();
+    assert_eq!(bodies, ["original words"]);
+}
