@@ -318,10 +318,8 @@ bool MessageComposer::pasteFromClipboard()
         }
     }
 
-    if (mime->hasImage()) {
-        QImage image = qvariant_cast<QImage>(mime->imageData());
-        if (image.isNull())
-            return false;
+    if (QImage image = AttachmentQueueModel::clipboardImage(mime);
+        !image.isNull()) {
         if (image.width() > kMaxPasteEdge || image.height() > kMaxPasteEdge)
             image = image.scaled(kMaxPasteEdge, kMaxPasteEdge,
                                  Qt::KeepAspectRatio, Qt::SmoothTransformation);

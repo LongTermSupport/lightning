@@ -525,7 +525,10 @@ void ForwardController::onMediaBytesForStar(const QString &mediaKey, bool ok,
         QBuffer buffer(&probe);
         buffer.open(QIODevice::ReadOnly);
         QImageReader reader(&buffer);
-        const QSize size = reader.size();
+        QSize size = reader.size();
+        // info.w/h are the displayed size; size() ignores EXIF orientation.
+        if (reader.transformation() & QImageIOHandler::TransformationRotate90)
+            size.transpose();
         if (size.isValid() && size.width() > 0 && size.height() > 0) {
             width = size.width();
             height = size.height();
