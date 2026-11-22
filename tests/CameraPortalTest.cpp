@@ -1,5 +1,6 @@
 
 #include "calls/CameraPortal.h"
+#include "calls/PortalCapability.h"
 #include "calls/PortalRequest.h"
 #include "calls/ScreenCastPortal.h"
 
@@ -69,6 +70,10 @@ public:
     QString lastSessionPath;
     QString caller;
     QDBusMessage heldCall;
+    bool holdProperties = false;
+    QList<QDBusMessage> heldProperties;
+    QMap<QString, int> getAllByInterface;
+    QVariantMap cameraProperties;
 
     QString introspect(const QString &) const override { return {}; }
 
@@ -80,6 +85,13 @@ public:
             QStringLiteral("Response"));
         response << code << results;
         m_bus.send(response);
+    }
+
+    void releaseHeldProperties(const QVariantMap &properties)
+    {
+        for (const QDBusMessage &held : std::as_const(heldProperties))
+            m_bus.send(held.createReply(QVariant::fromValue(properties)));
+        heldProperties.clear();
     }
 
     void releaseHeldReply()
@@ -104,12 +116,26 @@ public:
             return true;
         }
         if (message.interface() == QLatin1String(kProperties)
-            && message.member() == QLatin1String("GetAll")
-            && message.arguments().value(0).toString()
-                == QLatin1String(kScreenCast)) {
-            ++getAllCalls;
-            m_bus.send(message.createReply(QVariant::fromValue(castProperties)));
-            return true;
+            && message.member() == QLatin1String("GetAll")) {
+            const QString target = message.arguments().value(0).toString();
+            ++getAllByInterface[target];
+            if (holdProperties) {
+                message.setDelayedReply(true);
+                heldProperties << message;
+                return true;
+            }
+            if (target == QLatin1String(kScreenCast)) {
+                ++getAllCalls;
+                m_bus.send(
+                    message.createReply(QVariant::fromValue(castProperties)));
+                return true;
+            }
+            if (target == QLatin1String(kCamera) && !cameraProperties.isEmpty()) {
+                m_bus.send(message.createReply(
+                    QVariant::fromValue(cameraProperties)));
+                return true;
+            }
+            return false;
         }
         if (message.interface() == QLatin1String(kScreenCast))
             return handleScreenCast(message);
@@ -259,6 +285,9 @@ private Q_SLOTS:
     void theCursorModeIsReadAgainForEveryShare();
     void aSessionCreatedAfterCancellingIsClosed();
     void cancellingAnOpenPickerClosesItsRequestAndSession();
+    void aCapabilityProbeNeverBlocksTheCaller();
+    void aProbeWithNoAnswerSettlesOnceAsUnavailable();
+    void aPortalRestartDropsTheCachedAnswer();
 
 private:
     QProcess m_daemon;
@@ -661,6 +690,90 @@ void CameraPortalTest::cancellingAnOpenPickerClosesItsRequestAndSession()
     QTest::qWait(200);
     QCOMPARE(m_fake->closedRequests.count(picker), 1);
     QCOMPARE(m_fake->closedSessions.count(m_fake->lastSessionPath), 1);
+}
+
+void CameraPortalTest::aCapabilityProbeNeverBlocksTheCaller()
+{
+    m_fake->holdProperties = true;
+    m_fake->heldProperties.clear();
+    const int cameraBefore =
+        m_fake->getAllByInterface.value(QString::fromLatin1(kCamera));
+    const int castBefore =
+        m_fake->getAllByInterface.value(QString::fromLatin1(kScreenCast));
+    CameraPortal camera;
+    ScreenCastPortal cast;
+    QSignalSpy cameraChanged(&camera, &CameraPortal::capabilityChanged);
+    QSignalSpy castChanged(&cast, &ScreenCastPortal::capabilityChanged);
+
+    for (int i = 0; i < 5; ++i) {
+        QCOMPARE(camera.capability(), portal::Capability::Unknown);
+        QCOMPARE(camera.cameraPresence(), portal::Capability::Unknown);
+        QCOMPARE(cast.capability(), portal::Capability::Unknown);
+    }
+    // The fake runs on this thread, so it sees a probe only once the caller
+    // has returned to the event loop.
+    QTRY_COMPARE(m_fake->heldProperties.size(), 2);
+    QTest::qWait(100);
+    QCOMPARE(m_fake->getAllByInterface.value(QString::fromLatin1(kCamera)),
+             cameraBefore + 1);
+    QCOMPARE(m_fake->getAllByInterface.value(QString::fromLatin1(kScreenCast)),
+             castBefore + 1);
+
+    m_fake->holdProperties = false;
+    m_fake->releaseHeldProperties({{QStringLiteral("version"), 1u},
+                                   {QStringLiteral("IsCameraPresent"), true}});
+    QTRY_COMPARE(cameraChanged.count(), 1);
+    QTRY_COMPARE(castChanged.count(), 1);
+    QCOMPARE(camera.capability(), portal::Capability::Available);
+    QCOMPARE(camera.cameraPresence(), portal::Capability::Available);
+    QCOMPARE(cast.capability(), portal::Capability::Available);
+    QCOMPARE(m_fake->getAllByInterface.value(QString::fromLatin1(kCamera)),
+             cameraBefore + 1);
+    QCOMPARE(m_fake->getAllByInterface.value(QString::fromLatin1(kScreenCast)),
+             castBefore + 1);
+}
+
+void CameraPortalTest::aProbeWithNoAnswerSettlesOnceAsUnavailable()
+{
+    m_fake->holdProperties = true;
+    m_fake->heldProperties.clear();
+    const int before =
+        m_fake->getAllByInterface.value(QString::fromLatin1(kCamera));
+    CameraPortal camera;
+    QSignalSpy changed(&camera, &CameraPortal::capabilityChanged);
+
+    QCOMPARE(camera.capability(), portal::Capability::Unknown);
+    QVERIFY(changed.wait(portal::CapabilityProbe::kTimeoutMs + 3000));
+    QTest::qWait(100);
+    QCOMPARE(changed.count(), 1);
+    QCOMPARE(m_fake->getAllByInterface.value(QString::fromLatin1(kCamera)),
+             before + 1);
+    QCOMPARE(camera.capability(), portal::Capability::Unavailable);
+    QCOMPARE(camera.cameraPresence(), portal::Capability::Unavailable);
+    m_fake->holdProperties = false;
+    m_fake->heldProperties.clear();
+}
+
+void CameraPortalTest::aPortalRestartDropsTheCachedAnswer()
+{
+    m_fake->holdProperties = false;
+    m_fake->cameraProperties = {{QStringLiteral("version"), 1u},
+                                {QStringLiteral("IsCameraPresent"), true}};
+    CameraPortal camera;
+    QSignalSpy changed(&camera, &CameraPortal::capabilityChanged);
+    camera.refreshCapability();
+    QTRY_COMPARE(camera.capability(), portal::Capability::Available);
+    const int probes =
+        m_fake->getAllByInterface.value(QString::fromLatin1(kCamera));
+
+    QDBusConnection fakeBus(QStringLiteral("fake-portal"));
+    QVERIFY(fakeBus.unregisterService(QString::fromLatin1(kPortalService)));
+    QTRY_VERIFY(camera.capability() != portal::Capability::Available);
+    QVERIFY(fakeBus.registerService(QString::fromLatin1(kPortalService)));
+    QTRY_COMPARE(camera.capability(), portal::Capability::Available);
+    QVERIFY(m_fake->getAllByInterface.value(QString::fromLatin1(kCamera))
+            > probes);
+    m_fake->cameraProperties.clear();
 }
 
 QTEST_GUILESS_MAIN(CameraPortalTest)

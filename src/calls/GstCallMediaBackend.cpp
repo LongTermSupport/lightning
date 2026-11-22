@@ -1,6 +1,7 @@
 #include "GstCallMediaBackend.h"
 
 #include "calls/CaptureClock.h"
+#include "calls/RgbaVideoFrame.h"
 #include "calls/RtpVp8Payloader.h"
 #include "calls/SerialSinkSwap.h"
 #include "calls/GstBootstrap.h"
@@ -369,40 +370,10 @@ GstFlowReturn onVideoSample(GstElement *sink, void *userData)
         gst_sample_unref(sample);
         return GST_FLOW_OK;
     }
-    GstCaps *caps = gst_sample_get_caps(sample);
-    GstBuffer *buffer = gst_sample_get_buffer(sample);
-    int width = 0;
-    int height = 0;
-    if (caps && gst_caps_get_size(caps) > 0) {
-        const GstStructure *structure = gst_caps_get_structure(caps, 0);
-        gst_structure_get_int(structure, "width", &width);
-        gst_structure_get_int(structure, "height", &height);
-    }
-    // Dimensions come from the peer and size an allocation: bound them.
-    GstMapInfo map;
-    if (!buffer || width <= 0 || height <= 0 || width > 8192 || height > 8192
-        || !gst_buffer_map(buffer, &map, GST_MAP_READ)) {
-        gst_sample_unref(sample);
-        return GST_FLOW_OK;
-    }
-    QVideoFrame frame(QVideoFrameFormat(QSize(width, height),
-                                        QVideoFrameFormat::Format_RGBA8888));
-    if (frame.map(QVideoFrame::WriteOnly)) {
-        const int sourceStride = width * 4;
-        const int targetStride = frame.bytesPerLine(0);
-        const qsizetype available = static_cast<qsizetype>(map.size);
-        uchar *target = frame.bits(0);
-        for (int row = 0; row < height; ++row) {
-            const qsizetype offset = qsizetype(row) * sourceStride;
-            if (offset + sourceStride > available)
-                break;
-            std::memcpy(target + qsizetype(row) * targetStride,
-                        map.data + offset, size_t(sourceStride));
-        }
-        frame.unmap();
-    }
-    gst_buffer_unmap(buffer, &map);
+    const QVideoFrame frame = lightning::calls::rgbaFrameFromSample(sample);
     gst_sample_unref(sample);
+    if (!frame.isValid())
+        return GST_FLOW_OK;
     if (router->offerFrame(ctx->key, frame)) {
         GstCallMediaBackend *backend = ctx->backend;
         const QString key = ctx->key;

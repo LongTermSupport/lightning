@@ -113,6 +113,30 @@ bool CallDeviceController::preferredMicrophoneMissing() const
     return !preferred.isEmpty() && activeMicrophoneId().isEmpty();
 }
 
+bool CallDeviceController::preferredMicrophoneUnusable() const
+{
+    return m_settings && !m_microphoneFellBackFrom.isEmpty()
+        && m_microphoneFellBackFrom == m_settings->preferredMicrophoneId();
+}
+
+void CallDeviceController::noteMicrophoneBinding(const QString &chosenId,
+                                                 bool fellBack)
+{
+    QMetaObject::invokeMethod(this, [this, chosenId, fellBack] {
+        if (chosenId.isEmpty())
+            return;
+        QString next = m_microphoneFellBackFrom;
+        if (fellBack)
+            next = chosenId;
+        else if (next == chosenId)
+            next.clear();
+        if (next == m_microphoneFellBackFrom)
+            return;
+        m_microphoneFellBackFrom = next;
+        Q_EMIT selectionChanged();
+    });
+}
+
 bool CallDeviceController::preferredCameraMissing() const
 {
     return !camerasChosenByDesktop() && cameraSelection().preferredMissing;
