@@ -825,9 +825,8 @@ private Q_SLOTS:
         QVERIFY(begin > 0);
         const int close = qml.indexOf(QStringLiteral("})"), begin);
         QVERIFY2(qml.mid(begin, close - begin)
-                     .contains(QStringLiteral("formattedBody: model.formattedBody")),
-                 "the forward snapshot omits formattedBody, so a spoiler cannot "
-                 "be concealed");
+                     .contains(QStringLiteral("previewBody: root.timelineModel.replyPreviewForEvent(")),
+                 "the forward snapshot omits the model's concealed preview");
     }
 
     void beginRefusesEmptyTextBody()

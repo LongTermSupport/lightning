@@ -956,6 +956,51 @@ async fn a_valid_edit_that_adds_the_spoiler_marker_hides_the_quote() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn a_file_swap_edit_gives_the_row_a_media_key_naming_the_new_file() {
+    let server = MatrixMockServer::new().await;
+    let client = server.client_builder().build().await;
+    client.event_cache().subscribe().unwrap();
+    let image = json!({"type":"m.room.message", "event_id":"$pic", "sender":SENDER,
+        "origin_server_ts":1000, "content":{"msgtype":"m.image",
+        "body":"old.png", "url":"mxc://localhost/old"}});
+    let swap = |id: &str, name: &str, ts: u64| {
+        json!({"type":"m.room.message", "event_id":id, "sender":SENDER,
+            "origin_server_ts":ts, "content":{"msgtype":"m.image",
+            "body":format!("* {name}"), "url":format!("mxc://localhost/{name}"),
+            "m.new_content":{"msgtype":"m.image", "body":name,
+                "url":format!("mxc://localhost/{name}")},
+            "m.relates_to":{"rel_type":"m.replace", "event_id":"$pic"}}})
+    };
+    sync(&client, vec![image], "1").await;
+    let timeline = build(&client).await;
+    assert_eq!(wait_body(&timeline, "$pic", "old.png").await["media_key"], "$pic");
+
+    let mut caption = swap("$caption", "old", 1500);
+    caption["content"]["m.new_content"]["body"] = json!("a caption");
+    sync(&client, vec![caption], "2").await;
+    let row = wait_body(&timeline, "$pic", "a caption").await;
+    assert_eq!(row["media_key"], "$pic", "a caption-only edit refetched the bytes: {row}");
+
+    let registry = TimelineRegistry::new(Arc::new(Mutex::new(VecDeque::new())));
+    let media_of = |key: &str| match registry.media_source(key, false) {
+        Some((MediaSource::Plain(mxc), ..)) => mxc.to_string(),
+        other => panic!("{key}: {other:?}"),
+    };
+    for (id, name, ts, pos) in [("$swap1", "new", 2000, "3"), ("$swap2", "third", 3000, "4")] {
+        sync(&client, vec![swap(id, name, ts)], pos).await;
+        wait_body(&timeline, "$pic", name).await;
+        let item = timeline.items().await.iter().find_map(|item| {
+            let event = item.as_event()?;
+            (event.event_id().map(|e| e.as_str()) == Some("$pic"))
+                .then(|| item_to_json(item, ROOM, "@me:localhost", &registry))
+        });
+        let key = item.unwrap()["media_key"].as_str().unwrap().to_owned();
+        assert_eq!(key, format!("$pic#edit:{id}"));
+        assert_eq!(media_of(&key), format!("mxc://localhost/{name}"));
+    }
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn an_edit_uses_the_timeline_that_holds_the_event() {
     let server = MatrixMockServer::new().await;
     let client = server.client_builder().build().await;

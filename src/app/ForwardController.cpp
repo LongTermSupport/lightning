@@ -112,14 +112,19 @@ QString ForwardController::buildPreview(const QVariantMap &snapshot)
         if (!filename.isEmpty())
             kind = tr("%1 (%2)").arg(kind, filename);
     } else {
+        // previewBody is the model's concealed text: the delegate's
+        // formattedBody is sanitized and no longer marks its spoilers.
         const QString html =
             snapshot.value(QStringLiteral("formattedBody")).toString();
-        QString body = html.contains(QLatin1String("data-mx-spoiler"),
-                                     Qt::CaseInsensitive)
-            ? MessageHtml::plainTextConcealingSpoilers(
-                  html, QStringLiteral("\u2588\u2588\u2588\u2588\u2588"))
-                  .trimmed()
-            : snapshot.value(QStringLiteral("body")).toString().trimmed();
+        QString body;
+        if (snapshot.contains(QStringLiteral("previewBody")))
+            body = snapshot.value(QStringLiteral("previewBody")).toString().trimmed();
+        else if (html.contains(QLatin1String("data-mx-spoiler"), Qt::CaseInsensitive))
+            body = MessageHtml::plainTextConcealingSpoilers(
+                       html, QStringLiteral("\u2588\u2588\u2588\u2588\u2588"))
+                       .trimmed();
+        else
+            body = snapshot.value(QStringLiteral("body")).toString().trimmed();
         body.replace(QLatin1Char('\n'), QLatin1Char(' '));
         if (body.size() > 140) {
             body.truncate(140);
