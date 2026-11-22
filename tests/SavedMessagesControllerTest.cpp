@@ -51,6 +51,16 @@ public:
                                        { QStringLiteral("editUnreadable"), editUnreadable },
                                    });
     }
+    void fail(const QString &eventId)
+    {
+        Q_EMIT eventSourceReceived(QStringLiteral("!room:example.org"), eventId, false, {},
+                                   QVariantMap{{QStringLiteral("opId"), opFor.value(eventId)}});
+    }
+    void answerAll(int from = 0)
+    {
+        for (int i = from; i < requested.size(); ++i)
+            answer(requested.at(i), opFor.value(requested.at(i)), QStringLiteral("body"));
+    }
     void login(const QString &, const QString &, const QString &) override {}
     void logout() override { user.clear(); Q_EMIT loggedOut(); }
     bool restoreSession() override { return false; }
@@ -99,6 +109,15 @@ QVariantMap entryFor(const SavedMessagesController &saved, const QString &event)
         if (v.toMap().value(QStringLiteral("eventId")) == event)
             return v.toMap();
     return {};
+}
+
+QVariantMap manyRefs(int count)
+{
+    QVariantList refs;
+    for (int i = 0; i < count; ++i)
+        refs << savedRef(QStringLiteral("!room:example.org"), QStringLiteral("$%1").arg(i),
+                         1000 - i);
+    return savedList(refs);
 }
 
 bool setNow(SavedMessagesController &saved, qint64 ms)
@@ -591,6 +610,102 @@ private Q_SLOTS:
         QVERIFY(!saved.loaded());
         QCOMPARE(saved.count(), 0);
         QVERIFY(!saved.error().isEmpty());
+    }
+
+    void theFirstViewportFetchesOnlyItsPrefetchWindow_data()
+    {
+        QTest::addColumn<int>("count");
+        QTest::newRow("10") << 10;
+        QTest::newRow("50") << 50;
+        QTest::newRow("100") << 100;
+    }
+
+    void theFirstViewportFetchesOnlyItsPrefetchWindow()
+    {
+        QFETCH(int, count);
+        SavedFakeClient client;
+        client.useOps = true;
+        SavedMessagesController saved;
+        saved.setClient(&client);
+        Q_EMIT client.accountPrefRead(client.lastType, true, manyRefs(count));
+        saved.resolveVisible();
+        client.answerAll();
+        qInfo().noquote() << "requests after opening" << count << "saved messages:"
+                          << client.requested.size();
+        QCOMPARE(client.requested.size(), qMin(count, 9));
+
+        QVERIFY(QMetaObject::invokeMethod(&saved, "resolveVisible", Q_ARG(int, 4),
+                                          Q_ARG(int, 9)));
+        client.answerAll();
+        QCOMPARE(client.requested.size(), qMin(count, 18));
+        QCOMPARE(client.requested.last(), QStringLiteral("$%1").arg(qMin(count, 18) - 1));
+    }
+
+    void closingStopsDispatchWhileInFlightAnswersStillLand()
+    {
+        SavedFakeClient client;
+        client.useOps = true;
+        SavedMessagesController saved;
+        saved.setClient(&client);
+        Q_EMIT client.accountPrefRead(client.lastType, true, manyRefs(20));
+        saved.resolveVisible();
+        QCOMPARE(client.requested.size(), 4);
+        QMetaObject::invokeMethod(&saved, "pauseResolving");
+        client.answerAll();
+        QCOMPARE(client.requested.size(), 4);
+        QCOMPARE(entryFor(saved, QStringLiteral("$3")).value(QStringLiteral("preview")).toString(),
+                 QStringLiteral("body"));
+        Q_EMIT client.eventEdited(QStringLiteral("!room:example.org"), QStringLiteral("$0"));
+        QCOMPARE(client.requested.size(), 4);
+
+        saved.resolveVisible();
+        QCOMPARE(client.requested.size(), 8);
+        QCOMPARE(client.requested.at(4), QStringLiteral("$0"));
+    }
+
+    void aFilterLoadsTheRestCancellablyAndReportsWhatItCannotSearch()
+    {
+        SavedFakeClient client;
+        client.useOps = true;
+        SavedMessagesController saved;
+        saved.setClient(&client);
+        Q_EMIT client.accountPrefRead(client.lastType, true, manyRefs(30));
+        saved.resolveVisible();
+        client.answerAll();
+        QCOMPARE(client.requested.size(), 9);
+        QCOMPARE(saved.property("unsearchedCount").toInt(), 21);
+
+        saved.setQuery(QStringLiteral("needle"));
+        QCOMPARE(client.requested.size(), 13);
+        QVERIFY(saved.property("searchLoading").toBool());
+        QVERIFY(saved.setProperty("searchPaused", true));
+        client.answerAll(9);
+        QCOMPARE(client.requested.size(), 13);
+        QCOMPARE(saved.property("unsearchedCount").toInt(), 17);
+        QVERIFY(!saved.property("searchLoading").toBool());
+
+        QVERIFY(saved.setProperty("searchPaused", false));
+        client.answerAll(13);
+        QCOMPARE(client.requested.size(), 30);
+        QCOMPARE(saved.property("unsearchedCount").toInt(), 0);
+        QVERIFY(!saved.property("searchLoading").toBool());
+    }
+
+    void unavailableReferencesAreEachAskedOnce()
+    {
+        SavedFakeClient client;
+        client.useOps = true;
+        SavedMessagesController saved;
+        saved.setClient(&client);
+        Q_EMIT client.accountPrefRead(client.lastType, true, manyRefs(100));
+        saved.setTypeFilter(QStringLiteral("text"));
+        saved.resolveVisible();
+        for (int i = 0; i < client.requested.size(); ++i)
+            client.fail(client.requested.at(i));
+        QCOMPARE(client.requested.size(), 100);
+        QCOMPARE(QSet<QString>(client.requested.cbegin(), client.requested.cend()).size(), 100);
+        QCOMPARE(saved.property("unsearchedCount").toInt(), 0);
+        QVERIFY(!saved.property("searchLoading").toBool());
     }
 };
 
