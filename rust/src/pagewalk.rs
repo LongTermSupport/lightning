@@ -772,12 +772,13 @@ mod sdk_tests {
         let registry = TimelineRegistry::new(Arc::new(Mutex::new(VecDeque::new())));
         let returned = runtime.block_on(async {
             let timeline = churn_timeline(&addr).await;
+            let claim = registry.start_check_claim(ROOM, 1);
             let walk = walk_backwards(
                 &timeline,
                 20,
                 budget,
                 || wanted.load(Ordering::SeqCst),
-                &registry.start_check_claim(ROOM, 1),
+                &claim,
             );
             tokio::time::timeout(Duration::from_secs(15), walk).await.is_ok()
         });
