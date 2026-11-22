@@ -4,6 +4,7 @@
 #include <QQmlComponent>
 #include <QQmlContext>
 #include <QQmlEngine>
+#include <QQmlExpression>
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QTemporaryDir>
@@ -328,6 +329,78 @@ ApplicationWindow {
         QTest::keyClick(m_window, Qt::Key_Return);
         QTRY_COMPARE(mock()->lastThreadSendRootForTest(), roots.at(1));
         QCOMPARE(sentThreadEmoticonUrl(), packA);
+    }
+
+    // The thread "+" menu is the only UI path to a thread poll; it must reach
+    // the thread send path with the root, never the room composer.
+    void threadPlusMenuSendsAPollIntoTheThread()
+    {
+        openThreadPanel();
+        auto *thread = m_controller->thread();
+        QTRY_VERIFY(thread->state() == ThreadController::Ready);
+        const QString root = thread->rootEventId();
+        const int before = mock()->pollCreatesForTest();
+        const auto click = [this](QQuickItem *it) {
+            const QPointF c = it->mapToScene(QPointF(it->width() / 2, it->height() / 2));
+            QTest::mouseClick(m_window, Qt::LeftButton, {}, c.toPoint());
+        };
+
+        auto *plus = item("threadAttachButton");
+        QVERIFY(plus);
+        QTRY_VERIFY(plus->isEnabled() && plus->width() > 0);
+        click(plus);
+        auto *menu = m_window->findChild<QObject *>(QStringLiteral("threadAttachMenu"));
+        QVERIFY2(menu, "the thread + has no menu");
+        QTRY_VERIFY(menu->property("opened").toBool());
+        auto *pollItem = m_window->findChild<QQuickItem *>(
+            QStringLiteral("threadCreatePollMenuItem"));
+        QVERIFY(pollItem);
+        QTRY_VERIFY(pollItem->isVisible() && pollItem->isEnabled() && pollItem->width() > 0);
+        click(pollItem);
+
+        auto *dialog = m_window->findChild<QObject *>(QStringLiteral("threadCreatePollDialog"));
+        QVERIFY(dialog);
+        QTRY_VERIFY(dialog->property("opened").toBool());
+        auto *content = dialog->property("contentItem").value<QQuickItem *>();
+        QVERIFY(content);
+        QQmlExpression fill(qmlContext(content), dialog, QStringLiteral(
+            "questionField.text = 'Thread lunch?';"
+            "answerModel.setProperty(0,'answerText','red');"
+            "answerModel.setProperty(1,'answerText','blue');"
+            "bumpAnswerRevision(); formValid"));
+        QVERIFY(fill.evaluate().toBool());
+        auto *submit = find(content, QStringLiteral("createPollSubmitButton"));
+        QVERIFY(submit);
+        QTRY_VERIFY(submit->isEnabled());
+        click(submit);
+
+        QTRY_COMPARE(mock()->pollCreatesForTest(), before + 1);
+        QCOMPARE(mock()->lastPollThreadRootForTest(), root);
+        QTRY_VERIFY2(!dialog->property("opened").toBool(),
+                     "the acked poll did not retire the dialog");
+        const auto hasPoll = [](const QList<TimelineEvent> &events) {
+            for (const TimelineEvent &e : events) {
+                if (e.type == TimelineEvent::Poll
+                    && e.pollQuestion == QLatin1String("Thread lunch?"))
+                    return true;
+            }
+            return false;
+        };
+        QTRY_VERIFY2(hasPoll(thread->model()->events()), "no local echo in the thread");
+        QVERIFY2(!hasPoll(m_controller->timeline()->events()),
+                 "the thread poll leaked into the main timeline");
+
+        // Closed thread: refused, never retried as a room send.
+        thread->close();
+        bool queued = true;
+        const QStringList answers{QStringLiteral("a"), QStringLiteral("b")};
+        QVERIFY(QMetaObject::invokeMethod(
+            thread, "createPoll", Q_RETURN_ARG(bool, queued),
+            Q_ARG(QString, QStringLiteral("Q")),
+            Q_ARG(QStringList, answers),
+            Q_ARG(bool, false), Q_ARG(int, 1)));
+        QVERIFY(!queued);
+        QCOMPARE(mock()->pollCreatesForTest(), before + 1);
     }
 };
 

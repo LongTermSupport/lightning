@@ -170,6 +170,11 @@ public:
                                       const QString &mime,
                                       qreal durationMs,
                                       const QVariantList &waveform);
+    Q_INVOKABLE bool pollsSupported() const;
+    // Same contract as MessageComposer::createPoll, sent into the open thread.
+    Q_INVOKABLE bool createPoll(const QString &question,
+                                const QStringList &answers,
+                                bool undisclosed, int maxSelections);
     Q_INVOKABLE void setFollowed(bool followed);
     // Sends one threaded read receipt for the open thread's latest readable
     // event (deduplicated; never room-wide). A no-op unless viewerAtLatest,
@@ -217,6 +222,7 @@ Q_SIGNALS:
     void listStateChanged();
     void attachmentsChanged();
     void attachmentRejected(const QString &reason);
+    void pollCreateFinished(bool ok);
     void navigationChanged();
     void navigationTargetLocated(int row);
 
@@ -249,6 +255,7 @@ private:
 
     MatrixClient *m_client = nullptr;
     quint64 m_slashJoinOp = 0;
+    quint64 m_pendingPollOp = 0;
     TimelineModel m_model;
     int m_lastReplyCount = -1;
     int m_lastExactReplyCount = -1;

@@ -5073,7 +5073,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>CreatePollDialog</name>
     <message>
-        <location filename="../qml/CreatePollDialog.qml" line="+122"/>
+        <location filename="../qml/CreatePollDialog.qml" line="+124"/>
         <source>Discard this poll draft?</source>
         <translation>تجاهل مسودة الاستطلاع هذه؟</translation>
     </message>
@@ -14410,7 +14410,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>رسالة أقدم رقم %1 (صفحة %2)</translation>
     </message>
     <message>
-        <location line="+1511"/>
+        <location line="+1540"/>
         <source>You joined the room.</source>
         <translation>انضممت إلى الغرفة.</translation>
     </message>
@@ -32959,7 +32959,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ThreadController</name>
     <message>
-        <location filename="../src/threads/ThreadController.cpp" line="+737"/>
+        <location filename="../src/threads/ThreadController.cpp" line="+768"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>المرفقات غير مدعومة على هذه الخلفية.</translation>
@@ -33320,18 +33320,33 @@ Note: importing keys does not verify this session.</source>
         <translation>إزالة المرفق %1</translation>
     </message>
     <message>
-        <location line="+55"/>
-        <location line="+768"/>
+        <location line="+56"/>
+        <source>Attach files or create a poll</source>
+        <translation>إرفاق ملفات أو إنشاء استطلاع</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+797"/>
         <source>Attach files</source>
         <translation>إرفاق ملفات</translation>
     </message>
     <message>
-        <location line="-767"/>
+        <location line="-796"/>
         <source>Attach</source>
         <translation>إرفاق</translation>
     </message>
     <message>
-        <location line="+228"/>
+        <location line="+16"/>
+        <source>Attach files…</source>
+        <translation>إرفاق ملفات…</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Create poll…</source>
+        <translation>إنشاء استطلاع…</translation>
+    </message>
+    <message>
+        <location line="+229"/>
         <source>Reply…</source>
         <translation>رد…</translation>
     </message>
