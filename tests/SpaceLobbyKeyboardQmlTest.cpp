@@ -117,6 +117,17 @@ Rectangle {
     }
 
 private Q_SLOTS:
+    void aSpaceTooLargeToCheckSaysWhyItsPeopleAreUnscoped()
+    {
+        H h;
+        QVERIFY(build(h));
+        QVERIFY(all(h.lobby, "spaceLobbyMembershipNote").isEmpty());
+        QVERIFY(h.lobby->setProperty("membershipLimited", true));
+        const auto notes = all(h.lobby, "spaceLobbyMembershipNote");
+        QCOMPARE(notes.size(), 1);
+        QVERIFY(!notes.first()->property("text").toString().isEmpty());
+    }
+
     void joinedRowsAreTabStopsThatOpenFromTheKeyboard()
     {
         H h;
