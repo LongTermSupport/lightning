@@ -106,6 +106,7 @@ private Q_SLOTS:
         QVERIFY(block.contains(QStringLiteral("accel: \"E\"")));
         QVERIFY(block.contains(QStringLiteral("accel: \"F\"")));
         QVERIFY(block.contains(QStringLiteral("accel: \"C\"")));
+        QVERIFY(block.contains(QStringLiteral("accel: \"V\"")));
         QVERIFY(!block.contains(QStringLiteral("accel: \"↑\"")));
         QStringList accels;
         static const QRegularExpression accelRe(
@@ -127,12 +128,13 @@ private Q_SLOTS:
                  "call) has moved, so every assertion below is testing an "
                  "empty string");
         QVERIFY(!block.contains(QStringLiteral("Keys.onPressed")));
-        QVERIFY(block.count(QStringLiteral("Shortcut {")) == 6);
-        QVERIFY(block.count(QStringLiteral("enabled: moreMenu.opened")) == 6);
+        QVERIFY(block.count(QStringLiteral("Shortcut {")) == 7);
+        QVERIFY(block.count(QStringLiteral("enabled: moreMenu.opened")) == 7);
         QVERIFY(block.count(QStringLiteral(
-            "context: Qt.ApplicationShortcut")) == 6);
+            "context: Qt.ApplicationShortcut")) == 7);
         QVERIFY(block.contains(QStringLiteral("sequence: \"F\"")));
         QVERIFY(block.contains(QStringLiteral("sequence: \"C\"")));
+        QVERIFY(block.contains(QStringLiteral("sequence: \"V\"")));
         QVERIFY(block.contains(QStringLiteral("sequence: \"R\"")));
         QVERIFY(block.contains(QStringLiteral("sequence: \"T\"")));
         QVERIFY(block.contains(QStringLiteral("sequence: \"E\"")));

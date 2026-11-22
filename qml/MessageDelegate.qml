@@ -4089,6 +4089,18 @@ Item {
                     }
                 }
             }
+            Shortcut {
+                sequence: "V"
+                enabled: moreMenu.opened
+                context: Qt.ApplicationShortcut
+                onActivated: {
+                    if (root.menuEventId !== ""
+                            && !!root.timelineModel.requestEventSource) {
+                        root.openEventSource(root.menuEventId)
+                        moreMenu.close()
+                    }
+                }
+            }
             QuickReactionStrip {
                 objectName: "quickReactionStrip"
                 emojis: app.emojiCatalog.recentEmoji || []
@@ -4398,6 +4410,7 @@ Item {
                 objectName: "viewSourceMenuItem"
                 iconName: "code"
                 text: qsTr("View source")
+                accel: "V"
                 enabled: root.menuEventId !== ""
                          && !!root.timelineModel.requestEventSource
                 onTriggered: root.openEventSource(root.menuEventId)
