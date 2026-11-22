@@ -2704,6 +2704,19 @@ void MockMatrixClient::setDemoUnreadHidden(bool hidden)
     Q_EMIT roomsChanged();
 }
 
+quint64 MockMatrixClient::createPoll(const QString &roomId, const QString &,
+                                    const QString &question,
+                                    const QStringList &answers, bool, int)
+{
+    if (roomId.isEmpty() || question.trimmed().isEmpty() || answers.size() < 2)
+        return 0;
+    const quint64 op = ++m_mediaOpCounter;
+    QTimer::singleShot(0, this, [this, op, roomId] {
+        Q_EMIT roomSendFinished(op, roomId, true, QString());
+    });
+    return op;
+}
+
 void MockMatrixClient::sendPollResponse(const QString &roomId,
                                         const QString &threadRootId,
                                         const QString &pollStartEventId,

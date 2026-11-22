@@ -58,8 +58,8 @@ public:
     { sentBodies.append(body); }
     void sendThreadReplyTo(const QString &, const QString &, const QString &,
                            const QString &body, const QStringList &,
-                           const QVariantMap &) override
-    { sentBodies.append(body); }
+                           const QVariantMap &spec) override
+    { sentBodies.append(body); sentSpecs.append(spec); }
     void editMessage(const QString &, const QString &, const QString &body,
                      const QStringList &, const QVariantMap &spec) override
     { sentBodies.append(body); sentSpecs.append(spec); editBodies.append(body); }
@@ -465,6 +465,112 @@ private Q_SLOTS:
                      .value(QStringLiteral(":blob_wave:")).toString(),
                  QStringLiteral("mxc://x/1"));
         QVERIFY(m_composer->selectedEmoticons().isEmpty());
+    }
+
+    void codeIsNeverConvertedAtSend_data()
+    {
+        QTest::addColumn<QString>("text");
+        QTest::addColumn<QString>("sent");
+        const QString t = kThumbsUp;
+        QTest::newRow("double-backtick span")
+            << QStringLiteral("``x :thumbsup: ``") << QStringLiteral("``x :thumbsup: ``");
+        QTest::newRow("triple-backtick inline span")
+            << QStringLiteral("```x :thumbsup:```") << QStringLiteral("```x :thumbsup:```");
+        QTest::newRow("backtick fence")
+            << QStringLiteral("```\n:thumbsup:\n```") << QStringLiteral("```\n:thumbsup:\n```");
+        QTest::newRow("tilde fence")
+            << QStringLiteral("~~~\n:thumbsup:\n~~~") << QStringLiteral("~~~\n:thumbsup:\n~~~");
+        QTest::newRow("unclosed tilde fence")
+            << QStringLiteral("~~~\n:thumbsup:") << QStringLiteral("~~~\n:thumbsup:");
+        QTest::newRow("prose around a double span")
+            << QStringLiteral(":thumbsup: ``a :thumbsup: b`` :thumbsup:")
+            << t + QStringLiteral(" ``a :thumbsup: b`` ") + t;
+        QTest::newRow("literal backtick inside a double span")
+            << QStringLiteral("``a ` :thumbsup: b`` :thumbsup:")
+            << QStringLiteral("``a ` :thumbsup: b`` ") + t;
+        QTest::newRow("escaped backtick is prose")
+            << QStringLiteral("\\` :thumbsup:") << QStringLiteral("\\` ") + t;
+        QTest::newRow("multiline paste with a tilde fence")
+            << QStringLiteral("a :thumbsup:\n~~~\nb :thumbsup:\n~~~\nc :thumbsup:")
+            << QStringLiteral("a ") + t + QStringLiteral("\n~~~\nb :thumbsup:\n~~~\nc ") + t;
+        QTest::newRow("single spans either side")
+            << QStringLiteral("`one` :thumbsup: `two`")
+            << QStringLiteral("`one` ") + t + QStringLiteral(" `two`");
+    }
+
+    void codeIsNeverConvertedAtSend()
+    {
+        QFETCH(QString, text);
+        QFETCH(QString, sent);
+        m_composer->setText(text);
+        m_composer->send();
+        QCOMPARE(m_client->sentBodies, QStringList{ sent });
+    }
+
+    void codeIsNeverConvertedWhileTyping()
+    {
+        const QString open = QStringLiteral("``x :thumbsup: ");
+        m_composer->setText(open);
+        QCOMPARE(m_composer->maybeAutoConvertShortcodeBeforeCursor(open.size()), -1);
+        QVERIFY(m_composer->shortcodeAutoConvertEdit(open, open.size()).isEmpty());
+
+        const QString fence = QStringLiteral("~~~\n:thumbsup: ");
+        m_composer->setText(fence);
+        QCOMPARE(m_composer->maybeAutoConvertShortcodeBeforeCursor(fence.size()), -1);
+        QCOMPARE(m_composer->text(), fence);
+        QVERIFY(m_composer->shortcodeAutoConvertEdit(fence, fence.size()).isEmpty());
+        QVERIFY(m_composer->emojiCompletionsForText(QStringLiteral("~~~\n:thu"), 8).isEmpty());
+
+        const QString after = QStringLiteral("``a`` :thumbsup: ");
+        m_composer->setText(after);
+        QVERIFY(m_composer->maybeAutoConvertShortcodeBeforeCursor(after.size()) > 0);
+        QCOMPARE(m_composer->text(), QStringLiteral("``a`` ") + kThumbsUp + QStringLiteral(" "));
+    }
+
+    void eachInlineThreadDraftKeepsItsOwnChosenImage()
+    {
+        auto *drafts = new DraftStore(m_composer);
+        drafts->setClient(m_client);
+        m_composer->setDraftStore(drafts);
+        const auto choose = [this](const QString &url) {
+            m_composer->setText(QStringLiteral(":blob"));
+            QCOMPARE(m_composer->acceptEmoticonCompletionAt(
+                         5, row(QStringLiteral("blob_wave"), url, QString())), 12);
+        };
+        const auto sentUrl = [this] {
+            return m_client->sentSpecs.last().value(QStringLiteral("emoticons")).toMap()
+                .value(QStringLiteral(":blob_wave:")).toMap()
+                .value(QStringLiteral("url")).toString();
+        };
+        m_composer->setThreadTargetRootId(QStringLiteral("$a"));
+        choose(QStringLiteral("mxc://x/a"));
+        m_composer->setThreadTargetRootId(QStringLiteral("$b"));
+        QVERIFY2(m_composer->selectedEmoticons().isEmpty(),
+                 "an empty thread draft showed another thread's choice");
+        choose(QStringLiteral("mxc://x/b"));
+        m_composer->setThreadTargetRootId(QString());
+        QVERIFY(m_composer->selectedEmoticons().isEmpty());
+        choose(QStringLiteral("mxc://x/room"));
+
+        m_composer->setThreadTargetRootId(QStringLiteral("$a"));
+        QCOMPARE(m_composer->text(), QStringLiteral(":blob_wave: "));
+        QCOMPARE(m_composer->selectedEmoticons().size(), 1);
+        m_composer->send();
+        QCOMPARE(sentUrl(), QStringLiteral("mxc://x/a"));
+
+        m_composer->setThreadTargetRootId(QStringLiteral("$b"));
+        QCOMPARE(m_composer->text(), QStringLiteral(":blob_wave: "));
+        m_composer->send();
+        QCOMPARE(sentUrl(), QStringLiteral("mxc://x/b"));
+
+        m_composer->setThreadTargetRootId(QString());
+        QCOMPARE(m_composer->text(), QStringLiteral(":blob_wave: "));
+        m_composer->send();
+        QCOMPARE(sentUrl(), QStringLiteral("mxc://x/room"));
+
+        m_composer->setThreadTargetRootId(QStringLiteral("$a"));
+        QVERIFY2(m_composer->selectedEmoticons().isEmpty(),
+                 "a sent thread draft kept its choice");
     }
 
     void anAmbiguousTypedShortcodeStaysLiteral()

@@ -1,4 +1,5 @@
 
+#include "app/DraftStore.h"
 #include "matrix/MatrixClient.h"
 #include "models/MessageComposer.h"
 #include "models/MessageHtml.h"
@@ -137,6 +138,17 @@ public:
         calls.append(QStringLiteral("roomname|%1|%2").arg(roomId, name));
         return 1;
     }
+    quint64 pollOp = 0;
+    QStringList polls;
+    quint64 createPoll(const QString &roomId, const QString &threadRootId,
+                       const QString &question, const QStringList &answers,
+                       bool, int maxSelections) override
+    {
+        polls.append(QStringLiteral("%1|%2|%3|%4|%5").arg(
+            roomId, threadRootId, question, answers.join(QLatin1Char(',')))
+                         .arg(maxSelections));
+        return pollOp;
+    }
     quint64 joinOp = 1;
     bool joinByAddress = false;
     bool supportsJoinByAddress() const override { return joinByAddress; }
@@ -167,6 +179,143 @@ private Q_SLOTS:
         m_composer = nullptr;
         delete m_client;
         m_client = nullptr;
+    }
+
+    void cancellingAReplyKeepsThePickedMentions_data()
+    {
+        QTest::addColumn<bool>("threadChip");
+        QTest::newRow("reply") << false;
+        QTest::newRow("thread reply") << true;
+    }
+
+    void cancellingAReplyKeepsThePickedMentions()
+    {
+        QFETCH(bool, threadChip);
+        if (threadChip)
+            m_composer->beginThreadReply(QStringLiteral("$root"), QStringLiteral("p"));
+        else
+            m_composer->beginReply(QStringLiteral("$evt"), QStringLiteral("Bob"),
+                                   QStringLiteral("hi"));
+        m_composer->setText(QStringLiteral("hi @bo"));
+        m_composer->insertMention(QStringLiteral("@bob:example.org"),
+                                  QStringLiteral("Bob"), 3, 6);
+        m_composer->setText(m_composer->text() + QStringLiteral("there"));
+        QCOMPARE(m_composer->text(), QStringLiteral("hi @Bob there"));
+        m_composer->cancelReplyOrEdit();
+        QVERIFY(!m_composer->isReplying() && !m_composer->inThread());
+        QCOMPARE(m_composer->text(), QStringLiteral("hi @Bob there"));
+        QCOMPARE(m_composer->mentionRanges().size(), 1);
+        m_composer->send();
+        QCOMPARE(m_client->sends.size(), 1);
+        const SendRecord &s = m_client->sends.first();
+        QCOMPARE(s.kind, QStringLiteral("text"));
+        QCOMPARE(s.mentionIds, QStringList{ QStringLiteral("@bob:example.org") });
+        QVERIFY2(s.body.contains(QStringLiteral("[@Bob](https://matrix.to/#/%40bob%3Aexample.org)")),
+                 qPrintable(s.body));
+    }
+
+    void anEditOfAMentionAfterCancellingAReplyStillDropsIt()
+    {
+        m_composer->beginReply(QStringLiteral("$evt"), QStringLiteral("Bob"),
+                               QStringLiteral("hi"));
+        m_composer->setText(QStringLiteral("@bo"));
+        m_composer->insertMention(QStringLiteral("@bob:example.org"),
+                                  QStringLiteral("Bob"), 0, 3);
+        m_composer->cancelReplyOrEdit();
+        m_composer->setText(QStringLiteral("@Bo "));
+        QVERIFY(m_composer->mentionRanges().isEmpty());
+        m_composer->send();
+        QCOMPARE(m_client->sends.size(), 1);
+        QVERIFY(m_client->sends.first().mentionIds.isEmpty());
+        QVERIFY(!m_client->sends.first().body.contains(QStringLiteral("matrix.to")));
+    }
+
+    void cancellingAnEditGivesBackTheDraftsMentionsOnly()
+    {
+        auto *drafts = new DraftStore(m_composer);
+        drafts->setClient(m_client);
+        m_composer->setDraftStore(drafts);
+        m_composer->setText(QStringLiteral("hi @al"));
+        m_composer->insertMention(QStringLiteral("@alice:example.org"),
+                                  QStringLiteral("Alice"), 3, 6);
+        m_composer->beginEdit(
+            QStringLiteral("$e"),
+            QStringLiteral("[Carol](https://matrix.to/#/@carol:example.org) x"));
+        QCOMPARE(m_composer->mentionRanges().size(), 1);
+        m_composer->cancelReplyOrEdit();
+        QCOMPARE(m_composer->text(), QStringLiteral("hi @Alice "));
+        m_composer->send();
+        QCOMPARE(m_client->sends.size(), 1);
+        QCOMPARE(m_client->sends.first().mentionIds,
+                 QStringList{ QStringLiteral("@alice:example.org") });
+    }
+
+    void aPollTheBackendRefusesIsNotPending()
+    {
+        QSignalSpy finished(m_composer, &MessageComposer::pollCreateFinished);
+        QVERIFY(!m_composer->createPoll(QStringLiteral("Lunch?"),
+                                        { QStringLiteral("a"), QStringLiteral("b") },
+                                        false, 1));
+        QCOMPARE(m_client->polls.size(), 1);
+        m_client->pollOp = 7;
+        QVERIFY2(m_composer->createPoll(QStringLiteral("Lunch?"),
+                                        { QStringLiteral("a"), QStringLiteral("b") },
+                                        false, 1),
+                 "a refusal left a poll pending");
+        QCOMPARE(finished.count(), 0);
+    }
+
+    void anAcceptedPollAnswersOnceForItsOwnOp()
+    {
+        m_client->pollOp = 7;
+        QSignalSpy finished(m_composer, &MessageComposer::pollCreateFinished);
+        QVERIFY(m_composer->createPoll(QStringLiteral("Lunch?"),
+                                       { QStringLiteral("a"), QStringLiteral("b") },
+                                       true, 2));
+        QVERIFY2(!m_composer->createPoll(QStringLiteral("Lunch?"),
+                                         { QStringLiteral("a"), QStringLiteral("b") },
+                                         true, 2),
+                 "a second poll was offered while the first was pending");
+        QCOMPARE(m_client->polls,
+                 QStringList{ QStringLiteral("!room:example.org||Lunch?|a,b|2") });
+        Q_EMIT m_client->roomSendFinished(99, kRoom, true, QString());
+        QCOMPARE(finished.count(), 0);
+        Q_EMIT m_client->roomSendFinished(7, kRoom, false,
+                                          QStringLiteral("poll_create_rejected"));
+        QCOMPARE(finished.count(), 1);
+        QCOMPARE(finished.first().first().toBool(), false);
+        Q_EMIT m_client->roomSendFinished(7, kRoom, true, QString());
+        QCOMPARE(finished.count(), 1);
+    }
+
+    void anInlineThreadPollGoesToTheThread()
+    {
+        m_client->pollOp = 3;
+        m_composer->setThreadTargetRootId(QStringLiteral("$root"));
+        QVERIFY(m_composer->createPoll(QStringLiteral("Q"),
+                                       { QStringLiteral("a"), QStringLiteral("b") },
+                                       false, 1));
+        QCOMPARE(m_client->polls,
+                 QStringList{ QStringLiteral("!room:example.org|$root|Q|a,b|1") });
+    }
+
+    void aRoomSwitchOrALostBackendEndsThePendingPoll()
+    {
+        m_client->pollOp = 7;
+        QSignalSpy finished(m_composer, &MessageComposer::pollCreateFinished);
+        QVERIFY(m_composer->createPoll(QStringLiteral("Q"),
+                                       { QStringLiteral("a"), QStringLiteral("b") },
+                                       false, 1));
+        m_composer->setRoomId(QStringLiteral("!other:example.org"));
+        Q_EMIT m_client->roomSendFinished(7, kRoom, true, QString());
+        QCOMPARE(finished.count(), 0);
+        m_client->pollOp = 8;
+        QVERIFY(m_composer->createPoll(QStringLiteral("Q"),
+                                       { QStringLiteral("a"), QStringLiteral("b") },
+                                       false, 1));
+        Q_EMIT m_client->sendsAbandoned();
+        QCOMPARE(finished.count(), 1);
+        QCOMPARE(finished.first().first().toBool(), false);
     }
 
     void typingNoticesAreSentByDefault()

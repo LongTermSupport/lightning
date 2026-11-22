@@ -36,6 +36,8 @@ Dialog {
         undisclosedSwitch.checked = false
         multipleSwitch.checked = false
         answerRevision = 0
+        sending = false
+        sendFailed = false
     }
     function answerTexts() {
         var texts = []
@@ -52,14 +54,26 @@ Dialog {
                && answerTexts().length >= 2
     }
 
+    // The draft is retired only once the send queue holds the poll.
+    property bool sending: false
+    property bool sendFailed: false
     function submit() {
-        if (!formValid) return
+        if (!formValid || sending) return
         var answers = answerTexts()
-        app.composer.createPoll(
+        sendFailed = !app.composer.createPoll(
             questionField.text.trim(), answers,
             undisclosedSwitch.checked,
             multipleSwitch.checked ? answers.length : 1)
-        close()
+        sending = !sendFailed
+    }
+    Connections {
+        target: app.composer
+        function onPollCreateFinished(ok) {
+            if (!root.sending) return
+            root.sending = false
+            if (ok) root.close()
+            else root.sendFailed = true
+        }
     }
 
     readonly property bool dirty: {
@@ -67,7 +81,10 @@ Dialog {
         return questionField.text.trim().length > 0
                || answerTexts().length > 0
     }
+    // A queued poll cannot be withdrawn, so it is not dismissable while pending.
     function maybeClose() {
+        if (sending)
+            return
         if (dirty)
             discardConfirm.open()
         else
@@ -78,7 +95,8 @@ Dialog {
     anchors.centerIn: parent
     modal: true
     focus: true
-    closePolicy: dirty ? Popup.CloseOnEscape
+    // Dirty: Escape reaches contentItem's handler, which asks like Cancel does.
+    closePolicy: dirty ? Popup.NoAutoClose
                        : (Popup.CloseOnEscape | Popup.CloseOnPressOutside)
     width: Math.min(680, (parent ? parent.width : 680) - AppTheme.spacing24 * 2)
     height: Math.min(implicitHeight,
@@ -147,6 +165,7 @@ Dialog {
 
     contentItem: ColumnLayout {
         spacing: AppTheme.spacing12
+        Keys.onEscapePressed: root.maybeClose()
 
         RowLayout {
             Layout.fillWidth: true
@@ -162,6 +181,7 @@ Dialog {
             IconButton {
                 storm: true
                 objectName: "createPollCloseButton"
+                enabled: !root.sending
                 iconName: "close"
                 iconSize: 18
                 implicitWidth: 28; implicitHeight: 28
@@ -528,6 +548,16 @@ Dialog {
             }
         }
 
+        Label {
+            objectName: "pollSendError"
+            Layout.fillWidth: true
+            visible: root.sendFailed
+            text: qsTr("The poll was not sent. Your question and answers are "
+                       + "still here, so you can try again.")
+            color: AppTheme.stormDanger
+            wrapMode: Text.Wrap
+        }
+
         RowLayout {
             Layout.fillWidth: true
             Layout.topMargin: AppTheme.spacing8
@@ -537,14 +567,15 @@ Dialog {
                 storm: true
                 objectName: "createPollCancelButton"
                 text: qsTr("Cancel")
+                enabled: !root.sending
                 onClicked: root.maybeClose()
             }
             AppButton {
                 storm: true
                 objectName: "createPollSubmitButton"
                 kind: "primary"
-                text: qsTr("Send poll")
-                enabled: root.formValid
+                text: root.sending ? qsTr("Sending…") : qsTr("Send poll")
+                enabled: root.formValid && !root.sending
                 Accessible.name: qsTr("Send poll")
                 onClicked: root.submit()
             }

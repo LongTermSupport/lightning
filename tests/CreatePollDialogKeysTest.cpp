@@ -1,6 +1,7 @@
 #include <QtTest/QtTest>
 
 #include <QElapsedTimer>
+#include <QSignalSpy>
 #include <QQmlComponent>
 #include <QQmlContext>
 #include <QQmlExpression>
@@ -9,6 +10,7 @@
 #include <QQuickWindow>
 
 #include "app/AppController.h"
+#include "models/MessageComposer.h"
 
 namespace {
 QStringList g_warnings;
@@ -89,6 +91,40 @@ class CreatePollDialogKeysTest : public QObject
         content = dialog->property("contentItem").value<QQuickItem *>();
         QVERIFY(content);
     }
+    QVariant eval(const QString &js)
+    {
+        // The ids live in the dialog component's context, which its contentItem was made in.
+        QQmlExpression ex(qmlContext(content), dialog, js);
+        const QVariant v = ex.evaluate();
+        if (ex.hasError())
+            qWarning("%s", qPrintable(ex.error().toString()));
+        return v;
+    }
+    void click(QQuickItem *it)
+    {
+        const QPointF c = it->mapToScene(QPointF(it->width() / 2, it->height() / 2));
+        QTest::mouseClick(window, Qt::LeftButton, {}, c.toPoint());
+    }
+    void fillValidPoll()
+    {
+        QVERIFY(eval(QStringLiteral(
+                    "questionField.text = 'Lunch?';"
+                    "answerModel.setProperty(0,'answerText','red');"
+                    "answerModel.setProperty(1,'answerText','blue');"
+                    "answerModel.append({answerText:''});"
+                    "multipleSwitch.checked = true;"
+                    "bumpAnswerRevision(); formValid")).toBool());
+        settle();
+    }
+    void verifyPollKept()
+    {
+        QVERIFY2(dialog->property("opened").toBool(), "the poll draft was retired");
+        QCOMPARE(eval(QStringLiteral("questionField.text")).toString(),
+                 QStringLiteral("Lunch?"));
+        QCOMPARE(eval(QStringLiteral("answerTexts().join('|')")).toString(),
+                 QStringLiteral("red|blue"));
+        QVERIFY(eval(QStringLiteral("multipleSwitch.checked")).toBool());
+    }
     void teardown()
     {
         windowObj.reset();
@@ -131,6 +167,116 @@ private Q_SLOTS:
         teardown();
     }
 
+    void escapeOnADirtyPollAsksBeforeDiscarding_data()
+    {
+        QTest::addColumn<QString>("focusName");
+        QTest::newRow("question") << QStringLiteral("pollQuestionField");
+        QTest::newRow("answer") << QStringLiteral("pollAnswerField");
+        QTest::newRow("switch") << QStringLiteral("pollMultipleSwitch");
+        QTest::newRow("add answer") << QStringLiteral("pollAddAnswerButton");
+        QTest::newRow("remove answer") << QStringLiteral("pollAnswerRemoveButton");
+        QTest::newRow("footer") << QStringLiteral("createPollCancelButton");
+    }
+
+    void escapeOnADirtyPollAsksBeforeDiscarding()
+    {
+        QFETCH(QString, focusName);
+        setup();
+        fillValidPoll();
+        QQuickItem *target = findVisual(content, focusName);
+        QVERIFY(target);
+        target->forceActiveFocus();
+        settle(50);
+        QVERIFY(target->hasActiveFocus());
+        QTest::keyClick(window, Qt::Key_Escape);
+        settle();
+        verifyPollKept();
+        QVERIFY2(eval(QStringLiteral("discardConfirm.opened")).toBool(),
+                 "Escape did not ask before discarding");
+
+        QTest::keyClick(window, Qt::Key_Escape);
+        settle();
+        QVERIFY2(!eval(QStringLiteral("discardConfirm.opened")).toBool(),
+                 "Escape in the confirmation did not mean Keep editing");
+        verifyPollKept();
+
+        click(findVisual(content, QStringLiteral("createPollCancelButton")));
+        settle();
+        QVERIFY(eval(QStringLiteral("discardConfirm.opened")).toBool());
+        QQuickItem *discard =
+            findVisual(window->contentItem(), QStringLiteral("pollDiscardConfirmButton"));
+        QVERIFY(discard);
+        click(discard);
+        settle();
+        QVERIFY(!dialog->property("opened").toBool());
+        QCOMPARE(eval(QStringLiteral("questionField.text")).toString(), QString());
+        teardown();
+    }
+
+    void escapeOnAnEmptyPollCloses()
+    {
+        setup();
+        QTest::keyClick(window, Qt::Key_Escape);
+        settle();
+        QVERIFY(!dialog->property("opened").toBool());
+        QVERIFY(!eval(QStringLiteral("discardConfirm.opened")).toBool());
+        teardown();
+    }
+
+    void aPollTheBackendRefusesStaysEditable()
+    {
+        setup();
+        app->composer()->setRoomId(QString());
+        fillValidPoll();
+        click(findVisual(content, QStringLiteral("createPollSubmitButton")));
+        settle();
+        verifyPollKept();
+        QQuickItem *error = findVisual(content, QStringLiteral("pollSendError"));
+        QVERIFY2(error && error->isVisible(), "a refused poll said nothing");
+        teardown();
+    }
+
+    void anAcceptedPollIsRetiredOnceAndNeverSentTwice()
+    {
+        setup();
+        QSignalSpy finished(app->composer(), SIGNAL(pollCreateFinished(bool)));
+        QVERIFY(finished.isValid());
+        app->composer()->setRoomId(QStringLiteral("!poll:mock.local"));
+        fillValidPoll();
+        QQuickItem *q = findVisual(content, QStringLiteral("pollQuestionField"));
+        q->forceActiveFocus();
+        QTest::keyClick(window, Qt::Key_Return);
+        QTest::keyClick(window, Qt::Key_Return);
+        click(findVisual(content, QStringLiteral("createPollSubmitButton")));
+        settle();
+        QCOMPARE(finished.count(), 1);
+        QVERIFY(finished.first().first().toBool());
+        QVERIFY(!dialog->property("opened").toBool());
+        teardown();
+    }
+
+    void aPendingPollCannotBeDismissedUntilItIsAnswered()
+    {
+        setup();
+        fillValidPoll();
+        eval(QStringLiteral("sending = true"));
+        settle(50);
+        QQuickItem *q = findVisual(content, QStringLiteral("pollQuestionField"));
+        q->forceActiveFocus();
+        QTest::keyClick(window, Qt::Key_Escape);
+        settle();
+        verifyPollKept();
+        QVERIFY2(!eval(QStringLiteral("discardConfirm.opened")).toBool(),
+                 "Escape offered to discard a poll that is already being sent");
+        QVERIFY(!findVisual(content, QStringLiteral("createPollCancelButton"))->isEnabled());
+        QVERIFY(!findVisual(content, QStringLiteral("createPollCloseButton"))->isEnabled());
+        QVERIFY(!findVisual(content, QStringLiteral("createPollSubmitButton"))->isEnabled());
+        QMetaObject::invokeMethod(app->composer(), "pollCreateFinished", Q_ARG(bool, true));
+        settle();
+        QVERIFY(!dialog->property("opened").toBool());
+        teardown();
+    }
+
     void enterInANonLastRowOfAValidFormNeverSends()
     {
         setup();
@@ -167,6 +313,7 @@ private Q_SLOTS:
                                          "append({answerText:'a'+j});"
                                          "bumpAnswerRevision(); answerModel.count"));
         QCOMPARE(ex.evaluate().toInt(), 20);
+        app->composer()->setRoomId(QStringLiteral("!poll:mock.local"));
         settle();
         auto fields = answerFields();
         QCOMPARE(fields.size(), 20);
