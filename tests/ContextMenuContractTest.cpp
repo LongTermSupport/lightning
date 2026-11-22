@@ -104,7 +104,17 @@ private Q_SLOTS:
         QVERIFY(block.contains(QStringLiteral("accel: \"T\"")));
         QVERIFY(block.contains(QStringLiteral("accel: \"Ctrl+C\"")));
         QVERIFY(block.contains(QStringLiteral("accel: \"E\"")));
+        QVERIFY(block.contains(QStringLiteral("accel: \"F\"")));
+        QVERIFY(block.contains(QStringLiteral("accel: \"C\"")));
         QVERIFY(!block.contains(QStringLiteral("accel: \"↑\"")));
+        QStringList accels;
+        static const QRegularExpression accelRe(
+            QStringLiteral("accel: \"([^\"]+)\""));
+        for (auto it = accelRe.globalMatch(block); it.hasNext();)
+            accels << it.next().captured(1);
+        QVERIFY(accels.size() >= 7);
+        for (const QString &a : std::as_const(accels))
+            QVERIFY2(accels.count(a) == 1, qPrintable(a));
     }
 
     void messageMenuKeyboardAcceleratorsCallExistingActionsOnly()
@@ -117,10 +127,12 @@ private Q_SLOTS:
                  "call) has moved, so every assertion below is testing an "
                  "empty string");
         QVERIFY(!block.contains(QStringLiteral("Keys.onPressed")));
-        QVERIFY(block.count(QStringLiteral("Shortcut {")) == 4);
-        QVERIFY(block.count(QStringLiteral("enabled: moreMenu.opened")) == 4);
+        QVERIFY(block.count(QStringLiteral("Shortcut {")) == 6);
+        QVERIFY(block.count(QStringLiteral("enabled: moreMenu.opened")) == 6);
         QVERIFY(block.count(QStringLiteral(
-            "context: Qt.ApplicationShortcut")) == 4);
+            "context: Qt.ApplicationShortcut")) == 6);
+        QVERIFY(block.contains(QStringLiteral("sequence: \"F\"")));
+        QVERIFY(block.contains(QStringLiteral("sequence: \"C\"")));
         QVERIFY(block.contains(QStringLiteral("sequence: \"R\"")));
         QVERIFY(block.contains(QStringLiteral("sequence: \"T\"")));
         QVERIFY(block.contains(QStringLiteral("sequence: \"E\"")));

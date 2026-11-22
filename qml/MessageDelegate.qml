@@ -4067,6 +4067,28 @@ Item {
                     }
                 }
             }
+            Shortcut {
+                sequence: "F"
+                enabled: moreMenu.opened
+                context: Qt.ApplicationShortcut
+                onActivated: {
+                    if (root.forwardEligible()) {
+                        root.beginForward()
+                        moreMenu.close()
+                    }
+                }
+            }
+            Shortcut {
+                sequence: "C"
+                enabled: moreMenu.opened
+                context: Qt.ApplicationShortcut
+                onActivated: {
+                    if (copyImageItem.visible) {
+                        app.copyImageToClipboard(model.mediaKey || "")
+                        moreMenu.close()
+                    }
+                }
+            }
             QuickReactionStrip {
                 objectName: "quickReactionStrip"
                 emojis: app.emojiCatalog.recentEmoji || []
@@ -4316,9 +4338,11 @@ Item {
                                  root.previewRoomId, root.actionKey)
             }
             AppMenuItem {
+                id: copyImageItem
                 objectName: "copyImageMenuItem"
                 iconName: "content_copy"
                 text: qsTr("Copy image")
+                accel: "C"
                 visible: model.isImage === true
                          && model.mediaSourceAvailable === true
                          && app.mediaBridge.supported
@@ -4438,6 +4462,7 @@ Item {
                 objectName: "forwardMessageMenuItem"
                 iconName: "arrow_forward"
                 text: qsTr("Forward")
+                accel: "F"
                 readonly property bool isMediaRow:
                     model.isImage === true || model.isVideo === true
                     || model.isAudio === true || model.isSticker === true

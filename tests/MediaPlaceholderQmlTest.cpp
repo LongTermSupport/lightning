@@ -16,6 +16,7 @@
 #include <QSignalSpy>
 
 #include "app/AppController.h"
+#include "app/ForwardController.h"
 #include "app/SettingsManager.h"
 #include "auth/AuthManager.h"
 #include "models/MessageComposer.h"
@@ -1532,6 +1533,73 @@ QtObject {
         QTest::mouseDClick(d.window.get(), Qt::LeftButton, {}, probe);
         QTest::qWait(50);
         QCOMPARE(controller.composer()->replyingToEventId(), QString());
+    }
+
+    void messageMenuKeysForwardAndCopyTheImage()
+    {
+        AppController controller(AppController::MockBackend);
+        auto *mock = controller.findChild<MockMatrixClient *>();
+        QVERIFY(mock != nullptr);
+        mock->setSupportsMediaBridgeForTest(true);
+        QVERIFY(loginToGeneral(controller));
+        const QString id = repliableMockEvent(controller);
+        QVERIFY2(!id.isEmpty(), "the mock room has no event to act on");
+        QVariantMap image = baseFixture(controller);
+        image.insert(QStringLiteral("eventId"), id);
+        image.insert(QStringLiteral("isImage"), true);
+        image.insert(QStringLiteral("mediaFilename"), QStringLiteral("cat.png"));
+        image.insert(QStringLiteral("mediaSourceAvailable"), true);
+        image.insert(QStringLiteral("mediaKey"), QStringLiteral("$fixture"));
+
+        const auto openMenu = [&](Delegate &d) -> QObject * {
+            QMetaObject::invokeMethod(d.root, "openContextMenu",
+                                      Q_ARG(QVariant, 10), Q_ARG(QVariant, 10),
+                                      Q_ARG(QVariant, false));
+            auto *menu = d.root->findChild<QObject *>(
+                QStringLiteral("messageContextMenu"));
+            for (int waited = 0; menu && !menu->property("opened").toBool()
+                                 && waited < kSignalTimeoutMs; waited += 20)
+                QTest::qWait(20);
+            return menu && menu->property("opened").toBool() ? menu : nullptr;
+        };
+
+        Delegate f;
+        QVERIFY(createDelegate(controller, image, f));
+        QObject *menu = openMenu(f);
+        QVERIFY(menu != nullptr);
+        QCOMPARE(menu->findChild<QObject *>(QStringLiteral("forwardMessageMenuItem"))
+                     ->property("accel").toString(), QStringLiteral("F"));
+        QCOMPARE(menu->findChild<QObject *>(QStringLiteral("copyImageMenuItem"))
+                     ->property("accel").toString(), QStringLiteral("C"));
+        QSignalSpy copies(&controller, &AppController::copyImageFinished);
+        QTest::keyClick(f.window.get(), Qt::Key_F);
+        QTRY_COMPARE_WITH_TIMEOUT(controller.forward()->sourceEventId(), id,
+                                  kSignalTimeoutMs);
+        QTRY_VERIFY(!menu->property("opened").toBool());
+        QCOMPARE(copies.count(), 0);
+        controller.forward()->cancel();
+
+        Delegate c;
+        QVERIFY(createDelegate(controller, image, c));
+        menu = openMenu(c);
+        QVERIFY(menu != nullptr);
+        QTest::keyClick(c.window.get(), Qt::Key_C);
+        QTRY_COMPARE_WITH_TIMEOUT(copies.count(), 1, kSignalTimeoutMs);
+        QTRY_VERIFY(!menu->property("opened").toBool());
+        QCOMPARE(controller.forward()->sourceEventId(), QString());
+
+        // C on a row with no image does nothing and leaves the menu open.
+        QVariantMap text = baseFixture(controller);
+        text.insert(QStringLiteral("eventId"), id);
+        text.insert(QStringLiteral("body"), QStringLiteral("words"));
+        Delegate t;
+        QVERIFY(createDelegate(controller, text, t));
+        menu = openMenu(t);
+        QVERIFY(menu != nullptr);
+        QTest::keyClick(t.window.get(), Qt::Key_C);
+        QTest::qWait(100);
+        QCOMPARE(copies.count(), 1);
+        QVERIFY(menu->property("opened").toBool());
     }
 
     void formattedBodyRendersInsteadOfRawMarkdown()
