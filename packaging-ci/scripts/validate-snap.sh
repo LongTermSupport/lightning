@@ -24,6 +24,7 @@ audit=$(mktemp -d)
 cleanup() { rm -rf "$audit"; }
 trap cleanup EXIT
 unsquashfs -q -d "$audit/prime" "$snap_file"
+"$SCRIPT_DIR/check-elf-stacks.sh" "$audit/prime/usr/bin/lightning-matrix" "$audit/prime/usr/bin/lightning-updater" "$audit/prime"
 
 python3 - "$audit/prime/meta/snap.yaml" "$LOGICAL_VERSION" <<'EOF'
 import sys, yaml

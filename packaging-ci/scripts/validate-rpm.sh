@@ -97,6 +97,7 @@ binary="$audit_root/usr/bin/lightning-matrix"
 # Without the update helper the in-app updater is inert.
 updater="$audit_root/usr/bin/lightning-updater"
 [[ -x "$updater" ]] || die "packaged update helper is missing"
+"$SCRIPT_DIR/check-elf-stacks.sh" "$binary" "$updater" "$audit_root"
 file "$binary" "$updater" | tee "$ROOT/dist/rpm-file.txt"
 readelf -d "$binary" "$updater" | tee "$ROOT/dist/rpm-readelf.txt"
 if grep -E '(RPATH|RUNPATH)' "$ROOT/dist/rpm-readelf.txt"; then
