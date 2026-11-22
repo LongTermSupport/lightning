@@ -1699,16 +1699,16 @@ bool MediaBridge::beginPlayableWrite(const QString &cacheKey,
     if (bytes.isEmpty() || bytes.size() > m_playableMaxBytes
         || !m_animatedDir || !m_animatedDir->isValid())
         return false;
-    qint64 pending = pendingPlayableWriteBytes();
-    if (pending + bytes.size() > m_playablePendingBudget && notifyFailure) {
+    qint64 reserved = pendingPlayableWriteBytes();
+    if (reserved + bytes.size() > m_playablePendingBudget && notifyFailure) {
         for (auto it = m_playableWriting.begin();
              it != m_playableWriting.end()
-             && pending + bytes.size() > m_playablePendingBudget;) {
+             && reserved + bytes.size() > m_playablePendingBudget;) {
             if (it->notifyFailure) {
                 ++it;
                 continue;
             }
-            pending -= it->bytes;
+            reserved -= it->bytes;
             m_posterWanted.remove(it.key());
             m_prefetchWanted.remove(it.key());
             if (m_playableWriter)
@@ -1716,10 +1716,10 @@ bool MediaBridge::beginPlayableWrite(const QString &cacheKey,
             it = m_playableWriting.erase(it);
         }
     }
-    if (pending > 0 && pending + bytes.size() > m_playablePendingBudget) {
+    if (reserved > 0 && reserved + bytes.size() > m_playablePendingBudget) {
         ++m_statPlayableWritesRefused;
         qCDebug(lcMedia, "playable write refused: %lld bytes pending",
-                static_cast<long long>(pending));
+                static_cast<long long>(reserved));
         return false;
     }
     const QString extension = playableExtensionFor(bytes, mimetype);
