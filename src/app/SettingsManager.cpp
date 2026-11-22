@@ -3547,7 +3547,7 @@ void SettingsManager::setSpaceBannersVisible(bool v)
 
 bool SettingsManager::keepRoomListOrderStill() const
 {
-    return m_store->value(kKeepRoomListOrderStill, true).toBool();
+    return m_store->value(kKeepRoomListOrderStill, false).toBool();
 }
 
 void SettingsManager::setKeepRoomListOrderStill(bool v)
