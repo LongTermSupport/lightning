@@ -1,6 +1,7 @@
 #include "media/ImageSendPrep.h"
 
 #include "media/ImageMetadata.h"
+#include "storage/PortableMode.h"
 
 #include <QDir>
 #include <QFile>
@@ -10,25 +11,14 @@ namespace {
 constexpr auto kPrefix = "lightning-stripped-";
 }
 
-bool ImageSendPrep::s_swept = false;
-
 ImageSendPrep::ImageSendPrep() = default;
-ImageSendPrep::~ImageSendPrep() = default;
 
-void ImageSendPrep::sweepStale()
+ImageSendPrep::~ImageSendPrep()
 {
-    if (s_swept)
-        return;
-    s_swept = true;
-    // A previous run killed mid-send leaves its directory behind.
-    const QDir tmp(QDir::tempPath());
-    const QDateTime cutoff = QDateTime::currentDateTime().addDays(-1);
-    for (const QFileInfo &info : tmp.entryInfoList(
-             {QString::fromLatin1(kPrefix) + QLatin1Char('*')},
-             QDir::Dirs | QDir::NoDotAndDotDot)) {
-        if (info.lastModified() < cutoff)
-            QDir(info.absoluteFilePath()).removeRecursively();
-    }
+    // The live lock must go before the directory: Windows cannot delete a
+    // lock file that is still open.
+    if (m_dir)
+        lightning::portable::releaseScratchDir(m_dir->path());
 }
 
 void ImageSendPrep::purgeOld()
@@ -75,11 +65,14 @@ bool ImageSendPrep::prepare(const QString &modeString, const QString &mime,
         data = r.bytes;
         return true;
     }
-    sweepStale();
-    if (!m_dir)
+    if (!m_dir) {
+        // Crash leftovers are swept at startup by cleanStaleTempDirs().
         m_dir = std::make_unique<QTemporaryDir>(
-            QDir::tempPath() + QLatin1Char('/') + QString::fromLatin1(kPrefix)
-            + QStringLiteral("XXXXXX"));
+            lightning::portable::mediaScratchRoot() + QLatin1Char('/')
+            + QString::fromLatin1(kPrefix) + QStringLiteral("XXXXXX"));
+        if (m_dir->isValid())
+            lightning::portable::holdScratchDirLive(m_dir->path());
+    }
     if (!m_dir->isValid())
         return false;
     const QString sub = m_dir->filePath(QString::number(m_next++));
