@@ -1043,7 +1043,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7362"/>
+        <location filename="../src/app/AppController.cpp" line="+7373"/>
         <source>Room invitation</source>
         <translation>Приглашение в комнату</translation>
     </message>
@@ -1165,7 +1165,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>Входящий вызов</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5709"/>
+        <location filename="../src/app/AppController.cpp" line="-5720"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>Выход отменён, потому что учётная запись изменилась. Ничего не сброшено.</translation>
     </message>
@@ -1217,13 +1217,13 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4281"/>
+        <location line="+4292"/>
         <location line="+821"/>
         <source>Not connected</source>
         <translation>Нет подключения</translation>
     </message>
     <message>
-        <location line="-5143"/>
+        <location line="-5154"/>
         <source>Connecting…</source>
         <translation>Подключение…</translation>
     </message>
@@ -1284,29 +1284,29 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+4"/>
-        <location line="+3077"/>
+        <location line="+3088"/>
         <location line="+9"/>
         <source>Lightning could not read the selected file.</source>
         <translation>Lightning не смог прочитать выбранный файл.</translation>
     </message>
     <message>
-        <location line="-3083"/>
+        <location line="-3094"/>
         <source>A room-key import is already in progress.</source>
         <translation>Импорт ключей комнат уже выполняется.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4076"/>
+        <location line="+4087"/>
         <source>Not signed in.</source>
         <translation>Вход не выполнен.</translation>
     </message>
     <message>
-        <location line="-4074"/>
+        <location line="-4085"/>
         <source>Room-key import failed.</source>
         <translation>Не удалось импортировать ключи комнат.</translation>
     </message>
     <message>
-        <location line="+2251"/>
+        <location line="+2262"/>
         <source>Enter a size limit from 1 to 2000 MB.</source>
         <translation>Введите ограничение размера от 1 до 2000 МБ.</translation>
     </message>
@@ -1321,7 +1321,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>Используйте реальные даты в формате YYYY-MM-DD; дата «С» не должна быть позже даты «По».</translation>
     </message>
     <message>
-        <location line="-4769"/>
+        <location line="-4780"/>
         <location line="+2707"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
@@ -1387,12 +1387,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>Звонки здесь недоступны.</translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+158"/>
         <source>Your camera couldn&apos;t be started. The call goes on without it.</source>
         <translation>Не удалось включить камеру. Звонок продолжается без неё.</translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+157"/>
         <source>Modern room list</source>
         <translation>Современный список комнат</translation>
     </message>
@@ -2591,7 +2591,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>CallDeviceChevron</name>
     <message>
-        <location filename="../qml/CallDeviceChevron.qml" line="+20"/>
+        <location filename="../qml/CallDeviceChevron.qml" line="+19"/>
         <source>The chosen device isn&apos;t connected</source>
         <translation>Выбранное устройство не подключено</translation>
     </message>
@@ -2629,7 +2629,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>Выбранный вами микрофон не подключен</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
+        <source>Your chosen microphone couldn&apos;t be opened. The call uses the system default.</source>
+        <translation>Не удалось открыть выбранный микрофон. В звонке используется системный по умолчанию.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>Your chosen camera isn&apos;t connected</source>
         <translation>Выбранная камера не подключена</translation>
     </message>
@@ -2741,6 +2746,11 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <location line="+11"/>
         <source>Your chosen microphone isn&apos;t connected. Calls use the system default until it&apos;s back.</source>
         <translation>Выбранный вами микрофон не подключен. Для вызовов используются системные настройки по умолчанию, пока они не вернутся.</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Your chosen microphone couldn&apos;t be opened, so the system default was used. Choose it again or reconnect it.</source>
+        <translation>Не удалось открыть выбранный микрофон, поэтому использован системный по умолчанию. Выберите его снова или переподключите.</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -3090,7 +3100,17 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>Видеозвонок</translation>
     </message>
     <message>
-        <location line="+152"/>
+        <location line="+109"/>
+        <source>The chosen device isn&apos;t connected</source>
+        <translation>Выбранное устройство не подключено</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The chosen microphone couldn&apos;t be opened</source>
+        <translation>Не удалось открыть выбранный микрофон</translation>
+    </message>
+    <message>
+        <location line="+46"/>
         <location line="+28"/>
         <source>Turn off camera</source>
         <translation>Выключить камеру</translation>
@@ -3189,7 +3209,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>Вынести звонок в плавающее окно</translation>
     </message>
     <message>
-        <location line="-385"/>
+        <location line="-389"/>
         <source>Unmute microphone</source>
         <translation>Включить микрофон</translation>
     </message>
@@ -3224,7 +3244,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>Выбрать микрофон</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+19"/>
         <source>Undeafen</source>
         <translation>Неглухой</translation>
     </message>
@@ -4992,7 +5012,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>CreatePollDialog</name>
     <message>
-        <location filename="../qml/CreatePollDialog.qml" line="+122"/>
+        <location filename="../qml/CreatePollDialog.qml" line="+124"/>
         <source>Discard this poll draft?</source>
         <translation>Отменить черновик опроса?</translation>
     </message>
@@ -14242,7 +14262,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Более старое сообщение №%1 (страница %2)</translation>
     </message>
     <message>
-        <location line="+1511"/>
+        <location line="+1540"/>
         <source>You joined the room.</source>
         <translation>Вы вступили в комнату.</translation>
     </message>
@@ -27062,19 +27082,19 @@ Note: importing keys does not verify this session.</source>
     <name>SfuCallController</name>
     <message>
         <location filename="../src/calls/SfuCallController.cpp" line="+633"/>
-        <location line="+387"/>
-        <location line="+163"/>
+        <location line="+396"/>
+        <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
         <translation>Совместное использование экрана недоступно на этом рабочем столе.</translation>
     </message>
     <message>
-        <location line="-548"/>
-        <location line="+918"/>
+        <location line="-559"/>
+        <location line="+929"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>Не удалось запустить демонстрацию экрана.</translation>
     </message>
     <message>
-        <location line="-561"/>
+        <location line="-563"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>Для совместного использования экрана на Wayland требуется xdg-desktop-portal, и он не отвечает. Установите или запустите портал для рабочего стола — например, xdg-desktop-portal-kde или xdg-desktop-portal-gnome — затем повторите попытку.</translation>
     </message>
@@ -27090,7 +27110,7 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+53"/>
-        <location line="+159"/>
+        <location line="+161"/>
         <source>No display is available to share.</source>
         <translation>Ни один дисплей не доступен для совместного использования.</translation>
     </message>
@@ -27135,7 +27155,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Слишком много попыток. Повторите попытку через минуту.</translation>
     </message>
     <message>
-        <location line="-722"/>
+        <location line="-733"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>Портал камеры вашего рабочего стола не предоставил Lightning камеру. Если камера работает в других приложениях, разрешите Lightning использовать все устройства (во Flatseal: &quot;All devices&quot;), затем снова включите камеру.</translation>
     </message>
@@ -27165,12 +27185,12 @@ Note: importing keys does not verify this session.</source>
         <translation>На этом рабочем столе нет портала камеры, поэтому камеру нельзя использовать.</translation>
     </message>
     <message>
-        <location line="+211"/>
+        <location line="+220"/>
         <source>Screen sharing isn&apos;t available in this sandboxed (Flatpak or Snap) build on an X11 session: it can only share through the desktop&apos;s screen-sharing portal, and none is available, and GStreamer plugins installed on your system cannot be used from the sandbox. To share your screen, use the AppImage or a distribution package of Lightning, which capture an X11 screen directly, or log into a Wayland session, where your desktop&apos;s portal provides screen sharing. If your desktop&apos;s xdg-desktop-portal supports screen casting on X11, make sure it is installed and running.</source>
         <translation>Демонстрация экрана недоступна в этой сборке в песочнице (Flatpak или Snap) в сеансе X11: она может делиться экраном только через портал демонстрации экрана рабочего стола, которого нет, а GStreamer-плагины, установленные в системе, из песочницы не используются. Чтобы показать экран, используйте AppImage или пакет Lightning для вашего дистрибутива — они напрямую захватывают экран X11, — либо войдите в сеанс Wayland, где портал рабочего стола предоставляет демонстрацию экрана. Если xdg-desktop-portal вашего рабочего стола поддерживает трансляцию экрана в X11, убедитесь, что он установлен и запущен.</translation>
     </message>
     <message>
-        <location line="+474"/>
+        <location line="+476"/>
         <source>You don&apos;t have permission to join calls in this room. A room admin can raise your power level in it; Lightning can&apos;t change what call membership itself requires.</source>
         <translation>У вас нет прав присоединяться к звонкам в этой комнате. Администратор комнаты может повысить ваш уровень прав; Lightning не может изменить то, что требуется для участия в звонке.</translation>
     </message>
@@ -32506,7 +32526,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ThreadController</name>
     <message>
-        <location filename="../src/threads/ThreadController.cpp" line="+737"/>
+        <location filename="../src/threads/ThreadController.cpp" line="+768"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>Вложения не поддерживаются этим бэкендом.</translation>
@@ -32858,18 +32878,33 @@ Note: importing keys does not verify this session.</source>
         <translation>Удалить вложение %1</translation>
     </message>
     <message>
-        <location line="+55"/>
-        <location line="+768"/>
+        <location line="+56"/>
+        <source>Attach files or create a poll</source>
+        <translation>Прикрепить файлы или создать опрос</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+797"/>
         <source>Attach files</source>
         <translation>Прикрепить файлы</translation>
     </message>
     <message>
-        <location line="-767"/>
+        <location line="-796"/>
         <source>Attach</source>
         <translation>Прикрепить</translation>
     </message>
     <message>
-        <location line="+228"/>
+        <location line="+16"/>
+        <source>Attach files…</source>
+        <translation>Прикрепить файлы…</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Create poll…</source>
+        <translation>Создать опрос…</translation>
+    </message>
+    <message>
+        <location line="+229"/>
         <source>Reply…</source>
         <translation>Ответить…</translation>
     </message>

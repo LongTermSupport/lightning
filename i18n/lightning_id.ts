@@ -1023,7 +1023,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7362"/>
+        <location filename="../src/app/AppController.cpp" line="+7373"/>
         <source>Room invitation</source>
         <translation>Undangan ruang</translation>
     </message>
@@ -1143,7 +1143,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Panggilan masuk</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5709"/>
+        <location filename="../src/app/AppController.cpp" line="-5720"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>Keluar dibatalkan karena akun berubah. Tidak ada yang diatur ulang.</translation>
     </message>
@@ -1195,13 +1195,13 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4281"/>
+        <location line="+4292"/>
         <location line="+821"/>
         <source>Not connected</source>
         <translation>Tidak terhubung</translation>
     </message>
     <message>
-        <location line="-5143"/>
+        <location line="-5154"/>
         <source>Connecting…</source>
         <translation>Menghubungkan…</translation>
     </message>
@@ -1262,29 +1262,29 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
     </message>
     <message>
         <location line="+4"/>
-        <location line="+3077"/>
+        <location line="+3088"/>
         <location line="+9"/>
         <source>Lightning could not read the selected file.</source>
         <translation>Lightning tidak dapat membaca berkas yang dipilih.</translation>
     </message>
     <message>
-        <location line="-3083"/>
+        <location line="-3094"/>
         <source>A room-key import is already in progress.</source>
         <translation>Impor kunci ruang sedang berlangsung.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4076"/>
+        <location line="+4087"/>
         <source>Not signed in.</source>
         <translation>Belum masuk.</translation>
     </message>
     <message>
-        <location line="-4074"/>
+        <location line="-4085"/>
         <source>Room-key import failed.</source>
         <translation>Impor kunci ruang gagal.</translation>
     </message>
     <message>
-        <location line="+2251"/>
+        <location line="+2262"/>
         <source>Enter a size limit from 1 to 2000 MB.</source>
         <translation>Masukkan batas ukuran dari 1 sampai 2000 MB.</translation>
     </message>
@@ -1299,7 +1299,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Gunakan tanggal yang valid dengan format YYYY-MM-DD, dengan “Dari” tidak setelah “Sampai”.</translation>
     </message>
     <message>
-        <location line="-4769"/>
+        <location line="-4780"/>
         <location line="+2707"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
@@ -1365,12 +1365,12 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Panggilan tidak tersedia di sini.</translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+158"/>
         <source>Your camera couldn&apos;t be started. The call goes on without it.</source>
         <translation>Kamera Anda tidak dapat dinyalakan. Panggilan tetap berlanjut tanpanya.</translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+157"/>
         <source>Modern room list</source>
         <translation>Daftar ruang modern</translation>
     </message>
@@ -2549,7 +2549,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
 <context>
     <name>CallDeviceChevron</name>
     <message>
-        <location filename="../qml/CallDeviceChevron.qml" line="+20"/>
+        <location filename="../qml/CallDeviceChevron.qml" line="+19"/>
         <source>The chosen device isn&apos;t connected</source>
         <translation>Perangkat yang dipilih tidak terhubung</translation>
     </message>
@@ -2587,7 +2587,12 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Mikrofon pilihan Anda tidak tersambung</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
+        <source>Your chosen microphone couldn&apos;t be opened. The call uses the system default.</source>
+        <translation>Mikrofon pilihan Anda tidak dapat dibuka. Panggilan memakai mikrofon bawaan sistem.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>Your chosen camera isn&apos;t connected</source>
         <translation>Kamera yang Anda pilih tidak terhubung</translation>
     </message>
@@ -2699,6 +2704,11 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <location line="+11"/>
         <source>Your chosen microphone isn&apos;t connected. Calls use the system default until it&apos;s back.</source>
         <translation>Mikrofon pilihan Anda tidak tersambung. Panggilan menggunakan default sistem hingga kembali.</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Your chosen microphone couldn&apos;t be opened, so the system default was used. Choose it again or reconnect it.</source>
+        <translation>Mikrofon pilihan Anda tidak dapat dibuka, jadi mikrofon bawaan sistem dipakai. Pilih lagi atau sambungkan ulang.</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -3048,7 +3058,17 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Panggilan video</translation>
     </message>
     <message>
-        <location line="+152"/>
+        <location line="+109"/>
+        <source>The chosen device isn&apos;t connected</source>
+        <translation>Perangkat yang dipilih tidak terhubung</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The chosen microphone couldn&apos;t be opened</source>
+        <translation>Mikrofon pilihan tidak dapat dibuka</translation>
+    </message>
+    <message>
+        <location line="+46"/>
         <location line="+28"/>
         <source>Turn off camera</source>
         <translation>Matikan kamera</translation>
@@ -3147,7 +3167,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Lepaskan panggilan ke jendela mengambang</translation>
     </message>
     <message>
-        <location line="-385"/>
+        <location line="-389"/>
         <source>Unmute microphone</source>
         <translation>Suarakan mikrofon</translation>
     </message>
@@ -3182,7 +3202,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Pilih mikrofon</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+19"/>
         <source>Undeafen</source>
         <translation>Tidak tuli</translation>
     </message>
@@ -4938,7 +4958,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
 <context>
     <name>CreatePollDialog</name>
     <message>
-        <location filename="../qml/CreatePollDialog.qml" line="+122"/>
+        <location filename="../qml/CreatePollDialog.qml" line="+124"/>
         <source>Discard this poll draft?</source>
         <translation>Buang draf jajak pendapat ini?</translation>
     </message>
@@ -14130,7 +14150,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Pesan lama #%1 (halaman %2)</translation>
     </message>
     <message>
-        <location line="+1511"/>
+        <location line="+1540"/>
         <source>You joined the room.</source>
         <translation>Anda bergabung ke ruang.</translation>
     </message>
@@ -26854,19 +26874,19 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
     <name>SfuCallController</name>
     <message>
         <location filename="../src/calls/SfuCallController.cpp" line="+633"/>
-        <location line="+387"/>
-        <location line="+163"/>
+        <location line="+396"/>
+        <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
         <translation>Berbagi layar tidak tersedia di desktop ini.</translation>
     </message>
     <message>
-        <location line="-548"/>
-        <location line="+918"/>
+        <location line="-559"/>
+        <location line="+929"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>Berbagi layar tidak dapat dimulai.</translation>
     </message>
     <message>
-        <location line="-561"/>
+        <location line="-563"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>Berbagi layar di Wayland memerlukan xdg-desktop-portal, dan tidak merespons. Instal atau mulai portal untuk desktop Anda — misalnya xdg-desktop-portal-kde atau xdg-desktop-portal-gnome — lalu coba lagi.</translation>
     </message>
@@ -26882,7 +26902,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
     </message>
     <message>
         <location line="+53"/>
-        <location line="+159"/>
+        <location line="+161"/>
         <source>No display is available to share.</source>
         <translation>Tidak ada tampilan yang tersedia untuk dibagikan.</translation>
     </message>
@@ -26927,7 +26947,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Terlalu banyak upaya. Coba lagi sebentar lagi.</translation>
     </message>
     <message>
-        <location line="-722"/>
+        <location line="-733"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>Portal kamera desktop Anda tidak memberi Lightning kamera. Jika kamera berfungsi di aplikasi lain, izinkan Lightning memakai semua perangkat (di Flatseal: &quot;All devices&quot;), lalu nyalakan kamera lagi.</translation>
     </message>
@@ -26957,12 +26977,12 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Desktop ini tidak memiliki portal kamera, sehingga kamera tidak dapat digunakan.</translation>
     </message>
     <message>
-        <location line="+211"/>
+        <location line="+220"/>
         <source>Screen sharing isn&apos;t available in this sandboxed (Flatpak or Snap) build on an X11 session: it can only share through the desktop&apos;s screen-sharing portal, and none is available, and GStreamer plugins installed on your system cannot be used from the sandbox. To share your screen, use the AppImage or a distribution package of Lightning, which capture an X11 screen directly, or log into a Wayland session, where your desktop&apos;s portal provides screen sharing. If your desktop&apos;s xdg-desktop-portal supports screen casting on X11, make sure it is installed and running.</source>
         <translation>Berbagi layar tidak tersedia di build sandbox (Flatpak atau Snap) pada sesi X11: hanya dapat berbagi lewat portal berbagi layar desktop, dan tidak ada yang tersedia, serta plugin GStreamer yang terpasang di sistem Anda tidak dapat dipakai dari sandbox. Untuk berbagi layar, gunakan AppImage atau paket distribusi Lightning, yang menangkap layar X11 secara langsung, atau masuk ke sesi Wayland, tempat portal desktop Anda menyediakan berbagi layar. Jika xdg-desktop-portal desktop Anda mendukung screen casting di X11, pastikan terpasang dan berjalan.</translation>
     </message>
     <message>
-        <location line="+474"/>
+        <location line="+476"/>
         <source>You don&apos;t have permission to join calls in this room. A room admin can raise your power level in it; Lightning can&apos;t change what call membership itself requires.</source>
         <translation>Anda tidak memiliki izin untuk bergabung ke panggilan di ruang ini. Admin ruang dapat menaikkan level daya Anda di dalamnya; Lightning tidak dapat mengubah apa yang diperlukan keanggotaan panggilan itu sendiri.</translation>
     </message>
@@ -32204,7 +32224,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
 <context>
     <name>ThreadController</name>
     <message>
-        <location filename="../src/threads/ThreadController.cpp" line="+737"/>
+        <location filename="../src/threads/ThreadController.cpp" line="+768"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>Lampiran tidak didukung pada backend ini.</translation>
@@ -32550,18 +32570,33 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Hapus lampiran %1</translation>
     </message>
     <message>
-        <location line="+55"/>
-        <location line="+768"/>
+        <location line="+56"/>
+        <source>Attach files or create a poll</source>
+        <translation>Lampirkan berkas atau buat jajak pendapat</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+797"/>
         <source>Attach files</source>
         <translation>Lampirkan berkas</translation>
     </message>
     <message>
-        <location line="-767"/>
+        <location line="-796"/>
         <source>Attach</source>
         <translation>Lampirkan</translation>
     </message>
     <message>
-        <location line="+228"/>
+        <location line="+16"/>
+        <source>Attach files…</source>
+        <translation>Lampirkan berkas…</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Create poll…</source>
+        <translation>Buat jajak pendapat…</translation>
+    </message>
+    <message>
+        <location line="+229"/>
         <source>Reply…</source>
         <translation>Balas…</translation>
     </message>

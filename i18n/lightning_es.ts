@@ -1033,7 +1033,7 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7362"/>
+        <location filename="../src/app/AppController.cpp" line="+7373"/>
         <source>Room invitation</source>
         <translation>Invitación a una sala</translation>
     </message>
@@ -1154,7 +1154,7 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
         <translation>Llamada entrante</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5709"/>
+        <location filename="../src/app/AppController.cpp" line="-5720"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>El cierre de sesión se canceló porque la cuenta cambió. No se restableció nada.</translation>
     </message>
@@ -1206,13 +1206,13 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4281"/>
+        <location line="+4292"/>
         <location line="+821"/>
         <source>Not connected</source>
         <translation>Sin conexión</translation>
     </message>
     <message>
-        <location line="-5143"/>
+        <location line="-5154"/>
         <source>Connecting…</source>
         <translation>Conectando…</translation>
     </message>
@@ -1273,29 +1273,29 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
     </message>
     <message>
         <location line="+4"/>
-        <location line="+3077"/>
+        <location line="+3088"/>
         <location line="+9"/>
         <source>Lightning could not read the selected file.</source>
         <translation>Lightning no pudo leer el archivo seleccionado.</translation>
     </message>
     <message>
-        <location line="-3083"/>
+        <location line="-3094"/>
         <source>A room-key import is already in progress.</source>
         <translation>Ya hay una importación de claves de sala en curso.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4076"/>
+        <location line="+4087"/>
         <source>Not signed in.</source>
         <translation>No has iniciado sesión.</translation>
     </message>
     <message>
-        <location line="-4074"/>
+        <location line="-4085"/>
         <source>Room-key import failed.</source>
         <translation>Falló la importación de claves de sala.</translation>
     </message>
     <message>
-        <location line="+2251"/>
+        <location line="+2262"/>
         <source>Enter a size limit from 1 to 2000 MB.</source>
         <translation>Introduce un límite de tamaño de 1 a 2000 MB.</translation>
     </message>
@@ -1310,7 +1310,7 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
         <translation>Usa fechas reales en formato YYYY-MM-DD, con «Desde» no posterior a «Hasta».</translation>
     </message>
     <message>
-        <location line="-4769"/>
+        <location line="-4780"/>
         <location line="+2707"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
@@ -1376,12 +1376,12 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
         <translation>Las llamadas no están disponibles aquí.</translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+158"/>
         <source>Your camera couldn&apos;t be started. The call goes on without it.</source>
         <translation>No se pudo iniciar tu cámara. La llamada continúa sin ella.</translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+157"/>
         <source>Modern room list</source>
         <translation>Lista de salas moderna</translation>
     </message>
@@ -2570,7 +2570,7 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
 <context>
     <name>CallDeviceChevron</name>
     <message>
-        <location filename="../qml/CallDeviceChevron.qml" line="+20"/>
+        <location filename="../qml/CallDeviceChevron.qml" line="+19"/>
         <source>The chosen device isn&apos;t connected</source>
         <translation>El dispositivo elegido no está conectado</translation>
     </message>
@@ -2608,7 +2608,12 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
         <translation>El micrófono elegido no está conectado</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
+        <source>Your chosen microphone couldn&apos;t be opened. The call uses the system default.</source>
+        <translation>No se pudo abrir el micrófono elegido. La llamada usa el predeterminado del sistema.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>Your chosen camera isn&apos;t connected</source>
         <translation>La cámara elegida no está conectada</translation>
     </message>
@@ -2720,6 +2725,11 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
         <location line="+11"/>
         <source>Your chosen microphone isn&apos;t connected. Calls use the system default until it&apos;s back.</source>
         <translation>El micrófono elegido no está conectado. Las llamadas utilizan el valor predeterminado del sistema hasta que vuelve.</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Your chosen microphone couldn&apos;t be opened, so the system default was used. Choose it again or reconnect it.</source>
+        <translation>No se pudo abrir el micrófono elegido, así que se usó el predeterminado del sistema. Vuelve a elegirlo o reconéctalo.</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -3069,7 +3079,17 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
         <translation>Videollamada</translation>
     </message>
     <message>
-        <location line="+152"/>
+        <location line="+109"/>
+        <source>The chosen device isn&apos;t connected</source>
+        <translation>El dispositivo elegido no está conectado</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The chosen microphone couldn&apos;t be opened</source>
+        <translation>No se pudo abrir el micrófono elegido</translation>
+    </message>
+    <message>
+        <location line="+46"/>
         <location line="+28"/>
         <source>Turn off camera</source>
         <translation>Apagar la cámara</translation>
@@ -3168,7 +3188,7 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
         <translation>Sacar la llamada a una ventana flotante</translation>
     </message>
     <message>
-        <location line="-385"/>
+        <location line="-389"/>
         <source>Unmute microphone</source>
         <translation>Activar micrófono</translation>
     </message>
@@ -3203,7 +3223,7 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
         <translation>Elige micrófono</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+19"/>
         <source>Undeafen</source>
         <translation>no sordo</translation>
     </message>
@@ -4965,7 +4985,7 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
 <context>
     <name>CreatePollDialog</name>
     <message>
-        <location filename="../qml/CreatePollDialog.qml" line="+122"/>
+        <location filename="../qml/CreatePollDialog.qml" line="+124"/>
         <source>Discard this poll draft?</source>
         <translation>¿Descartar este borrador de encuesta?</translation>
     </message>
@@ -14186,7 +14206,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Mensaje anterior n.º %1 (página %2)</translation>
     </message>
     <message>
-        <location line="+1511"/>
+        <location line="+1540"/>
         <source>You joined the room.</source>
         <translation>Te uniste a la sala.</translation>
     </message>
@@ -26958,19 +26978,19 @@ Nota: importar claves no verifica esta sesión.</translation>
     <name>SfuCallController</name>
     <message>
         <location filename="../src/calls/SfuCallController.cpp" line="+633"/>
-        <location line="+387"/>
-        <location line="+163"/>
+        <location line="+396"/>
+        <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
         <translation>Compartir pantalla no está disponible en este escritorio.</translation>
     </message>
     <message>
-        <location line="-548"/>
-        <location line="+918"/>
+        <location line="-559"/>
+        <location line="+929"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>No se pudo iniciar el uso compartido de pantalla.</translation>
     </message>
     <message>
-        <location line="-561"/>
+        <location line="-563"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>Compartir pantalla en Wayland necesita xdg-desktop-portal y no responde. Instale o inicie el portal para su escritorio (por ejemplo, xdg-desktop-portal-kde o xdg-desktop-portal-gnome) y vuelva a intentarlo.</translation>
     </message>
@@ -26986,7 +27006,7 @@ Nota: importar claves no verifica esta sesión.</translation>
     </message>
     <message>
         <location line="+53"/>
-        <location line="+159"/>
+        <location line="+161"/>
         <source>No display is available to share.</source>
         <translation>No hay ninguna pantalla disponible para compartir.</translation>
     </message>
@@ -27031,7 +27051,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>Demasiados intentos. Inténtalo de nuevo en un momento.</translation>
     </message>
     <message>
-        <location line="-722"/>
+        <location line="-733"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>El portal de cámara de tu escritorio no le ofreció a Lightning ninguna cámara. Si la cámara funciona en otras aplicaciones, permite que Lightning use todos los dispositivos (en Flatseal: «Todos los dispositivos»), y luego vuelve a encender la cámara.</translation>
     </message>
@@ -27061,12 +27081,12 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>Este escritorio no tiene portal de cámara, así que no se puede usar la cámara.</translation>
     </message>
     <message>
-        <location line="+211"/>
+        <location line="+220"/>
         <source>Screen sharing isn&apos;t available in this sandboxed (Flatpak or Snap) build on an X11 session: it can only share through the desktop&apos;s screen-sharing portal, and none is available, and GStreamer plugins installed on your system cannot be used from the sandbox. To share your screen, use the AppImage or a distribution package of Lightning, which capture an X11 screen directly, or log into a Wayland session, where your desktop&apos;s portal provides screen sharing. If your desktop&apos;s xdg-desktop-portal supports screen casting on X11, make sure it is installed and running.</source>
         <translation>Compartir pantalla no está disponible en esta compilación aislada (Flatpak o Snap) en una sesión X11: solo puede compartir a través del portal de compartir pantalla del escritorio, no hay ninguno disponible, y los complementos de GStreamer instalados en tu sistema no se pueden usar desde el entorno aislado. Para compartir tu pantalla, usa el AppImage o un paquete de tu distribución de Lightning, que capturan una pantalla X11 directamente, o inicia sesión en una sesión Wayland, donde el portal de tu escritorio ofrece compartir pantalla. Si el xdg-desktop-portal de tu escritorio admite la emisión de pantalla en X11, asegúrate de que esté instalado y en ejecución.</translation>
     </message>
     <message>
-        <location line="+474"/>
+        <location line="+476"/>
         <source>You don&apos;t have permission to join calls in this room. A room admin can raise your power level in it; Lightning can&apos;t change what call membership itself requires.</source>
         <translation>No tienes permiso para unirte a llamadas en esta sala. Un administrador de la sala puede subir tu nivel de permisos; Lightning no puede cambiar lo que exige la pertenencia a llamadas.</translation>
     </message>
@@ -32355,7 +32375,7 @@ Nota: importar claves no verifica esta sesión.</translation>
 <context>
     <name>ThreadController</name>
     <message>
-        <location filename="../src/threads/ThreadController.cpp" line="+737"/>
+        <location filename="../src/threads/ThreadController.cpp" line="+768"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>Este backend no admite archivos adjuntos.</translation>
@@ -32704,18 +32724,33 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>Quitar el archivo adjunto %1</translation>
     </message>
     <message>
-        <location line="+55"/>
-        <location line="+768"/>
+        <location line="+56"/>
+        <source>Attach files or create a poll</source>
+        <translation>Adjuntar archivos o crear una encuesta</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+797"/>
         <source>Attach files</source>
         <translation>Adjuntar archivos</translation>
     </message>
     <message>
-        <location line="-767"/>
+        <location line="-796"/>
         <source>Attach</source>
         <translation>Adjuntar</translation>
     </message>
     <message>
-        <location line="+228"/>
+        <location line="+16"/>
+        <source>Attach files…</source>
+        <translation>Adjuntar archivos…</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Create poll…</source>
+        <translation>Crear encuesta…</translation>
+    </message>
+    <message>
+        <location line="+229"/>
         <source>Reply…</source>
         <translation>Responder…</translation>
     </message>

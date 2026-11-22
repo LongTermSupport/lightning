@@ -8,6 +8,8 @@ Dialog {
     objectName: "createPollDialog"
 
     readonly property int maxAnswers: 20
+    // app.composer for the room, app.thread for the open thread.
+    property var target: app.composer
     property var answerModel: ListModel {}
     property int answerRevision: 0
     function bumpAnswerRevision() { answerRevision = answerRevision + 1 }
@@ -60,14 +62,14 @@ Dialog {
     function submit() {
         if (!formValid || sending) return
         var answers = answerTexts()
-        sendFailed = !app.composer.createPoll(
+        sendFailed = !root.target.createPoll(
             questionField.text.trim(), answers,
             undisclosedSwitch.checked,
             multipleSwitch.checked ? answers.length : 1)
         sending = !sendFailed
     }
     Connections {
-        target: app.composer
+        target: root.target
         function onPollCreateFinished(ok) {
             if (!root.sending) return
             root.sending = false

@@ -133,6 +133,8 @@ public:
     bool threadRepliesInLiveTimeline() const { return m_threadRepliesInLive; }
     int threadTextSendsForTest() const { return m_threadTextSends; }
     QString lastThreadSendRootForTest() const { return m_lastThreadSendRoot; }
+    int pollCreatesForTest() const { return m_pollCreates; }
+    QString lastPollThreadRootForTest() const { return m_lastPollThreadRoot; }
     QString lastThreadSendBodyForTest() const { return m_lastThreadSendBody; }
     QString lastThreadSendReplyToForTest() const
     { return m_lastThreadSendReplyTo; }
@@ -368,6 +370,8 @@ private:
     int m_threadVoiceCalls = 0;
     int m_threadTextSends = 0;
     QString m_lastThreadSendRoot;
+    int m_pollCreates = 0;
+    QString m_lastPollThreadRoot;
     QString m_lastThreadSendBody;
     QString m_lastThreadSendReplyTo;
     QVariantMap m_lastThreadSendSpec;

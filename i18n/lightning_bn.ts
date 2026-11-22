@@ -1033,7 +1033,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7362"/>
+        <location filename="../src/app/AppController.cpp" line="+7373"/>
         <source>Room invitation</source>
         <translation>রুমের আমন্ত্রণ</translation>
     </message>
@@ -1154,7 +1154,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>আগত কল</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5709"/>
+        <location filename="../src/app/AppController.cpp" line="-5720"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>অ্যাকাউন্ট বদলে যাওয়ায় সাইন আউট বাতিল হয়েছে। কিছুই রিসেট হয়নি।</translation>
     </message>
@@ -1206,13 +1206,13 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4281"/>
+        <location line="+4292"/>
         <location line="+821"/>
         <source>Not connected</source>
         <translation>সংযুক্ত নয়</translation>
     </message>
     <message>
-        <location line="-5143"/>
+        <location line="-5154"/>
         <source>Connecting…</source>
         <translation>সংযোগ করা হচ্ছে…</translation>
     </message>
@@ -1273,29 +1273,29 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+4"/>
-        <location line="+3077"/>
+        <location line="+3088"/>
         <location line="+9"/>
         <source>Lightning could not read the selected file.</source>
         <translation>Lightning নির্বাচিত ফাইলটি পড়তে পারেনি।</translation>
     </message>
     <message>
-        <location line="-3083"/>
+        <location line="-3094"/>
         <source>A room-key import is already in progress.</source>
         <translation>একটি রুম-কী আমদানি ইতিমধ্যেই চলছে।</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4076"/>
+        <location line="+4087"/>
         <source>Not signed in.</source>
         <translation>সাইন ইন করা নেই।</translation>
     </message>
     <message>
-        <location line="-4074"/>
+        <location line="-4085"/>
         <source>Room-key import failed.</source>
         <translation>রুম-কী আমদানি ব্যর্থ হয়েছে।</translation>
     </message>
     <message>
-        <location line="+2251"/>
+        <location line="+2262"/>
         <source>Enter a size limit from 1 to 2000 MB.</source>
         <translation>১ থেকে ২০০০ MB-এর মধ্যে আকারের সীমা দিন।</translation>
     </message>
@@ -1310,7 +1310,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>YYYY-MM-DD ফরম্যাটে প্রকৃত তারিখ দিন; “শুরু” তারিখ “শেষ” তারিখের পরে হতে পারবে না।</translation>
     </message>
     <message>
-        <location line="-4769"/>
+        <location line="-4780"/>
         <location line="+2707"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
@@ -1376,12 +1376,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>এখানে কল করার সুবিধা নেই।</translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+158"/>
         <source>Your camera couldn&apos;t be started. The call goes on without it.</source>
         <translation>আপনার ক্যামেরা চালু করা যায়নি। কলটি ক্যামেরা ছাড়াই চলবে।</translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+157"/>
         <source>Modern room list</source>
         <translation>আধুনিক রুম তালিকা</translation>
     </message>
@@ -2570,7 +2570,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>CallDeviceChevron</name>
     <message>
-        <location filename="../qml/CallDeviceChevron.qml" line="+20"/>
+        <location filename="../qml/CallDeviceChevron.qml" line="+19"/>
         <source>The chosen device isn&apos;t connected</source>
         <translation>নির্বাচিত ডিভাইসটি সংযুক্ত নেই৷</translation>
     </message>
@@ -2608,7 +2608,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>আপনার নির্বাচিত মাইক্রোফোন সংযুক্ত নেই৷</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
+        <source>Your chosen microphone couldn&apos;t be opened. The call uses the system default.</source>
+        <translation>আপনার বেছে নেওয়া মাইক্রোফোন খোলা যায়নি। কলটি সিস্টেমের ডিফল্ট ব্যবহার করছে।</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>Your chosen camera isn&apos;t connected</source>
         <translation>আপনার বেছে নেওয়া ক্যামেরা সংযুক্ত নেই</translation>
     </message>
@@ -2720,6 +2725,11 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <location line="+11"/>
         <source>Your chosen microphone isn&apos;t connected. Calls use the system default until it&apos;s back.</source>
         <translation>আপনার নির্বাচিত মাইক্রোফোন সংযুক্ত নেই৷ এটি ফিরে না আসা পর্যন্ত কলগুলি সিস্টেম ডিফল্ট ব্যবহার করে৷</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Your chosen microphone couldn&apos;t be opened, so the system default was used. Choose it again or reconnect it.</source>
+        <translation>আপনার বেছে নেওয়া মাইক্রোফোন খোলা যায়নি, তাই সিস্টেমের ডিফল্ট ব্যবহার করা হয়েছে। আবার বেছে নিন বা পুনরায় সংযোগ করুন।</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -3069,7 +3079,17 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>ভিডিও কল</translation>
     </message>
     <message>
-        <location line="+152"/>
+        <location line="+109"/>
+        <source>The chosen device isn&apos;t connected</source>
+        <translation>নির্বাচিত ডিভাইসটি সংযুক্ত নেই৷</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The chosen microphone couldn&apos;t be opened</source>
+        <translation>বেছে নেওয়া মাইক্রোফোন খোলা যায়নি</translation>
+    </message>
+    <message>
+        <location line="+46"/>
         <location line="+28"/>
         <source>Turn off camera</source>
         <translation>ক্যামেরা বন্ধ করুন</translation>
@@ -3168,7 +3188,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>কলটি ভাসমান উইন্ডোতে আলাদা করুন</translation>
     </message>
     <message>
-        <location line="-385"/>
+        <location line="-389"/>
         <source>Unmute microphone</source>
         <translation>মাইক্রোফোন আনমিউট করুন</translation>
     </message>
@@ -3203,7 +3223,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>মাইক্রোফোন নির্বাচন করুন</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+19"/>
         <source>Undeafen</source>
         <translation>আনডিফেন</translation>
     </message>
@@ -4965,7 +4985,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>CreatePollDialog</name>
     <message>
-        <location filename="../qml/CreatePollDialog.qml" line="+122"/>
+        <location filename="../qml/CreatePollDialog.qml" line="+124"/>
         <source>Discard this poll draft?</source>
         <translation>এই জরিপের খসড়া বাতিল করবেন?</translation>
     </message>
@@ -14186,7 +14206,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>পুরনো বার্তা #%1 (পৃষ্ঠা %2)</translation>
     </message>
     <message>
-        <location line="+1511"/>
+        <location line="+1540"/>
         <source>You joined the room.</source>
         <translation>আপনি রুমে যোগ দিয়েছেন।</translation>
     </message>
@@ -26958,19 +26978,19 @@ Note: importing keys does not verify this session.</source>
     <name>SfuCallController</name>
     <message>
         <location filename="../src/calls/SfuCallController.cpp" line="+633"/>
-        <location line="+387"/>
-        <location line="+163"/>
+        <location line="+396"/>
+        <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
         <translation>এই ডেস্কটপে স্ক্রিন শেয়ারিং উপলব্ধ নেই৷</translation>
     </message>
     <message>
-        <location line="-548"/>
-        <location line="+918"/>
+        <location line="-559"/>
+        <location line="+929"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>স্ক্রিন শেয়ারিং শুরু করা যায়নি।</translation>
     </message>
     <message>
-        <location line="-561"/>
+        <location line="-563"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>ওয়েল্যান্ডে স্ক্রিন শেয়ার করার জন্য xdg-ডেস্কটপ-পোর্টাল প্রয়োজন, এবং এটি সাড়া দিচ্ছে না। আপনার ডেস্কটপের জন্য পোর্টাল ইনস্টল বা শুরু করুন — যেমন xdg-desktop-portal-kde বা xdg-desktop-portal-gnome — তারপর আবার চেষ্টা করুন।</translation>
     </message>
@@ -26986,7 +27006,7 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+53"/>
-        <location line="+159"/>
+        <location line="+161"/>
         <source>No display is available to share.</source>
         <translation>ভাগ করার জন্য কোনো প্রদর্শন উপলব্ধ নেই৷</translation>
     </message>
@@ -27031,7 +27051,7 @@ Note: importing keys does not verify this session.</source>
         <translation>অনেক চেষ্টা. কিছুক্ষণের মধ্যে আবার চেষ্টা করুন।</translation>
     </message>
     <message>
-        <location line="-722"/>
+        <location line="-733"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>আপনার ডেস্কটপের ক্যামেরা পোর্টাল Lightning-কে কোনো ক্যামেরা দেয়নি। ক্যামেরা অন্য অ্যাপে কাজ করলে Lightning-কে সব ডিভাইস ব্যবহারের অনুমতি দিন (Flatseal-এ: &quot;All devices&quot;), তারপর আবার ক্যামেরা চালু করুন।</translation>
     </message>
@@ -27061,12 +27081,12 @@ Note: importing keys does not verify this session.</source>
         <translation>এই ডেস্কটপে কোনো ক্যামেরা পোর্টাল নেই, তাই ক্যামেরা ব্যবহার করা যায় না।</translation>
     </message>
     <message>
-        <location line="+211"/>
+        <location line="+220"/>
         <source>Screen sharing isn&apos;t available in this sandboxed (Flatpak or Snap) build on an X11 session: it can only share through the desktop&apos;s screen-sharing portal, and none is available, and GStreamer plugins installed on your system cannot be used from the sandbox. To share your screen, use the AppImage or a distribution package of Lightning, which capture an X11 screen directly, or log into a Wayland session, where your desktop&apos;s portal provides screen sharing. If your desktop&apos;s xdg-desktop-portal supports screen casting on X11, make sure it is installed and running.</source>
         <translation>X11 সেশনে এই স্যান্ডবক্সড (Flatpak বা Snap) বিল্ডে স্ক্রিন শেয়ার উপলব্ধ নয়: এটি কেবল ডেস্কটপের স্ক্রিন-শেয়ারিং পোর্টালের মাধ্যমে শেয়ার করতে পারে, যা নেই, আর আপনার সিস্টেমে ইনস্টল করা GStreamer প্লাগইন স্যান্ডবক্স থেকে ব্যবহার করা যায় না। স্ক্রিন শেয়ার করতে AppImage বা Lightning-এর ডিস্ট্রিবিউশন প্যাকেজ ব্যবহার করুন, যা সরাসরি X11 স্ক্রিন ধরে, অথবা Wayland সেশনে লগ ইন করুন, যেখানে আপনার ডেস্কটপের পোর্টাল স্ক্রিন শেয়ার দেয়। আপনার ডেস্কটপের xdg-desktop-portal X11-এ স্ক্রিন কাস্টিং সমর্থন করলে সেটি ইনস্টল ও চালু আছে কি না দেখুন।</translation>
     </message>
     <message>
-        <location line="+474"/>
+        <location line="+476"/>
         <source>You don&apos;t have permission to join calls in this room. A room admin can raise your power level in it; Lightning can&apos;t change what call membership itself requires.</source>
         <translation>এই রুমের কলে যোগ দেওয়ার অনুমতি আপনার নেই। রুমের অ্যাডমিন এখানে আপনার পাওয়ার লেভেল বাড়াতে পারেন; কল সদস্যপদের নিজস্ব যে প্রয়োজন তা Lightning বদলাতে পারে না।</translation>
     </message>
@@ -32355,7 +32375,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ThreadController</name>
     <message>
-        <location filename="../src/threads/ThreadController.cpp" line="+737"/>
+        <location filename="../src/threads/ThreadController.cpp" line="+768"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>এই ব্যাকএন্ডে সংযুক্তি সমর্থিত নয়।</translation>
@@ -32704,18 +32724,33 @@ Note: importing keys does not verify this session.</source>
         <translation>সংযুক্তি %1 সরান</translation>
     </message>
     <message>
-        <location line="+55"/>
-        <location line="+768"/>
+        <location line="+56"/>
+        <source>Attach files or create a poll</source>
+        <translation>ফাইল সংযুক্ত করুন বা জরিপ তৈরি করুন</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+797"/>
         <source>Attach files</source>
         <translation>ফাইল সংযুক্ত করুন</translation>
     </message>
     <message>
-        <location line="-767"/>
+        <location line="-796"/>
         <source>Attach</source>
         <translation>সংযুক্ত করুন</translation>
     </message>
     <message>
-        <location line="+228"/>
+        <location line="+16"/>
+        <source>Attach files…</source>
+        <translation>ফাইল সংযুক্ত করুন…</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Create poll…</source>
+        <translation>জরিপ তৈরি করুন…</translation>
+    </message>
+    <message>
+        <location line="+229"/>
         <source>Reply…</source>
         <translation>উত্তর দিন…</translation>
     </message>

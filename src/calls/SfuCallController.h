@@ -726,6 +726,7 @@ private:
     bool cameraEngineReady() const;
     bool cameraSandboxed() const;
     bool cameraPortalUsable() const;
+    bool cameraPortalWired() const;
     void requestCameraAccess();
     bool cameraChosen() const;
     void fallBackToPortalCamera(const QString &category);

@@ -1043,7 +1043,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7362"/>
+        <location filename="../src/app/AppController.cpp" line="+7373"/>
         <source>Room invitation</source>
         <translation>Kvietimas į kambarį</translation>
     </message>
@@ -1165,7 +1165,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Įeinantis skambutis</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5709"/>
+        <location filename="../src/app/AppController.cpp" line="-5720"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>Atsijungimas atšauktas, nes paskyra pasikeitė. Nieko iš naujo nenustatyta.</translation>
     </message>
@@ -1217,13 +1217,13 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4281"/>
+        <location line="+4292"/>
         <location line="+821"/>
         <source>Not connected</source>
         <translation>Neprisijungęs</translation>
     </message>
     <message>
-        <location line="-5143"/>
+        <location line="-5154"/>
         <source>Connecting…</source>
         <translation>Jungiamasi…</translation>
     </message>
@@ -1284,29 +1284,29 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
     </message>
     <message>
         <location line="+4"/>
-        <location line="+3077"/>
+        <location line="+3088"/>
         <location line="+9"/>
         <source>Lightning could not read the selected file.</source>
         <translation>Lightning nepavyko nuskaityti pasirinkto failo.</translation>
     </message>
     <message>
-        <location line="-3083"/>
+        <location line="-3094"/>
         <source>A room-key import is already in progress.</source>
         <translation>Jau vyksta kambario rakto importavimas.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4076"/>
+        <location line="+4087"/>
         <source>Not signed in.</source>
         <translation>Neprisijungęs.</translation>
     </message>
     <message>
-        <location line="-4074"/>
+        <location line="-4085"/>
         <source>Room-key import failed.</source>
         <translation>Nepavyko importuoti kambario rakto.</translation>
     </message>
     <message>
-        <location line="+2251"/>
+        <location line="+2262"/>
         <source>Enter a size limit from 1 to 2000 MB.</source>
         <translation>Įveskite dydžio ribą nuo 1 iki 2000 MB.</translation>
     </message>
@@ -1321,7 +1321,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Naudokite tikras datas formatu YYYY-MM-DD, kai „Nuo“ nėra vėlesnė už „Iki“.</translation>
     </message>
     <message>
-        <location line="-4769"/>
+        <location line="-4780"/>
         <location line="+2707"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
@@ -1387,12 +1387,12 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Skambinti čia negalima.</translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+158"/>
         <source>Your camera couldn&apos;t be started. The call goes on without it.</source>
         <translation>Nepavyko įjungti kameros. Skambutis tęsiamas be jos.</translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+157"/>
         <source>Modern room list</source>
         <translation>Šiuolaikinių kambarių sąrašas</translation>
     </message>
@@ -2591,7 +2591,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
 <context>
     <name>CallDeviceChevron</name>
     <message>
-        <location filename="../qml/CallDeviceChevron.qml" line="+20"/>
+        <location filename="../qml/CallDeviceChevron.qml" line="+19"/>
         <source>The chosen device isn&apos;t connected</source>
         <translation>Pasirinktas įrenginys neprijungtas</translation>
     </message>
@@ -2629,7 +2629,12 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Jūsų pasirinktas mikrofonas neprijungtas</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
+        <source>Your chosen microphone couldn&apos;t be opened. The call uses the system default.</source>
+        <translation>Jūsų pasirinkto mikrofono atidaryti nepavyko. Skambutis naudoja sistemos numatytąjį.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>Your chosen camera isn&apos;t connected</source>
         <translation>Jūsų pasirinkta kamera neprijungta</translation>
     </message>
@@ -2741,6 +2746,11 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <location line="+11"/>
         <source>Your chosen microphone isn&apos;t connected. Calls use the system default until it&apos;s back.</source>
         <translation>Jūsų pasirinktas mikrofonas neprijungtas. Skambučiams naudojami numatytieji sistemos nustatymai, kol sugrįš.</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Your chosen microphone couldn&apos;t be opened, so the system default was used. Choose it again or reconnect it.</source>
+        <translation>Jūsų pasirinkto mikrofono atidaryti nepavyko, todėl naudotas sistemos numatytasis. Pasirinkite jį dar kartą arba prijunkite iš naujo.</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -3090,7 +3100,17 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Vaizdo skambutis</translation>
     </message>
     <message>
-        <location line="+152"/>
+        <location line="+109"/>
+        <source>The chosen device isn&apos;t connected</source>
+        <translation>Pasirinktas įrenginys neprijungtas</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The chosen microphone couldn&apos;t be opened</source>
+        <translation>Pasirinkto mikrofono atidaryti nepavyko</translation>
+    </message>
+    <message>
+        <location line="+46"/>
         <location line="+28"/>
         <source>Turn off camera</source>
         <translation>Išjunkite kamerą</translation>
@@ -3189,7 +3209,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Iškelti skambutį į plaukiojantį langą</translation>
     </message>
     <message>
-        <location line="-385"/>
+        <location line="-389"/>
         <source>Unmute microphone</source>
         <translation>Įjungti mikrofono garsą</translation>
     </message>
@@ -3224,7 +3244,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Pasirinkite mikrofoną</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+19"/>
         <source>Undeafen</source>
         <translation>Įjungti klausymą</translation>
     </message>
@@ -4992,7 +5012,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
 <context>
     <name>CreatePollDialog</name>
     <message>
-        <location filename="../qml/CreatePollDialog.qml" line="+122"/>
+        <location filename="../qml/CreatePollDialog.qml" line="+124"/>
         <source>Discard this poll draft?</source>
         <translation>Išmesti šį apklausos juodraštį?</translation>
     </message>
@@ -14242,7 +14262,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Senesnė žinutė Nr.%1 (puslapis %2)</translation>
     </message>
     <message>
-        <location line="+1511"/>
+        <location line="+1540"/>
         <source>You joined the room.</source>
         <translation>Jūs prisijungėte prie kambario.</translation>
     </message>
@@ -27062,19 +27082,19 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     <name>SfuCallController</name>
     <message>
         <location filename="../src/calls/SfuCallController.cpp" line="+633"/>
-        <location line="+387"/>
-        <location line="+163"/>
+        <location line="+396"/>
+        <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
         <translation>Ekrano bendrinimas šiame darbalaukyje negalimas.</translation>
     </message>
     <message>
-        <location line="-548"/>
-        <location line="+918"/>
+        <location line="-559"/>
+        <location line="+929"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>Nepavyko pradėti bendrinti ekrano.</translation>
     </message>
     <message>
-        <location line="-561"/>
+        <location line="-563"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>Ekrano bendrinimui „Wayland“ reikia xdg-desktop-portal, ir jis nereaguoja. Įdiekite arba paleiskite darbalaukio portalą, pvz., xdg-desktop-portal-kde arba xdg-desktop-portal-gnome, tada bandykite dar kartą.</translation>
     </message>
@@ -27090,7 +27110,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     </message>
     <message>
         <location line="+53"/>
-        <location line="+159"/>
+        <location line="+161"/>
         <source>No display is available to share.</source>
         <translation>Nėra ekrano, kurį būtų galima bendrinti.</translation>
     </message>
@@ -27135,7 +27155,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Per daug bandymų. Po akimirkos bandykite dar kartą.</translation>
     </message>
     <message>
-        <location line="-722"/>
+        <location line="-733"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>Jūsų darbalaukio kameros portalas nesiūlė „Lightning“ jokios kameros. Jei kamera veikia kitose programose, leiskite „Lightning“ naudoti visus įrenginius („Flatseal“: „All devices“), tada vėl įjunkite kamerą.</translation>
     </message>
@@ -27165,12 +27185,12 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Šiame darbalaukyje nėra kameros portalo, todėl kameros naudoti negalima.</translation>
     </message>
     <message>
-        <location line="+211"/>
+        <location line="+220"/>
         <source>Screen sharing isn&apos;t available in this sandboxed (Flatpak or Snap) build on an X11 session: it can only share through the desktop&apos;s screen-sharing portal, and none is available, and GStreamer plugins installed on your system cannot be used from the sandbox. To share your screen, use the AppImage or a distribution package of Lightning, which capture an X11 screen directly, or log into a Wayland session, where your desktop&apos;s portal provides screen sharing. If your desktop&apos;s xdg-desktop-portal supports screen casting on X11, make sure it is installed and running.</source>
         <translation>Ekrano bendrinimas šioje izoliuotoje („Flatpak“ ar „Snap“) versijoje X11 seanse nepasiekiamas: jį galima bendrinti tik per darbalaukio ekrano bendrinimo portalą, o jo nėra, o jūsų sistemoje įdiegtų GStreamer papildinių iš izoliuotos aplinkos naudoti negalima. Norėdami bendrinti ekraną, naudokite „Lightning“ AppImage arba distribucijos paketą, kurie fiksuoja X11 ekraną tiesiogiai, arba prisijunkite prie Wayland seanso, kuriame ekrano bendrinimą suteikia jūsų darbalaukio portalas. Jei jūsų darbalaukio xdg-desktop-portal palaiko ekrano transliavimą X11, įsitikinkite, kad jis įdiegtas ir veikia.</translation>
     </message>
     <message>
-        <location line="+474"/>
+        <location line="+476"/>
         <source>You don&apos;t have permission to join calls in this room. A room admin can raise your power level in it; Lightning can&apos;t change what call membership itself requires.</source>
         <translation>Neturite teisės jungtis prie skambučių šiame kambaryje. Kambario administratorius gali pakelti jūsų galios lygį; „Lightning“ negali pakeisti to, ko reikalauja pats prisijungimas prie skambučio.</translation>
     </message>
@@ -32506,7 +32526,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
 <context>
     <name>ThreadController</name>
     <message>
-        <location filename="../src/threads/ThreadController.cpp" line="+737"/>
+        <location filename="../src/threads/ThreadController.cpp" line="+768"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>Ši posistemė nepalaiko priedų.</translation>
@@ -32858,18 +32878,33 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Pašalinti priedą %1</translation>
     </message>
     <message>
-        <location line="+55"/>
-        <location line="+768"/>
+        <location line="+56"/>
+        <source>Attach files or create a poll</source>
+        <translation>Pridėkite failus arba sukurkite apklausą</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+797"/>
         <source>Attach files</source>
         <translation>Pridėkite failus</translation>
     </message>
     <message>
-        <location line="-767"/>
+        <location line="-796"/>
         <source>Attach</source>
         <translation>Prikabinti</translation>
     </message>
     <message>
-        <location line="+228"/>
+        <location line="+16"/>
+        <source>Attach files…</source>
+        <translation>Pridėti failus…</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Create poll…</source>
+        <translation>Sukurti apklausą…</translation>
+    </message>
+    <message>
+        <location line="+229"/>
         <source>Reply…</source>
         <translation>Atsakyti…</translation>
     </message>

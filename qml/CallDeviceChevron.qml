@@ -16,9 +16,8 @@ AbstractButton {
 
     Accessible.role: Accessible.ButtonMenu
     Accessible.name: root.accessibleName
-    Accessible.description: root.warn
-                            ? qsTr("The chosen device isn't connected")
-                            : ""
+    property string warnText: qsTr("The chosen device isn't connected")
+    Accessible.description: root.warn ? root.warnText : ""
 
     background: Rectangle {
         radius: AppTheme.radiusSm
