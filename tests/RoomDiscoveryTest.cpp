@@ -25,6 +25,33 @@ QVariantMap directoryRow(const QString &id, const QString &name,
     row.insert(QStringLiteral("isSpace"), false);
     return row;
 }
+
+class HierarchyClient final : public MockMatrixClient
+{
+public:
+    quint64 lastOp = 0;
+    quint64 requestSpaceChildren(const QString &) override { return ++lastOp; }
+    void answer(bool ok, int rows, bool truncated, const QString &category)
+    {
+        QVariantList out;
+        for (int i = 0; i < rows; ++i)
+            out << directoryRow(QStringLiteral("!c%1:mock.local").arg(i),
+                                QStringLiteral("Child %1").arg(i),
+                                QStringLiteral("public"));
+        Q_EMIT spaceChildrenReceived(lastOp, QStringLiteral("!s:mock.local"), ok,
+                                     out, truncated, category);
+    }
+};
+
+// Read through the meta-object: the coverage API is what QML calls.
+QString coverageOf(RoomDiscoveryController &controller)
+{
+    QString out = QStringLiteral("<no coverage api>");
+    QMetaObject::invokeMethod(&controller, "spaceChildrenCoverage",
+                              Q_RETURN_ARG(QString, out),
+                              Q_ARG(QString, QStringLiteral("!s:mock.local")));
+    return out;
+}
 }
 
 class RoomDiscoveryTest : public QObject
@@ -380,6 +407,55 @@ private Q_SLOTS:
         QCOMPARE(controller.spaceChildrenState(
                      QStringLiteral("!other:mock.local")),
                  QString());
+    }
+
+    void aPartialHierarchySaysWhyAndACompleteOneDoesNot()
+    {
+        HierarchyClient client;
+        QVERIFY(login(client));
+        RoomDiscoveryController controller;
+        controller.setClient(&client);
+        const QString space = QStringLiteral("!s:mock.local");
+
+        controller.refreshSpaceChildren(space);
+        client.answer(true, 200, true, QStringLiteral("limit"));
+        QCOMPARE(controller.spaceChildrenState(space), QStringLiteral("ready"));
+        QCOMPARE(controller.spaceChildren(space).size(), 200);
+        QCOMPARE(coverageOf(controller), QStringLiteral("limit"));
+
+        controller.refreshSpaceChildren(space);
+        client.answer(true, 7, true, QStringLiteral("network"));
+        QCOMPARE(controller.spaceChildren(space).size(), 7);
+        QCOMPARE(coverageOf(controller), QStringLiteral("network"));
+
+        controller.refreshSpaceChildren(space);
+        client.answer(false, 0, false, QStringLiteral("network"));
+        QCOMPARE(controller.spaceChildrenState(space), QStringLiteral("ready"));
+        QCOMPARE(controller.spaceChildren(space).size(), 7);
+        QCOMPARE(coverageOf(controller), QStringLiteral("stale"));
+
+        controller.refreshSpaceChildren(space);
+        const quint64 current = client.lastOp;
+        Q_EMIT client.spaceChildrenReceived(current - 1, space, true, {}, false,
+                                            QString());
+        QCOMPARE(coverageOf(controller), QStringLiteral("stale"));
+        client.answer(true, 0, false, QString());
+        QCOMPARE(controller.spaceChildrenState(space), QStringLiteral("ready"));
+        QCOMPARE(controller.spaceChildren(space).size(), 0);
+        QCOMPARE(coverageOf(controller), QString());
+    }
+
+    void aHierarchyThatFailsWithNoRowsIsFailedNotPartial()
+    {
+        HierarchyClient client;
+        QVERIFY(login(client));
+        RoomDiscoveryController controller;
+        controller.setClient(&client);
+        controller.refreshSpaceChildren(QStringLiteral("!s:mock.local"));
+        client.answer(false, 0, false, QStringLiteral("network"));
+        QCOMPARE(controller.spaceChildrenState(QStringLiteral("!s:mock.local")),
+                 QStringLiteral("failed"));
+        QCOMPARE(coverageOf(controller), QString());
     }
 
     void loggedOutClearsEverything()

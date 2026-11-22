@@ -173,6 +173,11 @@ QString RoomDiscoveryController::spaceChildrenState(const QString &spaceId) cons
     return m_spaceChildren.value(spaceId).state;
 }
 
+QString RoomDiscoveryController::spaceChildrenCoverage(const QString &spaceId) const
+{
+    return m_spaceChildren.value(spaceId).coverage;
+}
+
 void RoomDiscoveryController::clearError()
 {
     if (m_errorMessage.isEmpty())
@@ -259,8 +264,6 @@ void RoomDiscoveryController::onSpaceChildren(quint64 opId,
                                               bool truncated,
                                               const QString &category)
 {
-    Q_UNUSED(truncated);
-    Q_UNUSED(category);
     auto it = m_spaceChildren.find(spaceId);
     if (it == m_spaceChildren.end() || opId == 0 || it->pendingOp != opId)
         return;
@@ -268,11 +271,15 @@ void RoomDiscoveryController::onSpaceChildren(quint64 opId,
     if (!ok) {
         it->state = it->rows.isEmpty() ? QStringLiteral("failed")
                                        : QStringLiteral("ready");
+        if (!it->rows.isEmpty())
+            it->coverage = QStringLiteral("stale");
         Q_EMIT spaceChildrenChanged(spaceId);
         return;
     }
     it->rows = rooms;
     it->state = QStringLiteral("ready");
+    it->coverage = !truncated ? QString()
+        : category.isEmpty() ? QStringLiteral("limit") : category;
     Q_EMIT spaceChildrenChanged(spaceId);
 }
 

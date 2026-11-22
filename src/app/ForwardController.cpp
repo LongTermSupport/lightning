@@ -5,6 +5,7 @@
 
 #include <QBuffer>
 
+#include <algorithm>
 #include <cstring>
 #include <QImageReader>
 #include <QSize>
@@ -301,7 +302,15 @@ void ForwardController::sendSelection(const QVariantList &targets)
     m_failedPairs.clear();
     m_unconfirmed = 0;
     m_progressDone = 0;
-    for (const QVariant &snapValue : m_selectionSnapshots) {
+    // Selection is kept in click order; copies go out oldest first.
+    QVariantList ordered = m_selectionSnapshots;
+    std::stable_sort(ordered.begin(), ordered.end(),
+                     [](const QVariant &a, const QVariant &b) {
+        const QString key = QStringLiteral("timestampMs");
+        return a.toMap().value(key).toLongLong()
+            < b.toMap().value(key).toLongLong();
+    });
+    for (const QVariant &snapValue : ordered) {
         const QVariantMap snapshot = snapValue.toMap();
         for (const QVariant &targetValue : targets) {
             const QVariantMap target = targetValue.toMap();

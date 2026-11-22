@@ -3911,7 +3911,7 @@ Não toca nas suas chaves de encriptação, na sua sessão nem em qualquer mensa
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+282"/>
+        <location filename="../qml/SpaceLobby.qml" line="+316"/>
         <source>%1, collapsed</source>
         <translation>%1, recolhido</translation>
     </message>
@@ -8663,7 +8663,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+96"/>
+        <location filename="../src/app/ForwardController.cpp" line="+97"/>
         <source>Photo</source>
         <translation>Fotografia</translation>
     </message>
@@ -8737,7 +8737,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Reencaminhado de %1</translation>
     </message>
     <message>
-        <location line="+94"/>
+        <location line="+102"/>
         <source>Not signed in.</source>
         <translation>Não tem sessão iniciada.</translation>
     </message>
@@ -20317,7 +20317,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>SavedMessagesController</name>
     <message>
-        <location filename="../src/app/SavedMessagesController.cpp" line="+201"/>
+        <location filename="../src/app/SavedMessagesController.cpp" line="+247"/>
         <source>Saved messages could not be loaded. Retry.</source>
         <translation>As mensagens guardadas não puderam ser carregadas. Tente novamente.</translation>
     </message>
@@ -20329,24 +20329,29 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     </message>
     <message>
         <location line="-80"/>
-        <location line="+142"/>
+        <location line="+156"/>
         <source>Saved messages data is unavailable.</source>
         <translation>Os dados das mensagens guardadas não estão disponíveis.</translation>
     </message>
     <message>
-        <location line="-109"/>
-        <location line="+214"/>
+        <location line="-123"/>
+        <location line="+228"/>
         <location line="+15"/>
         <source>Saved messages are full. Remove an older item first.</source>
         <translation>As mensagens guardadas estão cheias. Remova primeiro um item mais antigo.</translation>
     </message>
     <message>
-        <location line="+153"/>
+        <location line="+219"/>
         <source>Sticker</source>
         <translation>Autocolante</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+15"/>
+        <source>Edited message. The latest version cannot be decrypted.</source>
+        <translation>Mensagem editada. A versão mais recente não pode ser descriptografada.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Image</source>
         <translation>Imagem</translation>
     </message>
@@ -20370,12 +20375,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     <name>SavedMessagesPanel</name>
     <message>
         <location filename="../qml/SavedMessagesPanel.qml" line="+49"/>
-        <location line="+121"/>
+        <location line="+132"/>
         <source>Saved messages</source>
         <translation>Mensagens guardadas</translation>
     </message>
     <message>
-        <location line="-104"/>
+        <location line="-115"/>
         <source>Undo remove</source>
         <translation>Desfazer remoção</translation>
     </message>
@@ -20435,18 +20440,29 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Nenhuma mensagem guardada ainda. Use Salvar mensagem em uma mensagem para adicionar uma.</translation>
     </message>
     <message>
-        <location line="+38"/>
-        <location line="+35"/>
+        <location line="+10"/>
+        <source>Clear filters</source>
+        <translation>Limpar filtros</translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <location line="+36"/>
+        <source>Message could not be loaded</source>
+        <translation>Não foi possível carregar a mensagem</translation>
+    </message>
+    <message>
+        <location line="-35"/>
+        <location line="+37"/>
         <source>Message unavailable or redacted</source>
         <translation>Mensagem indisponível ou redigida</translation>
     </message>
     <message>
-        <location line="-34"/>
+        <location line="-36"/>
         <source>Loading message</source>
         <translation>Carregando mensagem</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+37"/>
         <source>Loading message…</source>
         <translation>Carregando mensagem…</translation>
     </message>
@@ -20456,7 +20472,17 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Em um tópico</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+11"/>
+        <source>Retry</source>
+        <translation>Tentar novamente</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Retry loading saved message</source>
+        <translation>Tentar carregar a mensagem salva novamente</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>Open</source>
         <translation>Abrir</translation>
     </message>
@@ -28323,8 +28349,31 @@ Nota: importar chaves não verifica esta sessão.</translation>
 </context>
 <context>
     <name>SpaceLobby</name>
+    <message numerus="yes">
+        <location filename="../qml/SpaceLobby.qml" line="-111"/>
+        <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
+        <translation>
+            <numerusform>Só a primeira %n sala deste espaço está listada. Uma sala não listada ainda pode ser aberta pelo endereço.</numerusform>
+            <numerusform>Só as primeiras %n salas deste espaço estão listadas. Uma sala não listada ainda pode ser aberta pelo endereço.</numerusform>
+        </translation>
+    </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-60"/>
+        <location line="+3"/>
+        <source>This Space could not be refreshed. Showing the rooms loaded earlier.</source>
+        <translation>Não foi possível atualizar este espaço. Mostrando as salas carregadas antes.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Loading stopped early, so some rooms of this Space may be missing.</source>
+        <translation>O carregamento parou antes do fim, então algumas salas deste espaço podem estar faltando.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Retry</source>
+        <translation>Tentar novamente</translation>
+    </message>
+    <message>
+        <location line="+35"/>
         <location line="+265"/>
         <source>Loading rooms…</source>
         <translation>A carregar as salas…</translation>
@@ -32250,7 +32299,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
 <context>
     <name>ThreadController</name>
     <message>
-        <location filename="../src/threads/ThreadController.cpp" line="+736"/>
+        <location filename="../src/threads/ThreadController.cpp" line="+737"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>Os anexos não são suportados neste backend.</translation>
@@ -32955,12 +33004,12 @@ Nota: importar chaves não verifica esta sessão.</translation>
     <message>
         <location filename="../qml/SpaceLobby.qml" line="-521"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5396"/>
+        <location line="+5401"/>
         <source>Space</source>
         <translation>Espaço</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5395"/>
+        <location filename="../qml/TimelinePane.qml" line="-5400"/>
         <source>Home</source>
         <translation>Início</translation>
     </message>
@@ -33418,7 +33467,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Reencaminhar…</translation>
     </message>
     <message>
-        <location line="+437"/>
+        <location line="+442"/>
         <source>Room added — waiting for the server to confirm.</source>
         <translation>Sala adicionada — à espera da confirmação do servidor.</translation>
     </message>
@@ -33483,7 +33532,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Não foi possível guardar o banner (%1).</translation>
     </message>
     <message>
-        <location line="+571"/>
+        <location line="+574"/>
         <source>You are the only administrator. If you leave, nobody will be able to change this Space&apos;s settings or manage its rooms and members. Make someone else an administrator first.</source>
         <translation>É o único administrador. Se sair, ninguém poderá alterar as definições deste espaço nem gerir as suas salas e membros. Torne outra pessoa administrador primeiro.</translation>
     </message>
@@ -33497,7 +33546,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/TimelinePane.qml" line="-514"/>
+        <location filename="../qml/TimelinePane.qml" line="-517"/>
         <source>%n joined room(s)</source>
         <comment>joined rooms inside a Space</comment>
         <translation>
@@ -33551,7 +33600,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Mostrar bandeira</translation>
     </message>
     <message>
-        <location line="+289"/>
+        <location line="+292"/>
         <source>People in this Space</source>
         <translation>Pessoas neste espaço</translation>
     </message>
@@ -33566,7 +33615,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>A mostrar os primeiros 60 de %1.</translation>
     </message>
     <message>
-        <location line="-298"/>
+        <location line="-301"/>
         <source>Choose Space avatar</source>
         <translation>Escolher o avatar do espaço</translation>
     </message>
@@ -33627,17 +33676,17 @@ Nota: importar chaves não verifica esta sessão.</translation>
     </message>
     <message>
         <location line="+27"/>
-        <location line="+297"/>
+        <location line="+300"/>
         <source>Leave Space</source>
         <translation>Sair do espaço</translation>
     </message>
     <message>
-        <location line="-291"/>
+        <location line="-294"/>
         <source>Leaving does not remove the rooms inside it.</source>
         <translation>Sair não remove as salas que estão dentro dele.</translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-260"/>
+        <location filename="../qml/SpaceLobby.qml" line="-290"/>
         <source>ROOMS AND SPACES</source>
         <translation>SALAS E ESPAÇOS</translation>
     </message>
@@ -33651,24 +33700,24 @@ Nota: importar chaves não verifica esta sessão.</translation>
     </message>
     <message>
         <location line="+21"/>
-        <location filename="../qml/TimelinePane.qml" line="+214"/>
+        <location filename="../qml/TimelinePane.qml" line="+217"/>
         <source>Remove</source>
         <translation>Remover</translation>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+601"/>
+        <location line="+631"/>
         <source>Mark as not suggested</source>
         <translation>Marcar como não sugerida</translation>
     </message>
     <message>
-        <location line="-600"/>
-        <location line="+601"/>
+        <location line="-630"/>
+        <location line="+631"/>
         <source>Mark as suggested</source>
         <translation>Marcar como sugerida</translation>
     </message>
     <message>
-        <location line="-590"/>
+        <location line="-620"/>
         <source>Search names and descriptions</source>
         <translation>Procurar em nomes e descrições</translation>
     </message>
@@ -33678,7 +33727,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Procurar salas e espaços</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+42"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>Nenhuma sala ou espaço corresponde a «%1».</translation>
     </message>
@@ -33695,8 +33744,8 @@ Nota: importar chaves não verifica esta sessão.</translation>
     </message>
     <message>
         <location line="+299"/>
-        <location filename="../qml/TimelinePane.qml" line="-6691"/>
-        <location line="+6868"/>
+        <location filename="../qml/TimelinePane.qml" line="-6699"/>
+        <location line="+6876"/>
         <source>Room</source>
         <translation>Sala</translation>
     </message>
@@ -33763,21 +33812,21 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>As salas continuam a existir e você continua nelas — apenas saem da lista deste espaço.</translation>
     </message>
     <message>
-        <location line="-1440"/>
+        <location line="-1448"/>
         <location line="+209"/>
-        <location line="+1245"/>
+        <location line="+1253"/>
         <location line="+77"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location line="-5983"/>
+        <location line="-5991"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation>Ver perfil</translation>
     </message>
     <message>
-        <location line="+5215"/>
+        <location line="+5220"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation>Imagens (*.png *.jpg *.jpeg *.gif *.webp *.svg)</translation>
     </message>
@@ -33792,7 +33841,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Só os administradores do espaço podem alterar isto.</translation>
     </message>
     <message>
-        <location line="+344"/>
+        <location line="+347"/>
         <source>Leave %1?</source>
         <translation>Sair de %1?</translation>
     </message>
@@ -33853,7 +33902,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Largue ficheiros para os anexar</translation>
     </message>
     <message>
-        <location line="-5431"/>
+        <location line="-5439"/>
         <source>Join space</source>
         <translation>Entrar no espaço</translation>
     </message>

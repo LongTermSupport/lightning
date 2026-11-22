@@ -4499,7 +4499,10 @@ pub(crate) fn request_event_source(
     bridge: &RustClient,
     room_id: String,
     event_id: String,
+    op_id: u64,
 ) -> Result<(), String> {
+    use matrix_sdk::ruma::events::relation::RelationType;
+
     let client = require_client(bridge)?;
     let room = joined_room(&client, &room_id)?;
     let target = EventId::parse(&event_id).map_err(|_| "invalid event id".to_owned())?;
@@ -4507,22 +4510,54 @@ pub(crate) fn request_event_source(
     let timelines = Arc::clone(&bridge.timelines);
     let lifecycle = timelines.lifecycle();
     bridge.spawn_room_action(async move {
+        use matrix_sdk::room::{IncludeRelations, RelationsOptions};
+        use matrix_sdk::ruma::UInt;
         let loaded = room.load_or_fetch_event(&target, None).await;
         if !timelines.lifecycle_current(lifecycle) {
             return;
         }
         let Ok(event) = loaded else {
             enqueue(&events, json!({
-                "type": "event_source", "lifecycle": lifecycle,
+                "type": "event_source", "lifecycle": lifecycle, "op_id": op_id,
                 "room_id": room_id, "event_id": event_id, "ok": false,
             }));
             return;
         };
+        let mut options = RelationsOptions::default();
+        options.include_relations =
+            IncludeRelations::RelationsOfType(RelationType::Replacement);
+        options.limit = Some(UInt::from(50u32));
+        let relations = match room.relations(target.to_owned(), options).await {
+            Ok(answer) => answer.chunk,
+            Err(_) => room
+                .load_or_fetch_event_with_relations(
+                    &target,
+                    Some(vec![RelationType::Replacement]),
+                    None,
+                )
+                .await
+                .map(|(_, cached)| cached)
+                .unwrap_or_default(),
+        };
+        if !timelines.lifecycle_current(lifecycle) {
+            return;
+        }
         // The JSON the SDK holds: for an encrypted event, the decrypted form, with
         // the ciphertext envelope described beside it. Session id and sender key
         // are public identifiers; no key material.
         let json_value: serde_json::Value =
             event.raw().deserialize_as().unwrap_or(serde_json::Value::Null);
+        let candidates: Vec<(serde_json::Value, bool)> = relations
+            .iter()
+            .filter_map(|related| {
+                Some((
+                    related.raw().deserialize_as::<serde_json::Value>().ok()?,
+                    related.encryption_info().is_some(),
+                ))
+            })
+            .collect();
+        let (effective, edit_unreadable) =
+            effective_revision(&json_value, event.encryption_info().is_some(), &candidates);
         let pretty = serde_json::to_string_pretty(&json_value).unwrap_or_default();
         let encryption = match event.encryption_info() {
             Some(info) => json!({
@@ -4536,12 +4571,75 @@ pub(crate) fn request_event_source(
             None => json!({ "encrypted": false }),
         };
         enqueue(&events, json!({
-            "type": "event_source", "lifecycle": lifecycle,
+            "type": "event_source", "lifecycle": lifecycle, "op_id": op_id,
             "room_id": room_id, "event_id": event_id, "ok": true,
             "json": pretty, "encryption": encryption,
+            "effective_content": effective, "edit_unreadable": edit_unreadable,
         }));
     });
     Ok(())
+}
+
+/// The `m.new_content` of the latest valid replacement of `original` among
+/// `candidates` (event JSON, encrypted?), and whether a newer replacement from
+/// the original's sender could not be decrypted.
+fn effective_revision(
+    original: &serde_json::Value,
+    original_encrypted: bool,
+    candidates: &[(serde_json::Value, bool)],
+) -> (Option<serde_json::Value>, bool) {
+    use crate::replacement;
+    let field = |v: &serde_json::Value, key: &str| -> String {
+        v.get(key).and_then(serde_json::Value::as_str).unwrap_or_default().to_owned()
+    };
+    let (original_id, original_sender, original_type) =
+        (field(original, "event_id"), field(original, "sender"), field(original, "type"));
+    if original_id.is_empty()
+        || original.get("state_key").is_some()
+        || replacement::is_replacement(original)
+    {
+        return (None, false);
+    }
+    let mut best: Option<replacement::Replacement<'_>> = None;
+    let mut unreadable: Option<(u64, String)> = None;
+    for (candidate, encrypted) in candidates {
+        if field(candidate, "type") == "m.room.encrypted" {
+            let targets_original = candidate
+                .pointer("/content/m.relates_to/rel_type")
+                .and_then(serde_json::Value::as_str)
+                == Some("m.replace")
+                && candidate
+                    .pointer("/content/m.relates_to/event_id")
+                    .and_then(serde_json::Value::as_str)
+                    == Some(original_id.as_str());
+            if targets_original && field(candidate, "sender") == original_sender {
+                let key = (
+                    candidate.get("origin_server_ts").and_then(serde_json::Value::as_u64)
+                        .unwrap_or(0),
+                    field(candidate, "event_id"),
+                );
+                if unreadable.as_ref().is_none_or(|u| (key.0, key.1.as_str()) > (u.0, u.1.as_str())) {
+                    unreadable = Some(key);
+                }
+            }
+            continue;
+        }
+        let Some(r) = replacement::parse(candidate) else { continue };
+        if r.target != original_id
+            || !replacement::may_replace(r.sender, &field(candidate, "type"),
+                                         &original_sender, &original_type)
+            || !replacement::encryption_permits(*encrypted, original_encrypted)
+        {
+            continue;
+        }
+        if best.as_ref().is_none_or(|b| replacement::supersedes((r.ts, r.event_id), (b.ts, b.event_id))) {
+            best = Some(r);
+        }
+    }
+    let newer_unreadable = unreadable.is_some_and(|(ts, id)| {
+        best.as_ref().is_none_or(|b| replacement::supersedes((ts, id.as_str()), (b.ts, b.event_id)))
+    });
+    (best.map(|b| b.new_content.clone()), newer_unreadable)
 }
 
 pub(crate) fn probe_delayed_events(bridge: &RustClient) -> Result<(), String> {
@@ -5936,6 +6034,57 @@ pub(crate) fn fetch_upload_limit(bridge: &RustClient) -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn original() -> serde_json::Value {
+        json!({"type": "m.room.message", "event_id": "$o", "sender": "@a:x",
+               "origin_server_ts": 1, "content": {"msgtype": "m.text", "body": "old"}})
+    }
+
+    fn edit(id: &str, sender: &str, ts: u64, body: &str) -> serde_json::Value {
+        json!({"type": "m.room.message", "event_id": id, "sender": sender,
+               "origin_server_ts": ts,
+               "content": {"body": format!("* {body}"),
+                           "m.new_content": {"msgtype": "m.text", "body": body},
+                           "m.relates_to": {"rel_type": "m.replace", "event_id": "$o"}}})
+    }
+
+    fn body(revision: &(Option<serde_json::Value>, bool)) -> Option<String> {
+        revision.0.as_ref().map(|c| c["body"].as_str().unwrap_or_default().to_owned())
+    }
+
+    #[test]
+    fn a_saved_preview_takes_the_newest_valid_edit_by_its_sender() {
+        let o = original();
+        let none = effective_revision(&o, false, &[]);
+        assert_eq!((body(&none), none.1), (None, false));
+        let got = effective_revision(&o, false, &[
+            (edit("$e2", "@a:x", 3, "newest"), false),
+            (edit("$e1", "@a:x", 2, "middle"), false),
+            (edit("$forged", "@b:x", 9, "forged"), false),
+        ]);
+        assert_eq!(body(&got), Some("newest".to_owned()));
+        let mut wrong_target = edit("$e3", "@a:x", 9, "elsewhere");
+        wrong_target["content"]["m.relates_to"]["event_id"] = json!("$other");
+        let got = effective_revision(&o, false, &[(wrong_target, false)]);
+        assert_eq!(body(&got), None);
+    }
+
+    #[test]
+    fn an_encrypted_original_ignores_a_plaintext_edit_and_flags_an_unreadable_one() {
+        let o = original();
+        let got = effective_revision(&o, true, &[(edit("$p", "@a:x", 5, "plain"), false)]);
+        assert_eq!(body(&got), None);
+        let readable = edit("$r", "@a:x", 3, "readable");
+        let unreadable = json!({"type": "m.room.encrypted", "event_id": "$u", "sender": "@a:x",
+            "origin_server_ts": 4,
+            "content": {"m.relates_to": {"rel_type": "m.replace", "event_id": "$o"}}});
+        let got = effective_revision(&o, true, &[(readable.clone(), true), (unreadable.clone(), false)]);
+        assert_eq!((body(&got), got.1), (Some("readable".to_owned()), true));
+        let mut older = unreadable;
+        older["origin_server_ts"] = json!(2);
+        let got = effective_revision(&o, true, &[(readable, true), (older, false)]);
+        assert_eq!((body(&got), got.1), (Some("readable".to_owned()), false));
+    }
 
     // A pasted image replying to someone, or in a thread, goes through these;
     // dropping the caption there split one captioned event into two.

@@ -275,6 +275,30 @@ private Q_SLOTS:
         QCOMPARE(fwd.failureCount(), 0);
     }
 
+    void aSelectionIsForwardedInTimelineOrderNotClickOrder()
+    {
+        FakeClient client;
+        ForwardController fwd;
+        fwd.setClient(&client);
+        fwd.beginSelecting(QStringLiteral("!src:example.org"));
+        QVariantMap two = textSnapshot(QStringLiteral("two"));
+        two.insert(QStringLiteral("timestampMs"), qint64(2000));
+        QVariantMap one = textSnapshot(QStringLiteral("one"));
+        one.insert(QStringLiteral("timestampMs"), qint64(1000));
+        fwd.toggleSelected(QStringLiteral("$two"), two);
+        fwd.toggleSelected(QStringLiteral("$one"), one);
+        fwd.sendSelection({
+            QVariantMap{ { QStringLiteral("roomId"), QStringLiteral("!x:e.org") } },
+            QVariantMap{ { QStringLiteral("roomId"), QStringLiteral("!y:e.org") } },
+        });
+        QStringList toX, toY;
+        for (const auto &send : client.roomSends)
+            (send.roomId == QLatin1String("!x:e.org") ? toX : toY) << send.body;
+        const QStringList expected{ QStringLiteral("one"), QStringLiteral("two") };
+        QCOMPARE(toX, expected);
+        QCOMPARE(toY, expected);
+    }
+
     void aThreadDestinationSendsIntoThatThread()
     {
         FakeClient client;

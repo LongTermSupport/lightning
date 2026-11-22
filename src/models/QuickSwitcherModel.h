@@ -84,5 +84,5 @@ private:
     QString m_query;
     QList<Result> m_results;
 
-    static constexpr int kMaxResults = 50;
+    static constexpr int kMaxPerCategory = 50;
 };

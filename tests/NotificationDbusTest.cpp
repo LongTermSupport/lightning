@@ -323,6 +323,7 @@ private Q_SLOTS:
     void theCallCardIsNeitherResidentNorClosedByItsClick();
     void aRepliedOrStaleCardIsWithdrawn();
     void aRestartedDaemonForgetsItsIds();
+    void aSecondAccountMergedBeforeTheProbeAnswersIsOnTheFirstCard();
 
 private:
     QProcess m_daemon;
@@ -1053,6 +1054,35 @@ void NotificationDbusTest::aRepliedOrStaleCardIsWithdrawn()
     QTRY_COMPARE(open.size(), 1);
     QCOMPARE(open.first().at(0).toString(), QString());
     QTRY_COMPARE(m_fake->closedIds().count(staleId), 2);
+}
+
+void NotificationDbusTest::aSecondAccountMergedBeforeTheProbeAnswersIsOnTheFirstCard()
+{
+    m_fake->reset(FakeDaemon::Mode::Answer);
+    NotificationManager manager;
+    manager.setAccountUserId(QStringLiteral("@alice:example.org"));
+    manager.setLiveAccountsMode(true);
+    manager.setAccountLabelsShown(true);
+    NotificationManager::Context alice = context();
+    alice.accountLabel = QStringLiteral("Alice");
+    NotificationManager::Context bea = context();
+    bea.selfUserId = QStringLiteral("@bea:example.org");
+    bea.accountUserId = bea.selfUserId;
+    bea.accountLabel = QStringLiteral("Bea");
+
+    manager.processEvent(incomingText(), alice);
+    manager.processEvent(incomingText(), bea);
+    QCOMPARE(manager.capabilityWaitCountForTest(), 1);
+    const QString merged = manager.eventCardTitleForTest(
+        kRoom, QStringLiteral("$ev:example.org"));
+    QVERIFY2(merged.contains(QStringLiteral("Bea")), qPrintable(merged));
+
+    QTRY_COMPARE(m_fake->count(QStringLiteral("Notify")), 1);
+    QTest::qWait(200);
+    QCOMPARE(m_fake->count(QStringLiteral("Notify")), 1);
+    QCOMPARE(m_fake->lastArguments(QStringLiteral("Notify")).value(3).toString(),
+             merged);
+    QCOMPARE(manager.droppedReplacementsForTest(), 0);
 }
 
 QTEST_MAIN(NotificationDbusTest)

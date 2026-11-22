@@ -508,7 +508,7 @@ public:
     void requestActivitySeed(int limit) override;
     void requestActivitySeedPage(const QString &from, int limit) override;
     void requestEditHistory(const QString &roomId, const QString &eventId) override;
-    void requestEventSource(const QString &roomId, const QString &eventId) override;
+    quint64 requestEventSource(const QString &roomId, const QString &eventId) override;
     quint64 eventAtTimestamp(const QString &roomId, qint64 timestampMs) override;
     quint64 localSearch(const QString &query, const QString &roomId,
                         int limit, int offset) override;

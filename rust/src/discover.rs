@@ -567,8 +567,7 @@ pub(crate) fn space_children(
         );
         let children: Vec<_> =
             rooms.iter().filter(|room| room.room_id != parsed).collect();
-        let truncated =
-            !end_reached || children.len() > SPACE_CHILDREN_ROW_CAP;
+        let partial = hierarchy_partial(end_reached, children.len(), failure);
         let results: Vec<serde_json::Value> = children
             .iter()
             .take(SPACE_CHILDREN_ROW_CAP)
@@ -608,16 +607,41 @@ pub(crate) fn space_children(
             "lifecycle": lifecycle,
             "ok": true,
             "space_id": parsed.to_string(),
-            "truncated": truncated,
+            "truncated": partial.is_some(),
+            "category": partial.unwrap_or_default(),
             "results": results,
         }));
     });
     Ok(())
 }
 
+/// Why a hierarchy listing that returned rows is incomplete: `"limit"` when
+/// the page or row budget stopped it, otherwise the category of the failure
+/// that cut pagination short. `None` when the server reported the end.
+fn hierarchy_partial(
+    end_reached: bool,
+    children: usize,
+    failure: Option<&'static str>,
+) -> Option<&'static str> {
+    if let Some(category) = failure {
+        return Some(category);
+    }
+    (!end_reached || children > SPACE_CHILDREN_ROW_CAP).then_some("limit")
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_hierarchy_says_why_it_is_partial() {
+        assert_eq!(hierarchy_partial(true, 0, None), None);
+        assert_eq!(hierarchy_partial(true, SPACE_CHILDREN_ROW_CAP, None), None);
+        assert_eq!(hierarchy_partial(true, SPACE_CHILDREN_ROW_CAP + 1, None), Some("limit"));
+        assert_eq!(hierarchy_partial(false, 12, None), Some("limit"));
+        assert_eq!(hierarchy_partial(false, 12, Some("network")), Some("network"));
+        assert_eq!(hierarchy_partial(true, 12, Some("network")), Some("network"));
+    }
 
     #[test]
     fn parses_alias() {

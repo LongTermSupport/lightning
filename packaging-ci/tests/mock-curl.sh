@@ -229,7 +229,12 @@ elif [[ "$url" == *"/packages/generic/"* ]]; then
     fi
     case "$method" in
         GET)
-            if [[ "${MOCK_CONFLICT_FILE:-}" == "$file" && ! -f "$dest" ]]; then
+            if [[ "$gen_path" == "lightning-update/latest/update-manifest-v1.json" && -f "$STATE/next-latest-status" ]]; then
+                status="$(cat "$STATE/next-latest-status")"
+                mv "$STATE/next-latest-body" "$output"
+                rm "$STATE/next-latest-status"
+                emit_body=0
+            elif [[ "${MOCK_CONFLICT_FILE:-}" == "$file" && ! -f "$dest" ]]; then
                 respond 200 'conflicting-registry-bytes-that-differ'
             elif [[ -f "$dest" ]]; then
                 cp "$dest" "$output"; emit_body=0; status=200

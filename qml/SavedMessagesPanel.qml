@@ -22,7 +22,7 @@ Dialog {
         root.open()
     }
     onOpened: {
-        if (saved) saved.resolveVisible()
+        if (saved) saved.refreshPreviews()
         searchField.forceActiveFocus(Qt.PopupFocusReason)
     }
     Connections {
@@ -157,6 +157,17 @@ Dialog {
                   ? qsTr("No saved messages match these filters.")
                   : qsTr("No saved messages yet. Use Save message on a message to add one.")
         }
+        AppButton {
+            objectName: "savedMessagesClearFilters"
+            visible: root.saved && root.saved.loaded && root.saved.count > 0
+                     && savedList.count === 0
+            Layout.alignment: Qt.AlignHCenter
+            storm: true
+            kind: "secondary"
+            size: "sm"
+            text: qsTr("Clear filters")
+            onClicked: root.saved.clearFilters()
+        }
         ListView {
             id: savedList
             objectName: "savedMessagesList"
@@ -193,6 +204,7 @@ Dialog {
                 Accessible.role: Accessible.Grouping
                 Accessible.name: modelData.roomName + ", "
                     + (modelData.available ? modelData.preview
+                       : modelData.failed ? qsTr("Message could not be loaded")
                        : modelData.resolved ? qsTr("Message unavailable or redacted")
                                             : qsTr("Loading message"))
                 RowLayout {
@@ -227,6 +239,8 @@ Dialog {
                                   ? (modelData.senderName
                                       ? modelData.senderName + ": " : "")
                                     + modelData.preview
+                                  : modelData.failed
+                                    ? qsTr("Message could not be loaded")
                                   : modelData.resolved
                                     ? qsTr("Message unavailable or redacted")
                                     : qsTr("Loading message…")
@@ -242,6 +256,17 @@ Dialog {
                             color: AppTheme.stormTextMuted
                             font.pixelSize: AppTheme.textMeta
                         }
+                    }
+                    AppButton {
+                        objectName: "savedMessageRetryPreview"
+                        visible: modelData.failed === true
+                        storm: true
+                        kind: "ghost"
+                        size: "sm"
+                        text: qsTr("Retry")
+                        Accessible.name: qsTr("Retry loading saved message")
+                        onClicked: root.saved.retryPreview(modelData.roomId,
+                                                           modelData.eventId)
                     }
                     AppButton {
                         storm: true
