@@ -12388,6 +12388,8 @@ async fn run_modern_sync(
         let mut watched_latest: BTreeSet<OwnedRoomId> = BTreeSet::new();
         let mut room_updates_sub = client.subscribe_to_all_room_updates();
         let mut room_updates_live = background.is_none();
+        let mut invited_seen: BTreeSet<OwnedRoomId> =
+            client.invited_rooms().iter().map(|room| room.room_id().to_owned()).collect();
         let mut activity_stamps: HashMap<OwnedRoomId, u64> = HashMap::new();
 
         publication.set(Some(Arc::clone(&room_list_service)));
@@ -12474,6 +12476,23 @@ async fn run_modern_sync(
                                         &mut backfill_tasks, &mut forced_looks, true);
                 }
                 updates = room_updates_sub.recv(), if room_updates_live => {
+                    let settled = match &updates {
+                        Ok(updates) => settled_invites(&mut invited_seen, updates),
+                        Err(tokio::sync::broadcast::error::RecvError::Lagged(_)) => {
+                            let gone: Vec<OwnedRoomId> = invited_seen.iter()
+                                .filter(|id| client.get_room(id)
+                                    .is_none_or(|room| room.state() != matrix_sdk::RoomState::Invited))
+                                .cloned().collect();
+                            invited_seen.retain(|id| !gone.contains(id));
+                            gone
+                        }
+                        Err(_) => Vec::new(),
+                    };
+                    for room in settled.iter().filter_map(|id| client.get_room(id)) {
+                        enqueue(&events, json!({
+                            "type": "room_refreshed", "room": room_payload(&room).await
+                        }));
+                    }
                     match updates {
                         Ok(updates) => {
                             let moved = harvest_room_activity(
@@ -13950,6 +13969,40 @@ pub(crate) fn event_ordering_stamp_ms(
     let raw_ts = conversation_timestamp_ms(event.raw())?;
     let own = event.timestamp_raw().map(|ts| u64::from(ts.get())).filter(|ts| *ts != 0);
     Some(own.map_or(raw_ts, |ts| ts.min(raw_ts)))
+}
+
+/// Invitations `updates` settled. matrix-sdk's room list retires an invite
+/// only through a room-info broadcast that drops updates when it lags.
+fn settled_invites(
+    invited: &mut BTreeSet<OwnedRoomId>,
+    updates: &matrix_sdk::sync::RoomUpdates,
+) -> Vec<OwnedRoomId> {
+    invited.extend(updates.invited.keys().cloned());
+    updates.joined.keys().chain(updates.left.keys()).chain(updates.knocked.keys())
+        .filter(|id| invited.remove(*id))
+        .cloned()
+        .collect()
+}
+
+#[cfg(test)]
+mod settled_invite_tests {
+    use super::*;
+
+    #[test]
+    fn a_join_or_leave_settles_a_seen_invitation_once() {
+        let id = |s: &str| OwnedRoomId::try_from(s).unwrap();
+        let mut seen = BTreeSet::from([id("!a:x")]);
+        let mut updates = matrix_sdk::sync::RoomUpdates::default();
+        updates.invited.insert(id("!b:x"), Default::default());
+        updates.joined.insert(id("!c:x"), Default::default());
+        assert!(settled_invites(&mut seen, &updates).is_empty());
+        let mut updates = matrix_sdk::sync::RoomUpdates::default();
+        updates.joined.insert(id("!a:x"), Default::default());
+        updates.left.insert(id("!b:x"), Default::default());
+        assert_eq!(settled_invites(&mut seen, &updates), [id("!a:x"), id("!b:x")]);
+        assert!(seen.is_empty());
+        assert!(settled_invites(&mut seen, &updates).is_empty());
+    }
 }
 
 fn harvest_room_activity(
