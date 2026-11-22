@@ -3,6 +3,7 @@
 
 #include "media/AnimatedImageSniff.h"
 #include "media/ImageFormatSupport.h"
+#include "media/ImageMetadataSize.h"
 
 #include "storage/PortableMode.h"
 #include "storage/ScratchFile.h"
@@ -269,7 +270,8 @@ QSize MediaBridge::cachedImageSize(const QString &source) const
     }
     QBuffer buffer(&bytes);
     buffer.open(QIODevice::ReadOnly);
-    return QImageReader(&buffer).size();
+    QImageReader reader(&buffer);
+    return imagemeta::displayedSize(reader);
 }
 
 QImage MediaBridge::cachedArtwork(const QString &cacheKey) const
