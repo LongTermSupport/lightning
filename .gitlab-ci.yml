@@ -195,6 +195,10 @@ config-tests:
     # The gitlab.com CI gates: producer exit status, first-attempt failures, run == registered.
     - python3 ./packaging-ci/tests/test-ci-test-gates.py
     - ./packaging-ci/tests/test-write-build-info.sh
+    # Advisory triage over the locks, and the packaged-ELF executable-stack check.
+    - python3 -I packaging-ci/tests/test-advisories.py
+    - python3 -I packaging-ci/tests/test-elf-stacks.py
+    - python3 -I packaging-ci/scripts/check-advisories.py
 
 # Proves the GitHub mirror token works before anything is published, since the
 # mirror job only runs after the GitLab tag and release exist. Refuses a token
