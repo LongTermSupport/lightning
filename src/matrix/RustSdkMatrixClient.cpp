@@ -129,6 +129,25 @@ constexpr int kPaginationPollMs = 8;
 constexpr int kPaginationPollTicks = 250;
 constexpr int kPaginationPollQuietTicks = 6;
 
+bool isRoomListDiff(const QString &type)
+{
+    return type.startsWith(QLatin1String("room_list_"))
+        && type != QLatin1String("room_list_mode")
+        && type != QLatin1String("room_list_sync_state")
+        && type != QLatin1String("room_list_error");
+}
+
+// Events whose only announcement is roomsChanged(); a run of them in one drain
+// is published once.
+bool onlyRefreshesRooms(const QString &type)
+{
+    return isRoomListDiff(type)
+        || type == QLatin1String("rooms")
+        || type == QLatin1String("room_snapshot")
+        || type == QLatin1String("room_refreshed")
+        || type == QLatin1String("space_list_reset");
+}
+
 bool rustPollFailed(const QByteArray &raw)
 {
     static qint64 failuresInARow = 0;
@@ -213,6 +232,12 @@ RustSdkMatrixClient::RustSdkMatrixClient(SettingsManager *settings, QObject *par
 {
     m_pollTimer.setInterval(100);
     connect(&m_pollTimer, &QTimer::timeout, this, &RustSdkMatrixClient::pollRustEvents);
+    m_roomListResetTimer.setSingleShot(true);
+    m_roomListResetTimer.setInterval(2000);
+    connect(&m_roomListResetTimer, &QTimer::timeout, this, [this] {
+        if (m_roomListAwaitingReset)
+            requestRoomListReset();
+    });
     m_tokenWriteRetry.setSingleShot(true);
     connect(&m_tokenWriteRetry, &QTimer::timeout, this,
             &RustSdkMatrixClient::retryRotatedTokenWrite);
@@ -474,6 +499,7 @@ void RustSdkMatrixClient::clearLocalState()
     m_rooms.clear();
     m_memberListRecency.clear();
     m_roomOrder.clear();
+    resetRoomListDrainState();
     m_lastReceiptSent.clear();
     m_syncMode = QStringLiteral("stopped");
     m_lastSyncState.clear();
@@ -1518,6 +1544,7 @@ void RustSdkMatrixClient::login(const QString &homeserver,
     m_rooms.clear();
     m_memberListRecency.clear();
     m_roomOrder.clear();
+    resetRoomListDrainState();
     m_timelines.clear();
     m_forwardedEditIds.clear();
     resetNotificationProducerState();
@@ -2437,6 +2464,7 @@ void RustSdkMatrixClient::adoptBrowserSession(
     m_rooms.clear();
     m_memberListRecency.clear();
     m_roomOrder.clear();
+    resetRoomListDrainState();
     m_timelines.clear();
     m_forwardedEditIds.clear();
     resetNotificationProducerState();
@@ -2759,6 +2787,7 @@ bool RustSdkMatrixClient::restoreSession()
     m_rooms.clear();
     m_memberListRecency.clear();
     m_roomOrder.clear();
+    resetRoomListDrainState();
     m_timelines.clear();
     m_forwardedEditIds.clear();
     resetNotificationProducerState();
@@ -2833,6 +2862,7 @@ bool RustSdkMatrixClient::restoreSessionFromFile(const QString &homeserver,
     m_rooms.clear();
     m_memberListRecency.clear();
     m_roomOrder.clear();
+    resetRoomListDrainState();
     m_timelines.clear();
     m_forwardedEditIds.clear();
     resetNotificationProducerState();
@@ -5599,17 +5629,47 @@ void RustSdkMatrixClient::pollRustEvents()
             return;
     }
 
+    drainSdkEvents([this] { return takeRustBytes(mx_rust_poll_event(m_rustHandle)); },
+                   eventGeneration, true);
+}
+
+void RustSdkMatrixClient::drainSdkEvents(const std::function<QByteArray()> &next,
+                                         quint64 eventGeneration, bool handleBound)
+{
     const bool traceSync = synctrace::enabled();
+    static const bool tracePoll = qEnvironmentVariableIsSet("LIGHTNING_POLL_TRACE");
+    QElapsedTimer drainClock;
+    QElapsedTimer eventClock;
+    QHash<QString, QPair<int, qint64>> costByType;
+    int drained = 0;
+    if (tracePoll)
+        drainClock.start();
+    const auto reportDrain = [&] {
+        if (!tracePoll || drainClock.elapsed() < 20)
+            return;
+        QStringList parts;
+        for (auto it = costByType.cbegin(); it != costByType.cend(); ++it)
+            parts.append(QStringLiteral("%1:%2/%3ms").arg(it.key())
+                             .arg(it->first).arg(it->second / 1000000));
+        parts.sort();
+        qCInfo(lcRust) << "poll drain events=" << drained
+                       << "ms=" << drainClock.elapsed()
+                       << "rooms=" << m_roomOrder.size()
+                       << "types=" << parts.join(QLatin1Char(' '));
+    };
 
     m_coalesceTimelineInserts = true;
+    m_coalesceRoomsChanged = true;
     constexpr int kSoftDrainCap = 64;
     constexpr int kHardDrainCap = 256;
+    bool backlog = false;
     for (int i = 0; i < kHardDrainCap; ++i) {
-        const QByteArray raw = takeRustBytes(mx_rust_poll_event(m_rustHandle));
+        const QByteArray raw = next();
         if (raw.isEmpty())
             break;
         if (rustPollFailed(raw))
             break;
+        backlog = i == kHardDrainCap - 1;
 
         const QJsonDocument doc = QJsonDocument::fromJson(raw);
         if (!doc.isObject()) {
@@ -5618,14 +5678,28 @@ void RustSdkMatrixClient::pollRustEvents()
         }
         const QJsonObject event = doc.object();
         const QString type = event.value(QStringLiteral("type")).toString();
+        ++drained;
+        if (tracePoll)
+            eventClock.start();
+        const auto noteCost = [&] {
+            if (!tracePoll)
+                return;
+            auto &cost = costByType[type];
+            ++cost.first;
+            cost.second += eventClock.nsecsElapsed();
+        };
         if (type != QLatin1String("timeline_diff"))
             flushTimelineInsertBatch();
+        if (!onlyRefreshesRooms(type))
+            flushRoomsChanged();
         if (m_lifecycle.acceptsActive(eventGeneration)) {
             handleRustEvent(event, eventGeneration);
         } else if (type == QLatin1String("logged_out")
                    && m_lifecycle.acceptsShutdownCompletion(eventGeneration)) {
             handleRustEvent(event, eventGeneration);
             m_coalesceTimelineInserts = false;
+            m_coalesceRoomsChanged = false;
+            flushRoomsChanged();
             return;
         } else {
             qCInfo(lcRust) << "ignored stale callback"
@@ -5634,15 +5708,58 @@ void RustSdkMatrixClient::pollRustEvents()
                            << "active_generation="
                            << m_lifecycle.activeGeneration();
         }
+        noteCost();
         if (traceSync)
             synctrace::noteSyncResponse();
-        if (!m_rustHandle || m_handleGeneration != eventGeneration)
+        if (handleBound
+            && (!m_rustHandle || m_handleGeneration != eventGeneration)) {
+            backlog = false;
             break;
-        if (i >= kSoftDrainCap - 1 && type != QLatin1String("timeline_diff"))
+        }
+        if (i >= kSoftDrainCap - 1 && type != QLatin1String("timeline_diff")) {
+            backlog = true;
             break;
+        }
     }
     flushTimelineInsertBatch();
     m_coalesceTimelineInserts = false;
+    m_coalesceRoomsChanged = false;
+    if (tracePoll)
+        eventClock.start();
+    flushRoomsChanged();
+    if (tracePoll && drained > 0) {
+        auto &cost = costByType[QStringLiteral("(rooms_changed)")];
+        ++cost.first;
+        cost.second += eventClock.nsecsElapsed();
+    }
+    reportDrain();
+    // The 100 ms timer alone moves 640 events a second; a first sync of a
+    // large account queues them faster than that and the queue then drops.
+    if (backlog && !m_backlogPollPending) {
+        m_backlogPollPending = true;
+        QTimer::singleShot(0, this, [this] {
+            if (!m_backlogPollPending)
+                return;
+            m_backlogPollPending = false;
+            pollRustEvents();
+        });
+    }
+}
+
+void RustSdkMatrixClient::noteRoomsChanged()
+{
+    if (m_coalesceRoomsChanged)
+        m_roomsChangedPending = true;
+    else
+        Q_EMIT roomsChanged();
+}
+
+void RustSdkMatrixClient::flushRoomsChanged()
+{
+    if (!m_roomsChangedPending)
+        return;
+    m_roomsChangedPending = false;
+    Q_EMIT roomsChanged();
 }
 
 void RustSdkMatrixClient::requireLocalReset(
@@ -6266,7 +6383,7 @@ void RustSdkMatrixClient::handleRustEvent(const QJsonObject &event,
         const QJsonObject room = event.value(QStringLiteral("room")).toObject();
         if (matrix::rust_rooms::applyRoomRefresh({m_rooms, m_roomOrder}, room)) {
             observeHighlightCounts(QJsonArray{ room });
-            Q_EMIT roomsChanged();
+            noteRoomsChanged();
         }
         return;
     }
@@ -6300,10 +6417,7 @@ void RustSdkMatrixClient::handleRustEvent(const QJsonObject &event,
         return;
     }
 
-    if (type.startsWith(QLatin1String("room_list_"))
-        && type != QLatin1String("room_list_mode")
-        && type != QLatin1String("room_list_sync_state")
-        && type != QLatin1String("room_list_error")) {
+    if (isRoomListDiff(type)) {
         handleRoomListDiff(event);
         return;
     }
@@ -7163,8 +7277,13 @@ void RustSdkMatrixClient::handleRustEvent(const QJsonObject &event,
                           << "— resyncing rooms and reloading the open room";
         Q_EMIT errorOccurred(event.value(QStringLiteral("message")).toString(
             tr("Rust SDK event queue overflowed.")));
-        if (m_rustHandle)
-            takeRustString(mx_rust_resync_rooms(m_rustHandle));
+        if (!m_roomListAwaitingReset) {
+            m_roomListAwaitingReset = true;
+            ++m_roomListResyncRequests;
+            if (m_rustHandle)
+                takeRustString(mx_rust_resync_rooms(m_rustHandle));
+            m_roomListResetTimer.start();
+        }
         const QString openRoom = m_timelineTracker.activeRoom();
         if (!openRoom.isEmpty()
             && admitRecoveryReopen(
@@ -7187,18 +7306,22 @@ void RustSdkMatrixClient::handleRoomsEvent(const QJsonArray &rooms, qint64 *pars
     observeHighlightCounts(rooms);
     if (parseMs)
         *parseMs = timed.elapsed();
-    if (modelMs)
-        timed.restart();
+    m_roomListAwaitingReset = false;
+    m_roomListResetTimer.stop();
+    if (!modelMs) {
+        noteRoomsChanged();
+        return;
+    }
+    timed.restart();
     Q_EMIT roomsChanged();
-    if (modelMs)
-        *modelMs = timed.elapsed();
+    *modelMs = timed.elapsed();
 }
 
 void RustSdkMatrixClient::handleRoomSnapshotEvent(const QJsonArray &rooms)
 {
     matrix::rust_rooms::applySnapshot({m_rooms, m_roomOrder}, rooms);
     observeHighlightCounts(rooms);
-    Q_EMIT roomsChanged();
+    noteRoomsChanged();
 }
 
 void RustSdkMatrixClient::observeHighlightCounts(const QJsonArray &rooms)
@@ -7261,6 +7384,10 @@ RoomInfo RustSdkMatrixClient::roomInfoFromJson(const QJsonObject &obj) const
 
 void RustSdkMatrixClient::handleRoomListDiff(const QJsonObject &event)
 {
+    // Every diff queued before the requested reset is against an index this
+    // registry no longer mirrors; the reset supersedes them all.
+    if (m_roomListAwaitingReset)
+        return;
     const QString type = event.value(QStringLiteral("type")).toString();
     const bool removes = type == QLatin1String("room_list_remove")
         || type == QLatin1String("room_list_pop_front")
@@ -7287,7 +7414,7 @@ void RustSdkMatrixClient::handleRoomListDiff(const QJsonObject &event)
         if (event.value(QStringLiteral("room")).isObject())
             payloads.append(event.value(QStringLiteral("room")));
         observeHighlightCounts(payloads);
-        Q_EMIT roomsChanged();
+        noteRoomsChanged();
         return;
     }
 
@@ -7306,8 +7433,26 @@ void RustSdkMatrixClient::handleRoomListDiff(const QJsonObject &event)
                       << "indexed=" << (!roomId.isEmpty() && m_roomOrder.contains(roomId))
                       << "registry=" << m_roomOrder.size()
                       << "— asking the room list to re-emit its index base";
+    requestRoomListReset();
+}
+
+// The reset can itself be lost to a queue overflow; without the re-request the
+// gate would hold the list for the rest of the session.
+void RustSdkMatrixClient::requestRoomListReset()
+{
+    m_roomListAwaitingReset = true;
+    ++m_roomListResyncRequests;
     if (m_rustHandle)
         takeRustString(mx_rust_resync_rooms(m_rustHandle));
+    m_roomListResetTimer.start();
+}
+
+void RustSdkMatrixClient::resetRoomListDrainState()
+{
+    m_roomListAwaitingReset = false;
+    m_roomListResetTimer.stop();
+    m_roomsChangedPending = false;
+    m_backlogPollPending = false;
 }
 
 void RustSdkMatrixClient::handleSpacesEvent(const QJsonArray &spaces)
@@ -7358,7 +7503,7 @@ void RustSdkMatrixClient::handleSpacesEvent(const QJsonArray &spaces)
         qCInfo(lcRust) << "spaces retired count=" << retiredSpaces
                        << "joined=" << present.size();
     }
-    Q_EMIT roomsChanged();
+    noteRoomsChanged();
 }
 
 void RustSdkMatrixClient::handleTimelineEvent(const QJsonObject &event)
