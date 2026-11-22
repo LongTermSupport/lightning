@@ -386,8 +386,10 @@ void AudioDeviceTester::setDeviceController(CallDeviceController *devices)
     m_devices = devices;
     if (!m_devices)
         return;
+    // selectionChanged also fires on every device-list notification, and the
+    // test's own stream opening is one: restart only when the device moved.
     connect(m_devices, &CallDeviceController::selectionChanged, this, [this] {
-        if (microphoneTestRunning())
+        if (microphoneTestRunning() && deviceKey(m_mode) != m_deviceKey)
             start(m_mode);
     });
 }
@@ -528,6 +530,7 @@ bool AudioDeviceTester::start(Mode mode)
     }
 #endif
 
+    m_deviceKey = deviceKey(mode);
     const quint64 generation = ++m_generation;
     m_session = std::make_shared<Session>();
     setMode(mode);
@@ -572,6 +575,18 @@ void AudioDeviceTester::endSession()
     std::lock_guard<std::mutex> lock(session->mutex);
     session->cancelled = true;
 #endif
+}
+
+QString AudioDeviceTester::deviceKey(Mode mode) const
+{
+    if (!m_devices)
+        return {};
+    QString key = m_devices->activeMicrophoneId();
+    if (m_devices->preferredMicrophoneMissing())
+        key += QStringLiteral("|missing");
+    if (mode == Mode::Loopback)
+        key += QStringLiteral("|") + m_devices->activeSpeakerId();
+    return key;
 }
 
 int AudioDeviceTester::limitMs(Mode mode) const
