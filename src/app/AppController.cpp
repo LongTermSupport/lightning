@@ -739,6 +739,10 @@ AppController::AppController(Backend backend, bool screenshotDemo,
             });
     m_composer->setEmojiAutoConvertEnabled(
         m_settings->emojiShortcodeAutoConvert());
+    m_composer->setThreadDraftKey([this] {
+        return MatrixClient::threadTimelineId(m_thread->roomId(),
+                                              m_thread->rootEventId());
+    });
     m_thread->setOutgoingEmoji([this](QString &body, QVariantMap &spec) {
         m_composer->applyOutgoingEmoji(body, spec);
     });
