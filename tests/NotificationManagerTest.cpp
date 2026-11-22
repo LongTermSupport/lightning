@@ -148,6 +148,7 @@ private Q_SLOTS:
     void theBalloonHoldFollowsTheNotificationDuration();
     void theSenderIsNamedTheSameWhicheverPathDeliveredIt();
     void anEditFromTheLiveSyncRefreshesAWaitingCardOnlyIfValid();
+    void aPlaintextEditCannotRewriteAnEncryptedCard();
     void anEditShowsTheBalloonOnScreenAgainWithTheNewText();
     void directMessageNotifiesWithSenderOnlyDefault()
     {
@@ -3590,6 +3591,29 @@ void NotificationManagerTest::anEditFromTheLiveSyncRefreshesAWaitingCardOnlyIfVa
     QCOMPARE(manager.avatarWaitBodyForTest(0), QStringLiteral("decrypted words"));
     QCOMPARE(manager.avatarWaitCountForTest(), 1);
     QCOMPARE(delivered.count(), 0);
+}
+
+void NotificationManagerTest::aPlaintextEditCannotRewriteAnEncryptedCard()
+{
+    NotificationManager manager;
+    parkDeliveries(manager);
+    auto context = parkedContext();
+    context.previewMode = NotificationManager::SenderAndMessage;
+    TimelineEvent original = incomingText(QStringLiteral("orig words"));
+    original.isEncrypted = true;
+    manager.processEvent(original, context);
+    QCOMPARE(manager.avatarWaitCountForTest(), 1);
+
+    auto forged = liveEditOf(original, QStringLiteral("$e1:example.org"),
+                             QStringLiteral("forged words"), 2000);
+    forged.isEncrypted = false;
+    manager.processEvent(forged, context);
+    QCOMPARE(manager.avatarWaitBodyForTest(0), QStringLiteral("orig words"));
+
+    manager.processEvent(liveEditOf(original, QStringLiteral("$e2:example.org"),
+                                    QStringLiteral("new words"), 3000),
+                         context);
+    QCOMPARE(manager.avatarWaitBodyForTest(0), QStringLiteral("new words"));
 }
 
 void NotificationManagerTest::anEditShowsTheBalloonOnScreenAgainWithTheNewText()

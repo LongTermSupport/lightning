@@ -3931,7 +3931,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+316"/>
+        <location filename="../qml/SpaceLobby.qml" line="+348"/>
         <source>%1, collapsed</source>
         <translation>%1, ढह गया</translation>
     </message>
@@ -7357,13 +7357,13 @@ Size: %3</source>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+377"/>
+        <location line="+393"/>
         <location line="+274"/>
         <source>Ask to join</source>
         <translation>शामिल होने का अनुरोध</translation>
     </message>
     <message>
-        <location line="-650"/>
+        <location line="-666"/>
         <source>Restricted</source>
         <translation>प्रतिबंधित</translation>
     </message>
@@ -7422,8 +7422,16 @@ Size: %3</source>
         <source>matrixrooms.info is a third-party directory: your homeserver sends it your search terms.</source>
         <translation>matrixrooms.info एक तृतीय-पक्ष डायरेक्टरी है: आपका होमसर्वर उसे आपके खोज शब्द भेजता है।</translation>
     </message>
+    <message numerus="yes">
+        <location line="+13"/>
+        <source>Showing %1 of about %n room(s). Scroll for more, or narrow the search.</source>
+        <translation>
+            <numerusform>लगभग %n रूम में से %1 दिखाए जा रहे हैं। और देखने के लिए स्क्रॉल करें या खोज सीमित करें।</numerusform>
+            <numerusform>लगभग %n रूम में से %1 दिखाए जा रहे हैं। और देखने के लिए स्क्रॉल करें या खोज सीमित करें।</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+69"/>
+        <location line="+72"/>
         <source>Open %1</source>
         <translation>%1 खोलें</translation>
     </message>
@@ -14899,7 +14907,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+1973"/>
         <location line="+1007"/>
         <source>Open</source>
         <translation>खोलें</translation>
@@ -15432,7 +15440,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2860"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2863"/>
         <source>(spoiler)</source>
         <translation>(स्पॉइलर)</translation>
     </message>
@@ -15498,8 +15506,8 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message numerus="yes">
         <location line="+233"/>
-        <location line="+217"/>
-        <location line="+1738"/>
+        <location line="+218"/>
+        <location line="+1740"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n नया संदेश</numerusform>
@@ -15507,8 +15515,8 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1951"/>
-        <location line="+211"/>
+        <location line="-1954"/>
+        <location line="+212"/>
         <source>%n new Matrix notifications</source>
         <translation>
             <numerusform>%n नई Matrix सूचना</numerusform>
@@ -15516,7 +15524,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1743"/>
+        <location line="+1745"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>%n रूम में</numerusform>
@@ -16471,7 +16479,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>QuickSwitcher</name>
     <message>
-        <location filename="../qml/QuickSwitcher.qml" line="+96"/>
+        <location filename="../qml/QuickSwitcher.qml" line="+103"/>
         <source>Open Settings</source>
         <translation>सेटिंग्स खोलें</translation>
     </message>
@@ -16712,7 +16720,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>आज़माएँ %1</translation>
     </message>
     <message>
-        <location line="+44"/>
+        <location line="+90"/>
         <source>ROOMS</source>
         <translation>रूम</translation>
     </message>
@@ -16730,6 +16738,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+1"/>
         <source>INVITES</source>
         <translation>निमंत्रण</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>MATRIX ADDRESS</source>
+        <translation>MATRIX पता</translation>
     </message>
     <message>
         <location line="+172"/>
@@ -16758,11 +16771,16 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+66"/>
+        <source>No matching rooms, people or Spaces</source>
+        <translation>कोई मेल खाते रूम, लोग या स्पेस नहीं</translation>
+    </message>
+    <message>
+        <location line="+50"/>
         <source>No matching rooms</source>
         <translation>कोई मेल खाता रूम नहीं</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-49"/>
         <source>Type to search your rooms</source>
         <translation>अपने रूम खोजने के लिए टाइप करें</translation>
     </message>
@@ -16777,12 +16795,25 @@ Signing out and signing in again is the only fix.</source>
         <translation>सार्वजनिक रूम खोजें</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
+        <source>No matching people</source>
+        <translation>कोई मेल खाते लोग नहीं</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>No matching actions</source>
         <translation>कोई मेल खाती कार्रवाई नहीं</translation>
     </message>
+    <message numerus="yes">
+        <location line="+44"/>
+        <source>%n MORE, TYPE TO NARROW</source>
+        <translation>
+            <numerusform>%n और, सीमित करने के लिए लिखें</numerusform>
+            <numerusform>%n और, सीमित करने के लिए लिखें</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+299"/>
+        <location line="+262"/>
         <source>navigate</source>
         <translation>नेविगेट</translation>
     </message>
@@ -16802,7 +16833,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>कमांड</translation>
     </message>
     <message>
-        <location filename="../src/models/QuickSwitcherModel.cpp" line="+202"/>
+        <location filename="../src/models/QuickSwitcherModel.cpp" line="+211"/>
         <source>Invitation</source>
         <translation>निमंत्रण</translation>
     </message>
@@ -16815,6 +16846,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+4"/>
         <source>Direct message</source>
         <translation>डायरेक्ट मैसेज</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>Not in your rooms. Preview it before joining</source>
+        <translation>आपके रूम में नहीं। जुड़ने से पहले पूर्वावलोकन करें</translation>
     </message>
 </context>
 <context>
@@ -18006,7 +18042,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1 संदेश लाए गए…</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+28"/>
         <source>Could not read the room&apos;s history. Try again later.</source>
         <translation>रूम का इतिहास नहीं पढ़ा जा सका। बाद में फिर कोशिश करें।</translation>
     </message>
@@ -28410,7 +28446,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SpaceLobby</name>
     <message numerus="yes">
-        <location filename="../qml/SpaceLobby.qml" line="-111"/>
+        <location filename="../qml/SpaceLobby.qml" line="-127"/>
         <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
         <translation>
             <numerusform>इस स्पेस का केवल पहला %n रूम दिखाया गया है। जो रूम सूची में नहीं है उसे अब भी उसके पते से खोला जा सकता है।</numerusform>
@@ -28433,7 +28469,12 @@ Note: importing keys does not verify this session.</source>
         <translation>फिर से कोशिश करें</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+9"/>
+        <source>This Space has too many members to check them all, so Lightning cannot tell which of your direct messages are with its members. Your room list may show direct messages with people outside it.</source>
+        <translation>इस स्पेस में इतने सदस्य हैं कि सबकी जाँच नहीं हो सकती, इसलिए Lightning नहीं बता सकता कि आपके कौन-से सीधे संदेश इसके सदस्यों से हैं। आपकी रूम सूची में बाहर के लोगों से सीधे संदेश दिख सकते हैं।</translation>
+    </message>
+    <message>
+        <location line="+42"/>
         <location line="+265"/>
         <source>Loading rooms…</source>
         <translation>रूम लोड हो रहे हैं…</translation>
@@ -28467,7 +28508,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+255"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+264"/>
         <source>All rooms</source>
         <translation>सभी रूम</translation>
     </message>
@@ -32443,7 +32484,7 @@ Note: importing keys does not verify this session.</source>
         <translation>इस थ्रेड को पढ़ा हुआ चिह्नित करें</translation>
     </message>
     <message>
-        <location line="+1318"/>
+        <location line="+1332"/>
         <source>Jump to the newest reply</source>
         <translation>सबसे नए जवाब पर जाएँ</translation>
     </message>
@@ -32456,7 +32497,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message>
-        <location line="-1713"/>
+        <location line="-1727"/>
         <source>This room has been replaced.</source>
         <translation>यह रूम बदल दिया गया है।</translation>
     </message>
@@ -32559,13 +32600,13 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="-90"/>
         <location line="+92"/>
-        <location line="+362"/>
+        <location line="+376"/>
         <location line="+72"/>
         <source>Replies</source>
         <translation>उत्तर</translation>
     </message>
     <message>
-        <location line="-524"/>
+        <location line="-538"/>
         <source>Unread</source>
         <translation>अपठित</translation>
     </message>
@@ -32615,7 +32656,7 @@ Note: importing keys does not verify this session.</source>
         <translation>[स्पॉइलर]</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+28"/>
         <source>Loading the original message…</source>
         <translation>मूल संदेश लोड हो रहा है…</translation>
     </message>
@@ -33798,7 +33839,7 @@ Note: importing keys does not verify this session.</source>
         <translation>छोड़ने से उसके भीतर के कक्ष नहीं हटते।</translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-290"/>
+        <location filename="../qml/SpaceLobby.qml" line="-306"/>
         <source>ROOMS AND SPACES</source>
         <translation>कक्ष और स्पेस</translation>
     </message>
@@ -33818,18 +33859,18 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+631"/>
+        <location line="+647"/>
         <source>Mark as not suggested</source>
         <translation>“सुझाया गया” चिह्न हटाएँ</translation>
     </message>
     <message>
-        <location line="-630"/>
-        <location line="+631"/>
+        <location line="-646"/>
+        <location line="+647"/>
         <source>Mark as suggested</source>
         <translation>सुझाया गया चिह्नित करें</translation>
     </message>
     <message>
-        <location line="-620"/>
+        <location line="-636"/>
         <source>Search names and descriptions</source>
         <translation>नाम और विवरण खोजें</translation>
     </message>
@@ -33839,7 +33880,7 @@ Note: importing keys does not verify this session.</source>
         <translation>कक्ष और स्पेस खोजें</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+58"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>“%1” से कोई कक्ष या स्पेस मेल नहीं खाता।</translation>
     </message>
@@ -34657,12 +34698,12 @@ Note: importing keys does not verify this session.</source>
         <translation>कोई परिणाम नहीं</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Search failed. Check your connection and try again.</source>
         <translation>खोज विफल रही। अपना कनेक्शन जाँचें और पुनः प्रयास करें।</translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+90"/>
         <location line="+79"/>
         <source>%1 (%2)</source>
         <translation>%1 (%2)</translation>
@@ -34673,9 +34714,50 @@ Note: importing keys does not verify this session.</source>
         <translation>आपके सर्वर से</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Exact Matrix ID</source>
         <translation>सटीक Matrix आईडी</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Exact Matrix ID, not confirmed</source>
+        <translation>सटीक Matrix ID, पुष्टि नहीं</translation>
+    </message>
+</context>
+<context>
+    <name>UserSearchModel</name>
+    <message>
+        <location filename="../src/models/UserSearchModel.cpp" line="+47"/>
+        <source>People search failed, so only the exact Matrix ID is shown.</source>
+        <translation>लोगों की खोज विफल रही, इसलिए केवल सटीक Matrix ID दिखाया गया है।</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Only the first %n match(es) are shown. Type more of the name, or their full Matrix ID like @name:example.org.</source>
+        <translation>
+            <numerusform>केवल पहला %n मिलान दिखाया गया है। नाम का और भाग या पूरा Matrix ID लिखें, जैसे @name:example.org।</numerusform>
+            <numerusform>केवल पहले %n मिलान दिखाए गए हैं। नाम का और भाग या पूरा Matrix ID लिखें, जैसे @name:example.org।</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>That is not a valid Matrix ID. A full ID looks like @name:example.org.</source>
+        <translation>यह मान्य Matrix ID नहीं है। पूरा ID ऐसा दिखता है: @name:example.org।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Your server&apos;s user directory may not list everyone. If you know their Matrix ID, type it in full, like @name:example.org.</source>
+        <translation>आपके सर्वर की उपयोगकर्ता निर्देशिका में शायद सब न हों। अगर आप उनका Matrix ID जानते हैं, तो पूरा लिखें, जैसे @name:example.org।</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Too many searches in a row. Wait a moment, then try again.</source>
+        <translation>लगातार बहुत ज़्यादा खोजें। थोड़ा रुककर फिर कोशिश करें।</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Your server does not offer people search. Type their full Matrix ID, like @name:example.org.</source>
+        <translation>आपका सर्वर लोगों की खोज नहीं देता। उनका पूरा Matrix ID लिखें, जैसे @name:example.org।</translation>
     </message>
 </context>
 <context>

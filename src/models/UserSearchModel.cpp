@@ -3,7 +3,6 @@
 #include "matrix/MatrixClient.h"
 #include "models/UserLookup.h"
 
-#include <QRegularExpression>
 #include <QVariantMap>
 
 namespace {
@@ -41,11 +40,34 @@ bool UserSearchModel::supported() const
     return m_client && m_client->supportsRoomManagement();
 }
 
-bool UserSearchModel::looksLikeMxid(const QString &text)
+QString UserSearchModel::notice() const
 {
-    static const QRegularExpression re(
-        QStringLiteral("^@[^:@\\s]+:[A-Za-z0-9.\\-]+(?::\\d+)?$"));
-    return re.match(text.trimmed()).hasMatch();
+    if (m_state == QLatin1String("results")) {
+        if (m_directoryDone && !m_directoryOk)
+            return tr("People search failed, so only the exact Matrix ID is shown.");
+        if (m_limited)
+            return tr("Only the first %n match(es) are shown. Type more of the name, or "
+                      "their full Matrix ID like @name:example.org.",
+                      "", static_cast<int>(m_directoryResults.size()));
+        return {};
+    }
+    if (m_state == QLatin1String("no_results")) {
+        if (matrix::user_lookup::queryNamesServer(m_query)
+            && matrix::user_lookup::exactCandidate(m_query, QString()).isEmpty())
+            return tr("That is not a valid Matrix ID. A full ID looks like "
+                      "@name:example.org.");
+        return tr("Your server's user directory may not list everyone. If you know "
+                  "their Matrix ID, type it in full, like @name:example.org.");
+    }
+    if (m_state == QLatin1String("error")) {
+        if (m_errorCategory == QLatin1String("rate_limited"))
+            return tr("Too many searches in a row. Wait a moment, then try again.");
+        if (m_errorCategory == QLatin1String("unrecognized")
+            || m_errorCategory == QLatin1String("forbidden"))
+            return tr("Your server does not offer people search. Type their full "
+                      "Matrix ID, like @name:example.org.");
+    }
+    return {};
 }
 
 void UserSearchModel::invalidatePending()
@@ -54,6 +76,8 @@ void UserSearchModel::invalidatePending()
     m_pendingProfileOp = 0;
     m_directoryDone = false;
     m_directoryOk = true;
+    m_limited = false;
+    m_errorCategory.clear();
     m_directoryResults.clear();
     m_candidateUserId.clear();
     m_candidateNamesServer = false;
@@ -180,6 +204,7 @@ void UserSearchModel::rebuildRows()
             row.displayName = m_candidateDisplayName;
             row.avatarUrl = m_candidateAvatarUrl;
             row.isExactMxid = true;
+            row.confirmed = m_candidateConfirmed;
             row.source = m_candidateNamesServer
                              ? QStringLiteral("exact_mxid")
                              : QStringLiteral("exact_local");
@@ -215,13 +240,13 @@ void UserSearchModel::onSearchFinished(quint64 opId, bool ok,
                                        const QVariantList &results,
                                        bool limited, const QString &category)
 {
-    Q_UNUSED(limited);
-    Q_UNUSED(category);
     if (opId != m_pendingOp || m_pendingOp == 0)
         return;
     m_pendingOp = 0;
     m_directoryDone = true;
     m_directoryOk = ok;
+    m_limited = ok && limited;
+    m_errorCategory = ok ? QString() : category;
 
     m_directoryResults.clear();
     if (ok) {
@@ -289,6 +314,7 @@ QVariant UserSearchModel::data(const QModelIndex &index, int role) const
     case AvatarUrlRole:   return r.avatarUrl;
     case IsExactMxidRole: return r.isExactMxid;
     case SourceRole:      return r.source;
+    case ConfirmedRole:   return r.confirmed;
     default:              return {};
     }
 }
@@ -301,5 +327,6 @@ QHash<int, QByteArray> UserSearchModel::roleNames() const
         { AvatarUrlRole,   "avatarUrl" },
         { IsExactMxidRole, "isExactMxid" },
         { SourceRole,      "source" },
+        { ConfirmedRole,   "confirmed" },
     };
 }

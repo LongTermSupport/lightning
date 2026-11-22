@@ -2,7 +2,10 @@
 
 #include "matrix/MatrixClient.h"
 
+#include <QSet>
 #include <QStringList>
+
+#include <climits>
 
 namespace {
 constexpr int kDebounceMs = 300;
@@ -148,6 +151,7 @@ void RoomDirectorySearchModel::clear()
     m_rows.clear();
     endResetModel();
     m_nextBatch.clear();
+    m_totalEstimate = 0;
     m_errorCategory.clear();
     setState(QStringLiteral("idle"));
 }
@@ -188,7 +192,6 @@ void RoomDirectorySearchModel::onPublicRooms(quint64 opId, bool ok,
                                              quint64 totalEstimate,
                                              const QString &category)
 {
-    Q_UNUSED(totalEstimate);
     if (opId == 0 || opId != m_pendingOp)
         return;
     m_pendingOp = 0;
@@ -199,6 +202,7 @@ void RoomDirectorySearchModel::onPublicRooms(quint64 opId, bool ok,
             m_rows.clear();
             endResetModel();
             m_nextBatch.clear();
+            m_totalEstimate = 0;
         }
         setState(QStringLiteral("error"));
         return;
@@ -209,13 +213,28 @@ void RoomDirectorySearchModel::onPublicRooms(quint64 opId, bool ok,
         for (const QVariant &value : rooms)
             m_rows.append(withVia(value.toMap(), m_pendingServer));
         endResetModel();
-    } else if (!rooms.isEmpty()) {
-        beginInsertRows({}, m_rows.size(), m_rows.size() + rooms.size() - 1);
-        for (const QVariant &value : rooms)
-            m_rows.append(withVia(value.toMap(), m_pendingServer));
-        endInsertRows();
+    } else {
+        // Pages can overlap when the directory changes between requests.
+        QSet<QString> seen;
+        for (const QVariantMap &row : std::as_const(m_rows))
+            seen.insert(row.value(QStringLiteral("roomId")).toString());
+        QList<QVariantMap> fresh;
+        for (const QVariant &value : rooms) {
+            QVariantMap row = withVia(value.toMap(), m_pendingServer);
+            const QString id = row.value(QStringLiteral("roomId")).toString();
+            if (seen.contains(id))
+                continue;
+            seen.insert(id);
+            fresh.append(std::move(row));
+        }
+        if (!fresh.isEmpty()) {
+            beginInsertRows({}, m_rows.size(), m_rows.size() + fresh.size() - 1);
+            m_rows.append(fresh);
+            endInsertRows();
+        }
     }
     m_nextBatch = nextBatch;
+    m_totalEstimate = static_cast<int>(qMin<quint64>(totalEstimate, INT_MAX));
     setState(m_rows.isEmpty() ? QStringLiteral("no_results")
                               : QStringLiteral("results"));
 }

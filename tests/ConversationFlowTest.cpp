@@ -1,6 +1,7 @@
 
 #include "app/ConversationController.h"
 #include "matrix/MatrixClient.h"
+#include "models/UserLookup.h"
 #include "models/UserSearchModel.h"
 
 #include <QSignalSpy>
@@ -258,11 +259,16 @@ private Q_SLOTS:
 
     void mxidValidation()
     {
-        QVERIFY(UserSearchModel::looksLikeMxid(QStringLiteral("@a:example.org")));
-        QVERIFY(UserSearchModel::looksLikeMxid(QStringLiteral("@a:server:8448")));
-        QVERIFY(!UserSearchModel::looksLikeMxid(QStringLiteral("alice")));
-        QVERIFY(!UserSearchModel::looksLikeMxid(QStringLiteral("@alice")));
-        QVERIFY(!UserSearchModel::looksLikeMxid(QStringLiteral("@a b:x.org")));
+        using matrix::user_lookup::exactCandidate;
+        QCOMPARE(exactCandidate(QStringLiteral("@a:example.org"), {}),
+                 QStringLiteral("@a:example.org"));
+        QCOMPARE(exactCandidate(QStringLiteral("@a:server:8448"), {}),
+                 QStringLiteral("@a:server:8448"));
+        QCOMPARE(exactCandidate(QStringLiteral("@a:[::1]:8448"), {}),
+                 QStringLiteral("@a:[::1]:8448"));
+        QVERIFY(exactCandidate(QStringLiteral("alice"), {}).isEmpty());
+        QVERIFY(exactCandidate(QStringLiteral("@alice"), {}).isEmpty());
+        QVERIFY(exactCandidate(QStringLiteral("@a b:x.org"), {}).isEmpty());
     }
 
     void existingDmIsDiscovered()

@@ -340,8 +340,23 @@ ApplicationWindow {
         QTRY_VERIFY(thread->state() == ThreadController::Ready);
         const QString root = thread->rootEventId();
         const int before = mock()->pollCreatesForTest();
+        // A just-opened popup is laid out in the next frame's polish, so click
+        // only once a rendered frame shows the item where it will stay.
         const auto click = [this](QQuickItem *it) {
-            const QPointF c = it->mapToScene(QPointF(it->width() / 2, it->height() / 2));
+            const auto centre = [it] {
+                return it->mapToScene(QPointF(it->width() / 2, it->height() / 2));
+            };
+            QPointF c = centre();
+            bool settled = false;
+            for (int i = 0; i < 5 && !settled; ++i) {
+                QSignalSpy frame(m_window, &QQuickWindow::frameSwapped);
+                m_window->update();
+                QVERIFY(frame.count() > 0 || frame.wait(5000));
+                const QPointF now = centre();
+                settled = i > 0 && now == c;
+                c = now;
+            }
+            QVERIFY2(settled, "the item never held still across two frames");
             QTest::mouseClick(m_window, Qt::LeftButton, {}, c.toPoint());
         };
 
@@ -349,6 +364,8 @@ ApplicationWindow {
         QVERIFY(plus);
         QTRY_VERIFY(plus->isEnabled() && plus->width() > 0);
         click(plus);
+        if (QTest::currentTestFailed())
+            return;
         auto *menu = m_window->findChild<QObject *>(QStringLiteral("threadAttachMenu"));
         QVERIFY2(menu, "the thread + has no menu");
         QTRY_VERIFY(menu->property("opened").toBool());
@@ -357,6 +374,8 @@ ApplicationWindow {
         QVERIFY(pollItem);
         QTRY_VERIFY(pollItem->isVisible() && pollItem->isEnabled() && pollItem->width() > 0);
         click(pollItem);
+        if (QTest::currentTestFailed())
+            return;
 
         auto *dialog = m_window->findChild<QObject *>(QStringLiteral("threadCreatePollDialog"));
         QVERIFY(dialog);
@@ -373,6 +392,8 @@ ApplicationWindow {
         QVERIFY(submit);
         QTRY_VERIFY(submit->isEnabled());
         click(submit);
+        if (QTest::currentTestFailed())
+            return;
 
         QTRY_COMPARE(mock()->pollCreatesForTest(), before + 1);
         QCOMPARE(mock()->lastPollThreadRootForTest(), root);

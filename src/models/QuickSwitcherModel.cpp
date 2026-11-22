@@ -3,6 +3,7 @@
 #include "matrix/MatrixClient.h"
 #include "matrix/RoomUnreadRule.h"
 #include "models/TextFold.h"
+#include "models/UserLookup.h"
 #include "spaces/SpaceManager.h"
 
 #include <QCoreApplication>
@@ -24,6 +25,10 @@ void QuickSwitcherModel::setClient(MatrixClient *client)
     if (m_client) {
         connect(m_client, &MatrixClient::loggedOut, this,
                 &QuickSwitcherModel::reset);
+        connect(m_client, &MatrixClient::roomsChanged, this, [this] {
+            if (m_active)
+                rebuild();
+        });
     }
     reset();
 }
@@ -56,6 +61,7 @@ QVariant QuickSwitcherModel::data(const QModelIndex &index, int role) const
     case HasUnreadRole: return r.hasUnread;
     case IsSpaceRole:   return r.isSpace;
     case IsInviteRole:  return r.isInvite;
+    case LinkRole:      return r.link;
     default:            return {};
     }
 }
@@ -74,6 +80,7 @@ QHash<int, QByteArray> QuickSwitcherModel::roleNames() const
         { HasUnreadRole, "hasUnread" },
         { IsSpaceRole,   "isSpace" },
         { IsInviteRole,  "isInvite" },
+        { LinkRole,      "link" },
     };
 }
 
@@ -83,11 +90,13 @@ void QuickSwitcherModel::setQuery(const QString &query)
         return;
     m_query = query;
     Q_EMIT queryChanged();
+    m_active = true;
     rebuild();
 }
 
 void QuickSwitcherModel::refresh()
 {
+    m_active = true;
     rebuild();
 }
 
@@ -95,9 +104,12 @@ void QuickSwitcherModel::reset()
 {
     const bool hadQuery = !m_query.isEmpty();
     m_query.clear();
-    if (!m_results.isEmpty()) {
+    m_active = false;
+    if (!m_results.isEmpty() || !m_hidden.isEmpty()) {
+        Q_EMIT resultsAboutToChange();
         beginResetModel();
         m_results.clear();
+        m_hidden.clear();
         endResetModel();
         Q_EMIT resultsChanged();
     }
@@ -121,7 +133,16 @@ QVariantMap QuickSwitcherModel::resultAt(int row) const
     map.insert(QStringLiteral("unread"), r.unread);
     map.insert(QStringLiteral("highlight"), r.highlight);
     map.insert(QStringLiteral("hasUnread"), r.hasUnread);
+    map.insert(QStringLiteral("link"), r.link);
     return map;
+}
+
+int QuickSwitcherModel::indexOfRoom(const QString &roomId) const
+{
+    for (int row = 0; row < m_results.size(); ++row)
+        if (m_results.at(row).roomId == roomId)
+            return row;
+    return -1;
 }
 
 int QuickSwitcherModel::matchScore(const QString &query, const QString &name,
@@ -133,10 +154,17 @@ int QuickSwitcherModel::matchScore(const QString &query, const QString &name,
         return 0;
 
     QString haystack = lowerName;
+    bool exactAlternate = false;
     for (const QString &alt : alternates) {
+        const QString folded = textfold::fold(alt);
+        exactAlternate = exactAlternate || folded == q;
         haystack += QLatin1Char(' ');
-        haystack += textfold::fold(alt);
+        haystack += folded;
     }
+    if (exactAlternate)
+        return 3000;
+    if (lowerName == q)
+        return 2000;
 
     const auto tokens = q.split(QLatin1Char(' '), Qt::SkipEmptyParts);
     for (const QString &token : tokens) {
@@ -160,9 +188,102 @@ void QuickSwitcherModel::setNotificationModeSource(
     m_modeOf = std::move(modeOf);
 }
 
+QuickSwitcherModel::Result QuickSwitcherModel::resultFor(const RoomInfo &room,
+                                                        int score) const
+{
+    const bool isInvite = room.membership == RoomInfo::Invited;
+    Result r;
+    r.roomId = room.id;
+    r.identityColorKey = identityColorKey(room);
+    r.name = room.name.isEmpty() ? room.id : room.name;
+    r.avatarUrl = room.avatarUrl;
+    const int mode = (m_modeOf && !isInvite)
+        ? m_modeOf(room.id) : roomunread::kModeAllMessages;
+    r.unread = roomunread::visibleUnreadCount(room, mode);
+    r.highlight = roomunread::mentionCount(room, mode);
+    r.hasUnread = room.markedUnread
+                  || roomunread::countsAsUnread(room, mode);
+    r.isSpace = room.isSpace;
+    r.isInvite = isInvite;
+    r.score = score;
+    if (isInvite) {
+        r.category = QStringLiteral("invite");
+        r.subtitle = QCoreApplication::translate(
+            "QuickSwitcher", "Invitation");
+    } else if (room.isSpace) {
+        r.category = QStringLiteral("space");
+        r.subtitle =
+            QCoreApplication::translate("QuickSwitcher", "Space");
+    } else if (room.isDirect) {
+        r.category = QStringLiteral("dm");
+        r.subtitle = room.directUserId.isEmpty()
+            ? QCoreApplication::translate("QuickSwitcher",
+                                          "Direct message")
+            : room.directUserId;
+    } else {
+        r.category = QStringLiteral("room");
+        r.subtitle = room.canonicalAlias;
+    }
+    return r;
+}
+
+// A pasted room id, alias or room link is answered from this account's own
+// rooms only; nothing is sent anywhere until the user activates a row.
+bool QuickSwitcherModel::rebuildForRoomTarget(QList<Result> &next) const
+{
+    const auto target = matrix::user_lookup::parseRoomTarget(m_query);
+    if (!target.isValid())
+        return false;
+    const bool alias = target.id.startsWith(QLatin1Char('#'));
+    if (m_client) {
+        const auto rooms = m_client->rooms();
+        for (const auto &room : rooms) {
+            if (room.membership != RoomInfo::Joined
+                && room.membership != RoomInfo::Invited)
+                continue;
+            if (alias ? room.canonicalAlias != target.id : room.id != target.id)
+                continue;
+            Result r = resultFor(room, 3000);
+            if (!target.eventId.isEmpty())
+                r.link = m_query.trimmed();
+            next.append(std::move(r));
+            return true;
+        }
+        if (m_client->supportsRoomDiscovery()) {
+            Result r;
+            r.roomId = target.id;
+            r.name = target.id;
+            r.category = QStringLiteral("address");
+            r.subtitle = QCoreApplication::translate(
+                "QuickSwitcher", "Not in your rooms. Preview it before joining");
+            r.link = m_query.trimmed();
+            r.score = 3000;
+            next.append(std::move(r));
+        }
+    }
+    return true;
+}
+
 void QuickSwitcherModel::rebuild()
 {
     QList<Result> next;
+    QVariantMap hidden;
+    if (!rebuildForRoomTarget(next))
+        collectMatches(next, hidden);
+
+    // A sync that changes nothing shown must not reset the open list.
+    if (next == m_results && hidden == m_hidden)
+        return;
+    Q_EMIT resultsAboutToChange();
+    beginResetModel();
+    m_results = std::move(next);
+    m_hidden = std::move(hidden);
+    endResetModel();
+    Q_EMIT resultsChanged();
+}
+
+void QuickSwitcherModel::collectMatches(QList<Result> &next, QVariantMap &hidden) const
+{
     if (m_client) {
         const auto rooms = m_client->rooms();
         for (const auto &room : rooms) {
@@ -170,7 +291,6 @@ void QuickSwitcherModel::rebuild()
                 && room.membership != RoomInfo::Invited)
                 continue;
 
-            const bool isInvite = room.membership == RoomInfo::Invited;
             QStringList alternates;
             if (!room.canonicalAlias.isEmpty())
                 alternates << room.canonicalAlias;
@@ -182,40 +302,7 @@ void QuickSwitcherModel::rebuild()
             const int score = matchScore(m_query, displayName, alternates);
             if (score < 0)
                 continue;
-
-            Result r;
-            r.roomId = room.id;
-            r.identityColorKey = identityColorKey(room);
-            r.name = displayName;
-            r.avatarUrl = room.avatarUrl;
-            const int mode = (m_modeOf && !isInvite)
-                ? m_modeOf(room.id) : roomunread::kModeAllMessages;
-            r.unread = roomunread::visibleUnreadCount(room, mode);
-            r.highlight = roomunread::mentionCount(room, mode);
-            r.hasUnread = room.markedUnread
-                          || roomunread::countsAsUnread(room, mode);
-            r.isSpace = room.isSpace;
-            r.isInvite = isInvite;
-            r.score = score;
-            if (isInvite) {
-                r.category = QStringLiteral("invite");
-                r.subtitle = QCoreApplication::translate(
-                    "QuickSwitcher", "Invitation");
-            } else if (room.isSpace) {
-                r.category = QStringLiteral("space");
-                r.subtitle =
-                    QCoreApplication::translate("QuickSwitcher", "Space");
-            } else if (room.isDirect) {
-                r.category = QStringLiteral("dm");
-                r.subtitle = room.directUserId.isEmpty()
-                    ? QCoreApplication::translate("QuickSwitcher",
-                                                  "Direct message")
-                    : room.directUserId;
-            } else {
-                r.category = QStringLiteral("room");
-                r.subtitle = room.canonicalAlias;
-            }
-            next.append(std::move(r));
+            next.append(resultFor(room, score));
         }
     }
 
@@ -253,16 +340,14 @@ void QuickSwitcherModel::rebuild()
         if (rank != previousRank)
             inCategory = 0;
         previousRank = rank;
-        if (inCategory++ >= kMaxPerCategory)
+        if (inCategory++ >= kMaxPerCategory) {
+            const QString cat = next.at(i).category;
+            hidden.insert(cat, hidden.value(cat).toInt() + 1);
             continue;
+        }
         if (kept != i)
             next[kept] = std::move(next[i]);
         ++kept;
     }
     next.erase(next.begin() + kept, next.end());
-
-    beginResetModel();
-    m_results = std::move(next);
-    endResetModel();
-    Q_EMIT resultsChanged();
 }

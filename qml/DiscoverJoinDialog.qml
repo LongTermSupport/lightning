@@ -345,6 +345,22 @@ Dialog {
                 Accessible.name: text
             }
 
+            Label {
+                objectName: "directoryTotalEstimate"
+                Layout.fillWidth: true
+                // The server's count is an estimate, so it is labelled as one.
+                visible: app.discovery.directory.count > 0
+                         && app.discovery.directory.totalEstimate > app.discovery.directory.count
+                text: qsTr("Showing %1 of about %n room(s). Scroll for more, or narrow the search.",
+                           "", app.discovery.directory.totalEstimate)
+                          .arg(app.discovery.directory.count)
+                textFormat: Text.PlainText
+                color: AppTheme.stormTextMuted
+                font.pixelSize: AppTheme.textMeta
+                wrapMode: Text.Wrap
+                Accessible.name: text
+            }
+
             ListView {
                 id: directoryList
                 objectName: "directoryResultsList"

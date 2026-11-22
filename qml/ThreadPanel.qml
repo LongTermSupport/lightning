@@ -967,6 +967,20 @@ Rectangle {
                         onLinkActivated: function(link) {
                             panel.openRootLink(link)
                         }
+                        QuoteBars {
+                            id: rootQuotes
+                            document: rootBody.textDocument
+                        }
+                        Repeater {
+                            model: rootQuotes.bars
+                            Rectangle {
+                                x: modelData.x
+                                y: modelData.y
+                                width: 3
+                                height: modelData.height
+                                color: modelData.color
+                            }
+                        }
                     }
                     ScrollBar.vertical: AppScrollBar { policy: ScrollBar.AsNeeded }
                 }
