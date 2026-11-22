@@ -23,7 +23,7 @@
     { QStringLiteral("timelineWheelSpeed"), Kind::Int, 0, 2, 1, QStringLiteral("Appearance"), 0, {  }, QVariant(int(1)) },
     { QStringLiteral("spacesRailVisible"), Kind::Bool, 0, 0, 3, QStringLiteral("Layout"), 0, {  }, QVariant(true) },
     { QStringLiteral("spaceBannersVisible"), Kind::Bool, 0, 0, 3, QStringLiteral("Layout"), 0, {  }, QVariant(true) },
-    { QStringLiteral("keepRoomListOrderStill"), Kind::Bool, 0, 0, 3, QStringLiteral("Layout"), 0, {  }, QVariant(true) },
+    { QStringLiteral("keepRoomListOrderStill"), Kind::Bool, 0, 0, 3, QStringLiteral("Layout"), 0, {  }, QVariant(false) },
     { QStringLiteral("roomListSort"), Kind::Int, 0, 8, 3, QStringLiteral("Layout"), 0, {  }, QVariant(int(0)) },
     { QStringLiteral("spacesRailDepthStyle"), Kind::Int, 0, 1, 3, QStringLiteral("Layout"), 0, {  }, QVariant(int(0)) },
     { QStringLiteral("spaceBannerExpanded"), Kind::Bool, 0, 0, 1, QStringLiteral("Layout"), 0, {  }, QVariant(false) },
