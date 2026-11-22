@@ -33,11 +33,15 @@ Q_SIGNALS:
     void documentChanged();
     void barsChanged();
 
+private Q_SLOTS:
+    void repaintFrames();
+
 private:
     void update();
     void collect(QTextFrame *frame, QVariantList &out) const;
 
     QPointer<QQuickTextDocument> m_quickDocument;
     QPointer<QTextDocument> m_textDocument;
+    QPointer<QObject> m_textEdit;
     QVariantList m_bars;
 };
