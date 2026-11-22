@@ -14,6 +14,7 @@
 #include "models/MessageHtml.h"
 #include "matrix/MatrixClient.h"
 #include "media/ImageFormatSupport.h"
+#include "media/ImageMetadataSize.h"
 #include "media/MediaBridge.h"
 
 ForwardController::ForwardController(QObject *parent)
@@ -525,10 +526,7 @@ void ForwardController::onMediaBytesForStar(const QString &mediaKey, bool ok,
         QBuffer buffer(&probe);
         buffer.open(QIODevice::ReadOnly);
         QImageReader reader(&buffer);
-        QSize size = reader.size();
-        // info.w/h are the displayed size; size() ignores EXIF orientation.
-        if (reader.transformation() & QImageIOHandler::TransformationRotate90)
-            size.transpose();
+        const QSize size = imagemeta::displayedSize(reader);
         if (size.isValid() && size.width() > 0 && size.height() > 0) {
             width = size.width();
             height = size.height();

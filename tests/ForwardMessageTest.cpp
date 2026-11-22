@@ -1286,6 +1286,7 @@ private Q_SLOTS:
         QTest::addColumn<int>("orientation");
         QTest::addColumn<QSize>("displayed");
         QTest::addColumn<QPoint>("redAt");
+        QTest::newRow("upright") << 1 << QSize(64, 32) << QPoint(8, 8);
         QTest::newRow("180") << 3 << QSize(64, 32) << QPoint(56, 24);
         QTest::newRow("90cw") << 6 << QSize(32, 64) << QPoint(24, 8);
         QTest::newRow("90ccw") << 8 << QSize(32, 64) << QPoint(8, 56);
@@ -1315,6 +1316,7 @@ private Q_SLOTS:
         QCOMPARE(client.attachmentSends.size(), 1);
         const auto &sent = client.attachmentSends.first();
         QCOMPARE(QSize(sent.width, sent.height), displayed);
+        QCOMPARE(sent.bytes, original);
         QByteArray bytes = sent.bytes;
         QBuffer buffer(&bytes);
         buffer.open(QIODevice::ReadOnly);

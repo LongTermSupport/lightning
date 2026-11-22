@@ -3,6 +3,7 @@
 #include "app/GuiStallTracer.h"
 #include "media/StagedImageStore.h"
 #include "media/AnimatedImageSniff.h"
+#include "media/ImageMetadataSize.h"
 
 #include "matrix/MatrixClient.h"
 #include "matrix/PresentableName.h"
@@ -423,10 +424,7 @@ QString AttachmentQueueModel::addFile(const QUrl &fileUrl)
     // unscreened. Its size comes from the conversion's PNG.
     if (entry.isImage && !entry.isSvg) {
         QImageReader reader(path);
-        QSize size = reader.size();
-        // info.w/h are the displayed size; size() ignores EXIF orientation.
-        if (reader.transformation() & QImageIOHandler::TransformationRotate90)
-            size.transpose();
+        const QSize size = imagemeta::displayedSize(reader);
         if (size.isValid()) {
             entry.width = size.width();
             entry.height = size.height();
