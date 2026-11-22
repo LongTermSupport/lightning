@@ -28,6 +28,7 @@ while :; do
     sleep 30
 done
 mkdir -p build-remote
+rm -f build-remote/ctest-first-attempt-failures.tsv build-remote/ctest-nonrust-first-attempt-failures.tsv build-remote/cargo.rc
 jobs=$(curl -fsS -K "$auth" "$api/pipelines/$id/jobs" |
     python3 -c 'import sys,json;[print(j["id"],j["name"],j["status"]) for j in json.load(sys.stdin)]')
 echo "$jobs"
@@ -37,12 +38,19 @@ while read -r job name state; do
         chmod +x build-remote/lightning-matrix
     elif [ "$name" = test-nixos ]; then
         curl -fsSL -K "$auth" "$api/jobs/$job/artifacts/out/ctest.log" -o build-remote/ctest.log || true
+        curl -fsSL -K "$auth" "$api/jobs/$job/artifacts/out/ctest-first-attempt-failures.tsv" -o build-remote/ctest-first-attempt-failures.tsv || true
         curl -fsSL -K "$auth" "$api/jobs/$job/trace" -o build-remote/test-job.log || true
     elif [ "$name" = test-nonrust ]; then
         curl -fsSL -K "$auth" "$api/jobs/$job/artifacts/out/ctest-nonrust.log" -o build-remote/ctest-nonrust.log || true
+        curl -fsSL -K "$auth" "$api/jobs/$job/artifacts/out/ctest-nonrust-first-attempt-failures.tsv" -o build-remote/ctest-nonrust-first-attempt-failures.tsv || true
     elif [ "$name" = test-rust ]; then
         curl -fsSL -K "$auth" "$api/jobs/$job/artifacts/out/cargo.log" -o build-remote/cargo.log || true
+        curl -fsSL -K "$auth" "$api/jobs/$job/artifacts/out/cargo.rc" -o build-remote/cargo.rc || true
     fi
 done <<< "$jobs"
+for f in build-remote/ctest-first-attempt-failures.tsv build-remote/ctest-nonrust-first-attempt-failures.tsv; do
+    if [ -s "$f" ]; then echo "$f:"; cat "$f"; fi
+done
+if [ -s build-remote/cargo.rc ]; then echo "cargo test exit status: $(cat build-remote/cargo.rc)"; fi
 [ "$status" = success ] || { echo "pipeline $status" >&2; exit 1; }
 echo "run: LIGHTNING_DEV_BINARY=./build-remote/lightning-matrix scripts/run-dev.sh"

@@ -61,6 +61,35 @@ build-nixos:
       CONF
     - nix develop -c dbus-uuidgen --ensure=/etc/machine-id
 
+# Needs CTEST_LOG, CTEST_RC and ${CTEST_LOG%.log}-registered.txt (ctest -N).
+# The retry stays, but a first-attempt failure is kept in
+# ${CTEST_LOG%.log}-first-attempt-failures.tsv, and every registered test must
+# have run.
+.ctest-gate:
+  script:
+    - |
+      # First attempts carry an "i/N" counter; --repeat until-pass retries do not.
+      re='^ *([0-9]+/[0-9]+ )?Test +#[0-9]+: ([^ ]+) [ .]*(\*\*\*)?(.*[^ ]) +[0-9.]+ sec$'
+      declare -A first final; order=()
+      while IFS= read -r line; do
+        if [[ $line =~ $re ]]; then
+          name=${BASH_REMATCH[2]}
+          if [[ -n ${BASH_REMATCH[1]} ]]; then first[$name]=${BASH_REMATCH[4]}; order+=("$name"); fi
+          final[$name]=${BASH_REMATCH[4]}
+        fi
+      done <"$CTEST_LOG"
+      tsv=${CTEST_LOG%.log}-first-attempt-failures.tsv
+      printf 'test\tfirst_attempt\tfinal\n' >"$tsv"
+      for name in "${order[@]}"; do
+        if [[ ${first[$name]} != Passed ]]; then printf '%s\t%s\t%s\n' "$name" "${first[$name]}" "${final[$name]}" >>"$tsv"; fi
+      done
+      echo "first-attempt failures ($tsv):"; cat "$tsv"
+      registered=$(grep -oE '^Total Tests: [0-9]+' "${CTEST_LOG%.log}-registered.txt" | grep -oE '[0-9]+$' || true)
+      echo "registered ${registered:-unknown}, run ${#order[@]}, ctest exit $CTEST_RC"
+      if [[ -z $registered || $registered -eq 0 || ${#order[@]} -ne $registered ]]; then echo "not every registered test ran"; exit 1; fi
+      if [[ $CTEST_RC != 0 ]]; then echo "ctest failed"; exit 1; fi
+      grep -q '100% tests passed' "$CTEST_LOG"
+
 test-nixos:
   image: nixos/nix:latest
   tags: [saas-linux-2xlarge-amd64]
@@ -98,8 +127,11 @@ test-nixos:
     - $RUSTC_WRAPPER --show-stats | grep -E 'Cache hits|Cache misses|Non-cacheable' || true
     - mkdir -p out
     - !reference [.qt-test-env, script]
-    - nix develop -c dbus-run-session -- ctest --test-dir build-test -j8 --timeout 1500 --repeat until-pass:2 --output-junit $PWD/out/ctest.xml --output-on-failure 2>&1 | tee out/ctest.log | tail -40 || true
-    - grep -q '100% tests passed' out/ctest.log
+    - nix develop -c ctest --test-dir build-test -N >out/ctest-registered.txt
+    - rc=0; nix develop -c dbus-run-session -- ctest --test-dir build-test -j8 --timeout 1500 --repeat until-pass:2 --output-junit $PWD/out/ctest.xml --output-on-failure >out/ctest.log 2>&1 || rc=$?
+    - tail -40 out/ctest.log
+    - CTEST_LOG=out/ctest.log CTEST_RC=$rc
+    - !reference [.ctest-gate, script]
   artifacts:
     when: always
     paths: [out/]
@@ -122,9 +154,10 @@ test-rust:
     - export CARGO_HOME=$PWD/.ci-cargo
     - mkdir -p out
     - nix develop -c cargo fetch --locked --manifest-path rust/Cargo.toml
-    - nix develop -c cargo test --manifest-path rust/Cargo.toml -j32 2>&1 | tee out/cargo.log | grep -E '^test result|FAILED|panicked' | head -20 || true
-    - "if grep -q 'test result: FAILED' out/cargo.log; then exit 1; fi"
-    - grep -q 'passed;' out/cargo.log
+    - rc=0; nix develop -c cargo test --manifest-path rust/Cargo.toml -j32 >out/cargo.log 2>&1 || rc=$?; echo "$rc" >out/cargo.rc
+    - grep -E '^test result|FAILED|panicked|^error' out/cargo.log | head -40 || true
+    - echo "cargo test exited $(cat out/cargo.rc)"; test "$(cat out/cargo.rc)" = 0
+    - "grep -qE '^test result: ok\\. [1-9][0-9]* passed' out/cargo.log"
   artifacts:
     when: always
     paths: [out/]
@@ -135,7 +168,9 @@ test-nonrust:
   tags: [saas-linux-2xlarge-amd64]
   timeout: 2h
   rules:
-    - if: $RUN_NONRUST == "1"
+    - if: $PACKAGE_LANE == "1"
+      when: never
+    - if: $RUN_NONRUST == "1" || $RELEASE_CHECKS == "1"
   variables:
     NIX_CONFIG: "experimental-features = nix-command flakes"
     CCACHE_DIR: $CI_PROJECT_DIR/.ci-ccache-nonrust
@@ -152,8 +187,11 @@ test-nonrust:
     - nix develop -c cmake --build build-nonrust -j32
     - mkdir -p out
     - !reference [.qt-test-env, script]
-    - nix develop -c dbus-run-session -- ctest --test-dir build-nonrust -j8 --timeout 1500 --repeat until-pass:2 --output-on-failure 2>&1 | tee out/ctest-nonrust.log | tail -40 || true
-    - grep -q '100% tests passed' out/ctest-nonrust.log
+    - nix develop -c ctest --test-dir build-nonrust -N >out/ctest-nonrust-registered.txt
+    - rc=0; nix develop -c dbus-run-session -- ctest --test-dir build-nonrust -j8 --timeout 1500 --repeat until-pass:2 --output-junit $PWD/out/ctest-nonrust.xml --output-on-failure >out/ctest-nonrust.log 2>&1 || rc=$?
+    - tail -40 out/ctest-nonrust.log
+    - CTEST_LOG=out/ctest-nonrust.log CTEST_RC=$rc
+    - !reference [.ctest-gate, script]
   artifacts:
     when: always
     paths: [out/]

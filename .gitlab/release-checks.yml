@@ -1,6 +1,7 @@
 # Pre-release source checks (CLAUDE.md §14 and §16), present only with
 # RELEASE_CHECKS=1 and never in the package lane. Pair with RUN_TESTS=1 for the
-# Rust tests and the Rust-enabled CTest run.
+# Rust tests and the Rust-enabled CTest run; test-nonrust (remote-build.yml)
+# also runs here.
 
 .release-check:
   image: nixos/nix:latest
@@ -24,23 +25,6 @@
     when: always
     paths: [out/]
     expire_in: 1 week
-
-test-nonrust:
-  extends: .release-check
-  cache:
-    - key: nonrust-ccache
-      paths: [.ci-ccache/]
-      when: always
-      unprotect: true
-  script:
-    - mkdir -p out
-    - nix develop -c cmake -S . -B build -G Ninja -DCMAKE_CXX_FLAGS=-g0 -DCMAKE_C_FLAGS=-g0 "-DCMAKE_EXE_LINKER_FLAGS=-Wl,--strip-debug" -DCMAKE_JOB_POOLS=lk=12 -DCMAKE_JOB_POOL_LINK=lk
-    - nix develop -c ccache -z
-    - nix develop -c cmake --build build -j32 2>&1 | tee out/build.log | tail -40
-    - nix develop -c ccache -s
-    - !reference [.qt-test-env, script]
-    - nix develop -c dbus-run-session -- ctest --test-dir build -j8 --timeout 1500 --repeat until-pass:2 --output-junit $PWD/out/ctest.xml --output-on-failure 2>&1 | tee out/ctest.log | tail -40 || true
-    - grep -q '100% tests passed' out/ctest.log
 
 # Built inside the checkout: presence-manager-test walks up to find the repository.
 build-nowebrtc:
