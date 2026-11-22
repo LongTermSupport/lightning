@@ -193,7 +193,7 @@ variables:
   - zypper --non-interactive refresh
   - >-
     zypper --non-interactive install --no-recommends
-    AppStream binutils ca-certificates cpio desktop-file-utils file procps
+    AppStream binutils ca-certificates cpio desktop-file-utils file findutils procps
 
 resolve-source:
   extends: .pkg-job
