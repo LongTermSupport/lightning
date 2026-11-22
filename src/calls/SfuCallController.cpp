@@ -3737,10 +3737,10 @@ void SfuCallController::noteParticipantIdentities()
     }
     // Stream ids change on every reconnect; without this the aliases of
     // departed streams and senders accumulate for the whole call.
-    m_engine->retainReceiveNames(keyed | live.value(m_engine.data()));
+    m_engine->retainReceiveNames(QSet<QString>(keyed).unite(live.value(m_engine.data())));
     for (const auto &receiver : std::as_const(m_subscriberEngines)) {
         if (!receiver.isNull())
-            receiver->retainReceiveNames(keyed | live.value(receiver.data()));
+            receiver->retainReceiveNames(QSet<QString>(keyed).unite(live.value(receiver.data())));
     }
 #endif
 }
