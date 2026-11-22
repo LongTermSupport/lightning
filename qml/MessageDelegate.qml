@@ -3771,7 +3771,8 @@ Item {
                 mediaIsVoice: model.mediaIsVoice === true,
                 senderDisplayName: model.senderDisplayName || "",
                 body: model.body || "",
-                formattedBody: model.formattedBody || "",
+                previewBody: root.timelineModel.replyPreviewForEvent(
+                    root.menuEventId),
                 mediaKey: model.mediaKey || "",
                 mediaFilename: model.mediaFilename || "",
                 mediaMimetype: model.mediaMimetype || "",

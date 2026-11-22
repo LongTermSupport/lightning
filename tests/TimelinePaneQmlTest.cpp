@@ -12312,6 +12312,39 @@ false);
         QCOMPARE(mock->eventContextPaginateCount(), 1);
     }
 
+    void forwardPreviewFromTheDelegateConcealsASpoiler()
+    {
+        AppController controller(AppController::MockBackend);
+        QVERIFY(!loginAndRoomIdAt(controller,0).isEmpty());
+        const QString roomId = QStringLiteral("!general:mock.local");
+        auto events = textFixture(roomId, 6, QStringLiteral("fwdsp"),
+                                  QStringLiteral("plain"));
+        events.last().body = QStringLiteral("visible part SECRETWORD");
+        events.last().formattedBody = QStringLiteral(
+            "visible part <span data-mx-spoiler>SECRETWORD</span>");
+        const QString target = events.last().eventId;
+        QQmlApplicationEngine engine;
+        QQuickWindow window;
+        QQuickItem *timeline = nullptr;
+        QVERIFY(paneWithEvents(controller, engine, window, roomId, events, 0,
+                               600, &timeline) != nullptr);
+
+        QQuickItem *row = nullptr;
+        QTRY_VERIFY((row = itemAtViewRow(timeline, 0)) != nullptr);
+        QTRY_COMPARE(row->property("spoilerKey").toString(), target);
+        QVERIFY(row->setProperty("menuEventId", target));
+        QVERIFY(QMetaObject::invokeMethod(row, "beginForward"));
+
+        auto *forward = controller.forward();
+        QVERIFY(forward->active());
+        QCOMPARE(forward->sourceEventId(), target);
+        QVERIFY2(!forward->previewText().contains(QStringLiteral("SECRETWORD")),
+                 qPrintable(forward->previewText()));
+        QVERIFY2(forward->previewText().contains(QStringLiteral("visible part")),
+                 qPrintable(forward->previewText()));
+        forward->cancel();
+    }
+
     void contextViewRowActionsTargetTheJumpedToRow()
     {
         AppController controller(AppController::MockBackend);
