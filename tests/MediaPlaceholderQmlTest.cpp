@@ -1,4 +1,6 @@
 #include <QtTest/QtTest>
+#include <QClipboard>
+#include <QGuiApplication>
 
 #include <QTemporaryDir>
 #include <QImage>
@@ -18,6 +20,7 @@
 #include "app/AppController.h"
 #include "app/ForwardController.h"
 #include "app/SettingsManager.h"
+#include "app/ShortcutRegistry.h"
 #include "auth/AuthManager.h"
 #include "models/MessageComposer.h"
 #include "matrix/MockMatrixClient.h"
@@ -1628,6 +1631,50 @@ QtObject {
         QTest::qWait(100);
         QCOMPARE(copies.count(), 1);
         QVERIFY(menu->property("opened").toBool());
+
+        // U copies the sender's user ID.
+        QGuiApplication::clipboard()->setText(QStringLiteral("before"));
+        auto *userId = menu->findChild<QObject *>(QStringLiteral("copyUserIdMenuItem"));
+        QVERIFY(userId != nullptr);
+        QVERIFY(userId->property("visible").toBool());
+        QCOMPARE(userId->property("accel").toString(), QStringLiteral("U"));
+        QTest::keyClick(t.window.get(), Qt::Key_U);
+        QTRY_COMPARE(QGuiApplication::clipboard()->text(),
+                     QStringLiteral("@fixture:mock.local"));
+        QTRY_VERIFY(!menu->property("opened").toBool());
+
+        // Not on your own message, where View profile is hidden too.
+        QVariantMap mine = text;
+        mine.insert(QStringLiteral("isOwn"), true);
+        Delegate o;
+        QVERIFY(createDelegate(controller, mine, o));
+        menu = openMenu(o);
+        QVERIFY(menu != nullptr);
+        QVERIFY(!menu->findChild<QObject *>(QStringLiteral("copyUserIdMenuItem"))
+                     ->property("visible").toBool());
+        QVERIFY(!menu->findChild<QObject *>(QStringLiteral("viewProfileMenuItem"))
+                     ->property("visible").toBool());
+
+        // A rebound key is what the menu shows and answers.
+        auto *shortcuts = controller.shortcuts();
+        const auto unbind = qScopeGuard([&] {
+            shortcuts->resetToDefault(QStringLiteral("menu.forward"));
+        });
+        QCOMPARE(shortcuts->setBinding(QStringLiteral("menu.forward"), QStringLiteral("W")),
+                 QString());
+        Delegate w;
+        QVERIFY(createDelegate(controller, image, w));
+        menu = openMenu(w);
+        QVERIFY(menu != nullptr);
+        QCOMPARE(menu->findChild<QObject *>(QStringLiteral("forwardMessageMenuItem"))
+                     ->property("accel").toString(), QStringLiteral("W"));
+        QTest::keyClick(w.window.get(), Qt::Key_F);
+        QTest::qWait(100);
+        QCOMPARE(controller.forward()->sourceEventId(), QString());
+        QTest::keyClick(w.window.get(), Qt::Key_W);
+        QTRY_COMPARE_WITH_TIMEOUT(controller.forward()->sourceEventId(), id,
+                                  kSignalTimeoutMs);
+        controller.forward()->cancel();
     }
 
     void formattedBodyRendersInsteadOfRawMarkdown()

@@ -13063,7 +13063,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MessageDelegate</name>
     <message>
-        <location filename="../qml/MessageDelegate.qml" line="+1232"/>
+        <location filename="../qml/MessageDelegate.qml" line="+1236"/>
         <source>Today</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13083,7 +13083,7 @@ Signing out and signing in again is the only fix.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+268"/>
+        <location line="+277"/>
         <location line="+162"/>
         <source>Avatar for %1</source>
         <translation type="unfinished"></translation>
@@ -13112,12 +13112,12 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="+91"/>
         <location line="+924"/>
-        <location line="+1124"/>
+        <location line="+1150"/>
         <source>Reply</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2033"/>
+        <location line="-2059"/>
         <source>(original message not loaded)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13161,8 +13161,8 @@ Signing out and signing in again is the only fix.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1054"/>
-        <location line="+1063"/>
+        <location line="-1063"/>
+        <location line="+1072"/>
         <source>Retry decryption</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13172,12 +13172,12 @@ Signing out and signing in again is the only fix.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1977"/>
+        <location line="-1990"/>
         <source>Link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1348"/>
+        <location line="+1361"/>
         <source>Open this thread</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13218,13 +13218,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2290"/>
+        <location line="+2340"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3306"/>
+        <location line="-3356"/>
         <location line="+1227"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
@@ -13236,12 +13236,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+188"/>
-        <location line="+1381"/>
+        <location line="+1412"/>
         <source>Hide image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1377"/>
+        <location line="-1408"/>
         <source>Hide</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13339,12 +13339,12 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="-997"/>
         <location line="+4"/>
-        <location line="+1109"/>
+        <location line="+1136"/>
         <source>Reply in thread</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2045"/>
+        <location line="-2072"/>
         <source>Original message removed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13367,12 +13367,12 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message>
-        <location line="+942"/>
+        <location line="+969"/>
         <source>Open in room</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+23"/>
         <source>Pin message</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13382,7 +13382,7 @@ Signing out and signing in again is the only fix.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+15"/>
         <source>Remove from saved messages</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13392,12 +13392,12 @@ Signing out and signing in again is the only fix.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+14"/>
         <source>Copy text</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+9"/>
         <source>Copy messages</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13438,17 +13438,17 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+10"/>
-        <location line="+628"/>
+        <location line="+647"/>
         <source>Show link preview</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-619"/>
+        <location line="-637"/>
         <source>Copy image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>Use as my background here</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13458,22 +13458,27 @@ Signing out and signing in again is the only fix.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+11"/>
+        <source>Copy user ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>View details</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Edit history</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+9"/>
         <source>View source</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+545"/>
+        <location line="+548"/>
         <source>Your server sees this URL — never direct</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13569,13 +13574,13 @@ Signing out and signing in again is the only fix.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3697"/>
-        <location line="+1107"/>
+        <location line="-3747"/>
+        <location line="+1135"/>
         <source>Edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3660"/>
+        <location line="-3701"/>
         <source>%1 B</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13591,45 +13596,45 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+19"/>
-        <location line="+572"/>
+        <location line="+576"/>
         <source>Sticker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-569"/>
+        <location line="-573"/>
         <source>Voice message</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+566"/>
+        <location line="+570"/>
         <source>Audio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-564"/>
-        <location line="+562"/>
-        <location line="+3628"/>
+        <location line="-568"/>
+        <location line="+566"/>
+        <location line="+3687"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-5113"/>
+        <location line="-5176"/>
         <location line="+53"/>
-        <location line="+508"/>
-        <location line="+4177"/>
+        <location line="+512"/>
+        <location line="+4236"/>
         <source>Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4736"/>
+        <location line="-4799"/>
         <source>Attachment</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location line="+545"/>
+        <location line="+549"/>
         <source>%n image(s)</source>
         <translation>
             <numerusform>%n image</numerusform>
@@ -13655,7 +13660,7 @@ Signing out and signing in again is the only fix.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+459"/>
+        <location line="+468"/>
         <source>Back to the room</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13690,7 +13695,7 @@ Signing out and signing in again is the only fix.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1599"/>
+        <location line="+1630"/>
         <source>Add :%1: to my emoji</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13703,7 +13708,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+130"/>
         <location line="+12"/>
         <source>Remove edits</source>
         <translation type="unfinished"></translation>
@@ -13720,23 +13725,23 @@ Signing out and signing in again is the only fix.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
         <source>Forward</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>Report message</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-651"/>
-        <location line="+665"/>
+        <location line="-701"/>
+        <location line="+715"/>
         <source>Delete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-660"/>
+        <location line="-710"/>
         <source>Remove message?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13751,7 +13756,7 @@ Signing out and signing in again is the only fix.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+698"/>
+        <location line="+748"/>
         <source>Message details</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13828,12 +13833,12 @@ Signing out and signing in again is the only fix.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1947"/>
+        <location line="-1997"/>
         <source>Show preview</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1805"/>
+        <location line="+1853"/>
         <source>Remove edits?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13853,7 +13858,7 @@ Signing out and signing in again is the only fix.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-609"/>
+        <location line="-657"/>
         <source>Delete message?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13863,7 +13868,7 @@ Signing out and signing in again is the only fix.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+914"/>
+        <location line="+964"/>
         <source>Open link in browser</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13945,10 +13950,10 @@ Signing out and signing in again is the only fix.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-5530"/>
+        <location line="-5593"/>
         <location line="+57"/>
-        <location line="+511"/>
-        <location line="+4175"/>
+        <location line="+515"/>
+        <location line="+4234"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -13961,9 +13966,9 @@ Signing out and signing in again is the only fix.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-5911"/>
-        <location line="+564"/>
-        <location line="+4278"/>
+        <location line="-5974"/>
+        <location line="+568"/>
+        <location line="+4337"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -27440,12 +27445,12 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ShortcutRegistry</name>
     <message>
-        <location filename="../src/app/ShortcutRegistry.cpp" line="+351"/>
+        <location filename="../src/app/ShortcutRegistry.cpp" line="+360"/>
         <source>Dialogs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+85"/>
+        <location line="+86"/>
         <source>Select the previous item or Settings section</source>
         <translation type="unfinished"></translation>
     </message>
@@ -27460,27 +27465,27 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+500"/>
+        <location line="+518"/>
         <source>Use a single key combination for dialog navigation.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+23"/>
         <source>Use Ctrl, Alt or Super. Dialog shortcuts must leave ordinary typing and navigation keys available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+132"/>
+        <location line="+137"/>
         <source>Only in Activity, the quick switcher or Settings. Copying selected text takes priority over closing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+19"/>
         <source>In Activity, the quick switcher or Settings, “%1” runs instead.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-501"/>
+        <location line="-528"/>
         <source>Focus the message box</source>
         <translation type="unfinished"></translation>
     </message>
@@ -27520,17 +27525,17 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+136"/>
+        <location line="+159"/>
         <source>closing the find bar, room information, a thread or Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+307"/>
+        <location line="+302"/>
         <source>Use a single key combination for message selection.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+171"/>
+        <location line="+180"/>
         <source>While the timeline has focus this runs instead of “%1”.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -27540,7 +27545,7 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-776"/>
+        <location line="-804"/>
         <source>Application</source>
         <translation type="unfinished"></translation>
     </message>
@@ -27580,7 +27585,12 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+3"/>
+        <source>Message menu</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+21"/>
         <source>Quit Lightning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -27950,7 +27960,62 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+2"/>
+        <source>Reply</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Reply in thread</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Save message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copy text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copy messages</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copy image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copy user ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>View details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>View source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Forward</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>the emoji picker&apos;s skin-tone selector</source>
         <translation type="unfinished"></translation>
     </message>
@@ -27965,29 +28030,12 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>the message menu&apos;s Reply accelerator</source>
+        <location line="+530"/>
+        <source>While a message&apos;s menu is open, %1 runs “%2” instead.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <location line="+2"/>
-        <location line="+2"/>
-        <source>a message&apos;s menu is open</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-3"/>
-        <source>the message menu&apos;s Thread accelerator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>the message menu&apos;s Edit accelerator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="-529"/>
         <source>the screenshot-demo controls</source>
         <translation type="unfinished"></translation>
     </message>
@@ -28013,17 +28061,22 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+269"/>
-        <location line="+94"/>
+        <location line="+102"/>
         <source>Unknown action.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-90"/>
+        <location line="-98"/>
         <source>That is not a key combination Lightning can store.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+22"/>
+        <source>Use a single key combination for the message menu.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>Use Ctrl, Alt or Super, or PgUp, PgDn or an F-key. Any other bare key is a character you type in the message box.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -28039,6 +28092,11 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+6"/>
+        <source>%1 moves through or closes the menu, so it cannot run a menu item.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>%1 moves focus or navigates the conversation, so it cannot be used to select messages.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -28063,7 +28121,12 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+18"/>
+        <source>Only while a message&apos;s menu is open.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+26"/>
         <source>With text selected in the message box this runs instead of “%1”; with nothing selected, “%1” runs.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -28098,12 +28161,12 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-808"/>
+        <location line="-836"/>
         <source>Settings navigation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+94"/>
+        <location line="+95"/>
         <source>Open the previous Settings page</source>
         <translation type="unfinished"></translation>
     </message>
@@ -28123,27 +28186,27 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+488"/>
+        <location line="+506"/>
         <source>Use a single key combination for Settings navigation.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+23"/>
         <source>Use Ctrl, Alt or Super. Settings page actions also accept Tab or Shift+Tab.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+132"/>
+        <location line="+137"/>
         <source>Only in Settings. Overrides shared navigation; Tab bindings replace normal focus traversal.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+19"/>
         <source>In Settings, “%1” runs instead.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-655"/>
+        <location line="-682"/>
         <source>Scroll Settings up half a page</source>
         <translation type="unfinished"></translation>
     </message>
@@ -28153,7 +28216,7 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+491"/>
+        <location line="+511"/>
         <source>%1 moves focus, navigates or edits text, so it cannot be a shortcut on its own.</source>
         <translation type="unfinished"></translation>
     </message>

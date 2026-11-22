@@ -91,7 +91,7 @@ private Q_SLOTS:
         QVERIFY(glyphs <= 1);
     }
 
-    void messageMenuAcceleratorsArePresent()
+    void messageMenuAcceleratorsComeFromTheShortcutRegistry()
     {
         const QString delegate = read(QStringLiteral("MessageDelegate.qml"));
         const QString block = moreMenuBlock(delegate);
@@ -100,60 +100,33 @@ private Q_SLOTS:
                  "markers (id: moreMenu, or the Delete item's redactEvent "
                  "call) has moved, so every assertion below is testing an "
                  "empty string");
-        QVERIFY(block.contains(QStringLiteral("accel: \"R\"")));
-        QVERIFY(block.contains(QStringLiteral("accel: \"T\"")));
-        QVERIFY(block.contains(QStringLiteral("accel: \"Ctrl+C\"")));
-        QVERIFY(block.contains(QStringLiteral("accel: \"E\"")));
-        QVERIFY(block.contains(QStringLiteral("accel: \"F\"")));
-        QVERIFY(block.contains(QStringLiteral("accel: \"C\"")));
-        QVERIFY(block.contains(QStringLiteral("accel: \"V\"")));
-        QVERIFY(block.contains(QStringLiteral("accel: \"I\"")));
-        QVERIFY(!block.contains(QStringLiteral("accel: \"↑\"")));
-        QStringList accels;
-        static const QRegularExpression accelRe(
-            QStringLiteral("accel: \"([^\"]+)\""));
-        for (auto it = accelRe.globalMatch(block); it.hasNext();)
-            accels << it.next().captured(1);
-        QVERIFY(accels.size() >= 10);
-        for (const QString &a : std::as_const(accels))
-            QVERIFY2(accels.count(a) == 1, qPrintable(a));
-        QStringList sequences;
-        static const QRegularExpression sequenceRe(
-            QStringLiteral("sequence: \"([^\"]+)\""));
-        for (auto it = sequenceRe.globalMatch(block); it.hasNext();)
-            sequences << it.next().captured(1);
-        for (const QString &q : std::as_const(sequences)) {
-            QVERIFY2(sequences.count(q) == 1, qPrintable(q));
-            QVERIFY2(accels.contains(q), qPrintable(q));
+        const QStringList items = {
+            QStringLiteral("reply"), QStringLiteral("replyInThread"),
+            QStringLiteral("edit"), QStringLiteral("save"),
+            QStringLiteral("copyText"), QStringLiteral("copyMessages"),
+            QStringLiteral("copyImage"), QStringLiteral("copyUserId"),
+            QStringLiteral("viewDetails"), QStringLiteral("viewSource"),
+            QStringLiteral("forward"),
+        };
+        for (const QString &n : items) {
+            QVERIFY2(block.contains(QStringLiteral("sequenceFor(\"menu.%1\")").arg(n)),
+                     qPrintable(n));
+            QVERIFY2(block.count(QStringLiteral("accel: moreMenu.menuKeys.%1\n").arg(n)) == 1,
+                     qPrintable(n));
+            QVERIFY2(block.count(QStringLiteral("sequence: moreMenu.menuKeys.%1\n").arg(n)) == 1,
+                     qPrintable(n));
+            QVERIFY2(block.contains(QStringLiteral("runItem(%1MenuItem)").arg(n)),
+                     qPrintable(n));
+            QVERIFY2(block.contains(QStringLiteral("id: %1MenuItem\n").arg(n)),
+                     qPrintable(n));
         }
-    }
-
-    void messageMenuKeyboardAcceleratorsCallExistingActionsOnly()
-    {
-        const QString delegate = read(QStringLiteral("MessageDelegate.qml"));
-        const QString block = moreMenuBlock(delegate);
-        QVERIFY2(!block.isEmpty(),
-                 "the more-menu block could not be extracted: one of its "
-                 "markers (id: moreMenu, or the Delete item's redactEvent "
-                 "call) has moved, so every assertion below is testing an "
-                 "empty string");
+        QVERIFY(!block.contains(QStringLiteral("accel: \"")));
+        QVERIFY(!block.contains(QStringLiteral("sequence: \"")));
         QVERIFY(!block.contains(QStringLiteral("Keys.onPressed")));
-        QVERIFY(block.count(QStringLiteral("Shortcut {")) == 8);
-        QVERIFY(block.count(QStringLiteral("enabled: moreMenu.opened")) == 8);
-        QVERIFY(block.count(QStringLiteral(
-            "context: Qt.ApplicationShortcut")) == 8);
-        QVERIFY(block.contains(QStringLiteral("sequence: \"F\"")));
-        QVERIFY(block.contains(QStringLiteral("sequence: \"C\"")));
-        QVERIFY(block.contains(QStringLiteral("sequence: \"V\"")));
-        QVERIFY(block.contains(QStringLiteral("sequence: \"I\"")));
-        QVERIFY(block.contains(QStringLiteral("sequence: \"R\"")));
-        QVERIFY(block.contains(QStringLiteral("sequence: \"T\"")));
-        QVERIFY(block.contains(QStringLiteral("sequence: \"E\"")));
-        QVERIFY(block.contains(QStringLiteral("sequence: \"Ctrl+C\"")));
-        QVERIFY(!block.contains(QStringLiteral("Qt.Key_Up")));
-        QVERIFY(block.count(QStringLiteral(
-            "root.copyToClipboard(\n")) >= 1);
-        QVERIFY(block.count(QStringLiteral("app.composer.beginEdit(")) == 2);
+        QCOMPARE(block.count(QStringLiteral("Shortcut {")), items.size());
+        QCOMPARE(block.count(QStringLiteral("enabled: moreMenu.opened")), items.size());
+        QCOMPARE(block.count(QStringLiteral("context: Qt.ApplicationShortcut")),
+                 items.size());
     }
 
     void starGifIsNotAMenuItem()

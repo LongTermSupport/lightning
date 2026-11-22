@@ -154,6 +154,8 @@ QString ShortcutRegistry::blockingReservedOwner(const QString &portable,
         && actionId == QStringLiteral("dialog.close")
         && portable == QStringLiteral("Ctrl+C"))
         return {};
+    if (context == MessageMenuContext && portable == QStringLiteral("Ctrl+C"))
+        return {};
     if (const Action *action = find(actionId); action && popupReserved(portable, *action))
         return {};
     return owner;
@@ -173,6 +175,8 @@ ShortcutRegistry::popupReserved(const QString &portable, const Action &action) c
 
 bool ShortcutRegistry::contextsClash(ActionContext a, ActionContext b)
 {
+    if (a == MessageMenuContext || b == MessageMenuContext)
+        return a == b;
     if (a == SettingsContext || b == SettingsContext)
         return a == b;
     if (a == DialogContext || b == DialogContext)
@@ -183,7 +187,12 @@ bool ShortcutRegistry::contextsClash(ActionContext a, ActionContext b)
 
 bool ShortcutRegistry::actionsClash(const Action &a, const Action &b)
 {
+    const auto appWideBesideMenu = [](const Action &menu, const Action &other) {
+        return menu.context == MessageMenuContext && other.context == GlobalContext
+            && other.appWide;
+    };
     return contextsClash(a.context, b.context)
+        || appWideBesideMenu(a, b) || appWideBesideMenu(b, a)
         || (a.context == SettingsContext && b.id == QStringLiteral("dialog.close"))
         || (b.context == SettingsContext && a.id == QStringLiteral("dialog.close"));
 }
@@ -350,6 +359,7 @@ void ShortcutRegistry::buildTables()
     const QString mediaCat = tr("Media");
     const QString dialogCat = tr("Dialogs");
     const QString settingsCat = tr("Settings navigation");
+    const QString menuCat = tr("Message menu");
 
 #if defined(Q_OS_MACOS)
     // Qt's Ctrl is Cmd here: Cmd+Tab belongs to the system and Option+arrows
@@ -628,6 +638,29 @@ void ShortcutRegistry::buildTables()
           tr("Underline"), QStringLiteral("Ctrl+U"), EditorContext },
         { QStringLiteral("composer.link"), composeCat,
           tr("Link"), QStringLiteral("Ctrl+Shift+L"), EditorContext },
+
+        { QStringLiteral("menu.reply"), menuCat, tr("Reply"),
+          QStringLiteral("R"), MessageMenuContext },
+        { QStringLiteral("menu.replyInThread"), menuCat, tr("Reply in thread"),
+          QStringLiteral("T"), MessageMenuContext },
+        { QStringLiteral("menu.edit"), menuCat, tr("Edit"),
+          QStringLiteral("E"), MessageMenuContext },
+        { QStringLiteral("menu.save"), menuCat, tr("Save message"),
+          QStringLiteral("S"), MessageMenuContext },
+        { QStringLiteral("menu.copyText"), menuCat, tr("Copy text"),
+          QStringLiteral("Ctrl+C"), MessageMenuContext },
+        { QStringLiteral("menu.copyMessages"), menuCat, tr("Copy messages"),
+          QStringLiteral("Shift+C"), MessageMenuContext },
+        { QStringLiteral("menu.copyImage"), menuCat, tr("Copy image"),
+          QStringLiteral("C"), MessageMenuContext },
+        { QStringLiteral("menu.copyUserId"), menuCat, tr("Copy user ID"),
+          QStringLiteral("U"), MessageMenuContext },
+        { QStringLiteral("menu.viewDetails"), menuCat, tr("View details"),
+          QStringLiteral("I"), MessageMenuContext },
+        { QStringLiteral("menu.viewSource"), menuCat, tr("View source"),
+          QStringLiteral("V"), MessageMenuContext },
+        { QStringLiteral("menu.forward"), menuCat, tr("Forward"),
+          QStringLiteral("F"), MessageMenuContext },
     };
 
     // Hard-coded sequences with no row. Conflict detection must know them,
@@ -639,12 +672,6 @@ void ShortcutRegistry::buildTables()
         { QStringLiteral("Alt+V"),
           tr("the emoji picker's skin-tone selector"), tr("the emoji picker is open") },
         { QStringLiteral("Ctrl+C"), tr("the message menu's Copy accelerator") },
-        { QStringLiteral("R"), tr("the message menu's Reply accelerator"),
-          tr("a message's menu is open") },
-        { QStringLiteral("T"), tr("the message menu's Thread accelerator"),
-          tr("a message's menu is open") },
-        { QStringLiteral("E"), tr("the message menu's Edit accelerator"),
-          tr("a message's menu is open") },
         { QStringLiteral("Ctrl+Alt+Shift+D"), tr("the screenshot-demo controls") },
         { QStringLiteral("Space"), tr("paging the timeline and the media grids") },
         { QStringLiteral("Shift+PgUp"),
@@ -931,6 +958,7 @@ QString ShortcutRegistry::validationError(const QString &actionId,
     const bool selectionOnly = action->context == MessageSelectionContext;
     const bool dialogOnly = action->context == DialogContext;
     const bool settingsOnly = action->context == SettingsContext;
+    const bool menuOnly = action->context == MessageMenuContext;
     const bool settingsPage = actionId == QStringLiteral("settings.previousPage")
                               || actionId == QStringLiteral("settings.nextPage");
     const auto combo = seq[0];
@@ -943,13 +971,15 @@ QString ShortcutRegistry::validationError(const QString &actionId,
 
     if (selectionOnly && seq.count() != 1)
         return tr("Use a single key combination for message selection.");
+    if (menuOnly && seq.count() != 1)
+        return tr("Use a single key combination for the message menu.");
     const bool globalKey = action->context == GlobalContext && isSingleBareKey(seq);
     if (globalKey && isNavigationOrEditingKey(combo.key())) {
         return tr("%1 moves focus, navigates or edits text, so it cannot be a "
                   "shortcut on its own.")
             .arg(displayText(portable));
     }
-    const bool bareOk = selectionOnly || settingsTab || globalKey
+    const bool bareOk = selectionOnly || menuOnly || settingsTab || globalKey
                        || (action->context == TimelineContext && isNonTextKey(seq));
     if (!hasCommandModifier(seq) && !bareOk) {
         if (action->context == TimelineContext) {
@@ -971,6 +1001,11 @@ QString ShortcutRegistry::validationError(const QString &actionId,
                         "happen.");
     }
 
+    if (menuOnly && isFocusOrNavigationKey(seq)) {
+        return tr("%1 moves through or closes the menu, so it cannot run a "
+                  "menu item.")
+            .arg(displayText(portable));
+    }
     if (selectionOnly && isFocusOrNavigationKey(seq)) {
         return tr("%1 moves focus or navigates the conversation, so it "
                   "cannot be used to select messages.")
@@ -1094,6 +1129,8 @@ QString ShortcutRegistry::shadowNote(int row) const
     if (a.context == DialogContext)
         return tr("Only in Activity, the quick switcher or Settings. "
                   "Copying selected text takes priority over closing.");
+    if (a.context == MessageMenuContext)
+        return tr("Only while a message's menu is open.");
     const QString mine = m_resolved.at(row);
     if (mine.isEmpty())
         return {};
@@ -1159,6 +1196,15 @@ QString ShortcutRegistry::overlapNote(int row) const
     if (const Reserved *r = popupReserved(m_resolved.at(row), a)) {
         notes.append(tr("While %1, %2 is used for %3 instead.")
                          .arg(r->whileOpen, displayText(m_resolved.at(row)), r->owner));
+    }
+    if (a.context == GlobalContext && !a.appWide && !m_resolved.at(row).isEmpty()) {
+        for (int i = 0; i < m_actions.size(); ++i) {
+            if (m_actions.at(i).context == MessageMenuContext
+                && m_resolved.at(i) == m_resolved.at(row))
+                notes.append(tr("While a message's menu is open, %1 runs “%2” instead.")
+                                 .arg(displayText(m_resolved.at(row)),
+                                      m_actions.at(i).description));
+        }
     }
     return notes.join(QLatin1Char('\n'));
 }

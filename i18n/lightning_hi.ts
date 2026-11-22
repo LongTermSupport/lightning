@@ -13074,7 +13074,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MessageDelegate</name>
     <message>
-        <location filename="../qml/MessageDelegate.qml" line="+1232"/>
+        <location filename="../qml/MessageDelegate.qml" line="+1236"/>
         <source>Today</source>
         <translation>आज</translation>
     </message>
@@ -13094,7 +13094,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>नए संदेश</translation>
     </message>
     <message>
-        <location line="+268"/>
+        <location line="+277"/>
         <location line="+162"/>
         <source>Avatar for %1</source>
         <translation>%1 का अवतार</translation>
@@ -13123,12 +13123,12 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="+91"/>
         <location line="+924"/>
-        <location line="+1124"/>
+        <location line="+1150"/>
         <source>Reply</source>
         <translation>जवाब दें</translation>
     </message>
     <message>
-        <location line="-2033"/>
+        <location line="-2059"/>
         <source>(original message not loaded)</source>
         <translation>(मूल संदेश लोड नहीं हुआ)</translation>
     </message>
@@ -13172,8 +13172,8 @@ Signing out and signing in again is the only fix.</source>
         <translation>कुंजियों की प्रतीक्षा है…</translation>
     </message>
     <message>
-        <location line="-1054"/>
-        <location line="+1063"/>
+        <location line="-1063"/>
+        <location line="+1072"/>
         <source>Retry decryption</source>
         <translation>डिक्रिप्शन फिर से आज़माएं</translation>
     </message>
@@ -13183,12 +13183,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>सुरक्षा सेटिंग्स</translation>
     </message>
     <message>
-        <location line="-1977"/>
+        <location line="-1990"/>
         <source>Link</source>
         <translation>लिंक</translation>
     </message>
     <message>
-        <location line="+1348"/>
+        <location line="+1361"/>
         <source>Open this thread</source>
         <translation>यह थ्रेड खोलें</translation>
     </message>
@@ -13229,13 +13229,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2290"/>
+        <location line="+2340"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>फिर कोशिश करें</translation>
     </message>
     <message>
-        <location line="-3306"/>
+        <location line="-3356"/>
         <location line="+1227"/>
         <source>Cancel</source>
         <translation>रद्द करें</translation>
@@ -13247,12 +13247,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+188"/>
-        <location line="+1381"/>
+        <location line="+1412"/>
         <source>Hide image</source>
         <translation>छवि छिपाएँ</translation>
     </message>
     <message>
-        <location line="-1377"/>
+        <location line="-1408"/>
         <source>Hide</source>
         <translation>छिपाएँ</translation>
     </message>
@@ -13350,12 +13350,12 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="-997"/>
         <location line="+4"/>
-        <location line="+1109"/>
+        <location line="+1136"/>
         <source>Reply in thread</source>
         <translation>थ्रेड में जवाब दें</translation>
     </message>
     <message>
-        <location line="-2045"/>
+        <location line="-2072"/>
         <source>Original message removed</source>
         <translation>मूल संदेश हटा दिया गया</translation>
     </message>
@@ -13378,12 +13378,12 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message>
-        <location line="+942"/>
+        <location line="+969"/>
         <source>Open in room</source>
         <translation>रूम में खोलें</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+23"/>
         <source>Pin message</source>
         <translation>संदेश पिन करें</translation>
     </message>
@@ -13393,7 +13393,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>संदेश अनपिन करें</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+15"/>
         <source>Remove from saved messages</source>
         <translation>सहेजे गए संदेशों से हटाएँ</translation>
     </message>
@@ -13403,12 +13403,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>संदेश सहेजें</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+14"/>
         <source>Copy text</source>
         <translation>टेक्स्ट कॉपी करें</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+9"/>
         <source>Copy messages</source>
         <translation>संदेश कॉपी करें</translation>
     </message>
@@ -13449,17 +13449,17 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+10"/>
-        <location line="+628"/>
+        <location line="+647"/>
         <source>Show link preview</source>
         <translation>लिंक पूर्वावलोकन दिखाएँ</translation>
     </message>
     <message>
-        <location line="-619"/>
+        <location line="-637"/>
         <source>Copy image</source>
         <translation>इमेज कॉपी करें</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>Use as my background here</source>
         <translation>यहाँ इसे अपना बैकग्राउंड बनाएँ</translation>
     </message>
@@ -13469,22 +13469,27 @@ Signing out and signing in again is the only fix.</source>
         <translation>प्रोफ़ाइल देखें</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+11"/>
+        <source>Copy user ID</source>
+        <translation>उपयोगकर्ता आईडी कॉपी करें</translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>View details</source>
         <translation>विवरण देखें</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Edit history</source>
         <translation>संपादन इतिहास</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+9"/>
         <source>View source</source>
         <translation>स्रोत देखें</translation>
     </message>
     <message>
-        <location line="+545"/>
+        <location line="+548"/>
         <source>Your server sees this URL — never direct</source>
         <translation>आपका सर्वर यह URL देखता है — कभी सीधे नहीं</translation>
     </message>
@@ -13580,13 +13585,13 @@ Signing out and signing in again is the only fix.</source>
         <translation>फिर कोशिश करें</translation>
     </message>
     <message>
-        <location line="-3697"/>
-        <location line="+1107"/>
+        <location line="-3747"/>
+        <location line="+1135"/>
         <source>Edit</source>
         <translation>संपादित करें</translation>
     </message>
     <message>
-        <location line="-3660"/>
+        <location line="-3701"/>
         <source>%1 B</source>
         <translation>%1 B</translation>
     </message>
@@ -13602,45 +13607,45 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+19"/>
-        <location line="+572"/>
+        <location line="+576"/>
         <source>Sticker</source>
         <translation>स्टिकर</translation>
     </message>
     <message>
-        <location line="-569"/>
+        <location line="-573"/>
         <source>Voice message</source>
         <translation>वॉइस संदेश</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+566"/>
+        <location line="+570"/>
         <source>Audio</source>
         <translation>ऑडियो</translation>
     </message>
     <message>
-        <location line="-564"/>
-        <location line="+562"/>
-        <location line="+3628"/>
+        <location line="-568"/>
+        <location line="+566"/>
+        <location line="+3687"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5113"/>
+        <location line="-5176"/>
         <location line="+53"/>
-        <location line="+508"/>
-        <location line="+4177"/>
+        <location line="+512"/>
+        <location line="+4236"/>
         <source>Image</source>
         <translation>तस्वीर</translation>
     </message>
     <message>
-        <location line="-4736"/>
+        <location line="-4799"/>
         <source>Attachment</source>
         <translation>अटैचमेंट</translation>
     </message>
     <message numerus="yes">
-        <location line="+545"/>
+        <location line="+549"/>
         <source>%n image(s)</source>
         <translation>
             <numerusform>%n तस्वीर</numerusform>
@@ -13666,7 +13671,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>थ्रेड खोलें</translation>
     </message>
     <message>
-        <location line="+459"/>
+        <location line="+468"/>
         <source>Back to the room</source>
         <translation>रूम पर वापस जाएँ</translation>
     </message>
@@ -13701,7 +13706,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>(संपादित)</translation>
     </message>
     <message>
-        <location line="+1599"/>
+        <location line="+1630"/>
         <source>Add :%1: to my emoji</source>
         <translation>:%1: को मेरे इमोजी में जोड़ें</translation>
     </message>
@@ -13714,7 +13719,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+130"/>
         <location line="+12"/>
         <source>Remove edits</source>
         <translation>संपादन हटाएँ</translation>
@@ -13731,23 +13736,23 @@ Signing out and signing in again is the only fix.</source>
         <translation>संदेश चुनें</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
         <source>Forward</source>
         <translation>फ़ॉरवर्ड करें</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>Report message</source>
         <translation>संदेश की रिपोर्ट करें</translation>
     </message>
     <message>
-        <location line="-651"/>
-        <location line="+665"/>
+        <location line="-701"/>
+        <location line="+715"/>
         <source>Delete</source>
         <translation>हटाएँ</translation>
     </message>
     <message>
-        <location line="-660"/>
+        <location line="-710"/>
         <source>Remove message?</source>
         <translation>संदेश हटाएँ?</translation>
     </message>
@@ -13762,7 +13767,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>हटाएँ</translation>
     </message>
     <message>
-        <location line="+698"/>
+        <location line="+748"/>
         <source>Message details</source>
         <translation>संदेश का विवरण</translation>
     </message>
@@ -13839,12 +13844,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>जिसका जवाब है</translation>
     </message>
     <message>
-        <location line="-1947"/>
+        <location line="-1997"/>
         <source>Show preview</source>
         <translation>प्रीव्यू दिखाएँ</translation>
     </message>
     <message>
-        <location line="+1805"/>
+        <location line="+1853"/>
         <source>Remove edits?</source>
         <translation>संपादन हटाएँ?</translation>
     </message>
@@ -13864,7 +13869,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>इससे मतदान बंद हो जाता है और परिणाम प्रकाशित होता है। पोल दोबारा खोला नहीं जा सकता।</translation>
     </message>
     <message>
-        <location line="-609"/>
+        <location line="-657"/>
         <source>Delete message?</source>
         <translation>संदेश हटाएँ?</translation>
     </message>
@@ -13874,7 +13879,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>इससे संदेश रूम में सभी के लिए हट जाता है। इसे पूर्ववत नहीं किया जा सकता।</translation>
     </message>
     <message>
-        <location line="+914"/>
+        <location line="+964"/>
         <source>Open link in browser</source>
         <translation>लिंक ब्राउज़र में खोलें</translation>
     </message>
@@ -13956,10 +13961,10 @@ Signing out and signing in again is the only fix.</source>
         <translation>स्टिकर लोड नहीं हो सका — फिर कोशिश करने के लिए क्लिक करें</translation>
     </message>
     <message>
-        <location line="-5530"/>
+        <location line="-5593"/>
         <location line="+57"/>
-        <location line="+511"/>
-        <location line="+4175"/>
+        <location line="+515"/>
+        <location line="+4234"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -13972,9 +13977,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>वीडियो</translation>
     </message>
     <message>
-        <location line="-5911"/>
-        <location line="+564"/>
-        <location line="+4278"/>
+        <location line="-5974"/>
+        <location line="+568"/>
+        <location line="+4337"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -27460,12 +27465,12 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ShortcutRegistry</name>
     <message>
-        <location filename="../src/app/ShortcutRegistry.cpp" line="+351"/>
+        <location filename="../src/app/ShortcutRegistry.cpp" line="+360"/>
         <source>Dialogs</source>
         <translation>संवाद</translation>
     </message>
     <message>
-        <location line="+85"/>
+        <location line="+86"/>
         <source>Select the previous item or Settings section</source>
         <translation>पिछला आइटम या सेटिंग अनुभाग चुनें</translation>
     </message>
@@ -27480,27 +27485,27 @@ Note: importing keys does not verify this session.</source>
         <translation>गतिविधि, त्वरित स्विचर या सेटिंग बंद करें</translation>
     </message>
     <message>
-        <location line="+500"/>
+        <location line="+518"/>
         <source>Use a single key combination for dialog navigation.</source>
         <translation>संवाद में नेविगेशन के लिए एक कुंजी संयोजन का उपयोग करें।</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+23"/>
         <source>Use Ctrl, Alt or Super. Dialog shortcuts must leave ordinary typing and navigation keys available.</source>
         <translation>Ctrl, Alt या Super का उपयोग करें। संवाद शॉर्टकट को सामान्य टाइपिंग और नेविगेशन कुंजियाँ उपलब्ध रखनी चाहिए।</translation>
     </message>
     <message>
-        <location line="+132"/>
+        <location line="+137"/>
         <source>Only in Activity, the quick switcher or Settings. Copying selected text takes priority over closing.</source>
         <translation>केवल गतिविधि, त्वरित स्विचर या सेटिंग में। चयनित पाठ की प्रतिलिपि बनाने को बंद करने पर प्राथमिकता मिलती है।</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+19"/>
         <source>In Activity, the quick switcher or Settings, “%1” runs instead.</source>
         <translation>गतिविधि, त्वरित स्विचर या सेटिंग में इसके बजाय “%1” चलता है।</translation>
     </message>
     <message>
-        <location line="-501"/>
+        <location line="-528"/>
         <source>Focus the message box</source>
         <translation>संदेश बॉक्स पर फ़ोकस करें</translation>
     </message>
@@ -27540,17 +27545,17 @@ Note: importing keys does not verify this session.</source>
         <translation>चुने हुए संदेश का उत्तर दें</translation>
     </message>
     <message>
-        <location line="+136"/>
+        <location line="+159"/>
         <source>closing the find bar, room information, a thread or Settings</source>
         <translation>फ़ाइंड बार, रूम जानकारी, थ्रेड या सेटिंग्स बंद करना</translation>
     </message>
     <message>
-        <location line="+307"/>
+        <location line="+302"/>
         <source>Use a single key combination for message selection.</source>
         <translation>संदेश चयन के लिए एक ही कुंजी संयोजन का उपयोग करें।</translation>
     </message>
     <message>
-        <location line="+171"/>
+        <location line="+180"/>
         <source>While the timeline has focus this runs instead of “%1”.</source>
         <translation>जब टाइमलाइन पर फ़ोकस होता है, तब “%1” की जगह यह चलता है।</translation>
     </message>
@@ -27560,7 +27565,7 @@ Note: importing keys does not verify this session.</source>
         <translation>जब टाइमलाइन पर फ़ोकस होता है, तब इसके बजाय “%1” चलता है।</translation>
     </message>
     <message>
-        <location line="-776"/>
+        <location line="-804"/>
         <source>Application</source>
         <translation>आवेदन</translation>
     </message>
@@ -27600,7 +27605,12 @@ Note: importing keys does not verify this session.</source>
         <translation>मीडिया</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+3"/>
+        <source>Message menu</source>
+        <translation>संदेश मेनू</translation>
+    </message>
+    <message>
+        <location line="+21"/>
         <source>Quit Lightning</source>
         <translation>Lightning से बाहर निकलें</translation>
     </message>
@@ -27970,7 +27980,62 @@ Note: importing keys does not verify this session.</source>
         <translation>लिंक</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+2"/>
+        <source>Reply</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Reply in thread</source>
+        <translation>थ्रेड में जवाब दें</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Edit</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Save message</source>
+        <translation>संदेश सहेजें</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copy text</source>
+        <translation>टेक्स्ट कॉपी करें</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copy messages</source>
+        <translation>संदेश कॉपी करें</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copy image</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copy user ID</source>
+        <translation>उपयोगकर्ता आईडी कॉपी करें</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>View details</source>
+        <translation>विवरण देखें</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>View source</source>
+        <translation>स्रोत देखें</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Forward</source>
+        <translation>फ़ॉरवर्ड करें</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>the emoji picker&apos;s skin-tone selector</source>
         <translation>इमोजी पिकर का त्वचा-टोन चयनकर्ता</translation>
     </message>
@@ -27985,29 +28050,12 @@ Note: importing keys does not verify this session.</source>
         <translation>संदेश मेनू का कॉपी त्वरक</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>the message menu&apos;s Reply accelerator</source>
-        <translation>संदेश मेनू का उत्तर त्वरक</translation>
+        <location line="+530"/>
+        <source>While a message&apos;s menu is open, %1 runs “%2” instead.</source>
+        <translation>किसी संदेश का मेनू खुला होने पर %1 इसके बजाय “%2” चलाता है।</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <location line="+2"/>
-        <location line="+2"/>
-        <source>a message&apos;s menu is open</source>
-        <translation>किसी संदेश का मेनू खुला है</translation>
-    </message>
-    <message>
-        <location line="-3"/>
-        <source>the message menu&apos;s Thread accelerator</source>
-        <translation>संदेश मेनू का थ्रेड त्वरक</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>the message menu&apos;s Edit accelerator</source>
-        <translation>संदेश मेनू का संपादन त्वरक</translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="-529"/>
         <source>the screenshot-demo controls</source>
         <translation>स्क्रीनशॉट-डेमो नियंत्रण</translation>
     </message>
@@ -28033,17 +28081,22 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+269"/>
-        <location line="+94"/>
+        <location line="+102"/>
         <source>Unknown action.</source>
         <translation>अज्ञात क्रिया.</translation>
     </message>
     <message>
-        <location line="-90"/>
+        <location line="-98"/>
         <source>That is not a key combination Lightning can store.</source>
         <translation>यह कोई कुंजी संयोजन नहीं है जिसे Lightning संग्रहित कर सके।</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+22"/>
+        <source>Use a single key combination for the message menu.</source>
+        <translation>संदेश मेनू के लिए एक ही कुंजी संयोजन इस्तेमाल करें।</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>Use Ctrl, Alt or Super, or PgUp, PgDn or an F-key. Any other bare key is a character you type in the message box.</source>
         <translation>Ctrl, Alt या Super, या PgUp, PgDn या F-कुंजी का उपयोग करें। कोई भी अन्य अकेली कुंजी एक अक्षर है जो आप संदेश बॉक्स में टाइप करते हैं।</translation>
     </message>
@@ -28059,6 +28112,11 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+6"/>
+        <source>%1 moves through or closes the menu, so it cannot run a menu item.</source>
+        <translation>%1 मेनू में आगे-पीछे जाता है या उसे बंद करता है, इसलिए यह कोई मेनू आइटम नहीं चला सकता।</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>%1 moves focus or navigates the conversation, so it cannot be used to select messages.</source>
         <translation>%1 फ़ोकस बदलता है या बातचीत में नेविगेट करता है, इसलिए इसे संदेश चुनने के लिए उपयोग नहीं किया जा सकता।</translation>
     </message>
@@ -28083,7 +28141,12 @@ Note: importing keys does not verify this session.</source>
         <translation>&quot;%1&quot; के लिए भी उपयोग किया जाता है - कोई भी काम नहीं करेगा।</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+18"/>
+        <source>Only while a message&apos;s menu is open.</source>
+        <translation>केवल तब, जब किसी संदेश का मेनू खुला हो।</translation>
+    </message>
+    <message>
+        <location line="+26"/>
         <source>With text selected in the message box this runs instead of “%1”; with nothing selected, “%1” runs.</source>
         <translation>संदेश बॉक्स में टेक्स्ट चुना होने पर यह “%1” की जगह चलता है; कुछ भी चुना न होने पर “%1” चलता है।</translation>
     </message>
@@ -28118,12 +28181,12 @@ Note: importing keys does not verify this session.</source>
         <translation>जब %1, तब %2 की जगह %3 के लिए इस्तेमाल होता है।</translation>
     </message>
     <message>
-        <location line="-808"/>
+        <location line="-836"/>
         <source>Settings navigation</source>
         <translation>सेटिंग नेविगेशन</translation>
     </message>
     <message>
-        <location line="+94"/>
+        <location line="+95"/>
         <source>Open the previous Settings page</source>
         <translation>पिछला सेटिंग पृष्ठ खोलें</translation>
     </message>
@@ -28143,27 +28206,27 @@ Note: importing keys does not verify this session.</source>
         <translation>अगले सेटिंग उप-अनुभाग पर जाएँ</translation>
     </message>
     <message>
-        <location line="+488"/>
+        <location line="+506"/>
         <source>Use a single key combination for Settings navigation.</source>
         <translation>सेटिंग नेविगेशन के लिए एक कुंजी संयोजन का उपयोग करें।</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+23"/>
         <source>Use Ctrl, Alt or Super. Settings page actions also accept Tab or Shift+Tab.</source>
         <translation>Ctrl, Alt या Super का उपयोग करें। सेटिंग पृष्ठ क्रियाएँ Tab या Shift+Tab भी स्वीकार करती हैं।</translation>
     </message>
     <message>
-        <location line="+132"/>
+        <location line="+137"/>
         <source>Only in Settings. Overrides shared navigation; Tab bindings replace normal focus traversal.</source>
         <translation>केवल सेटिंग में। साझा नेविगेशन को बदलता है; Tab बाइंडिंग सामान्य फ़ोकस नेविगेशन की जगह लेती हैं।</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+19"/>
         <source>In Settings, “%1” runs instead.</source>
         <translation>सेटिंग में इसके बजाय “%1” चलता है।</translation>
     </message>
     <message>
-        <location line="-655"/>
+        <location line="-682"/>
         <source>Scroll Settings up half a page</source>
         <translation>सेटिंग को आधा पृष्ठ ऊपर स्क्रॉल करें</translation>
     </message>
@@ -28173,7 +28236,7 @@ Note: importing keys does not verify this session.</source>
         <translation>सेटिंग को आधा पृष्ठ नीचे स्क्रॉल करें</translation>
     </message>
     <message>
-        <location line="+491"/>
+        <location line="+511"/>
         <source>%1 moves focus, navigates or edits text, so it cannot be a shortcut on its own.</source>
         <translation>%1 फ़ोकस बदलती है, नेविगेट करती है या टेक्स्ट संपादित करती है, इसलिए यह अकेले शॉर्टकट नहीं हो सकती।</translation>
     </message>

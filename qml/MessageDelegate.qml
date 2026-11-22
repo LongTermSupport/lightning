@@ -4004,114 +4004,93 @@ Item {
                         && root.timelineView.openRowMenu === moreMenu)
                     root.timelineView.openRowMenu = null
             }
-            Shortcut {
-                sequence: "R"
-                enabled: moreMenu.opened
-                context: Qt.ApplicationShortcut
-                onActivated: {
-                    if (root.timelineModel.messagePermalink(
-                            root.menuEventId).length > 0
-                        && !root.timelineModel.messageDetails(
-                            root.menuEventId).redacted) {
-                        root.beginReply(root.menuEventId)
-                        moreMenu.close()
-                    }
+            readonly property var menuKeys: {
+                app.shortcuts.bindingRevision
+                return {
+                    reply: app.shortcuts.sequenceFor("menu.reply"),
+                    replyInThread: app.shortcuts.sequenceFor("menu.replyInThread"),
+                    edit: app.shortcuts.sequenceFor("menu.edit"),
+                    save: app.shortcuts.sequenceFor("menu.save"),
+                    copyText: app.shortcuts.sequenceFor("menu.copyText"),
+                    copyMessages: app.shortcuts.sequenceFor("menu.copyMessages"),
+                    copyImage: app.shortcuts.sequenceFor("menu.copyImage"),
+                    copyUserId: app.shortcuts.sequenceFor("menu.copyUserId"),
+                    viewDetails: app.shortcuts.sequenceFor("menu.viewDetails"),
+                    viewSource: app.shortcuts.sequenceFor("menu.viewSource"),
+                    forward: app.shortcuts.sequenceFor("menu.forward")
+                }
+            }
+            function runItem(item) {
+                if (item.visible && item.enabled) {
+                    item.triggered()
+                    moreMenu.close()
                 }
             }
             Shortcut {
-                sequence: "T"
+                sequence: moreMenu.menuKeys.reply
                 enabled: moreMenu.opened
                 context: Qt.ApplicationShortcut
-                onActivated: {
-                    if (root.timelineModel.messagePermalink(
-                            root.menuEventId).length > 0
-                        && !root.timelineModel.messageDetails(
-                            root.menuEventId).redacted) {
-                        var details = root.timelineModel.messageDetails(
-                                          root.menuEventId)
-                        var rootId = (details.threadRootId || "").length > 0
-                                     ? details.threadRootId
-                                     : root.menuEventId
-                        root.showThread(rootId)
-                        moreMenu.close()
-                    }
-                }
+                onActivated: moreMenu.runItem(replyMenuItem)
             }
             Shortcut {
-                sequence: "E"
+                sequence: moreMenu.menuKeys.replyInThread
                 enabled: moreMenu.opened
                 context: Qt.ApplicationShortcut
-                onActivated: {
-                    if (root.timelineModel.canEditEvent(root.menuEventId)) {
-                        app.composer.beginEdit(
-                            root.menuEventId,
-                            root.timelineModel.visibleTextForEvent(
-                                root.menuEventId),
-                            root.timelineModel.sanitizedHtmlForEvent(
-                                root.menuEventId),
-                            root.timelineModel.roomId)
-                        moreMenu.close()
-                    }
-                }
+                onActivated: moreMenu.runItem(replyInThreadMenuItem)
             }
             Shortcut {
-                sequence: "Ctrl+C"
+                sequence: moreMenu.menuKeys.edit
                 enabled: moreMenu.opened
                 context: Qt.ApplicationShortcut
-                onActivated: {
-                    if (root.copyableText) {
-                        root.copyToClipboard(
-                            root.timelineModel.copyTextForEvent(
-                                root.menuEventId))
-                        moreMenu.close()
-                    }
-                }
+                onActivated: moreMenu.runItem(editMenuItem)
             }
             Shortcut {
-                sequence: "F"
+                sequence: moreMenu.menuKeys.save
                 enabled: moreMenu.opened
                 context: Qt.ApplicationShortcut
-                onActivated: {
-                    if (root.forwardEligible()) {
-                        root.beginForward()
-                        moreMenu.close()
-                    }
-                }
+                onActivated: moreMenu.runItem(saveMenuItem)
             }
             Shortcut {
-                sequence: "C"
+                sequence: moreMenu.menuKeys.copyText
                 enabled: moreMenu.opened
                 context: Qt.ApplicationShortcut
-                onActivated: {
-                    if (copyImageItem.visible) {
-                        app.copyImageToClipboard(model.mediaKey || "")
-                        moreMenu.close()
-                    }
-                }
+                onActivated: moreMenu.runItem(copyTextMenuItem)
             }
             Shortcut {
-                sequence: "V"
+                sequence: moreMenu.menuKeys.copyMessages
                 enabled: moreMenu.opened
                 context: Qt.ApplicationShortcut
-                onActivated: {
-                    if (root.menuEventId !== ""
-                            && !!root.timelineModel.requestEventSource) {
-                        root.openEventSource(root.menuEventId)
-                        moreMenu.close()
-                    }
-                }
+                onActivated: moreMenu.runItem(copyMessagesMenuItem)
             }
             Shortcut {
-                sequence: "I"
+                sequence: moreMenu.menuKeys.copyImage
                 enabled: moreMenu.opened
                 context: Qt.ApplicationShortcut
-                onActivated: {
-                    if (root.menuEventId !== "") {
-                        root.openMessageDetails(
-                            root.timelineModel.messageDetails(root.menuEventId))
-                        moreMenu.close()
-                    }
-                }
+                onActivated: moreMenu.runItem(copyImageMenuItem)
+            }
+            Shortcut {
+                sequence: moreMenu.menuKeys.copyUserId
+                enabled: moreMenu.opened
+                context: Qt.ApplicationShortcut
+                onActivated: moreMenu.runItem(copyUserIdMenuItem)
+            }
+            Shortcut {
+                sequence: moreMenu.menuKeys.viewDetails
+                enabled: moreMenu.opened
+                context: Qt.ApplicationShortcut
+                onActivated: moreMenu.runItem(viewDetailsMenuItem)
+            }
+            Shortcut {
+                sequence: moreMenu.menuKeys.viewSource
+                enabled: moreMenu.opened
+                context: Qt.ApplicationShortcut
+                onActivated: moreMenu.runItem(viewSourceMenuItem)
+            }
+            Shortcut {
+                sequence: moreMenu.menuKeys.forward
+                enabled: moreMenu.opened
+                context: Qt.ApplicationShortcut
+                onActivated: moreMenu.runItem(forwardMenuItem)
             }
             QuickReactionStrip {
                 objectName: "quickReactionStrip"
@@ -4137,9 +4116,10 @@ Item {
                 }
             }
             AppMenuItem {
+                id: replyMenuItem
                 iconName: "reply"
                 text: qsTr("Reply")
-                accel: "R"
+                accel: moreMenu.menuKeys.reply
                 enabled: root.timelineModel.messagePermalink(
                              root.menuEventId).length > 0
                          && !root.timelineModel.messageDetails(
@@ -4147,9 +4127,10 @@ Item {
                 onTriggered: root.beginReply(root.menuEventId)
             }
             AppMenuItem {
+                id: replyInThreadMenuItem
                 iconName: "forum"
                 text: qsTr("Reply in thread")
-                accel: "T"
+                accel: moreMenu.menuKeys.replyInThread
                 enabled: root.timelineModel.messagePermalink(
                              root.menuEventId).length > 0
                          && !root.timelineModel.messageDetails(
@@ -4165,10 +4146,11 @@ Item {
                     root.menuEventId)
             }
             AppMenuItem {
+                id: editMenuItem
                 objectName: "editMessageMenuItem"
                 iconName: "edit_square"
                 text: qsTr("Edit")
-                accel: "E"
+                accel: moreMenu.menuKeys.edit
                 enabled: root.timelineModel.canEditEvent(root.menuEventId)
                 visible: enabled
                 onTriggered: app.composer.beginEdit(
@@ -4196,6 +4178,7 @@ Item {
                 onTriggered: app.pinned.unpin(root.menuEventId)
             }
             AppMenuItem {
+                id: saveMenuItem
                 objectName: "saveMessageMenuItem"
                 iconName: "bookmark"
                 readonly property string targetRoom:
@@ -4205,7 +4188,7 @@ Item {
                     && app.savedMessages.isSaved(targetRoom, root.menuEventId)
                 text: alreadySaved ? qsTr("Remove from saved messages")
                                    : qsTr("Save message")
-                accel: "S"
+                accel: moreMenu.menuKeys.save
                 visible: !!app.savedMessages && app.savedMessages.loaded
                          && model.redacted !== true && model.undecryptable !== true
                          && model.isLocalEcho !== true && model.isVirtual !== true
@@ -4215,18 +4198,20 @@ Item {
                 onTriggered: root.toggleSavedMessage()
             }
             AppMenuItem {
+                id: copyTextMenuItem
                 objectName: "copyTextMenuItem"
                 iconName: "content_copy"
                 text: qsTr("Copy text")
-                accel: "Ctrl+C"
+                accel: moreMenu.menuKeys.copyText
                 enabled: root.copyableText
                 onTriggered: root.copyMessageText()
             }
             AppMenuItem {
+                id: copyMessagesMenuItem
                 objectName: "copyMessagesMenuItem"
                 iconName: "content_copy"
                 text: qsTr("Copy messages")
-                accel: "Shift+C"
+                accel: moreMenu.menuKeys.copyMessages
                 visible: root.inMessageRange || root.inDragSelection
                 enabled: visible
                 onTriggered: root.copyMessages()
@@ -4362,11 +4347,11 @@ Item {
                                  root.previewRoomId, root.actionKey)
             }
             AppMenuItem {
-                id: copyImageItem
+                id: copyImageMenuItem
                 objectName: "copyImageMenuItem"
                 iconName: "content_copy"
                 text: qsTr("Copy image")
-                accel: "C"
+                accel: moreMenu.menuKeys.copyImage
                 visible: model.isImage === true
                          && model.mediaSourceAvailable === true
                          && app.mediaBridge.supported
@@ -4403,10 +4388,21 @@ Item {
                 onTriggered: root.openSenderProfileForRow()
             }
             AppMenuItem {
+                id: copyUserIdMenuItem
+                objectName: "copyUserIdMenuItem"
+                iconName: "content_copy"
+                text: qsTr("Copy user ID")
+                accel: moreMenu.menuKeys.copyUserId
+                visible: model.isOwn !== true && (model.sender || "").length > 0
+                enabled: visible
+                onTriggered: root.copyToClipboard(model.sender)
+            }
+            AppMenuItem {
+                id: viewDetailsMenuItem
                 objectName: "viewDetailsMenuItem"
                 iconName: "info"
                 text: qsTr("View details")
-                accel: "I"
+                accel: moreMenu.menuKeys.viewDetails
                 enabled: root.menuEventId !== ""
                 onTriggered: root.openMessageDetails(
                     root.timelineModel.messageDetails(
@@ -4421,10 +4417,11 @@ Item {
                 onTriggered: root.openEditHistory(root.menuEventId)
             }
             AppMenuItem {
+                id: viewSourceMenuItem
                 objectName: "viewSourceMenuItem"
                 iconName: "code"
                 text: qsTr("View source")
-                accel: "V"
+                accel: moreMenu.menuKeys.viewSource
                 enabled: root.menuEventId !== ""
                          && !!root.timelineModel.requestEventSource
                 onTriggered: root.openEventSource(root.menuEventId)
@@ -4486,10 +4483,11 @@ Item {
                 }
             }
             AppMenuItem {
+                id: forwardMenuItem
                 objectName: "forwardMessageMenuItem"
                 iconName: "arrow_forward"
                 text: qsTr("Forward")
-                accel: "F"
+                accel: moreMenu.menuKeys.forward
                 readonly property bool isMediaRow:
                     model.isImage === true || model.isVideo === true
                     || model.isAudio === true || model.isSticker === true

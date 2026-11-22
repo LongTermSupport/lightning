@@ -450,8 +450,9 @@ private Q_SLOTS:
             const QString id = registry.data(idx, ShortcutRegistry::IdRole).toString();
             if (id == QStringLiteral("dialog.close"))
                 continue;
-            if (registry.data(idx, ShortcutRegistry::ContextRole).toInt()
-                    == ShortcutRegistry::MessageSelectionContext
+            const int ctx = registry.data(idx, ShortcutRegistry::ContextRole).toInt();
+            if ((ctx == ShortcutRegistry::MessageSelectionContext
+                 || ctx == ShortcutRegistry::MessageMenuContext)
                 && (seq == QStringLiteral("R") || seq == QStringLiteral("T")
                     || seq == QStringLiteral("E")
                     || seq == QStringLiteral("Ctrl+C")))
@@ -465,6 +466,79 @@ private Q_SLOTS:
         QVERIFY(registry.isReserved(QStringLiteral("Alt+V")));
         QVERIFY(registry.isReserved(QStringLiteral("Ctrl+C")));
         QVERIFY(registry.isReserved(QStringLiteral("Space")));
+    }
+
+    void theMessageMenuShipsUniqueRebindableLetters()
+    {
+        SettingsManager settings;
+        ShortcutRegistry registry(&settings);
+        const QHash<QString, QString> expected = {
+            { QStringLiteral("menu.reply"), QStringLiteral("R") },
+            { QStringLiteral("menu.replyInThread"), QStringLiteral("T") },
+            { QStringLiteral("menu.edit"), QStringLiteral("E") },
+            { QStringLiteral("menu.save"), QStringLiteral("S") },
+            { QStringLiteral("menu.copyText"), QStringLiteral("Ctrl+C") },
+            { QStringLiteral("menu.copyMessages"), QStringLiteral("Shift+C") },
+            { QStringLiteral("menu.copyImage"), QStringLiteral("C") },
+            { QStringLiteral("menu.copyUserId"), QStringLiteral("U") },
+            { QStringLiteral("menu.viewDetails"), QStringLiteral("I") },
+            { QStringLiteral("menu.viewSource"), QStringLiteral("V") },
+            { QStringLiteral("menu.forward"), QStringLiteral("F") },
+        };
+        QHash<QString, QString> menu;
+        QString category;
+        for (int row = 0; row < registry.rowCount(); ++row) {
+            const QModelIndex idx = registry.index(row);
+            if (registry.data(idx, ShortcutRegistry::ContextRole).toInt()
+                != ShortcutRegistry::MessageMenuContext)
+                continue;
+            menu.insert(registry.data(idx, ShortcutRegistry::IdRole).toString(),
+                        registry.data(idx, ShortcutRegistry::CurrentSequenceRole).toString());
+            category = registry.data(idx, ShortcutRegistry::CategoryRole).toString();
+        }
+        QCOMPARE(menu, expected);
+        QCOMPARE(QSet<QString>(menu.cbegin(), menu.cend()).size(), menu.size());
+        QVERIFY(registry.categories().contains(category));
+        QCOMPARE(registry.conflictCount(), 0);
+
+        // Another menu item's chosen key is refused; a default one moves over.
+        QCOMPARE(registry.setBinding(QStringLiteral("menu.forward"), QStringLiteral("W")),
+                 QString());
+        QVERIFY(!registry.setBinding(QStringLiteral("menu.viewSource"), QStringLiteral("W"))
+                     .isEmpty());
+        QCOMPARE(registry.sequenceFor(QStringLiteral("menu.viewSource")), QStringLiteral("V"));
+        QCOMPARE(registry.setBinding(QStringLiteral("menu.viewSource"), QStringLiteral("R")),
+                 QString());
+        QCOMPARE(registry.sequenceFor(QStringLiteral("menu.reply")), QString());
+        QCOMPARE(registry.conflictCount(), 0);
+
+        // Global and selection keys are not menu conflicts: the menu scope is
+        // active only while it is open.
+        QCOMPARE(registry.setBinding(QStringLiteral("menu.copyUserId"),
+                                     QStringLiteral("Ctrl+K")), QString());
+        QCOMPARE(registry.sequenceFor(QStringLiteral("nav.quickSwitcher")),
+                 QStringLiteral("Ctrl+K"));
+        QCOMPARE(registry.sequenceFor(QStringLiteral("timeline.forwardMessage")),
+                 QStringLiteral("F"));
+        QCOMPARE(registry.setBinding(QStringLiteral("room.markAllRead"), QStringLiteral("I")),
+                 QString());
+        QCOMPARE(registry.sequenceFor(QStringLiteral("menu.viewDetails")), QStringLiteral("I"));
+        QCOMPARE(registry.conflictCount(), 0);
+
+        // One key, and not one the menu itself navigates with.
+        QVERIFY(!registry.setBinding(QStringLiteral("menu.forward"), QStringLiteral("F, G"))
+                     .isEmpty());
+        QVERIFY(!registry.setBinding(QStringLiteral("menu.forward"), QStringLiteral("Down"))
+                     .isEmpty());
+        QVERIFY(!registry.setBinding(QStringLiteral("menu.forward"), QStringLiteral("Return"))
+                     .isEmpty());
+        QCOMPARE(registry.sequenceFor(QStringLiteral("menu.forward")), QStringLiteral("W"));
+
+        QCOMPARE(registry.resetToDefault(QStringLiteral("menu.forward")), QString());
+        QCOMPARE(registry.sequenceFor(QStringLiteral("menu.forward")), QStringLiteral("F"));
+        QCOMPARE(registry.resetToDefault(QStringLiteral("menu.viewSource")), QString());
+        QCOMPARE(registry.sequenceFor(QStringLiteral("menu.reply")), QStringLiteral("R"));
+        QCOMPARE(registry.sequenceFor(QStringLiteral("menu.viewSource")), QStringLiteral("V"));
     }
 
     void everySeededDefaultSurvivesThePortableTextRoundTrip()
@@ -511,6 +585,13 @@ private Q_SLOTS:
                         == ShortcutRegistry::SettingsContext
                     || paletteOnly(id)))
                 continue;
+            if (registry.data(idx, ShortcutRegistry::ContextRole).toInt()
+                    == ShortcutRegistry::MessageMenuContext) {
+                ++checkedRows;
+                QVERIFY2(registry.validationError(id, seq).isEmpty(),
+                         qPrintable(id + QStringLiteral(" ships ") + seq));
+                continue;
+            }
             if (registry.data(idx, ShortcutRegistry::ContextRole).toInt()
                     == ShortcutRegistry::MessageSelectionContext) {
                 ++checkedRows;
@@ -756,7 +837,9 @@ private Q_SLOTS:
         QHash<QString, QStringList> idsBySequence;
         for (int row = 0; row < registry.rowCount(); ++row) {
             const QModelIndex idx = registry.index(row);
-            if (registry.data(idx, ShortcutRegistry::CurrentSequenceRole).toString().isEmpty())
+            if (registry.data(idx, ShortcutRegistry::CurrentSequenceRole).toString().isEmpty()
+                || registry.data(idx, ShortcutRegistry::ContextRole).toInt()
+                       == ShortcutRegistry::MessageMenuContext)
                 continue;
             idsBySequence[registry
                               .data(idx,
