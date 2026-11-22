@@ -292,7 +292,7 @@ build-deb:
     - >-
       apt-get install -y --no-install-recommends
       build-essential ca-certificates ccache cmake curl debhelper dpkg-dev
-      fakeroot file git jq libsecret-1-dev libsqlite3-dev libssl-dev
+      fakeroot file git jq libsecret-1-dev python3 libsqlite3-dev libssl-dev
       ninja-build patchelf pkg-config qt6-base-dev qt6-base-private-dev qt6-declarative-dev
       qt6-multimedia-dev qt6-svg-dev qt6-tools-dev zstd
     # GStreamer development files for the call media engine; without them the
@@ -315,6 +315,7 @@ build-deb:
     - ./packaging-ci/scripts/prepare-pinned-source.sh
     - ./packaging-ci/scripts/build-deb.sh
     - ./packaging-ci/scripts/write-build-info.sh deb
+    - python3 -I packaging-ci/scripts/check-advisories.py --build-info dist/build-info.json --cargo-lock work/lightning/rust/Cargo.lock --flake-lock work/lightning/flake.lock > dist/advisory-report.json
 
 # Second deb lane: Ubuntu 26.04 LTS.
 #
@@ -352,7 +353,7 @@ build-deb-ubuntu:
     - >-
       apt-get install -y --no-install-recommends
       build-essential ca-certificates ccache cmake curl debhelper dpkg-dev
-      fakeroot file git jq libsecret-1-dev libsqlite3-dev libssl-dev
+      fakeroot file git jq libsecret-1-dev python3 libsqlite3-dev libssl-dev
       ninja-build patchelf pkg-config qt6-base-dev qt6-base-private-dev qt6-declarative-dev
       qt6-multimedia-dev qt6-svg-dev qt6-tools-dev zstd
     # GStreamer development files for the call media engine; without them the
@@ -375,6 +376,7 @@ build-deb-ubuntu:
     - ./packaging-ci/scripts/prepare-pinned-source.sh
     - ./packaging-ci/scripts/build-deb.sh
     - ./packaging-ci/scripts/write-build-info.sh deb
+    - python3 -I packaging-ci/scripts/check-advisories.py --build-info dist/build-info.json --cargo-lock work/lightning/rust/Cargo.lock --flake-lock work/lightning/flake.lock > dist/advisory-report.json
   # FORMAT is "deb" in both deb lanes; a distinct archive name keeps their
   # dist/build-info.json from overwriting each other.
   artifacts:
@@ -1274,7 +1276,7 @@ validate-flatpak:
     - test ! -e work/lightning
     - command -v nix >/dev/null 2>&1 && exit 1 || true
     - apt-get update
-    - apt-get install -y --no-install-recommends ca-certificates flatpak
+    - apt-get install -y --no-install-recommends binutils ca-certificates flatpak
   script: [./packaging-ci/scripts/validate-flatpak.sh]
   artifacts:
     when: always

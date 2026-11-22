@@ -86,7 +86,7 @@ variables:
   - >-
     apt-get install -y --no-install-recommends
     build-essential ca-certificates ccache cmake curl debhelper dpkg-dev
-    fakeroot file git jq libsecret-1-dev libsqlite3-dev libssl-dev
+    fakeroot file git jq libsecret-1-dev python3 libsqlite3-dev libssl-dev
     ninja-build patchelf pkg-config qt6-base-dev qt6-base-private-dev qt6-declarative-dev
     qt6-multimedia-dev qt6-svg-dev qt6-tools-dev zstd
     libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
@@ -245,6 +245,7 @@ build-deb-amd64:
     - ./packaging-ci/scripts/prepare-pinned-source.sh
     - ./packaging-ci/scripts/build-deb.sh
     - ./packaging-ci/scripts/write-build-info.sh deb
+    - python3 -I packaging-ci/scripts/check-advisories.py --build-info dist/build-info.json --cargo-lock work/lightning/rust/Cargo.lock --flake-lock work/lightning/flake.lock > dist/advisory-report.json
 
 validate-deb-amd64:
   extends: .pkg-validate
@@ -281,6 +282,7 @@ build-deb-ubuntu-amd64:
     - ./packaging-ci/scripts/prepare-pinned-source.sh
     - ./packaging-ci/scripts/build-deb.sh
     - ./packaging-ci/scripts/write-build-info.sh deb
+    - python3 -I packaging-ci/scripts/check-advisories.py --build-info dist/build-info.json --cargo-lock work/lightning/rust/Cargo.lock --flake-lock work/lightning/flake.lock > dist/advisory-report.json
 
 validate-deb-ubuntu-amd64:
   extends: .pkg-validate
@@ -441,6 +443,7 @@ build-deb-arm64:
     - ./packaging-ci/scripts/prepare-pinned-source.sh
     - ./packaging-ci/scripts/build-deb.sh
     - ./packaging-ci/scripts/write-build-info.sh deb
+    - python3 -I packaging-ci/scripts/check-advisories.py --build-info dist/build-info.json --cargo-lock work/lightning/rust/Cargo.lock --flake-lock work/lightning/flake.lock > dist/advisory-report.json
 
 validate-deb-arm64:
   extends: .pkg-validate
@@ -477,6 +480,7 @@ build-deb-ubuntu-arm64:
     - ./packaging-ci/scripts/prepare-pinned-source.sh
     - ./packaging-ci/scripts/build-deb.sh
     - ./packaging-ci/scripts/write-build-info.sh deb
+    - python3 -I packaging-ci/scripts/check-advisories.py --build-info dist/build-info.json --cargo-lock work/lightning/rust/Cargo.lock --flake-lock work/lightning/flake.lock > dist/advisory-report.json
 
 validate-deb-ubuntu-arm64:
   extends: .pkg-validate
@@ -653,7 +657,7 @@ validate-flatpak-amd64:
   before_script:
     - *pkg-clean-validator
     - apt-get update
-    - apt-get install -y --no-install-recommends ca-certificates flatpak
+    - apt-get install -y --no-install-recommends binutils ca-certificates flatpak
   script:
     - ./packaging-ci/scripts/validate-flatpak.sh
 
