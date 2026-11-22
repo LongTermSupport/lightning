@@ -111,6 +111,19 @@ public:
 private:
     quint64 m_fakeOp = 3000000;
 };
+class DeepIndexClient final : public MockMatrixClient
+{
+    Q_OBJECT
+public:
+    quint64 answer = 0;
+    int asked = 0;
+
+    quint64 deepenSearchIndex(const QString &) override
+    {
+        ++asked;
+        return answer;
+    }
+};
 }
 
 class MessageSearchControllerTest : public QObject
@@ -992,6 +1005,45 @@ private Q_SLOTS:
         QCOMPARE(model.data(model.index(0, 0),
                             MessageSearchController::FilenameRole).toString(),
                  QStringLiteral("IMG_2041.png"));
+    }
+
+    void aRefusedRoomIndexEndsAtOnceAndCanBeRetried()
+    {
+        DeepIndexClient client;
+        MessageSearchController model;
+        model.setClient(&client);
+        QSignalSpy ended(&model, &MessageSearchController::roomHistoryIndexed);
+        const QString room = QStringLiteral("!general:mock.local");
+        model.indexRoomHistory(room);
+        QVERIFY(!model.indexing());
+        QCOMPARE(ended.count(), 1);
+        QCOMPARE(ended.first().at(0).toString(), room);
+        QCOMPARE(ended.first().at(1).toBool(), false);
+        client.answer = 41;
+        model.indexRoomHistory(room);
+        QCOMPARE(client.asked, 2);
+        QVERIFY(model.indexing());
+    }
+
+    void aPendingRoomIndexEndsOnlyWithItsOwnResultOrSignOut()
+    {
+        DeepIndexClient client;
+        client.answer = 41;
+        MessageSearchController model;
+        model.setClient(&client);
+        QSignalSpy ended(&model, &MessageSearchController::roomHistoryIndexed);
+        const QString room = QStringLiteral("!general:mock.local");
+        model.indexRoomHistory(room);
+        QVERIFY(model.indexing());
+        Q_EMIT client.searchIndexDeepened(40, true, room, 1, true, 0, 0, QString());
+        QVERIFY2(model.indexing(), "a stale completion ended the newer operation");
+        Q_EMIT client.loggedOut();
+        QVERIFY2(!model.indexing(), "sign-out left the room index busy");
+        Q_EMIT client.searchIndexDeepened(41, true, room, 1, true, 0, 0, QString());
+        QCOMPARE(ended.count(), 0);
+        client.answer = 42;
+        model.indexRoomHistory(room);
+        QCOMPARE(client.asked, 2);
     }
 };
 

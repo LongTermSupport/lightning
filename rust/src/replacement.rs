@@ -61,6 +61,37 @@ pub(crate) fn encryption_permits(replacement_encrypted: bool, original_encrypted
     replacement_encrypted || !original_encrypted
 }
 
+/// `m.new_content` replaces the whole content, so it must be a message on its
+/// own: a body, and for an attachment the file it now shows.
+pub(crate) fn complete_message(new_content: &Value) -> bool {
+    if !new_content.get("body").is_some_and(Value::is_string) {
+        return false;
+    }
+    match new_content.get("msgtype").and_then(Value::as_str) {
+        Some("m.image" | "m.video" | "m.audio" | "m.file") => {
+            new_content.get("file").is_some_and(Value::is_object)
+                || new_content
+                    .get("url")
+                    .and_then(Value::as_str)
+                    .is_some_and(|u| u.starts_with("mxc://"))
+        }
+        _ => true,
+    }
+}
+
+/// The original as its winning replacement shows it: `m.new_content` whole,
+/// except that the original's own `m.relates_to` (thread, reply) is kept.
+pub(crate) fn project(original_content: &Value, new_content: &Value) -> Value {
+    let mut out = new_content.clone();
+    if let Some(fields) = out.as_object_mut() {
+        fields.remove("m.relates_to");
+        if let Some(relation) = original_content.get("m.relates_to") {
+            fields.insert("m.relates_to".to_owned(), relation.clone());
+        }
+    }
+    out
+}
+
 /// The spec's order: the newest `origin_server_ts`, ties to the greatest
 /// event id. Arrival order never decides.
 pub(crate) fn supersedes(candidate: (u64, &str), current: (u64, &str)) -> bool {
@@ -121,6 +152,22 @@ mod tests {
         assert!(encryption_permits(true, true));
         assert!(encryption_permits(false, false));
         assert!(encryption_permits(true, false));
+    }
+
+    #[test]
+    fn a_projection_is_the_new_content_with_the_originals_relations() {
+        let original = json!({"msgtype": "m.file", "body": "a.pdf", "url": "mxc://x/a",
+                              "m.relates_to": {"rel_type": "m.thread", "event_id": "$root"}});
+        let new = json!({"msgtype": "m.text", "body": "never mind",
+                         "m.relates_to": {"rel_type": "m.thread", "event_id": "$other"}});
+        let projected = project(&original, &new);
+        assert_eq!(projected["body"], "never mind");
+        assert!(projected.get("url").is_none(), "the old attachment survived the edit");
+        assert_eq!(projected["m.relates_to"]["event_id"], "$root");
+        assert!(complete_message(&new));
+        assert!(!complete_message(&json!({"msgtype": "m.image", "body": "caption"})));
+        assert!(complete_message(&json!({"msgtype": "m.image", "body": "c", "url": "mxc://x/b"})));
+        assert!(!complete_message(&json!({"msgtype": "m.text"})));
     }
 
     #[test]

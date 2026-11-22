@@ -9232,10 +9232,10 @@ quint64 RustSdkMatrixClient::deepenSearchIndex(const QString &roomId)
         return 0;
     const quint64 opId = nextOpId();
     const QByteArray room = roomId.toUtf8();
-    takeRustString(mx_rust_search_index_deep(
+    const QString error = takeRustString(mx_rust_search_index_deep(
         m_rustHandle, room.constData(),
         static_cast<unsigned long long>(opId)));
-    return opId;
+    return error.isEmpty() ? opId : 0;
 }
 
 void RustSdkMatrixClient::forgetIndexedEvent(const QString &eventId)

@@ -123,18 +123,59 @@ pub(crate) async fn get_media_content_bounded(
         return client.media().get_media_content(request, use_cache).await;
     }
 
+    through_cache(
+        use_cache,
+        || cache_get(client, request),
+        || fetch_uncached(client, request, timeout),
+        |content| cache_put(client, request, content),
+    )
+    .await
+}
+
+/// The store is a cache: a local storage fault falls through to the network
+/// and never discards bytes the network delivered. Fetch errors (including a
+/// failed decrypt or hash check) stay errors.
+async fn through_cache<G, GF, F, FF, P, PF>(
+    use_cache: bool,
+    get: G,
+    fetch: F,
+    put: P,
+) -> matrix_sdk::Result<Vec<u8>>
+where
+    G: FnOnce() -> GF,
+    GF: std::future::Future<Output = matrix_sdk::Result<Option<Vec<u8>>>>,
+    F: FnOnce() -> FF,
+    FF: std::future::Future<Output = matrix_sdk::Result<Vec<u8>>>,
+    P: FnOnce(Vec<u8>) -> PF,
+    PF: std::future::Future<Output = matrix_sdk::Result<()>>,
+{
     if use_cache {
-        if let Some(content) = cache_get(client, request).await? {
-            return Ok(content);
+        match get().await {
+            Ok(Some(content)) => return Ok(content),
+            Ok(None) => {}
+            Err(_) => note_cache_fault("read"),
         }
     }
-
-    let content = fetch_uncached(client, request, timeout).await?;
-
-    if use_cache {
-        cache_put(client, request, &content).await?;
+    let content = fetch().await?;
+    if use_cache && fits_store(content.len()) && put(content.clone()).await.is_err() {
+        note_cache_fault("write");
     }
     Ok(content)
+}
+
+fn note_cache_fault(stage: &str) {
+    use std::sync::atomic::{AtomicU64, Ordering};
+    static LAST_SECS: AtomicU64 = AtomicU64::new(0);
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0);
+    let last = LAST_SECS.load(Ordering::Relaxed);
+    if now >= last.saturating_add(60)
+        && LAST_SECS.compare_exchange(last, now, Ordering::Relaxed, Ordering::Relaxed).is_ok()
+    {
+        eprintln!("lightning: media store: a cache {stage} failed; the download is used without it");
+    }
 }
 
 pub(crate) struct Coalescer<T: Clone> {
@@ -253,7 +294,7 @@ async fn cache_get(
 async fn cache_put(
     client: &Client,
     request: &MediaRequestParameters,
-    content: &[u8],
+    content: Vec<u8>,
 ) -> matrix_sdk::Result<()> {
     if !fits_store(content.len()) {
         return Ok(());
@@ -262,7 +303,7 @@ async fn cache_put(
         .media_store()
         .lock()
         .await?
-        .add_media_content(request, content.to_vec(), IgnoreMediaRetentionPolicy::No)
+        .add_media_content(request, content, IgnoreMediaRetentionPolicy::No)
         .await?;
     Ok(())
 }
@@ -447,7 +488,7 @@ pub(crate) async fn get_avatar_bounded(
         return Err(err);
     }
     if use_cache {
-        let _ = cache_put(client, &file_request, &bytes).await;
+        let _ = cache_put(client, &file_request, bytes.clone()).await;
     }
     Ok(bytes)
 }
@@ -545,9 +586,9 @@ mod tests {
             format: MediaFormat::File,
         };
         let cap = crate::rooms::MEDIA_STORE_MAX_FILE_BYTES as usize;
-        cache_put(&client, &file("Over"), &vec![7u8; cap + 1]).await.unwrap();
+        cache_put(&client, &file("Over"), vec![7u8; cap + 1]).await.unwrap();
         assert!(cache_get(&client, &file("Over")).await.unwrap().is_none(), "over the cap was kept");
-        cache_put(&client, &file("Under"), b"small").await.unwrap();
+        cache_put(&client, &file("Under"), b"small".to_vec()).await.unwrap();
         assert_eq!(cache_get(&client, &file("Under")).await.unwrap().as_deref(), Some(&b"small"[..]));
     }
 
@@ -1018,5 +1059,73 @@ mod tests {
         .await
         .expect("bounded");
         assert!(a.is_ok() && b.is_ok());
+    }
+
+    fn store_fault() -> matrix_sdk::Error {
+        matrix_sdk::Error::UnknownError(Box::new(std::io::Error::other("disk I/O error")))
+    }
+
+    #[tokio::test]
+    async fn a_cache_read_fault_still_downloads() {
+        let fetched_once = std::cell::Cell::new(false);
+        let fetched = &fetched_once;
+        let got = through_cache(
+            true,
+            || async { Err(store_fault()) },
+            || async move {
+                fetched.set(true);
+                Ok(b"network".to_vec())
+            },
+            |_| async { Ok(()) },
+        )
+        .await;
+        assert_eq!(got.unwrap(), b"network");
+        assert!(fetched_once.get());
+    }
+
+    #[tokio::test]
+    async fn a_cache_write_fault_keeps_the_downloaded_bytes() {
+        let got = through_cache(
+            true,
+            || async { Ok(None) },
+            || async { Ok(b"network".to_vec()) },
+            |_| async { Err(store_fault()) },
+        )
+        .await;
+        assert_eq!(got.unwrap(), b"network");
+    }
+
+    #[tokio::test]
+    async fn a_cache_hit_skips_the_network_and_a_fetch_error_stays_an_error() {
+        let got = through_cache(
+            true,
+            || async { Ok(Some(b"cached".to_vec())) },
+            || async { panic!("fetched despite a cache hit") },
+            |_| async { panic!("rewrote a cache hit") },
+        )
+        .await;
+        assert_eq!(got.unwrap(), b"cached");
+        let put_once = std::cell::Cell::new(false);
+        let put = &put_once;
+        let failed = through_cache(
+            true,
+            || async { Err(store_fault()) },
+            || async { Err(store_fault()) },
+            |_| {
+                put.set(true);
+                async { Ok(()) }
+            },
+        )
+        .await;
+        assert!(failed.is_err());
+        assert!(!put_once.get(), "a failed fetch must not reach the cache");
+        let untouched = through_cache(
+            false,
+            || async { panic!("read the cache with use_cache off") },
+            || async { Ok(b"network".to_vec()) },
+            |_| async { panic!("wrote the cache with use_cache off") },
+        )
+        .await;
+        assert_eq!(untouched.unwrap(), b"network");
     }
 }

@@ -133,6 +133,7 @@ void MessageSearchController::setClient(MatrixClient *client)
         disconnect(m_client, nullptr, this, nullptr);
     m_client = client;
     m_sweepOp = 0;
+    m_deepOp = 0;
     m_backgroundIndex.stop();
     m_backgroundIndexSpent = false;
     clear();
@@ -246,8 +247,9 @@ void MessageSearchController::setClient(MatrixClient *client)
         resetIndexAll();
         m_backgroundIndex.stop();
         m_backgroundIndexSpent = false;
-        if (m_sweepOp != 0) {
+        if (m_sweepOp != 0 || m_deepOp != 0) {
             m_sweepOp = 0;
+            m_deepOp = 0;
             Q_EMIT indexingChanged();
         }
         setProperty(kIgnoredUsersProperty, QStringList());
@@ -320,6 +322,8 @@ void MessageSearchController::indexRoomHistory(const QString &roomId)
     m_deepOp = m_client->deepenSearchIndex(roomId);
     if (m_deepOp != 0)
         Q_EMIT indexingChanged();
+    else
+        Q_EMIT roomHistoryIndexed(roomId, false, false, 0);
 }
 
 bool MessageSearchController::clearIndex()

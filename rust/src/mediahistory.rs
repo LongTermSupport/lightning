@@ -29,9 +29,7 @@ pub(crate) struct MediaEdit {
     pub event_id: String,
     pub ts: u64,
     pub sender: String,
-    pub body: String,
-    pub filename: Option<String>,
-    pub spoiler: bool,
+    pub new_content: Value,
     pub encrypted: bool,
 }
 
@@ -59,10 +57,6 @@ impl PendingEdits {
 
 /// Candidates held across all targets; a new sender past it is refused.
 pub(crate) const MAX_PENDING_EDITS: usize = 4096;
-// shortcut: eight newer stranger edits of one event crowd out the owner's
-// (bounded, and a stranger is never promoted); keep senders unbounded per
-// event if that is ever seen.
-const MAX_EDITORS_PER_EVENT: usize = 8;
 
 impl MediaEntry {
     pub(crate) fn to_json(&self) -> Value {
@@ -94,6 +88,8 @@ impl MediaEntry {
 pub(crate) struct Scanned {
     pub entries: Vec<MediaEntry>,
     pub undecryptable: bool,
+    /// An attachment's content with its winning edit applied: what to fetch.
+    pub attachment: Option<Value>,
 }
 
 /// An `mxc://` URI and nothing else. `url` is remote text that becomes a
@@ -197,7 +193,12 @@ pub(crate) fn host_of(url: &str) -> String {
     host.to_ascii_lowercase()
 }
 
+#[cfg(test)]
 pub(crate) fn stored_media_from_event(value: &Value) -> Option<crate::timeline::StoredMedia> {
+    stored_media_from_content(value.get("content")?)
+}
+
+pub(crate) fn stored_media_from_content(content: &Value) -> Option<crate::timeline::StoredMedia> {
     use matrix_sdk::ruma::events::room::{EncryptedFile, MediaSource};
     use matrix_sdk::ruma::OwnedMxcUri;
     fn source_of(container: &Value, file_key: &str, url_key: &str) -> Option<MediaSource> {
@@ -212,7 +213,6 @@ pub(crate) fn stored_media_from_event(value: &Value) -> Option<crate::timeline::
             .filter(|u| u.starts_with("mxc://") && u.len() > "mxc://".len())
             .map(|u| MediaSource::Plain(OwnedMxcUri::from(u)))
     }
-    let content = value.get("content")?;
     let source = source_of(content, "file", "url")?;
     let info = content.get("info");
     let thumbnail = info.and_then(|i| source_of(i, "thumbnail_file", "thumbnail_url"));
@@ -283,17 +283,16 @@ pub(crate) fn classify_with_edits(value: &Value, encrypted: bool, edits: &mut Pe
         return out;
     }
     if type_str == "m.room.message" && crate::replacement::is_replacement(value) {
-        let Some(r) = crate::replacement::parse(value) else { return out };
-        let Some(new_body) = r.new_content.get("body").and_then(|v| v.as_str()) else {
+        let Some(r) = crate::replacement::parse(value)
+            .filter(|r| crate::replacement::complete_message(r.new_content))
+        else {
             return out;
         };
         let candidate = MediaEdit {
             event_id: r.event_id.to_owned(),
             ts: r.ts,
             sender: r.sender.to_owned(),
-            body: new_body.to_owned(),
-            filename: r.new_content.get("filename").and_then(|v| v.as_str()).map(str::to_owned),
-            spoiler: crate::spoiler::spoiler_of(r.new_content).is_some(),
+            new_content: r.new_content.clone(),
             encrypted,
         };
         let full = edits.held >= MAX_PENDING_EDITS;
@@ -308,12 +307,22 @@ pub(crate) fn classify_with_edits(value: &Value, encrypted: bool, edits: &mut Pe
             ) {
                 *held = candidate;
             }
-        } else if !full && list.len() < MAX_EDITORS_PER_EVENT {
+        } else if !full {
             list.push(candidate);
             edits.held += 1;
         }
         return out;
     }
+    let edit = edits.by_target.remove(&event_id).and_then(|list| {
+        edits.held -= list.len();
+        list.into_iter().find(|e| {
+            crate::replacement::may_replace(&e.sender, "m.room.message", &sender, type_str)
+                && crate::replacement::encryption_permits(e.encrypted, encrypted)
+        })
+    });
+    let original_spoiler = crate::spoiler::spoiler_of(content).is_some();
+    let projected = edit.map(|e| crate::replacement::project(content, &e.new_content));
+    let content = projected.as_ref().unwrap_or(content);
     let msgtype = if type_str == "m.sticker" {
         "m.sticker"
     } else {
@@ -322,18 +331,11 @@ pub(crate) fn classify_with_edits(value: &Value, encrypted: bool, edits: &mut Pe
             .and_then(|v| v.as_str())
             .unwrap_or("m.text")
     };
-    let mut body = content
+    let body = content
         .get("body")
         .and_then(|v| v.as_str())
         .unwrap_or_default()
         .to_owned();
-    let edit = edits.by_target.remove(&event_id).and_then(|list| {
-        edits.held -= list.len();
-        list.into_iter().find(|e| {
-            crate::replacement::may_replace(&e.sender, "m.room.message", &sender, type_str)
-                && crate::replacement::encryption_permits(e.encrypted, encrypted)
-        })
-    });
 
     if let Some(kind) = media_kind(msgtype, content) {
         let info = content.get("info");
@@ -356,25 +358,19 @@ pub(crate) fn classify_with_edits(value: &Value, encrypted: bool, edits: &mut Pe
         if mxc.is_empty() {
             return out;
         }
-        let mut filename = content
+        let filename = content
             .get("filename")
             .and_then(|v| v.as_str())
             .unwrap_or(&body)
             .to_owned();
-        if let Some(edit) = &edit {
-            body = edit.body.clone();
-            if let Some(f) = &edit.filename {
-                filename = f.clone();
-            }
-        }
         let mimetype = info
             .and_then(|i| i.get("mimetype"))
             .and_then(|v| v.as_str())
             .unwrap_or_default()
             .to_owned();
         let gif = is_gif(kind, &mimetype, info);
-        let spoiler = crate::spoiler::spoiler_of(content).is_some()
-            || edit.as_ref().is_some_and(|e| e.spoiler);
+        let spoiler = original_spoiler || crate::spoiler::spoiler_of(content).is_some();
+        out.attachment = Some(content.clone());
         out.entries.push(MediaEntry {
             spoiler,
             event_id,
@@ -398,9 +394,6 @@ pub(crate) fn classify_with_edits(value: &Value, encrypted: bool, edits: &mut Pe
         return out;
     }
 
-    if let Some(edit) = &edit {
-        body = edit.body.clone();
-    }
     for url in extract_urls(&body) {
         let host = host_of(&url);
         out.entries.push(MediaEntry {
@@ -467,7 +460,7 @@ mod tests {
             "type": "m.room.message", "event_id": "$e", "sender": event["sender"].clone(),
             "content": {
                 "body": "* new", "msgtype": "m.image",
-                "m.new_content": { "body": "new", "msgtype": "m.image" },
+                "m.new_content": { "body": "new", "msgtype": "m.image", "url": "mxc://example.org/plain" },
                 "m.relates_to": { "rel_type": "m.replace", "event_id": event["event_id"].clone() }
             }
         });
@@ -574,9 +567,7 @@ mod tests {
     #[test]
     fn an_edited_caption_replaces_the_caption_and_keeps_the_file_name() {
         let mut edits = PendingEdits::new();
-        let mut edit = edit_event("$e", "$1", "@a:example.org", "new caption");
-        edit["content"]["msgtype"] = json!("m.image");
-        classify_with_edits(&edit, false, &mut edits);
+        classify_with_edits(&caption_edit("$e", "@a:example.org", 2_000, "new caption"), false, &mut edits);
         let scanned = classify_with_edits(&image_event(false), false, &mut edits);
         assert_eq!(scanned.entries.len(), 1, "one row, not two");
         assert_eq!(scanned.entries[0].body, "new caption");
@@ -587,13 +578,13 @@ mod tests {
     #[test]
     fn only_the_original_senders_edit_counts_and_the_newest_wins() {
         let mut edits = PendingEdits::new();
-        classify_with_edits(&edit_event("$e2", "$1", "@a:example.org", "second"), false, &mut edits);
-        classify_with_edits(&edit_event("$e1", "$1", "@a:example.org", "first"), false, &mut edits);
+        classify_with_edits(&caption_edit("$e2", "@a:example.org", 3_000, "second"), false, &mut edits);
+        classify_with_edits(&caption_edit("$e1", "@a:example.org", 2_000, "first"), false, &mut edits);
         let scanned = classify_with_edits(&image_event(false), false, &mut edits);
         assert_eq!(scanned.entries[0].body, "second");
 
         let mut edits = PendingEdits::new();
-        classify_with_edits(&edit_event("$x", "$1", "@mallory:example.org", "hijacked"), false, &mut edits);
+        classify_with_edits(&caption_edit("$x", "@mallory:example.org", 3_000, "hijacked"), false, &mut edits);
         let scanned = classify_with_edits(&image_event(false), false, &mut edits);
         assert_eq!(scanned.entries[0].body, "holiday.png");
     }
@@ -635,6 +626,8 @@ mod tests {
         edit["origin_server_ts"] = json!(ts);
         edit["content"]["msgtype"] = json!("m.image");
         edit["content"]["m.new_content"]["msgtype"] = json!("m.image");
+        edit["content"]["m.new_content"]["url"] = json!("mxc://example.org/plain");
+        edit["content"]["m.new_content"]["filename"] = json!("holiday.png");
         edit
     }
 
@@ -690,7 +683,7 @@ mod tests {
         assert_eq!(edits.len(), MAX_PENDING_EDITS);
         classify_with_edits(&edit_event("$n", "$t0", "@u9:example.org", "y"), false, &mut edits);
         assert_eq!(edits.len(), MAX_PENDING_EDITS, "a new sender past the cap was held");
-        assert_eq!(edits.by_target["$t0"].iter().find(|e| e.sender == "@u0:example.org").unwrap().body, "newer");
+        assert_eq!(edits.by_target["$t0"].iter().find(|e| e.sender == "@u0:example.org").unwrap().new_content["body"], "newer");
     }
 
     #[test]
@@ -807,6 +800,40 @@ mod tests {
     }
 
     #[test]
+    fn an_edit_that_swaps_the_file_shows_and_registers_the_new_one() {
+        let mut edit = caption_edit("$e", "@a:example.org", 2_000, "new picture");
+        edit["content"]["m.new_content"]["url"] = json!("mxc://example.org/other");
+        edit["content"]["m.new_content"]["info"] = json!({ "mimetype": "image/jpeg", "size": 77 });
+        let mut edits = PendingEdits::new();
+        classify_with_edits(&edit, false, &mut edits);
+        let scanned = classify_with_edits(&image_event(false), false, &mut edits);
+        assert_eq!(scanned.entries.len(), 1);
+        assert_eq!(scanned.entries[0].mxc, "mxc://example.org/other");
+        assert_eq!((scanned.entries[0].mimetype.as_str(), scanned.entries[0].size), ("image/jpeg", 77));
+        let media = stored_media_from_content(scanned.attachment.as_ref().unwrap()).unwrap();
+        assert!(matches!(&media.source,
+            matrix_sdk::ruma::events::room::MediaSource::Plain(uri) if uri.as_str() == "mxc://example.org/other"));
+    }
+
+    #[test]
+    fn an_edit_from_a_file_to_text_removes_the_attachment() {
+        let mut edits = PendingEdits::new();
+        classify_with_edits(&edit_event("$e", "$1", "@a:example.org", "no picture after all"), false, &mut edits);
+        let scanned = classify_with_edits(&image_event(false), false, &mut edits);
+        assert!(scanned.entries.is_empty());
+        assert!(scanned.attachment.is_none());
+    }
+
+    #[test]
+    fn eight_strangers_cannot_crowd_out_the_owners_caption() {
+        let mut walk: Vec<Value> = (0..8)
+            .map(|i| caption_edit(&format!("$x{i}"), &format!("@m{i}:example.org"), 5_000, "hijacked"))
+            .collect();
+        walk.push(caption_edit("$own", "@a:example.org", 2_000, "corrected caption"));
+        assert_eq!(caption_after(&walk), "corrected caption");
+    }
+
+    #[test]
     fn a_caption_and_a_filename_are_both_kept() {
         let mut event = image_event(false);
         event["content"]["body"] = json!("look at this");
@@ -859,5 +886,5 @@ pub(crate) struct Cursor {
     pub scanned_total: u64,
     pub undecryptable_total: u64,
     pub pending_edits: PendingEdits,
-
+    pub pager: crate::roomexport::Pager,
 }
