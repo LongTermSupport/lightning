@@ -336,6 +336,10 @@ impl WalkState {
                 .map(|o| o.is_empty())
                 .unwrap_or(true);
         if redacted {
+            // Only a server that keeps relations through redaction can tell a redacted edit from a deleted message.
+            if crate::replacement::is_replacement(value) {
+                return None;
+            }
             return Some(ExportRow { kind: "redacted".to_owned(), ..base });
         }
         if type_str == "m.room.encrypted" {
@@ -566,15 +570,7 @@ mod tests {
             for room in [ROOM, OTHER_ROOM] {
                 let mut walk = WalkState::new(Range::All);
                 for (event, encrypted) in case.history(room) {
-                    if let Some(row) = walk.consume(event, encrypted) {
-                        if row.kind == "redacted" {
-                            let winner = case.before_redaction.as_ref().unwrap_or_else(|| panic!("{}: unexpected tombstone", case.name));
-                            assert_eq!(row.event_id, winner["event_id"].as_str().unwrap(), "{}", case.name);
-                            assert!(row.body.is_empty() && !row.is_attachment(), "{}", case.name);
-                        } else {
-                            rows.push(row);
-                        }
-                    }
+                    rows.extend(walk.consume(event, encrypted));
                 }
             }
             let want = case.content_for(Projection::Export);
