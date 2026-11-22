@@ -173,10 +173,11 @@ private:
     bool passesScopeFilter(const RoomInfo &r) const;
     bool passesFilter(const RoomInfo &r) const;
     bool openRoomListsAsUnread() const;
-    QList<RoomInfo> desiredRooms(const QSet<QString> &superseded);
+    QList<RoomInfo> desiredRooms(const QList<RoomInfo> &all,
+                                 const QSet<QString> &superseded);
     void setOrderHeld(bool held);
     void reconcileRooms();
-    QSet<QString> computeSupersededRoomIds() const;
+    QSet<QString> computeSupersededRoomIds(const QList<RoomInfo> &rooms) const;
     void resolveMissingDirectAvatars();
     struct BridgeBadge {
         QString networkId;
@@ -191,12 +192,13 @@ private:
     int m_archivedUnreadCount = 0;
     int m_archivedCount = 0;
     void updateUnreadTotals();
+    void updateUnreadTotals(const QList<RoomInfo> &rooms);
     void unarchiveOnNewUnread(const RoomInfo &room, bool counts);
     struct UnreadBaseline { bool counts = false; int unread = 0; int highlight = 0; };
     QHash<QString, UnreadBaseline> m_unreadBaseline;
     QSet<QString> m_unarchiveRequested;
     bool marksReady() const;
-    void pruneArchivedMarks();
+    void pruneArchivedMarks(const QList<RoomInfo> &rooms);
     void storeArchivedMark(const QString &roomId, int unread, int highlight);
     QVariantMap m_archivedMarks;
     bool m_archivedMarksLoaded = false;
@@ -226,6 +228,7 @@ private:
     bool m_orderHeld = false;
     int m_sortMode = conversation::SortByActivity;
     bool m_sortPending = false;
+    bool m_reconciling = false;
     QTimer m_holdCap;
     QHash<QString, BridgeBadge> m_advertisedBridges;
 

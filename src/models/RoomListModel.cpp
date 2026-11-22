@@ -12,6 +12,7 @@
 #include "spaces/SpaceManager.h"
 
 #include <algorithm>
+#include <QScopedValueRollback>
 #include <QSet>
 #include <QUrl>
 
@@ -48,6 +49,8 @@ RoomListModel::RoomListModel(QObject *parent)
     connect(&m_holdCap, &QTimer::timeout, this, &RoomListModel::releaseOrder);
 
     const auto boundary = [this] {
+        if (m_reconciling)
+            return;
         updateFavouritesBoundary();
         updateUnreadTotals();
     };
@@ -563,12 +566,9 @@ void RoomListModel::setSearchQuery(const QString &query)
     m_searchDebounce.start();
 }
 
-QSet<QString> RoomListModel::computeSupersededRoomIds() const
+QSet<QString> RoomListModel::computeSupersededRoomIds(const QList<RoomInfo> &rooms) const
 {
     QSet<QString> superseded;
-    if (!m_client)
-        return superseded;
-    const QList<RoomInfo> rooms = m_client->rooms();
     QHash<QString, const RoomInfo *> byId;
     byId.reserve(rooms.size());
     for (const RoomInfo &room : rooms)
@@ -590,12 +590,12 @@ QSet<QString> RoomListModel::computeSupersededRoomIds() const
     return superseded;
 }
 
-QList<RoomInfo> RoomListModel::desiredRooms(const QSet<QString> &superseded)
+QList<RoomInfo> RoomListModel::desiredRooms(const QList<RoomInfo> &all,
+                                            const QSet<QString> &superseded)
 {
     QList<RoomInfo> desired;
     m_sortPending = false;
     if (m_client) {
-        const QList<RoomInfo> all = m_client->rooms();
         QSet<QString> everyId;
         everyId.reserve(all.size());
         for (const auto &r : all) {
@@ -754,25 +754,39 @@ void RoomListModel::clearAdvertisedBridges()
 
 void RoomListModel::reconcileRooms()
 {
+    // The per-row model signals below must not each rescan the account; the
+    // totals are recomputed once at the end from the same snapshot.
+    const QScopedValueRollback<bool> batch(m_reconciling, true);
+    const QList<RoomInfo> all = m_client ? m_client->rooms() : QList<RoomInfo>();
     // Recomputed before the rows are written so replaceRoom's dataChanged
     // carries the new value; data() reads this cache to stay linear.
     const QSet<QString> previousSuperseded = m_supersededRoomIds;
-    m_supersededRoomIds = computeSupersededRoomIds();
-    const auto desired = desiredRooms(m_supersededRoomIds);
+    m_supersededRoomIds = computeSupersededRoomIds(all);
+    const auto desired = desiredRooms(all, m_supersededRoomIds);
     QSet<QString> wanted;
     for (const auto &room : desired) wanted.insert(room.id);
 
+    QSet<QString> present;
     for (int i = m_rooms.size() - 1; i >= 0; --i) {
         if (!wanted.contains(m_rooms.at(i).id)) removeRoom(i);
+        else present.insert(m_rooms.at(i).id);
     }
 
     for (int target = 0; target < desired.size(); ++target) {
+        const QString &id = desired.at(target).id;
         int current = -1;
-        for (int i = target; i < m_rooms.size(); ++i) {
-            if (m_rooms.at(i).id == desired.at(target).id) { current = i; break; }
+        if (present.contains(id)) {
+            for (int i = target; i < m_rooms.size(); ++i) {
+                if (m_rooms.at(i).id == id) { current = i; break; }
+            }
         }
         if (current < 0) {
-            insertRoom(target, desired.at(target));
+            if (!present.contains(id) && !id.isEmpty()) {
+                beginInsertRows({}, target, target);
+                m_rooms.insert(target, desired.at(target));
+                endInsertRows();
+                present.insert(id);
+            }
         } else if (current != target) {
             beginMoveRows({}, current, current, {}, current < target ? target + 1 : target);
             m_rooms.move(current, target);
@@ -794,11 +808,12 @@ void RoomListModel::reconcileRooms()
 
     setOrderHeld(m_sortPending);
     resolveMissingDirectAvatars();
+    updateFavouritesBoundary();
     // The account-wide totals (window title) must not depend on the scope: a
     // room the scope filter drops emits no model signal, so it would never
     // reach the model-signal trigger. updateUnreadTotals() is a no-op when
     // nothing moved.
-    updateUnreadTotals();
+    updateUnreadTotals(all);
 }
 
 void RoomListModel::resetRooms(const QList<RoomInfo> &rooms)
@@ -1065,12 +1080,17 @@ void RoomListModel::notificationModeChanged()
 
 void RoomListModel::updateUnreadTotals()
 {
+    updateUnreadTotals(m_client ? m_client->rooms() : QList<RoomInfo>());
+}
+
+void RoomListModel::updateUnreadTotals(const QList<RoomInfo> &rooms)
+{
     int unread = 0;
     int highlight = 0;
     int archived = 0;
     int archivedUnread = 0;
     if (m_client) {
-        for (const RoomInfo &room : m_client->rooms()) {
+        for (const RoomInfo &room : rooms) {
             if (room.membership == RoomInfo::Joined && !room.isSpace)
                 unarchiveOnNewUnread(room, roomunread::countsAsUnread(
                                                room, notificationModeOf(room.id)));
@@ -1100,7 +1120,7 @@ void RoomListModel::updateUnreadTotals()
                 ++highlight;
         }
     }
-    pruneArchivedMarks();
+    pruneArchivedMarks(rooms);
     if (unread == m_unreadRoomCount && highlight == m_highlightRoomCount
         && archived == m_archivedCount && archivedUnread == m_archivedUnreadCount)
         return;
@@ -1127,12 +1147,12 @@ void RoomListModel::storeArchivedMark(const QString &roomId, int unread, int hig
                          m_archivedMarks);
 }
 
-void RoomListModel::pruneArchivedMarks()
+void RoomListModel::pruneArchivedMarks(const QList<RoomInfo> &rooms)
 {
     if (!m_archivedMarksLoaded || !marksReady() || m_archivedMarks.isEmpty())
         return;
     QSet<QString> joined;
-    for (const RoomInfo &room : m_client->rooms())
+    for (const RoomInfo &room : rooms)
         if (room.membership == RoomInfo::Joined)
             joined.insert(room.id);
     bool changed = false;
