@@ -71,6 +71,9 @@ protected:
 
     void resetTerminalStateForReuse();
 
+public:
+    void setDeadlineMsForTest(int ms) { m_deadlineOverrideMs = ms; }
+
 private:
     void issueRequest(const QUrl &url);
     void handleReadyRead();
@@ -79,6 +82,9 @@ private:
     QPointer<QNetworkAccessManager> m_network;
     QNetworkReply *m_reply = nullptr;
     QTimer *m_stallTimer = nullptr;
+    QTimer *m_deadlineTimer = nullptr;
+    int m_deadlineOverrideMs = 0;
+    qint64 m_redirectBodyBytes = 0;
     QUrl m_url;
     QByteArray m_userAgent;
     qint64 m_maxBytes = 0;
@@ -90,6 +96,11 @@ private:
 
     static constexpr int kMaxRedirects = 4;
     static constexpr int kStallTimeoutMs = 60000;
+    // Whole transfer including redirects: a fixed allowance plus maxBytes at
+    // this floor rate, so a trickle that beats the stall timer still ends.
+    static constexpr qint64 kDeadlineBaseMs = 5 * 60 * 1000;
+    static constexpr qint64 kDeadlineMinBytesPerSec = 32 * 1024;
+    static constexpr qint64 kMaxRedirectBodyBytes = 64 * 1024;
 };
 
 class UpdateDocumentFetcher final : public UpdateTransferBase

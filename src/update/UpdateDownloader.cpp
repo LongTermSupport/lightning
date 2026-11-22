@@ -9,6 +9,8 @@
 #include <QTimer>
 #include <QVariant>
 
+#include <climits>
+
 namespace lightning::update {
 namespace {
 
@@ -115,6 +117,7 @@ void UpdateTransferBase::beginTransfer(const QUrl &url, const QByteArray &userAg
     m_received = 0;
     m_declaredTotal = -1;
     m_redirects = 0;
+    m_redirectBodyBytes = 0;
     m_cancelled = false;
     m_done = false;
     m_url = url;
@@ -128,6 +131,20 @@ void UpdateTransferBase::beginTransfer(const QUrl &url, const QByteArray &userAg
                                                     : TransferError::InsecureUrl);
         return;
     }
+    if (!m_deadlineTimer) {
+        m_deadlineTimer = new QTimer(this);
+        m_deadlineTimer->setSingleShot(true);
+        connect(m_deadlineTimer, &QTimer::timeout, this, [this]() {
+            if (m_done)
+                return;
+            abortReply();
+            fail(TransferError::Stalled);
+        });
+    }
+    const qint64 deadlineMs = m_deadlineOverrideMs > 0
+        ? m_deadlineOverrideMs
+        : kDeadlineBaseMs + qMax<qint64>(0, maxBytes) * 1000 / kDeadlineMinBytesPerSec;
+    m_deadlineTimer->start(static_cast<int>(qMin<qint64>(deadlineMs, INT_MAX)));
     issueRequest(url);
 }
 
@@ -221,7 +238,17 @@ void UpdateTransferBase::handleReadyRead()
     const int status =
         m_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     if (isRedirectStatus(status)) {
-        m_reply->readAll();
+        while (m_reply && m_reply->bytesAvailable() > 0) {
+            const QByteArray discarded = m_reply->read(16 * 1024);
+            if (discarded.isEmpty())
+                break;
+            m_redirectBodyBytes += discarded.size();
+            if (m_redirectBodyBytes > kMaxRedirectBodyBytes) {
+                abortReply();
+                fail(TransferError::Network);
+                return;
+            }
+        }
         return;
     }
 
@@ -323,6 +350,8 @@ void UpdateTransferBase::fail(TransferError error, const QString &detail)
     m_done = true;
     if (m_stallTimer)
         m_stallTimer->stop();
+    if (m_deadlineTimer)
+        m_deadlineTimer->stop();
     const QString message = detail.isEmpty()
         ? transferErrorText(error)
         : transferErrorText(error) + QStringLiteral(": ") + detail;
@@ -336,6 +365,8 @@ void UpdateTransferBase::succeed()
     m_done = true;
     if (m_stallTimer)
         m_stallTimer->stop();
+    if (m_deadlineTimer)
+        m_deadlineTimer->stop();
     Q_EMIT finished(true, TransferError::None, QString());
 }
 
