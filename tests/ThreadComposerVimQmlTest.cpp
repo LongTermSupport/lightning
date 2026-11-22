@@ -1,5 +1,6 @@
 #include <QtTest/QtTest>
 #include <QGuiApplication>
+#include <QJSValue>
 #include <QQmlComponent>
 #include <QQmlContext>
 #include <QQmlEngine>
@@ -15,6 +16,7 @@
 #include "models/RoomListModel.h"
 #include "models/TimelineModel.h"
 #include "models/VimKeymap.h"
+#include "stickers/StickerPackManager.h"
 #include "threads/ThreadController.h"
 
 class ThreadComposerVimQmlTest : public QObject
@@ -71,6 +73,85 @@ class ThreadComposerVimQmlTest : public QObject
         QTRY_VERIFY(m_controller->thread()->active());
         QTRY_VERIFY(m_controller->thread()->model()->rowCount() > 2);
         QTest::qWait(300);
+    }
+
+    // An existing thread root, then a plain message to "Reply in thread" on.
+    QStringList threadRoots() const
+    {
+        QString root;
+        QString plain;
+        for (const TimelineEvent &e : m_controller->timeline()->events()) {
+            if (e.isThreadRoot && root.isEmpty())
+                root = e.eventId;
+            else if (!e.isThreadRoot && plain.isEmpty() && e.threadRootId.isEmpty()
+                     && e.type == TimelineEvent::TextMessage && e.eventId.startsWith(u'$'))
+                plain = e.eventId;
+        }
+        QStringList roots;
+        if (!root.isEmpty() && !plain.isEmpty())
+            roots << root << plain;
+        return roots;
+    }
+
+    static QVariantMap emoticonPack(const QString &id, const QString &url)
+    {
+        return QVariantMap{
+            { QStringLiteral("id"), id },
+            { QStringLiteral("displayName"), id },
+            { QStringLiteral("source"), QStringLiteral("user") },
+            { QStringLiteral("images"), QVariantList{ QVariantMap{
+                  { QStringLiteral("shortcode"), QStringLiteral("lc_bl") },
+                  { QStringLiteral("url"), url },
+                  { QStringLiteral("body"), id },
+                  { QStringLiteral("mimetype"), QStringLiteral("image/png") },
+                  { QStringLiteral("isEmoticon"), true },
+                  { QStringLiteral("isSticker"), false } } } },
+        };
+    }
+
+    // Types ":lc_b" into the thread composer and accepts the popup row with `url`.
+    void pickThreadEmoticon(const QString &url)
+    {
+        auto *editor = item("threadComposerInput");
+        QVERIFY(editor);
+        editor->forceActiveFocus();
+        QTRY_VERIFY(editor->hasActiveFocus());
+        type(QStringLiteral("x :lc_b"));
+        auto *popup = m_window->findChild<QObject *>(
+            QStringLiteral("threadEmojiCompletionPopup"));
+        QVERIFY(popup);
+        QTRY_VERIFY(popup->property("visible").toBool());
+        QVariant value = popup->property("completions");
+        if (value.userType() == qMetaTypeId<QJSValue>())
+            value = value.value<QJSValue>().toVariant();
+        const QVariantList rows = value.toList();
+        int at = -1;
+        for (int i = 0; i < rows.size(); ++i) {
+            if (rows.at(i).toMap().value(QStringLiteral("url")).toString() == url)
+                at = i;
+        }
+        QVERIFY2(at >= 0, qPrintable(QStringLiteral("no row for %1 in %2 rows")
+                                         .arg(url).arg(rows.size())));
+        while (popup->property("currentIndex").toInt() < at)
+            QTest::keyClick(m_window, Qt::Key_Down);
+        QCOMPARE(popup->property("currentIndex").toInt(), at);
+        QTest::keyClick(m_window, Qt::Key_Return);
+        QTRY_COMPARE(editor->property("text").toString(), QStringLiteral("x :lc_bl: "));
+    }
+
+    void restoreDraftText(QQuickItem *editor)
+    {
+        if (editor->property("text").toString().isEmpty())
+            editor->setProperty("text", QStringLiteral("x :lc_bl: "));
+        QTRY_COMPARE(m_controller->thread()->text(), QStringLiteral("x :lc_bl: "));
+    }
+
+    QString sentThreadEmoticonUrl() const
+    {
+        return mock()->lastThreadSendSpecForTest()
+            .value(QStringLiteral("emoticons")).toMap()
+            .value(QStringLiteral(":lc_bl:")).toMap()
+            .value(QStringLiteral("url")).toString();
     }
 
 private Q_SLOTS:
@@ -201,6 +282,52 @@ ApplicationWindow {
         QTest::keyClick(m_window, Qt::Key_Escape);
         QVERIFY(!vim()->normal());
         QTRY_VERIFY(!m_controller->thread()->active());
+    }
+    void eachThreadDraftSendsTheCustomEmojiPickedInIt()
+    {
+        m_controller->settings()->setComposerMode(QStringLiteral("plain"));
+        openThreadPanel();
+        const QStringList roots = threadRoots();
+        QVERIFY2(roots.size() >= 2, "the demo room needs a thread root and a plain message");
+        const QString packA = QStringLiteral("mxc://lightning.example/packA");
+        const QString packB = QStringLiteral("mxc://lightning.example/packB");
+        m_controller->stickers()->applySnapshotForTest(
+            QString::fromLatin1(kDevRoom), false,
+            { emoticonPack(QStringLiteral("packA"), packA),
+              emoticonPack(QStringLiteral("packB"), packB) });
+        auto *thread = m_controller->thread();
+        const QString room = QString::fromLatin1(kDevRoom);
+
+        thread->openThread(room, roots.at(0));
+        QTRY_VERIFY(thread->active());
+        QTRY_COMPARE(thread->rootEventId(), roots.at(0));
+        pickThreadEmoticon(packB);
+        thread->openThread(room, roots.at(1));
+        QTRY_COMPARE(thread->rootEventId(), roots.at(1));
+        QTRY_COMPARE(item("threadComposerInput")->property("text").toString(), QString());
+        pickThreadEmoticon(packA);
+
+        thread->openThread(room, roots.at(0));
+        QTRY_COMPARE(thread->rootEventId(), roots.at(0));
+        QTRY_VERIFY(thread->state() == ThreadController::Ready);
+        auto *editor = item("threadComposerInput");
+        // No saved account here, so unencrypted-room drafts are not kept: put the text back.
+        restoreDraftText(editor);
+        editor->forceActiveFocus();
+        QTRY_VERIFY(editor->hasActiveFocus());
+        QTest::keyClick(m_window, Qt::Key_Return);
+        QTRY_COMPARE(mock()->lastThreadSendRootForTest(), roots.at(0));
+        QCOMPARE(sentThreadEmoticonUrl(), packB);
+
+        thread->openThread(room, roots.at(1));
+        QTRY_COMPARE(thread->rootEventId(), roots.at(1));
+        QTRY_VERIFY(thread->state() == ThreadController::Ready);
+        restoreDraftText(editor);
+        editor->forceActiveFocus();
+        QTRY_VERIFY(editor->hasActiveFocus());
+        QTest::keyClick(m_window, Qt::Key_Return);
+        QTRY_COMPARE(mock()->lastThreadSendRootForTest(), roots.at(1));
+        QCOMPARE(sentThreadEmoticonUrl(), packA);
     }
 };
 

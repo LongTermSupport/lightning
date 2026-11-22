@@ -22,6 +22,8 @@ pub(crate) struct MediaEntry {
     pub host: String,
     pub gif: bool,
     pub spoiler: bool,
+    /// The bridge caches bytes per key, so an edited file needs a key of its own.
+    pub media_key: String,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -75,7 +77,7 @@ impl MediaEntry {
             "mxc": self.mxc,
             "thumbnail_mxc": self.thumbnail_mxc,
             "encrypted": self.encrypted,
-            "media_key": self.event_id,
+            "media_key": self.media_key,
             "url": self.url,
             "host": self.host,
             "gif": self.gif,
@@ -321,6 +323,10 @@ pub(crate) fn classify_with_edits(value: &Value, encrypted: bool, edits: &mut Pe
         })
     });
     let original_spoiler = crate::spoiler::spoiler_of(content).is_some();
+    let media_key = match &edit {
+        Some(e) => format!("{event_id}#edit:{}", e.event_id),
+        None => event_id.clone(),
+    };
     let projected = edit.map(|e| crate::replacement::project(content, &e.new_content));
     let content = projected.as_ref().unwrap_or(content);
     let msgtype = if type_str == "m.sticker" {
@@ -373,6 +379,7 @@ pub(crate) fn classify_with_edits(value: &Value, encrypted: bool, edits: &mut Pe
         out.attachment = Some(content.clone());
         out.entries.push(MediaEntry {
             spoiler,
+            media_key,
             event_id,
             sender,
             ts_ms,
@@ -415,6 +422,7 @@ pub(crate) fn classify_with_edits(value: &Value, encrypted: bool, edits: &mut Pe
             url,
             gif: false,
             spoiler: false,
+            media_key: event_id.clone(),
         });
     }
     out
@@ -813,6 +821,22 @@ mod tests {
         let media = stored_media_from_content(scanned.attachment.as_ref().unwrap()).unwrap();
         assert!(matches!(&media.source,
             matrix_sdk::ruma::events::room::MediaSource::Plain(uri) if uri.as_str() == "mxc://example.org/other"));
+    }
+
+    #[test]
+    fn a_swapped_file_is_not_asked_for_under_the_key_holding_the_originals_bytes() {
+        // The timeline and the media bridge cache the original under its event id.
+        let mut edit = caption_edit("$e", "@a:example.org", 2_000, "new picture");
+        edit["content"]["m.new_content"]["url"] = json!("mxc://example.org/other");
+        let mut edits = PendingEdits::new();
+        classify_with_edits(&edit, false, &mut edits);
+        let edited = classify_with_edits(&image_event(false), false, &mut edits);
+        let key = edited.entries[0].to_json()["media_key"].as_str().unwrap().to_owned();
+        assert_ne!(key, "$1");
+        assert_eq!(edited.entries[0].to_json()["event_id"], "$1");
+
+        let unedited = classify_with_edits(&image_event(false), false, &mut PendingEdits::new());
+        assert_eq!(unedited.entries[0].to_json()["media_key"], "$1");
     }
 
     #[test]

@@ -2262,6 +2262,9 @@ Rectangle {
                     text: {
                         if (app.messageSearch.indexing)
                             return qsTr("Indexing this room's history…")
+                        if (app.messageSearch.indexWriteFailed)
+                            return qsTr("The search index could not be updated. "
+                                        + "Index this room again to retry.")
                         if (app.messageSearch.state === "too_short")
                             return qsTr("Type at least %1 characters.")
                                 .arg(app.messageSearch.minLocalChars)

@@ -46,6 +46,7 @@ class MessageSearchController : public QAbstractListModel
                    NOTIFY indexStatsChanged)
     Q_PROPERTY(qint64 indexedRooms READ indexedRooms NOTIFY indexStatsChanged)
     Q_PROPERTY(bool indexing READ indexing NOTIFY indexingChanged)
+    Q_PROPERTY(bool indexWriteFailed READ indexWriteFailed NOTIFY indexingChanged)
     /// A sweep for newly arrived messages is in flight.
     Q_PROPERTY(bool sweeping READ sweeping NOTIFY indexingChanged)
     Q_PROPERTY(int minLocalChars READ minLocalChars NOTIFY stateChanged)
@@ -120,6 +121,7 @@ public:
     qint64 indexedMessages() const { return m_indexedMessages; }
     qint64 indexedRooms() const { return m_indexedRooms; }
     bool indexing() const { return m_deepOp != 0; }
+    bool indexWriteFailed() const { return m_indexWriteFailed; }
     bool sweeping() const { return m_sweepOp != 0; }
     int minLocalChars() const { return m_minLocalChars; }
     QString indexAllState() const { return m_indexAllState; }
@@ -224,6 +226,7 @@ private:
     QString m_source = QStringLiteral("local");
     bool m_scanLimited = false;
     qint64 m_indexedMessages = 0;
+    bool m_indexWriteFailed = false;
     qint64 m_indexedRooms = 0;
     quint64 m_deepOp = 0;
     quint64 m_sweepOp = 0;

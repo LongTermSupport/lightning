@@ -369,6 +369,9 @@ Rectangle {
                     text: {
                         if (app.messageSearch.indexing)
                             return qsTr("Indexing this room's history…")
+                        if (app.messageSearch.indexWriteFailed)
+                            return qsTr("The search index could not be updated. "
+                                        + "Index this room again to retry.")
                         var n = app.messageSearch.indexedMessages
                         if (n <= 0 && app.messageSearch.count > 0)
                             return ""

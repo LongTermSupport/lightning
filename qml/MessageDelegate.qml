@@ -57,7 +57,6 @@ Item {
         enabled: root.anyHoverReveal && !root.rowHoverSuspended
     }
 
-    property string sourceRoomName: ""
     readonly property bool bulkSelectionMode:
         app.bulkRedaction.selecting === true
         && root.timelineModel.roomId === app.bulkRedaction.timelineId
@@ -214,7 +213,9 @@ Item {
             mediaKey: model.mediaKey || "",
             mediaFilename: model.mediaFilename || "",
             timestampMs: (model.timestamp && model.timestamp.getTime()) || 0,
-            sourceRoomName: root.sourceRoomName || "",
+            sourceRoomName: app.roomList.findRoom(
+                root.timelineModel.realRoomIdForEvent(
+                    root.eventIdForActions())).name || "",
         })
     }
     readonly property bool speculativeMediaAllowed:
