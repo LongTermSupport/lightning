@@ -4965,7 +4965,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
 <context>
     <name>CreatePollDialog</name>
     <message>
-        <location filename="../qml/CreatePollDialog.qml" line="+104"/>
+        <location filename="../qml/CreatePollDialog.qml" line="+122"/>
         <source>Discard this poll draft?</source>
         <translation>Diesen Umfrageentwurf verwerfen?</translation>
     </message>
@@ -4980,12 +4980,12 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Verwerfen</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+34"/>
         <source>Create a poll</source>
         <translation>Umfrage erstellen</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+14"/>
         <source>Close poll creation</source>
         <translation>Umfrageerstellung schließen</translation>
     </message>
@@ -5073,15 +5073,25 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>0 Stimmen</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+14"/>
+        <source>The poll was not sent. Your question and answers are still here, so you can try again.</source>
+        <translation>Die Umfrage wurde nicht gesendet. Deine Frage und Antworten sind noch da, du kannst es erneut versuchen.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+8"/>
         <location line="+2"/>
         <source>Send poll</source>
         <translation>Umfrage senden</translation>
+    </message>
+    <message>
+        <location line="-2"/>
+        <source>Sending…</source>
+        <translation>Wird gesendet …</translation>
     </message>
 </context>
 <context>
@@ -12483,7 +12493,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>MessageComposer</name>
     <message>
-        <location filename="../src/models/MessageComposer.cpp" line="+223"/>
+        <location filename="../src/models/MessageComposer.cpp" line="+245"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>Anhänge werden von diesem Backend nicht unterstützt.</translation>
@@ -12511,23 +12521,23 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="+17"/>
         <location line="+30"/>
-        <location line="+80"/>
+        <location line="+81"/>
         <source>The voice message could not be sent.</source>
         <translation>Die Sprachnachricht konnte nicht gesendet werden.</translation>
     </message>
     <message>
-        <location line="-103"/>
+        <location line="-104"/>
         <source>The voice message is larger than the server&apos;s upload limit (%1).</source>
         <translation>Die Sprachnachricht ist größer als das Upload-Limit des Servers (%1).</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+122"/>
         <location line="+54"/>
         <source>Upload failed. Retry or remove.</source>
         <translation>Upload fehlgeschlagen. Erneut versuchen oder entfernen.</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+89"/>
         <source>An edit cannot be empty. Delete the message instead.</source>
         <translation>Eine Bearbeitung darf nicht leer sein. Lösche die Nachricht stattdessen.</translation>
     </message>
@@ -12537,7 +12547,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Diese Nachricht ist zu lang zum Senden (%1 KB; das Limit liegt bei etwa %2 KB). Kürze sie oder teile sie auf mehrere Nachrichten auf.</translation>
     </message>
     <message>
-        <location line="+713"/>
+        <location line="+830"/>
         <source>Part of this message is hidden as a spoiler, so it cannot be edited here.</source>
         <translation>Ein Teil dieser Nachricht ist als Spoiler verborgen, daher kann sie hier nicht bearbeitet werden.</translation>
     </message>
@@ -12734,7 +12744,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>jemand</translation>
     </message>
     <message>
-        <location line="+141"/>
+        <location line="+142"/>
         <source>Cancel editing</source>
         <translation>Bearbeiten abbrechen</translation>
     </message>
@@ -14180,7 +14190,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Ältere Nachricht Nr. %1 (Seite %2)</translation>
     </message>
     <message>
-        <location line="+1498"/>
+        <location line="+1511"/>
         <source>You joined the room.</source>
         <translation>Du bist dem Raum beigetreten.</translation>
     </message>
@@ -20070,12 +20080,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="+7"/>
         <location line="+10"/>
         <location line="+50"/>
-        <location line="+2694"/>
+        <location line="+2697"/>
         <source>Lightning could not completely reset the local session for this account. Check the application logs and filesystem permissions, then try again.</source>
         <translation>Lightning konnte die lokale Sitzung dieses Kontos nicht vollständig zurücksetzen. Prüfe die Anwendungsprotokolle und die Dateisystemberechtigungen und versuche es dann erneut.</translation>
     </message>
     <message>
-        <location line="-2708"/>
+        <location line="-2711"/>
         <source>Local Lightning session rebuilt. The previous encryption store was moved aside, not deleted, and is still in this account&apos;s data directory. You can sign in again.</source>
         <translation>Lokale Lightning-Sitzung neu aufgebaut. Der vorherige Verschlüsselungsspeicher wurde beiseitegelegt, nicht gelöscht, und liegt weiterhin im Datenverzeichnis dieses Kontos. Du kannst dich erneut anmelden.</translation>
     </message>
@@ -20088,7 +20098,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4589"/>
+        <location line="+4592"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -20097,22 +20107,22 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Nicht angemeldet.</translation>
     </message>
     <message>
-        <location line="-4945"/>
+        <location line="-4948"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4752"/>
+        <location line="+4755"/>
         <source>Unknown room: %1</source>
         <translation>Unbekannter Raum: %1</translation>
     </message>
     <message>
-        <location line="-4947"/>
+        <location line="-4950"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
         <translation>An verschlüsselte Räume kann noch nicht gesendet werden: Das verschlüsselte Senden des Rust-SDK ist nicht verifiziert.</translation>
     </message>
     <message>
-        <location line="+769"/>
+        <location line="+772"/>
         <location line="+2621"/>
         <location line="+64"/>
         <source>The sticker could not be sent.</source>

@@ -4938,7 +4938,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
 <context>
     <name>CreatePollDialog</name>
     <message>
-        <location filename="../qml/CreatePollDialog.qml" line="+104"/>
+        <location filename="../qml/CreatePollDialog.qml" line="+122"/>
         <source>Discard this poll draft?</source>
         <translation>Buang draf jajak pendapat ini?</translation>
     </message>
@@ -4953,12 +4953,12 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Buang</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+34"/>
         <source>Create a poll</source>
         <translation>Buat jajak pendapat</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+14"/>
         <source>Close poll creation</source>
         <translation>Tutup pembuatan jajak pendapat</translation>
     </message>
@@ -5046,15 +5046,25 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>0 suara</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+14"/>
+        <source>The poll was not sent. Your question and answers are still here, so you can try again.</source>
+        <translation>Polling tidak terkirim. Pertanyaan dan jawaban Anda masih ada, jadi Anda bisa mencoba lagi.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>Cancel</source>
         <translation>Batal</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+8"/>
         <location line="+2"/>
         <source>Send poll</source>
         <translation>Kirim jajak pendapat</translation>
+    </message>
+    <message>
+        <location line="-2"/>
+        <source>Sending…</source>
+        <translation>Mengirim…</translation>
     </message>
 </context>
 <context>
@@ -12435,7 +12445,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
 <context>
     <name>MessageComposer</name>
     <message>
-        <location filename="../src/models/MessageComposer.cpp" line="+223"/>
+        <location filename="../src/models/MessageComposer.cpp" line="+245"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>Lampiran tidak didukung pada backend ini.</translation>
@@ -12463,23 +12473,23 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     <message>
         <location line="+17"/>
         <location line="+30"/>
-        <location line="+80"/>
+        <location line="+81"/>
         <source>The voice message could not be sent.</source>
         <translation>Pesan suara tidak dapat dikirim.</translation>
     </message>
     <message>
-        <location line="-103"/>
+        <location line="-104"/>
         <source>The voice message is larger than the server&apos;s upload limit (%1).</source>
         <translation>Pesan suara melebihi batas unggah server (%1).</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+122"/>
         <location line="+54"/>
         <source>Upload failed. Retry or remove.</source>
         <translation>Unggahan gagal. Coba lagi atau hapus.</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+89"/>
         <source>An edit cannot be empty. Delete the message instead.</source>
         <translation>Suntingan tidak boleh kosong. Hapus pesannya saja.</translation>
     </message>
@@ -12489,7 +12499,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Pesan ini terlalu panjang untuk dikirim (%1 KB; batasnya sekitar %2 KB). Persingkat atau bagi menjadi beberapa pesan.</translation>
     </message>
     <message>
-        <location line="+713"/>
+        <location line="+830"/>
         <source>Part of this message is hidden as a spoiler, so it cannot be edited here.</source>
         <translation>Sebagian pesan ini disembunyikan sebagai spoiler, jadi tidak dapat disunting di sini.</translation>
     </message>
@@ -12666,7 +12676,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>seseorang</translation>
     </message>
     <message>
-        <location line="+141"/>
+        <location line="+142"/>
         <source>Cancel editing</source>
         <translation>Batalkan penyuntingan</translation>
     </message>
@@ -12868,7 +12878,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Rekam pesan suara</translation>
     </message>
     <message>
-        <location line="-3172"/>
+        <location line="-3173"/>
         <source>A recording is already in progress.</source>
         <translation>Rekaman sedang berlangsung.</translation>
     </message>
@@ -12888,7 +12898,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Perekaman suara tidak tersedia.</translation>
     </message>
     <message>
-        <location line="+2889"/>
+        <location line="+2890"/>
         <location line="+1"/>
         <source>More</source>
         <translation>Lainnya</translation>
@@ -14124,7 +14134,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Pesan lama #%1 (halaman %2)</translation>
     </message>
     <message>
-        <location line="+1498"/>
+        <location line="+1511"/>
         <source>You joined the room.</source>
         <translation>Anda bergabung ke ruang.</translation>
     </message>
@@ -19960,12 +19970,12 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <location line="+7"/>
         <location line="+10"/>
         <location line="+50"/>
-        <location line="+2694"/>
+        <location line="+2697"/>
         <source>Lightning could not completely reset the local session for this account. Check the application logs and filesystem permissions, then try again.</source>
         <translation>Lightning tidak dapat mereset sepenuhnya sesi lokal untuk akun ini. Periksa log aplikasi dan izin sistem berkas, lalu coba lagi.</translation>
     </message>
     <message>
-        <location line="-2708"/>
+        <location line="-2711"/>
         <source>Local Lightning session rebuilt. The previous encryption store was moved aside, not deleted, and is still in this account&apos;s data directory. You can sign in again.</source>
         <translation>Sesi Lightning lokal telah dibangun ulang. Penyimpanan enkripsi sebelumnya disingkirkan, bukan dihapus, dan masih ada di direktori data akun ini. Anda dapat masuk lagi.</translation>
     </message>
@@ -19978,7 +19988,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4589"/>
+        <location line="+4592"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -19987,22 +19997,22 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Belum masuk.</translation>
     </message>
     <message>
-        <location line="-4945"/>
+        <location line="-4948"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4752"/>
+        <location line="+4755"/>
         <source>Unknown room: %1</source>
         <translation>Ruang tidak dikenal: %1</translation>
     </message>
     <message>
-        <location line="-4947"/>
+        <location line="-4950"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
         <translation>Belum dapat mengirim ke ruang terenkripsi: pengiriman terenkripsi Rust SDK belum terverifikasi.</translation>
     </message>
     <message>
-        <location line="+769"/>
+        <location line="+772"/>
         <location line="+2621"/>
         <location line="+64"/>
         <source>The sticker could not be sent.</source>
@@ -20101,7 +20111,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Tindakan jajak pendapat tidak dapat diselesaikan.</translation>
     </message>
     <message>
-        <location line="-6527"/>
+        <location line="-6530"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>Data akun ini masih digunakan oleh sesi latar belakang. Tunggu sebentar lalu coba lagi.</translation>
     </message>
@@ -20131,7 +20141,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Masukkan kata sandi Anda.</translation>
     </message>
     <message>
-        <location line="+5657"/>
+        <location line="+5660"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>Pesan tidak dapat dikirim. Anda dapat mencoba lagi dari tindakan Coba lagi pada pesan.</translation>
     </message>

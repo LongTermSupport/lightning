@@ -4938,7 +4938,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>CreatePollDialog</name>
     <message>
-        <location filename="../qml/CreatePollDialog.qml" line="+104"/>
+        <location filename="../qml/CreatePollDialog.qml" line="+122"/>
         <source>Discard this poll draft?</source>
         <translation>放弃此投票草稿？</translation>
     </message>
@@ -4953,12 +4953,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>放弃</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+34"/>
         <source>Create a poll</source>
         <translation>创建投票</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+14"/>
         <source>Close poll creation</source>
         <translation>关闭投票创建</translation>
     </message>
@@ -5046,15 +5046,25 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>0 票</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+14"/>
+        <source>The poll was not sent. Your question and answers are still here, so you can try again.</source>
+        <translation>投票未发送。你的问题和选项仍在，可以重试。</translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+8"/>
         <location line="+2"/>
         <source>Send poll</source>
         <translation>发送投票</translation>
+    </message>
+    <message>
+        <location line="-2"/>
+        <source>Sending…</source>
+        <translation>正在发送…</translation>
     </message>
 </context>
 <context>
@@ -12435,7 +12445,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MessageComposer</name>
     <message>
-        <location filename="../src/models/MessageComposer.cpp" line="+223"/>
+        <location filename="../src/models/MessageComposer.cpp" line="+245"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>此后端不支持附件。</translation>
@@ -12463,23 +12473,23 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="+17"/>
         <location line="+30"/>
-        <location line="+80"/>
+        <location line="+81"/>
         <source>The voice message could not be sent.</source>
         <translation>语音消息发送失败。</translation>
     </message>
     <message>
-        <location line="-103"/>
+        <location line="-104"/>
         <source>The voice message is larger than the server&apos;s upload limit (%1).</source>
         <translation>该语音消息超过了服务器的上传大小限制（%1）。</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+122"/>
         <location line="+54"/>
         <source>Upload failed. Retry or remove.</source>
         <translation>上传失败。请重试或移除。</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+89"/>
         <source>An edit cannot be empty. Delete the message instead.</source>
         <translation>编辑内容不能为空。请改为删除这条消息。</translation>
     </message>
@@ -12489,7 +12499,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>这条消息太长，无法发送（%1 KB；上限约为 %2 KB）。请缩短消息或拆分成多条发送。</translation>
     </message>
     <message>
-        <location line="+713"/>
+        <location line="+830"/>
         <source>Part of this message is hidden as a spoiler, so it cannot be edited here.</source>
         <translation>此消息的一部分作为剧透被隐藏，因此无法在此编辑。</translation>
     </message>
@@ -12666,7 +12676,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>某人</translation>
     </message>
     <message>
-        <location line="+141"/>
+        <location line="+142"/>
         <source>Cancel editing</source>
         <translation>取消编辑</translation>
     </message>
@@ -12868,7 +12878,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>录制语音消息</translation>
     </message>
     <message>
-        <location line="-3172"/>
+        <location line="-3173"/>
         <source>A recording is already in progress.</source>
         <translation>已有录音正在进行。</translation>
     </message>
@@ -12888,7 +12898,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>语音录制不可用。</translation>
     </message>
     <message>
-        <location line="+2889"/>
+        <location line="+2890"/>
         <location line="+1"/>
         <source>More</source>
         <translation>更多</translation>
@@ -14124,7 +14134,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>较早的消息 #%1（第 %2 页）</translation>
     </message>
     <message>
-        <location line="+1498"/>
+        <location line="+1511"/>
         <source>You joined the room.</source>
         <translation>你加入了该房间。</translation>
     </message>
@@ -19960,12 +19970,12 @@ Signing out and signing in again is the only fix.</source>
         <location line="+7"/>
         <location line="+10"/>
         <location line="+50"/>
-        <location line="+2694"/>
+        <location line="+2697"/>
         <source>Lightning could not completely reset the local session for this account. Check the application logs and filesystem permissions, then try again.</source>
         <translation>Lightning 无法完全重置此账号的本地会话。请检查应用日志和文件系统权限后重试。</translation>
     </message>
     <message>
-        <location line="-2708"/>
+        <location line="-2711"/>
         <source>Local Lightning session rebuilt. The previous encryption store was moved aside, not deleted, and is still in this account&apos;s data directory. You can sign in again.</source>
         <translation>本地 Lightning 会话已重建。之前的加密存储只是被移开，并未删除，仍保留在此账号的数据目录中。你可以重新登录。</translation>
     </message>
@@ -19978,7 +19988,7 @@ Signing out and signing in again is the only fix.</source>
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4589"/>
+        <location line="+4592"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -19987,22 +19997,22 @@ Signing out and signing in again is the only fix.</source>
         <translation>未登录。</translation>
     </message>
     <message>
-        <location line="-4945"/>
+        <location line="-4948"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4752"/>
+        <location line="+4755"/>
         <source>Unknown room: %1</source>
         <translation>未知房间：%1</translation>
     </message>
     <message>
-        <location line="-4947"/>
+        <location line="-4950"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
         <translation>暂时无法向加密房间发送消息：Rust SDK 的加密发送尚未验证。</translation>
     </message>
     <message>
-        <location line="+769"/>
+        <location line="+772"/>
         <location line="+2621"/>
         <location line="+64"/>
         <source>The sticker could not be sent.</source>
@@ -20101,7 +20111,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>无法完成投票操作。</translation>
     </message>
     <message>
-        <location line="-6527"/>
+        <location line="-6530"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>此账号的数据仍被后台会话使用。请稍候再试。</translation>
     </message>
@@ -20131,7 +20141,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>请输入你的密码。</translation>
     </message>
     <message>
-        <location line="+5657"/>
+        <location line="+5660"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>消息发送失败。你可以通过该消息的“重试”操作再次发送。</translation>
     </message>

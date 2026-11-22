@@ -4965,7 +4965,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
 <context>
     <name>CreatePollDialog</name>
     <message>
-        <location filename="../qml/CreatePollDialog.qml" line="+104"/>
+        <location filename="../qml/CreatePollDialog.qml" line="+122"/>
         <source>Discard this poll draft?</source>
         <translation>Abandonner ce brouillon de sondage ?</translation>
     </message>
@@ -4980,12 +4980,12 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>Abandonner</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+34"/>
         <source>Create a poll</source>
         <translation>Créer un sondage</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+14"/>
         <source>Close poll creation</source>
         <translation>Fermer la création de sondage</translation>
     </message>
@@ -5073,15 +5073,25 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>0 vote</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+14"/>
+        <source>The poll was not sent. Your question and answers are still here, so you can try again.</source>
+        <translation>Le sondage n’a pas été envoyé. Votre question et vos réponses sont toujours là, vous pouvez réessayer.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+8"/>
         <location line="+2"/>
         <source>Send poll</source>
         <translation>Envoyer le sondage</translation>
+    </message>
+    <message>
+        <location line="-2"/>
+        <source>Sending…</source>
+        <translation>Envoi…</translation>
     </message>
 </context>
 <context>
@@ -12483,7 +12493,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
 <context>
     <name>MessageComposer</name>
     <message>
-        <location filename="../src/models/MessageComposer.cpp" line="+223"/>
+        <location filename="../src/models/MessageComposer.cpp" line="+245"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>Les pièces jointes ne sont pas prises en charge par ce backend.</translation>
@@ -12511,23 +12521,23 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     <message>
         <location line="+17"/>
         <location line="+30"/>
-        <location line="+80"/>
+        <location line="+81"/>
         <source>The voice message could not be sent.</source>
         <translation>Le message vocal n&apos;a pas pu être envoyé.</translation>
     </message>
     <message>
-        <location line="-103"/>
+        <location line="-104"/>
         <source>The voice message is larger than the server&apos;s upload limit (%1).</source>
         <translation>Le message vocal dépasse la limite d&apos;envoi du serveur (%1).</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+122"/>
         <location line="+54"/>
         <source>Upload failed. Retry or remove.</source>
         <translation>Échec de l&apos;envoi. Réessayez ou supprimez.</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+89"/>
         <source>An edit cannot be empty. Delete the message instead.</source>
         <translation>Une modification ne peut pas être vide. Supprimez plutôt le message.</translation>
     </message>
@@ -12537,7 +12547,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Ce message est trop long pour être envoyé (%1 Ko ; la limite est d&apos;environ %2 Ko). Raccourcissez-le ou répartissez-le en plusieurs messages.</translation>
     </message>
     <message>
-        <location line="+713"/>
+        <location line="+830"/>
         <source>Part of this message is hidden as a spoiler, so it cannot be edited here.</source>
         <translation>Une partie de ce message est masquée comme spoiler, il ne peut donc pas être modifié ici.</translation>
     </message>
@@ -12714,7 +12724,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>quelqu&apos;un</translation>
     </message>
     <message>
-        <location line="+141"/>
+        <location line="+142"/>
         <source>Cancel editing</source>
         <translation>Annuler la modification</translation>
     </message>
@@ -12916,7 +12926,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Enregistrer un message vocal</translation>
     </message>
     <message>
-        <location line="-3172"/>
+        <location line="-3173"/>
         <source>A recording is already in progress.</source>
         <translation>Un enregistrement est déjà en cours.</translation>
     </message>
@@ -12936,7 +12946,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>L&apos;enregistrement vocal est indisponible.</translation>
     </message>
     <message>
-        <location line="+2889"/>
+        <location line="+2890"/>
         <location line="+1"/>
         <source>More</source>
         <translation>Plus</translation>
@@ -14180,7 +14190,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Message plus ancien n° %1 (page %2)</translation>
     </message>
     <message>
-        <location line="+1498"/>
+        <location line="+1511"/>
         <source>You joined the room.</source>
         <translation>Vous avez rejoint le salon.</translation>
     </message>
@@ -20040,12 +20050,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <location line="+7"/>
         <location line="+10"/>
         <location line="+50"/>
-        <location line="+2694"/>
+        <location line="+2697"/>
         <source>Lightning could not completely reset the local session for this account. Check the application logs and filesystem permissions, then try again.</source>
         <translation>Lightning n&apos;a pas pu réinitialiser complètement la session locale de ce compte. Vérifiez les journaux de l&apos;application et les permissions du système de fichiers, puis réessayez.</translation>
     </message>
     <message>
-        <location line="-2708"/>
+        <location line="-2711"/>
         <source>Local Lightning session rebuilt. The previous encryption store was moved aside, not deleted, and is still in this account&apos;s data directory. You can sign in again.</source>
         <translation>Session Lightning locale reconstruite. Le magasin de chiffrement précédent a été mis de côté, pas supprimé, et se trouve toujours dans le dossier de données de ce compte. Vous pouvez vous reconnecter.</translation>
     </message>
@@ -20058,7 +20068,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4589"/>
+        <location line="+4592"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -20067,22 +20077,22 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Non connecté.</translation>
     </message>
     <message>
-        <location line="-4945"/>
+        <location line="-4948"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4752"/>
+        <location line="+4755"/>
         <source>Unknown room: %1</source>
         <translation>Salon inconnu : %1</translation>
     </message>
     <message>
-        <location line="-4947"/>
+        <location line="-4950"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
         <translation>Envoi impossible vers des salons chiffrés pour l&apos;instant : l&apos;envoi chiffré du Rust SDK n&apos;est pas vérifié.</translation>
     </message>
     <message>
-        <location line="+769"/>
+        <location line="+772"/>
         <location line="+2621"/>
         <location line="+64"/>
         <source>The sticker could not be sent.</source>
@@ -20181,7 +20191,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>L&apos;action sur le sondage n&apos;a pas pu être effectuée.</translation>
     </message>
     <message>
-        <location line="-6527"/>
+        <location line="-6530"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>Les données de ce compte sont encore utilisées par une session en arrière-plan. Patientez un instant et réessayez.</translation>
     </message>
@@ -20211,7 +20221,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Saisissez votre mot de passe.</translation>
     </message>
     <message>
-        <location line="+5657"/>
+        <location line="+5660"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>Le message n&apos;a pas pu être envoyé. Vous pouvez réessayer depuis l&apos;action Réessayer du message.</translation>
     </message>

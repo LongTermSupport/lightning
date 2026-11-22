@@ -4965,7 +4965,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>CreatePollDialog</name>
     <message>
-        <location filename="../qml/CreatePollDialog.qml" line="+104"/>
+        <location filename="../qml/CreatePollDialog.qml" line="+122"/>
         <source>Discard this poll draft?</source>
         <translation>এই জরিপের খসড়া বাতিল করবেন?</translation>
     </message>
@@ -4980,12 +4980,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>বাতিল করুন</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+34"/>
         <source>Create a poll</source>
         <translation>জরিপ তৈরি করুন</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+14"/>
         <source>Close poll creation</source>
         <translation>জরিপ তৈরি বন্ধ করুন</translation>
     </message>
@@ -5073,15 +5073,25 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>০ ভোট</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+14"/>
+        <source>The poll was not sent. Your question and answers are still here, so you can try again.</source>
+        <translation>পোলটি পাঠানো হয়নি। আপনার প্রশ্ন ও উত্তরগুলো এখনও আছে, তাই আবার চেষ্টা করতে পারেন।</translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>Cancel</source>
         <translation>বাতিল</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+8"/>
         <location line="+2"/>
         <source>Send poll</source>
         <translation>জরিপ পাঠান</translation>
+    </message>
+    <message>
+        <location line="-2"/>
+        <source>Sending…</source>
+        <translation>পাঠানো হচ্ছে…</translation>
     </message>
 </context>
 <context>
@@ -12483,7 +12493,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MessageComposer</name>
     <message>
-        <location filename="../src/models/MessageComposer.cpp" line="+223"/>
+        <location filename="../src/models/MessageComposer.cpp" line="+245"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>এই ব্যাকএন্ডে সংযুক্তি সমর্থিত নয়।</translation>
@@ -12511,23 +12521,23 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="+17"/>
         <location line="+30"/>
-        <location line="+80"/>
+        <location line="+81"/>
         <source>The voice message could not be sent.</source>
         <translation>ভয়েস বার্তাটি পাঠানো যায়নি।</translation>
     </message>
     <message>
-        <location line="-103"/>
+        <location line="-104"/>
         <source>The voice message is larger than the server&apos;s upload limit (%1).</source>
         <translation>ভয়েস বার্তাটি সার্ভারের আপলোড সীমার চেয়ে বড় (%1)।</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+122"/>
         <location line="+54"/>
         <source>Upload failed. Retry or remove.</source>
         <translation>আপলোড ব্যর্থ। আবার চেষ্টা করুন বা সরান।</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+89"/>
         <source>An edit cannot be empty. Delete the message instead.</source>
         <translation>সম্পাদনা খালি হতে পারে না। পরিবর্তে বার্তাটি মুছে ফেলুন।</translation>
     </message>
@@ -12537,7 +12547,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>এই বার্তাটি পাঠানোর জন্য খুব বড় (%1 KB; সীমা প্রায় %2 KB)। এটি ছোট করুন অথবা কয়েকটি বার্তায় ভাগ করুন।</translation>
     </message>
     <message>
-        <location line="+713"/>
+        <location line="+830"/>
         <source>Part of this message is hidden as a spoiler, so it cannot be edited here.</source>
         <translation>এই বার্তার একটি অংশ স্পয়লার হিসেবে লুকানো, তাই এটি এখানে সম্পাদনা করা যাবে না।</translation>
     </message>
@@ -12714,7 +12724,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>কেউ</translation>
     </message>
     <message>
-        <location line="+141"/>
+        <location line="+142"/>
         <source>Cancel editing</source>
         <translation>সম্পাদনা বাতিল করুন</translation>
     </message>
@@ -12916,7 +12926,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>ভয়েস বার্তা রেকর্ড করুন</translation>
     </message>
     <message>
-        <location line="-3172"/>
+        <location line="-3173"/>
         <source>A recording is already in progress.</source>
         <translation>একটি রেকর্ডিং ইতিমধ্যেই চলছে।</translation>
     </message>
@@ -12936,7 +12946,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>ভয়েস রেকর্ডিং উপলব্ধ নয়।</translation>
     </message>
     <message>
-        <location line="+2889"/>
+        <location line="+2890"/>
         <location line="+1"/>
         <source>More</source>
         <translation>আরও</translation>
@@ -14180,7 +14190,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>পুরনো বার্তা #%1 (পৃষ্ঠা %2)</translation>
     </message>
     <message>
-        <location line="+1498"/>
+        <location line="+1511"/>
         <source>You joined the room.</source>
         <translation>আপনি রুমে যোগ দিয়েছেন।</translation>
     </message>
@@ -20040,12 +20050,12 @@ Signing out and signing in again is the only fix.</source>
         <location line="+7"/>
         <location line="+10"/>
         <location line="+50"/>
-        <location line="+2694"/>
+        <location line="+2697"/>
         <source>Lightning could not completely reset the local session for this account. Check the application logs and filesystem permissions, then try again.</source>
         <translation>Lightning এই অ্যাকাউন্টের স্থানীয় সেশন পুরোপুরি রিসেট করতে পারেনি। অ্যাপ্লিকেশন লগ ও ফাইল সিস্টেমের অনুমতি দেখে আবার চেষ্টা করুন।</translation>
     </message>
     <message>
-        <location line="-2708"/>
+        <location line="-2711"/>
         <source>Local Lightning session rebuilt. The previous encryption store was moved aside, not deleted, and is still in this account&apos;s data directory. You can sign in again.</source>
         <translation>স্থানীয় Lightning সেশন নতুন করে গড়া হয়েছে। আগের এনক্রিপশন সংরক্ষণ সরিয়ে রাখা হয়েছে, মোছা হয়নি, এবং এখনও এই অ্যাকাউন্টের ডেটা ডিরেক্টরিতে আছে। আপনি আবার সাইন ইন করতে পারেন।</translation>
     </message>
@@ -20058,7 +20068,7 @@ Signing out and signing in again is the only fix.</source>
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4589"/>
+        <location line="+4592"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -20067,22 +20077,22 @@ Signing out and signing in again is the only fix.</source>
         <translation>সাইন ইন করা নেই।</translation>
     </message>
     <message>
-        <location line="-4945"/>
+        <location line="-4948"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4752"/>
+        <location line="+4755"/>
         <source>Unknown room: %1</source>
         <translation>অজানা রুম: %1</translation>
     </message>
     <message>
-        <location line="-4947"/>
+        <location line="-4950"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
         <translation>এনক্রিপ্টেড রুমে এখনও পাঠানো যায় না: Rust SDK-এর এনক্রিপ্টেড পাঠানো যাচাই করা হয়নি।</translation>
     </message>
     <message>
-        <location line="+769"/>
+        <location line="+772"/>
         <location line="+2621"/>
         <location line="+64"/>
         <source>The sticker could not be sent.</source>
@@ -20181,7 +20191,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>ভোটের কাজ সম্পন্ন করা যায়নি।</translation>
     </message>
     <message>
-        <location line="-6527"/>
+        <location line="-6530"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>এই অ্যাকাউন্টের ডেটা এখনও একটি ব্যাকগ্রাউন্ড সেশনে ব্যবহৃত হচ্ছে। একটু অপেক্ষা করে আবার চেষ্টা করুন।</translation>
     </message>
@@ -20211,7 +20221,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>আপনার পাসওয়ার্ড দিন।</translation>
     </message>
     <message>
-        <location line="+5657"/>
+        <location line="+5660"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>বার্তাটি পাঠানো যায়নি। বার্তার “আবার চেষ্টা করুন” ক্রিয়া থেকে আবার চেষ্টা করতে পারেন।</translation>
     </message>
