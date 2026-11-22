@@ -1,7 +1,10 @@
+#include "calls/RtcController.h"
 #include "calls/SfuCallController.h"
 #include "calls/SfuMediaEngine.h"
 #include "matrix/MockMatrixClient.h"
+#include "matrix/RtcSession.h"
 
+#include <QLoggingCategory>
 #include <QSignalSpy>
 #include <QtTest/QtTest>
 
@@ -33,6 +36,82 @@ public:
             calls << QStringLiteral("offer");
     }
     QStringList calls;
+};
+
+class SessionClient : public MockMatrixClient
+{
+public:
+    using MockMatrixClient::MockMatrixClient;
+    bool supportsMatrixRtc() const override { return true; }
+    quint64 rtcSession(const QString &, bool) override
+    {
+        return lastSessionOp = ++ops;
+    }
+    quint64 ops = 1000;
+    quint64 lastSessionOp = 0;
+};
+
+QString ringOf(const QString &user, const QString &device)
+{
+    return user + QChar(0x1f) + device;
+}
+
+QVariantMap sfuRow(const QString &identity, const QString &sid,
+                   bool disconnected = false)
+{
+    QVariantMap row{{QStringLiteral("identity"), identity},
+                    {QStringLiteral("sid"), sid},
+                    {QStringLiteral("tracks"), QVariantList()}};
+    if (disconnected)
+        row.insert(QStringLiteral("state"), QStringLiteral("disconnected"));
+    return row;
+}
+
+// A connected call with a real engine, an RTC membership view and keys
+// delivered the way the to-device handler delivers them.
+struct KeyedCall
+{
+    SessionClient client;
+    RtcController rtc;
+    SfuCallController call;
+    SfuMediaEngine engine;
+    const QString room = QStringLiteral("!keys:x");
+
+    KeyedCall()
+    {
+        rtc.setClient(&client);
+        call.setClient(&client);
+        call.setRtcController(&rtc);
+        call.setMediaEngine(&engine);
+        call.setMembershipForTest(room, QString());
+        call.setCallStateForTest(SfuCallController::State::Connected);
+    }
+    void members(const QList<QPair<QString, QString>> &devices)
+    {
+        RtcSessionData session;
+        session.roomId = room;
+        for (const auto &device : devices) {
+            RtcParticipant member;
+            member.userId = device.first;
+            member.deviceId = device.second;
+            member.rtcIdentity = device.first + QLatin1Char(':') + device.second;
+            member.intent = QStringLiteral("audio");
+            member.membershipEventId = QStringLiteral("$m") + member.rtcIdentity;
+            member.wireFormat = QStringLiteral("session");
+            session.participants.append(member);
+        }
+        rtc.refresh(room);
+        Q_EMIT client.rtcSessionReceived(client.lastSessionOp, session);
+    }
+    void key(const QString &user, const QString &device, int index)
+    {
+        QVERIFY(QMetaObject::invokeMethod(
+            &call, "onMediaKeyReceived", Qt::DirectConnection,
+            Q_ARG(QString, room), Q_ARG(QString, user), Q_ARG(QString, device),
+            Q_ARG(int, index),
+            Q_ARG(QString, QString::fromLatin1(
+                               QByteArray(16, char('a' + index)).toBase64()))));
+    }
 };
 }
 
@@ -188,6 +267,86 @@ private slots:
         QVERIFY2(client.calls.first().startsWith(QLatin1String("add:")),
                  qPrintable(client.calls.join(QLatin1Char(' '))));
         engine.stop();
+    }
+
+    void sequentialSendersPastTheRingCapStillGetTheirKeys()
+    {
+        KeyedCall f;
+        f.call.setInboundRingGraceMsForTest(0);
+        auto *subscriber = new SfuMediaEngine(&f.call);
+        f.call.attachSubscriberEngineForTest(1, subscriber);
+        const QString a = QStringLiteral("@a:x");
+        const QString aDev = QStringLiteral("ADEV");
+        f.members({{a, aDev}});
+        f.key(a, aDev, 0);
+        f.call.ingestParticipantsForTest({sfuRow(a + QStringLiteral(":ADEV"),
+                                                 QStringLiteral("PA_A"))});
+
+        for (int i = 0; i < 80; ++i) {
+            const QString user = QStringLiteral("@u%1:x").arg(i);
+            const QString dev = QStringLiteral("D%1").arg(i);
+            const QString identity = user + QLatin1Char(':') + dev;
+            f.members({{a, aDev}, {user, dev}});
+            f.call.ingestParticipantsForTest(
+                {sfuRow(identity, QStringLiteral("PA_%1").arg(i))});
+            f.call.ingestSubscriberParticipantsForTest(
+                1, {sfuRow(identity, QStringLiteral("PB_%1").arg(i))});
+            f.key(user, dev, 0);
+            QVERIFY2(f.engine.recvCryptorFor(QStringLiteral("PA_%1").arg(i))
+                         ->hasKey(0),
+                     qPrintable(QStringLiteral("sender %1 of a long call has "
+                                               "no key").arg(i)));
+            QVERIFY2(subscriber->recvCryptorFor(QStringLiteral("PB_%1").arg(i))
+                         ->hasKey(0),
+                     qPrintable(QStringLiteral("sender %1 has no key on the "
+                                               "second SFU").arg(i)));
+            f.call.ingestParticipantsForTest(
+                {sfuRow(identity, QStringLiteral("PA_%1").arg(i), true)});
+            f.call.ingestSubscriberParticipantsForTest(
+                1, {sfuRow(identity, QStringLiteral("PB_%1").arg(i), true)});
+            f.members({{a, aDev}});
+        }
+
+        QVERIFY2(f.engine.recvCryptorFor(QStringLiteral("PA_A"))->hasKey(0),
+                 "the sender present all along lost its key to a pruning");
+        f.key(a, aDev, 1);
+        QVERIFY(f.engine.recvCryptorFor(QStringLiteral("PA_A"))->hasKey(1));
+        QVERIFY(subscriber->recvCryptorFor(ringOf(a, aDev))->hasKey(1));
+    }
+
+    void aRecentKeyIsNotRetiredToAdmitAStranger()
+    {
+        KeyedCall f;
+        const QString a = QStringLiteral("@a:x");
+        f.members({{a, QStringLiteral("ADEV")}});
+        f.key(a, QStringLiteral("ADEV"), 0);
+        const QString early = QStringLiteral("@early:x");
+        f.key(early, QStringLiteral("E"), 0);
+        for (int i = 0; i < 62; ++i)
+            f.key(QStringLiteral("@s%1:x").arg(i), QStringLiteral("S"), 0);
+        f.members({{a, QStringLiteral("ADEV")}, {early, QStringLiteral("E")}});
+
+        const QString stranger = QStringLiteral("@late:x");
+        f.key(stranger, QStringLiteral("L"), 0);
+        QVERIFY2(!f.engine.recvCryptorFor(ringOf(stranger, QStringLiteral("L")))
+                      ->hasKey(0),
+                 "a key from inside the grace period was retired for a "
+                 "stranger");
+        QVERIFY(f.engine.recvCryptorFor(ringOf(early, QStringLiteral("E")))
+                    ->hasKey(0));
+        QVERIFY(f.engine.recvCryptorFor(QStringLiteral("@s0:x") + QChar(0x1f)
+                                        + QStringLiteral("S"))->hasKey(0));
+
+        f.call.setInboundRingGraceMsForTest(0);
+        f.key(stranger, QStringLiteral("L"), 0);
+        QVERIFY2(f.engine.recvCryptorFor(ringOf(stranger, QStringLiteral("L")))
+                     ->hasKey(0),
+                 "departed senders' rings were never retired");
+        QVERIFY(f.engine.recvCryptorFor(ringOf(a, QStringLiteral("ADEV")))
+                    ->hasKey(0));
+        QVERIFY2(f.engine.recvCryptorFor(ringOf(early, QStringLiteral("E")))
+                     ->hasKey(0),
+                 "a key that arrived before its membership was retired");
     }
 };
 
