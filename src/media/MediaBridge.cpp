@@ -68,6 +68,14 @@ QString mxcCacheKey(const QString &mxc, int size)
     return QStringLiteral("mxc:%1:%2").arg(size).arg(mxc);
 }
 
+// Save and copy take a timeline media key or, for a room or user picture, its
+// mxc; the latter shares the viewer's full-size cache entry.
+QString fullContentCacheKey(const QString &mediaKey)
+{
+    return mediaKey.startsWith(QLatin1String("mxc://"))
+        ? mxcCacheKey(mediaKey, 0) : mediaCacheKey(mediaKey, 0);
+}
+
 bool previewBytesMatchMime(const QByteArray &bytes, const QString &mimetype)
 {
     if (mimetype == QLatin1String("image/gif"))
@@ -2155,13 +2163,14 @@ void MediaBridge::startSave(const QString &mediaKey, const QUrl &destination,
         Q_EMIT saveFinished(false, tr("No destination selected."), mediaKey);
         return;
     }
-    const QByteArray cached = cachedBytes(mediaCacheKey(mediaKey, 0));
+    const QByteArray cached = cachedBytes(fullContentCacheKey(mediaKey));
     if (!cached.isEmpty()) {
         writeSaveFile(destination, cached, mediaKey, uniquify);
         return;
     }
     Pending request;
-    request.cacheKey = mediaCacheKey(mediaKey, 0);
+    request.cacheKey = fullContentCacheKey(mediaKey);
+    request.isMxc = mediaKey.startsWith(QLatin1String("mxc://"));
     request.mediaKey = mediaKey;
     request.kind = 0;
     request.saveRequest = true;
@@ -2250,7 +2259,7 @@ void MediaBridge::fetchFullForStar(const QString &mediaKey)
                                  QStringLiteral("unavailable"));
         return;
     }
-    const QByteArray cached = cachedBytes(mediaCacheKey(mediaKey, 0));
+    const QByteArray cached = cachedBytes(fullContentCacheKey(mediaKey));
     if (!cached.isEmpty()) {
         Q_EMIT mediaBytesForStar(mediaKey, true, cached, QString());
         return;
@@ -2264,7 +2273,8 @@ void MediaBridge::fetchFullForStar(const QString &mediaKey)
             return;
     }
     Pending request;
-    request.cacheKey = mediaCacheKey(mediaKey, 0);
+    request.cacheKey = fullContentCacheKey(mediaKey);
+    request.isMxc = mediaKey.startsWith(QLatin1String("mxc://"));
     request.mediaKey = mediaKey;
     request.kind = 0;
     request.starRequest = true;
