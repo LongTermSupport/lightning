@@ -22065,3 +22065,6 @@ mod ignore_preview_wiring_tests {
         drop(run);
     }
 }
+
+#[cfg(test)]
+mod forged_edit_tests;
