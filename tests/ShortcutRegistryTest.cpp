@@ -512,6 +512,12 @@ private Q_SLOTS:
                  QString());
         QCOMPARE(registry.sequenceFor(QStringLiteral("menu.reply")), QString());
         QCOMPARE(registry.conflictCount(), 0);
+        QVERIFY(roleFor(registry, QStringLiteral("menu.reply"),
+                        ShortcutRegistry::OverlapNoteRole)
+                    .contains(registry.descriptionFor(QStringLiteral("menu.viewSource"))));
+        QVERIFY(roleFor(registry, QStringLiteral("menu.viewSource"),
+                        ShortcutRegistry::OverlapNoteRole)
+                    .contains(registry.descriptionFor(QStringLiteral("menu.reply"))));
 
         // Global and selection keys are not menu conflicts: the menu scope is
         // active only while it is open.
