@@ -197,6 +197,7 @@ private:
         QVERIFY(avatar);
         auto *action = findItem(avatar, QStringLiteral("avatarViewAction"));
         QVERIFY(action);
+        QCOMPARE(avatar->property("mxc").toString(), mxc);
         QTRY_COMPARE(avatar->property("presentationState").toString(),
                      QStringLiteral("ready"));
         QVERIFY(action->property("available").toBool());
@@ -645,10 +646,12 @@ private slots:
 
         auto *panel = root->property("panel").value<QQuickItem *>();
         QVERIFY(panel);
-        QVariantMap roomData;
-        roomData.insert(QStringLiteral("name"), QStringLiteral("Picture room"));
-        roomData.insert(QStringLiteral("avatarUrl"), roomMxc);
-        panel->setProperty("roomData", roomData);
+        const QString roomId = QStringLiteral("!general:mock.local");
+        mock->setRoomAvatarForTest(roomId, roomMxc);
+        QVERIFY(QMetaObject::invokeMethod(panel, "openForRoom",
+                                          Q_ARG(QVariant, QVariant(roomId))));
+        QTRY_COMPARE(panel->property("roomData").toMap()
+                         .value(QStringLiteral("avatarUrl")).toString(), roomMxc);
         copyAndSaveFromTheViewer(root.get(),
                                  findItem(panel, QStringLiteral("roomInfoAvatar")),
                                  roomMxc, roomPng);
@@ -666,9 +669,14 @@ private slots:
                                           Q_ARG(QVariant, QVariant())));
         QTRY_VERIFY(card->property("visible").toBool());
         QQuickItem *cardAvatar = nullptr;
-        for (auto *candidate : root->findChildren<QQuickItem *>(
-                 QStringLiteral("profileCardAvatar")))
-            cardAvatar = candidate;
+        QTRY_VERIFY([&] {
+            for (auto *candidate : root->findChildren<QQuickItem *>(
+                     QStringLiteral("profileCardAvatar"))) {
+                if (candidate->property("mxc").toString() == userMxc)
+                    cardAvatar = candidate;
+            }
+            return cardAvatar != nullptr;
+        }());
         copyAndSaveFromTheViewer(root.get(), cardAvatar, userMxc, userPng);
         QMetaObject::invokeMethod(card, "close");
     }
