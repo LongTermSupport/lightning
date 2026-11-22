@@ -469,3 +469,51 @@ async fn a_sweep_releases_what_sync_piled_up_in_a_room_nobody_opened() {
         tokio::time::sleep(std::time::Duration::from_millis(20)).await;
     }
 }
+
+#[tokio::test]
+async fn search_index_matches_derived_fixtures() {
+    use crate::derived_fixtures::{scenarios, Projection, ORIGINAL, OTHER_ROOM, ROOM as HOME_ROOM};
+    use matrix_sdk::ruma::RoomId;
+
+    let server = MatrixMockServer::new().await;
+    for case in scenarios() {
+        let client = server.client_builder().build().await;
+        let encryption = server.mock_room_state_encryption();
+        let _scope = if case.original_encrypted { encryption.encrypted() } else { encryption.plain() }
+            .mount_as_scoped().await;
+        let index = SearchIndex::open_in_memory().unwrap();
+        for room_id in [HOME_ROOM, OTHER_ROOM] {
+            let events: Vec<_> = case.history(room_id).map(|(raw, enc)| (raw.clone(), enc)).collect();
+            if events.is_empty() {
+                continue;
+            }
+            let room = server.sync_joined_room(&client, &RoomId::parse(room_id).unwrap()).await;
+            room.latest_encryption_state().await.unwrap();
+            assert_eq!(room.encryption_state().is_encrypted(), case.original_encrypted, "{}", case.name);
+            if let Some(winner) = &case.before_redaction {
+                let original = case.original.as_ref().unwrap();
+                let batch = batch_from(&room, [(original.clone(), false), (winner.clone(), false)].into_iter()).await;
+                write_batch(&index, room_id, &batch).unwrap();
+                let body = winner["content"]["m.new_content"]["body"].as_str().unwrap();
+                let hits = index.search(body, room_id, 10, 0).unwrap();
+                assert_eq!(hits.len(), 1, "{}", case.name);
+                assert_eq!(hits[0].event_id, ORIGINAL, "{}", case.name);
+            }
+            let batch = batch_from(&room, events.into_iter()).await;
+            write_batch(&index, room_id, &batch).unwrap();
+        }
+
+        let want = case.content_for(Projection::Search);
+        let hits = index.search("fixture", "", 10, 0).unwrap();
+        assert_eq!(index.stats().unwrap().messages, i64::from(want.is_some()), "{}", case.name);
+        assert_eq!(hits.len(), usize::from(want.is_some()), "{}", case.name);
+        if let Some(content) = want {
+            let hit = &hits[0];
+            assert_eq!(hit.event_id, ORIGINAL, "{}", case.name);
+            assert_eq!(hit.room_id, HOME_ROOM, "{}", case.name);
+            assert_eq!(hit.body, content["body"].as_str().unwrap(), "{} {}", case.name, case.reason());
+            assert_eq!(hit.msgtype, content["msgtype"].as_str().unwrap(), "{}", case.name);
+            assert_eq!(hit.filename, content["filename"].as_str().unwrap_or(""), "{}", case.name);
+        }
+    }
+}

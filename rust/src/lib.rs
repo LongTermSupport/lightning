@@ -117,6 +117,7 @@ mod uia;
 mod warm_rooms;
 mod recovery;
 mod replacement;
+#[cfg(test)] mod derived_fixtures;
 mod password;
 mod policy;
 mod presence;

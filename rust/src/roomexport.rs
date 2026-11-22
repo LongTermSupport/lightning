@@ -558,6 +558,43 @@ mod tests {
     }
 
     #[test]
+    fn room_export_matches_derived_fixtures() {
+        use crate::derived_fixtures::{scenarios, Projection, ORIGINAL, OTHER_ROOM, ROOM};
+
+        for case in scenarios() {
+            let mut rows = Vec::new();
+            for room in [ROOM, OTHER_ROOM] {
+                let mut walk = WalkState::new(Range::All);
+                for (event, encrypted) in case.history(room) {
+                    if let Some(row) = walk.consume(event, encrypted) {
+                        if row.kind == "redacted" {
+                            let winner = case.before_redaction.as_ref().unwrap_or_else(|| panic!("{}: unexpected tombstone", case.name));
+                            assert_eq!(row.event_id, winner["event_id"].as_str().unwrap(), "{}", case.name);
+                            assert!(row.body.is_empty() && !row.is_attachment(), "{}", case.name);
+                        } else {
+                            rows.push(row);
+                        }
+                    }
+                }
+            }
+            let want = case.content_for(Projection::Export);
+            assert_eq!(rows.len(), usize::from(want.is_some()), "{}", case.name);
+            if let Some(content) = want {
+                let row = &rows[0];
+                assert_eq!(row.event_id, ORIGINAL, "{}", case.name);
+                assert_eq!(&row.content, content, "{}", case.name);
+                let body = content["body"].as_str().unwrap();
+                assert_eq!(row.body, body, "{}", case.name);
+                assert_eq!(row.edited, case.original.as_ref().unwrap()["content"] != *content, "{}", case.name);
+                assert_eq!(row.is_attachment(), content.get("url").is_some(), "{}", case.name);
+                if row.is_attachment() {
+                    assert_eq!(row.filename, content["filename"].as_str().unwrap_or(body), "{}", case.name);
+                }
+            }
+        }
+    }
+
+    #[test]
     fn only_the_original_senders_newest_edit_replaces_the_text() {
         let mut state = WalkState::new(Range::All);
         let page = vec![

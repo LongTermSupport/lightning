@@ -456,6 +456,43 @@ mod tests {
     }
 
     #[test]
+    fn media_history_matches_derived_fixtures() {
+        use crate::derived_fixtures::{scenarios, Projection, ORIGINAL, OTHER_ROOM, ROOM};
+
+        for case in scenarios() {
+            let mut entries = Vec::new();
+            for room in [ROOM, OTHER_ROOM] {
+                let mut edits = PendingEdits::default();
+                for (event, encrypted) in case.history(room) {
+                    let found = classify_with_edits(event, encrypted, &mut edits);
+                    assert!(!found.undecryptable, "{}", case.name);
+                    if let Some(attachment) = found.attachment {
+                        assert_eq!(Some(&attachment), case.content_for(Projection::Media), "{}", case.name);
+                    }
+                    entries.extend(found.entries);
+                }
+            }
+
+            let want = case.content_for(Projection::Media);
+            assert_eq!(entries.len(), usize::from(want.is_some()), "{}", case.name);
+            if let Some(content) = want {
+                let entry = &entries[0];
+                let body = content["body"].as_str().unwrap();
+                assert_eq!(entry.event_id, ORIGINAL, "{}", case.name);
+                assert_eq!(entry.body, body, "{}", case.name);
+                if let Some(mxc) = content["url"].as_str() {
+                    assert_eq!(entry.mxc, mxc, "{}", case.name);
+                    assert_eq!(entry.filename, content["filename"].as_str().unwrap_or(body), "{}", case.name);
+                    assert_eq!(entry.thumbnail_mxc, content["info"]["thumbnail_url"].as_str().unwrap_or(""), "{}", case.name);
+                } else {
+                    assert_eq!(entry.kind, "link", "{}", case.name);
+                    assert_eq!(entry.url, body, "{}", case.name);
+                }
+            }
+        }
+    }
+
+    #[test]
     fn a_spoiler_attachment_carries_the_marker_and_an_edit_cannot_drop_it() {
         let mut event = image_event(false);
         assert!(!classify(&event).entries[0].spoiler);
