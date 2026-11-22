@@ -1770,17 +1770,17 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AttachmentImageEditDialog</name>
     <message>
-        <location filename="../qml/AttachmentImageEditDialog.qml" line="+25"/>
+        <location filename="../qml/AttachmentImageEditDialog.qml" line="+26"/>
         <source>Edit image before sending</source>
         <translation>পাঠানোর আগে ছবি সম্পাদনা করুন</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+37"/>
         <source>The image edit failed.</source>
         <translation>চিত্র সম্পাদনা ব্যর্থ হয়েছে.</translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+70"/>
         <source>Editing this animation sends one still PNG frame.</source>
         <translation>এই অ্যানিমেশনটি সম্পাদনা করলে একটি স্থির PNG ফ্রেম পাঠানো হয়।</translation>
     </message>
@@ -1850,7 +1850,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>সম্পাদিত ছবি ব্যবহার করুন</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>The edited image could not be queued.</source>
         <translation>সম্পাদিত ছবিটি সারিবদ্ধ করা যায়নি।</translation>
     </message>
@@ -1858,7 +1858,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AttachmentQueueModel</name>
     <message>
-        <location filename="../src/models/AttachmentQueueModel.cpp" line="+79"/>
+        <location filename="../src/models/AttachmentQueueModel.cpp" line="+81"/>
         <source>The file is larger than the server&apos;s upload limit (%1).</source>
         <translation>ফাইলটি সার্ভারের আপলোড সীমার চেয়ে বড় (%1)।</translation>
     </message>
@@ -1893,7 +1893,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>ওই ফাইলটি ইতিমধ্যেই সংযুক্ত।</translation>
     </message>
     <message>
-        <location line="+151"/>
+        <location line="+260"/>
         <source>The converted picture couldn&apos;t be saved.</source>
         <translation>রূপান্তরিত ছবিটি সংরক্ষণ করা যায়নি।</translation>
     </message>
@@ -1908,7 +1908,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>ছবিটি সার্ভারের আপলোড সীমার চেয়ে বড় (%1)।</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+215"/>
         <source>The attachment is no longer available.</source>
         <translation>সংযুক্তি আর উপলব্ধ নেই৷</translation>
     </message>
@@ -1923,35 +1923,35 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>অবৈধ চিত্র সম্পাদনা।</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <location line="+31"/>
+        <location line="-113"/>
+        <location line="+144"/>
         <source>This image is too large to edit.</source>
         <translation>এই ছবিটি সম্পাদনা করার জন্য খুব বড়।</translation>
     </message>
     <message>
-        <location line="-17"/>
+        <location line="-162"/>
         <source>This image format cannot be edited.</source>
         <translation>এই চিত্র বিন্যাস সম্পাদনা করা যাবে না.</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+26"/>
         <source>This image could not be decoded safely.</source>
         <translation>এই ছবিটি নিরাপদে ডিকোড করা যায়নি।</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+16"/>
         <source>The crop is empty.</source>
         <translation>ফসল খালি।</translation>
     </message>
     <message>
-        <location line="-7"/>
-        <location line="+11"/>
-        <location line="+51"/>
+        <location line="-8"/>
+        <location line="+12"/>
+        <location line="+34"/>
         <source>The image edit failed.</source>
         <translation>চিত্র সম্পাদনা ব্যর্থ হয়েছে.</translation>
     </message>
     <message>
-        <location line="-36"/>
+        <location line="+63"/>
         <source>Too many annotation points.</source>
         <translation>অনেক বেশি টীকা পয়েন্ট।</translation>
     </message>
@@ -1961,11 +1961,11 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>অবৈধ টীকা বিন্দু।</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+4"/>
-        <location line="+18"/>
+        <location line="-64"/>
         <location line="+5"/>
-        <location line="+4"/>
+        <location line="+5"/>
+        <location line="+8"/>
+        <location line="+59"/>
         <source>The image edit could not be saved.</source>
         <translation>চিত্র সম্পাদনা সংরক্ষণ করা যায়নি.</translation>
     </message>
@@ -3931,7 +3931,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+316"/>
+        <location filename="../qml/SpaceLobby.qml" line="+348"/>
         <source>%1, collapsed</source>
         <translation>%1, ভেঙে পড়েছে</translation>
     </message>
@@ -7357,13 +7357,13 @@ Size: %3</source>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+377"/>
+        <location line="+393"/>
         <location line="+274"/>
         <source>Ask to join</source>
         <translation>যোগ দেওয়ার অনুরোধ</translation>
     </message>
     <message>
-        <location line="-650"/>
+        <location line="-666"/>
         <source>Restricted</source>
         <translation>সীমিত</translation>
     </message>
@@ -7422,8 +7422,16 @@ Size: %3</source>
         <source>matrixrooms.info is a third-party directory: your homeserver sends it your search terms.</source>
         <translation>matrixrooms.info একটি তৃতীয় পক্ষের ডিরেক্টরি: আপনার হোমসার্ভার আপনার অনুসন্ধানের শব্দগুলো সেখানে পাঠায়।</translation>
     </message>
+    <message numerus="yes">
+        <location line="+13"/>
+        <source>Showing %1 of about %n room(s). Scroll for more, or narrow the search.</source>
+        <translation>
+            <numerusform>প্রায় %nটি রুমের মধ্যে %1টি দেখানো হচ্ছে। আরও দেখতে স্ক্রল করুন বা খোঁজ সংকুচিত করুন।</numerusform>
+            <numerusform>প্রায় %nটি রুমের মধ্যে %1টি দেখানো হচ্ছে। আরও দেখতে স্ক্রল করুন বা খোঁজ সংকুচিত করুন।</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+69"/>
+        <location line="+72"/>
         <source>Open %1</source>
         <translation>%1 খুলুন</translation>
     </message>
@@ -11703,7 +11711,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>ডাউনলোড বাতিল করা হয়েছে।</translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+178"/>
         <source>The destination folder is not available.</source>
         <translation>গন্তব্য ফোল্ডারটি উপলব্ধ নয়।</translation>
     </message>
@@ -12509,7 +12517,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MessageComposer</name>
     <message>
-        <location filename="../src/models/MessageComposer.cpp" line="+245"/>
+        <location filename="../src/models/MessageComposer.cpp" line="+258"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>এই ব্যাকএন্ডে সংযুক্তি সমর্থিত নয়।</translation>
@@ -12525,17 +12533,17 @@ Signing out and signing in again is the only fix.</source>
         <translation>ক্লিপবোর্ডের ছবি পড়া যায়নি।</translation>
     </message>
     <message>
-        <location line="+192"/>
+        <location line="+206"/>
         <source>Photo details could not be removed from this image, so it was not sent. You can change this under Settings, Privacy.</source>
         <translation>এই ছবি থেকে ছবির বিবরণ সরানো যায়নি, তাই এটি পাঠানো হয়নি। সেটিংস, গোপনীয়তায় এটি বদলাতে পারেন।</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+77"/>
         <source>The attachment could not be queued.</source>
         <translation>সংযুক্তিটি সারিতে দেওয়া যায়নি।</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+16"/>
         <location line="+30"/>
         <location line="+81"/>
         <source>The voice message could not be sent.</source>
@@ -12548,12 +12556,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+122"/>
-        <location line="+54"/>
+        <location line="+78"/>
         <source>Upload failed. Retry or remove.</source>
         <translation>আপলোড ব্যর্থ। আবার চেষ্টা করুন বা সরান।</translation>
     </message>
     <message>
-        <location line="+89"/>
+        <location line="+90"/>
         <source>An edit cannot be empty. Delete the message instead.</source>
         <translation>সম্পাদনা খালি হতে পারে না। পরিবর্তে বার্তাটি মুছে ফেলুন।</translation>
     </message>
@@ -14904,7 +14912,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+1973"/>
         <location line="+1007"/>
         <source>Open</source>
         <translation>খুলুন</translation>
@@ -15437,7 +15445,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2860"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2863"/>
         <source>(spoiler)</source>
         <translation>(স্পয়লার)</translation>
     </message>
@@ -15503,8 +15511,8 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message numerus="yes">
         <location line="+233"/>
-        <location line="+217"/>
-        <location line="+1738"/>
+        <location line="+218"/>
+        <location line="+1740"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n টি নতুন বার্তা</numerusform>
@@ -15512,8 +15520,8 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1951"/>
-        <location line="+211"/>
+        <location line="-1954"/>
+        <location line="+212"/>
         <source>%n new Matrix notifications</source>
         <translation>
             <numerusform>%n টি নতুন Matrix বিজ্ঞপ্তি</numerusform>
@@ -15521,7 +15529,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1743"/>
+        <location line="+1745"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>%n টি রুমে</numerusform>
@@ -16476,7 +16484,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>QuickSwitcher</name>
     <message>
-        <location filename="../qml/QuickSwitcher.qml" line="+96"/>
+        <location filename="../qml/QuickSwitcher.qml" line="+103"/>
         <source>Open Settings</source>
         <translation>সেটিংস খুলুন</translation>
     </message>
@@ -16717,7 +16725,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>চেষ্টা করুন %1</translation>
     </message>
     <message>
-        <location line="+44"/>
+        <location line="+90"/>
         <source>ROOMS</source>
         <translation>রুম</translation>
     </message>
@@ -16735,6 +16743,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+1"/>
         <source>INVITES</source>
         <translation>আমন্ত্রণ</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>MATRIX ADDRESS</source>
+        <translation>MATRIX ঠিকানা</translation>
     </message>
     <message>
         <location line="+172"/>
@@ -16763,11 +16776,16 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+66"/>
+        <source>No matching rooms, people or Spaces</source>
+        <translation>মিলে যাওয়া কোনো রুম, মানুষ বা স্পেস নেই</translation>
+    </message>
+    <message>
+        <location line="+50"/>
         <source>No matching rooms</source>
         <translation>মিলে যাওয়া কোনো রুম নেই</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-49"/>
         <source>Type to search your rooms</source>
         <translation>আপনার রুমগুলিতে খুঁজতে লিখুন</translation>
     </message>
@@ -16782,12 +16800,25 @@ Signing out and signing in again is the only fix.</source>
         <translation>পাবলিক রুম খুঁজুন</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
+        <source>No matching people</source>
+        <translation>মিলে যাওয়া কোনো মানুষ নেই</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>No matching actions</source>
         <translation>মিলে যাওয়া কোনো ক্রিয়া নেই</translation>
     </message>
+    <message numerus="yes">
+        <location line="+44"/>
+        <source>%n MORE, TYPE TO NARROW</source>
+        <translation>
+            <numerusform>আরও %nটি, সংকুচিত করতে লিখুন</numerusform>
+            <numerusform>আরও %nটি, সংকুচিত করতে লিখুন</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+299"/>
+        <location line="+262"/>
         <source>navigate</source>
         <translation>চলাচল</translation>
     </message>
@@ -16807,7 +16838,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>কমান্ড</translation>
     </message>
     <message>
-        <location filename="../src/models/QuickSwitcherModel.cpp" line="+202"/>
+        <location filename="../src/models/QuickSwitcherModel.cpp" line="+211"/>
         <source>Invitation</source>
         <translation>আমন্ত্রণ</translation>
     </message>
@@ -16820,6 +16851,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+4"/>
         <source>Direct message</source>
         <translation>সরাসরি বার্তা</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>Not in your rooms. Preview it before joining</source>
+        <translation>আপনার রুমে নেই। যোগ দেওয়ার আগে প্রিভিউ দেখুন</translation>
     </message>
 </context>
 <context>
@@ -18011,7 +18047,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1টি বার্তা আনা হয়েছে…</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+28"/>
         <source>Could not read the room&apos;s history. Try again later.</source>
         <translation>রুমের ইতিহাস পড়া যায়নি। পরে আবার চেষ্টা করুন।</translation>
     </message>
@@ -28473,7 +28509,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SpaceLobby</name>
     <message numerus="yes">
-        <location filename="../qml/SpaceLobby.qml" line="-111"/>
+        <location filename="../qml/SpaceLobby.qml" line="-127"/>
         <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
         <translation>
             <numerusform>এই স্পেসের শুধু প্রথম %nটি রুম দেখানো হয়েছে। তালিকায় না থাকা রুম এখনও তার ঠিকানা দিয়ে খোলা যায়।</numerusform>
@@ -28496,7 +28532,12 @@ Note: importing keys does not verify this session.</source>
         <translation>আবার চেষ্টা করুন</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+9"/>
+        <source>This Space has too many members to check them all, so Lightning cannot tell which of your direct messages are with its members. Your room list may show direct messages with people outside it.</source>
+        <translation>এই স্পেসে এত সদস্য যে সবাইকে যাচাই করা যায় না, তাই Lightning বলতে পারে না আপনার কোন সরাসরি বার্তা এর সদস্যদের সঙ্গে। আপনার রুম তালিকায় বাইরের মানুষের সঙ্গে সরাসরি বার্তা দেখা যেতে পারে।</translation>
+    </message>
+    <message>
+        <location line="+42"/>
         <location line="+265"/>
         <source>Loading rooms…</source>
         <translation>রুম লোড হচ্ছে…</translation>
@@ -28530,7 +28571,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+255"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+264"/>
         <source>All rooms</source>
         <translation>সব রুম</translation>
     </message>
@@ -32470,7 +32511,7 @@ Note: importing keys does not verify this session.</source>
         <translation>ক্লিপবোর্ডের ছবি পড়া যায়নি।</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+82"/>
         <source>Photo details could not be removed from this image, so it was not sent. You can change this under Settings, Privacy.</source>
         <translation>এই ছবি থেকে ছবির বিবরণ সরানো যায়নি, তাই এটি পাঠানো হয়নি। সেটিংস, গোপনীয়তায় এটি বদলাতে পারেন।</translation>
     </message>
@@ -32506,7 +32547,7 @@ Note: importing keys does not verify this session.</source>
         <translation>এই থ্রেড পড়া হয়েছে চিহ্নিত করুন</translation>
     </message>
     <message>
-        <location line="+1318"/>
+        <location line="+1332"/>
         <source>Jump to the newest reply</source>
         <translation>সবচেয়ে নতুন উত্তরে যান</translation>
     </message>
@@ -32519,7 +32560,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message>
-        <location line="-1713"/>
+        <location line="-1727"/>
         <source>This room has been replaced.</source>
         <translation>এই রুমটি প্রতিস্থাপন করা হয়েছে।</translation>
     </message>
@@ -32622,13 +32663,13 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="-90"/>
         <location line="+92"/>
-        <location line="+362"/>
+        <location line="+376"/>
         <location line="+72"/>
         <source>Replies</source>
         <translation>উত্তর</translation>
     </message>
     <message>
-        <location line="-524"/>
+        <location line="-538"/>
         <source>Unread</source>
         <translation>অপঠিত</translation>
     </message>
@@ -32678,7 +32719,7 @@ Note: importing keys does not verify this session.</source>
         <translation>[স্পয়লার]</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+28"/>
         <source>Loading the original message…</source>
         <translation>মূল বার্তা লোড হচ্ছে…</translation>
     </message>
@@ -33861,7 +33902,7 @@ Note: importing keys does not verify this session.</source>
         <translation>ছাড়লে এর ভেতরের রুমগুলি সরে যায় না।</translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-290"/>
+        <location filename="../qml/SpaceLobby.qml" line="-306"/>
         <source>ROOMS AND SPACES</source>
         <translation>রুম ও স্পেস</translation>
     </message>
@@ -33881,18 +33922,18 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+631"/>
+        <location line="+647"/>
         <source>Mark as not suggested</source>
         <translation>প্রস্তাবিত নয় হিসেবে চিহ্নিত করুন</translation>
     </message>
     <message>
-        <location line="-630"/>
-        <location line="+631"/>
+        <location line="-646"/>
+        <location line="+647"/>
         <source>Mark as suggested</source>
         <translation>প্রস্তাবিত হিসেবে চিহ্নিত করুন</translation>
     </message>
     <message>
-        <location line="-620"/>
+        <location line="-636"/>
         <source>Search names and descriptions</source>
         <translation>নাম ও বিবরণে খুঁজুন</translation>
     </message>
@@ -33902,7 +33943,7 @@ Note: importing keys does not verify this session.</source>
         <translation>রুম ও স্পেস খুঁজুন</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+58"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>“%1”-এর সঙ্গে কোনো রুম বা স্পেস মেলে না।</translation>
     </message>
@@ -34720,12 +34761,12 @@ Note: importing keys does not verify this session.</source>
         <translation>কোনো ফল নেই</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Search failed. Check your connection and try again.</source>
         <translation>অনুসন্ধান ব্যর্থ। আপনার সংযোগ দেখে আবার চেষ্টা করুন।</translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+90"/>
         <location line="+79"/>
         <source>%1 (%2)</source>
         <translation>%1 (%2)</translation>
@@ -34736,9 +34777,50 @@ Note: importing keys does not verify this session.</source>
         <translation>আপনার সার্ভার থেকে</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Exact Matrix ID</source>
         <translation>হুবহু Matrix আইডি</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Exact Matrix ID, not confirmed</source>
+        <translation>সঠিক Matrix ID, নিশ্চিত নয়</translation>
+    </message>
+</context>
+<context>
+    <name>UserSearchModel</name>
+    <message>
+        <location filename="../src/models/UserSearchModel.cpp" line="+47"/>
+        <source>People search failed, so only the exact Matrix ID is shown.</source>
+        <translation>মানুষ খোঁজা ব্যর্থ হয়েছে, তাই কেবল সঠিক Matrix ID দেখানো হচ্ছে।</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Only the first %n match(es) are shown. Type more of the name, or their full Matrix ID like @name:example.org.</source>
+        <translation>
+            <numerusform>শুধু প্রথম %nটি মিল দেখানো হচ্ছে। নামের আরও অংশ বা পূর্ণ Matrix ID লিখুন, যেমন @name:example.org।</numerusform>
+            <numerusform>শুধু প্রথম %nটি মিল দেখানো হচ্ছে। নামের আরও অংশ বা পূর্ণ Matrix ID লিখুন, যেমন @name:example.org।</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>That is not a valid Matrix ID. A full ID looks like @name:example.org.</source>
+        <translation>এটি বৈধ Matrix ID নয়। পূর্ণ ID দেখতে এমন: @name:example.org।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Your server&apos;s user directory may not list everyone. If you know their Matrix ID, type it in full, like @name:example.org.</source>
+        <translation>আপনার সার্ভারের ব্যবহারকারী ডিরেক্টরিতে সবাই নাও থাকতে পারে। Matrix ID জানলে পুরোটা লিখুন, যেমন @name:example.org।</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Too many searches in a row. Wait a moment, then try again.</source>
+        <translation>পরপর অনেক বেশি খোঁজ। একটু অপেক্ষা করে আবার চেষ্টা করুন।</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Your server does not offer people search. Type their full Matrix ID, like @name:example.org.</source>
+        <translation>আপনার সার্ভার মানুষ খোঁজার সুবিধা দেয় না। পূর্ণ Matrix ID লিখুন, যেমন @name:example.org।</translation>
     </message>
 </context>
 <context>

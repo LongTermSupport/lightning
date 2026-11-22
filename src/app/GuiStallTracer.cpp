@@ -1,6 +1,7 @@
 #include "GuiStallTracer.h"
 
 #include <QCoreApplication>
+#include <QHash>
 #include <QLoggingCategory>
 #include <QObject>
 #include <QThread>
@@ -199,6 +200,44 @@ QByteArray lastStallCategory()
     const char *category =
         g_lastStallCategory.load(std::memory_order_relaxed);
     return category ? QByteArray(category) : QByteArray();
+}
+
+namespace {
+struct GuiWork {
+    int calls = 0;
+    qint64 bytes = 0;
+};
+std::mutex g_workMutex;
+QHash<QByteArray, GuiWork> g_work;
+}
+
+void noteGuiWork(const char *category, qint64 bytes)
+{
+    const QCoreApplication *app = QCoreApplication::instance();
+    if (!app || QThread::currentThread() != app->thread())
+        return;
+    std::lock_guard<std::mutex> lock(g_workMutex);
+    GuiWork &work = g_work[QByteArray(category)];
+    ++work.calls;
+    work.bytes += bytes;
+}
+
+int guiWorkCalls(const char *category)
+{
+    std::lock_guard<std::mutex> lock(g_workMutex);
+    return g_work.value(QByteArray(category)).calls;
+}
+
+qint64 guiWorkBytes(const char *category)
+{
+    std::lock_guard<std::mutex> lock(g_workMutex);
+    return g_work.value(QByteArray(category)).bytes;
+}
+
+void resetGuiWork()
+{
+    std::lock_guard<std::mutex> lock(g_workMutex);
+    g_work.clear();
 }
 
 Scope::Scope(const char *category)

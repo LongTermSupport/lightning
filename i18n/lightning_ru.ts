@@ -1781,17 +1781,17 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AttachmentImageEditDialog</name>
     <message>
-        <location filename="../qml/AttachmentImageEditDialog.qml" line="+25"/>
+        <location filename="../qml/AttachmentImageEditDialog.qml" line="+26"/>
         <source>Edit image before sending</source>
         <translation>Редактировать изображение перед отправкой</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+37"/>
         <source>The image edit failed.</source>
         <translation>Не удалось ообсуждениеактировать изображение.</translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+70"/>
         <source>Editing this animation sends one still PNG frame.</source>
         <translation>При редактировании этой анимации отправляется один неподвижный кадр PNG.</translation>
     </message>
@@ -1861,7 +1861,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>Использовать ообсуждениеактированное изображение</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>The edited image could not be queued.</source>
         <translation>Ообсуждениеактированное изображение не удалось поставить в очередь.</translation>
     </message>
@@ -1869,7 +1869,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AttachmentQueueModel</name>
     <message>
-        <location filename="../src/models/AttachmentQueueModel.cpp" line="+79"/>
+        <location filename="../src/models/AttachmentQueueModel.cpp" line="+81"/>
         <source>The file is larger than the server&apos;s upload limit (%1).</source>
         <translation>Файл превышает ограничение сервера на загрузку (%1).</translation>
     </message>
@@ -1904,7 +1904,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>Этот файл уже прикреплён.</translation>
     </message>
     <message>
-        <location line="+151"/>
+        <location line="+260"/>
         <source>The converted picture couldn&apos;t be saved.</source>
         <translation>Не удалось сохранить преобразованное изображение.</translation>
     </message>
@@ -1919,7 +1919,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>Изображение превышает ограничение сервера на загрузку (%1).</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+215"/>
         <source>The attachment is no longer available.</source>
         <translation>Вложение больше недоступно.</translation>
     </message>
@@ -1934,35 +1934,35 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>Недопустимое редактирование изображения.</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <location line="+31"/>
+        <location line="-113"/>
+        <location line="+144"/>
         <source>This image is too large to edit.</source>
         <translation>Это изображение слишком велико для редактирования.</translation>
     </message>
     <message>
-        <location line="-17"/>
+        <location line="-162"/>
         <source>This image format cannot be edited.</source>
         <translation>Этот формат изображения нельзя редактировать.</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+26"/>
         <source>This image could not be decoded safely.</source>
         <translation>Это изображение не удалось безопасно декодировать.</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+16"/>
         <source>The crop is empty.</source>
         <translation>Урожай пуст.</translation>
     </message>
     <message>
-        <location line="-7"/>
-        <location line="+11"/>
-        <location line="+51"/>
+        <location line="-8"/>
+        <location line="+12"/>
+        <location line="+34"/>
         <source>The image edit failed.</source>
         <translation>Не удалось ообсуждениеактировать изображение.</translation>
     </message>
     <message>
-        <location line="-36"/>
+        <location line="+63"/>
         <source>Too many annotation points.</source>
         <translation>Слишком много точек аннотации.</translation>
     </message>
@@ -1972,11 +1972,11 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>Недопустимая точка аннотации.</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+4"/>
-        <location line="+18"/>
+        <location line="-64"/>
         <location line="+5"/>
-        <location line="+4"/>
+        <location line="+5"/>
+        <location line="+8"/>
+        <location line="+59"/>
         <source>The image edit could not be saved.</source>
         <translation>Не удалось сохранить изменения изображения.</translation>
     </message>
@@ -3954,7 +3954,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+316"/>
+        <location filename="../qml/SpaceLobby.qml" line="+348"/>
         <source>%1, collapsed</source>
         <translation>%1, свернуто</translation>
     </message>
@@ -7388,13 +7388,13 @@ Size: %3</source>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+377"/>
+        <location line="+393"/>
         <location line="+274"/>
         <source>Ask to join</source>
         <translation>Запросить вступление</translation>
     </message>
     <message>
-        <location line="-650"/>
+        <location line="-666"/>
         <source>Restricted</source>
         <translation>Ограниченная</translation>
     </message>
@@ -7453,8 +7453,17 @@ Size: %3</source>
         <source>matrixrooms.info is a third-party directory: your homeserver sends it your search terms.</source>
         <translation>matrixrooms.info — сторонний каталог: ваш домашний сервер отправляет ему ваши поисковые запросы.</translation>
     </message>
+    <message numerus="yes">
+        <location line="+13"/>
+        <source>Showing %1 of about %n room(s). Scroll for more, or narrow the search.</source>
+        <translation>
+            <numerusform>Показано %1 из примерно %n комнаты. Прокрутите дальше или уточните поиск.</numerusform>
+            <numerusform>Показано %1 из примерно %n комнат. Прокрутите дальше или уточните поиск.</numerusform>
+            <numerusform>Показано %1 из примерно %n комнат. Прокрутите дальше или уточните поиск.</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+69"/>
+        <location line="+72"/>
         <source>Open %1</source>
         <translation>Открыть %1</translation>
     </message>
@@ -11747,7 +11756,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Загрузка отменена.</translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+178"/>
         <source>The destination folder is not available.</source>
         <translation>Папка назначения недоступна.</translation>
     </message>
@@ -12557,7 +12566,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MessageComposer</name>
     <message>
-        <location filename="../src/models/MessageComposer.cpp" line="+245"/>
+        <location filename="../src/models/MessageComposer.cpp" line="+258"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>Вложения не поддерживаются этим бэкендом.</translation>
@@ -12573,17 +12582,17 @@ Signing out and signing in again is the only fix.</source>
         <translation>Не удалось прочитать изображение из буфера обмена.</translation>
     </message>
     <message>
-        <location line="+192"/>
+        <location line="+206"/>
         <source>Photo details could not be removed from this image, so it was not sent. You can change this under Settings, Privacy.</source>
         <translation>Данные фото не удалось удалить из этого изображения, поэтому оно не отправлено. Это можно изменить в Настройках, раздел «Конфиденциальность».</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+77"/>
         <source>The attachment could not be queued.</source>
         <translation>Не удалось поставить вложение в очередь.</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+16"/>
         <location line="+30"/>
         <location line="+81"/>
         <source>The voice message could not be sent.</source>
@@ -12596,12 +12605,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+122"/>
-        <location line="+54"/>
+        <location line="+78"/>
         <source>Upload failed. Retry or remove.</source>
         <translation>Не удалось загрузить. Повторите или удалите.</translation>
     </message>
     <message>
-        <location line="+89"/>
+        <location line="+90"/>
         <source>An edit cannot be empty. Delete the message instead.</source>
         <translation>Правка не может быть пустой. Вместо этого удалите сообщение.</translation>
     </message>
@@ -14960,7 +14969,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+1973"/>
         <location line="+1007"/>
         <source>Open</source>
         <translation>Открыть</translation>
@@ -15493,7 +15502,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2860"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2863"/>
         <source>(spoiler)</source>
         <translation>(спойлер)</translation>
     </message>
@@ -15559,8 +15568,8 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message numerus="yes">
         <location line="+233"/>
-        <location line="+217"/>
-        <location line="+1738"/>
+        <location line="+218"/>
+        <location line="+1740"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n новое сообщение</numerusform>
@@ -15569,8 +15578,8 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1951"/>
-        <location line="+211"/>
+        <location line="-1954"/>
+        <location line="+212"/>
         <source>%n new Matrix notifications</source>
         <translation>
             <numerusform>%n новое уведомление Matrix</numerusform>
@@ -15579,7 +15588,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1743"/>
+        <location line="+1745"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>в %n комнате</numerusform>
@@ -16537,7 +16546,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>QuickSwitcher</name>
     <message>
-        <location filename="../qml/QuickSwitcher.qml" line="+96"/>
+        <location filename="../qml/QuickSwitcher.qml" line="+103"/>
         <source>Open Settings</source>
         <translation>Открыть настройки</translation>
     </message>
@@ -16778,7 +16787,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Попробуйте %1</translation>
     </message>
     <message>
-        <location line="+44"/>
+        <location line="+90"/>
         <source>ROOMS</source>
         <translation>КОМНАТЫ</translation>
     </message>
@@ -16796,6 +16805,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+1"/>
         <source>INVITES</source>
         <translation>ПРИГЛАШЕНИЯ</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>MATRIX ADDRESS</source>
+        <translation>АДРЕС MATRIX</translation>
     </message>
     <message>
         <location line="+172"/>
@@ -16824,11 +16838,16 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+66"/>
+        <source>No matching rooms, people or Spaces</source>
+        <translation>Нет подходящих комнат, людей или пространств</translation>
+    </message>
+    <message>
+        <location line="+50"/>
         <source>No matching rooms</source>
         <translation>Подходящих комнат нет</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-49"/>
         <source>Type to search your rooms</source>
         <translation>Введите текст, чтобы искать по вашим комнатам</translation>
     </message>
@@ -16843,12 +16862,26 @@ Signing out and signing in again is the only fix.</source>
         <translation>Найти публичные комнаты</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
+        <source>No matching people</source>
+        <translation>Нет подходящих людей</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>No matching actions</source>
         <translation>Подходящих действий нет</translation>
     </message>
+    <message numerus="yes">
+        <location line="+44"/>
+        <source>%n MORE, TYPE TO NARROW</source>
+        <translation>
+            <numerusform>ЕЩЁ %n, ВВЕДИТЕ ДЛЯ УТОЧНЕНИЯ</numerusform>
+            <numerusform>ЕЩЁ %n, ВВЕДИТЕ ДЛЯ УТОЧНЕНИЯ</numerusform>
+            <numerusform>ЕЩЁ %n, ВВЕДИТЕ ДЛЯ УТОЧНЕНИЯ</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+299"/>
+        <location line="+262"/>
         <source>navigate</source>
         <translation>перемещение</translation>
     </message>
@@ -16868,7 +16901,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>команды</translation>
     </message>
     <message>
-        <location filename="../src/models/QuickSwitcherModel.cpp" line="+202"/>
+        <location filename="../src/models/QuickSwitcherModel.cpp" line="+211"/>
         <source>Invitation</source>
         <translation>Приглашение</translation>
     </message>
@@ -16881,6 +16914,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+4"/>
         <source>Direct message</source>
         <translation>Личная переписка</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>Not in your rooms. Preview it before joining</source>
+        <translation>Не в ваших комнатах. Посмотрите перед входом</translation>
     </message>
 </context>
 <context>
@@ -18078,7 +18116,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Получено сообщений: %1…</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+28"/>
         <source>Could not read the room&apos;s history. Try again later.</source>
         <translation>Не удалось прочитать историю комнаты. Повторите попытку позже.</translation>
     </message>
@@ -28577,7 +28615,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SpaceLobby</name>
     <message numerus="yes">
-        <location filename="../qml/SpaceLobby.qml" line="-111"/>
+        <location filename="../qml/SpaceLobby.qml" line="-127"/>
         <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
         <translation>
             <numerusform>Показана только первая %n комната этого пространства. Комнату, которой нет в списке, всё равно можно открыть по адресу.</numerusform>
@@ -28601,7 +28639,12 @@ Note: importing keys does not verify this session.</source>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+9"/>
+        <source>This Space has too many members to check them all, so Lightning cannot tell which of your direct messages are with its members. Your room list may show direct messages with people outside it.</source>
+        <translation>В этом пространстве слишком много участников, чтобы проверить всех, поэтому Lightning не может определить, какие ваши личные сообщения — с его участниками. В списке комнат могут быть личные сообщения с людьми вне его.</translation>
+    </message>
+    <message>
+        <location line="+42"/>
         <location line="+265"/>
         <source>Loading rooms…</source>
         <translation>Загрузка комнат…</translation>
@@ -28635,7 +28678,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+255"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+264"/>
         <source>All rooms</source>
         <translation>Все комнаты</translation>
     </message>
@@ -32621,7 +32664,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Не удалось прочитать изображение из буфера обмена.</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+82"/>
         <source>Photo details could not be removed from this image, so it was not sent. You can change this under Settings, Privacy.</source>
         <translation>Данные фото не удалось удалить из этого изображения, поэтому оно не отправлено. Это можно изменить в Настройках, раздел «Конфиденциальность».</translation>
     </message>
@@ -32657,7 +32700,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Отметить это обсуждение прочитанным</translation>
     </message>
     <message>
-        <location line="+1318"/>
+        <location line="+1332"/>
         <source>Jump to the newest reply</source>
         <translation>Перейти к последнему ответу</translation>
     </message>
@@ -32671,7 +32714,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message>
-        <location line="-1713"/>
+        <location line="-1727"/>
         <source>This room has been replaced.</source>
         <translation>Эта комната заменена.</translation>
     </message>
@@ -32775,13 +32818,13 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="-90"/>
         <location line="+92"/>
-        <location line="+362"/>
+        <location line="+376"/>
         <location line="+72"/>
         <source>Replies</source>
         <translation>Ответы</translation>
     </message>
     <message>
-        <location line="-524"/>
+        <location line="-538"/>
         <source>Unread</source>
         <translation>Непрочитано</translation>
     </message>
@@ -32831,7 +32874,7 @@ Note: importing keys does not verify this session.</source>
         <translation>[Спойлер]</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+28"/>
         <source>Loading the original message…</source>
         <translation>Загрузка исходного сообщения…</translation>
     </message>
@@ -34021,7 +34064,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Выход не удаляет комнаты внутри него.</translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-290"/>
+        <location filename="../qml/SpaceLobby.qml" line="-306"/>
         <source>ROOMS AND SPACES</source>
         <translation>КОМНАТЫ И ПРОСТРАНСТВА</translation>
     </message>
@@ -34042,18 +34085,18 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+631"/>
+        <location line="+647"/>
         <source>Mark as not suggested</source>
         <translation>Снять пометку «рекомендуется»</translation>
     </message>
     <message>
-        <location line="-630"/>
-        <location line="+631"/>
+        <location line="-646"/>
+        <location line="+647"/>
         <source>Mark as suggested</source>
         <translation>Пометить как рекомендуемую</translation>
     </message>
     <message>
-        <location line="-620"/>
+        <location line="-636"/>
         <source>Search names and descriptions</source>
         <translation>Поиск по названиям и описаниям</translation>
     </message>
@@ -34063,7 +34106,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Поиск комнат и пространств</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+58"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>Ни одна комната или пространство не совпадает с «%1».</translation>
     </message>
@@ -34886,12 +34929,12 @@ Note: importing keys does not verify this session.</source>
         <translation>Результатов нет</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Search failed. Check your connection and try again.</source>
         <translation>Поиск не удался. Проверьте подключение и повторите попытку.</translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+90"/>
         <location line="+79"/>
         <source>%1 (%2)</source>
         <translation>%1 (%2)</translation>
@@ -34902,9 +34945,51 @@ Note: importing keys does not verify this session.</source>
         <translation>С вашего сервера</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Exact Matrix ID</source>
         <translation>Точный идентификатор Matrix</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Exact Matrix ID, not confirmed</source>
+        <translation>Точный Matrix ID, не подтверждён</translation>
+    </message>
+</context>
+<context>
+    <name>UserSearchModel</name>
+    <message>
+        <location filename="../src/models/UserSearchModel.cpp" line="+47"/>
+        <source>People search failed, so only the exact Matrix ID is shown.</source>
+        <translation>Поиск людей не удался, поэтому показан только точный Matrix ID.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Only the first %n match(es) are shown. Type more of the name, or their full Matrix ID like @name:example.org.</source>
+        <translation>
+            <numerusform>Показано только первое %n совпадение. Введите больше имени или полный Matrix ID, например @name:example.org.</numerusform>
+            <numerusform>Показаны только первые %n совпадения. Введите больше имени или полный Matrix ID, например @name:example.org.</numerusform>
+            <numerusform>Показаны только первые %n совпадений. Введите больше имени или полный Matrix ID, например @name:example.org.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>That is not a valid Matrix ID. A full ID looks like @name:example.org.</source>
+        <translation>Это недопустимый Matrix ID. Полный ID выглядит так: @name:example.org.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Your server&apos;s user directory may not list everyone. If you know their Matrix ID, type it in full, like @name:example.org.</source>
+        <translation>Каталог пользователей вашего сервера может показывать не всех. Если знаете Matrix ID, введите его полностью, например @name:example.org.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Too many searches in a row. Wait a moment, then try again.</source>
+        <translation>Слишком много поисков подряд. Подождите немного и попробуйте снова.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Your server does not offer people search. Type their full Matrix ID, like @name:example.org.</source>
+        <translation>Ваш сервер не поддерживает поиск людей. Введите полный Matrix ID, например @name:example.org.</translation>
     </message>
 </context>
 <context>

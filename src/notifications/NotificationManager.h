@@ -503,6 +503,7 @@ private:
         // The newest edit applied to this card (origin_server_ts), so an
         // older one delivered late cannot bring back superseded text.
         qint64 editStampMs = 0;
+        bool encrypted = false;
     };
     struct AccountTable {
         QHash<quint32, QVariantMap> pendingPayloads;

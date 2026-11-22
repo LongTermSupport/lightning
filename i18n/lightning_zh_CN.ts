@@ -1759,17 +1759,17 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AttachmentImageEditDialog</name>
     <message>
-        <location filename="../qml/AttachmentImageEditDialog.qml" line="+25"/>
+        <location filename="../qml/AttachmentImageEditDialog.qml" line="+26"/>
         <source>Edit image before sending</source>
         <translation>发送前编辑图像</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+37"/>
         <source>The image edit failed.</source>
         <translation>图像编辑失败。</translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+70"/>
         <source>Editing this animation sends one still PNG frame.</source>
         <translation>编辑此动画会发送一个静态 PNG 帧。</translation>
     </message>
@@ -1839,7 +1839,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>使用编辑后的图像</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>The edited image could not be queued.</source>
         <translation>编辑后的图像无法排队。</translation>
     </message>
@@ -1847,7 +1847,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AttachmentQueueModel</name>
     <message>
-        <location filename="../src/models/AttachmentQueueModel.cpp" line="+79"/>
+        <location filename="../src/models/AttachmentQueueModel.cpp" line="+81"/>
         <source>The file is larger than the server&apos;s upload limit (%1).</source>
         <translation>该文件超过服务器的上传大小限制（%1）。</translation>
     </message>
@@ -1882,7 +1882,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>该文件已添加。</translation>
     </message>
     <message>
-        <location line="+151"/>
+        <location line="+260"/>
         <source>The converted picture couldn&apos;t be saved.</source>
         <translation>无法保存转换后的图片。</translation>
     </message>
@@ -1897,7 +1897,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>该图片超过服务器的上传大小限制（%1）。</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+215"/>
         <source>The attachment is no longer available.</source>
         <translation>该附件不再可用。</translation>
     </message>
@@ -1912,35 +1912,35 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>图像编辑无效。</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <location line="+31"/>
+        <location line="-113"/>
+        <location line="+144"/>
         <source>This image is too large to edit.</source>
         <translation>该图像太大，无法编辑。</translation>
     </message>
     <message>
-        <location line="-17"/>
+        <location line="-162"/>
         <source>This image format cannot be edited.</source>
         <translation>该图像格式无法编辑。</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+26"/>
         <source>This image could not be decoded safely.</source>
         <translation>该图像无法安全解码。</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+16"/>
         <source>The crop is empty.</source>
         <translation>作物是空的。</translation>
     </message>
     <message>
-        <location line="-7"/>
-        <location line="+11"/>
-        <location line="+51"/>
+        <location line="-8"/>
+        <location line="+12"/>
+        <location line="+34"/>
         <source>The image edit failed.</source>
         <translation>图像编辑失败。</translation>
     </message>
     <message>
-        <location line="-36"/>
+        <location line="+63"/>
         <source>Too many annotation points.</source>
         <translation>注释点太多。</translation>
     </message>
@@ -1950,11 +1950,11 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>注释点无效。</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+4"/>
-        <location line="+18"/>
+        <location line="-64"/>
         <location line="+5"/>
-        <location line="+4"/>
+        <location line="+5"/>
+        <location line="+8"/>
+        <location line="+59"/>
         <source>The image edit could not be saved.</source>
         <translation>无法保存图像编辑。</translation>
     </message>
@@ -3908,7 +3908,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+316"/>
+        <location filename="../qml/SpaceLobby.qml" line="+348"/>
         <source>%1, collapsed</source>
         <translation>%1，折叠</translation>
     </message>
@@ -7326,13 +7326,13 @@ Size: %3</source>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+377"/>
+        <location line="+393"/>
         <location line="+274"/>
         <source>Ask to join</source>
         <translation>申请加入</translation>
     </message>
     <message>
-        <location line="-650"/>
+        <location line="-666"/>
         <source>Restricted</source>
         <translation>受限</translation>
     </message>
@@ -7391,8 +7391,15 @@ Size: %3</source>
         <source>matrixrooms.info is a third-party directory: your homeserver sends it your search terms.</source>
         <translation>matrixrooms.info 是第三方目录：你的主服务器会将你的搜索词发送给它。</translation>
     </message>
+    <message numerus="yes">
+        <location line="+13"/>
+        <source>Showing %1 of about %n room(s). Scroll for more, or narrow the search.</source>
+        <translation>
+            <numerusform>显示约 %n 个房间中的 %1 个。滚动查看更多，或缩小搜索范围。</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+69"/>
+        <location line="+72"/>
         <source>Open %1</source>
         <translation>打开 %1</translation>
     </message>
@@ -11659,7 +11666,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>已取消下载。</translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+178"/>
         <source>The destination folder is not available.</source>
         <translation>目标文件夹不可用。</translation>
     </message>
@@ -12461,7 +12468,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MessageComposer</name>
     <message>
-        <location filename="../src/models/MessageComposer.cpp" line="+245"/>
+        <location filename="../src/models/MessageComposer.cpp" line="+258"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>此后端不支持附件。</translation>
@@ -12477,17 +12484,17 @@ Signing out and signing in again is the only fix.</source>
         <translation>无法读取剪贴板中的图片。</translation>
     </message>
     <message>
-        <location line="+192"/>
+        <location line="+206"/>
         <source>Photo details could not be removed from this image, so it was not sent. You can change this under Settings, Privacy.</source>
         <translation>无法从此图片中移除照片详情，因此未发送。你可以在“设置 → 隐私”中更改此项。</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+77"/>
         <source>The attachment could not be queued.</source>
         <translation>无法将该附件加入队列。</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+16"/>
         <location line="+30"/>
         <location line="+81"/>
         <source>The voice message could not be sent.</source>
@@ -12500,12 +12507,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+122"/>
-        <location line="+54"/>
+        <location line="+78"/>
         <source>Upload failed. Retry or remove.</source>
         <translation>上传失败。请重试或移除。</translation>
     </message>
     <message>
-        <location line="+89"/>
+        <location line="+90"/>
         <source>An edit cannot be empty. Delete the message instead.</source>
         <translation>编辑内容不能为空。请改为删除这条消息。</translation>
     </message>
@@ -14848,7 +14855,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+1973"/>
         <location line="+1007"/>
         <source>Open</source>
         <translation>打开</translation>
@@ -15381,7 +15388,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2860"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2863"/>
         <source>(spoiler)</source>
         <translation>（剧透）</translation>
     </message>
@@ -15447,23 +15454,23 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message numerus="yes">
         <location line="+233"/>
-        <location line="+217"/>
-        <location line="+1738"/>
+        <location line="+218"/>
+        <location line="+1740"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n 条新消息</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1951"/>
-        <location line="+211"/>
+        <location line="-1954"/>
+        <location line="+212"/>
         <source>%n new Matrix notifications</source>
         <translation>
             <numerusform>%n 条新的 Matrix 通知</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1743"/>
+        <location line="+1745"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>在 %n 个房间中</numerusform>
@@ -16415,7 +16422,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>QuickSwitcher</name>
     <message>
-        <location filename="../qml/QuickSwitcher.qml" line="+96"/>
+        <location filename="../qml/QuickSwitcher.qml" line="+103"/>
         <source>Open Settings</source>
         <translation>打开设置</translation>
     </message>
@@ -16656,7 +16663,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>试试 %1</translation>
     </message>
     <message>
-        <location line="+44"/>
+        <location line="+90"/>
         <source>ROOMS</source>
         <translation>房间</translation>
     </message>
@@ -16674,6 +16681,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+1"/>
         <source>INVITES</source>
         <translation>邀请</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>MATRIX ADDRESS</source>
+        <translation>MATRIX 地址</translation>
     </message>
     <message>
         <location line="+172"/>
@@ -16702,11 +16714,16 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+66"/>
+        <source>No matching rooms, people or Spaces</source>
+        <translation>没有匹配的房间、用户或空间</translation>
+    </message>
+    <message>
+        <location line="+50"/>
         <source>No matching rooms</source>
         <translation>没有匹配的房间</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-49"/>
         <source>Type to search your rooms</source>
         <translation>输入内容以搜索房间</translation>
     </message>
@@ -16721,12 +16738,24 @@ Signing out and signing in again is the only fix.</source>
         <translation>查找公开房间</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
+        <source>No matching people</source>
+        <translation>没有匹配的用户</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>No matching actions</source>
         <translation>没有匹配的操作</translation>
     </message>
+    <message numerus="yes">
+        <location line="+44"/>
+        <source>%n MORE, TYPE TO NARROW</source>
+        <translation>
+            <numerusform>还有 %n 个，输入以缩小范围</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+299"/>
+        <location line="+262"/>
         <source>navigate</source>
         <translation>导航</translation>
     </message>
@@ -16746,7 +16775,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>命令</translation>
     </message>
     <message>
-        <location filename="../src/models/QuickSwitcherModel.cpp" line="+202"/>
+        <location filename="../src/models/QuickSwitcherModel.cpp" line="+211"/>
         <source>Invitation</source>
         <translation>邀请</translation>
     </message>
@@ -16759,6 +16788,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+4"/>
         <source>Direct message</source>
         <translation>私聊</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>Not in your rooms. Preview it before joining</source>
+        <translation>不在你的房间中。加入前先预览</translation>
     </message>
 </context>
 <context>
@@ -17944,7 +17978,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>已获取 %1 条消息…</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+28"/>
         <source>Could not read the room&apos;s history. Try again later.</source>
         <translation>无法读取房间历史记录。请稍后再试。</translation>
     </message>
@@ -28369,7 +28403,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SpaceLobby</name>
     <message numerus="yes">
-        <location filename="../qml/SpaceLobby.qml" line="-111"/>
+        <location filename="../qml/SpaceLobby.qml" line="-127"/>
         <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
         <translation>
             <numerusform>仅列出此空间的前 %n 个房间。未列出的房间仍可通过其地址打开。</numerusform>
@@ -28391,7 +28425,12 @@ Note: importing keys does not verify this session.</source>
         <translation>重试</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+9"/>
+        <source>This Space has too many members to check them all, so Lightning cannot tell which of your direct messages are with its members. Your room list may show direct messages with people outside it.</source>
+        <translation>此空间成员太多，无法逐一检查，因此 Lightning 无法判断你的哪些私聊对象是其成员。你的房间列表可能显示与空间外用户的私聊。</translation>
+    </message>
+    <message>
+        <location line="+42"/>
         <location line="+265"/>
         <source>Loading rooms…</source>
         <translation>正在加载房间…</translation>
@@ -28425,7 +28464,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+255"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+264"/>
         <source>All rooms</source>
         <translation>所有房间</translation>
     </message>
@@ -32319,7 +32358,7 @@ Note: importing keys does not verify this session.</source>
         <translation>无法读取剪贴板中的图片。</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+82"/>
         <source>Photo details could not be removed from this image, so it was not sent. You can change this under Settings, Privacy.</source>
         <translation>无法从此图片中移除照片详情，因此未发送。你可以在“设置 → 隐私”中更改此项。</translation>
     </message>
@@ -32355,7 +32394,7 @@ Note: importing keys does not verify this session.</source>
         <translation>将此话题标为已读</translation>
     </message>
     <message>
-        <location line="+1318"/>
+        <location line="+1332"/>
         <source>Jump to the newest reply</source>
         <translation>跳到最新回复</translation>
     </message>
@@ -32367,7 +32406,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message>
-        <location line="-1713"/>
+        <location line="-1727"/>
         <source>This room has been replaced.</source>
         <translation>此房间已被替换。</translation>
     </message>
@@ -32469,13 +32508,13 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="-90"/>
         <location line="+92"/>
-        <location line="+362"/>
+        <location line="+376"/>
         <location line="+72"/>
         <source>Replies</source>
         <translation>回复</translation>
     </message>
     <message>
-        <location line="-524"/>
+        <location line="-538"/>
         <source>Unread</source>
         <translation>未读</translation>
     </message>
@@ -32525,7 +32564,7 @@ Note: importing keys does not verify this session.</source>
         <translation>[剧透]</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+28"/>
         <source>Loading the original message…</source>
         <translation>正在加载原始消息…</translation>
     </message>
@@ -33701,7 +33740,7 @@ Note: importing keys does not verify this session.</source>
         <translation>退出不会移除其中的房间。</translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-290"/>
+        <location filename="../qml/SpaceLobby.qml" line="-306"/>
         <source>ROOMS AND SPACES</source>
         <translation>房间与空间</translation>
     </message>
@@ -33720,18 +33759,18 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+631"/>
+        <location line="+647"/>
         <source>Mark as not suggested</source>
         <translation>标记为不推荐</translation>
     </message>
     <message>
-        <location line="-630"/>
-        <location line="+631"/>
+        <location line="-646"/>
+        <location line="+647"/>
         <source>Mark as suggested</source>
         <translation>标记为推荐</translation>
     </message>
     <message>
-        <location line="-620"/>
+        <location line="-636"/>
         <source>Search names and descriptions</source>
         <translation>搜索名称和描述</translation>
     </message>
@@ -33741,7 +33780,7 @@ Note: importing keys does not verify this session.</source>
         <translation>搜索房间和空间</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+58"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>没有与“%1”匹配的房间或空间。</translation>
     </message>
@@ -34554,12 +34593,12 @@ Note: importing keys does not verify this session.</source>
         <translation>没有结果</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Search failed. Check your connection and try again.</source>
         <translation>搜索失败。请检查网络连接后重试。</translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+90"/>
         <location line="+79"/>
         <source>%1 (%2)</source>
         <translation>%1（%2）</translation>
@@ -34570,9 +34609,49 @@ Note: importing keys does not verify this session.</source>
         <translation>来自你的服务器</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Exact Matrix ID</source>
         <translation>完全匹配的 Matrix ID</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Exact Matrix ID, not confirmed</source>
+        <translation>精确的 Matrix ID，未确认</translation>
+    </message>
+</context>
+<context>
+    <name>UserSearchModel</name>
+    <message>
+        <location filename="../src/models/UserSearchModel.cpp" line="+47"/>
+        <source>People search failed, so only the exact Matrix ID is shown.</source>
+        <translation>用户搜索失败，因此仅显示精确的 Matrix ID。</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Only the first %n match(es) are shown. Type more of the name, or their full Matrix ID like @name:example.org.</source>
+        <translation>
+            <numerusform>仅显示前 %n 个匹配项。输入更多名称，或完整的 Matrix ID，例如 @name:example.org。</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>That is not a valid Matrix ID. A full ID looks like @name:example.org.</source>
+        <translation>这不是有效的 Matrix ID。完整 ID 形如 @name:example.org。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Your server&apos;s user directory may not list everyone. If you know their Matrix ID, type it in full, like @name:example.org.</source>
+        <translation>你的服务器的用户目录可能未列出所有人。如果知道其 Matrix ID，请完整输入，例如 @name:example.org。</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Too many searches in a row. Wait a moment, then try again.</source>
+        <translation>搜索过于频繁。请稍候再试。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Your server does not offer people search. Type their full Matrix ID, like @name:example.org.</source>
+        <translation>你的服务器不提供用户搜索。请输入完整的 Matrix ID，例如 @name:example.org。</translation>
     </message>
 </context>
 <context>

@@ -1,6 +1,7 @@
 #include "models/QuoteBars.h"
 
 #include <QAbstractTextDocumentLayout>
+#include <QTextBlock>
 #include <QTextDocument>
 #include <QTextFrame>
 #include <QTextTable>
@@ -19,8 +20,18 @@ void QuoteBars::setDocument(QQuickTextDocument *document)
         if (auto *layout = m_textDocument->documentLayout())
             disconnect(layout, nullptr, this, nullptr);
     }
+    if (m_textEdit)
+        disconnect(m_textEdit, nullptr, this, nullptr);
     m_quickDocument = document;
     m_textDocument = document ? document->textDocument() : nullptr;
+    m_textEdit = document ? document->parent() : nullptr;
+    // QQuickTextEdit re-adds a child frame's text on every partial repaint
+    // without removing the old nodes, so each selection change draws the
+    // quote once more on top of itself; repaint every block instead.
+    if (m_textEdit
+        && m_textEdit->metaObject()->indexOfSignal("selectedTextChanged()") >= 0)
+        connect(m_textEdit, SIGNAL(selectedTextChanged()), this,
+                SLOT(repaintFrames()));
     if (m_textDocument) {
         connect(m_textDocument, &QTextDocument::contentsChanged, this,
                 &QuoteBars::update);
@@ -58,6 +69,15 @@ void QuoteBars::collect(QTextFrame *frame, QVariantList &out) const
         }
         collect(child, out);
     }
+}
+
+void QuoteBars::repaintFrames()
+{
+    if (!m_textDocument || m_textDocument->rootFrame()->childFrames().isEmpty())
+        return;
+    auto *layout = m_textDocument->documentLayout();
+    for (QTextBlock b = m_textDocument->begin(); b.isValid(); b = b.next())
+        Q_EMIT layout->updateBlock(b);
 }
 
 void QuoteBars::update()

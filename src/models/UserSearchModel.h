@@ -14,6 +14,12 @@ class UserSearchModel : public QAbstractListModel
     Q_PROPERTY(QString state READ state NOTIFY stateChanged)
     Q_PROPERTY(int count READ rowCount NOTIFY stateChanged)
     Q_PROPERTY(bool supported READ supported NOTIFY stateChanged)
+    // The directory answered with a full page and said more exist.
+    Q_PROPERTY(bool limited READ limited NOTIFY stateChanged)
+    Q_PROPERTY(QString errorCategory READ errorCategory NOTIFY stateChanged)
+    // Why the list looks the way it does and what to try next; "" if nothing
+    // needs saying.
+    Q_PROPERTY(QString notice READ notice NOTIFY stateChanged)
 
 public:
     enum Roles {
@@ -22,6 +28,7 @@ public:
         AvatarUrlRole,
         IsExactMxidRole,
         SourceRole,
+        ConfirmedRole,
     };
 
     struct Result {
@@ -30,6 +37,9 @@ public:
         QString avatarUrl;
         bool isExactMxid = false;
         QString source = QStringLiteral("directory");
+        // The server listed or profiled this id; an unconfirmed typed id may
+        // not exist.
+        bool confirmed = true;
     };
 
     explicit UserSearchModel(QObject *parent = nullptr);
@@ -40,6 +50,9 @@ public:
     void setQuery(const QString &query);
     QString state() const { return m_state; }
     bool supported() const;
+    bool limited() const { return m_state == QLatin1String("results") && m_limited; }
+    QString errorCategory() const { return m_errorCategory; }
+    QString notice() const;
 
     int rowCount(const QModelIndex &parent = {}) const override;
     QVariant data(const QModelIndex &index, int role) const override;
@@ -48,8 +61,6 @@ public:
     Q_INVOKABLE void clear();
     Q_INVOKABLE QString userIdAt(int row) const;
     Q_INVOKABLE QString displayNameAt(int row) const;
-
-    static bool looksLikeMxid(const QString &text);
 
     static QList<Result> mergeResults(const QList<Result> &exact,
                                       const QList<Result> &directory,
@@ -84,6 +95,8 @@ private:
     quint64 m_pendingOp = 0;
     bool m_directoryDone = false;
     bool m_directoryOk = true;
+    bool m_limited = false;
+    QString m_errorCategory;
     QList<Result> m_directoryResults;
 
     quint64 m_pendingProfileOp = 0;

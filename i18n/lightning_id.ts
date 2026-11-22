@@ -1759,17 +1759,17 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
 <context>
     <name>AttachmentImageEditDialog</name>
     <message>
-        <location filename="../qml/AttachmentImageEditDialog.qml" line="+25"/>
+        <location filename="../qml/AttachmentImageEditDialog.qml" line="+26"/>
         <source>Edit image before sending</source>
         <translation>Edit gambar sebelum dikirim</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+37"/>
         <source>The image edit failed.</source>
         <translation>Pengeditan gambar gagal.</translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+70"/>
         <source>Editing this animation sends one still PNG frame.</source>
         <translation>Mengedit animasi ini mengirimkan satu bingkai diam PNG.</translation>
     </message>
@@ -1839,7 +1839,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Gunakan gambar yang telah diedit</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>The edited image could not be queued.</source>
         <translation>Gambar yang diedit tidak dapat dimasukkan ke dalam antrean.</translation>
     </message>
@@ -1847,7 +1847,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
 <context>
     <name>AttachmentQueueModel</name>
     <message>
-        <location filename="../src/models/AttachmentQueueModel.cpp" line="+79"/>
+        <location filename="../src/models/AttachmentQueueModel.cpp" line="+81"/>
         <source>The file is larger than the server&apos;s upload limit (%1).</source>
         <translation>Berkas melebihi batas unggah server (%1).</translation>
     </message>
@@ -1882,7 +1882,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Berkas itu sudah dilampirkan.</translation>
     </message>
     <message>
-        <location line="+151"/>
+        <location line="+260"/>
         <source>The converted picture couldn&apos;t be saved.</source>
         <translation>Gambar hasil konversi tidak dapat disimpan.</translation>
     </message>
@@ -1897,7 +1897,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Gambar melebihi batas unggah server (%1).</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+215"/>
         <source>The attachment is no longer available.</source>
         <translation>Lampiran tidak lagi tersedia.</translation>
     </message>
@@ -1912,35 +1912,35 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Pengeditan gambar tidak valid.</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <location line="+31"/>
+        <location line="-113"/>
+        <location line="+144"/>
         <source>This image is too large to edit.</source>
         <translation>Gambar ini terlalu besar untuk diedit.</translation>
     </message>
     <message>
-        <location line="-17"/>
+        <location line="-162"/>
         <source>This image format cannot be edited.</source>
         <translation>Format gambar ini tidak dapat diedit.</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+26"/>
         <source>This image could not be decoded safely.</source>
         <translation>Gambar ini tidak dapat diterjemahkan dengan aman.</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+16"/>
         <source>The crop is empty.</source>
         <translation>Pangkasannya kosong.</translation>
     </message>
     <message>
-        <location line="-7"/>
-        <location line="+11"/>
-        <location line="+51"/>
+        <location line="-8"/>
+        <location line="+12"/>
+        <location line="+34"/>
         <source>The image edit failed.</source>
         <translation>Pengeditan gambar gagal.</translation>
     </message>
     <message>
-        <location line="-36"/>
+        <location line="+63"/>
         <source>Too many annotation points.</source>
         <translation>Terlalu banyak poin anotasi.</translation>
     </message>
@@ -1950,11 +1950,11 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Poin anotasi tidak valid.</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+4"/>
-        <location line="+18"/>
+        <location line="-64"/>
         <location line="+5"/>
-        <location line="+4"/>
+        <location line="+5"/>
+        <location line="+8"/>
+        <location line="+59"/>
         <source>The image edit could not be saved.</source>
         <translation>Hasil edit gambar tidak dapat disimpan.</translation>
     </message>
@@ -3908,7 +3908,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+316"/>
+        <location filename="../qml/SpaceLobby.qml" line="+348"/>
         <source>%1, collapsed</source>
         <translation>%1, roboh</translation>
     </message>
@@ -7326,13 +7326,13 @@ Ukuran: %3</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+377"/>
+        <location line="+393"/>
         <location line="+274"/>
         <source>Ask to join</source>
         <translation>Minta bergabung</translation>
     </message>
     <message>
-        <location line="-650"/>
+        <location line="-666"/>
         <source>Restricted</source>
         <translation>Terbatas</translation>
     </message>
@@ -7391,8 +7391,15 @@ Ukuran: %3</translation>
         <source>matrixrooms.info is a third-party directory: your homeserver sends it your search terms.</source>
         <translation>matrixrooms.info adalah direktori pihak ketiga: homeserver Anda mengirimkan kata pencarian Anda ke sana.</translation>
     </message>
+    <message numerus="yes">
+        <location line="+13"/>
+        <source>Showing %1 of about %n room(s). Scroll for more, or narrow the search.</source>
+        <translation>
+            <numerusform>Menampilkan %1 dari sekitar %n ruangan. Gulir untuk lainnya, atau persempit pencarian.</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+69"/>
+        <location line="+72"/>
         <source>Open %1</source>
         <translation>Buka %1</translation>
     </message>
@@ -11659,7 +11666,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Unduhan dibatalkan.</translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+178"/>
         <source>The destination folder is not available.</source>
         <translation>Folder tujuan tidak tersedia.</translation>
     </message>
@@ -12461,7 +12468,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
 <context>
     <name>MessageComposer</name>
     <message>
-        <location filename="../src/models/MessageComposer.cpp" line="+245"/>
+        <location filename="../src/models/MessageComposer.cpp" line="+258"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>Lampiran tidak didukung pada backend ini.</translation>
@@ -12477,17 +12484,17 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Gambar papan klip tidak dapat dibaca.</translation>
     </message>
     <message>
-        <location line="+192"/>
+        <location line="+206"/>
         <source>Photo details could not be removed from this image, so it was not sent. You can change this under Settings, Privacy.</source>
         <translation>Detail foto tidak dapat dihapus dari gambar ini, sehingga tidak dikirim. Anda dapat mengubahnya di Pengaturan, Privasi.</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+77"/>
         <source>The attachment could not be queued.</source>
         <translation>Lampiran tidak dapat diantrekan.</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+16"/>
         <location line="+30"/>
         <location line="+81"/>
         <source>The voice message could not be sent.</source>
@@ -12500,12 +12507,12 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     </message>
     <message>
         <location line="+122"/>
-        <location line="+54"/>
+        <location line="+78"/>
         <source>Upload failed. Retry or remove.</source>
         <translation>Unggahan gagal. Coba lagi atau hapus.</translation>
     </message>
     <message>
-        <location line="+89"/>
+        <location line="+90"/>
         <source>An edit cannot be empty. Delete the message instead.</source>
         <translation>Suntingan tidak boleh kosong. Hapus pesannya saja.</translation>
     </message>
@@ -14848,7 +14855,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+1973"/>
         <location line="+1007"/>
         <source>Open</source>
         <translation>Buka</translation>
@@ -15381,7 +15388,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2860"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2863"/>
         <source>(spoiler)</source>
         <translation>(spoiler)</translation>
     </message>
@@ -15447,23 +15454,23 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     </message>
     <message numerus="yes">
         <location line="+233"/>
-        <location line="+217"/>
-        <location line="+1738"/>
+        <location line="+218"/>
+        <location line="+1740"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n pesan baru</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1951"/>
-        <location line="+211"/>
+        <location line="-1954"/>
+        <location line="+212"/>
         <source>%n new Matrix notifications</source>
         <translation>
             <numerusform>%n notifikasi Matrix baru</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1743"/>
+        <location line="+1745"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>di %n ruang</numerusform>
@@ -16415,7 +16422,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
 <context>
     <name>QuickSwitcher</name>
     <message>
-        <location filename="../qml/QuickSwitcher.qml" line="+96"/>
+        <location filename="../qml/QuickSwitcher.qml" line="+103"/>
         <source>Open Settings</source>
         <translation>Buka Pengaturan</translation>
     </message>
@@ -16656,7 +16663,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Coba %1</translation>
     </message>
     <message>
-        <location line="+44"/>
+        <location line="+90"/>
         <source>ROOMS</source>
         <translation>RUANG</translation>
     </message>
@@ -16674,6 +16681,11 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <location line="+1"/>
         <source>INVITES</source>
         <translation>UNDANGAN</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>MATRIX ADDRESS</source>
+        <translation>ALAMAT MATRIX</translation>
     </message>
     <message>
         <location line="+172"/>
@@ -16702,11 +16714,16 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     </message>
     <message>
         <location line="+66"/>
+        <source>No matching rooms, people or Spaces</source>
+        <translation>Tidak ada ruangan, orang, atau Space yang cocok</translation>
+    </message>
+    <message>
+        <location line="+50"/>
         <source>No matching rooms</source>
         <translation>Tidak ada ruang yang cocok</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-49"/>
         <source>Type to search your rooms</source>
         <translation>Ketik untuk mencari di ruang Anda</translation>
     </message>
@@ -16721,12 +16738,24 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Cari ruang publik</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
+        <source>No matching people</source>
+        <translation>Tidak ada orang yang cocok</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>No matching actions</source>
         <translation>Tidak ada tindakan yang cocok</translation>
     </message>
+    <message numerus="yes">
+        <location line="+44"/>
+        <source>%n MORE, TYPE TO NARROW</source>
+        <translation>
+            <numerusform>%n LAGI, KETIK UNTUK MEMPERSEMPIT</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+299"/>
+        <location line="+262"/>
         <source>navigate</source>
         <translation>navigasi</translation>
     </message>
@@ -16746,7 +16775,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>perintah</translation>
     </message>
     <message>
-        <location filename="../src/models/QuickSwitcherModel.cpp" line="+202"/>
+        <location filename="../src/models/QuickSwitcherModel.cpp" line="+211"/>
         <source>Invitation</source>
         <translation>Undangan</translation>
     </message>
@@ -16759,6 +16788,11 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <location line="+4"/>
         <source>Direct message</source>
         <translation>Pesan langsung</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>Not in your rooms. Preview it before joining</source>
+        <translation>Tidak ada di ruangan Anda. Pratinjau sebelum bergabung</translation>
     </message>
 </context>
 <context>
@@ -17944,7 +17978,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Mengambil %1 pesan…</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+28"/>
         <source>Could not read the room&apos;s history. Try again later.</source>
         <translation>Tidak dapat membaca riwayat ruang. Coba lagi nanti.</translation>
     </message>
@@ -28369,7 +28403,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
 <context>
     <name>SpaceLobby</name>
     <message numerus="yes">
-        <location filename="../qml/SpaceLobby.qml" line="-111"/>
+        <location filename="../qml/SpaceLobby.qml" line="-127"/>
         <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
         <translation>
             <numerusform>Hanya %n ruangan pertama Space ini yang ditampilkan. Ruangan yang tidak tercantum tetap dapat dibuka lewat alamatnya.</numerusform>
@@ -28391,7 +28425,12 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Coba lagi</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+9"/>
+        <source>This Space has too many members to check them all, so Lightning cannot tell which of your direct messages are with its members. Your room list may show direct messages with people outside it.</source>
+        <translation>Space ini punya terlalu banyak anggota untuk diperiksa semua, jadi Lightning tidak bisa tahu pesan langsung mana yang dengan anggotanya. Daftar ruangan Anda mungkin menampilkan pesan langsung dengan orang di luarnya.</translation>
+    </message>
+    <message>
+        <location line="+42"/>
         <location line="+265"/>
         <source>Loading rooms…</source>
         <translation>Memuat ruang…</translation>
@@ -28425,7 +28464,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+255"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+264"/>
         <source>All rooms</source>
         <translation>Semua ruang</translation>
     </message>
@@ -32319,7 +32358,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Gambar papan klip tidak dapat dibaca.</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+82"/>
         <source>Photo details could not be removed from this image, so it was not sent. You can change this under Settings, Privacy.</source>
         <translation>Detail foto tidak dapat dihapus dari gambar ini, sehingga tidak dikirim. Anda dapat mengubahnya di Pengaturan, Privasi.</translation>
     </message>
@@ -32355,7 +32394,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Tandai utas ini sudah dibaca</translation>
     </message>
     <message>
-        <location line="+1318"/>
+        <location line="+1332"/>
         <source>Jump to the newest reply</source>
         <translation>Lompat ke balasan terbaru</translation>
     </message>
@@ -32367,7 +32406,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         </translation>
     </message>
     <message>
-        <location line="-1713"/>
+        <location line="-1727"/>
         <source>This room has been replaced.</source>
         <translation>Ruang ini telah diganti.</translation>
     </message>
@@ -32469,13 +32508,13 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
     <message>
         <location line="-90"/>
         <location line="+92"/>
-        <location line="+362"/>
+        <location line="+376"/>
         <location line="+72"/>
         <source>Replies</source>
         <translation>Balasan</translation>
     </message>
     <message>
-        <location line="-524"/>
+        <location line="-538"/>
         <source>Unread</source>
         <translation>Belum dibaca</translation>
     </message>
@@ -32525,7 +32564,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>[Spoiler]</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+28"/>
         <source>Loading the original message…</source>
         <translation>Memuat pesan asli…</translation>
     </message>
@@ -33701,7 +33740,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Meninggalkan Space tidak menghapus ruang di dalamnya.</translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-290"/>
+        <location filename="../qml/SpaceLobby.qml" line="-306"/>
         <source>ROOMS AND SPACES</source>
         <translation>RUANG DAN SPACE</translation>
     </message>
@@ -33720,18 +33759,18 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+631"/>
+        <location line="+647"/>
         <source>Mark as not suggested</source>
         <translation>Tandai tidak disarankan</translation>
     </message>
     <message>
-        <location line="-630"/>
-        <location line="+631"/>
+        <location line="-646"/>
+        <location line="+647"/>
         <source>Mark as suggested</source>
         <translation>Tandai disarankan</translation>
     </message>
     <message>
-        <location line="-620"/>
+        <location line="-636"/>
         <source>Search names and descriptions</source>
         <translation>Cari nama dan deskripsi</translation>
     </message>
@@ -33741,7 +33780,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Cari ruang dan Space</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+58"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>Tidak ada ruang atau Space yang cocok dengan “%1”.</translation>
     </message>
@@ -34554,12 +34593,12 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Tidak ada hasil</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Search failed. Check your connection and try again.</source>
         <translation>Pencarian gagal. Periksa koneksi Anda dan coba lagi.</translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+90"/>
         <location line="+79"/>
         <source>%1 (%2)</source>
         <translation>%1 (%2)</translation>
@@ -34570,9 +34609,49 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Dari server Anda</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Exact Matrix ID</source>
         <translation>ID Matrix persis</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Exact Matrix ID, not confirmed</source>
+        <translation>ID Matrix persis, belum dikonfirmasi</translation>
+    </message>
+</context>
+<context>
+    <name>UserSearchModel</name>
+    <message>
+        <location filename="../src/models/UserSearchModel.cpp" line="+47"/>
+        <source>People search failed, so only the exact Matrix ID is shown.</source>
+        <translation>Pencarian orang gagal, jadi hanya ID Matrix persis yang ditampilkan.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Only the first %n match(es) are shown. Type more of the name, or their full Matrix ID like @name:example.org.</source>
+        <translation>
+            <numerusform>Hanya %n hasil pertama yang ditampilkan. Ketik lebih banyak nama, atau ID Matrix lengkap seperti @name:example.org.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>That is not a valid Matrix ID. A full ID looks like @name:example.org.</source>
+        <translation>Itu bukan ID Matrix yang valid. ID lengkap seperti @name:example.org.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Your server&apos;s user directory may not list everyone. If you know their Matrix ID, type it in full, like @name:example.org.</source>
+        <translation>Direktori pengguna server Anda mungkin tidak mencantumkan semua orang. Jika tahu ID Matrix-nya, ketik lengkap, seperti @name:example.org.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Too many searches in a row. Wait a moment, then try again.</source>
+        <translation>Terlalu banyak pencarian beruntun. Tunggu sebentar, lalu coba lagi.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Your server does not offer people search. Type their full Matrix ID, like @name:example.org.</source>
+        <translation>Server Anda tidak menyediakan pencarian orang. Ketik ID Matrix lengkapnya, seperti @name:example.org.</translation>
     </message>
 </context>
 <context>

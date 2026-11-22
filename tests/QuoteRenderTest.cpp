@@ -69,6 +69,55 @@ private Q_SLOTS:
         QVERIFY2(nestedBarRows >= 8, qPrintable(QString::number(nestedBarRows)));
     }
 
+    void selectingBesideAQuoteDoesNotThickenIt()
+    {
+        const MessageHtml::MentionStyle style{QString(), QString(), QString(),
+                                              false, QStringLiteral("#cc3333"),
+                                              QStringLiteral("#777777")};
+        const QString html = MessageHtml::sanitize(
+            QStringLiteral("<blockquote>quoted words here</blockquote>"
+                           "<p>first line after the quote</p>"
+                           "<p>second line after the quote</p>"),
+            nullptr, QString(), style);
+
+        QQmlEngine engine;
+        QQmlComponent comp(&engine);
+        qmlRegisterType<QuoteBars>("QuoteTest", 1, 0, "QuoteBars");
+        comp.setData(
+            "import QtQuick\nimport QuoteTest\n"
+            "TextEdit { id: e; width: 300; readOnly: true; selectByMouse: true\n"
+            "  textFormat: TextEdit.RichText; wrapMode: TextEdit.Wrap\n"
+            "  color: 'black'; selectionColor: 'navy'; selectedTextColor: 'white'\n"
+            "  property alias bars: q.bars\n"
+            "  QuoteBars { id: q; document: e.textDocument } }",
+            QUrl());
+        QQuickWindow window;
+        window.setColor(Qt::white);
+        window.resize(300, 200);
+        auto *edit = qobject_cast<QQuickItem *>(comp.create());
+        QVERIFY2(edit, qPrintable(comp.errorString()));
+        edit->setParentItem(window.contentItem());
+        edit->setProperty("text", html);
+        window.show();
+        QVERIFY(QTest::qWaitForWindowExposed(&window));
+
+        const QVariantList bars = edit->property("bars").toList();
+        QCOMPARE(bars.size(), 1);
+        const QVariantMap bar = bars.first().toMap();
+        const QRect quote(4, int(bar.value(QStringLiteral("y")).toReal()),
+                          290, int(bar.value(QStringLiteral("height")).toReal()));
+        const QImage before = window.grabWindow().copy(quote);
+
+        const int start = edit->property("length").toInt() - 40;
+        for (int end = start + 2; end <= start + 30; end += 4) {
+            QMetaObject::invokeMethod(edit, "select", Q_ARG(int, start),
+                                      Q_ARG(int, end));
+            QCOMPARE(window.grabWindow().copy(quote), before);
+        }
+        QMetaObject::invokeMethod(edit, "deselect");
+        QCOMPARE(window.grabWindow().copy(quote), before);
+    }
+
     void copyingAcrossAQuoteAddsNoBlankLine()
     {
         QTextDocument doc;

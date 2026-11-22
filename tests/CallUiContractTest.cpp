@@ -30,6 +30,7 @@
 #include "calls/SfuMediaEngine.h"
 #include "matrix/CallSignal.h"
 #include "matrix/MockMatrixClient.h"
+#include "support/SettledClick.h"
 
 #ifdef HAVE_LIGHTNING_WEBRTC
 #include <QVideoSink>
@@ -264,10 +265,7 @@ private:
 
     static void clickCentre(QQuickWindow *window, QQuickItem *item)
     {
-        const QPointF centre =
-            item->mapToScene(QPointF(item->width() / 2, item->height() / 2));
-        QTest::mouseClick(window, Qt::LeftButton, Qt::NoModifier,
-                          centre.toPoint());
+        testsupport::clickWhenSettled(window, item);
         QCoreApplication::processEvents();
     }
 

@@ -1770,17 +1770,17 @@ Não toca nas suas chaves de encriptação, na sua sessão nem em qualquer mensa
 <context>
     <name>AttachmentImageEditDialog</name>
     <message>
-        <location filename="../qml/AttachmentImageEditDialog.qml" line="+25"/>
+        <location filename="../qml/AttachmentImageEditDialog.qml" line="+26"/>
         <source>Edit image before sending</source>
         <translation>Edite a imagem antes de enviar</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+37"/>
         <source>The image edit failed.</source>
         <translation>A edição da imagem falhou.</translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+70"/>
         <source>Editing this animation sends one still PNG frame.</source>
         <translation>A edição desta animação envia um quadro PNG estático.</translation>
     </message>
@@ -1850,7 +1850,7 @@ Não toca nas suas chaves de encriptação, na sua sessão nem em qualquer mensa
         <translation>Usar imagem editada</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>The edited image could not be queued.</source>
         <translation>A imagem editada não pôde ser colocada na fila.</translation>
     </message>
@@ -1858,7 +1858,7 @@ Não toca nas suas chaves de encriptação, na sua sessão nem em qualquer mensa
 <context>
     <name>AttachmentQueueModel</name>
     <message>
-        <location filename="../src/models/AttachmentQueueModel.cpp" line="+79"/>
+        <location filename="../src/models/AttachmentQueueModel.cpp" line="+81"/>
         <source>The file is larger than the server&apos;s upload limit (%1).</source>
         <translation>O ficheiro excede o limite de envio do servidor (%1).</translation>
     </message>
@@ -1893,7 +1893,7 @@ Não toca nas suas chaves de encriptação, na sua sessão nem em qualquer mensa
         <translation>Esse ficheiro já está anexado.</translation>
     </message>
     <message>
-        <location line="+151"/>
+        <location line="+260"/>
         <source>The converted picture couldn&apos;t be saved.</source>
         <translation>Não foi possível guardar a imagem convertida.</translation>
     </message>
@@ -1908,7 +1908,7 @@ Não toca nas suas chaves de encriptação, na sua sessão nem em qualquer mensa
         <translation>A imagem excede o limite de envio do servidor (%1).</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+215"/>
         <source>The attachment is no longer available.</source>
         <translation>O anexo não está mais disponível.</translation>
     </message>
@@ -1923,35 +1923,35 @@ Não toca nas suas chaves de encriptação, na sua sessão nem em qualquer mensa
         <translation>Edição de imagem inválida.</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <location line="+31"/>
+        <location line="-113"/>
+        <location line="+144"/>
         <source>This image is too large to edit.</source>
         <translation>Esta imagem é muito grande para ser editada.</translation>
     </message>
     <message>
-        <location line="-17"/>
+        <location line="-162"/>
         <source>This image format cannot be edited.</source>
         <translation>Este formato de imagem não pode ser editado.</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+26"/>
         <source>This image could not be decoded safely.</source>
         <translation>Esta imagem não pôde ser decodificada com segurança.</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+16"/>
         <source>The crop is empty.</source>
         <translation>O recorte está vazio.</translation>
     </message>
     <message>
-        <location line="-7"/>
-        <location line="+11"/>
-        <location line="+51"/>
+        <location line="-8"/>
+        <location line="+12"/>
+        <location line="+34"/>
         <source>The image edit failed.</source>
         <translation>A edição da imagem falhou.</translation>
     </message>
     <message>
-        <location line="-36"/>
+        <location line="+63"/>
         <source>Too many annotation points.</source>
         <translation>Muitos pontos de anotação.</translation>
     </message>
@@ -1961,11 +1961,11 @@ Não toca nas suas chaves de encriptação, na sua sessão nem em qualquer mensa
         <translation>Ponto de anotação inválido.</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+4"/>
-        <location line="+18"/>
+        <location line="-64"/>
         <location line="+5"/>
-        <location line="+4"/>
+        <location line="+5"/>
+        <location line="+8"/>
+        <location line="+59"/>
         <source>The image edit could not be saved.</source>
         <translation>A edição da imagem não pôde ser salva.</translation>
     </message>
@@ -3931,7 +3931,7 @@ Não toca nas suas chaves de encriptação, na sua sessão nem em qualquer mensa
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+316"/>
+        <location filename="../qml/SpaceLobby.qml" line="+348"/>
         <source>%1, collapsed</source>
         <translation>%1, recolhido</translation>
     </message>
@@ -7357,13 +7357,13 @@ Tamanho: %3</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+377"/>
+        <location line="+393"/>
         <location line="+274"/>
         <source>Ask to join</source>
         <translation>Pedir para entrar</translation>
     </message>
     <message>
-        <location line="-650"/>
+        <location line="-666"/>
         <source>Restricted</source>
         <translation>Restrito</translation>
     </message>
@@ -7422,8 +7422,16 @@ Tamanho: %3</translation>
         <source>matrixrooms.info is a third-party directory: your homeserver sends it your search terms.</source>
         <translation>matrixrooms.info é um diretório de terceiros: o seu servidor doméstico envia-lhe os seus termos de pesquisa.</translation>
     </message>
+    <message numerus="yes">
+        <location line="+13"/>
+        <source>Showing %1 of about %n room(s). Scroll for more, or narrow the search.</source>
+        <translation>
+            <numerusform>Mostrando %1 de cerca de %n sala. Role para ver mais ou refine a busca.</numerusform>
+            <numerusform>Mostrando %1 de cerca de %n salas. Role para ver mais ou refine a busca.</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+69"/>
+        <location line="+72"/>
         <source>Open %1</source>
         <translation>Abrir %1</translation>
     </message>
@@ -11703,7 +11711,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Transferência cancelada.</translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+178"/>
         <source>The destination folder is not available.</source>
         <translation>A pasta de destino não está disponível.</translation>
     </message>
@@ -12509,7 +12517,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>MessageComposer</name>
     <message>
-        <location filename="../src/models/MessageComposer.cpp" line="+245"/>
+        <location filename="../src/models/MessageComposer.cpp" line="+258"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>Os anexos não são suportados neste backend.</translation>
@@ -12525,17 +12533,17 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Não foi possível ler a imagem da área de transferência.</translation>
     </message>
     <message>
-        <location line="+192"/>
+        <location line="+206"/>
         <source>Photo details could not be removed from this image, so it was not sent. You can change this under Settings, Privacy.</source>
         <translation>Não foi possível remover os dados da fotografia desta imagem, por isso não foi enviada. Pode alterar isto em Definições, Privacidade.</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+77"/>
         <source>The attachment could not be queued.</source>
         <translation>Não foi possível colocar o anexo na fila.</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+16"/>
         <location line="+30"/>
         <location line="+81"/>
         <source>The voice message could not be sent.</source>
@@ -12548,12 +12556,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     </message>
     <message>
         <location line="+122"/>
-        <location line="+54"/>
+        <location line="+78"/>
         <source>Upload failed. Retry or remove.</source>
         <translation>O envio falhou. Tente novamente ou remova.</translation>
     </message>
     <message>
-        <location line="+89"/>
+        <location line="+90"/>
         <source>An edit cannot be empty. Delete the message instead.</source>
         <translation>Uma edição não pode estar vazia. Em vez disso, elimine a mensagem.</translation>
     </message>
@@ -14904,7 +14912,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+1973"/>
         <location line="+1007"/>
         <source>Open</source>
         <translation>Abrir</translation>
@@ -15437,7 +15445,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2860"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2863"/>
         <source>(spoiler)</source>
         <translation>(spoiler)</translation>
     </message>
@@ -15503,8 +15511,8 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     </message>
     <message numerus="yes">
         <location line="+233"/>
-        <location line="+217"/>
-        <location line="+1738"/>
+        <location line="+218"/>
+        <location line="+1740"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n nova mensagem</numerusform>
@@ -15512,8 +15520,8 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1951"/>
-        <location line="+211"/>
+        <location line="-1954"/>
+        <location line="+212"/>
         <source>%n new Matrix notifications</source>
         <translation>
             <numerusform>%n nova notificação do Matrix</numerusform>
@@ -15521,7 +15529,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1743"/>
+        <location line="+1745"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>em %n sala</numerusform>
@@ -16476,7 +16484,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>QuickSwitcher</name>
     <message>
-        <location filename="../qml/QuickSwitcher.qml" line="+96"/>
+        <location filename="../qml/QuickSwitcher.qml" line="+103"/>
         <source>Open Settings</source>
         <translation>Abrir as definições</translation>
     </message>
@@ -16717,7 +16725,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Experimente %1</translation>
     </message>
     <message>
-        <location line="+44"/>
+        <location line="+90"/>
         <source>ROOMS</source>
         <translation>SALAS</translation>
     </message>
@@ -16735,6 +16743,11 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <location line="+1"/>
         <source>INVITES</source>
         <translation>CONVITES</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>MATRIX ADDRESS</source>
+        <translation>ENDEREÇO MATRIX</translation>
     </message>
     <message>
         <location line="+172"/>
@@ -16763,11 +16776,16 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     </message>
     <message>
         <location line="+66"/>
+        <source>No matching rooms, people or Spaces</source>
+        <translation>Nenhuma sala, pessoa ou espaço correspondente</translation>
+    </message>
+    <message>
+        <location line="+50"/>
         <source>No matching rooms</source>
         <translation>Nenhuma sala corresponde</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-49"/>
         <source>Type to search your rooms</source>
         <translation>Escreva para procurar nas suas salas</translation>
     </message>
@@ -16782,12 +16800,25 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Procurar salas públicas</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
+        <source>No matching people</source>
+        <translation>Nenhuma pessoa correspondente</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>No matching actions</source>
         <translation>Nenhuma ação corresponde</translation>
     </message>
+    <message numerus="yes">
+        <location line="+44"/>
+        <source>%n MORE, TYPE TO NARROW</source>
+        <translation>
+            <numerusform>MAIS %n, DIGITE PARA REFINAR</numerusform>
+            <numerusform>MAIS %n, DIGITE PARA REFINAR</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+299"/>
+        <location line="+262"/>
         <source>navigate</source>
         <translation>navegar</translation>
     </message>
@@ -16807,7 +16838,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>comandos</translation>
     </message>
     <message>
-        <location filename="../src/models/QuickSwitcherModel.cpp" line="+202"/>
+        <location filename="../src/models/QuickSwitcherModel.cpp" line="+211"/>
         <source>Invitation</source>
         <translation>Convite</translation>
     </message>
@@ -16820,6 +16851,11 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <location line="+4"/>
         <source>Direct message</source>
         <translation>Mensagem direta</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>Not in your rooms. Preview it before joining</source>
+        <translation>Não está nas suas salas. Visualize antes de entrar</translation>
     </message>
 </context>
 <context>
@@ -18011,7 +18047,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Obtidas %1 mensagens…</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+28"/>
         <source>Could not read the room&apos;s history. Try again later.</source>
         <translation>Não foi possível ler o histórico da sala. Tente novamente mais tarde.</translation>
     </message>
@@ -28473,7 +28509,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
 <context>
     <name>SpaceLobby</name>
     <message numerus="yes">
-        <location filename="../qml/SpaceLobby.qml" line="-111"/>
+        <location filename="../qml/SpaceLobby.qml" line="-127"/>
         <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
         <translation>
             <numerusform>Só a primeira %n sala deste espaço está listada. Uma sala não listada ainda pode ser aberta pelo endereço.</numerusform>
@@ -28496,7 +28532,12 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Tentar novamente</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+9"/>
+        <source>This Space has too many members to check them all, so Lightning cannot tell which of your direct messages are with its members. Your room list may show direct messages with people outside it.</source>
+        <translation>Este espaço tem membros demais para verificar todos, então o Lightning não consegue saber quais das suas mensagens diretas são com membros dele. Sua lista de salas pode mostrar mensagens diretas com pessoas de fora.</translation>
+    </message>
+    <message>
+        <location line="+42"/>
         <location line="+265"/>
         <source>Loading rooms…</source>
         <translation>A carregar as salas…</translation>
@@ -28530,7 +28571,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+255"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+264"/>
         <source>All rooms</source>
         <translation>Todas as salas</translation>
     </message>
@@ -32470,7 +32511,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Não foi possível ler a imagem da área de transferência.</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+82"/>
         <source>Photo details could not be removed from this image, so it was not sent. You can change this under Settings, Privacy.</source>
         <translation>Não foi possível remover os dados da fotografia desta imagem, por isso não foi enviada. Pode alterar isto em Definições, Privacidade.</translation>
     </message>
@@ -32506,7 +32547,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Marcar este tópico como lido</translation>
     </message>
     <message>
-        <location line="+1318"/>
+        <location line="+1332"/>
         <source>Jump to the newest reply</source>
         <translation>Ir para a resposta mais recente</translation>
     </message>
@@ -32519,7 +32560,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         </translation>
     </message>
     <message>
-        <location line="-1713"/>
+        <location line="-1727"/>
         <source>This room has been replaced.</source>
         <translation>Esta sala foi substituída.</translation>
     </message>
@@ -32622,13 +32663,13 @@ Nota: importar chaves não verifica esta sessão.</translation>
     <message>
         <location line="-90"/>
         <location line="+92"/>
-        <location line="+362"/>
+        <location line="+376"/>
         <location line="+72"/>
         <source>Replies</source>
         <translation>Respostas</translation>
     </message>
     <message>
-        <location line="-524"/>
+        <location line="-538"/>
         <source>Unread</source>
         <translation>Não lido</translation>
     </message>
@@ -32678,7 +32719,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>[Spoiler]</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+28"/>
         <source>Loading the original message…</source>
         <translation>A carregar a mensagem original…</translation>
     </message>
@@ -33861,7 +33902,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Sair não remove as salas que estão dentro dele.</translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-290"/>
+        <location filename="../qml/SpaceLobby.qml" line="-306"/>
         <source>ROOMS AND SPACES</source>
         <translation>SALAS E ESPAÇOS</translation>
     </message>
@@ -33881,18 +33922,18 @@ Nota: importar chaves não verifica esta sessão.</translation>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+631"/>
+        <location line="+647"/>
         <source>Mark as not suggested</source>
         <translation>Marcar como não sugerida</translation>
     </message>
     <message>
-        <location line="-630"/>
-        <location line="+631"/>
+        <location line="-646"/>
+        <location line="+647"/>
         <source>Mark as suggested</source>
         <translation>Marcar como sugerida</translation>
     </message>
     <message>
-        <location line="-620"/>
+        <location line="-636"/>
         <source>Search names and descriptions</source>
         <translation>Procurar em nomes e descrições</translation>
     </message>
@@ -33902,7 +33943,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Procurar salas e espaços</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+58"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>Nenhuma sala ou espaço corresponde a «%1».</translation>
     </message>
@@ -34720,12 +34761,12 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Sem resultados</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Search failed. Check your connection and try again.</source>
         <translation>A procura falhou. Verifique a sua ligação e tente novamente.</translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+90"/>
         <location line="+79"/>
         <source>%1 (%2)</source>
         <translation>%1 (%2)</translation>
@@ -34736,9 +34777,50 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Do seu servidor</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Exact Matrix ID</source>
         <translation>ID Matrix exato</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Exact Matrix ID, not confirmed</source>
+        <translation>ID Matrix exato, não confirmado</translation>
+    </message>
+</context>
+<context>
+    <name>UserSearchModel</name>
+    <message>
+        <location filename="../src/models/UserSearchModel.cpp" line="+47"/>
+        <source>People search failed, so only the exact Matrix ID is shown.</source>
+        <translation>A busca de pessoas falhou, então só o ID Matrix exato é mostrado.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Only the first %n match(es) are shown. Type more of the name, or their full Matrix ID like @name:example.org.</source>
+        <translation>
+            <numerusform>Só o primeiro resultado (%n) é mostrado. Digite mais do nome ou o ID Matrix completo, como @name:example.org.</numerusform>
+            <numerusform>Só os primeiros %n resultados são mostrados. Digite mais do nome ou o ID Matrix completo, como @name:example.org.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>That is not a valid Matrix ID. A full ID looks like @name:example.org.</source>
+        <translation>Isso não é um ID Matrix válido. Um ID completo é assim: @name:example.org.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Your server&apos;s user directory may not list everyone. If you know their Matrix ID, type it in full, like @name:example.org.</source>
+        <translation>O diretório de usuários do seu servidor pode não listar todos. Se souber o ID Matrix, digite-o completo, como @name:example.org.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Too many searches in a row. Wait a moment, then try again.</source>
+        <translation>Muitas buscas seguidas. Aguarde um momento e tente de novo.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Your server does not offer people search. Type their full Matrix ID, like @name:example.org.</source>
+        <translation>Seu servidor não oferece busca de pessoas. Digite o ID Matrix completo, como @name:example.org.</translation>
     </message>
 </context>
 <context>

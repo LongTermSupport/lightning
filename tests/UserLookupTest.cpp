@@ -87,6 +87,12 @@ struct Rig {
                                          ok ? QString()
                                             : QStringLiteral("network"));
     }
+    void finishDirectoryAs(const QVariantList &rows, bool limited,
+                           const QString &failure = {})
+    {
+        Q_EMIT client.userSearchFinished(client.lastSearchOp, failure.isEmpty(),
+                                         rows, limited, failure);
+    }
     void confirmProfile(const QString &userId, const QString &displayName)
     {
         Q_EMIT client.userProfileFinished(client.lastProfileOp, true, userId,
@@ -351,6 +357,137 @@ private Q_SLOTS:
         QCOMPARE(merged.size(), 1);
         QCOMPARE(merged.first().source, QStringLiteral("exact_local"));
         QCOMPARE(merged.first().displayName, QStringLiteral("A"));
+    }
+
+    void aHistoricalFullIdIsAnExactCandidateButNeverFabricated()
+    {
+        using namespace matrix::user_lookup;
+        const QString server = QStringLiteral("example.org");
+        QCOMPARE(exactCandidate(QStringLiteral("@Ali'ce:old.example"), server),
+                 QStringLiteral("@Ali'ce:old.example"));
+        QCOMPARE(exactCandidate(QStringLiteral("@a!b:[::1]"), server),
+                 QStringLiteral("@a!b:[::1]"));
+        QVERIFY(exactCandidate(QStringLiteral("ali'ce"), server).isEmpty());
+        QVERIFY(exactCandidate(QStringLiteral("@é:old.example"), server).isEmpty());
+        QVERIFY(exactCandidate(QStringLiteral("@a\tb:old.example"), server).isEmpty());
+        QVERIFY(exactCandidate(QStringLiteral("@") + QString(250, QLatin1Char('a'))
+                                   + QStringLiteral(":old.example"), server).isEmpty());
+    }
+
+    void aLimitedDirectoryKeepsItsRowsAndSaysWhy()
+    {
+        Rig rig;
+        rig.search(QStringLiteral("al"));
+        QVariantList rows;
+        for (int i = 0; i < 20; ++i)
+            rows << directoryRow(QStringLiteral("@al%1:example.org").arg(i),
+                                 QStringLiteral("Al %1").arg(i));
+        rig.finishDirectoryAs(rows, true);
+        QCOMPARE(rig.model.rowCount(), 20);
+        QCOMPARE(rig.model.state(), QStringLiteral("results"));
+        QVERIFY(rig.model.property("limited").toBool());
+        QVERIFY(rig.model.property("notice").toString().contains(
+            QStringLiteral("@name:example.org")));
+
+        rig.search(QStringLiteral("alb"));
+        rig.finishDirectoryAs({ directoryRow(QStringLiteral("@alb:example.org"),
+                                             QStringLiteral("Alb")) }, false);
+        QVERIFY(!rig.model.property("limited").toBool());
+        QVERIFY(rig.model.property("notice").toString().isEmpty());
+    }
+
+    void searchFailuresAndEmptyAnswersSayWhatToTryNext()
+    {
+        Rig rig;
+        rig.search(QStringLiteral("z z"));
+        rig.finishDirectoryAs({}, false, QStringLiteral("rate_limited"));
+        QCOMPARE(rig.model.state(), QStringLiteral("error"));
+        QCOMPARE(rig.model.property("errorCategory").toString(),
+                 QStringLiteral("rate_limited"));
+        const QString wait = rig.model.property("notice").toString();
+        QVERIFY(!wait.isEmpty());
+
+        rig.search(QStringLiteral("z zz"));
+        rig.finishDirectoryAs({}, false, QStringLiteral("unrecognized"));
+        const QString unsupported = rig.model.property("notice").toString();
+        QVERIFY(!unsupported.isEmpty());
+        QVERIFY(unsupported != wait);
+
+        rig.search(QStringLiteral("z zzz"));
+        rig.finishDirectoryAs({}, false, QStringLiteral("network"));
+        QCOMPARE(rig.model.property("errorCategory").toString(), QStringLiteral("network"));
+        QVERIFY(rig.model.property("notice").toString().isEmpty());
+
+        rig.search(QStringLiteral("nobody here"));
+        rig.finishDirectoryAs({}, false);
+        QCOMPARE(rig.model.state(), QStringLiteral("no_results"));
+        const QString hint = rig.model.property("notice").toString();
+        QVERIFY(hint.contains(QStringLiteral("@name:example.org")));
+
+        rig.search(QStringLiteral("@a b:x.org"));
+        rig.finishDirectoryAs({}, false);
+        QCOMPARE(rig.model.state(), QStringLiteral("no_results"));
+        const QString invalid = rig.model.property("notice").toString();
+        QVERIFY(!invalid.isEmpty());
+        QVERIFY(invalid != hint);
+
+        rig.search(QStringLiteral("admin"));
+        rig.finishDirectoryAs({}, false, QStringLiteral("network"));
+        rig.confirmProfile(QStringLiteral("@admin:example.org"), QStringLiteral("Admin"));
+        QCOMPARE(rig.model.state(), QStringLiteral("results"));
+        QVERIFY(!rig.model.property("notice").toString().isEmpty());
+    }
+
+    void anUnconfirmedTypedIdIsMarkedUntilItsProfileAnswers()
+    {
+        Rig rig;
+        const int role = rig.model.roleNames().key(QByteArrayLiteral("confirmed"), -1);
+        QVERIFY(role >= 0);
+        rig.search(QStringLiteral("@carol:federated.example"));
+        rig.finishDirectory({ directoryRow(QStringLiteral("@carl:federated.example"),
+                                           QStringLiteral("Carl")) });
+        QCOMPARE(rig.model.rowCount(), 2);
+        QVERIFY(!rig.model.data(rig.model.index(0, 0), role).toBool());
+        QVERIFY(rig.model.data(rig.model.index(1, 0), role).toBool());
+        rig.confirmProfile(QStringLiteral("@carol:federated.example"), QStringLiteral("Carol"));
+        QVERIFY(rig.model.data(rig.model.index(0, 0), role).toBool());
+    }
+
+    void roomTargetsAreParsedLocally()
+    {
+        using namespace matrix::user_lookup;
+        const struct {
+            const char *text;
+            const char *id;
+            const char *event;
+            bool link;
+        } good[] = {
+            { "!abc:example.org", "!abc:example.org", "", false },
+            { " #room:example.org:8448 ", "#room:example.org:8448", "", false },
+            { "!abc:[2001:db8::1]", "!abc:[2001:db8::1]", "", false },
+            { "!AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA_", "!AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA_", "", false },
+            { "https://matrix.to/#/%23room%3Aexample.org", "#room:example.org", "", true },
+            { "matrix.to/#/!abc:example.org/%24ev?via=example.org", "!abc:example.org", "$ev", true },
+            { "HTTPS://MATRIX.TO/#/#room:example.org", "#room:example.org", "", true },
+            { "matrix:roomid/abc:example.org/e/ev?via=x", "!abc:example.org", "$ev", true },
+            { "matrix:r/room:example.org", "#room:example.org", "", true },
+        };
+        for (const auto &c : good) {
+            const RoomTarget t = parseRoomTarget(QString::fromUtf8(c.text));
+            QVERIFY2(t.isValid(), c.text);
+            QCOMPARE(t.id, QString::fromUtf8(c.id));
+            QCOMPARE(t.eventId, QString::fromUtf8(c.event));
+            QCOMPARE(t.isLink, c.link);
+        }
+        const char *bad[] = {
+            "", "!", "#", "#room", "!short", "room:example.org", "@user:example.org",
+            "#room:bad_server!", "!a b:example.org", "#room:[::1",
+            "https://matrix.to/#/@user:example.org", "https://matrix.to/#/!a:x/notanevent",
+            "matrix:u/user:example.org", "matrix:roomid/abc:example.org/x/ev",
+            "https://example.org/#/!abc:example.org",
+        };
+        for (const char *text : bad)
+            QVERIFY2(!parseRoomTarget(QString::fromUtf8(text)).isValid(), text);
     }
 };
 

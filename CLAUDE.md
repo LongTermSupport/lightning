@@ -662,7 +662,8 @@ the embedded keys work.
 
 Never print, log, commit, embed in tracked source, or pass key values through
 QML, `--version`, settings, or diagnostics. A key compiled into a distributed
-desktop binary is ultimately extractable; do not claim otherwise. These are
+desktop binary is ultimately extractable; do not claim otherwise. The root
+Flathub manifest carries them on purpose (Rokas, 2026-11-22). These are
 application/provider keys, not Matrix keys. Send only the user's GIF search
 term to the explicitly selected external provider; never send Matrix IDs,
 room IDs, event IDs, user IDs, message bodies, homeserver credentials, or
