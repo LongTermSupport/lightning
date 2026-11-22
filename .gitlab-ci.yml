@@ -195,6 +195,10 @@ config-tests:
     # The gitlab.com CI gates: producer exit status, first-attempt failures, run == registered.
     - python3 ./packaging-ci/tests/test-ci-test-gates.py
     - ./packaging-ci/tests/test-write-build-info.sh
+    # Advisory triage over the locks, and the packaged-ELF executable-stack check.
+    - python3 -I packaging-ci/tests/test-advisories.py
+    - python3 -I packaging-ci/tests/test-elf-stacks.py
+    - python3 -I packaging-ci/scripts/check-advisories.py
 
 # Proves the GitHub mirror token works before anything is published, since the
 # mirror job only runs after the GitLab tag and release exist. Refuses a token
@@ -288,7 +292,7 @@ build-deb:
     - >-
       apt-get install -y --no-install-recommends
       build-essential ca-certificates ccache cmake curl debhelper dpkg-dev
-      fakeroot file git jq libsecret-1-dev libsqlite3-dev libssl-dev
+      fakeroot file git jq libsecret-1-dev python3 libsqlite3-dev libssl-dev
       ninja-build patchelf pkg-config qt6-base-dev qt6-base-private-dev qt6-declarative-dev
       qt6-multimedia-dev qt6-svg-dev qt6-tools-dev zstd
     # GStreamer development files for the call media engine; without them the
@@ -311,6 +315,7 @@ build-deb:
     - ./packaging-ci/scripts/prepare-pinned-source.sh
     - ./packaging-ci/scripts/build-deb.sh
     - ./packaging-ci/scripts/write-build-info.sh deb
+    - python3 -I packaging-ci/scripts/check-advisories.py --build-info dist/build-info.json --cargo-lock work/lightning/rust/Cargo.lock --flake-lock work/lightning/flake.lock > dist/advisory-report.json
 
 # Second deb lane: Ubuntu 26.04 LTS.
 #
@@ -348,7 +353,7 @@ build-deb-ubuntu:
     - >-
       apt-get install -y --no-install-recommends
       build-essential ca-certificates ccache cmake curl debhelper dpkg-dev
-      fakeroot file git jq libsecret-1-dev libsqlite3-dev libssl-dev
+      fakeroot file git jq libsecret-1-dev python3 libsqlite3-dev libssl-dev
       ninja-build patchelf pkg-config qt6-base-dev qt6-base-private-dev qt6-declarative-dev
       qt6-multimedia-dev qt6-svg-dev qt6-tools-dev zstd
     # GStreamer development files for the call media engine; without them the
@@ -371,6 +376,7 @@ build-deb-ubuntu:
     - ./packaging-ci/scripts/prepare-pinned-source.sh
     - ./packaging-ci/scripts/build-deb.sh
     - ./packaging-ci/scripts/write-build-info.sh deb
+    - python3 -I packaging-ci/scripts/check-advisories.py --build-info dist/build-info.json --cargo-lock work/lightning/rust/Cargo.lock --flake-lock work/lightning/flake.lock > dist/advisory-report.json
   # FORMAT is "deb" in both deb lanes; a distinct archive name keeps their
   # dist/build-info.json from overwriting each other.
   artifacts:
@@ -1190,7 +1196,7 @@ validate-rpm-opensuse:
     - zypper --non-interactive refresh
     - >-
       zypper --non-interactive install --no-recommends
-      AppStream binutils ca-certificates cpio desktop-file-utils file procps
+      AppStream binutils ca-certificates cpio desktop-file-utils file findutils procps
   script: [./packaging-ci/scripts/validate-rpm.sh]
   artifacts:
     when: always
@@ -1233,7 +1239,7 @@ validate-rpm-leap:
     - zypper --non-interactive refresh
     - >-
       zypper --non-interactive install --no-recommends
-      AppStream binutils ca-certificates cpio desktop-file-utils file procps
+      AppStream binutils ca-certificates cpio desktop-file-utils file findutils procps
   script: [./packaging-ci/scripts/validate-rpm.sh]
   artifacts:
     when: always
@@ -1270,7 +1276,7 @@ validate-flatpak:
     - test ! -e work/lightning
     - command -v nix >/dev/null 2>&1 && exit 1 || true
     - apt-get update
-    - apt-get install -y --no-install-recommends ca-certificates flatpak
+    - apt-get install -y --no-install-recommends binutils ca-certificates flatpak
   script: [./packaging-ci/scripts/validate-flatpak.sh]
   artifacts:
     when: always

@@ -16,6 +16,7 @@ bad() { printf '  FAIL: %s\n' "$1" >&2; fail=1; }
 project() { # dir, then name=content-kind pairs for the payload
     local dir="$1"; shift
     mkdir -p "$dir/dist" "$dir/work/lightning/rust" "$dir/pkg/DEBIAN"
+    cp "$REPO/flake.lock" "$dir/work/lightning/"
     cp "$REPO/rust/Cargo.lock" "$dir/work/lightning/rust/"
     cat >"$dir/dist/version.env" <<'EOF'
 BASE_VERSION=0.11.0

@@ -82,6 +82,8 @@ if grep -q 'Cache hit for cleanup' "$WORKDIR/build.log"; then
 fi
 
 [ "$build_rc" -eq 0 ] || die "the build failed; the repo lint below would be meaningless"
+appdir="$WORKDIR/builddir/files"
+"$SCRIPT_DIR/check-elf-stacks.sh" "$appdir/bin/lightning-matrix" "$appdir/bin/lightning-updater" "$appdir"
 
 printf '== what the catalogue actually says ==\n'
 catalogue="$(find "$WORKDIR/builddir/files/share/app-info/xmls" -name '*.xml.gz' | head -1)"
