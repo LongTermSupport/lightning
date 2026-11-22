@@ -3908,7 +3908,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+316"/>
+        <location filename="../qml/SpaceLobby.qml" line="+348"/>
         <source>%1, collapsed</source>
         <translation>%1, roboh</translation>
     </message>
@@ -7326,13 +7326,13 @@ Ukuran: %3</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+377"/>
+        <location line="+393"/>
         <location line="+274"/>
         <source>Ask to join</source>
         <translation>Minta bergabung</translation>
     </message>
     <message>
-        <location line="-650"/>
+        <location line="-666"/>
         <source>Restricted</source>
         <translation>Terbatas</translation>
     </message>
@@ -7391,8 +7391,15 @@ Ukuran: %3</translation>
         <source>matrixrooms.info is a third-party directory: your homeserver sends it your search terms.</source>
         <translation>matrixrooms.info adalah direktori pihak ketiga: homeserver Anda mengirimkan kata pencarian Anda ke sana.</translation>
     </message>
+    <message numerus="yes">
+        <location line="+13"/>
+        <source>Showing %1 of about %n room(s). Scroll for more, or narrow the search.</source>
+        <translation>
+            <numerusform>Menampilkan %1 dari sekitar %n ruangan. Gulir untuk lainnya, atau persempit pencarian.</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+69"/>
+        <location line="+72"/>
         <source>Open %1</source>
         <translation>Buka %1</translation>
     </message>
@@ -16410,7 +16417,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
 <context>
     <name>QuickSwitcher</name>
     <message>
-        <location filename="../qml/QuickSwitcher.qml" line="+96"/>
+        <location filename="../qml/QuickSwitcher.qml" line="+103"/>
         <source>Open Settings</source>
         <translation>Buka Pengaturan</translation>
     </message>
@@ -16651,7 +16658,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Coba %1</translation>
     </message>
     <message>
-        <location line="+44"/>
+        <location line="+90"/>
         <source>ROOMS</source>
         <translation>RUANG</translation>
     </message>
@@ -16669,6 +16676,11 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <location line="+1"/>
         <source>INVITES</source>
         <translation>UNDANGAN</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>MATRIX ADDRESS</source>
+        <translation>ALAMAT MATRIX</translation>
     </message>
     <message>
         <location line="+172"/>
@@ -16697,11 +16709,16 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     </message>
     <message>
         <location line="+66"/>
+        <source>No matching rooms, people or Spaces</source>
+        <translation>Tidak ada ruangan, orang, atau Space yang cocok</translation>
+    </message>
+    <message>
+        <location line="+50"/>
         <source>No matching rooms</source>
         <translation>Tidak ada ruang yang cocok</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-49"/>
         <source>Type to search your rooms</source>
         <translation>Ketik untuk mencari di ruang Anda</translation>
     </message>
@@ -16716,12 +16733,24 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Cari ruang publik</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
+        <source>No matching people</source>
+        <translation>Tidak ada orang yang cocok</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>No matching actions</source>
         <translation>Tidak ada tindakan yang cocok</translation>
     </message>
+    <message numerus="yes">
+        <location line="+44"/>
+        <source>%n MORE, TYPE TO NARROW</source>
+        <translation>
+            <numerusform>%n LAGI, KETIK UNTUK MEMPERSEMPIT</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+299"/>
+        <location line="+262"/>
         <source>navigate</source>
         <translation>navigasi</translation>
     </message>
@@ -16741,7 +16770,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>perintah</translation>
     </message>
     <message>
-        <location filename="../src/models/QuickSwitcherModel.cpp" line="+202"/>
+        <location filename="../src/models/QuickSwitcherModel.cpp" line="+211"/>
         <source>Invitation</source>
         <translation>Undangan</translation>
     </message>
@@ -16754,6 +16783,11 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <location line="+4"/>
         <source>Direct message</source>
         <translation>Pesan langsung</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>Not in your rooms. Preview it before joining</source>
+        <translation>Tidak ada di ruangan Anda. Pratinjau sebelum bergabung</translation>
     </message>
 </context>
 <context>
@@ -28306,7 +28340,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
 <context>
     <name>SpaceLobby</name>
     <message numerus="yes">
-        <location filename="../qml/SpaceLobby.qml" line="-111"/>
+        <location filename="../qml/SpaceLobby.qml" line="-127"/>
         <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
         <translation>
             <numerusform>Hanya %n ruangan pertama Space ini yang ditampilkan. Ruangan yang tidak tercantum tetap dapat dibuka lewat alamatnya.</numerusform>
@@ -28328,7 +28362,12 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Coba lagi</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+9"/>
+        <source>This Space has too many members to check them all, so Lightning cannot tell which of your direct messages are with its members. Your room list may show direct messages with people outside it.</source>
+        <translation>Space ini punya terlalu banyak anggota untuk diperiksa semua, jadi Lightning tidak bisa tahu pesan langsung mana yang dengan anggotanya. Daftar ruangan Anda mungkin menampilkan pesan langsung dengan orang di luarnya.</translation>
+    </message>
+    <message>
+        <location line="+42"/>
         <location line="+265"/>
         <source>Loading rooms…</source>
         <translation>Memuat ruang…</translation>
@@ -28362,7 +28401,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+255"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+264"/>
         <source>All rooms</source>
         <translation>Semua ruang</translation>
     </message>
@@ -33638,7 +33677,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Meninggalkan Space tidak menghapus ruang di dalamnya.</translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-290"/>
+        <location filename="../qml/SpaceLobby.qml" line="-306"/>
         <source>ROOMS AND SPACES</source>
         <translation>RUANG DAN SPACE</translation>
     </message>
@@ -33657,18 +33696,18 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+631"/>
+        <location line="+647"/>
         <source>Mark as not suggested</source>
         <translation>Tandai tidak disarankan</translation>
     </message>
     <message>
-        <location line="-630"/>
-        <location line="+631"/>
+        <location line="-646"/>
+        <location line="+647"/>
         <source>Mark as suggested</source>
         <translation>Tandai disarankan</translation>
     </message>
     <message>
-        <location line="-620"/>
+        <location line="-636"/>
         <source>Search names and descriptions</source>
         <translation>Cari nama dan deskripsi</translation>
     </message>
@@ -33678,7 +33717,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Cari ruang dan Space</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+58"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>Tidak ada ruang atau Space yang cocok dengan “%1”.</translation>
     </message>
@@ -34491,12 +34530,12 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Tidak ada hasil</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Search failed. Check your connection and try again.</source>
         <translation>Pencarian gagal. Periksa koneksi Anda dan coba lagi.</translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+90"/>
         <location line="+79"/>
         <source>%1 (%2)</source>
         <translation>%1 (%2)</translation>
@@ -34507,9 +34546,49 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Dari server Anda</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Exact Matrix ID</source>
         <translation>ID Matrix persis</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Exact Matrix ID, not confirmed</source>
+        <translation>ID Matrix persis, belum dikonfirmasi</translation>
+    </message>
+</context>
+<context>
+    <name>UserSearchModel</name>
+    <message>
+        <location filename="../src/models/UserSearchModel.cpp" line="+47"/>
+        <source>People search failed, so only the exact Matrix ID is shown.</source>
+        <translation>Pencarian orang gagal, jadi hanya ID Matrix persis yang ditampilkan.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Only the first %n match(es) are shown. Type more of the name, or their full Matrix ID like @name:example.org.</source>
+        <translation>
+            <numerusform>Hanya %n hasil pertama yang ditampilkan. Ketik lebih banyak nama, atau ID Matrix lengkap seperti @name:example.org.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>That is not a valid Matrix ID. A full ID looks like @name:example.org.</source>
+        <translation>Itu bukan ID Matrix yang valid. ID lengkap seperti @name:example.org.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Your server&apos;s user directory may not list everyone. If you know their Matrix ID, type it in full, like @name:example.org.</source>
+        <translation>Direktori pengguna server Anda mungkin tidak mencantumkan semua orang. Jika tahu ID Matrix-nya, ketik lengkap, seperti @name:example.org.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Too many searches in a row. Wait a moment, then try again.</source>
+        <translation>Terlalu banyak pencarian beruntun. Tunggu sebentar, lalu coba lagi.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Your server does not offer people search. Type their full Matrix ID, like @name:example.org.</source>
+        <translation>Server Anda tidak menyediakan pencarian orang. Ketik ID Matrix lengkapnya, seperti @name:example.org.</translation>
     </message>
 </context>
 <context>

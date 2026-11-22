@@ -3931,7 +3931,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+316"/>
+        <location filename="../qml/SpaceLobby.qml" line="+348"/>
         <source>%1, collapsed</source>
         <translation>%1, eingeklappt</translation>
     </message>
@@ -7357,13 +7357,13 @@ Größe: %3</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+377"/>
+        <location line="+393"/>
         <location line="+274"/>
         <source>Ask to join</source>
         <translation>Beitritt anfragen</translation>
     </message>
     <message>
-        <location line="-650"/>
+        <location line="-666"/>
         <source>Restricted</source>
         <translation>Eingeschränkt</translation>
     </message>
@@ -7422,8 +7422,16 @@ Größe: %3</translation>
         <source>matrixrooms.info is a third-party directory: your homeserver sends it your search terms.</source>
         <translation>matrixrooms.info ist ein Verzeichnis eines Drittanbieters: Dein Homeserver sendet ihm deine Suchbegriffe.</translation>
     </message>
+    <message numerus="yes">
+        <location line="+13"/>
+        <source>Showing %1 of about %n room(s). Scroll for more, or narrow the search.</source>
+        <translation>
+            <numerusform>%1 von etwa %n Raum angezeigt. Scrolle für mehr oder grenze die Suche ein.</numerusform>
+            <numerusform>%1 von etwa %n Räumen angezeigt. Scrolle für mehr oder grenze die Suche ein.</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+69"/>
+        <location line="+72"/>
         <source>Open %1</source>
         <translation>%1 öffnen</translation>
     </message>
@@ -16471,7 +16479,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>QuickSwitcher</name>
     <message>
-        <location filename="../qml/QuickSwitcher.qml" line="+96"/>
+        <location filename="../qml/QuickSwitcher.qml" line="+103"/>
         <source>Open Settings</source>
         <translation>Einstellungen öffnen</translation>
     </message>
@@ -16712,7 +16720,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Versuche %1</translation>
     </message>
     <message>
-        <location line="+44"/>
+        <location line="+90"/>
         <source>ROOMS</source>
         <translation>RÄUME</translation>
     </message>
@@ -16730,6 +16738,11 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="+1"/>
         <source>INVITES</source>
         <translation>EINLADUNGEN</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>MATRIX ADDRESS</source>
+        <translation>MATRIX-ADRESSE</translation>
     </message>
     <message>
         <location line="+172"/>
@@ -16758,11 +16771,16 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+66"/>
+        <source>No matching rooms, people or Spaces</source>
+        <translation>Keine passenden Räume, Personen oder Spaces</translation>
+    </message>
+    <message>
+        <location line="+50"/>
         <source>No matching rooms</source>
         <translation>Keine passenden Räume</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-49"/>
         <source>Type to search your rooms</source>
         <translation>Tippe, um deine Räume zu durchsuchen</translation>
     </message>
@@ -16777,12 +16795,25 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Nach öffentlichen Räumen suchen</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
+        <source>No matching people</source>
+        <translation>Keine passenden Personen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>No matching actions</source>
         <translation>Keine passenden Aktionen</translation>
     </message>
+    <message numerus="yes">
+        <location line="+44"/>
+        <source>%n MORE, TYPE TO NARROW</source>
+        <translation>
+            <numerusform>%n WEITERER, TIPPEN ZUM EINGRENZEN</numerusform>
+            <numerusform>%n WEITERE, TIPPEN ZUM EINGRENZEN</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+299"/>
+        <location line="+262"/>
         <source>navigate</source>
         <translation>navigieren</translation>
     </message>
@@ -16802,7 +16833,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Befehle</translation>
     </message>
     <message>
-        <location filename="../src/models/QuickSwitcherModel.cpp" line="+202"/>
+        <location filename="../src/models/QuickSwitcherModel.cpp" line="+211"/>
         <source>Invitation</source>
         <translation>Einladung</translation>
     </message>
@@ -16815,6 +16846,11 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="+4"/>
         <source>Direct message</source>
         <translation>Direktnachricht</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>Not in your rooms. Preview it before joining</source>
+        <translation>Nicht in deinen Räumen. Vor dem Beitreten eine Vorschau ansehen</translation>
     </message>
 </context>
 <context>
@@ -28410,7 +28446,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>SpaceLobby</name>
     <message numerus="yes">
-        <location filename="../qml/SpaceLobby.qml" line="-111"/>
+        <location filename="../qml/SpaceLobby.qml" line="-127"/>
         <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
         <translation>
             <numerusform>Nur der erste %n Raum dieses Spaces wird angezeigt. Ein nicht aufgeführter Raum kann weiterhin über seine Adresse geöffnet werden.</numerusform>
@@ -28433,7 +28469,12 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Erneut versuchen</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+9"/>
+        <source>This Space has too many members to check them all, so Lightning cannot tell which of your direct messages are with its members. Your room list may show direct messages with people outside it.</source>
+        <translation>Dieser Space hat zu viele Mitglieder, um alle zu prüfen. Lightning kann daher nicht feststellen, welche deiner Direktnachrichten mit seinen Mitgliedern sind. Deine Raumliste zeigt möglicherweise Direktnachrichten mit Personen außerhalb.</translation>
+    </message>
+    <message>
+        <location line="+42"/>
         <location line="+265"/>
         <source>Loading rooms…</source>
         <translation>Räume werden geladen …</translation>
@@ -28467,7 +28508,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+255"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+264"/>
         <source>All rooms</source>
         <translation>Alle Räume</translation>
     </message>
@@ -33091,7 +33132,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>TimelinePane</name>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-682"/>
+        <location filename="../qml/SpaceLobby.qml" line="-698"/>
         <source>ROOMS AND SPACES</source>
         <translation>RÄUME UND SPACES</translation>
     </message>
@@ -33111,18 +33152,18 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location line="+9"/>
-        <location line="+631"/>
+        <location line="+647"/>
         <source>Mark as not suggested</source>
         <translation>Als nicht empfohlen markieren</translation>
     </message>
     <message>
-        <location line="-630"/>
-        <location line="+631"/>
+        <location line="-646"/>
+        <location line="+647"/>
         <source>Mark as suggested</source>
         <translation>Als empfohlen markieren</translation>
     </message>
     <message>
-        <location line="-620"/>
+        <location line="-636"/>
         <source>Search names and descriptions</source>
         <translation>Namen und Beschreibungen durchsuchen</translation>
     </message>
@@ -33132,7 +33173,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Räume und Spaces durchsuchen</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+58"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>Keine Räume oder Spaces passen zu „%1“.</translation>
     </message>
@@ -34657,12 +34698,12 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Keine Ergebnisse</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Search failed. Check your connection and try again.</source>
         <translation>Die Suche ist fehlgeschlagen. Prüfe deine Verbindung und versuche es erneut.</translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+90"/>
         <location line="+79"/>
         <source>%1 (%2)</source>
         <translation>%1 (%2)</translation>
@@ -34673,9 +34714,50 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Von deinem Server</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Exact Matrix ID</source>
         <translation>Genaue Matrix-ID</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Exact Matrix ID, not confirmed</source>
+        <translation>Exakte Matrix-ID, nicht bestätigt</translation>
+    </message>
+</context>
+<context>
+    <name>UserSearchModel</name>
+    <message>
+        <location filename="../src/models/UserSearchModel.cpp" line="+47"/>
+        <source>People search failed, so only the exact Matrix ID is shown.</source>
+        <translation>Die Personensuche ist fehlgeschlagen, daher wird nur die exakte Matrix-ID angezeigt.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Only the first %n match(es) are shown. Type more of the name, or their full Matrix ID like @name:example.org.</source>
+        <translation>
+            <numerusform>Nur der erste Treffer (%n) wird angezeigt. Tippe mehr vom Namen oder die vollständige Matrix-ID wie @name:example.org.</numerusform>
+            <numerusform>Nur die ersten %n Treffer werden angezeigt. Tippe mehr vom Namen oder die vollständige Matrix-ID wie @name:example.org.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>That is not a valid Matrix ID. A full ID looks like @name:example.org.</source>
+        <translation>Das ist keine gültige Matrix-ID. Eine vollständige ID sieht so aus: @name:example.org.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Your server&apos;s user directory may not list everyone. If you know their Matrix ID, type it in full, like @name:example.org.</source>
+        <translation>Das Benutzerverzeichnis deines Servers listet eventuell nicht alle auf. Wenn du die Matrix-ID kennst, gib sie vollständig ein, z. B. @name:example.org.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Too many searches in a row. Wait a moment, then try again.</source>
+        <translation>Zu viele Suchen hintereinander. Warte kurz und versuche es dann erneut.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Your server does not offer people search. Type their full Matrix ID, like @name:example.org.</source>
+        <translation>Dein Server bietet keine Personensuche. Gib die vollständige Matrix-ID ein, z. B. @name:example.org.</translation>
     </message>
 </context>
 <context>

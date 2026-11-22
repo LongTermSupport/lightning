@@ -3908,7 +3908,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+316"/>
+        <location filename="../qml/SpaceLobby.qml" line="+348"/>
         <source>%1, collapsed</source>
         <translation>%1，折叠</translation>
     </message>
@@ -7326,13 +7326,13 @@ Size: %3</source>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+377"/>
+        <location line="+393"/>
         <location line="+274"/>
         <source>Ask to join</source>
         <translation>申请加入</translation>
     </message>
     <message>
-        <location line="-650"/>
+        <location line="-666"/>
         <source>Restricted</source>
         <translation>受限</translation>
     </message>
@@ -7391,8 +7391,15 @@ Size: %3</source>
         <source>matrixrooms.info is a third-party directory: your homeserver sends it your search terms.</source>
         <translation>matrixrooms.info 是第三方目录：你的主服务器会将你的搜索词发送给它。</translation>
     </message>
+    <message numerus="yes">
+        <location line="+13"/>
+        <source>Showing %1 of about %n room(s). Scroll for more, or narrow the search.</source>
+        <translation>
+            <numerusform>显示约 %n 个房间中的 %1 个。滚动查看更多，或缩小搜索范围。</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+69"/>
+        <location line="+72"/>
         <source>Open %1</source>
         <translation>打开 %1</translation>
     </message>
@@ -16410,7 +16417,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>QuickSwitcher</name>
     <message>
-        <location filename="../qml/QuickSwitcher.qml" line="+96"/>
+        <location filename="../qml/QuickSwitcher.qml" line="+103"/>
         <source>Open Settings</source>
         <translation>打开设置</translation>
     </message>
@@ -16651,7 +16658,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>试试 %1</translation>
     </message>
     <message>
-        <location line="+44"/>
+        <location line="+90"/>
         <source>ROOMS</source>
         <translation>房间</translation>
     </message>
@@ -16669,6 +16676,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+1"/>
         <source>INVITES</source>
         <translation>邀请</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>MATRIX ADDRESS</source>
+        <translation>MATRIX 地址</translation>
     </message>
     <message>
         <location line="+172"/>
@@ -16697,11 +16709,16 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+66"/>
+        <source>No matching rooms, people or Spaces</source>
+        <translation>没有匹配的房间、用户或空间</translation>
+    </message>
+    <message>
+        <location line="+50"/>
         <source>No matching rooms</source>
         <translation>没有匹配的房间</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-49"/>
         <source>Type to search your rooms</source>
         <translation>输入内容以搜索房间</translation>
     </message>
@@ -16716,12 +16733,24 @@ Signing out and signing in again is the only fix.</source>
         <translation>查找公开房间</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
+        <source>No matching people</source>
+        <translation>没有匹配的用户</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>No matching actions</source>
         <translation>没有匹配的操作</translation>
     </message>
+    <message numerus="yes">
+        <location line="+44"/>
+        <source>%n MORE, TYPE TO NARROW</source>
+        <translation>
+            <numerusform>还有 %n 个，输入以缩小范围</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+299"/>
+        <location line="+262"/>
         <source>navigate</source>
         <translation>导航</translation>
     </message>
@@ -16741,7 +16770,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>命令</translation>
     </message>
     <message>
-        <location filename="../src/models/QuickSwitcherModel.cpp" line="+202"/>
+        <location filename="../src/models/QuickSwitcherModel.cpp" line="+211"/>
         <source>Invitation</source>
         <translation>邀请</translation>
     </message>
@@ -16754,6 +16783,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+4"/>
         <source>Direct message</source>
         <translation>私聊</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>Not in your rooms. Preview it before joining</source>
+        <translation>不在你的房间中。加入前先预览</translation>
     </message>
 </context>
 <context>
@@ -28306,7 +28340,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SpaceLobby</name>
     <message numerus="yes">
-        <location filename="../qml/SpaceLobby.qml" line="-111"/>
+        <location filename="../qml/SpaceLobby.qml" line="-127"/>
         <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
         <translation>
             <numerusform>仅列出此空间的前 %n 个房间。未列出的房间仍可通过其地址打开。</numerusform>
@@ -28328,7 +28362,12 @@ Note: importing keys does not verify this session.</source>
         <translation>重试</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+9"/>
+        <source>This Space has too many members to check them all, so Lightning cannot tell which of your direct messages are with its members. Your room list may show direct messages with people outside it.</source>
+        <translation>此空间成员太多，无法逐一检查，因此 Lightning 无法判断你的哪些私聊对象是其成员。你的房间列表可能显示与空间外用户的私聊。</translation>
+    </message>
+    <message>
+        <location line="+42"/>
         <location line="+265"/>
         <source>Loading rooms…</source>
         <translation>正在加载房间…</translation>
@@ -28362,7 +28401,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+255"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+264"/>
         <source>All rooms</source>
         <translation>所有房间</translation>
     </message>
@@ -33638,7 +33677,7 @@ Note: importing keys does not verify this session.</source>
         <translation>退出不会移除其中的房间。</translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-290"/>
+        <location filename="../qml/SpaceLobby.qml" line="-306"/>
         <source>ROOMS AND SPACES</source>
         <translation>房间与空间</translation>
     </message>
@@ -33657,18 +33696,18 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+631"/>
+        <location line="+647"/>
         <source>Mark as not suggested</source>
         <translation>标记为不推荐</translation>
     </message>
     <message>
-        <location line="-630"/>
-        <location line="+631"/>
+        <location line="-646"/>
+        <location line="+647"/>
         <source>Mark as suggested</source>
         <translation>标记为推荐</translation>
     </message>
     <message>
-        <location line="-620"/>
+        <location line="-636"/>
         <source>Search names and descriptions</source>
         <translation>搜索名称和描述</translation>
     </message>
@@ -33678,7 +33717,7 @@ Note: importing keys does not verify this session.</source>
         <translation>搜索房间和空间</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+58"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>没有与“%1”匹配的房间或空间。</translation>
     </message>
@@ -34491,12 +34530,12 @@ Note: importing keys does not verify this session.</source>
         <translation>没有结果</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Search failed. Check your connection and try again.</source>
         <translation>搜索失败。请检查网络连接后重试。</translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+90"/>
         <location line="+79"/>
         <source>%1 (%2)</source>
         <translation>%1（%2）</translation>
@@ -34507,9 +34546,49 @@ Note: importing keys does not verify this session.</source>
         <translation>来自你的服务器</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Exact Matrix ID</source>
         <translation>完全匹配的 Matrix ID</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Exact Matrix ID, not confirmed</source>
+        <translation>精确的 Matrix ID，未确认</translation>
+    </message>
+</context>
+<context>
+    <name>UserSearchModel</name>
+    <message>
+        <location filename="../src/models/UserSearchModel.cpp" line="+47"/>
+        <source>People search failed, so only the exact Matrix ID is shown.</source>
+        <translation>用户搜索失败，因此仅显示精确的 Matrix ID。</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Only the first %n match(es) are shown. Type more of the name, or their full Matrix ID like @name:example.org.</source>
+        <translation>
+            <numerusform>仅显示前 %n 个匹配项。输入更多名称，或完整的 Matrix ID，例如 @name:example.org。</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>That is not a valid Matrix ID. A full ID looks like @name:example.org.</source>
+        <translation>这不是有效的 Matrix ID。完整 ID 形如 @name:example.org。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Your server&apos;s user directory may not list everyone. If you know their Matrix ID, type it in full, like @name:example.org.</source>
+        <translation>你的服务器的用户目录可能未列出所有人。如果知道其 Matrix ID，请完整输入，例如 @name:example.org。</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Too many searches in a row. Wait a moment, then try again.</source>
+        <translation>搜索过于频繁。请稍候再试。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Your server does not offer people search. Type their full Matrix ID, like @name:example.org.</source>
+        <translation>你的服务器不提供用户搜索。请输入完整的 Matrix ID，例如 @name:example.org。</translation>
     </message>
 </context>
 <context>

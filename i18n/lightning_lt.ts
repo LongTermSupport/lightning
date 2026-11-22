@@ -3954,7 +3954,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+316"/>
+        <location filename="../qml/SpaceLobby.qml" line="+348"/>
         <source>%1, collapsed</source>
         <translation>%1, sutraukta</translation>
     </message>
@@ -7388,13 +7388,13 @@ Dydis: %3</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+377"/>
+        <location line="+393"/>
         <location line="+274"/>
         <source>Ask to join</source>
         <translation>Paprašykite prisijungti</translation>
     </message>
     <message>
-        <location line="-650"/>
+        <location line="-666"/>
         <source>Restricted</source>
         <translation>Apribota</translation>
     </message>
@@ -7453,8 +7453,17 @@ Dydis: %3</translation>
         <source>matrixrooms.info is a third-party directory: your homeserver sends it your search terms.</source>
         <translation>matrixrooms.info yra trečiosios šalies katalogas: jūsų namų serveris siunčia jam jūsų paieškos žodžius.</translation>
     </message>
+    <message numerus="yes">
+        <location line="+13"/>
+        <source>Showing %1 of about %n room(s). Scroll for more, or narrow the search.</source>
+        <translation>
+            <numerusform>Rodoma %1 iš maždaug %n kambario. Slinkite daugiau arba susiaurinkite paiešką.</numerusform>
+            <numerusform>Rodoma %1 iš maždaug %n kambarių. Slinkite daugiau arba susiaurinkite paiešką.</numerusform>
+            <numerusform>Rodoma %1 iš maždaug %n kambarių. Slinkite daugiau arba susiaurinkite paiešką.</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+69"/>
+        <location line="+72"/>
         <source>Open %1</source>
         <translation>Atidaryti %1</translation>
     </message>
@@ -16532,7 +16541,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>QuickSwitcher</name>
     <message>
-        <location filename="../qml/QuickSwitcher.qml" line="+96"/>
+        <location filename="../qml/QuickSwitcher.qml" line="+103"/>
         <source>Open Settings</source>
         <translation>Atidarykite Nustatymai</translation>
     </message>
@@ -16773,7 +16782,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Išbandykite %1</translation>
     </message>
     <message>
-        <location line="+44"/>
+        <location line="+90"/>
         <source>ROOMS</source>
         <translation>KAMBARIAI</translation>
     </message>
@@ -16791,6 +16800,11 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <location line="+1"/>
         <source>INVITES</source>
         <translation>KVIETIMAI</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>MATRIX ADDRESS</source>
+        <translation>MATRIX ADRESAS</translation>
     </message>
     <message>
         <location line="+172"/>
@@ -16819,11 +16833,16 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     </message>
     <message>
         <location line="+66"/>
+        <source>No matching rooms, people or Spaces</source>
+        <translation>Nėra atitinkančių kambarių, žmonių ar erdvių</translation>
+    </message>
+    <message>
+        <location line="+50"/>
         <source>No matching rooms</source>
         <translation>Nėra atitinkamų kambarių</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-49"/>
         <source>Type to search your rooms</source>
         <translation>Įveskite norėdami ieškoti savo kambarių</translation>
     </message>
@@ -16838,12 +16857,26 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Ieškoti viešų kambarių</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
+        <source>No matching people</source>
+        <translation>Nėra atitinkančių žmonių</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>No matching actions</source>
         <translation>Nėra atitinkančių veiksmų</translation>
     </message>
+    <message numerus="yes">
+        <location line="+44"/>
+        <source>%n MORE, TYPE TO NARROW</source>
+        <translation>
+            <numerusform>DAR %n, RAŠYKITE SUSIAURINTI</numerusform>
+            <numerusform>DAR %n, RAŠYKITE SUSIAURINTI</numerusform>
+            <numerusform>DAR %n, RAŠYKITE SUSIAURINTI</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+299"/>
+        <location line="+262"/>
         <source>navigate</source>
         <translation>naršyti</translation>
     </message>
@@ -16863,7 +16896,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>komandos</translation>
     </message>
     <message>
-        <location filename="../src/models/QuickSwitcherModel.cpp" line="+202"/>
+        <location filename="../src/models/QuickSwitcherModel.cpp" line="+211"/>
         <source>Invitation</source>
         <translation>Kvietimas</translation>
     </message>
@@ -16876,6 +16909,11 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <location line="+4"/>
         <source>Direct message</source>
         <translation>Tiesioginis pokalbis</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>Not in your rooms. Preview it before joining</source>
+        <translation>Ne jūsų kambariuose. Prieš prisijungdami peržiūrėkite</translation>
     </message>
 </context>
 <context>
@@ -28514,7 +28552,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
 <context>
     <name>SpaceLobby</name>
     <message numerus="yes">
-        <location filename="../qml/SpaceLobby.qml" line="-111"/>
+        <location filename="../qml/SpaceLobby.qml" line="-127"/>
         <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
         <translation>
             <numerusform>Rodomas tik pirmasis %n šios erdvės kambarys. Neparodytą kambarį vis tiek galima atidaryti pagal jo adresą.</numerusform>
@@ -28538,7 +28576,12 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Bandyti dar kartą</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+9"/>
+        <source>This Space has too many members to check them all, so Lightning cannot tell which of your direct messages are with its members. Your room list may show direct messages with people outside it.</source>
+        <translation>Šioje erdvėje per daug narių, kad būtų galima patikrinti visus, todėl Lightning negali nustatyti, kurios jūsų tiesioginės žinutės yra su jos nariais. Kambarių sąraše gali būti tiesioginių žinučių su žmonėmis už jos ribų.</translation>
+    </message>
+    <message>
+        <location line="+42"/>
         <location line="+265"/>
         <source>Loading rooms…</source>
         <translation>Įkeliami kambariai…</translation>
@@ -28572,7 +28615,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+255"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+264"/>
         <source>All rooms</source>
         <translation>Visi kambariai</translation>
     </message>
@@ -33958,7 +34001,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Išėjus iš erdvės joje esantys kambariai nepašalinami.</translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-290"/>
+        <location filename="../qml/SpaceLobby.qml" line="-306"/>
         <source>ROOMS AND SPACES</source>
         <translation>KAMBARIAI IR ERDVĖS</translation>
     </message>
@@ -33979,18 +34022,18 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+631"/>
+        <location line="+647"/>
         <source>Mark as not suggested</source>
         <translation>Pažymėti kaip nesiūlomą</translation>
     </message>
     <message>
-        <location line="-630"/>
-        <location line="+631"/>
+        <location line="-646"/>
+        <location line="+647"/>
         <source>Mark as suggested</source>
         <translation>Pažymėti kaip siūlomą</translation>
     </message>
     <message>
-        <location line="-620"/>
+        <location line="-636"/>
         <source>Search names and descriptions</source>
         <translation>Ieškokite pavadinimų ir aprašymų</translation>
     </message>
@@ -34000,7 +34043,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Ieškokite kambarių ir erdvių</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+58"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>Nė vienas kambarys ar erdvė neatitinka „%1“.</translation>
     </message>
@@ -34823,12 +34866,12 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Jokių rezultatų</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Search failed. Check your connection and try again.</source>
         <translation>Paieška nepavyko. Patikrinkite ryšį ir bandykite dar kartą.</translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+90"/>
         <location line="+79"/>
         <source>%1 (%2)</source>
         <translation>%1 (%2)</translation>
@@ -34839,9 +34882,51 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Iš jūsų serverio</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Exact Matrix ID</source>
         <translation>Tikslus Matrix ID</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Exact Matrix ID, not confirmed</source>
+        <translation>Tikslus Matrix ID, nepatvirtintas</translation>
+    </message>
+</context>
+<context>
+    <name>UserSearchModel</name>
+    <message>
+        <location filename="../src/models/UserSearchModel.cpp" line="+47"/>
+        <source>People search failed, so only the exact Matrix ID is shown.</source>
+        <translation>Žmonių paieška nepavyko, todėl rodomas tik tikslus Matrix ID.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Only the first %n match(es) are shown. Type more of the name, or their full Matrix ID like @name:example.org.</source>
+        <translation>
+            <numerusform>Rodomas tik pirmasis %n atitikmuo. Įveskite daugiau vardo arba pilną Matrix ID, pvz., @name:example.org.</numerusform>
+            <numerusform>Rodomi tik pirmieji %n atitikmenys. Įveskite daugiau vardo arba pilną Matrix ID, pvz., @name:example.org.</numerusform>
+            <numerusform>Rodoma tik pirmųjų %n atitikmenų. Įveskite daugiau vardo arba pilną Matrix ID, pvz., @name:example.org.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>That is not a valid Matrix ID. A full ID looks like @name:example.org.</source>
+        <translation>Tai netinkamas Matrix ID. Pilnas ID atrodo taip: @name:example.org.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Your server&apos;s user directory may not list everyone. If you know their Matrix ID, type it in full, like @name:example.org.</source>
+        <translation>Jūsų serverio naudotojų katalogas gali neturėti visų. Jei žinote Matrix ID, įveskite jį visą, pvz., @name:example.org.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Too many searches in a row. Wait a moment, then try again.</source>
+        <translation>Per daug paieškų iš eilės. Palaukite ir bandykite dar kartą.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Your server does not offer people search. Type their full Matrix ID, like @name:example.org.</source>
+        <translation>Jūsų serveris nesiūlo žmonių paieškos. Įveskite pilną Matrix ID, pvz., @name:example.org.</translation>
     </message>
 </context>
 <context>

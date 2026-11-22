@@ -4023,7 +4023,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+316"/>
+        <location filename="../qml/SpaceLobby.qml" line="+348"/>
         <source>%1, collapsed</source>
         <translation>%1، تم تصغيره</translation>
     </message>
@@ -7481,13 +7481,13 @@ Size: %3</source>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+377"/>
+        <location line="+393"/>
         <location line="+274"/>
         <source>Ask to join</source>
         <translation>طلب الانضمام</translation>
     </message>
     <message>
-        <location line="-650"/>
+        <location line="-666"/>
         <source>Restricted</source>
         <translation>مقيّدة</translation>
     </message>
@@ -7546,8 +7546,20 @@ Size: %3</source>
         <source>matrixrooms.info is a third-party directory: your homeserver sends it your search terms.</source>
         <translation>matrixrooms.info دليل تابع لجهة خارجية: يرسل إليه خادومك المنزلي عبارات بحثك.</translation>
     </message>
+    <message numerus="yes">
+        <location line="+13"/>
+        <source>Showing %1 of about %n room(s). Scroll for more, or narrow the search.</source>
+        <translation>
+            <numerusform>يُعرض %1 من قرابة %n غرفة. مرّر للمزيد أو ضيّق البحث.</numerusform>
+            <numerusform>يُعرض %1 من قرابة %n غرفة. مرّر للمزيد أو ضيّق البحث.</numerusform>
+            <numerusform>يُعرض %1 من قرابة %n غرفة. مرّر للمزيد أو ضيّق البحث.</numerusform>
+            <numerusform>يُعرض %1 من قرابة %n غرفة. مرّر للمزيد أو ضيّق البحث.</numerusform>
+            <numerusform>يُعرض %1 من قرابة %n غرفة. مرّر للمزيد أو ضيّق البحث.</numerusform>
+            <numerusform>يُعرض %1 من قرابة %n غرفة. مرّر للمزيد أو ضيّق البحث.</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+69"/>
+        <location line="+72"/>
         <source>Open %1</source>
         <translation>فتح %1</translation>
     </message>
@@ -16715,7 +16727,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>QuickSwitcher</name>
     <message>
-        <location filename="../qml/QuickSwitcher.qml" line="+96"/>
+        <location filename="../qml/QuickSwitcher.qml" line="+103"/>
         <source>Open Settings</source>
         <translation>فتح الإعدادات</translation>
     </message>
@@ -16956,7 +16968,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>جرّب %1</translation>
     </message>
     <message>
-        <location line="+44"/>
+        <location line="+90"/>
         <source>ROOMS</source>
         <translation>الغرف</translation>
     </message>
@@ -16974,6 +16986,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+1"/>
         <source>INVITES</source>
         <translation>الدعوات</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>MATRIX ADDRESS</source>
+        <translation>عنوان MATRIX</translation>
     </message>
     <message>
         <location line="+172"/>
@@ -17002,11 +17019,16 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+66"/>
+        <source>No matching rooms, people or Spaces</source>
+        <translation>لا توجد غرف أو أشخاص أو مساحات مطابقة</translation>
+    </message>
+    <message>
+        <location line="+50"/>
         <source>No matching rooms</source>
         <translation>لا توجد غرف مطابقة</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-49"/>
         <source>Type to search your rooms</source>
         <translation>اكتب للبحث في غرفك</translation>
     </message>
@@ -17021,12 +17043,29 @@ Signing out and signing in again is the only fix.</source>
         <translation>البحث عن غرف عامة</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
+        <source>No matching people</source>
+        <translation>لا يوجد أشخاص مطابقون</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>No matching actions</source>
         <translation>لا توجد إجراءات مطابقة</translation>
     </message>
+    <message numerus="yes">
+        <location line="+44"/>
+        <source>%n MORE, TYPE TO NARROW</source>
+        <translation>
+            <numerusform>%n أخرى، اكتب للتضييق</numerusform>
+            <numerusform>%n أخرى، اكتب للتضييق</numerusform>
+            <numerusform>%n أخرى، اكتب للتضييق</numerusform>
+            <numerusform>%n أخرى، اكتب للتضييق</numerusform>
+            <numerusform>%n أخرى، اكتب للتضييق</numerusform>
+            <numerusform>%n أخرى، اكتب للتضييق</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+299"/>
+        <location line="+262"/>
         <source>navigate</source>
         <translation>تنقّل</translation>
     </message>
@@ -17046,7 +17085,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>الأوامر</translation>
     </message>
     <message>
-        <location filename="../src/models/QuickSwitcherModel.cpp" line="+202"/>
+        <location filename="../src/models/QuickSwitcherModel.cpp" line="+211"/>
         <source>Invitation</source>
         <translation>دعوة</translation>
     </message>
@@ -17059,6 +17098,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+4"/>
         <source>Direct message</source>
         <translation>محادثة مباشرة</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>Not in your rooms. Preview it before joining</source>
+        <translation>ليست ضمن غرفك. عاينها قبل الانضمام</translation>
     </message>
 </context>
 <context>
@@ -28826,7 +28870,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SpaceLobby</name>
     <message numerus="yes">
-        <location filename="../qml/SpaceLobby.qml" line="-111"/>
+        <location filename="../qml/SpaceLobby.qml" line="-127"/>
         <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
         <translation>
             <numerusform>لا تُعرض أي غرفة من هذه المساحة. لا يزال بالإمكان فتح الغرفة غير المدرجة بعنوانها.</numerusform>
@@ -28853,7 +28897,12 @@ Note: importing keys does not verify this session.</source>
         <translation>إعادة المحاولة</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+9"/>
+        <source>This Space has too many members to check them all, so Lightning cannot tell which of your direct messages are with its members. Your room list may show direct messages with people outside it.</source>
+        <translation>هذه المساحة فيها أعضاء أكثر من أن يُتحقَّق منهم جميعًا، لذا لا يستطيع Lightning معرفة أي رسائلك المباشرة مع أعضائها. قد تعرض قائمة غرفك رسائل مباشرة مع أشخاص من خارجها.</translation>
+    </message>
+    <message>
+        <location line="+42"/>
         <location line="+265"/>
         <source>Loading rooms…</source>
         <translation>جارٍ تحميل الغرف…</translation>
@@ -28887,7 +28936,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+255"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+264"/>
         <source>All rooms</source>
         <translation>كل الغرف</translation>
     </message>
@@ -34438,7 +34487,7 @@ Note: importing keys does not verify this session.</source>
         <translation>المغادرة لا تزيل الغرف التي بداخله.</translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-290"/>
+        <location filename="../qml/SpaceLobby.qml" line="-306"/>
         <source>ROOMS AND SPACES</source>
         <translation>الغرف والفضاءات</translation>
     </message>
@@ -34462,18 +34511,18 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+631"/>
+        <location line="+647"/>
         <source>Mark as not suggested</source>
         <translation>تعليمها كغير مقترحة</translation>
     </message>
     <message>
-        <location line="-630"/>
-        <location line="+631"/>
+        <location line="-646"/>
+        <location line="+647"/>
         <source>Mark as suggested</source>
         <translation>تعليمها كمقترحة</translation>
     </message>
     <message>
-        <location line="-620"/>
+        <location line="-636"/>
         <source>Search names and descriptions</source>
         <translation>ابحث في الأسماء والأوصاف</translation>
     </message>
@@ -34483,7 +34532,7 @@ Note: importing keys does not verify this session.</source>
         <translation>البحث في الغرف والفضاءات</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+58"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>لا توجد غرف أو فضاءات تطابق «%1».</translation>
     </message>
@@ -35321,12 +35370,12 @@ Note: importing keys does not verify this session.</source>
         <translation>لا نتائج</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Search failed. Check your connection and try again.</source>
         <translation>فشل البحث. تحقّق من اتصالك وأعد المحاولة.</translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+90"/>
         <location line="+79"/>
         <source>%1 (%2)</source>
         <translation>%1 (%2)</translation>
@@ -35337,9 +35386,54 @@ Note: importing keys does not verify this session.</source>
         <translation>من خادومك</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Exact Matrix ID</source>
         <translation>معرّف Matrix المطابق تمامًا</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Exact Matrix ID, not confirmed</source>
+        <translation>معرّف Matrix مطابق، غير مؤكَّد</translation>
+    </message>
+</context>
+<context>
+    <name>UserSearchModel</name>
+    <message>
+        <location filename="../src/models/UserSearchModel.cpp" line="+47"/>
+        <source>People search failed, so only the exact Matrix ID is shown.</source>
+        <translation>فشل البحث عن الأشخاص، لذا يُعرض معرّف Matrix المطابق فقط.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Only the first %n match(es) are shown. Type more of the name, or their full Matrix ID like @name:example.org.</source>
+        <translation>
+            <numerusform>تُعرض أول %n نتيجة فقط. اكتب المزيد من الاسم أو معرّف Matrix الكامل مثل @name:example.org.</numerusform>
+            <numerusform>تُعرض أول %n نتيجة فقط. اكتب المزيد من الاسم أو معرّف Matrix الكامل مثل @name:example.org.</numerusform>
+            <numerusform>تُعرض أول %n نتيجة فقط. اكتب المزيد من الاسم أو معرّف Matrix الكامل مثل @name:example.org.</numerusform>
+            <numerusform>تُعرض أول %n نتيجة فقط. اكتب المزيد من الاسم أو معرّف Matrix الكامل مثل @name:example.org.</numerusform>
+            <numerusform>تُعرض أول %n نتيجة فقط. اكتب المزيد من الاسم أو معرّف Matrix الكامل مثل @name:example.org.</numerusform>
+            <numerusform>تُعرض أول %n نتيجة فقط. اكتب المزيد من الاسم أو معرّف Matrix الكامل مثل @name:example.org.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>That is not a valid Matrix ID. A full ID looks like @name:example.org.</source>
+        <translation>هذا ليس معرّف Matrix صالحًا. يبدو المعرّف الكامل هكذا: @name:example.org.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Your server&apos;s user directory may not list everyone. If you know their Matrix ID, type it in full, like @name:example.org.</source>
+        <translation>قد لا يُدرج دليل مستخدمي خادمك الجميع. إن كنت تعرف معرّف Matrix فاكتبه كاملًا، مثل @name:example.org.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Too many searches in a row. Wait a moment, then try again.</source>
+        <translation>عمليات بحث كثيرة متتالية. انتظر قليلًا ثم حاول مجددًا.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Your server does not offer people search. Type their full Matrix ID, like @name:example.org.</source>
+        <translation>لا يوفّر خادمك البحث عن الأشخاص. اكتب معرّف Matrix الكامل، مثل @name:example.org.</translation>
     </message>
 </context>
 <context>
