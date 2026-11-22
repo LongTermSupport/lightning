@@ -67,6 +67,10 @@ public:
         MessageSelectionContext = 3,
         DialogContext = 4,
         SettingsContext = 5,
+        /// A message's context menu, only while it is open. Plain letters are
+        /// fine and only another menu key conflicts; window shortcuts are
+        /// blocked while a popup is open, app-wide ones are not.
+        MessageMenuContext = 6,
     };
     Q_ENUM(ActionContext)
 
