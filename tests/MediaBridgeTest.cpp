@@ -1594,6 +1594,93 @@ private Q_SLOTS:
         QVERIFY(!bridge.playableSource(QStringLiteral("$dual")).isEmpty());
     }
 
+    void playableWritesStayInsideTheirPendingBudget()
+    {
+        FakeClient client;
+        MediaBridge bridge;
+        bridge.setClient(&client);
+        constexpr qint64 mb = 1024 * 1024;
+        const qint64 budget = 5 * mb;
+        bridge.setPlayablePendingBudgetForTest(budget);
+        QSignalSpy ready(&bridge, &MediaBridge::playableMediaReady);
+        QSignalSpy failed(&bridge, &MediaBridge::mediaFetchFailed);
+        const auto mp4 = [](qint64 size, char fill) {
+            QByteArray bytes(size, fill);
+            bytes.replace(4, 4, "ftyp");
+            return bytes;
+        };
+        const auto failedFor = [&](const QString &cacheKey) {
+            int n = 0;
+            for (const auto &args : std::as_const(failed))
+                n += args.at(0).toString() == cacheKey ? 1 : 0;
+            return n;
+        };
+
+        // No event-loop turn until the end: the writer's completions cannot
+        // land, so every admitted write stays pending (a held writer).
+        for (int i = 0; i < 10; ++i)
+            bridge.prefetchPlayable(QStringLiteral("$spec-%1").arg(i), 2 * mb);
+        qint64 peak = 0;
+        int served = 0;
+        while (served < client.fetches.size()) {
+            client.succeed(client.fetches.at(served).opId,
+                           mp4(2 * mb, char('a' + served)),
+                           QStringLiteral("video/mp4"));
+            ++served;
+            peak = qMax(peak, bridge.pendingPlayableWriteBytes());
+        }
+        QCOMPARE(served, 10);
+        QVERIFY2(peak <= budget, qPrintable(QString::number(peak)));
+        QCOMPARE(bridge.pendingPlayableWriteBytes(), 4 * mb);
+        QCOMPARE(bridge.pendingPlayableWritesForTest(), 2);
+        QCOMPARE(bridge.healthSnapshot().value(QStringLiteral("playableWritesRefused"))
+                     .toLongLong(), 8);
+
+        // A play the user asked for displaces speculative writes.
+        bridge.playableSource(QStringLiteral("$play"));
+        client.succeed(client.fetches.last().opId, mp4(3 * mb, 'p'),
+                       QStringLiteral("video/mp4"));
+        QCOMPARE(bridge.pendingPlayableWriteBytes(), 5 * mb);
+        QCOMPARE(bridge.pendingPlayableWritesForTest(), 2);
+        QCOMPARE(failedFor(QStringLiteral("full:$play")), 0);
+
+        // A second one that cannot fit is refused, not queued.
+        bridge.playableSource(QStringLiteral("$play2"));
+        client.succeed(client.fetches.last().opId, mp4(3 * mb, 'q'),
+                       QStringLiteral("video/mp4"));
+        QVERIFY(bridge.pendingPlayableWriteBytes() <= budget + 3 * mb);
+        QCOMPARE(bridge.pendingPlayableWriteBytes(), 3 * mb);
+        QCOMPARE(failedFor(QStringLiteral("full:$play2")), 1);
+
+        QVERIFY(waitForPlayableCount(ready, 1));
+        QTest::qWait(100);
+        QCOMPARE(ready.count(), 1);
+        QCOMPARE(ready.at(0).at(0).toString(), QStringLiteral("full:$play"));
+        QCOMPARE(bridge.pendingPlayableWriteBytes(), 0);
+
+        // The refused play recovers once the writer has drained.
+        const auto fetchesBefore = client.fetches.size();
+        QVERIFY(bridge.playableSource(QStringLiteral("$play2")).isEmpty());
+        QCOMPARE(client.fetches.size(), fetchesBefore);
+        QVERIFY(waitForPlayableCount(ready, 2));
+        QVERIFY(!bridge.playableSource(QStringLiteral("$play2")).isEmpty());
+
+        // Signing out while a write is pending returns its reservation.
+        bridge.playableSource(QStringLiteral("$play3"));
+        client.succeed(client.fetches.last().opId, mp4(3 * mb, 'r'),
+                       QStringLiteral("video/mp4"));
+        QCOMPARE(bridge.pendingPlayableWriteBytes(), 3 * mb);
+        bridge.clear();
+        QCOMPARE(bridge.pendingPlayableWriteBytes(), 0);
+        QTest::qWait(100);
+        QCOMPARE(ready.count(), 2);
+        QVERIFY(bridge.playableSource(QStringLiteral("$play3")).isEmpty());
+        client.succeed(client.fetches.last().opId, mp4(3 * mb, 'r'),
+                       QStringLiteral("video/mp4"));
+        QVERIFY(waitForPlayableCount(ready, 3));
+        QCOMPARE(bridge.pendingPlayableWriteBytes(), 0);
+    }
+
     void aWriteStartedBeforeSignOutPublishesNothing()
     {
         FakeClient client;

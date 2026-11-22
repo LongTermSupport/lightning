@@ -132,6 +132,8 @@ public:
     {
         return m_playableWriting.size();
     }
+    void setPlayablePendingBudgetForTest(qint64 bytes) { m_playablePendingBudget = bytes; }
+    qint64 pendingPlayableWriteBytes() const;
 
     Q_INVOKABLE void pinPlayable(const QString &mediaKey);
     Q_INVOKABLE void unpinPlayable(const QString &mediaKey);
@@ -402,6 +404,8 @@ private:
     quint64 m_sessionGeneration = 1;
     int m_playableMaxEntries;
     qint64 m_playableMaxBytes;
+    qint64 m_playablePendingBudget = kPlayablePendingBudget;
+    qint64 m_statPlayableWritesRefused = 0;
     qint64 m_starvationMs = 15 * 1000;
     static constexpr int kMaxConcurrent = 8;
     static constexpr int kMaxHeavyConcurrent = 6;
@@ -417,4 +421,8 @@ private:
     static constexpr int kPlayableCacheEntries = 16;
     static constexpr qint64 kLargeCacheSkipBytes = 8 * 1024 * 1024;
     static constexpr qint64 kSpeculativePlayableMaxBytes = 32 * 1024 * 1024;
+    // Bytes held by writes not yet on disk. A speculative write must fit; a
+    // play the user asked for evicts speculative ones and may exceed it by its
+    // own size only when nothing else is pending.
+    static constexpr qint64 kPlayablePendingBudget = 64 * 1024 * 1024;
 };

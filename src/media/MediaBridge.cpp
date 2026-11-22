@@ -1553,6 +1553,9 @@ QVariantMap MediaBridge::healthSnapshot() const
                static_cast<qint64>(m_failed.size()));
     out.insert(QStringLiteral("pendingPlayableWrites"),
                static_cast<qint64>(m_playableWriting.size()));
+    out.insert(QStringLiteral("pendingPlayableWriteBytes"),
+               pendingPlayableWriteBytes());
+    out.insert(QStringLiteral("playableWritesRefused"), m_statPlayableWritesRefused);
     out.insert(QStringLiteral("cacheBytes"), cacheBytesUsed());
     return out;
 }
@@ -1694,6 +1697,29 @@ bool MediaBridge::beginPlayableWrite(const QString &cacheKey,
     if (bytes.isEmpty() || bytes.size() > m_playableMaxBytes
         || !m_animatedDir || !m_animatedDir->isValid())
         return false;
+    qint64 pending = pendingPlayableWriteBytes();
+    if (pending + bytes.size() > m_playablePendingBudget && notifyFailure) {
+        for (auto it = m_playableWriting.begin();
+             it != m_playableWriting.end()
+             && pending + bytes.size() > m_playablePendingBudget;) {
+            if (it->notifyFailure) {
+                ++it;
+                continue;
+            }
+            pending -= it->bytes;
+            m_posterWanted.remove(it.key());
+            m_prefetchWanted.remove(it.key());
+            if (m_playableWriter)
+                m_playableWriter->cancel(it.key());
+            it = m_playableWriting.erase(it);
+        }
+    }
+    if (pending > 0 && pending + bytes.size() > m_playablePendingBudget) {
+        ++m_statPlayableWritesRefused;
+        qCDebug(lcMedia, "playable write refused: %lld bytes pending",
+                static_cast<long long>(pending));
+        return false;
+    }
     const QString extension = playableExtensionFor(bytes, mimetype);
     if (extension.isEmpty())
         return false;
@@ -1717,6 +1743,14 @@ bool MediaBridge::beginPlayableWrite(const QString &cacheKey,
     pending.notifyFailure = notifyFailure;
     m_playableWriting.insert(cacheKey, pending);
     return true;
+}
+
+qint64 MediaBridge::pendingPlayableWriteBytes() const
+{
+    qint64 total = 0;
+    for (const PendingPlayableWrite &pending : m_playableWriting)
+        total += pending.bytes;
+    return total;
 }
 
 void MediaBridge::onPlayableWriteFinished(quint64 serial,
