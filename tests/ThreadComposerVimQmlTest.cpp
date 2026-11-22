@@ -75,13 +75,21 @@ class ThreadComposerVimQmlTest : public QObject
         QTest::qWait(300);
     }
 
+    // An existing thread root, then a plain message to "Reply in thread" on.
     QStringList threadRoots() const
     {
-        QStringList roots;
+        QString root;
+        QString plain;
         for (const TimelineEvent &e : m_controller->timeline()->events()) {
-            if (e.isThreadRoot)
-                roots << e.eventId;
+            if (e.isThreadRoot && root.isEmpty())
+                root = e.eventId;
+            else if (!e.isThreadRoot && plain.isEmpty() && e.threadRootId.isEmpty()
+                     && e.type == TimelineEvent::TextMessage && e.eventId.startsWith(u'$'))
+                plain = e.eventId;
         }
+        QStringList roots;
+        if (!root.isEmpty() && !plain.isEmpty())
+            roots << root << plain;
         return roots;
     }
 
@@ -273,7 +281,7 @@ ApplicationWindow {
         m_controller->settings()->setComposerMode(QStringLiteral("plain"));
         openThreadPanel();
         const QStringList roots = threadRoots();
-        QVERIFY2(roots.size() >= 2, "the demo room needs two thread roots");
+        QVERIFY2(roots.size() >= 2, "the demo room needs a thread root and a plain message");
         const QString packA = QStringLiteral("mxc://lightning.example/packA");
         const QString packB = QStringLiteral("mxc://lightning.example/packB");
         m_controller->stickers()->applySnapshotForTest(
