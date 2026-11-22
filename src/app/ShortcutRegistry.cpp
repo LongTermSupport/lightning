@@ -1139,7 +1139,7 @@ QString ShortcutRegistry::shadowNote(int row) const
         if (i == row)
             continue;
         const Action &other = m_actions.at(i);
-        if (actionsClash(other, a))
+        if (actionsClash(other, a) || other.context == MessageMenuContext)
             continue;
         if (m_resolved.at(i) != mine)
             continue;
