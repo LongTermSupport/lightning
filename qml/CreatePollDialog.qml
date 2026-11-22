@@ -81,7 +81,10 @@ Dialog {
         return questionField.text.trim().length > 0
                || answerTexts().length > 0
     }
+    // A queued poll cannot be withdrawn, so it is not dismissable while pending.
     function maybeClose() {
+        if (sending)
+            return
         if (dirty)
             discardConfirm.open()
         else
@@ -178,6 +181,7 @@ Dialog {
             IconButton {
                 storm: true
                 objectName: "createPollCloseButton"
+                enabled: !root.sending
                 iconName: "close"
                 iconSize: 18
                 implicitWidth: 28; implicitHeight: 28
@@ -563,13 +567,14 @@ Dialog {
                 storm: true
                 objectName: "createPollCancelButton"
                 text: qsTr("Cancel")
+                enabled: !root.sending
                 onClicked: root.maybeClose()
             }
             AppButton {
                 storm: true
                 objectName: "createPollSubmitButton"
                 kind: "primary"
-                text: qsTr("Send poll")
+                text: root.sending ? qsTr("Sending…") : qsTr("Send poll")
                 enabled: root.formValid && !root.sending
                 Accessible.name: qsTr("Send poll")
                 onClicked: root.submit()

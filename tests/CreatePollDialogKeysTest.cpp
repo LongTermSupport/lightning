@@ -255,6 +255,28 @@ private Q_SLOTS:
         teardown();
     }
 
+    void aPendingPollCannotBeDismissedUntilItIsAnswered()
+    {
+        setup();
+        fillValidPoll();
+        eval(QStringLiteral("sending = true"));
+        settle(50);
+        QQuickItem *q = findVisual(content, QStringLiteral("pollQuestionField"));
+        q->forceActiveFocus();
+        QTest::keyClick(window, Qt::Key_Escape);
+        settle();
+        verifyPollKept();
+        QVERIFY2(!eval(QStringLiteral("discardConfirm.opened")).toBool(),
+                 "Escape offered to discard a poll that is already being sent");
+        QVERIFY(!findVisual(content, QStringLiteral("createPollCancelButton"))->isEnabled());
+        QVERIFY(!findVisual(content, QStringLiteral("createPollCloseButton"))->isEnabled());
+        QVERIFY(!findVisual(content, QStringLiteral("createPollSubmitButton"))->isEnabled());
+        QMetaObject::invokeMethod(app->composer(), "pollCreateFinished", Q_ARG(bool, true));
+        settle();
+        QVERIFY(!dialog->property("opened").toBool());
+        teardown();
+    }
+
     void enterInANonLastRowOfAValidFormNeverSends()
     {
         setup();
