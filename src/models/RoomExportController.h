@@ -85,7 +85,8 @@ Q_SIGNALS:
 private:
     void onPage(quint64 opId, const QString &roomId, const QVariantList &rows,
                 qint64 rowsTotal, qint64 scannedTotal, qint64 undecryptable,
-                bool done, const QString &stopReason, bool encryptedRoom);
+                bool done, const QString &stopReason, bool encryptedRoom,
+                qint64 editsUnresolved);
     void onWalkFailed(quint64 opId, const QString &roomId,
                       const QString &message);
     void onMediaReady(quint64 opId, const QByteArray &bytes);
@@ -122,6 +123,7 @@ private:
     quint64 m_handleOp = 0;
     QList<TimelineEvent> m_newestFirst;
     QString m_stopReason;
+    qint64 m_editsUnresolved = 0;
 
     QList<TimelineEvent> m_events;
     std::unique_ptr<QSaveFile> m_file;

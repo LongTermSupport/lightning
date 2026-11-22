@@ -3770,6 +3770,7 @@ Item {
                 mediaIsVoice: model.mediaIsVoice === true,
                 senderDisplayName: model.senderDisplayName || "",
                 body: model.body || "",
+                formattedBody: model.formattedBody || "",
                 mediaKey: model.mediaKey || "",
                 mediaFilename: model.mediaFilename || "",
                 mediaMimetype: model.mediaMimetype || "",
