@@ -778,7 +778,7 @@ Dialog {
             ColumnLayout {
                 Layout.fillWidth: true
                 spacing: AppTheme.spacing4
-                visible: root.exporting
+                visible: root.cancellable
                 Label {
                     id: exportStatus
                     Layout.fillWidth: true
@@ -789,29 +789,33 @@ Dialog {
                           ? qsTr("Exporting pack (%1 of %2)")
                                 .arg(root.stickers.transferDone)
                                 .arg(root.stickers.transferTotal)
+                          : root.uploading
+                          ? qsTr("Adding images (%1 of %2)")
+                                .arg(root.stickers.transferDone)
+                                .arg(root.stickers.transferTotal)
                           : ""
                 }
                 AppProgressBar {
                     objectName: "stickerPackExportProgress"
                     Layout.fillWidth: true
                     Layout.minimumWidth: 0
-                    to: root.exporting ? root.stickers.transferTotal : 1
-                    value: root.exporting ? root.stickers.transferDone : 0
+                    to: root.cancellable ? root.stickers.transferTotal : 1
+                    value: root.cancellable ? root.stickers.transferDone : 0
                     Accessible.name: exportStatus.text
                 }
             }
             Item {
                 Layout.fillWidth: true
-                visible: !root.exporting
+                visible: !root.cancellable
             }
             AppBusyIndicator {
-                visible: !root.exporting && (root.busy || root.transferring)
+                visible: !root.cancellable && (root.busy || root.transferring)
                 implicitWidth: 18
                 implicitHeight: 18
             }
             AppButton {
                 objectName: "stickerPackCancelExportButton"
-                visible: root.exporting
+                visible: root.cancellable
                 text: qsTr("Cancel")
                 kind: "ghost"
                 size: "sm"
@@ -875,4 +879,6 @@ Dialog {
     readonly property bool transferring:
         root.stickers ? root.stickers.transferring : false
     readonly property bool exporting: root.transferring && root.stickers.transferKind === "export"
+    readonly property bool uploading: root.transferring && root.stickers.transferKind === "upload"
+    readonly property bool cancellable: root.exporting || root.uploading
 }

@@ -293,7 +293,7 @@ private Q_SLOTS:
         auto *notice = fixture.content->findChild<QQuickItem *>("stickerPackEditorNotice");
         QVERIFY(progress && cancel && notice);
         QVERIFY(!progress->isVisible() && !cancel->isVisible());
-        manager->setProperty("transferKind", "upload");
+        manager->setProperty("transferKind", "import");
         manager->setProperty("transferring", true);
         QVERIFY(!progress->isVisible() && !cancel->isVisible());
         manager->setProperty("transferring", false);
@@ -323,6 +323,36 @@ private Q_SLOTS:
                  ? QStringLiteral("Saved 4") : QStringLiteral("Result ") + category);
         QCOMPARE(fixture.editor->property("noticeIsError").toBool(),
                  !category.isEmpty() && !cancelled);
+    }
+
+    void packEditorCancelsABulkUpload()
+    {
+        PackEditorFixture fixture;
+        fixture.open();
+        QVERIFY(fixture.content);
+        auto *manager = fixture.editor->property("stickers").value<QObject *>();
+        QVERIFY(manager);
+        auto *progress = fixture.content->findChild<QQuickItem *>("stickerPackExportProgress");
+        auto *cancel = fixture.content->findChild<QQuickItem *>("stickerPackCancelExportButton");
+        QVERIFY(progress && cancel);
+        manager->setProperty("transferKind", "upload");
+        manager->setProperty("transferDone", 1);
+        manager->setProperty("transferring", true);
+        QTRY_VERIFY(progress->isVisible() && cancel->isVisible() && cancel->isEnabled());
+        QCOMPARE(progress->property("value").toInt(), 1);
+        bool labelled = false;
+        for (QQuickItem *item : fixture.content->findChildren<QQuickItem *>())
+            labelled = labelled
+                || (item->isVisible()
+                    && item->property("text").toString() == QStringLiteral("Adding images (1 of 4)"));
+        QVERIFY(labelled);
+
+        auto *window = cancel->window();
+        QVERIFY(window && QTest::qWaitForWindowExposed(window));
+        cancel->parentItem()->ensurePolished();
+        QTest::mouseClick(window, Qt::LeftButton, Qt::NoModifier,
+                          cancel->mapToScene(cancel->boundingRect().center()).toPoint());
+        QCOMPARE(manager->property("cancelCalls").toInt(), 1);
     }
 
     void streamInfoPollsOnlyWhileTheSurfaceIsVisible()
