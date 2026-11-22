@@ -2383,24 +2383,65 @@ private Q_SLOTS:
     {
         QTemporaryDir dir;
         QVERIFY(dir.isValid());
-        QDir(dir.path()).mkpath(QStringLiteral("sub"));
-        const QString outside = dir.path() + QStringLiteral("/pwned.txt");
+        // A user-chosen path is resolved, so outer/sub/../pwned.txt is
+        // outer/pwned.txt; dir/ holds a sentinel of that name one level up.
+        const QString outer = dir.filePath(QStringLiteral("outer"));
+        QVERIFY(QDir().mkpath(outer + QStringLiteral("/sub")));
+        const QString sentinel = dir.filePath(QStringLiteral("pwned.txt"));
+        {
+            QFile file(sentinel);
+            QVERIFY(file.open(QIODevice::WriteOnly));
+            file.write("sentinel");
+        }
 
         FakeClient client;
         MediaBridge bridge;
         bridge.setClient(&client);
         QSignalSpy saved(&bridge, &MediaBridge::saveFinished);
+        QSignalSpy completed(&bridge, &MediaBridge::saveCompleted);
 
-        const QUrl destination = QUrl::fromLocalFile(
-            dir.path() + QStringLiteral("/sub/../pwned.txt"));
-        bridge.saveAs(QStringLiteral("$ev"), destination);
+        const auto expectSavedOnceInOuter = [&](const QString &why) {
+            QVERIFY2(saved.count() > 0 || saved.wait(3000), qPrintable(why));
+            QTest::qWait(20);
+            QCOMPARE(saved.count(), 1);
+            QVERIFY2(saved.at(0).at(0).toBool(), qPrintable(why));
+            QCOMPARE(completed.count(), 1);
+            const QString expected = QDir(outer).filePath(QStringLiteral("pwned.txt"));
+            QCOMPARE(QFileInfo(completed.at(0).at(1).toString()).canonicalFilePath(),
+                     QFileInfo(expected).canonicalFilePath());
+            QFile written(expected);
+            QVERIFY(written.open(QIODevice::ReadOnly));
+            QCOMPARE(written.readAll(), QByteArray("payload"));
+            QCOMPARE(QDir(outer + QStringLiteral("/sub"))
+                         .entryList(QDir::AllEntries | QDir::NoDotAndDotDot),
+                     QStringList());
+            QCOMPARE(QDir(outer).entryList(QDir::Files),
+                     QStringList{QStringLiteral("pwned.txt")});
+            QFile untouched(sentinel);
+            QVERIFY(untouched.open(QIODevice::ReadOnly));
+            QCOMPARE(untouched.readAll(), QByteArray("sentinel"));
+            QCOMPARE(QDir(dir.path()).entryList(QDir::Files),
+                     QStringList{QStringLiteral("pwned.txt")});
+        };
+
+        bridge.saveAs(QStringLiteral("$ev"), QUrl::fromLocalFile(
+            outer + QStringLiteral("/sub/../pwned.txt")));
         QCOMPARE(client.fetches.size(), 1);
         client.succeed(client.fetches.at(0).opId, QByteArray("payload"),
                        QStringLiteral("text/plain"));
-        QVERIFY(saved.wait(3000) || saved.count() > 0);
+        expectSavedOnceInOuter(QStringLiteral("user-chosen path"));
 
-        QVERIFY2(!QFileInfo::exists(outside + QStringLiteral(".escaped")),
-                 "the leaf escaped the resolved directory");
+        // A sender-provided leaf is reduced to its last component, never
+        // resolved against the folder.
+        QVERIFY(QFile::remove(QDir(outer).filePath(QStringLiteral("pwned.txt"))));
+        saved.clear();
+        completed.clear();
+        bridge.saveInto(QStringLiteral("$ev2"), outer,
+                        QStringLiteral("../pwned.txt"));
+        QCOMPARE(client.fetches.size(), 2);
+        client.succeed(client.fetches.at(1).opId, QByteArray("payload"),
+                       QStringLiteral("text/plain"));
+        expectSavedOnceInOuter(QStringLiteral("sender leaf"));
     }
 
     void thumbPayloadSniffingRejectsSvgAndItsCompressedSpelling()

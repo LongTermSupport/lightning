@@ -2107,7 +2107,9 @@ void MediaBridge::saveInto(const QString &mediaKey, const QString &folder,
         Q_EMIT saveFinished(false, tr("No destination selected."), mediaKey);
         return;
     }
-    startSave(mediaKey, QUrl::fromLocalFile(QDir(folder).filePath(leaf)), true);
+    startSave(mediaKey,
+              QUrl::fromLocalFile(QDir(folder).filePath(sanitizedFileName(leaf))),
+              true);
 }
 
 void MediaBridge::startSave(const QString &mediaKey, const QUrl &destination,
