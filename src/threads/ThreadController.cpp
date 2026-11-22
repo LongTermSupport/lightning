@@ -21,6 +21,7 @@
 #include <QMimeData>
 
 #include <algorithm>
+#include <utility>
 
 namespace {
 constexpr int kMaxPasteEdge = 4096;
@@ -211,6 +212,8 @@ void ThreadController::setClient(MatrixClient *client)
     m_pendingThreadReads.clear();
     m_client = client;
     m_slashJoinOp = 0;
+    if (std::exchange(m_pendingPollOp, 0) != 0)
+        Q_EMIT pollCreateFinished(false);
     refreshRoomThreadUnread();
     m_model.setClient(client);
     m_attachments->setClient(client);
@@ -228,6 +231,17 @@ void ThreadController::setClient(MatrixClient *client)
                 });
         connect(m_client, &MatrixClient::attachmentQueueFinished, this,
                 &ThreadController::onAttachmentQueueFinished);
+        connect(m_client, &MatrixClient::roomSendFinished, this,
+                [this](quint64 opId, const QString &, bool ok, const QString &) {
+                    if (opId == 0 || opId != m_pendingPollOp)
+                        return;
+                    m_pendingPollOp = 0;
+                    Q_EMIT pollCreateFinished(ok);
+                });
+        connect(m_client, &MatrixClient::sendsAbandoned, this, [this] {
+            if (std::exchange(m_pendingPollOp, 0) != 0)
+                Q_EMIT pollCreateFinished(false);
+        });
         // The room timeline's root summary is the count when the thread
         // model has not loaded the root row.
         connect(m_client, &MatrixClient::eventChangedAt, this,
@@ -722,6 +736,23 @@ int ThreadController::insertMention(const QString &userId,
     Q_EMIT textChanged();
     Q_EMIT mentionRangesChanged();
     return res.cursorPos;
+}
+
+bool ThreadController::pollsSupported() const
+{
+    return m_client && m_client->supportsPolls() && supported();
+}
+
+bool ThreadController::createPoll(const QString &question,
+                                  const QStringList &answers,
+                                  bool undisclosed, int maxSelections)
+{
+    if (!m_client || m_state != Ready || m_roomId.isEmpty()
+        || m_rootEventId.isEmpty() || m_pendingPollOp != 0)
+        return false;
+    m_pendingPollOp = m_client->createPoll(m_roomId, m_rootEventId, question,
+                                           answers, undisclosed, maxSelections);
+    return m_pendingPollOp != 0;
 }
 
 bool ThreadController::attachmentsSupported() const

@@ -2705,13 +2705,42 @@ void MockMatrixClient::setDemoUnreadHidden(bool hidden)
     Q_EMIT roomsChanged();
 }
 
-quint64 MockMatrixClient::createPoll(const QString &roomId, const QString &,
+quint64 MockMatrixClient::createPoll(const QString &roomId,
+                                    const QString &threadRootId,
                                     const QString &question,
                                     const QStringList &answers, bool, int)
 {
     if (roomId.isEmpty() || question.trimmed().isEmpty() || answers.size() < 2)
         return 0;
     const quint64 op = ++m_mediaOpCounter;
+    m_lastPollThreadRoot = threadRootId;
+    ++m_pollCreates;
+    if (m_timelines.contains(roomId)) {
+        TimelineEvent ev;
+        ev.eventId = nextEventId();
+        ev.roomId = roomId;
+        ev.sender = m_userId;
+        ev.senderDisplayName = QStringLiteral("You");
+        ev.body = question;
+        ev.pollQuestion = question;
+        for (int i = 0; i < answers.size(); ++i)
+            ev.pollAnswers.append({QString::number(i), answers.at(i)});
+        ev.timestamp = QDateTime::currentDateTimeUtc();
+        ev.type = TimelineEvent::Poll;
+        ev.status = TimelineEvent::Sending;
+        ev.threadRootId = threadRootId;
+        m_timelines[roomId].append(ev);
+        if (threadRootId.isEmpty() || !m_screenshotDemoMode
+            || m_threadRepliesInLive)
+            Q_EMIT eventAppended(roomId, ev);
+        const QString timelineId = threadTimelineId(roomId, threadRootId);
+        if (!threadRootId.isEmpty() && m_openThreadTimelineId == timelineId) {
+            TimelineEvent threadCopy = ev;
+            threadCopy.roomId = timelineId;
+            m_timelines[timelineId].append(threadCopy);
+            Q_EMIT eventAppended(timelineId, threadCopy);
+        }
+    }
     QTimer::singleShot(0, this, [this, op, roomId] {
         Q_EMIT roomSendFinished(op, roomId, true, QString());
     });
