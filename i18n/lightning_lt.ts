@@ -1043,7 +1043,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7373"/>
+        <location filename="../src/app/AppController.cpp" line="+7379"/>
         <source>Room invitation</source>
         <translation>Kvietimas į kambarį</translation>
     </message>
@@ -1165,7 +1165,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Įeinantis skambutis</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5720"/>
+        <location filename="../src/app/AppController.cpp" line="-5725"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>Atsijungimas atšauktas, nes paskyra pasikeitė. Nieko iš naujo nenustatyta.</translation>
     </message>
@@ -1217,13 +1217,13 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4292"/>
+        <location line="+4297"/>
         <location line="+821"/>
         <source>Not connected</source>
         <translation>Neprisijungęs</translation>
     </message>
     <message>
-        <location line="-5154"/>
+        <location line="-5159"/>
         <source>Connecting…</source>
         <translation>Jungiamasi…</translation>
     </message>
@@ -1284,24 +1284,24 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
     </message>
     <message>
         <location line="+4"/>
-        <location line="+3088"/>
+        <location line="+3093"/>
         <location line="+9"/>
         <source>Lightning could not read the selected file.</source>
         <translation>Lightning nepavyko nuskaityti pasirinkto failo.</translation>
     </message>
     <message>
-        <location line="-3094"/>
+        <location line="-3099"/>
         <source>A room-key import is already in progress.</source>
         <translation>Jau vyksta kambario rakto importavimas.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4087"/>
+        <location line="+4092"/>
         <source>Not signed in.</source>
         <translation>Neprisijungęs.</translation>
     </message>
     <message>
-        <location line="-4085"/>
+        <location line="-4090"/>
         <source>Room-key import failed.</source>
         <translation>Nepavyko importuoti kambario rakto.</translation>
     </message>
@@ -1423,14 +1423,14 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
     </message>
     <message>
         <location line="+8"/>
-        <location line="+1842"/>
+        <location line="+1847"/>
         <location line="+41"/>
         <location line="+201"/>
         <source>This build has no Rust SDK backend.</source>
         <translation>Šioje versijoje nėra Rust SDK posistemės.</translation>
     </message>
     <message>
-        <location line="-1795"/>
+        <location line="-1800"/>
         <source>Choose a local image file.</source>
         <translation>Pasirinkite vietinį vaizdo failą.</translation>
     </message>
@@ -1500,7 +1500,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Tai nėra kopijuojamas vaizdas.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+10"/>
         <source>Couldn&apos;t decode the image.</source>
         <translation>Nepavyko iššifruoti vaizdo.</translation>
     </message>
@@ -1869,7 +1869,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
 <context>
     <name>AttachmentQueueModel</name>
     <message>
-        <location filename="../src/models/AttachmentQueueModel.cpp" line="+81"/>
+        <location filename="../src/models/AttachmentQueueModel.cpp" line="+82"/>
         <source>The file is larger than the server&apos;s upload limit (%1).</source>
         <translation>Failas didesnis nei serverio įkėlimo limitas (%1).</translation>
     </message>
@@ -1904,7 +1904,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Tas failas jau pridėtas.</translation>
     </message>
     <message>
-        <location line="+260"/>
+        <location line="+276"/>
         <source>The converted picture couldn&apos;t be saved.</source>
         <translation>Nepavyko įrašyti konvertuoto paveikslėlio.</translation>
     </message>
@@ -8731,7 +8731,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+98"/>
+        <location filename="../src/app/ForwardController.cpp" line="+99"/>
         <source>Photo</source>
         <translation>Nuotrauka</translation>
     </message>
@@ -11729,7 +11729,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1363"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1365"/>
         <location line="+689"/>
         <source>The file could not be downloaded.</source>
         <translation>Failo atsisiųsti nepavyko.</translation>
@@ -12577,7 +12577,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Šio failo perskaityti nepavyksta.</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+41"/>
         <source>The clipboard image could not be read.</source>
         <translation>Nepavyko nuskaityti iškarpinės vaizdo.</translation>
     </message>
@@ -32683,7 +32683,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Šio failo perskaityti nepavyksta.</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+41"/>
         <source>The clipboard image could not be read.</source>
         <translation>Nepavyko nuskaityti iškarpinės vaizdo.</translation>
     </message>

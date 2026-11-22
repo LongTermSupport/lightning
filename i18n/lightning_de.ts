@@ -1034,7 +1034,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     <name>AppController</name>
     <message>
         <location filename="../qml/LoginScreen.qml" line="+433"/>
-        <location filename="../src/app/AppController.cpp" line="+6410"/>
+        <location filename="../src/app/AppController.cpp" line="+6416"/>
         <location line="+25"/>
         <location line="+562"/>
         <location line="+454"/>
@@ -1042,7 +1042,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Lightning kann die gespeicherten Anmeldungen dieses Geräts gerade nicht lesen – der System-Schlüsselbund ist gesperrt oder nicht verfügbar. Entsperre ihn und versuche es erneut.</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-6851"/>
+        <location filename="../src/app/AppController.cpp" line="-6856"/>
         <location line="+2707"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
@@ -1115,13 +1115,13 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4292"/>
+        <location line="+4297"/>
         <location line="+821"/>
         <source>Not connected</source>
         <translation>Nicht verbunden</translation>
     </message>
     <message>
-        <location line="-5154"/>
+        <location line="-5159"/>
         <source>Connecting…</source>
         <translation>Verbindet …</translation>
     </message>
@@ -1177,24 +1177,24 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     </message>
     <message>
         <location line="+4"/>
-        <location line="+3088"/>
+        <location line="+3093"/>
         <location line="+9"/>
         <source>Lightning could not read the selected file.</source>
         <translation>Lightning konnte die ausgewählte Datei nicht lesen.</translation>
     </message>
     <message>
-        <location line="-3094"/>
+        <location line="-3099"/>
         <source>A room-key import is already in progress.</source>
         <translation>Ein Raumschlüssel-Import läuft bereits.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4087"/>
+        <location line="+4092"/>
         <source>Not signed in.</source>
         <translation>Nicht angemeldet.</translation>
     </message>
     <message>
-        <location line="-4085"/>
+        <location line="-4090"/>
         <source>Room-key import failed.</source>
         <translation>Der Raumschlüssel-Import ist fehlgeschlagen.</translation>
     </message>
@@ -1270,14 +1270,14 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     </message>
     <message>
         <location line="+8"/>
-        <location line="+1842"/>
+        <location line="+1847"/>
         <location line="+41"/>
         <location line="+201"/>
         <source>This build has no Rust SDK backend.</source>
         <translation>Diese Version enthält kein Rust-SDK-Backend.</translation>
     </message>
     <message>
-        <location line="-1795"/>
+        <location line="-1800"/>
         <source>Choose a local image file.</source>
         <translation>Wähle eine lokale Bilddatei aus.</translation>
     </message>
@@ -1362,7 +1362,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Dies ist kein kopierbares Bild.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+10"/>
         <source>Couldn&apos;t decode the image.</source>
         <translation>Das Bild konnte nicht dekodiert werden.</translation>
     </message>
@@ -1858,7 +1858,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
 <context>
     <name>AttachmentQueueModel</name>
     <message>
-        <location filename="../src/models/AttachmentQueueModel.cpp" line="+81"/>
+        <location filename="../src/models/AttachmentQueueModel.cpp" line="+82"/>
         <source>The file is larger than the server&apos;s upload limit (%1).</source>
         <translation>Die Datei ist größer als das Upload-Limit des Servers (%1).</translation>
     </message>
@@ -1893,7 +1893,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Diese Datei ist bereits angehängt.</translation>
     </message>
     <message>
-        <location line="+260"/>
+        <location line="+276"/>
         <source>The converted picture couldn&apos;t be saved.</source>
         <translation>Das konvertierte Bild konnte nicht gespeichert werden.</translation>
     </message>
@@ -8696,7 +8696,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+98"/>
+        <location filename="../src/app/ForwardController.cpp" line="+99"/>
         <source>Photo</source>
         <translation>Foto</translation>
     </message>
@@ -11684,7 +11684,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1363"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1365"/>
         <location line="+689"/>
         <source>The file could not be downloaded.</source>
         <translation>Die Datei konnte nicht heruntergeladen werden.</translation>
@@ -12528,7 +12528,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Diese Datei kann nicht gelesen werden.</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+41"/>
         <source>The clipboard image could not be read.</source>
         <translation>Das Bild aus der Zwischenablage konnte nicht gelesen werden.</translation>
     </message>
@@ -32529,7 +32529,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Diese Datei kann nicht gelesen werden.</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+41"/>
         <source>The clipboard image could not be read.</source>
         <translation>Das Bild aus der Zwischenablage konnte nicht gelesen werden.</translation>
     </message>
