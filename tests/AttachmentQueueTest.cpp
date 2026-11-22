@@ -11,6 +11,7 @@
 
 #include <QBuffer>
 #include <QImage>
+#include <QImageReader>
 #include <QMimeData>
 #include <QRegularExpression>
 #include <QScopeGuard>
@@ -344,6 +345,41 @@ QByteArray jpegWithGps()
     jpeg.insert(2, segment);
     return jpeg;
 }
+
+// A 64x32 stored JPEG, red 16x16 top-left on blue, carrying EXIF `orientation`.
+QByteArray rotatedJpeg(int orientation)
+{
+    QImage image(64, 32, QImage::Format_RGB32);
+    image.fill(Qt::blue);
+    for (int y = 0; y < 16; ++y)
+        for (int x = 0; x < 16; ++x)
+            image.setPixel(x, y, qRgb(255, 0, 0));
+    QByteArray jpeg;
+    QBuffer buffer(&jpeg);
+    buffer.open(QIODevice::WriteOnly);
+    image.save(&buffer, "JPG", 95);
+    QByteArray tiff("MM\0*\0\0\0\x08\0\1\x01\x12\0\3\0\0\0\1", 18);
+    tiff.append(char(0));
+    tiff.append(char(orientation));
+    tiff.append(QByteArray(6, '\0'));
+    const QByteArray payload = QByteArray("Exif\0\0", 6) + tiff;
+    QByteArray segment("\xFF\xE1", 2);
+    segment.append(char((payload.size() + 2) >> 8));
+    segment.append(char((payload.size() + 2) & 0xFF));
+    jpeg.insert(2, segment + payload);
+    return jpeg;
+}
+
+QImage renderedUpright(QByteArray bytes)
+{
+    QBuffer buffer(&bytes);
+    buffer.open(QIODevice::ReadOnly);
+    QImageReader reader(&buffer);
+    reader.setAutoTransform(true);
+    return reader.read();
+}
+
+bool isRed(QRgb c) { return qRed(c) > 200 && qBlue(c) < 60; }
 
 QByteArray readAll(const QString &path)
 {
@@ -2649,6 +2685,82 @@ private Q_SLOTS:
         QVERIFY(!queue->commitImageEdit(1));
         QCOMPARE(queue->entries().at(1).state, QStringLiteral("queued"));
 #endif
+    }
+    void aRotatedPhotoIsSentWithItsDisplayedSize_data()
+    {
+        QTest::addColumn<int>("orientation");
+        QTest::addColumn<QString>("mode");
+        QTest::addColumn<QSize>("displayed");
+        QTest::addColumn<QPoint>("redAt");
+        for (const QString &mode : {QStringLiteral("location"),
+                                    QStringLiteral("all"),
+                                    QStringLiteral("keep")}) {
+            QTest::addRow("180-%s", qPrintable(mode))
+                << 3 << mode << QSize(64, 32) << QPoint(56, 24);
+            QTest::addRow("90cw-%s", qPrintable(mode))
+                << 6 << mode << QSize(32, 64) << QPoint(24, 8);
+            QTest::addRow("90ccw-%s", qPrintable(mode))
+                << 8 << mode << QSize(32, 64) << QPoint(8, 56);
+        }
+    }
+
+    void aRotatedPhotoIsSentWithItsDisplayedSize()
+    {
+        QFETCH(int, orientation);
+        QFETCH(QString, mode);
+        QFETCH(QSize, displayed);
+        QFETCH(QPoint, redAt);
+        FakeClient client;
+        MessageComposer composer;
+        composer.setClient(&client);
+        composer.setRoomId(QStringLiteral("!room:example.org"));
+        composer.setImageMetadataMode(mode);
+        QTemporaryDir dir;
+        composer.addAttachment(QUrl::fromLocalFile(writeFile(
+            dir, QStringLiteral("phone.jpg"), rotatedJpeg(orientation))));
+        composer.send();
+        QCOMPARE(client.fileSends, 1);
+        QCOMPARE(QSize(client.lastFileWidth, client.lastFileHeight), displayed);
+        const QImage shown = renderedUpright(readAll(client.lastFilePath));
+        QCOMPARE(shown.size(), displayed);
+        QVERIFY(isRed(shown.pixel(redAt)));
+        QVERIFY(!isRed(shown.pixel(displayed.width() - 1 - redAt.x(),
+                                   displayed.height() - 1 - redAt.y())));
+    }
+
+    void aRotatedClipboardJpegIsPastedUpright_data()
+    {
+        QTest::addColumn<int>("orientation");
+        QTest::addColumn<QSize>("displayed");
+        QTest::addColumn<QPoint>("redAt");
+        QTest::newRow("180") << 3 << QSize(64, 32) << QPoint(56, 24);
+        QTest::newRow("90cw") << 6 << QSize(32, 64) << QPoint(24, 8);
+        QTest::newRow("90ccw") << 8 << QSize(32, 64) << QPoint(8, 56);
+    }
+
+    void aRotatedClipboardJpegIsPastedUpright()
+    {
+        QFETCH(int, orientation);
+        QFETCH(QSize, displayed);
+        QFETCH(QPoint, redAt);
+        QMimeData mime;
+        mime.setData(QStringLiteral("image/jpeg"), rotatedJpeg(orientation));
+        const QImage pasted = AttachmentQueueModel::clipboardImage(&mime);
+        QCOMPARE(pasted.size(), displayed);
+        QVERIFY(isRed(pasted.pixel(redAt)));
+        QVERIFY(!isRed(pasted.pixel(displayed.width() - 1 - redAt.x(),
+                                    displayed.height() - 1 - redAt.y())));
+    }
+
+    void aDecodedClipboardImageIsPastedAsIs()
+    {
+        QImage image(5, 3, QImage::Format_RGB32);
+        image.fill(Qt::green);
+        QMimeData mime;
+        mime.setImageData(image);
+        QCOMPARE(AttachmentQueueModel::clipboardImage(&mime).size(), QSize(5, 3));
+        const QMimeData empty;
+        QVERIFY(AttachmentQueueModel::clipboardImage(&empty).isNull());
     }
 };
 

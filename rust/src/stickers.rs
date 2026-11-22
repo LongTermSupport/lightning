@@ -1679,6 +1679,7 @@ pub(crate) fn header_dimensions(data: &[u8]) -> (u64, u64) {
         }
         if data.starts_with(&[0xff, 0xd8]) {
             let mut i = 2usize;
+            let mut orientation = 1;
             for _ in 0..512 {
                 while *data.get(i)? != 0xff {
                     i += 1;
@@ -1692,12 +1693,19 @@ pub(crate) fn header_dimensions(data: &[u8]) -> (u64, u64) {
                     0xd8 | 0x01 | 0xd0..=0xd7 => continue,
                     0xd9 | 0xda => return None,
                     0xc0..=0xcf if marker != 0xc4 && marker != 0xc8 && marker != 0xcc => {
-                        return Some((be16(i + 5)?, be16(i + 3)?));
+                        let (w, h) = (be16(i + 5)?, be16(i + 3)?);
+                        // Viewers draw the EXIF orientation; 5-8 turn the image a quarter.
+                        return Some(if (5..=8).contains(&orientation) { (h, w) } else { (w, h) });
                     }
                     _ => {
                         let len = usize::try_from(be16(i)?).ok()?;
                         if len < 2 {
                             return None;
+                        }
+                        if marker == 0xe1 {
+                            if let Some(o) = data.get(i + 2..i + len).and_then(exif_orientation) {
+                                orientation = o;
+                            }
                         }
                         i += len;
                     }
@@ -1710,6 +1718,29 @@ pub(crate) fn header_dimensions(data: &[u8]) -> (u64, u64) {
         Some((w, h)) if (1..=65_535).contains(&w) && (1..=65_535).contains(&h) => (w, h),
         _ => (0, 0),
     }
+}
+
+fn exif_orientation(payload: &[u8]) -> Option<u16> {
+    let tiff = payload.strip_prefix(b"Exif\0\0")?;
+    let big = match tiff.get(0..2)? {
+        b"MM" => true,
+        b"II" => false,
+        _ => return None,
+    };
+    let u16_at = |i: usize| -> Option<u16> {
+        let b = [*tiff.get(i)?, *tiff.get(i + 1)?];
+        Some(if big { u16::from_be_bytes(b) } else { u16::from_le_bytes(b) })
+    };
+    let ifd = usize::try_from({
+        let b: [u8; 4] = tiff.get(4..8)?.try_into().ok()?;
+        if big { u32::from_be_bytes(b) } else { u32::from_le_bytes(b) }
+    })
+    .ok()?;
+    let count = usize::from(u16_at(ifd)?);
+    (0..count.min(256))
+        .map(|n| ifd + 2 + n * 12)
+        .find(|&e| u16_at(e) == Some(0x0112))
+        .and_then(|e| u16_at(e + 8))
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -4267,6 +4298,16 @@ mod tests {
         ]
         .concat();
         assert_eq!(header_dimensions(&jpeg), (640, 480));
+        for (orientation, expected) in [(1u8, (640, 480)), (3, (640, 480)), (6, (480, 640)), (8, (480, 640))] {
+            let exif = [
+                &[0xff, 0xd8, 0xff, 0xe1, 0, 34][..],
+                b"Exif\0\0MM\0*\0\0\0\x08\0\x01\x01\x12\0\x03\0\0\0\x01",
+                &[0, orientation, 0, 0, 0, 0, 0, 0],
+                &[0xff, 0xc0, 0, 17, 8, 0x01, 0xe0, 0x02, 0x80, 3][..],
+            ]
+            .concat();
+            assert_eq!(header_dimensions(&exif), expected, "orientation {orientation}");
+        }
         assert_eq!(header_dimensions(&png[..20]), (0, 0));
         assert_eq!(header_dimensions(b"<svg"), (0, 0));
         let mut zero = png.clone();
