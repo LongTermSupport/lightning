@@ -23,8 +23,10 @@
 #include <QImageReader>
 #include <QLoggingCategory>
 #include <QMutexLocker>
+#include <QPointer>
 #include <QRegularExpression>
 #include <QSaveFile>
+#include <QThreadPool>
 #include <QUuid>
 
 #include <cstring>
@@ -1553,6 +1555,9 @@ QVariantMap MediaBridge::healthSnapshot() const
                static_cast<qint64>(m_failed.size()));
     out.insert(QStringLiteral("pendingPlayableWrites"),
                static_cast<qint64>(m_playableWriting.size()));
+    out.insert(QStringLiteral("pendingPlayableWriteBytes"),
+               pendingPlayableWriteBytes());
+    out.insert(QStringLiteral("playableWritesRefused"), m_statPlayableWritesRefused);
     out.insert(QStringLiteral("cacheBytes"), cacheBytesUsed());
     return out;
 }
@@ -1694,6 +1699,29 @@ bool MediaBridge::beginPlayableWrite(const QString &cacheKey,
     if (bytes.isEmpty() || bytes.size() > m_playableMaxBytes
         || !m_animatedDir || !m_animatedDir->isValid())
         return false;
+    qint64 reserved = pendingPlayableWriteBytes();
+    if (reserved + bytes.size() > m_playablePendingBudget && notifyFailure) {
+        for (auto it = m_playableWriting.begin();
+             it != m_playableWriting.end()
+             && reserved + bytes.size() > m_playablePendingBudget;) {
+            if (it->notifyFailure) {
+                ++it;
+                continue;
+            }
+            reserved -= it->bytes;
+            m_posterWanted.remove(it.key());
+            m_prefetchWanted.remove(it.key());
+            if (m_playableWriter)
+                m_playableWriter->cancel(it.key());
+            it = m_playableWriting.erase(it);
+        }
+    }
+    if (reserved > 0 && reserved + bytes.size() > m_playablePendingBudget) {
+        ++m_statPlayableWritesRefused;
+        qCDebug(lcMedia, "playable write refused: %lld bytes pending",
+                static_cast<long long>(reserved));
+        return false;
+    }
     const QString extension = playableExtensionFor(bytes, mimetype);
     if (extension.isEmpty())
         return false;
@@ -1717,6 +1745,14 @@ bool MediaBridge::beginPlayableWrite(const QString &cacheKey,
     pending.notifyFailure = notifyFailure;
     m_playableWriting.insert(cacheKey, pending);
     return true;
+}
+
+qint64 MediaBridge::pendingPlayableWriteBytes() const
+{
+    qint64 total = 0;
+    for (const PendingPlayableWrite &pending : m_playableWriting)
+        total += pending.bytes;
+    return total;
 }
 
 void MediaBridge::onPlayableWriteFinished(quint64 serial,
@@ -2107,7 +2143,9 @@ void MediaBridge::saveInto(const QString &mediaKey, const QString &folder,
         Q_EMIT saveFinished(false, tr("No destination selected."), mediaKey);
         return;
     }
-    startSave(mediaKey, QUrl::fromLocalFile(QDir(folder).filePath(leaf)), true);
+    startSave(mediaKey,
+              QUrl::fromLocalFile(QDir(folder).filePath(sanitizedFileName(leaf))),
+              true);
 }
 
 void MediaBridge::startSave(const QString &mediaKey, const QUrl &destination,
@@ -2189,6 +2227,14 @@ void MediaBridge::cancelSave(const QString &mediaKey)
             ++it;
         }
     }
+    for (auto it = m_saveWrites.begin(); it != m_saveWrites.end();) {
+        if (it->mediaKey == mediaKey) {
+            it->cancelled->store(true);
+            it = m_saveWrites.erase(it);
+        } else {
+            ++it;
+        }
+    }
     m_activeSaves.removeIf(
         [&](const ActiveSave &s) { return s.mediaKey == mediaKey; });
     Q_EMIT activeSavesChanged();
@@ -2260,19 +2306,28 @@ QString MediaBridge::cachedFullContentHash(const QString &mediaKey) const
     return hex;
 }
 
-void MediaBridge::writeSaveFile(const QUrl &destination, const QByteArray &bytes,
-                                const QString &mediaKey, bool uniquify)
+namespace {
+
+using Outcome = MediaBridge::SaveWriteOutcome;
+
+struct SaveWriteResult
 {
-    const QFileInfo chosen(destination.toLocalFile());
+    Outcome outcome = Outcome::WriteFailed;
+    QString path;
+};
+
+SaveWriteResult writeSaveFileBlocking(const QString &folder, const QString &leaf,
+                                      const QByteArray &bytes, bool uniquify,
+                                      const std::atomic<bool> &cancelled)
+{
+    const auto result = [](Outcome outcome, const QString &path = {}) {
+        return SaveWriteResult{outcome, path};
+    };
     // An empty canonical path would make QDir the working directory.
-    const QString parentPath = QFileInfo(chosen.absolutePath()).canonicalFilePath();
-    if (parentPath.isEmpty() || !QFileInfo(parentPath).isDir()) {
-        Q_EMIT saveFinished(false, tr("The destination folder is not available."),
-                            mediaKey);
-        return;
-    }
+    const QString parentPath = QFileInfo(folder).canonicalFilePath();
+    if (parentPath.isEmpty() || !QFileInfo(parentPath).isDir())
+        return result(Outcome::FolderUnavailable);
     const QDir parent(parentPath);
-    const QString leaf = sanitizedFileName(chosen.fileName());
     if (uniquify) {
         for (int n = 0; n < 1000; ++n) {
             const QString candidate =
@@ -2281,44 +2336,98 @@ void MediaBridge::writeSaveFile(const QUrl &destination, const QByteArray &bytes
             if (!file.open(QIODevice::WriteOnly | QIODevice::NewOnly)) {
                 if (QFileInfo::exists(candidate))
                     continue;
-                Q_EMIT saveFinished(false,
-                                    tr("The destination is not writable."),
-                                    mediaKey);
-                return;
+                return result(Outcome::NotWritable);
             }
             if (file.write(bytes) != bytes.size() || !file.flush()) {
                 file.close();
                 file.remove();
-                Q_EMIT saveFinished(false, tr("Writing the file failed."),
-                                    mediaKey);
-                return;
+                return result(Outcome::WriteFailed);
             }
             file.close();
+            if (cancelled.load()) {
+                file.remove();
+                return result(Outcome::Cancelled);
+            }
             savenaming::markAsDownloaded(candidate);
-            Q_EMIT saveCompleted(mediaKey,
-                                 QFileInfo(candidate).absoluteFilePath());
-            Q_EMIT saveFinished(true, tr("Saved."), mediaKey);
-            return;
+            return result(Outcome::Saved, QFileInfo(candidate).absoluteFilePath());
         }
-        Q_EMIT saveFinished(false, tr("The destination is not writable."),
-                            mediaKey);
-        return;
+        return result(Outcome::NotWritable);
     }
     const QString target = parent.filePath(leaf);
     QSaveFile file(target);
     file.setDirectWriteFallback(true);
-    if (!file.open(QIODevice::WriteOnly)) {
+    if (!file.open(QIODevice::WriteOnly))
+        return result(Outcome::NotWritable);
+    if (file.write(bytes) != bytes.size())
+        return result(Outcome::WriteFailed);
+    if (cancelled.load()) {
+        file.cancelWriting();
+        return result(Outcome::Cancelled);
+    }
+    if (!file.commit())
+        return result(Outcome::WriteFailed);
+    savenaming::markAsDownloaded(target);
+    return result(Outcome::Saved, QFileInfo(target).absoluteFilePath());
+}
+
+}
+
+void MediaBridge::writeSaveFile(const QUrl &destination, const QByteArray &bytes,
+                                const QString &mediaKey, bool uniquify)
+{
+    const QFileInfo chosen(destination.toLocalFile());
+    const QString folder = chosen.absolutePath();
+    const QString leaf = sanitizedFileName(chosen.fileName());
+    const quint64 serial = m_nextSaveWrite++;
+    auto cancelled = std::make_shared<std::atomic<bool>>(false);
+    m_saveWrites.insert(serial, {mediaKey, cancelled});
+    QPointer<MediaBridge> self(this);
+    QThreadPool::globalInstance()->start(
+        [self, folder, leaf, bytes, uniquify, cancelled, serial,
+         hook = m_saveWriteHook] {
+            if (hook)
+                hook();
+            const SaveWriteResult result = writeSaveFileBlocking(
+                folder, leaf, bytes, uniquify, *cancelled);
+            if (!self)
+                return;
+            QMetaObject::invokeMethod(
+                self.data(),
+                [self, serial, result] {
+                    if (self)
+                        self->finishSaveWrite(serial, result.outcome,
+                                              result.path);
+                },
+                Qt::QueuedConnection);
+        });
+}
+
+void MediaBridge::finishSaveWrite(quint64 serial, SaveWriteOutcome outcome,
+                                  const QString &path)
+{
+    const auto it = m_saveWrites.constFind(serial);
+    if (it == m_saveWrites.constEnd())
+        return;
+    const QString mediaKey = it->mediaKey;
+    m_saveWrites.erase(it);
+    switch (outcome) {
+    case SaveWriteOutcome::Saved:
+        Q_EMIT saveCompleted(mediaKey, path);
+        Q_EMIT saveFinished(true, tr("Saved."), mediaKey);
+        return;
+    case SaveWriteOutcome::FolderUnavailable:
+        Q_EMIT saveFinished(false, tr("The destination folder is not available."),
+                            mediaKey);
+        return;
+    case SaveWriteOutcome::NotWritable:
         Q_EMIT saveFinished(false, tr("The destination is not writable."),
                             mediaKey);
         return;
-    }
-    if (file.write(bytes) != bytes.size() || !file.commit()) {
+    case SaveWriteOutcome::WriteFailed:
+    case SaveWriteOutcome::Cancelled:
         Q_EMIT saveFinished(false, tr("Writing the file failed."), mediaKey);
         return;
     }
-    savenaming::markAsDownloaded(target);
-    Q_EMIT saveCompleted(mediaKey, QFileInfo(target).absoluteFilePath());
-    Q_EMIT saveFinished(true, tr("Saved."), mediaKey);
 }
 
 void MediaBridge::clear()
@@ -2350,6 +2459,9 @@ void MediaBridge::clear()
         m_activeSaves.clear();
         Q_EMIT activeSavesChanged();
     }
+    for (const SaveWrite &write : std::as_const(m_saveWrites))
+        write.cancelled->store(true);
+    m_saveWrites.clear();
     m_failed.clear();
     m_animatedFiles.clear();
     m_animatedSizes.clear();

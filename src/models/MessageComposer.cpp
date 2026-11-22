@@ -1528,7 +1528,7 @@ QVariantMap MessageComposer::emojiCompletionEdit(const QString &text,
         m_unicodeEmojiUseRecorder(value);
     const QString url = entry.value(QStringLiteral("url")).toString();
     if (!unicode && url.startsWith(QLatin1String("mxc://"))) {
-        m_threadEmoticonChoices.insert(
+        m_threadEmoticonChoices[m_threadDraftKey ? m_threadDraftKey() : QString()].insert(
             QLatin1Char(':') + value + QLatin1Char(':'),
             QVariantMap{ { QStringLiteral("url"), url },
                          { QStringLiteral("body"),
@@ -1573,8 +1573,9 @@ QVariantMap MessageComposer::shortcodeAutoConvertEdit(const QString &text,
 void MessageComposer::applyOutgoingEmoji(QString &body,
                                          QVariantMap &bodySpec) const
 {
-    applyOutgoingEmojiWith(body, bodySpec, m_threadEmoticonChoices);
-    m_threadEmoticonChoices.clear();
+    applyOutgoingEmojiWith(body, bodySpec,
+                           m_threadEmoticonChoices.take(
+                               m_threadDraftKey ? m_threadDraftKey() : QString()));
 }
 
 void MessageComposer::applyOutgoingEmojiWith(QString &body,

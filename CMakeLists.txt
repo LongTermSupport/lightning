@@ -4155,6 +4155,8 @@ if(BUILD_TESTING)
         src/app/ForwardController.cpp
         src/matrix/EventPreview.h
         src/matrix/EventPreview.cpp
+        src/models/MessageHtml.h
+        src/models/MessageHtml.cpp
         src/media/MediaBridge.h
         src/media/MediaBridge.cpp
         src/app/SaveNaming.h
@@ -8278,10 +8280,12 @@ if(BUILD_TESTING AND TARGET Qt6::DBus AND NOT WIN32 AND NOT APPLE)
         src/calls/CameraPortal.h
         src/calls/CameraPortal.cpp
         src/calls/PortalRequest.h
+        src/calls/ScreenCastPortal.h
+        src/calls/ScreenCastPortal.cpp
     )
     target_include_directories(camera-portal-test PRIVATE src)
     target_link_libraries(camera-portal-test PRIVATE
-        Qt6::Core Qt6::DBus Qt6::Test)
+        Qt6::Core Qt6::Gui Qt6::DBus Qt6::Test)
     target_compile_definitions(camera-portal-test PRIVATE HAVE_QT_DBUS=1)
     add_test(NAME camera-portal COMMAND camera-portal-test)
 

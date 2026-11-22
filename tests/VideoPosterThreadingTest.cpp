@@ -151,6 +151,46 @@ private Q_SLOTS:
         QCOMPARE(spy.at(1).at(0).toString(), QStringLiteral("second"));
     }
 
+    void cancellingJobsLetsTheNextOneStartAtOnce()
+    {
+        VideoPosterWorker worker;
+        QSignalSpy ready(&worker, &VideoPosterWorker::posterReady);
+        worker.enqueue(QStringLiteral("a"), m_path);
+        worker.enqueue(QStringLiteral("b"), m_path);
+        worker.enqueue(QStringLiteral("c"), m_path);
+        QCOMPARE(worker.activeTagForTest(), QStringLiteral("a"));
+        QCOMPARE(worker.queuedCountForTest(), 2);
+
+        worker.cancel(QStringLiteral("b"));
+        QCOMPARE(worker.activeTagForTest(), QStringLiteral("a"));
+        QCOMPARE(worker.queuedCountForTest(), 1);
+        worker.cancel(QStringLiteral("a"));
+        QCOMPARE(worker.activeTagForTest(), QStringLiteral("c"));
+        QCOMPARE(worker.queuedCountForTest(), 0);
+        worker.cancel(QStringLiteral("gone"));
+        QCOMPARE(worker.activeTagForTest(), QStringLiteral("c"));
+
+        QVERIFY(ready.count() > 0 || ready.wait(15000));
+        QTest::qWait(100);
+        QCOMPARE(ready.count(), 1);
+        QCOMPARE(ready.at(0).at(0).toString(), QStringLiteral("c"));
+    }
+
+    void aCancelledQueuedRequestIsNeverAnswered()
+    {
+        VideoPosterExtractor extractor;
+        QSignalSpy ready(&extractor, &VideoPosterExtractor::posterReady);
+        extractor.requestPoster(QStringLiteral("first"), m_path);
+        extractor.requestPoster(QStringLiteral("dropped"), m_path);
+        extractor.requestPoster(QStringLiteral("last"), m_path);
+        extractor.cancel(QStringLiteral("dropped"));
+        while (ready.count() < 2 && ready.wait(15000)) { }
+        QTest::qWait(100);
+        QCOMPARE(ready.count(), 2);
+        QCOMPARE(ready.at(0).at(0).toString(), QStringLiteral("first"));
+        QCOMPARE(ready.at(1).at(0).toString(), QStringLiteral("last"));
+    }
+
     void workerStartsItsWatchdogWithoutACrossThreadWarning()
     {
         for (const QString &message : capturedMessages()) {

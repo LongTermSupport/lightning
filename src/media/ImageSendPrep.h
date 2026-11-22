@@ -31,10 +31,8 @@ private:
         QDateTime at;
     };
     void purgeOld();
-    static void sweepStale();
 
     std::unique_ptr<QTemporaryDir> m_dir;
     QHash<quint64, Tracked> m_ops;
     quint64 m_next = 1;
-    static bool s_swept;
 };

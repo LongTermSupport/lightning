@@ -1033,7 +1033,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7358"/>
+        <location filename="../src/app/AppController.cpp" line="+7362"/>
         <source>Room invitation</source>
         <translation>रूम का आमंत्रण</translation>
     </message>
@@ -1310,18 +1310,18 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>YYYY-MM-DD प्रारूप में वास्तविक तिथियाँ दें, जहाँ “से” तिथि “तक” तिथि के बाद की न हो।</translation>
     </message>
     <message>
-        <location line="-4765"/>
-        <location line="+2703"/>
+        <location line="-4769"/>
+        <location line="+2707"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
     <message>
-        <location line="-2702"/>
+        <location line="-2706"/>
         <source>This is a test notification. If you can read it, desktop notifications work.</source>
         <translation>यह एक टेस्ट सूचना है। यदि आप इसे पढ़ पा रहे हैं, तो डेस्कटॉप सूचनाएँ काम कर रही हैं।</translation>
     </message>
     <message>
-        <location line="+350"/>
+        <location line="+354"/>
         <source>New mentions</source>
         <translation>नए मेंशन</translation>
     </message>
@@ -1893,7 +1893,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>वह फ़ाइल पहले से अटैच है।</translation>
     </message>
     <message>
-        <location line="+141"/>
+        <location line="+151"/>
         <source>The converted picture couldn&apos;t be saved.</source>
         <translation>बदली हुई तस्वीर सहेजी नहीं जा सकी।</translation>
     </message>
@@ -1908,7 +1908,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>इमेज सर्वर की अपलोड सीमा (%1) से बड़ी है।</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+51"/>
         <source>The attachment is no longer available.</source>
         <translation>अनुलग्नक अब उपलब्ध नहीं है।</translation>
     </message>
@@ -8668,7 +8668,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+97"/>
+        <location filename="../src/app/ForwardController.cpp" line="+98"/>
         <source>Photo</source>
         <translation>फ़ोटो</translation>
     </message>
@@ -8703,7 +8703,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1 (%2)</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+18"/>
         <source>%1 — %2</source>
         <translation>%1 — %2</translation>
     </message>
@@ -11656,53 +11656,49 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1361"/>
-        <location line="+655"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1363"/>
+        <location line="+689"/>
         <source>The file could not be downloaded.</source>
         <translation>फ़ाइल डाउनलोड नहीं हो सकी।</translation>
     </message>
     <message>
-        <location line="-500"/>
+        <location line="-534"/>
         <source>The download timed out.</source>
         <translation>डाउनलोड में समय समाप्त हो गया।</translation>
     </message>
     <message>
-        <location line="+498"/>
+        <location line="+532"/>
         <source>The media server is unreachable. Try again in a few minutes.</source>
         <translation>मीडिया सर्वर तक पहुँचा नहीं जा सकता। कुछ मिनट बाद फिर कोशिश करें।</translation>
     </message>
     <message>
         <location line="+93"/>
-        <location line="+10"/>
+        <location line="+12"/>
         <source>No destination selected.</source>
         <translation>कोई गंतव्य नहीं चुना गया।</translation>
     </message>
     <message>
-        <location line="+79"/>
+        <location line="+87"/>
         <source>Download cancelled.</source>
         <translation>डाउनलोड रद्द किया गया।</translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+177"/>
         <source>The destination folder is not available.</source>
         <translation>गंतव्य फ़ोल्डर उपलब्ध नहीं है।</translation>
     </message>
     <message>
-        <location line="+15"/>
-        <location line="+18"/>
-        <location line="+8"/>
+        <location line="+4"/>
         <source>The destination is not writable.</source>
         <translation>गंतव्य में लिखा नहीं जा सकता।</translation>
     </message>
     <message>
-        <location line="-19"/>
-        <location line="+24"/>
+        <location line="+5"/>
         <source>Writing the file failed.</source>
         <translation>फ़ाइल लिखना विफल रहा।</translation>
     </message>
     <message>
-        <location line="-16"/>
-        <location line="+21"/>
+        <location line="-12"/>
         <source>Saved.</source>
         <translation>सहेज लिया गया।</translation>
     </message>
@@ -12547,7 +12543,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>यह संदेश भेजने के लिए बहुत लंबा है (%1 KB; सीमा लगभग %2 KB है)। इसे छोटा करें या कई संदेशों में बाँटें।</translation>
     </message>
     <message>
-        <location line="+830"/>
+        <location line="+831"/>
         <source>Part of this message is hidden as a spoiler, so it cannot be edited here.</source>
         <translation>इस संदेश का एक हिस्सा स्पॉइलर के रूप में छिपा है, इसलिए इसे यहाँ संपादित नहीं किया जा सकता।</translation>
     </message>
@@ -13058,7 +13054,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MessageDelegate</name>
     <message>
-        <location filename="../qml/MessageDelegate.qml" line="+1231"/>
+        <location filename="../qml/MessageDelegate.qml" line="+1232"/>
         <source>Today</source>
         <translation>आज</translation>
     </message>
@@ -13107,12 +13103,12 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="+91"/>
         <location line="+924"/>
-        <location line="+1122"/>
+        <location line="+1123"/>
         <source>Reply</source>
         <translation>जवाब दें</translation>
     </message>
     <message>
-        <location line="-2031"/>
+        <location line="-2032"/>
         <source>(original message not loaded)</source>
         <translation>(मूल संदेश लोड नहीं हुआ)</translation>
     </message>
@@ -13213,30 +13209,30 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2288"/>
+        <location line="+2289"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>फिर कोशिश करें</translation>
     </message>
     <message>
-        <location line="-3304"/>
-        <location line="+1225"/>
+        <location line="-3305"/>
+        <location line="+1226"/>
         <source>Cancel</source>
         <translation>रद्द करें</translation>
     </message>
     <message>
-        <location line="-1220"/>
+        <location line="-1221"/>
         <source>Cancel sending this message</source>
         <translation>इस संदेश को भेजना रद्द करें</translation>
     </message>
     <message>
         <location line="+188"/>
-        <location line="+1379"/>
+        <location line="+1380"/>
         <source>Hide image</source>
         <translation>छवि छिपाएँ</translation>
     </message>
     <message>
-        <location line="-1375"/>
+        <location line="-1376"/>
         <source>Hide</source>
         <translation>छिपाएँ</translation>
     </message>
@@ -13327,19 +13323,19 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1, %2 और %3 अन्य ने पढ़ा</translation>
     </message>
     <message>
-        <location line="+565"/>
+        <location line="+566"/>
         <source>Message · %1 · %2</source>
         <translation>संदेश · %1 · %2</translation>
     </message>
     <message>
-        <location line="-995"/>
+        <location line="-996"/>
         <location line="+4"/>
-        <location line="+1107"/>
+        <location line="+1108"/>
         <source>Reply in thread</source>
         <translation>थ्रेड में जवाब दें</translation>
     </message>
     <message>
-        <location line="-2043"/>
+        <location line="-2044"/>
         <source>Original message removed</source>
         <translation>मूल संदेश हटा दिया गया</translation>
     </message>
@@ -13362,7 +13358,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message>
-        <location line="+940"/>
+        <location line="+941"/>
         <source>Open in room</source>
         <translation>रूम में खोलें</translation>
     </message>
@@ -13564,13 +13560,13 @@ Signing out and signing in again is the only fix.</source>
         <translation>फिर कोशिश करें</translation>
     </message>
     <message>
-        <location line="-3695"/>
-        <location line="+1105"/>
+        <location line="-3696"/>
+        <location line="+1106"/>
         <source>Edit</source>
         <translation>संपादित करें</translation>
     </message>
     <message>
-        <location line="-3658"/>
+        <location line="-3659"/>
         <source>%1 B</source>
         <translation>%1 B</translation>
     </message>
@@ -13604,22 +13600,22 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="-564"/>
         <location line="+562"/>
-        <location line="+3626"/>
+        <location line="+3627"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5111"/>
+        <location line="-5112"/>
         <location line="+53"/>
         <location line="+508"/>
-        <location line="+4175"/>
+        <location line="+4176"/>
         <source>Image</source>
         <translation>तस्वीर</translation>
     </message>
     <message>
-        <location line="-4734"/>
+        <location line="-4735"/>
         <source>Attachment</source>
         <translation>अटैचमेंट</translation>
     </message>
@@ -13685,7 +13681,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>(संपादित)</translation>
     </message>
     <message>
-        <location line="+1597"/>
+        <location line="+1598"/>
         <source>Add :%1: to my emoji</source>
         <translation>:%1: को मेरे इमोजी में जोड़ें</translation>
     </message>
@@ -13823,12 +13819,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>जिसका जवाब है</translation>
     </message>
     <message>
-        <location line="-1945"/>
+        <location line="-1946"/>
         <source>Show preview</source>
         <translation>प्रीव्यू दिखाएँ</translation>
     </message>
     <message>
-        <location line="+1803"/>
+        <location line="+1804"/>
         <source>Remove edits?</source>
         <translation>संपादन हटाएँ?</translation>
     </message>
@@ -13940,10 +13936,10 @@ Signing out and signing in again is the only fix.</source>
         <translation>स्टिकर लोड नहीं हो सका — फिर कोशिश करने के लिए क्लिक करें</translation>
     </message>
     <message>
-        <location line="-5528"/>
+        <location line="-5529"/>
         <location line="+57"/>
         <location line="+511"/>
-        <location line="+4173"/>
+        <location line="+4174"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -13956,9 +13952,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>वीडियो</translation>
     </message>
     <message>
-        <location line="-5909"/>
+        <location line="-5910"/>
         <location line="+564"/>
-        <location line="+4276"/>
+        <location line="+4277"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -14160,7 +14156,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MockMatrixClient</name>
     <message>
-        <location filename="../src/matrix/MockMatrixClient.cpp" line="+356"/>
+        <location filename="../src/matrix/MockMatrixClient.cpp" line="+357"/>
         <location line="+33"/>
         <location line="+28"/>
         <location line="+46"/>
@@ -14884,12 +14880,12 @@ Signing out and signing in again is the only fix.</source>
     <name>NotificationManager</name>
     <message>
         <location filename="../src/notifications/NotificationManager.cpp" line="+1970"/>
-        <location line="+1004"/>
+        <location line="+1007"/>
         <source>Open</source>
         <translation>खोलें</translation>
     </message>
     <message>
-        <location line="-1002"/>
+        <location line="-1005"/>
         <source>Mark as read</source>
         <translation>पढ़ा हुआ चिह्नित करें</translation>
     </message>
@@ -14899,7 +14895,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>उत्तर दें</translation>
     </message>
     <message>
-        <location line="+322"/>
+        <location line="+325"/>
         <source>Reply…</source>
         <translation>उत्तर दें…</translation>
     </message>
@@ -15416,7 +15412,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2857"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2860"/>
         <source>(spoiler)</source>
         <translation>(स्पॉइलर)</translation>
     </message>
@@ -15483,7 +15479,7 @@ Signing out and signing in again is the only fix.</source>
     <message numerus="yes">
         <location line="+233"/>
         <location line="+217"/>
-        <location line="+1735"/>
+        <location line="+1738"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n नया संदेश</numerusform>
@@ -15491,7 +15487,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1948"/>
+        <location line="-1951"/>
         <location line="+211"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15500,7 +15496,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1740"/>
+        <location line="+1743"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>%n रूम में</numerusform>
@@ -17990,7 +17986,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1 संदेश लाए गए…</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+27"/>
         <source>Could not read the room&apos;s history. Try again later.</source>
         <translation>रूम का इतिहास नहीं पढ़ा जा सका। बाद में फिर कोशिश करें।</translation>
     </message>
@@ -18023,7 +18019,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>अटैचमेंट डाउनलोड हो रहे हैं: %2 में से %1…</translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+151"/>
         <source>Exported 1 event to %1.</source>
         <translation>1 घटना %1 में निर्यात की गई।</translation>
     </message>
@@ -18032,8 +18028,16 @@ Signing out and signing in again is the only fix.</source>
         <source>Exported %1 events to %2.</source>
         <translation>%1 घटनाएँ %2 में निर्यात की गईं।</translation>
     </message>
+    <message numerus="yes">
+        <location line="+3"/>
+        <source>%n edit(s) could not be applied; the edited message(s) are shown in their original form.</source>
+        <translation>
+            <numerusform>%n संपादन लागू नहीं हो सका; संदेश अपने मूल रूप में दिखाया गया है।</numerusform>
+            <numerusform>%n संपादन लागू नहीं हो सके; संदेश अपने मूल रूप में दिखाए गए हैं।</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+22"/>
+        <location line="+24"/>
         <source>Export cancelled. No file was written.</source>
         <translation>निर्यात रद्द किया गया। कोई फ़ाइल नहीं लिखी गई।</translation>
     </message>
@@ -19334,7 +19338,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RoomListModel</name>
     <message>
-        <location filename="../src/models/RoomListModel.cpp" line="+207"/>
+        <location filename="../src/models/RoomListModel.cpp" line="+210"/>
         <source>%1 contact</source>
         <extracomment>A bridged chat partner with no usable name yet; %1 is the network, e.g. &quot;WhatsApp contact&quot;.</extracomment>
         <translation>%1 संपर्क</translation>
@@ -20322,7 +20326,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>SavedMessagesController</name>
     <message>
-        <location filename="../src/app/SavedMessagesController.cpp" line="+247"/>
+        <location filename="../src/app/SavedMessagesController.cpp" line="+251"/>
         <source>Saved messages could not be loaded. Retry.</source>
         <translation>सहेजे गए संदेश लोड नहीं किए जा सके। पुनः प्रयास करें.</translation>
     </message>
@@ -20346,7 +20350,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>सहेजे गए संदेश भरे हुए हैं। पहले कोई पुरानी वस्तु हटाएँ।</translation>
     </message>
     <message>
-        <location line="+219"/>
+        <location line="+285"/>
         <source>Sticker</source>
         <translation>स्टिकर</translation>
     </message>
@@ -20379,13 +20383,13 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>SavedMessagesPanel</name>
     <message>
-        <location filename="../qml/SavedMessagesPanel.qml" line="+49"/>
-        <location line="+132"/>
+        <location filename="../qml/SavedMessagesPanel.qml" line="+68"/>
+        <location line="+159"/>
         <source>Saved messages</source>
         <translation>सहेजे गए संदेश</translation>
     </message>
     <message>
-        <location line="-115"/>
+        <location line="-142"/>
         <source>Undo remove</source>
         <translation>पूर्ववत हटाएं</translation>
     </message>
@@ -20444,13 +20448,39 @@ Signing out and signing in again is the only fix.</source>
         <source>No saved messages yet. Use Save message on a message to add one.</source>
         <translation>अभी तक कोई संदेश सहेजा नहीं गया। किसी संदेश को जोड़ने के लिए उस पर संदेश सहेजें का उपयोग करें।</translation>
     </message>
+    <message numerus="yes">
+        <location line="+14"/>
+        <source>Loading %n more saved message(s) to search…</source>
+        <translation>
+            <numerusform>खोज के लिए %n और सहेजा गया संदेश लोड हो रहा है…</numerusform>
+            <numerusform>खोज के लिए %n और सहेजे गए संदेश लोड हो रहे हैं…</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>%n saved message(s) not loaded, so this filter cannot search them.</source>
+        <translation>
+            <numerusform>%n सहेजा गया संदेश लोड नहीं हुआ, इसलिए यह फ़िल्टर उसे नहीं खोज सकता।</numerusform>
+            <numerusform>%n सहेजे गए संदेश लोड नहीं हुए, इसलिए यह फ़िल्टर उन्हें नहीं खोज सकता।</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+10"/>
+        <location line="+9"/>
+        <source>Stop</source>
+        <translation>रोकें</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Load all</source>
+        <translation>सभी लोड करें</translation>
+    </message>
+    <message>
+        <location line="+12"/>
         <source>Clear filters</source>
         <translation>फ़िल्टर हटाएँ</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+41"/>
         <location line="+36"/>
         <source>Message could not be loaded</source>
         <translation>संदेश लोड नहीं हो सका</translation>
@@ -20953,12 +20983,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>लोड हुए संदेशों में ढूँढें</translation>
     </message>
     <message>
-        <location line="+142"/>
+        <location line="+145"/>
         <source>Open message from %1</source>
         <translation>%1 का संदेश खोलें</translation>
     </message>
     <message>
-        <location line="-240"/>
+        <location line="-243"/>
         <source>Search could not be completed.</source>
         <translation>खोज पूरी नहीं हो सकी।</translation>
     </message>
@@ -20973,12 +21003,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>कम से कम %1 अक्षर टाइप करें।</translation>
     </message>
     <message>
-        <location line="+176"/>
+        <location line="+179"/>
         <source>Nothing is indexed yet.</source>
         <translation>अभी कुछ भी इंडेक्स नहीं हुआ है।</translation>
     </message>
     <message>
-        <location line="-173"/>
+        <location line="-176"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>कोई मेल खाता संदेश नहीं। कोई कम प्रचलित शब्द आज़माएँ, या स्थानीय इंडेक्स में खोजें।</translation>
     </message>
@@ -21028,7 +21058,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>इस रूम का इतिहास इंडेक्स हो रहा है…</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+2"/>
+        <source>The search index could not be updated. Index this room again to retry.</source>
+        <translation>खोज इंडेक्स अपडेट नहीं हो सका। फिर से कोशिश करने के लिए इस रूम को दोबारा इंडेक्स करें।</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>Searching %1 messages Lightning has indexed, including encrypted ones.</source>
         <translation>Lightning ने जो %1 संदेश इंडेक्स किए हैं, एन्क्रिप्टेड समेत, उनमें खोजा जा रहा है।</translation>
     </message>
@@ -27103,12 +27138,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="+8"/>
         <location line="+448"/>
-        <location line="+366"/>
+        <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>कॉल से कनेक्ट नहीं हो सका.</translation>
     </message>
     <message>
-        <location line="-812"/>
+        <location line="-808"/>
         <source>The calling service is having trouble.</source>
         <translation>कॉलिंग सेवा में दिक्कत आ रही है.</translation>
     </message>
@@ -27226,7 +27261,7 @@ Note: importing keys does not verify this session.</source>
         <translation>कॉलिंग अभी तैयार नहीं है.</translation>
     </message>
     <message>
-        <location line="+657"/>
+        <location line="+653"/>
         <source>You can share your screen once the call has reconnected.</source>
         <translation>कॉल के दोबारा कनेक्ट होने के बाद आप अपनी स्क्रीन साझा कर सकते हैं।</translation>
     </message>
@@ -27236,7 +27271,7 @@ Note: importing keys does not verify this session.</source>
         <translation>कॉल का ऑडियो रुक गया: इस कंप्यूटर का साउंड आउटपुट डिस्कनेक्ट हो गया। आउटपुट दोबारा उपलब्ध होने पर यह फिर शुरू होता है; न हो तो कॉल छोड़कर फिर शामिल हों।</translation>
     </message>
     <message>
-        <location line="+2085"/>
+        <location line="+2172"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>स्क्रीन शेयर की ध्वनि बंद है: इस पैकेज में आवश्यक ऑडियो कैप्चर प्लगइन नहीं हैं।</translation>
     </message>
@@ -27321,7 +27356,7 @@ Note: importing keys does not verify this session.</source>
         <translation>प्रतिभागी</translation>
     </message>
     <message>
-        <location line="-4508"/>
+        <location line="-4591"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>यह रूम एन्क्रिप्टेड है, और इस बिल्ड पर एन्क्रिप्टेड कॉल अभी तक उपलब्ध नहीं हैं।</translation>
     </message>
@@ -27331,7 +27366,7 @@ Note: importing keys does not verify this session.</source>
         <translation>कॉल में आपकी घोषणा नहीं की जा सकी.</translation>
     </message>
     <message>
-        <location line="+528"/>
+        <location line="+524"/>
         <source>The call ended because the connection was lost.</source>
         <translation>कनेक्शन टूट जाने के कारण कॉल समाप्त हो गई.</translation>
     </message>
@@ -33025,12 +33060,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location filename="../qml/SpaceLobby.qml" line="-521"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5401"/>
+        <location line="+5404"/>
         <source>Space</source>
         <translation>स्पेस</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5400"/>
+        <location filename="../qml/TimelinePane.qml" line="-5403"/>
         <source>Home</source>
         <translation>होम</translation>
     </message>
@@ -33132,12 +33167,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="+16"/>
         <location line="+2"/>
-        <location line="+3869"/>
+        <location line="+3872"/>
         <source>Room information</source>
         <translation>कक्ष जानकारी</translation>
     </message>
     <message>
-        <location line="-3858"/>
+        <location line="-3861"/>
         <location line="+1"/>
         <source>More room actions</source>
         <translation>रूम की और कार्रवाइयाँ</translation>
@@ -33314,6 +33349,11 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+2"/>
+        <source>The search index could not be updated. Index this room again to retry.</source>
+        <translation>खोज इंडेक्स अपडेट नहीं हो सका। फिर से कोशिश करने के लिए इस रूम को दोबारा इंडेक्स करें।</translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Type at least %1 characters.</source>
         <translation>कम से कम %1 अक्षर टाइप करें।</translation>
     </message>
@@ -33765,8 +33805,8 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+299"/>
-        <location filename="../qml/TimelinePane.qml" line="-6699"/>
-        <location line="+6876"/>
+        <location filename="../qml/TimelinePane.qml" line="-6702"/>
+        <location line="+6879"/>
         <source>Room</source>
         <translation>कक्ष</translation>
     </message>
@@ -33841,13 +33881,13 @@ Note: importing keys does not verify this session.</source>
         <translation>रद्द करें</translation>
     </message>
     <message>
-        <location line="-5991"/>
+        <location line="-5994"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation>प्रोफ़ाइल देखें</translation>
     </message>
     <message>
-        <location line="+5220"/>
+        <location line="+5223"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation>तस्वीरें (*.png *.jpg *.jpeg *.gif *.webp *.svg)</translation>
     </message>
@@ -33923,7 +33963,7 @@ Note: importing keys does not verify this session.</source>
         <translation>संलग्न करने के लिए फ़ाइलें छोड़ें</translation>
     </message>
     <message>
-        <location line="-5439"/>
+        <location line="-5442"/>
         <source>Join space</source>
         <translation>स्पेस में शामिल हों</translation>
     </message>

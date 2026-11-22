@@ -13,10 +13,12 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QScopeGuard>
+#include <QSemaphore>
 #include <QDir>
 #include <QSignalSpy>
 #include <QtTest/QtTest>
 
+#include <atomic>
 #include <utility>
 
 namespace {
@@ -1594,6 +1596,93 @@ private Q_SLOTS:
         QVERIFY(!bridge.playableSource(QStringLiteral("$dual")).isEmpty());
     }
 
+    void playableWritesStayInsideTheirPendingBudget()
+    {
+        FakeClient client;
+        MediaBridge bridge;
+        bridge.setClient(&client);
+        constexpr qint64 mb = 1024 * 1024;
+        const qint64 budget = 5 * mb;
+        bridge.setPlayablePendingBudgetForTest(budget);
+        QSignalSpy ready(&bridge, &MediaBridge::playableMediaReady);
+        QSignalSpy failed(&bridge, &MediaBridge::mediaFetchFailed);
+        const auto mp4 = [](qint64 size, char fill) {
+            QByteArray bytes(size, fill);
+            bytes.replace(4, 4, "ftyp");
+            return bytes;
+        };
+        const auto failedFor = [&](const QString &cacheKey) {
+            int n = 0;
+            for (const auto &args : std::as_const(failed))
+                n += args.at(0).toString() == cacheKey ? 1 : 0;
+            return n;
+        };
+
+        // No event-loop turn until the end: the writer's completions cannot
+        // land, so every admitted write stays pending (a held writer).
+        for (int i = 0; i < 10; ++i)
+            bridge.prefetchPlayable(QStringLiteral("$spec-%1").arg(i), 2 * mb);
+        qint64 peak = 0;
+        int served = 0;
+        while (served < client.fetches.size()) {
+            client.succeed(client.fetches.at(served).opId,
+                           mp4(2 * mb, char('a' + served)),
+                           QStringLiteral("video/mp4"));
+            ++served;
+            peak = qMax(peak, bridge.pendingPlayableWriteBytes());
+        }
+        QCOMPARE(served, 10);
+        QVERIFY2(peak <= budget, qPrintable(QString::number(peak)));
+        QCOMPARE(bridge.pendingPlayableWriteBytes(), 4 * mb);
+        QCOMPARE(bridge.pendingPlayableWritesForTest(), 2);
+        QCOMPARE(bridge.healthSnapshot().value(QStringLiteral("playableWritesRefused"))
+                     .toLongLong(), 8);
+
+        // A play the user asked for displaces speculative writes.
+        bridge.playableSource(QStringLiteral("$play"));
+        client.succeed(client.fetches.last().opId, mp4(3 * mb, 'p'),
+                       QStringLiteral("video/mp4"));
+        QCOMPARE(bridge.pendingPlayableWriteBytes(), 5 * mb);
+        QCOMPARE(bridge.pendingPlayableWritesForTest(), 2);
+        QCOMPARE(failedFor(QStringLiteral("full:$play")), 0);
+
+        // A second one that cannot fit is refused, not queued.
+        bridge.playableSource(QStringLiteral("$play2"));
+        client.succeed(client.fetches.last().opId, mp4(3 * mb, 'q'),
+                       QStringLiteral("video/mp4"));
+        QVERIFY(bridge.pendingPlayableWriteBytes() <= budget + 3 * mb);
+        QCOMPARE(bridge.pendingPlayableWriteBytes(), 3 * mb);
+        QCOMPARE(failedFor(QStringLiteral("full:$play2")), 1);
+
+        QVERIFY(waitForPlayableCount(ready, 1));
+        QTest::qWait(100);
+        QCOMPARE(ready.count(), 1);
+        QCOMPARE(ready.at(0).at(0).toString(), QStringLiteral("full:$play"));
+        QCOMPARE(bridge.pendingPlayableWriteBytes(), 0);
+
+        // The refused play recovers once the writer has drained.
+        const auto fetchesBefore = client.fetches.size();
+        QVERIFY(bridge.playableSource(QStringLiteral("$play2")).isEmpty());
+        QCOMPARE(client.fetches.size(), fetchesBefore);
+        QVERIFY(waitForPlayableCount(ready, 2));
+        QVERIFY(!bridge.playableSource(QStringLiteral("$play2")).isEmpty());
+
+        // Signing out while a write is pending returns its reservation.
+        bridge.playableSource(QStringLiteral("$play3"));
+        client.succeed(client.fetches.last().opId, mp4(3 * mb, 'r'),
+                       QStringLiteral("video/mp4"));
+        QCOMPARE(bridge.pendingPlayableWriteBytes(), 3 * mb);
+        bridge.clear();
+        QCOMPARE(bridge.pendingPlayableWriteBytes(), 0);
+        QTest::qWait(100);
+        QCOMPARE(ready.count(), 2);
+        QVERIFY(bridge.playableSource(QStringLiteral("$play3")).isEmpty());
+        client.succeed(client.fetches.last().opId, mp4(3 * mb, 'r'),
+                       QStringLiteral("video/mp4"));
+        QVERIFY(waitForPlayableCount(ready, 3));
+        QCOMPARE(bridge.pendingPlayableWriteBytes(), 0);
+    }
+
     void aWriteStartedBeforeSignOutPublishesNothing()
     {
         FakeClient client;
@@ -2365,6 +2454,71 @@ private Q_SLOTS:
                  QFileInfo(root.filePath(leaf)).canonicalFilePath());
     }
 
+    void aSaveIsWrittenOffTheCallingThreadAndEndsOnce()
+    {
+        QTemporaryDir dir;
+        QVERIFY(dir.isValid());
+        FakeClient client;
+        MediaBridge bridge;
+        bridge.setClient(&client);
+        QSemaphore gate;
+        const auto openGate = qScopeGuard([&] { gate.release(16); });
+        std::atomic<int> writes{0};
+        std::atomic<int> writesOnCaller{0};
+        QThread *const caller = QThread::currentThread();
+        bridge.setSaveWriteHookForTest([&] {
+            if (QThread::currentThread() == caller)
+                ++writesOnCaller;
+            ++writes;
+            gate.acquire();
+        });
+        QSignalSpy saved(&bridge, &MediaBridge::saveFinished);
+        QSignalSpy completed(&bridge, &MediaBridge::saveCompleted);
+        int beats = 0;
+        QTimer heartbeat;
+        heartbeat.setInterval(5);
+        connect(&heartbeat, &QTimer::timeout, [&] { ++beats; });
+
+        // A slow write: the caller returns, the event loop keeps turning, and
+        // the save stays listed until its one terminal signal.
+        bridge.saveAs(QStringLiteral("$a"),
+                      QUrl::fromLocalFile(dir.filePath(QStringLiteral("a.bin"))));
+        client.succeed(client.fetches.at(0).opId, QByteArray("payload-a"),
+                       QStringLiteral("application/octet-stream"));
+        QCOMPARE(saved.count(), 0);
+        QTRY_COMPARE(writes.load(), 1);
+        heartbeat.start();
+        QTRY_VERIFY(beats >= 3);
+        QCOMPARE(saved.count(), 0);
+        QCOMPARE(bridge.savingKeys(), QStringList{QStringLiteral("$a")});
+        gate.release();
+        QTRY_COMPARE(saved.count(), 1);
+        QTest::qWait(20);
+        QCOMPARE(saved.count(), 1);
+        QVERIFY(saved.at(0).at(0).toBool());
+        QCOMPARE(completed.count(), 1);
+        QFile a(dir.filePath(QStringLiteral("a.bin")));
+        QVERIFY(a.open(QIODevice::ReadOnly));
+        QCOMPARE(a.readAll(), QByteArray("payload-a"));
+        QVERIFY(bridge.savingKeys().isEmpty());
+
+        // Cancel while the write is blocked: one terminal signal, no file.
+        bridge.saveInto(QStringLiteral("$b"), dir.path(), QStringLiteral("b.bin"));
+        client.succeed(client.fetches.at(1).opId, QByteArray("payload-b"),
+                       QStringLiteral("application/octet-stream"));
+        QTRY_COMPARE(writes.load(), 2);
+        bridge.cancelSave(QStringLiteral("$b"));
+        QCOMPARE(saved.count(), 2);
+        QVERIFY(!saved.at(1).at(0).toBool());
+        gate.release();
+        QTest::qWait(150);
+        QCOMPARE(saved.count(), 2);
+        QCOMPARE(completed.count(), 1);
+        QCOMPARE(QDir(dir.path()).entryList(QDir::Files),
+                 QStringList{QStringLiteral("a.bin")});
+        QCOMPARE(writesOnCaller.load(), 0);
+    }
+
     void clearingTheSessionDropsTheSaveList()
     {
         QTemporaryDir dir;
@@ -2383,24 +2537,65 @@ private Q_SLOTS:
     {
         QTemporaryDir dir;
         QVERIFY(dir.isValid());
-        QDir(dir.path()).mkpath(QStringLiteral("sub"));
-        const QString outside = dir.path() + QStringLiteral("/pwned.txt");
+        // A user-chosen path is resolved, so outer/sub/../pwned.txt is
+        // outer/pwned.txt; dir/ holds a sentinel of that name one level up.
+        const QString outer = dir.filePath(QStringLiteral("outer"));
+        QVERIFY(QDir().mkpath(outer + QStringLiteral("/sub")));
+        const QString sentinel = dir.filePath(QStringLiteral("pwned.txt"));
+        {
+            QFile file(sentinel);
+            QVERIFY(file.open(QIODevice::WriteOnly));
+            file.write("sentinel");
+        }
 
         FakeClient client;
         MediaBridge bridge;
         bridge.setClient(&client);
         QSignalSpy saved(&bridge, &MediaBridge::saveFinished);
+        QSignalSpy completed(&bridge, &MediaBridge::saveCompleted);
 
-        const QUrl destination = QUrl::fromLocalFile(
-            dir.path() + QStringLiteral("/sub/../pwned.txt"));
-        bridge.saveAs(QStringLiteral("$ev"), destination);
+        const auto expectSavedOnceInOuter = [&](const QString &why) {
+            QVERIFY2(saved.count() > 0 || saved.wait(3000), qPrintable(why));
+            QTest::qWait(20);
+            QCOMPARE(saved.count(), 1);
+            QVERIFY2(saved.at(0).at(0).toBool(), qPrintable(why));
+            QCOMPARE(completed.count(), 1);
+            const QString expected = QDir(outer).filePath(QStringLiteral("pwned.txt"));
+            QCOMPARE(QFileInfo(completed.at(0).at(1).toString()).canonicalFilePath(),
+                     QFileInfo(expected).canonicalFilePath());
+            QFile written(expected);
+            QVERIFY(written.open(QIODevice::ReadOnly));
+            QCOMPARE(written.readAll(), QByteArray("payload"));
+            QCOMPARE(QDir(outer + QStringLiteral("/sub"))
+                         .entryList(QDir::AllEntries | QDir::NoDotAndDotDot),
+                     QStringList());
+            QCOMPARE(QDir(outer).entryList(QDir::Files),
+                     QStringList{QStringLiteral("pwned.txt")});
+            QFile untouched(sentinel);
+            QVERIFY(untouched.open(QIODevice::ReadOnly));
+            QCOMPARE(untouched.readAll(), QByteArray("sentinel"));
+            QCOMPARE(QDir(dir.path()).entryList(QDir::Files),
+                     QStringList{QStringLiteral("pwned.txt")});
+        };
+
+        bridge.saveAs(QStringLiteral("$ev"), QUrl::fromLocalFile(
+            outer + QStringLiteral("/sub/../pwned.txt")));
         QCOMPARE(client.fetches.size(), 1);
         client.succeed(client.fetches.at(0).opId, QByteArray("payload"),
                        QStringLiteral("text/plain"));
-        QVERIFY(saved.wait(3000) || saved.count() > 0);
+        expectSavedOnceInOuter(QStringLiteral("user-chosen path"));
 
-        QVERIFY2(!QFileInfo::exists(outside + QStringLiteral(".escaped")),
-                 "the leaf escaped the resolved directory");
+        // A sender-provided leaf is reduced to its last component, never
+        // resolved against the folder.
+        QVERIFY(QFile::remove(QDir(outer).filePath(QStringLiteral("pwned.txt"))));
+        saved.clear();
+        completed.clear();
+        bridge.saveInto(QStringLiteral("$ev2"), outer,
+                        QStringLiteral("../pwned.txt"));
+        QCOMPARE(client.fetches.size(), 2);
+        client.succeed(client.fetches.at(1).opId, QByteArray("payload"),
+                       QStringLiteral("text/plain"));
+        expectSavedOnceInOuter(QStringLiteral("sender leaf"));
     }
 
     void thumbPayloadSniffingRejectsSvgAndItsCompressedSpelling()

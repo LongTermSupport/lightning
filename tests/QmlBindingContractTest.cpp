@@ -160,6 +160,17 @@ private Q_SLOTS:
             "ToolTip.text: qsTr(\"Open room\")")));
     }
 
+    void savedPreviewsFollowTheViewportAndStopOnClose()
+    {
+        const QString saved = read(QStringLiteral("SavedMessagesPanel.qml"));
+        QVERIFY(!saved.isEmpty());
+        const int closed = saved.indexOf(QStringLiteral("onClosed:"));
+        QVERIFY(closed >= 0);
+        QVERIFY(saved.mid(closed, 120).contains(QStringLiteral("pauseResolving()")));
+        QVERIFY(saved.contains(QStringLiteral("onContentYChanged: root.scheduleResolve()")));
+        QVERIFY(saved.contains(QStringLiteral("saved.resolveVisible(first, last)")));
+    }
+
     void presetDescriptionMatchesCozySmallAvatarRhythm()
     {
         const QString settings = read(QStringLiteral("SettingsScreen.qml"));

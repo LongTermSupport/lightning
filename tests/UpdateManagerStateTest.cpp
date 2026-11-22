@@ -18,6 +18,10 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QLockFile>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QPointer>
+#include <QTimer>
 #include <QSettings>
 #include <QSignalSpy>
 #include <QStandardPaths>
@@ -27,6 +31,7 @@
 
 #include <openssl/evp.h>
 
+#include <cstring>
 #include <memory>
 #include <optional>
 
@@ -36,6 +41,73 @@ using lightning::update::TrustStore;
 using lightning::update::UpdateManager;
 
 namespace {
+
+// A reply the test drives by hand: status, body chunks and completion.
+class ScriptedReply final : public QNetworkReply
+{
+public:
+    ScriptedReply(const QNetworkRequest &request, QObject *parent)
+        : QNetworkReply(parent)
+    {
+        setRequest(request);
+        setUrl(request.url());
+        setOperation(QNetworkAccessManager::GetOperation);
+        open(QIODevice::ReadOnly);
+    }
+    void respond(int status, const QUrl &location = {})
+    {
+        setAttribute(QNetworkRequest::HttpStatusCodeAttribute, status);
+        if (location.isValid())
+            setHeader(QNetworkRequest::LocationHeader, location);
+    }
+    void feed(const QByteArray &bytes)
+    {
+        m_pending += bytes;
+        Q_EMIT readyRead();
+    }
+    void complete()
+    {
+        setFinished(true);
+        Q_EMIT finished();
+    }
+    void abort() override { aborted = true; }
+    qint64 bytesAvailable() const override
+    {
+        return m_pending.size() + QIODevice::bytesAvailable();
+    }
+    bool isSequential() const override { return true; }
+
+    bool aborted = false;
+    qint64 consumed = 0;
+
+protected:
+    qint64 readData(char *data, qint64 maxSize) override
+    {
+        const qint64 n = qMin<qint64>(maxSize, m_pending.size());
+        memcpy(data, m_pending.constData(), static_cast<size_t>(n));
+        m_pending.remove(0, n);
+        consumed += n;
+        return n;
+    }
+
+private:
+    QByteArray m_pending;
+};
+
+class ScriptedNetwork final : public QNetworkAccessManager
+{
+public:
+    QList<QPointer<ScriptedReply>> replies;
+
+protected:
+    QNetworkReply *createRequest(Operation, const QNetworkRequest &request,
+                                 QIODevice *) override
+    {
+        auto *reply = new ScriptedReply(request, this);
+        replies.append(reply);
+        return reply;
+    }
+};
 
 class FixedTrustStore final : public TrustStore
 {
@@ -436,6 +508,8 @@ private slots:
     void aValidManifestFromGitlabComIsOffered();
     void gitlabComAddressesAreCompileTimeConstants();
     void theGitlabComFetcherAndDownloaderStayOnGitlabCom();
+    void aTrickleThatBeatsTheStallTimerStillEndsAtTheDeadline();
+    void aStreamingRedirectBodyIsCappedAndASmallChainFollows();
     void gitlabComIsTriedBeforeTheCanonicalSource();
     void aHashMismatchFromGitlabComFallsThroughToTheCanonicalSource();
     void aHashMismatchFromTheCanonicalSourceIsFinal();
@@ -2519,6 +2593,98 @@ void UpdateManagerStateTest::theStagedHelperLandsOutsideTheInstallationWithItsLi
     QVERIFY(UpdateManager::stageHelperOutsideInstallation(absent, installDir, &error)
                 .isEmpty());
     QVERIFY(!error.isEmpty());
+}
+
+void UpdateManagerStateTest::aTrickleThatBeatsTheStallTimerStillEndsAtTheDeadline()
+{
+    namespace u = lightning::update;
+    using lightning::update::TransferError;
+    ScriptedNetwork network;
+    u::UpdateDocumentFetcher fetcher(&network);
+    fetcher.setDeadlineMsForTest(300);
+    int calls = 0;
+    TransferError seen = TransferError::None;
+    QObject::connect(&fetcher, &u::UpdateTransferBase::finished,
+                     [&](bool, TransferError error, const QString &) {
+                         ++calls;
+                         seen = error;
+                     });
+    fetcher.start(u::gitlabComManifestUrl(), 1024 * 1024, QByteArrayLiteral("ua"));
+    QCOMPARE(network.replies.size(), 1);
+    QPointer<ScriptedReply> reply = network.replies.at(0);
+    reply->respond(200);
+
+    int fed = 0;
+    QTimer trickle;
+    trickle.setInterval(20);
+    QObject::connect(&trickle, &QTimer::timeout, [&] {
+        if (reply && !reply->aborted && calls == 0) {
+            reply->feed(QByteArrayLiteral("x"));
+            ++fed;
+        }
+    });
+    trickle.start();
+    QTRY_COMPARE_WITH_TIMEOUT(calls, 1, 10000);
+    QCOMPARE(seen, TransferError::Stalled);
+    QVERIFY(fed > 1);
+    QVERIFY(!reply || reply->aborted);
+    QTest::qWait(100);
+    QCOMPARE(calls, 1);
+    QCOMPARE(network.replies.size(), 1);
+}
+
+void UpdateManagerStateTest::aStreamingRedirectBodyIsCappedAndASmallChainFollows()
+{
+    namespace u = lightning::update;
+    using lightning::update::TransferError;
+    const QUrl start = u::gitlabComManifestUrl();
+    {
+        ScriptedNetwork network;
+        u::UpdateDocumentFetcher fetcher(&network);
+        int calls = 0;
+        TransferError seen = TransferError::None;
+        QObject::connect(&fetcher, &u::UpdateTransferBase::finished,
+                         [&](bool, TransferError error, const QString &) {
+                             ++calls;
+                             seen = error;
+                         });
+        fetcher.start(start, 1024 * 1024, QByteArrayLiteral("ua"));
+        QPointer<ScriptedReply> reply = network.replies.at(0);
+        reply->respond(302, start);
+        for (int i = 0; i < 64 && reply && !reply->aborted; ++i)
+            reply->feed(QByteArray(16 * 1024, 'r'));
+        QCOMPARE(calls, 1);
+        QCOMPARE(seen, TransferError::Network);
+        QVERIFY(!reply || reply->aborted);
+        QVERIFY(!reply || reply->consumed <= 80 * 1024);
+        QCOMPARE(network.replies.size(), 1);
+    }
+    {
+        ScriptedNetwork network;
+        u::UpdateDocumentFetcher fetcher(&network);
+        int calls = 0;
+        bool ok = false;
+        QObject::connect(&fetcher, &u::UpdateTransferBase::finished,
+                         [&](bool success, TransferError, const QString &) {
+                             ++calls;
+                             ok = success;
+                         });
+        fetcher.start(start, 1024 * 1024, QByteArrayLiteral("ua"));
+        for (int hop = 0; hop < 2; ++hop) {
+            ScriptedReply *redirect = network.replies.at(hop);
+            redirect->respond(302, start);
+            redirect->feed(QByteArrayLiteral("<html>moved</html>"));
+            redirect->complete();
+            QCOMPARE(network.replies.size(), hop + 2);
+        }
+        ScriptedReply *last = network.replies.at(2);
+        last->respond(200);
+        last->feed(QByteArrayLiteral("{\"doc\":1}"));
+        last->complete();
+        QCOMPARE(calls, 1);
+        QVERIFY(ok);
+        QCOMPARE(fetcher.document(), QByteArrayLiteral("{\"doc\":1}"));
+    }
 }
 
 QTEST_GUILESS_MAIN(UpdateManagerStateTest)

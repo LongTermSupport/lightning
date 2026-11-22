@@ -126,7 +126,14 @@ public:
     {
         Q_EMIT roomExportPage(op, QStringLiteral("!r:example.org"), rows,
                               rows.size(), rows.size(), 0, done,
-                              done ? stop : QString(), false);
+                              done ? stop : QString(), false, 0);
+    }
+    void pageWithUnresolvedEdits(quint64 op, const QVariantList &rows,
+                                 qint64 unresolved)
+    {
+        Q_EMIT roomExportPage(op, QStringLiteral("!r:example.org"), rows,
+                              rows.size(), rows.size(), 0, true,
+                              QStringLiteral("start"), false, unresolved);
     }
     void ready(quint64 op, const QByteArray &bytes)
     {
@@ -677,6 +684,41 @@ private Q_SLOTS:
         QVERIFY(file.open(QIODevice::ReadOnly));
         const QString page = QString::fromUtf8(file.readAll());
         QVERIFY(!page.contains(QStringLiteral("the secret plan")));
+    }
+
+    void editsTheWalkCouldNotApplyAreReportedInTheResult()
+    {
+        QTemporaryDir dir;
+        const QString path = dir.filePath(QStringLiteral("out.txt"));
+        FakeClient client;
+        RoomExportController controller;
+        controller.setClient(&client);
+        QSignalSpy finished(&controller, &RoomExportController::finished);
+        RoomExportController::Job job = htmlJob(path);
+        job.format = roomexport::Format::PlainText;
+        QCOMPARE(controller.start(job), QString());
+        client.pageWithUnresolvedEdits(
+            client.walkOp,
+            { walkRow(QStringLiteral("$1"), QStringLiteral("text"), 1000,
+                      QStringLiteral("hello")) },
+            3);
+        QTRY_COMPARE(finished.size(), 1);
+        QVERIFY(finished.first().at(0).toBool());
+        const QString message = finished.first().at(1).toString();
+        QVERIFY2(message.contains(QStringLiteral("3 edit")), qPrintable(message));
+        QVERIFY2(message.contains(QStringLiteral("original form")), qPrintable(message));
+        QCOMPARE(controller.resultMessage(), message);
+
+        QSignalSpy again(&controller, &RoomExportController::finished);
+        QCOMPARE(controller.start(job), QString());
+        client.pageWithUnresolvedEdits(
+            client.walkOp,
+            { walkRow(QStringLiteral("$1"), QStringLiteral("text"), 1000,
+                      QStringLiteral("hello")) },
+            0);
+        QTRY_COMPARE(again.size(), 1);
+        QVERIFY2(!again.first().at(1).toString().contains(QStringLiteral("edit")),
+                 qPrintable(again.first().at(1).toString()));
     }
 
     void theLoadedRangeNeedsNoWalk()

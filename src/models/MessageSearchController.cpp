@@ -134,6 +134,7 @@ void MessageSearchController::setClient(MatrixClient *client)
     m_client = client;
     m_sweepOp = 0;
     m_deepOp = 0;
+    m_indexWriteFailed = false;
     m_backgroundIndex.stop();
     m_backgroundIndexSpent = false;
     clear();
@@ -176,11 +177,14 @@ void MessageSearchController::setClient(MatrixClient *client)
     connect(m_client, &MatrixClient::searchIndexDeepened, this,
             [this](quint64 opId, bool ok, const QString &roomId, int,
                    bool reachedStart, int written, qint64 messages,
-                   const QString &) {
+                   const QString &category) {
         if (opId != m_deepOp)
             return;
         m_deepOp = 0;
-        m_indexedMessages = messages;
+        m_indexWriteFailed = !ok && category == QLatin1String("local_storage");
+        // A failed walk reports no count, not an empty index.
+        if (ok)
+            m_indexedMessages = messages;
         Q_EMIT indexingChanged();
         Q_EMIT indexStatsChanged();
         Q_EMIT roomHistoryIndexed(roomId, ok, reachedStart, written);
@@ -247,9 +251,10 @@ void MessageSearchController::setClient(MatrixClient *client)
         resetIndexAll();
         m_backgroundIndex.stop();
         m_backgroundIndexSpent = false;
-        if (m_sweepOp != 0 || m_deepOp != 0) {
+        if (m_sweepOp != 0 || m_deepOp != 0 || m_indexWriteFailed) {
             m_sweepOp = 0;
             m_deepOp = 0;
+            m_indexWriteFailed = false;
             Q_EMIT indexingChanged();
         }
         setProperty(kIgnoredUsersProperty, QStringList());
@@ -320,8 +325,10 @@ void MessageSearchController::indexRoomHistory(const QString &roomId)
     if (!m_client || roomId.isEmpty() || m_deepOp != 0)
         return;
     m_deepOp = m_client->deepenSearchIndex(roomId);
-    if (m_deepOp != 0)
+    if (m_deepOp != 0) {
+        m_indexWriteFailed = false;
         Q_EMIT indexingChanged();
+    }
     else
         Q_EMIT roomHistoryIndexed(roomId, false, false, 0);
 }

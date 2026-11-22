@@ -2,9 +2,11 @@
 #include "matrix/MatrixClient.h"
 #include "media/ImageFormatSupport.h"
 #include "media/ImageMetadata.h"
+#include "media/ImageSendPrep.h"
 #include "media/StagedImageStore.h"
 #include "media/SvgRasterJob.h"
 #include "models/MessageComposer.h"
+#include "storage/PortableMode.h"
 
 #include <QBuffer>
 #include <QImage>
@@ -375,6 +377,53 @@ private Q_SLOTS:
         const QByteArray code = source.readAll();
         QVERIFY(code.contains("lightning::scratch::ScratchFile file(path)"));
         QVERIFY(!code.contains("QSaveFile file(path)"));
+    }
+
+    void strippedImagesLiveUnderTheMediaScratchRootAndOnlyCrashLeftoversAreSwept()
+    {
+        QTemporaryDir root;
+        QTemporaryDir source;
+        QVERIFY(root.isValid() && source.isValid());
+        lightning::portable::setMediaScratchRootOverrideForTest(root.path());
+        const auto restore = qScopeGuard(
+            [] { lightning::portable::setMediaScratchRootOverrideForTest({}); });
+        const QString original =
+            writeFile(source, QStringLiteral("holiday.jpg"), jpegWithGps());
+
+        QString sub;
+        {
+            ImageSendPrep prep;
+            QString path = original;
+            QByteArray data;
+            QVERIFY(prep.prepare(QStringLiteral("all"), QStringLiteral("image/jpeg"),
+                                 path, data, &sub));
+            QVERIFY(path != original);
+            QVERIFY(!sub.isEmpty());
+            const QString canonicalRoot = QDir(root.path()).canonicalPath();
+            QVERIFY2(QFileInfo(path).canonicalFilePath().startsWith(canonicalRoot + QLatin1Char('/')),
+                     qPrintable(path));
+            QVERIFY(!readAll(path).contains(kGpsMarker));
+            const QStringList dirs =
+                QDir(root.path()).entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+            QCOMPARE(dirs.size(), 1);
+            QVERIFY(dirs.at(0).startsWith(QStringLiteral("lightning-stripped-")));
+
+            // A live instance's directory survives the startup sweep.
+            QCOMPARE(lightning::portable::cleanStaleTempDirs(
+                         QDateTime::currentDateTimeUtc().addDays(2)), 0);
+            QVERIFY(QFileInfo::exists(path));
+        }
+        QCOMPARE(QDir(root.path()).entryList(QDir::Dirs | QDir::NoDotAndDotDot),
+                 QStringList());
+
+        // A crashed run's directory (no live holder) is swept.
+        const QString crashed =
+            QDir(root.path()).filePath(QStringLiteral("lightning-stripped-crash1"));
+        QVERIFY(QDir().mkpath(crashed + QStringLiteral("/1")));
+        QCOMPARE(lightning::portable::cleanStaleTempDirs(
+                     QDateTime::currentDateTimeUtc().addDays(2)), 1);
+        QVERIFY(!QFileInfo::exists(crashed));
+        QCOMPARE(readAll(original), jpegWithGps());
     }
 
     void editedImagePreviewIsExactlyTheSentFileAndOriginalSurvives()
@@ -1234,6 +1283,46 @@ private Q_SLOTS:
         QCOMPARE(client.lastDurationMs, 4200);
         QCOMPARE(client.lastThumbWidth * client.lastVideoHeight,
                  client.lastThumbHeight * client.lastVideoWidth);
+    }
+
+    void removingAnAttachmentCancelsItsPosterJobAndParkingDoesNot()
+    {
+        FakeClient client;
+        MessageComposer composer;
+        composer.setClient(&client);
+        composer.setRoomId(QStringLiteral("!room:example.org"));
+        AttachmentQueueModel *model = composer.attachments();
+        QStringList requested;
+        QStringList cancelled;
+        model->setPosterRequestHook(
+            [&requested](const QString &tag, const QString &) { requested.append(tag); });
+        model->setPosterCancelHook(
+            [&cancelled](const QString &tag) { cancelled.append(tag); });
+
+        QTemporaryDir dir;
+        for (int i = 0; i < 5; ++i)
+            composer.addAttachment(QUrl::fromLocalFile(writeFile(
+                dir, QStringLiteral("clip%1.mp4").arg(i), tinyMp4Header())));
+        QCOMPARE(model->rowCount(), 5);
+        QCOMPARE(requested.size(), 5);
+        const QStringList tags = requested;
+
+        model->applyPoster(tags.at(4), {}, {}, {}, 1000);
+        model->removeAt(4);
+        model->removeAt(0);
+        model->removeAt(0);
+        QCOMPARE(cancelled, (QStringList{tags.at(0), tags.at(1)}));
+
+        const QList<AttachmentQueueModel::Entry> taken = model->takeAll();
+        QCOMPARE(taken.size(), 2);
+        QCOMPARE(cancelled.size(), 2);
+        model->restoreEntries(taken);
+        QCOMPARE(cancelled.size(), 2);
+        QCOMPARE(requested.mid(5), (QStringList{tags.at(2), tags.at(3)}));
+
+        composer.discardAllAttachments();
+        QCOMPARE(model->rowCount(), 0);
+        QCOMPARE(cancelled, (QStringList{tags.at(0), tags.at(1), tags.at(2), tags.at(3)}));
     }
 
     void videoSendsWithoutPosterWhenExtractionFails()

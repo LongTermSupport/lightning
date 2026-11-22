@@ -510,6 +510,42 @@ private Q_SLOTS:
     }
 
 #ifdef Q_OS_UNIX
+    void theHelpersScratchIsHeldLiveWhileItRuns()
+    {
+        ShHelper sh;
+        if (!sh.ok() || !svg::available())
+            QSKIP("no sh, or no Qt SVG");
+        QTemporaryDir root;
+        QVERIFY(root.isValid());
+        QStringList held;
+        QStringList released;
+        QStringList seenByHelper;
+        svg::hooks().scratchRoot = [&root] { return root.path(); };
+        svg::hooks().holdScratchDir = [&](const QString &dir) {
+            held << dir;
+            QVERIFY(QFileInfo(dir + QStringLiteral("/in.svg")).isFile());
+        };
+        svg::hooks().releaseScratchDir = [&](const QString &dir) {
+            released << dir;
+        };
+        svg::hooks().program = sh.program;
+        svg::hooks().args = { QStringLiteral("-c"), QStringLiteral("exit 3") };
+
+        QObject context;
+        bool done = false;
+        svg::rasterizeAsync(doc("viewBox=\"0 0 4 4\"", "<rect width=\"4\" height=\"4\"/>"),
+                            svg::attachmentPolicy(), &context,
+                            [&](const svg::Result &) {
+                                seenByHelper = held;
+                                done = true;
+                            });
+        QTRY_VERIFY_WITH_TIMEOUT(done, 10000);
+        QCOMPARE(seenByHelper.size(), 1);
+        QVERIFY2(seenByHelper.first().startsWith(root.path() + QStringLiteral("/lightning-svg-")),
+                 qPrintable(seenByHelper.first()));
+        QCOMPARE(released, held);
+    }
+
     void aHelperPastItsTimeoutIsKilled()
     {
         ShHelper sh;

@@ -23,16 +23,35 @@ Dialog {
     }
     onOpened: {
         if (saved) saved.refreshPreviews()
+        root.scheduleResolve()
         searchField.forceActiveFocus(Qt.PopupFocusReason)
+    }
+    onClosed: if (saved) saved.pauseResolving()
+    function scheduleResolve() {
+        Qt.callLater(root.resolveShownRows)
+    }
+    function resolveShownRows() {
+        if (!root.opened || !root.saved)
+            return
+        var top = savedList.contentY
+        var bottom = top + Math.max(0, savedList.height - 1)
+        var first = savedList.indexAt(0, top)
+        if (first < 0)
+            first = savedList.indexAt(0, top + savedList.spacing)
+        var last = savedList.indexAt(0, bottom)
+        if (last < 0)
+            last = savedList.indexAt(0, bottom - savedList.spacing)
+        if (last < 0 && savedList.contentHeight <= savedList.height)
+            last = savedList.count - 1
+        first = Math.max(0, first)
+        last = Math.max(first, last)
+        root.saved.resolveVisible(first, last)
     }
     Connections {
         target: root.saved
         function onChanged() {
-            if (root.opened && root.saved)
-                Qt.callLater(function() {
-                    if (root.opened && root.saved)
-                        root.saved.resolveVisible()
-                })
+            if (root.opened)
+                root.scheduleResolve()
         }
     }
     background: Rectangle {
@@ -157,6 +176,33 @@ Dialog {
                   ? qsTr("No saved messages match these filters.")
                   : qsTr("No saved messages yet. Use Save message on a message to add one.")
         }
+        RowLayout {
+            Layout.fillWidth: true
+            visible: root.saved && (root.saved.query !== "" || root.saved.typeFilter !== "")
+                     && root.saved.unsearchedCount > 0
+            Label {
+                objectName: "savedMessagesSearchCoverage"
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
+                color: AppTheme.stormTextMuted
+                font.pixelSize: AppTheme.textMeta
+                text: !root.saved ? ""
+                      : root.saved.searchLoading
+                        ? qsTr("Loading %n more saved message(s) to search…", "",
+                               root.saved.unsearchedCount)
+                        : qsTr("%n saved message(s) not loaded, so this filter cannot search them.",
+                               "", root.saved.unsearchedCount)
+            }
+            AppButton {
+                objectName: "savedMessagesSearchLoadToggle"
+                visible: root.saved && (root.saved.searchLoading || root.saved.searchPaused)
+                storm: true
+                kind: "ghost"
+                size: "sm"
+                text: root.saved && root.saved.searchLoading ? qsTr("Stop") : qsTr("Load all")
+                onClicked: root.saved.searchPaused = root.saved.searchLoading
+            }
+        }
         AppButton {
             objectName: "savedMessagesClearFilters"
             visible: root.saved && root.saved.loaded && root.saved.count > 0
@@ -185,6 +231,8 @@ Dialog {
                 if (currentItem) currentItem.openEvent()
             }
             ScrollBar.vertical: ScrollBar { }
+            onContentYChanged: root.scheduleResolve()
+            onHeightChanged: root.scheduleResolve()
             delegate: Rectangle {
                 id: savedRow
                 required property int index

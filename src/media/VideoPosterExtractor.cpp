@@ -98,6 +98,15 @@ void VideoPosterExtractor::requestPoster(const QString &tag,
     });
 }
 
+void VideoPosterExtractor::cancel(const QString &tag)
+{
+    if (tag.isEmpty())
+        return;
+    QMetaObject::invokeMethod(m_worker, [worker = m_worker, tag] {
+        worker->cancel(tag);
+    });
+}
+
 void VideoPosterExtractor::warmUp()
 {
     QMetaObject::invokeMethod(m_worker,
@@ -134,6 +143,19 @@ void VideoPosterWorker::enqueue(const QString &tag, const QString &filePath)
     m_queue.append({tag, filePath});
     if (!m_active)
         startNext();
+}
+
+void VideoPosterWorker::cancel(const QString &tag)
+{
+    m_queue.removeIf([&](const Job &job) { return job.tag == tag; });
+    if (!m_active || m_activeTag != tag)
+        return;
+    m_timeout->stop();
+    m_active = false;
+    m_activeTag.clear();
+    m_durationMs = 0;
+    teardownPlayer();
+    startNext();
 }
 
 void VideoPosterWorker::warmUp()

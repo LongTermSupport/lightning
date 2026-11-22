@@ -136,6 +136,7 @@ public:
     QString lastThreadSendBodyForTest() const { return m_lastThreadSendBody; }
     QString lastThreadSendReplyToForTest() const
     { return m_lastThreadSendReplyTo; }
+    QVariantMap lastThreadSendSpecForTest() const { return m_lastThreadSendSpec; }
     // Event context view: opt-in so suites written against the history walk
     // keep their behaviour. The window is a slice of the room's own mock
     // timeline around the event (kContextRadius each side by default).
@@ -162,6 +163,17 @@ public:
                            const QString &inReplyToEventId,
                            const QString &body,
                            const QStringList &mentionUserIds) override;
+    void sendThreadReplyTo(const QString &roomId,
+                           const QString &threadRootEventId,
+                           const QString &inReplyToEventId,
+                           const QString &body,
+                           const QStringList &mentionUserIds,
+                           const QVariantMap &bodySpec) override
+    {
+        m_lastThreadSendSpec = bodySpec;
+        sendThreadReplyTo(roomId, threadRootEventId, inReplyToEventId, body,
+                          mentionUserIds);
+    }
     bool supportsAttachmentSend() const override { return true; }
     quint64 sendThreadAttachment(const QString &roomId,
                                  const QString &rootEventId,
@@ -358,6 +370,7 @@ private:
     QString m_lastThreadSendRoot;
     QString m_lastThreadSendBody;
     QString m_lastThreadSendReplyTo;
+    QVariantMap m_lastThreadSendSpec;
 
     struct DemoAccount {
         QString userId;
@@ -552,6 +565,8 @@ public:
     QStringList forgottenIndexRooms;
     int indexSweeps = 0;
     QStringList deepIndexedRooms;
+    // The next walk ends as the Rust bridge reports a refused index write.
+    QString deepIndexFailureForTest;
     bool indexCleared = false;
     quint64 searchMessages(const QString &term, const QString &roomId,
                            const QString &nextBatch, int limit,

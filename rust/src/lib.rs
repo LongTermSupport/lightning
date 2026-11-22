@@ -7883,14 +7883,14 @@ pub unsafe extern "C" fn mx_rust_media_history_page(
                         undecryptable += 1;
                     }
                     if !found.entries.is_empty() {
-                        if let (Some(media), Some(event_id)) = (
+                        if let (Some(media), Some(key)) = (
                             found.attachment.as_ref()
                                 .and_then(mediahistory::stored_media_from_content),
-                            value.get("event_id").and_then(|v| v.as_str()),
+                            found.entries.first().map(|e| e.media_key.clone()),
                         ) {
-                            timelines.remember_media(event_id.to_owned(), media);
+                            timelines.remember_media(key.clone(), media);
                             if private_room {
-                                timelines.mark_media_from_encrypted_room(event_id);
+                                timelines.mark_media_from_encrypted_room(&key);
                             }
                         }
                     }

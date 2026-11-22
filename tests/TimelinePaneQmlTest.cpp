@@ -10107,6 +10107,54 @@ false);
         QCOMPARE(mock->deepIndexedRooms.last(), roomId);
     }
 
+    void aRefusedIndexWriteIsSaidInTheFindBar()
+    {
+        AppController controller(AppController::MockBackend);
+        QVERIFY(!loginAndRoomIdAt(controller,0).isEmpty());
+        const QString roomId = QStringLiteral("!general:mock.local");
+        QQmlApplicationEngine engine;
+        QQuickWindow window;
+        QQuickItem *timeline = nullptr;
+        QQuickItem *root = paneWithEvents(
+            controller, engine, window, roomId,
+            textFixture(roomId, 6, QStringLiteral("d"), QStringLiteral("body")),
+0,700, &timeline);
+        QVERIFY(root != nullptr);
+        auto *mock = controller.findChild<MockMatrixClient *>();
+        QVERIFY(mock != nullptr);
+
+        QMetaObject::invokeMethod(root, "openFind");
+        QTest::qWait(50);
+        auto *toggle = root->findChild<QQuickItem *>(
+            QStringLiteral("findModeToggle"));
+        QVERIFY(toggle != nullptr);
+        QMetaObject::invokeMethod(toggle, "activated",
+                                  Q_ARG(QVariant, QStringLiteral("history")));
+        QTest::qWait(50);
+        auto *coverage = root->findChild<QQuickItem *>(
+            QStringLiteral("findLocalCoverage"));
+        auto *button = root->findChild<QQuickItem *>(
+            QStringLiteral("findIndexRoomButton"));
+        QVERIFY(coverage != nullptr && button != nullptr);
+        QTRY_VERIFY(coverage->isVisible());
+
+        mock->deepIndexFailureForTest = QStringLiteral("local_storage");
+        const int before = mock->deepIndexedRooms.size();
+        QMetaObject::invokeMethod(button, "click");
+        QTRY_COMPARE(mock->deepIndexedRooms.size(), before + 1);
+        QTRY_VERIFY(!controller.messageSearch()->indexing());
+        QTRY_VERIFY2(coverage->property("text").toString().contains(
+                         QStringLiteral("could not be updated")),
+                     qPrintable(coverage->property("text").toString()));
+
+        QMetaObject::invokeMethod(button, "click");
+        QTRY_COMPARE(mock->deepIndexedRooms.size(), before + 2);
+        QTRY_VERIFY(!controller.messageSearch()->indexing());
+        QVERIFY2(!coverage->property("text").toString().contains(
+                     QStringLiteral("could not be updated")),
+                 "a walk that wrote kept the failure line");
+    }
+
     void freshShortRoomBecomesScrollableWithoutAResize()
     {
         AppController controller(AppController::MockBackend);

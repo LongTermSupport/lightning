@@ -684,6 +684,11 @@ public:
     void noteParticipantIdentity(const QString &streamId,
                                  const QString &senderName);
     std::shared_ptr<CallFrameCryptor> recvCryptorFor(const QString &name);
+    /// Drop every receive ring name and alias not in `live`. A frame already
+    /// holding a ring keeps it through shared ownership.
+    void retainReceiveNames(const QSet<QString> &live);
+    int receiveNameCountForTest() const;
+    static constexpr int kMaxReceiveRings = 1024;
     bool encryptionActive() const;
     quint64 framesEncrypted() const { return m_framesEncrypted.load(); }
     quint64 framesDecrypted() const { return m_framesDecrypted.load(); }

@@ -72,22 +72,27 @@ Lightning/
         secrets/    the saved session
         cache/
         logs/
+        temp/       session scratch media (see below)
+        update-work/  staging for an update being installed
 ```
 
 No Lightning-owned **persistent** state is written outside that tree in
 portable mode: no registry keys, no `%APPDATA%`, no `%LOCALAPPDATA%`, no
 Credential Manager.
 
-One deliberate exception, stated precisely because the marker file makes a
-claim to users: **ephemeral** media still uses the OS temporary directory
-(`QDir::tempPath()`, i.e. `%TEMP%`, which on Windows normally lives under
-`AppData\Local\Temp`). That is the decrypted payload of a video being played
-and a voice message being recorded — session-scoped, `0600`, wiped on
-sign-out, account switch and exit, and never read back on the next start. It
-is deliberately NOT routed into the portable folder: nothing needs it to
-travel, and writing decrypted media onto a USB stick would make an unwiped
-crash worse rather than better. A crash can leave one behind, exactly as it
-can for an installed build.
+Ephemeral media is inside that tree too. Every scratch file Lightning writes
+for media — the decrypted payload of a video or voice message being played, a
+voice message being recorded, animations, cropped and edited pictures, and a
+picture whose photo details were removed before sending — goes under
+`data/temp/` (`mediaScratchRoot()`), never `%TEMP%`. An installed build uses
+the OS temporary directory for the same files.
+
+Those files are owner-only where the filesystem has permissions (see below for
+FAT/exFAT and NTFS), live in a per-session `lightning-*` directory, and are
+deleted on sign-out, account switch and normal exit. A crash or power loss can
+leave one behind: the next start removes every such directory that no running
+Lightning holds. Deletion is an ordinary file delete, not a secure erase; on
+flash media the bytes may remain readable until overwritten.
 
 Windows itself still records unrelated things (SmartScreen, prefetch,
 filesystem metadata). No application can prevent that, and this document does

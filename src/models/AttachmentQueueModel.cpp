@@ -469,6 +469,16 @@ void AttachmentQueueModel::startPosterJob(int row)
     m_posterExtractor->requestPoster(entry.posterTag, entry.localPath);
 }
 
+void AttachmentQueueModel::cancelPosterJob(const Entry &entry)
+{
+    if (!entry.posterPending || entry.isSvg || entry.posterTag.isEmpty())
+        return;
+    if (m_posterCancelHook)
+        m_posterCancelHook(entry.posterTag);
+    else if (m_posterExtractor)
+        m_posterExtractor->cancel(entry.posterTag);
+}
+
 QString AttachmentQueueModel::convertedDirectory()
 {
     if (m_convertedDir && m_convertedDir->isValid())
@@ -662,6 +672,7 @@ void removeOwnedRendition(const QString &path)
 
 void AttachmentQueueModel::releaseStaged(const Entry &entry)
 {
+    cancelPosterJob(entry);
     if (m_stagedImages && !entry.stagedToken.isEmpty())
         m_stagedImages->remove(entry.stagedToken);
     if (entry.converted)

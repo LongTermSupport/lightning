@@ -152,6 +152,11 @@ public:
     {
         m_customEmojiUseRecorder = std::move(record);
     }
+    // Keys popup choices by thread draft; ThreadPanel types every thread through this composer.
+    void setThreadDraftKey(std::function<QString()> key)
+    {
+        m_threadDraftKey = std::move(key);
+    }
     void setEmoticonResolver(
         std::function<QString(const QString &shortcode)> resolve);
     Q_INVOKABLE void sendPrepared(const QString &body, const QString &html,
@@ -375,7 +380,8 @@ private:
     QList<EmoticonRef> m_emoticonRefs;
     QHash<QString, QList<EmoticonRef>> m_emoticonRefsByKey;
     void parkEmoticonRefs();
-    mutable QVariantMap m_threadEmoticonChoices;
+    mutable QHash<QString, QVariantMap> m_threadEmoticonChoices;
+    std::function<QString()> m_threadDraftKey;
     static QList<EmoticonRef> emoticonRefsFromHtml(const QString &text,
                                                    const QString &sanitizedHtml);
     static QList<EmoticonRef> shiftEmoticonRefs(const QList<EmoticonRef> &refs,

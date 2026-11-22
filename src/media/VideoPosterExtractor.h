@@ -25,6 +25,8 @@ public:
     void retireWithoutWaiting();
 
     void requestPoster(const QString &tag, const QString &filePath);
+    // Drops a queued job, or stops the active one; its result is never emitted.
+    void cancel(const QString &tag);
 
     void warmUp();
 
@@ -53,7 +55,12 @@ public:
 
 public Q_SLOTS:
     void enqueue(const QString &tag, const QString &filePath);
+    void cancel(const QString &tag);
     void warmUp();
+
+public:
+    QString activeTagForTest() const { return m_active ? m_activeTag : QString(); }
+    int queuedCountForTest() const { return static_cast<int>(m_queue.size()); }
 
 Q_SIGNALS:
     void posterReady(const QString &tag, const QByteArray &jpeg,

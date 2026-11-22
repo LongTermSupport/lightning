@@ -39,7 +39,8 @@ private:
     void reset();
     void armAnswerWatchdog(int ms);
 #ifdef HAVE_QT_DBUS
-    void selectSources(int types);
+    void negotiateSources(int types);
+    void selectSources(int types, uint cursorMode);
     void startSession();
     void handleStreams(const QVariantMap &results);
     void openRemote(unsigned nodeId);
@@ -50,5 +51,7 @@ private:
     QTimer m_answerWatchdog;
     int m_pickerBoundMs = 0;
     QString m_sessionHandle;
+    // The portal Request still awaiting its Response; closed on cancel.
+    QString m_requestPath;
     quint64 m_generation = 0;
 };
