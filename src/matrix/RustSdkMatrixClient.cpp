@@ -8709,6 +8709,25 @@ quint64 RustSdkMatrixClient::requestRoomMembers(const QString &roomId)
     return opId;
 }
 
+quint64 RustSdkMatrixClient::requestRoomMemberCheck(const QString &roomId,
+                                                    const QStringList &userIds)
+{
+    if (!m_rustHandle || roomId.isEmpty() || userIds.isEmpty())
+        return 0;
+    const quint64 opId = nextOpId();
+    const QByteArray room = roomId.toUtf8();
+    const QByteArray users =
+        QJsonDocument(QJsonArray::fromStringList(userIds))
+            .toJson(QJsonDocument::Compact);
+    const QString result = takeRustString(mx_rust_room_member_check(
+        m_rustHandle, room.constData(), users.constData(), opId));
+    if (!result.isEmpty()) {
+        qCWarning(lcRust) << "member check rejected";
+        return 0;
+    }
+    return opId;
+}
+
 quint64 RustSdkMatrixClient::requestRoomOwnPermissions(const QString &roomId)
 {
     if (!m_rustHandle || roomId.isEmpty())
@@ -12434,6 +12453,19 @@ bool RustSdkMatrixClient::handleRoomCommandEvent(const QString &type,
         }
         Q_EMIT roomOwnPermissionsReceived(
             opId(), event.value(QStringLiteral("room_id")).toString(), facts);
+        return true;
+    }
+
+    if (type == QLatin1String("room_member_check")) {
+        const auto strings = [&event](const char *key) {
+            QStringList out;
+            for (const QJsonValue &v : event.value(QLatin1String(key)).toArray())
+                out.append(v.toString());
+            return out;
+        };
+        Q_EMIT roomMemberCheckFinished(
+            opId(), event.value(QStringLiteral("room_id")).toString(),
+            strings("members"), strings("absent"));
         return true;
     }
 

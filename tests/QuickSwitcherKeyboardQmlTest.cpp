@@ -1,6 +1,7 @@
 
 #include <QtTest/QtTest>
 
+#include <QAccessible>
 #include <QFile>
 #include <QGuiApplication>
 #include <QClipboard>
@@ -20,6 +21,14 @@
 #include "models/QuickSwitcherModel.h"
 
 namespace {
+
+QStringList s_announcements;
+
+void captureAnnouncement(QAccessibleEvent *event)
+{
+    if (event->type() == QAccessible::Announcement)
+        s_announcements.append(static_cast<QAccessibleAnnouncementEvent *>(event)->message());
+}
 
 const char *kScene = R"QML(
 import QtQuick
@@ -363,6 +372,60 @@ private slots:
         mock()->setRoomMembershipForTest(selected, RoomInfo::Left);
         QTRY_COMPARE(rowOfRoom(selected), -1);
         QCOMPARE(list->property("currentIndex").toInt(), at);
+    }
+
+    void liveResultChangesAreAnnouncedOnceAndNameAVanishedSelection()
+    {
+        QVERIFY(mock());
+        QStringList left;
+        s_announcements.clear();
+        QAccessible::setActive(true);
+        const auto previous = QAccessible::installUpdateHandler(captureAnnouncement);
+        const auto restore = qScopeGuard([&] {
+            QAccessible::installUpdateHandler(previous);
+            QAccessible::setActive(false);
+            for (const QString &id : left)
+                mock()->setRoomMembershipForTest(id, RoomInfo::Joined);
+            QMetaObject::invokeMethod(switcher(), "close");
+        });
+        QMetaObject::invokeMethod(m_root, "openSwitcher");
+        QTRY_VERIFY(switcher()->property("opened").toBool());
+        QQuickItem *list = resultList();
+        QTRY_VERIFY(list->property("count").toInt() > 3);
+        list->setProperty("currentIndex", 2);
+        const QString selected = roomAt(2);
+        const QString name = m_controller->quickSwitcher()->resultAt(2)
+                                 .value(QStringLiteral("name")).toString();
+        QVERIFY(!name.isEmpty());
+        QTest::qWait(900);
+        QVERIFY2(s_announcements.isEmpty(), qPrintable(s_announcements.join(" | ")));
+
+        const QString first = roomAt(0);
+        const QString second = roomAt(1);
+        left << first << second;
+        mock()->setRoomMembershipForTest(first, RoomInfo::Left);
+        mock()->setRoomMembershipForTest(second, RoomInfo::Left);
+        QTRY_COMPARE(s_announcements.size(), 1);
+        QTest::qWait(900);
+        QCOMPARE(s_announcements.size(), 1);
+        QVERIFY2(s_announcements.first().contains(name), qPrintable(s_announcements.first()));
+        QVERIFY(!s_announcements.first().contains(QStringLiteral("no longer listed")));
+        QCOMPARE(switcher()->property("lastResultAnnouncement").toString(),
+                 s_announcements.first());
+
+        left << selected;
+        mock()->setRoomMembershipForTest(selected, RoomInfo::Left);
+        QTRY_COMPARE(s_announcements.size(), 2);
+        QVERIFY2(s_announcements.last().startsWith(name + QStringLiteral(" is no longer listed.")),
+                 qPrintable(s_announcements.last()));
+
+        field()->setProperty("text", QStringLiteral("zz"));
+        field()->setProperty("text", QStringLiteral("zzq-no-such-room"));
+        QTRY_COMPARE(s_announcements.size(), 3);
+        QTest::qWait(900);
+        QCOMPARE(s_announcements.size(), 3);
+        QVERIFY2(!s_announcements.last().contains(QStringLiteral("no longer listed")),
+                 qPrintable(s_announcements.last()));
     }
 
     void aCommandRebuildKeepsEnterOnTheSelectedAction()
