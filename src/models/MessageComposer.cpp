@@ -482,7 +482,8 @@ void MessageComposer::pumpAttachments()
         if (entries[row].posterPending)
             return;
         dispatchAttachment(row);
-        if (entries[row].state == QLatin1String("dispatching"))
+        if (entries[row].state == QLatin1String("dispatching")
+            || entries[row].posterPending)
             return;
     }
 }
@@ -500,13 +501,18 @@ void MessageComposer::dispatchAttachment(int row)
         return;
     const QString caption = entry.caption;
     quint64 opId = 0;
-    QString sendPath = entry.localPath;
-    QByteArray sendData = entry.data;
+    QString sendPath;
+    QByteArray sendData;
     QString strippedSub;
-    if (!entry.isVideo && !entry.isSvg
-        && entry.mime.startsWith(QLatin1String("image/"))
-        && !m_imagePrep.prepare(m_imageMetadataMode, entry.mime, sendPath,
-                                sendData, &strippedSub)) {
+    // A scheduled send must answer with its op now, so it strips inline.
+    const auto prepared = m_attachments->prepareImageForSend(
+        entry, m_imagePrep, m_imageMetadataMode, !m_preparingForSchedule,
+        sendPath, sendData, strippedSub);
+    if (prepared == AttachmentQueueModel::SendImage::Deferred) {
+        m_attachments->updateEntry(row);
+        return;
+    }
+    if (prepared == AttachmentQueueModel::SendImage::Refused) {
         entry.state = QStringLiteral("failed");
         entry.error = tr("Photo details could not be removed from this image, "
                          "so it was not sent. You can change this under "

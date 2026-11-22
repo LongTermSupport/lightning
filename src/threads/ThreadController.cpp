@@ -857,7 +857,8 @@ void ThreadController::pumpAttachments()
         if (entries[row].posterPending)
             return;
         dispatchAttachment(row);
-        if (entries[row].state == QLatin1String("dispatching"))
+        if (entries[row].state == QLatin1String("dispatching")
+            || entries[row].posterPending)
             return;
     }
 }
@@ -880,12 +881,15 @@ void ThreadController::dispatchEntry(AttachmentQueueModel::Entry &entry,
     quint64 opId = 0;
     // The same metadata policy as the room composer, at this send path's own
     // choke point (a thread image used to leave with its GPS block intact).
-    QString sendPath = entry.localPath;
-    QByteArray sendData = entry.data;
+    QString sendPath;
+    QByteArray sendData;
     QString strippedSub;
-    if (!entry.isVideo && !entry.isSvg
-        && !m_imagePrep.prepare(m_imageMetadataMode, entry.mime, sendPath,
-                                sendData, &strippedSub)) {
+    const auto prepared = m_attachments->prepareImageForSend(
+        entry, m_imagePrep, m_imageMetadataMode, true, sendPath, sendData,
+        strippedSub);
+    if (prepared == AttachmentQueueModel::SendImage::Deferred)
+        return;
+    if (prepared == AttachmentQueueModel::SendImage::Refused) {
         entry.state = QStringLiteral("failed");
         entry.error = tr("Photo details could not be removed from this image, "
                          "so it was not sent. You can change this under "
@@ -1067,7 +1071,7 @@ void ThreadController::pumpParked(const QString &key)
         if (entry.posterPending)
             return;
         dispatchEntry(entry, roomId, rootEventId);
-        if (entry.state == QLatin1String("dispatching"))
+        if (entry.state == QLatin1String("dispatching") || entry.posterPending)
             return;
     }
 }

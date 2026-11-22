@@ -1,4 +1,5 @@
 
+#include "app/GuiStallTracer.h"
 #include "matrix/MatrixClient.h"
 #include "media/MediaBridge.h"
 #include "media/AnimatedImageSniff.h"
@@ -20,6 +21,11 @@
 
 #include <atomic>
 #include <utility>
+
+#ifdef Q_OS_UNIX
+#include <csignal>
+#include <sys/resource.h>
+#endif
 
 namespace {
 
@@ -2517,6 +2523,54 @@ private Q_SLOTS:
         QCOMPARE(QDir(dir.path()).entryList(QDir::Files),
                  QStringList{QStringLiteral("a.bin")});
         QCOMPARE(writesOnCaller.load(), 0);
+    }
+
+    void aSaveThatRunsOutOfSpaceFailsOnceAndLeavesNothing()
+    {
+#ifndef Q_OS_UNIX
+        QSKIP("needs RLIMIT_FSIZE");
+#else
+        QTemporaryDir dir;
+        QVERIFY(dir.isValid());
+        FakeClient client;
+        MediaBridge bridge;
+        bridge.setClient(&client);
+        QSignalSpy saved(&bridge, &MediaBridge::saveFinished);
+        QSignalSpy completed(&bridge, &MediaBridge::saveCompleted);
+        const QByteArray payload(256 * 1024, 'm');
+        stalltrace::resetGuiWork();
+
+        std::signal(SIGXFSZ, SIG_IGN);
+        rlimit old{};
+        QVERIFY(::getrlimit(RLIMIT_FSIZE, &old) == 0);
+        rlimit full = old;
+        full.rlim_cur = 16 * 1024;
+        QVERIFY(::setrlimit(RLIMIT_FSIZE, &full) == 0);
+        const auto restore = qScopeGuard([&] { ::setrlimit(RLIMIT_FSIZE, &old); });
+
+        bridge.saveAs(QStringLiteral("$a"),
+                      QUrl::fromLocalFile(dir.filePath(QStringLiteral("a.bin"))));
+        client.succeed(client.fetches.at(0).opId, payload,
+                       QStringLiteral("application/octet-stream"));
+        QTRY_COMPARE(saved.count(), 1);
+        bridge.saveInto(QStringLiteral("$b"), dir.path(), QStringLiteral("b.bin"));
+        client.succeed(client.fetches.at(1).opId, payload,
+                       QStringLiteral("application/octet-stream"));
+        QTRY_COMPARE(saved.count(), 2);
+        QTest::qWait(50);
+        QCOMPARE(saved.count(), 2);
+        for (int i = 0; i < 2; ++i) {
+            QCOMPARE(saved.at(i).at(0).toBool(), false);
+            QCOMPARE(saved.at(i).at(1).toString(),
+                     QStringLiteral("Writing the file failed."));
+        }
+        QCOMPARE(completed.count(), 0);
+        QCOMPARE(QDir(dir.path()).entryList(QDir::AllEntries | QDir::Hidden
+                                            | QDir::NoDotAndDotDot),
+                 QStringList());
+        QVERIFY(bridge.savingKeys().isEmpty());
+        QCOMPARE(stalltrace::guiWorkCalls("media-save"), 0);
+#endif
     }
 
     void clearingTheSessionDropsTheSaveList()

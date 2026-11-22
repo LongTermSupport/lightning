@@ -3666,6 +3666,8 @@ if(BUILD_TESTING)
         src/models/RichComposition.cpp
         src/media/ImageSendPrep.h
         src/media/ImageSendPrep.cpp
+        src/app/GuiStallTracer.h
+        src/app/GuiStallTracer.cpp
         src/media/ImageMetadata.h
         src/media/ImageMetadata.cpp
         # The composer's draft hooks pull in the store.
@@ -3710,6 +3712,8 @@ if(BUILD_TESTING)
         src/models/RichComposition.cpp
         src/media/ImageSendPrep.h
         src/media/ImageSendPrep.cpp
+        src/app/GuiStallTracer.h
+        src/app/GuiStallTracer.cpp
         src/media/ImageMetadata.h
         src/media/ImageMetadata.cpp
         # The composer's draft hooks pull in the store.
@@ -4348,6 +4352,8 @@ if(BUILD_TESTING)
         src/models/RichComposition.cpp
         src/media/ImageSendPrep.h
         src/media/ImageSendPrep.cpp
+        src/app/GuiStallTracer.h
+        src/app/GuiStallTracer.cpp
         src/media/ImageMetadata.h
         src/media/ImageMetadata.cpp
         src/models/MentionTokenizer.h
@@ -5219,6 +5225,8 @@ if(BUILD_TESTING)
         src/media/ImageMetadata.cpp
         src/media/ImageSendPrep.h
         src/media/ImageSendPrep.cpp
+        src/app/GuiStallTracer.h
+        src/app/GuiStallTracer.cpp
         src/models/SlashCommands.h
         src/models/SlashCommands.cpp
         src/threads/ThreadManager.h
@@ -5294,6 +5302,12 @@ if(BUILD_TESTING)
         src/models/UserLookup.cpp
         src/models/AttachmentQueueModel.h
         src/models/AttachmentQueueModel.cpp
+        src/media/ImageSendPrep.h
+        src/media/ImageSendPrep.cpp
+        src/media/ImageMetadata.h
+        src/media/ImageMetadata.cpp
+        src/app/GuiStallTracer.h
+        src/app/GuiStallTracer.cpp
         src/media/StagedImageStore.h
         src/media/StagedImageStore.cpp
         # The poster hook keeps this suite free of a real media backend.

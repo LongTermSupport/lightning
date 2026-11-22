@@ -4,6 +4,7 @@
 // root/reply identity, thread and room switches, failure states, and the
 // thread-only send path.
 
+#include "app/GuiStallTracer.h"
 #include "matrix/MockMatrixClient.h"
 #include "models/AttachmentQueueModel.h"
 #include "media/StagedImageStore.h"
@@ -1764,6 +1765,67 @@ private Q_SLOTS:
         controller.sendText(QString{});
         QCOMPARE(client.threadAttachmentCallsForTest(), 2);
         QVERIFY(client.lastThreadAttachmentBytesForTest().contains(marker));
+    }
+
+    void aLargeThreadPhotoIsStrippedOffTheGuiThreadEvenAfterTheThreadCloses()
+    {
+        MockMatrixClient client;
+        QVERIFY(login(client));
+        ThreadController controller;
+        controller.setClient(&client);
+        const QString rootId = firstThreadRootId(client, kGeneral);
+        controller.openThread(kGeneral, rootId);
+        QTRY_COMPARE_WITH_TIMEOUT(controller.state(), ThreadController::Ready,
+                                  kSignalTimeoutMs);
+
+        QImage image(8, 8, QImage::Format_RGB32);
+        image.fill(Qt::blue);
+        QByteArray jpeg;
+        {
+            QBuffer buffer(&jpeg);
+            buffer.open(QIODevice::WriteOnly);
+            image.save(&buffer, "JPG", 80);
+        }
+        const QByteArray marker(24, '\xAB');
+        QByteArray t("MM\0*\0\0\0\x08", 8);
+        t.append("\0\1", 2);
+        t.append(QByteArray("\x88\x25\0\4\0\0\0\1\0\0\0\x1A", 12));
+        t.append("\0\0\0\0", 4);
+        t.append("\0\1", 2);
+        t.append(QByteArray("\0\2\0\5\0\0\0\3\0\0\0\x2C", 12));
+        t.append("\0\0\0\0", 4);
+        t.append(marker);
+        const QByteArray payload = QByteArray("Exif\0\0", 6) + t;
+        QByteArray inserted("\xFF\xE1", 2);
+        inserted.append(char((payload.size() + 2) >> 8));
+        inserted.append(char((payload.size() + 2) & 0xFF));
+        inserted.append(payload);
+        // Comment segments make it camera-sized (~2 MiB).
+        for (int i = 0; i < 32; ++i)
+            inserted += QByteArray("\xFF\xFE\xFF\xFF", 4) + QByteArray(65533, 'x');
+        jpeg.insert(2, inserted);
+
+        QTemporaryFile file(QDir::tempPath()
+                            + QStringLiteral("/lightning-XXXXXX.jpg"));
+        QVERIFY(file.open());
+        file.write(jpeg);
+        file.flush();
+        controller.addAttachment(QUrl::fromLocalFile(file.fileName()));
+        stalltrace::resetGuiWork();
+        controller.sendText(QString{});
+        qInfo("gui-thread work image-send-prep: calls=%d bytes=%lld",
+              stalltrace::guiWorkCalls("image-send-prep"),
+              static_cast<long long>(stalltrace::guiWorkBytes("image-send-prep")));
+        QCOMPARE(stalltrace::guiWorkCalls("image-send-prep"), 0);
+        QCOMPARE(client.threadAttachmentCallsForTest(), 0);
+        // Closing parks the row; the strip still lands and it is sent to the
+        // thread it was sent from.
+        controller.close();
+        QTRY_COMPARE_WITH_TIMEOUT(client.threadAttachmentCallsForTest(), 1, 30000);
+        QCOMPARE(stalltrace::guiWorkCalls("image-send-prep"), 0);
+        const QByteArray sent = client.lastThreadAttachmentBytesForTest();
+        QVERIFY(sent.size() > 2 * 1024 * 1024);
+        QVERIFY(!sent.contains(marker));
     }
 
     void threadAttachmentWithReplyTargetKeepsTheReplyAndTheThread()
