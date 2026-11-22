@@ -324,6 +324,7 @@ private Q_SLOTS:
     void aRepliedOrStaleCardIsWithdrawn();
     void aRestartedDaemonForgetsItsIds();
     void aSecondAccountMergedBeforeTheProbeAnswersIsOnTheFirstCard();
+    void aSecondAccountMergedWhileTheFirstCardWaitsForItsAvatarIsOnIt();
 
 private:
     QProcess m_daemon;
@@ -1077,6 +1078,50 @@ void NotificationDbusTest::aSecondAccountMergedBeforeTheProbeAnswersIsOnTheFirst
         kRoom, QStringLiteral("$ev:example.org"));
     QVERIFY2(merged.contains(QStringLiteral("Bea")), qPrintable(merged));
 
+    QTRY_COMPARE(m_fake->count(QStringLiteral("Notify")), 1);
+    QTest::qWait(200);
+    QCOMPARE(m_fake->count(QStringLiteral("Notify")), 1);
+    QCOMPARE(m_fake->lastArguments(QStringLiteral("Notify")).value(3).toString(),
+             merged);
+    QCOMPARE(manager.droppedReplacementsForTest(), 0);
+}
+
+void NotificationDbusTest::aSecondAccountMergedWhileTheFirstCardWaitsForItsAvatarIsOnIt()
+{
+    m_fake->reset(FakeDaemon::Mode::Answer);
+    NotificationManager manager;
+    bool avatarReady = false;
+    QImage avatar(8, 8, QImage::Format_ARGB32);
+    avatar.fill(Qt::red);
+    manager.setAvatarProvider(
+        [&avatarReady, &avatar](const QString &, bool) {
+            return avatarReady ? avatar : QImage();
+        },
+        [](const QString &) { return false; });
+    manager.setAccountUserId(QStringLiteral("@alice:example.org"));
+    manager.setLiveAccountsMode(true);
+    manager.setAccountLabelsShown(true);
+    NotificationManager::Context alice = context();
+    alice.accountLabel = QStringLiteral("Alice");
+    alice.avatarMxc = QStringLiteral("mxc://example.org/roomavatar");
+    NotificationManager::Context bea = context();
+    bea.selfUserId = QStringLiteral("@bea:example.org");
+    bea.accountUserId = bea.selfUserId;
+    bea.accountLabel = QStringLiteral("Bea");
+    bea.avatarMxc = alice.avatarMxc;
+
+    manager.processEvent(incomingText(), alice);
+    QCOMPARE(manager.avatarWaitCountForTest(), 1);
+    // The avatar lands, and the second account's copy arrives before the wait
+    // is flushed.
+    avatarReady = true;
+    manager.processEvent(incomingText(), bea);
+    QCOMPARE(manager.droppedReplacementsForTest(), 0);
+    const QString merged = manager.eventCardTitleForTest(
+        kRoom, QStringLiteral("$ev:example.org"));
+    QVERIFY2(merged.contains(QStringLiteral("Bea")), qPrintable(merged));
+
+    manager.avatarCacheChanged();
     QTRY_COMPARE(m_fake->count(QStringLiteral("Notify")), 1);
     QTest::qWait(200);
     QCOMPARE(m_fake->count(QStringLiteral("Notify")), 1);
