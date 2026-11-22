@@ -8723,7 +8723,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1 (%2)</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+23"/>
         <source>%1 — %2</source>
         <translation>%1 — %2</translation>
     </message>
@@ -13123,12 +13123,12 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="+91"/>
         <location line="+924"/>
-        <location line="+1123"/>
+        <location line="+1124"/>
         <source>Reply</source>
         <translation>উত্তর</translation>
     </message>
     <message>
-        <location line="-2032"/>
+        <location line="-2033"/>
         <source>(original message not loaded)</source>
         <translation>(মূল বার্তা লোড হয়নি)</translation>
     </message>
@@ -13229,30 +13229,30 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2289"/>
+        <location line="+2290"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>আবার চেষ্টা করুন</translation>
     </message>
     <message>
-        <location line="-3305"/>
-        <location line="+1226"/>
+        <location line="-3306"/>
+        <location line="+1227"/>
         <source>Cancel</source>
         <translation>বাতিল</translation>
     </message>
     <message>
-        <location line="-1221"/>
+        <location line="-1222"/>
         <source>Cancel sending this message</source>
         <translation>এই বার্তা পাঠানো বাতিল করুন</translation>
     </message>
     <message>
         <location line="+188"/>
-        <location line="+1380"/>
+        <location line="+1381"/>
         <source>Hide image</source>
         <translation>ছবি লুকান</translation>
     </message>
     <message>
-        <location line="-1376"/>
+        <location line="-1377"/>
         <source>Hide</source>
         <translation>লুকান</translation>
     </message>
@@ -13343,19 +13343,19 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1, %2 এবং আরও %3 জন পড়েছেন</translation>
     </message>
     <message>
-        <location line="+566"/>
+        <location line="+567"/>
         <source>Message · %1 · %2</source>
         <translation>বার্তা · %1 · %2</translation>
     </message>
     <message>
-        <location line="-996"/>
+        <location line="-997"/>
         <location line="+4"/>
-        <location line="+1108"/>
+        <location line="+1109"/>
         <source>Reply in thread</source>
         <translation>থ্রেডে উত্তর দিন</translation>
     </message>
     <message>
-        <location line="-2044"/>
+        <location line="-2045"/>
         <source>Original message removed</source>
         <translation>মূল বার্তা সরানো হয়েছে</translation>
     </message>
@@ -13378,7 +13378,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message>
-        <location line="+941"/>
+        <location line="+942"/>
         <source>Open in room</source>
         <translation>রুমে খুলুন</translation>
     </message>
@@ -13580,13 +13580,13 @@ Signing out and signing in again is the only fix.</source>
         <translation>আবার চেষ্টা করুন</translation>
     </message>
     <message>
-        <location line="-3696"/>
-        <location line="+1106"/>
+        <location line="-3697"/>
+        <location line="+1107"/>
         <source>Edit</source>
         <translation>সম্পাদনা</translation>
     </message>
     <message>
-        <location line="-3659"/>
+        <location line="-3660"/>
         <source>%1 B</source>
         <translation>%1 B</translation>
     </message>
@@ -13620,22 +13620,22 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="-564"/>
         <location line="+562"/>
-        <location line="+3627"/>
+        <location line="+3628"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5112"/>
+        <location line="-5113"/>
         <location line="+53"/>
         <location line="+508"/>
-        <location line="+4176"/>
+        <location line="+4177"/>
         <source>Image</source>
         <translation>ছবি</translation>
     </message>
     <message>
-        <location line="-4735"/>
+        <location line="-4736"/>
         <source>Attachment</source>
         <translation>সংযুক্তি</translation>
     </message>
@@ -13701,7 +13701,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>(সম্পাদিত)</translation>
     </message>
     <message>
-        <location line="+1598"/>
+        <location line="+1599"/>
         <source>Add :%1: to my emoji</source>
         <translation>আমার ইমোজিতে :%1: যোগ করুন</translation>
     </message>
@@ -13839,12 +13839,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>উত্তরের লক্ষ্য</translation>
     </message>
     <message>
-        <location line="-1946"/>
+        <location line="-1947"/>
         <source>Show preview</source>
         <translation>প্রাকদর্শন দেখান</translation>
     </message>
     <message>
-        <location line="+1804"/>
+        <location line="+1805"/>
         <source>Remove edits?</source>
         <translation>সম্পাদনা সরাবেন?</translation>
     </message>
@@ -13956,10 +13956,10 @@ Signing out and signing in again is the only fix.</source>
         <translation>স্টিকার লোড হয়নি — আবার চেষ্টা করতে ক্লিক করুন</translation>
     </message>
     <message>
-        <location line="-5529"/>
+        <location line="-5530"/>
         <location line="+57"/>
         <location line="+511"/>
-        <location line="+4174"/>
+        <location line="+4175"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -13972,9 +13972,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>ভিডিও</translation>
     </message>
     <message>
-        <location line="-5910"/>
+        <location line="-5911"/>
         <location line="+564"/>
-        <location line="+4277"/>
+        <location line="+4278"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -29946,7 +29946,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>StickerPackEditor</name>
     <message>
-        <location filename="../qml/StickerPackEditor.qml" line="+108"/>
+        <location filename="../qml/StickerPackEditor.qml" line="+109"/>
         <source>Export pack</source>
         <translation>প্যাক এক্সপোর্ট করুন</translation>
     </message>
@@ -30147,12 +30147,12 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+11"/>
-        <location line="+464"/>
+        <location line="+468"/>
         <source>Cancel</source>
         <translation>বাতিল</translation>
     </message>
     <message numerus="yes">
-        <location line="-434"/>
+        <location line="-438"/>
         <source>%n added</source>
         <translation>
             <numerusform>%nটি যোগ হয়েছে</numerusform>
@@ -30268,12 +30268,17 @@ Note: importing keys does not verify this session.</source>
         <translation>প্যাক রপ্তানি হচ্ছে (%2-এর মধ্যে %1)</translation>
     </message>
     <message>
+        <location line="+4"/>
+        <source>Adding images (%1 of %2)</source>
+        <translation>ছবি যোগ করা হচ্ছে (%2-এর মধ্যে %1)</translation>
+    </message>
+    <message>
         <location line="+61"/>
         <source>This deletes the pack from the room for everyone and turns it off for you. Messages already sent keep their images, and the images themselves are not deleted from the server.</source>
         <translation>এটি রুম থেকে সবার জন্য প্যাকটি মুছে দেয় এবং আপনার জন্য এটি বন্ধ করে। ইতিমধ্যে পাঠানো বার্তাগুলোর ছবি থেকে যায়, এবং ছবিগুলো নিজে সার্ভার থেকে মোছা হয় না।</translation>
     </message>
     <message>
-        <location line="-164"/>
+        <location line="-168"/>
         <source>Empty pack</source>
         <translation>প্যাক খালি করুন</translation>
     </message>
@@ -30323,7 +30328,7 @@ Note: importing keys does not verify this session.</source>
         <translation>ইমপোর্ট করুন…</translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+57"/>
         <source>Done</source>
         <translation>সম্পন্ন</translation>
     </message>
@@ -30341,7 +30346,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>StickerPackManager</name>
     <message>
-        <location filename="../src/stickers/StickerPackManager.cpp" line="+1192"/>
+        <location filename="../src/stickers/StickerPackManager.cpp" line="+1206"/>
         <source>Enter a name.</source>
         <translation>একটি নাম দিন।</translation>
     </message>
@@ -30361,12 +30366,17 @@ Note: importing keys does not verify this session.</source>
         <translation>এই প্যাকের অন্য একটি ছবি ইতিমধ্যে ওই নাম ব্যবহার করছে।</translation>
     </message>
     <message>
-        <location line="+347"/>
+        <location line="+353"/>
         <source>You do not have permission to change this pack.</source>
         <translation>এই প্যাক বদলানোর অনুমতি আপনার নেই।</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
+        <source>The images could not be confirmed as added. Retry adds any that are missing without uploading again.</source>
+        <translation>ছবিগুলো যোগ হয়েছে কিনা নিশ্চিত করা যায়নি। আবার চেষ্টা করলে অনুপস্থিতগুলো আবার আপলোড না করেই যোগ হবে।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>None of the images could be added. Retry adds them without uploading again.</source>
         <translation>কোনো ছবিই যোগ করা যায়নি। আবার চেষ্টা করলে আবার আপলোড না করেই যোগ হবে।</translation>
     </message>
@@ -30449,15 +30459,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+2"/>
-        <source>%n failed; Retry adds them without uploading again.</source>
-        <translation>
-            <numerusform>%nটি ব্যর্থ; আবার চেষ্টা করলে আবার আপলোড না করেই যোগ হবে।</numerusform>
-            <numerusform>%nটি ব্যর্থ; আবার চেষ্টা করলে আবার আপলোড না করেই যোগ হবে।</numerusform>
-        </translation>
-    </message>
-    <message numerus="yes">
-        <location line="+3"/>
+        <location line="+12"/>
         <source>%n skipped.</source>
         <translation>
             <numerusform>%nটি বাদ দেওয়া হয়েছে।</numerusform>
@@ -30523,15 +30525,29 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1"/>
+        <location line="-26"/>
+        <location line="+27"/>
         <source>%n failed.</source>
         <translation>
             <numerusform>%nটি ব্যর্থ হয়েছে।</numerusform>
             <numerusform>%nটি ব্যর্থ হয়েছে।</numerusform>
         </translation>
     </message>
+    <message numerus="yes">
+        <location line="-30"/>
+        <source>%n may have been added; the connection failed before the server answered.</source>
+        <translation>
+            <numerusform>%nটি হয়তো যোগ হয়েছে; সার্ভারের উত্তরের আগে সংযোগ বিচ্ছিন্ন হয়েছে।</numerusform>
+            <numerusform>%nটি হয়তো যোগ হয়েছে; সার্ভারের উত্তরের আগে সংযোগ বিচ্ছিন্ন হয়েছে।</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+334"/>
+        <location line="+5"/>
+        <source>Retry adds any that are missing without uploading again.</source>
+        <translation>আবার চেষ্টা করলে অনুপস্থিতগুলো আবার আপলোড না করেই যোগ হবে।</translation>
+    </message>
+    <message>
+        <location line="+359"/>
         <source>A pack</source>
         <translation>একটি প্যাক</translation>
     </message>

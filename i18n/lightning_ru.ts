@@ -8757,7 +8757,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1 (%2)</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+23"/>
         <source>%1 — %2</source>
         <translation>%1 — %2</translation>
     </message>
@@ -13171,12 +13171,12 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="+91"/>
         <location line="+924"/>
-        <location line="+1123"/>
+        <location line="+1124"/>
         <source>Reply</source>
         <translation>Ответить</translation>
     </message>
     <message>
-        <location line="-2032"/>
+        <location line="-2033"/>
         <source>(original message not loaded)</source>
         <translation>(исходное сообщение не загружено)</translation>
     </message>
@@ -13278,30 +13278,30 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2289"/>
+        <location line="+2290"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location line="-3305"/>
-        <location line="+1226"/>
+        <location line="-3306"/>
+        <location line="+1227"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location line="-1221"/>
+        <location line="-1222"/>
         <source>Cancel sending this message</source>
         <translation>Отменить отправку этого сообщения</translation>
     </message>
     <message>
         <location line="+188"/>
-        <location line="+1380"/>
+        <location line="+1381"/>
         <source>Hide image</source>
         <translation>Скрыть изображение</translation>
     </message>
     <message>
-        <location line="-1376"/>
+        <location line="-1377"/>
         <source>Hide</source>
         <translation>Скрыть</translation>
     </message>
@@ -13392,19 +13392,19 @@ Signing out and signing in again is the only fix.</source>
         <translation>Прочитано %1, %2 и ещё %3</translation>
     </message>
     <message>
-        <location line="+566"/>
+        <location line="+567"/>
         <source>Message · %1 · %2</source>
         <translation>Сообщение · %1 · %2</translation>
     </message>
     <message>
-        <location line="-996"/>
+        <location line="-997"/>
         <location line="+4"/>
-        <location line="+1108"/>
+        <location line="+1109"/>
         <source>Reply in thread</source>
         <translation>Ответить в обсуждении</translation>
     </message>
     <message>
-        <location line="-2044"/>
+        <location line="-2045"/>
         <source>Original message removed</source>
         <translation>Исходное сообщение удалено.</translation>
     </message>
@@ -13428,7 +13428,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message>
-        <location line="+941"/>
+        <location line="+942"/>
         <source>Open in room</source>
         <translation>Открыть в комнате</translation>
     </message>
@@ -13630,13 +13630,13 @@ Signing out and signing in again is the only fix.</source>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location line="-3696"/>
-        <location line="+1106"/>
+        <location line="-3697"/>
+        <location line="+1107"/>
         <source>Edit</source>
         <translation>Изменить</translation>
     </message>
     <message>
-        <location line="-3659"/>
+        <location line="-3660"/>
         <source>%1 B</source>
         <translation>%1 Б</translation>
     </message>
@@ -13670,22 +13670,22 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="-564"/>
         <location line="+562"/>
-        <location line="+3627"/>
+        <location line="+3628"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5112"/>
+        <location line="-5113"/>
         <location line="+53"/>
         <location line="+508"/>
-        <location line="+4176"/>
+        <location line="+4177"/>
         <source>Image</source>
         <translation>Изображение</translation>
     </message>
     <message>
-        <location line="-4735"/>
+        <location line="-4736"/>
         <source>Attachment</source>
         <translation>Вложение</translation>
     </message>
@@ -13753,7 +13753,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>(изменено)</translation>
     </message>
     <message>
-        <location line="+1598"/>
+        <location line="+1599"/>
         <source>Add :%1: to my emoji</source>
         <translation>Добавить :%1: в мои смайлики</translation>
     </message>
@@ -13892,12 +13892,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>Цель ответа</translation>
     </message>
     <message>
-        <location line="-1946"/>
+        <location line="-1947"/>
         <source>Show preview</source>
         <translation>Показать предпросмотр</translation>
     </message>
     <message>
-        <location line="+1804"/>
+        <location line="+1805"/>
         <source>Remove edits?</source>
         <translation>Удалить правки?</translation>
     </message>
@@ -14009,10 +14009,10 @@ Signing out and signing in again is the only fix.</source>
         <translation>Не удалось загрузить стикер — нажмите, чтобы повторить</translation>
     </message>
     <message>
-        <location line="-5529"/>
+        <location line="-5530"/>
         <location line="+57"/>
         <location line="+511"/>
-        <location line="+4174"/>
+        <location line="+4175"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -14025,9 +14025,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>видео</translation>
     </message>
     <message>
-        <location line="-5910"/>
+        <location line="-5911"/>
         <location line="+564"/>
-        <location line="+4277"/>
+        <location line="+4278"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -30054,7 +30054,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>StickerPackEditor</name>
     <message>
-        <location filename="../qml/StickerPackEditor.qml" line="+108"/>
+        <location filename="../qml/StickerPackEditor.qml" line="+109"/>
         <source>Export pack</source>
         <translation>Экспорт пака</translation>
     </message>
@@ -30261,12 +30261,12 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+11"/>
-        <location line="+464"/>
+        <location line="+468"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message numerus="yes">
-        <location line="-434"/>
+        <location line="-438"/>
         <source>%n added</source>
         <translation>
             <numerusform>%n добавлено</numerusform>
@@ -30385,12 +30385,17 @@ Note: importing keys does not verify this session.</source>
         <translation>Экспорт набора (%1 из %2)</translation>
     </message>
     <message>
+        <location line="+4"/>
+        <source>Adding images (%1 of %2)</source>
+        <translation>Добавление изображений (%1 из %2)</translation>
+    </message>
+    <message>
         <location line="+61"/>
         <source>This deletes the pack from the room for everyone and turns it off for you. Messages already sent keep their images, and the images themselves are not deleted from the server.</source>
         <translation>Это удалит набор из комнаты для всех и отключит его для вас. Уже отправленные сообщения сохранят свои изображения, а сами изображения не удаляются с сервера.</translation>
     </message>
     <message>
-        <location line="-164"/>
+        <location line="-168"/>
         <source>Empty pack</source>
         <translation>Очистить набор</translation>
     </message>
@@ -30440,7 +30445,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Импорт…</translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+57"/>
         <source>Done</source>
         <translation>Готово</translation>
     </message>
@@ -30458,7 +30463,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>StickerPackManager</name>
     <message>
-        <location filename="../src/stickers/StickerPackManager.cpp" line="+1192"/>
+        <location filename="../src/stickers/StickerPackManager.cpp" line="+1206"/>
         <source>Enter a name.</source>
         <translation>Введите название.</translation>
     </message>
@@ -30478,12 +30483,17 @@ Note: importing keys does not verify this session.</source>
         <translation>Другое изображение в этом паке уже использует это название.</translation>
     </message>
     <message>
-        <location line="+347"/>
+        <location line="+353"/>
         <source>You do not have permission to change this pack.</source>
         <translation>У вас нет прав изменять этот набор.</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
+        <source>The images could not be confirmed as added. Retry adds any that are missing without uploading again.</source>
+        <translation>Не удалось подтвердить добавление изображений. Повтор добавит недостающие без повторной загрузки.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>None of the images could be added. Retry adds them without uploading again.</source>
         <translation>Не удалось добавить ни одного изображения. «Повторить» добавит их без повторной загрузки.</translation>
     </message>
@@ -30567,16 +30577,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+2"/>
-        <source>%n failed; Retry adds them without uploading again.</source>
-        <translation>
-            <numerusform>%n не удалось; «Повторить» добавит без повторной загрузки.</numerusform>
-            <numerusform>%n не удалось; «Повторить» добавит их без повторной загрузки.</numerusform>
-            <numerusform>%n не удалось; «Повторить» добавит их без повторной загрузки.</numerusform>
-        </translation>
-    </message>
-    <message numerus="yes">
-        <location line="+3"/>
+        <location line="+12"/>
         <source>%n skipped.</source>
         <translation>
             <numerusform>%n пропущено.</numerusform>
@@ -30649,7 +30650,8 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1"/>
+        <location line="-26"/>
+        <location line="+27"/>
         <source>%n failed.</source>
         <translation>
             <numerusform>Не удалось: %n.</numerusform>
@@ -30657,8 +30659,22 @@ Note: importing keys does not verify this session.</source>
             <numerusform>Не удалось: %n.</numerusform>
         </translation>
     </message>
+    <message numerus="yes">
+        <location line="-30"/>
+        <source>%n may have been added; the connection failed before the server answered.</source>
+        <translation>
+            <numerusform>%n, возможно, добавлено; соединение прервалось до ответа сервера.</numerusform>
+            <numerusform>%n, возможно, добавлены; соединение прервалось до ответа сервера.</numerusform>
+            <numerusform>%n, возможно, добавлено; соединение прервалось до ответа сервера.</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+334"/>
+        <location line="+5"/>
+        <source>Retry adds any that are missing without uploading again.</source>
+        <translation>Повтор добавит недостающие без повторной загрузки.</translation>
+    </message>
+    <message>
+        <location line="+359"/>
         <source>A pack</source>
         <translation>Набор</translation>
     </message>

@@ -8757,7 +8757,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>%1 (%2)</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+23"/>
         <source>%1 — %2</source>
         <translation>%1 – %2</translation>
     </message>
@@ -13171,12 +13171,12 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     <message>
         <location line="+91"/>
         <location line="+924"/>
-        <location line="+1123"/>
+        <location line="+1124"/>
         <source>Reply</source>
         <translation>Atsakyti</translation>
     </message>
     <message>
-        <location line="-2032"/>
+        <location line="-2033"/>
         <source>(original message not loaded)</source>
         <translation>(originali žinutė neįkelta)</translation>
     </message>
@@ -13278,30 +13278,30 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2289"/>
+        <location line="+2290"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>Bandykite dar kartą</translation>
     </message>
     <message>
-        <location line="-3305"/>
-        <location line="+1226"/>
+        <location line="-3306"/>
+        <location line="+1227"/>
         <source>Cancel</source>
         <translation>Atšaukti</translation>
     </message>
     <message>
-        <location line="-1221"/>
+        <location line="-1222"/>
         <source>Cancel sending this message</source>
         <translation>Atšaukti šios žinutės siuntimą</translation>
     </message>
     <message>
         <location line="+188"/>
-        <location line="+1380"/>
+        <location line="+1381"/>
         <source>Hide image</source>
         <translation>Slėpti vaizdą</translation>
     </message>
     <message>
-        <location line="-1376"/>
+        <location line="-1377"/>
         <source>Hide</source>
         <translation>Slėpti</translation>
     </message>
@@ -13387,14 +13387,14 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Skaitė %1, %2 ir %3 kiti</translation>
     </message>
     <message>
-        <location line="+566"/>
+        <location line="+567"/>
         <source>Message · %1 · %2</source>
         <translation>Žinutė · %1 · %2</translation>
     </message>
     <message>
-        <location line="-996"/>
+        <location line="-997"/>
         <location line="+4"/>
-        <location line="+1108"/>
+        <location line="+1109"/>
         <source>Reply in thread</source>
         <translation>Atsakyti gijoje</translation>
     </message>
@@ -13480,13 +13480,13 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Peržiūrėti šaltinį</translation>
     </message>
     <message>
-        <location line="-1358"/>
-        <location line="+1106"/>
+        <location line="-1359"/>
+        <location line="+1107"/>
         <source>Edit</source>
         <translation>Redaguoti</translation>
     </message>
     <message>
-        <location line="-3659"/>
+        <location line="-3660"/>
         <source>%1 B</source>
         <translation>%1 B</translation>
     </message>
@@ -13520,22 +13520,22 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     <message>
         <location line="-564"/>
         <location line="+562"/>
-        <location line="+3627"/>
+        <location line="+3628"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5112"/>
+        <location line="-5113"/>
         <location line="+53"/>
         <location line="+508"/>
-        <location line="+4176"/>
+        <location line="+4177"/>
         <source>Image</source>
         <translation>Paveikslėlis</translation>
     </message>
     <message>
-        <location line="-4735"/>
+        <location line="-4736"/>
         <source>Attachment</source>
         <translation>Priedas</translation>
     </message>
@@ -13608,7 +13608,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Išsiųsta</translation>
     </message>
     <message>
-        <location line="+864"/>
+        <location line="+865"/>
         <source>Add :%1: to my emoji</source>
         <translation>Pridėti :%1: prie mano jaustukų</translation>
     </message>
@@ -13680,7 +13680,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Ištrinti</translation>
     </message>
     <message>
-        <location line="-2578"/>
+        <location line="-2579"/>
         <source>Open this thread</source>
         <translation>Atverti šią giją</translation>
     </message>
@@ -13709,7 +13709,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         </translation>
     </message>
     <message>
-        <location line="+630"/>
+        <location line="+631"/>
         <source>Delete message?</source>
         <translation>Ištrinti žinutę?</translation>
     </message>
@@ -13994,10 +13994,10 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Bandyti dar kartą</translation>
     </message>
     <message>
-        <location line="-6226"/>
+        <location line="-6227"/>
         <location line="+57"/>
         <location line="+511"/>
-        <location line="+4174"/>
+        <location line="+4175"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -14010,9 +14010,9 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>vaizdo įrašą</translation>
     </message>
     <message>
-        <location line="-5910"/>
+        <location line="-5911"/>
         <location line="+564"/>
-        <location line="+4277"/>
+        <location line="+4278"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -30054,7 +30054,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
 <context>
     <name>StickerPackEditor</name>
     <message>
-        <location filename="../qml/StickerPackEditor.qml" line="+108"/>
+        <location filename="../qml/StickerPackEditor.qml" line="+109"/>
         <source>Export pack</source>
         <translation>Eksportuoti rinkinį</translation>
     </message>
@@ -30261,12 +30261,12 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     </message>
     <message>
         <location line="+11"/>
-        <location line="+464"/>
+        <location line="+468"/>
         <source>Cancel</source>
         <translation>Atšaukti</translation>
     </message>
     <message numerus="yes">
-        <location line="-434"/>
+        <location line="-438"/>
         <source>%n added</source>
         <translation>
             <numerusform>%n pridėtas</numerusform>
@@ -30385,12 +30385,17 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Eksportuojamas paketas (%1 iš %2)</translation>
     </message>
     <message>
+        <location line="+4"/>
+        <source>Adding images (%1 of %2)</source>
+        <translation>Pridedami paveikslėliai (%1 iš %2)</translation>
+    </message>
+    <message>
         <location line="+61"/>
         <source>This deletes the pack from the room for everyone and turns it off for you. Messages already sent keep their images, and the images themselves are not deleted from the server.</source>
         <translation>Tai ištrina rinkinį iš kambario visiems ir išjungia jį jums. Jau išsiųstos žinutės išlaiko savo paveikslėlius, o patys paveikslėliai iš serverio neištrinami.</translation>
     </message>
     <message>
-        <location line="-164"/>
+        <location line="-168"/>
         <source>Empty pack</source>
         <translation>Ištuštinti paketą</translation>
     </message>
@@ -30440,7 +30445,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Importuoti…</translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+57"/>
         <source>Done</source>
         <translation>Atlikta</translation>
     </message>
@@ -30458,7 +30463,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
 <context>
     <name>StickerPackManager</name>
     <message>
-        <location filename="../src/stickers/StickerPackManager.cpp" line="+1192"/>
+        <location filename="../src/stickers/StickerPackManager.cpp" line="+1206"/>
         <source>Enter a name.</source>
         <translation>Įveskite pavadinimą.</translation>
     </message>
@@ -30478,12 +30483,17 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Kitas šio rinkinio paveikslėlis jau naudoja šį pavadinimą.</translation>
     </message>
     <message>
-        <location line="+347"/>
+        <location line="+353"/>
         <source>You do not have permission to change this pack.</source>
         <translation>Neturite leidimo keisti šio rinkinio.</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
+        <source>The images could not be confirmed as added. Retry adds any that are missing without uploading again.</source>
+        <translation>Nepavyko patvirtinti, kad paveikslėliai pridėti. „Bandyti dar kartą“ pridės trūkstamus neįkeliant iš naujo.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>None of the images could be added. Retry adds them without uploading again.</source>
         <translation>Nepavyko pridėti nė vieno paveikslėlio. „Bandyti dar kartą“ juos prideda neįkeliant iš naujo.</translation>
     </message>
@@ -30567,16 +30577,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+2"/>
-        <source>%n failed; Retry adds them without uploading again.</source>
-        <translation>
-            <numerusform>%n nepavyko; „Bandyti dar kartą“ jį prideda neįkeliant iš naujo.</numerusform>
-            <numerusform>%n nepavyko; „Bandyti dar kartą“ juos prideda neįkeliant iš naujo.</numerusform>
-            <numerusform>%n nepavyko; „Bandyti dar kartą“ juos prideda neįkeliant iš naujo.</numerusform>
-        </translation>
-    </message>
-    <message numerus="yes">
-        <location line="+3"/>
+        <location line="+12"/>
         <source>%n skipped.</source>
         <translation>
             <numerusform>%n praleistas.</numerusform>
@@ -30649,7 +30650,8 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1"/>
+        <location line="-26"/>
+        <location line="+27"/>
         <source>%n failed.</source>
         <translation>
             <numerusform>Nepavyko: %n.</numerusform>
@@ -30657,8 +30659,22 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
             <numerusform>Nepavyko: %n.</numerusform>
         </translation>
     </message>
+    <message numerus="yes">
+        <location line="-30"/>
+        <source>%n may have been added; the connection failed before the server answered.</source>
+        <translation>
+            <numerusform>%n galėjo būti pridėtas; ryšys nutrūko prieš atsakant serveriui.</numerusform>
+            <numerusform>%n galėjo būti pridėti; ryšys nutrūko prieš atsakant serveriui.</numerusform>
+            <numerusform>%n galėjo būti pridėta; ryšys nutrūko prieš atsakant serveriui.</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+334"/>
+        <location line="+5"/>
+        <source>Retry adds any that are missing without uploading again.</source>
+        <translation>„Bandyti dar kartą“ pridės trūkstamus neįkeliant iš naujo.</translation>
+    </message>
+    <message>
+        <location line="+359"/>
         <source>A pack</source>
         <translation>Rinkinys</translation>
     </message>

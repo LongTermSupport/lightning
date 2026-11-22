@@ -8723,7 +8723,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>%1 (%2)</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+23"/>
         <source>%1 — %2</source>
         <translation>%1 – %2</translation>
     </message>
@@ -13098,14 +13098,14 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="-571"/>
         <location line="+57"/>
         <location line="+511"/>
-        <location line="+4174"/>
+        <location line="+4175"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location line="-5897"/>
+        <location line="-5898"/>
         <source>Voice message</source>
         <translation>Sprachnachricht</translation>
     </message>
@@ -13118,24 +13118,24 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="-564"/>
         <location line="+562"/>
-        <location line="+3627"/>
+        <location line="+3628"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5112"/>
+        <location line="-5113"/>
         <location line="+53"/>
         <location line="+508"/>
-        <location line="+4176"/>
+        <location line="+4177"/>
         <source>Image</source>
         <translation>Bild</translation>
     </message>
     <message>
-        <location line="-4736"/>
+        <location line="-4737"/>
         <location line="+564"/>
-        <location line="+4277"/>
+        <location line="+4278"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -13143,7 +13143,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Datei</translation>
     </message>
     <message>
-        <location line="-6139"/>
+        <location line="-6140"/>
         <source>Attachment</source>
         <translation>Anhang</translation>
     </message>
@@ -13249,12 +13249,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="+91"/>
         <location line="+924"/>
-        <location line="+1123"/>
+        <location line="+1124"/>
         <source>Reply</source>
         <translation>Antworten</translation>
     </message>
     <message>
-        <location line="-2034"/>
+        <location line="-2035"/>
         <source>Original message removed</source>
         <translation>Ursprüngliche Nachricht entfernt</translation>
     </message>
@@ -13379,30 +13379,30 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2289"/>
+        <location line="+2290"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>Wiederholen</translation>
     </message>
     <message>
-        <location line="-3305"/>
-        <location line="+1226"/>
+        <location line="-3306"/>
+        <location line="+1227"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location line="-1221"/>
+        <location line="-1222"/>
         <source>Cancel sending this message</source>
         <translation>Senden dieser Nachricht abbrechen</translation>
     </message>
     <message>
         <location line="+188"/>
-        <location line="+1380"/>
+        <location line="+1381"/>
         <source>Hide image</source>
         <translation>Bild ausblenden</translation>
     </message>
     <message>
-        <location line="-1376"/>
+        <location line="-1377"/>
         <source>Hide</source>
         <translation>Ausblenden</translation>
     </message>
@@ -13424,23 +13424,23 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="+25"/>
         <location line="+4"/>
-        <location line="+1108"/>
+        <location line="+1109"/>
         <source>Reply in thread</source>
         <translation>Im Thread antworten</translation>
     </message>
     <message>
-        <location line="-1091"/>
+        <location line="-1092"/>
         <source>Edit message</source>
         <translation>Nachricht bearbeiten</translation>
     </message>
     <message>
         <location line="+4"/>
-        <location line="+1106"/>
+        <location line="+1107"/>
         <source>Edit</source>
         <translation>Bearbeiten</translation>
     </message>
     <message>
-        <location line="-1085"/>
+        <location line="-1086"/>
         <source>More message actions</source>
         <translation>Weitere Nachrichtenaktionen</translation>
     </message>
@@ -13506,7 +13506,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Gelesen von %1, %2 und %3 weiteren</translation>
     </message>
     <message>
-        <location line="+566"/>
+        <location line="+567"/>
         <source>Message · %1 · %2</source>
         <translation>Nachricht · %1 · %2</translation>
     </message>
@@ -13693,7 +13693,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-2578"/>
+        <location line="-2579"/>
         <source>Open this thread</source>
         <translation>Diesen Thread öffnen</translation>
     </message>
@@ -13706,7 +13706,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         </translation>
     </message>
     <message>
-        <location line="+630"/>
+        <location line="+631"/>
         <source>Delete message?</source>
         <translation>Nachricht löschen?</translation>
     </message>
@@ -29946,7 +29946,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>StickerPackEditor</name>
     <message>
-        <location filename="../qml/StickerPackEditor.qml" line="+108"/>
+        <location filename="../qml/StickerPackEditor.qml" line="+109"/>
         <source>Export pack</source>
         <translation>Paket exportieren</translation>
     </message>
@@ -30147,12 +30147,12 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location line="+11"/>
-        <location line="+464"/>
+        <location line="+468"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message numerus="yes">
-        <location line="-434"/>
+        <location line="-438"/>
         <source>%n added</source>
         <translation>
             <numerusform>%n hinzugefügt</numerusform>
@@ -30268,12 +30268,17 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Paket wird exportiert (%1 von %2)</translation>
     </message>
     <message>
+        <location line="+4"/>
+        <source>Adding images (%1 of %2)</source>
+        <translation>Bilder werden hinzugefügt (%1 von %2)</translation>
+    </message>
+    <message>
         <location line="+61"/>
         <source>This deletes the pack from the room for everyone and turns it off for you. Messages already sent keep their images, and the images themselves are not deleted from the server.</source>
         <translation>Dadurch wird das Paket für alle aus dem Raum gelöscht und für dich deaktiviert. Bereits gesendete Nachrichten behalten ihre Bilder, und die Bilder selbst werden nicht vom Server gelöscht.</translation>
     </message>
     <message>
-        <location line="-164"/>
+        <location line="-168"/>
         <source>Empty pack</source>
         <translation>Paket leeren</translation>
     </message>
@@ -30323,7 +30328,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Importieren …</translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+57"/>
         <source>Done</source>
         <translation>Fertig</translation>
     </message>
@@ -30341,7 +30346,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>StickerPackManager</name>
     <message>
-        <location filename="../src/stickers/StickerPackManager.cpp" line="+1192"/>
+        <location filename="../src/stickers/StickerPackManager.cpp" line="+1206"/>
         <source>Enter a name.</source>
         <translation>Gib einen Namen ein.</translation>
     </message>
@@ -30361,12 +30366,17 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Ein anderes Bild in diesem Paket verwendet diesen Namen bereits.</translation>
     </message>
     <message>
-        <location line="+347"/>
+        <location line="+353"/>
         <source>You do not have permission to change this pack.</source>
         <translation>Du darfst dieses Paket nicht ändern.</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
+        <source>The images could not be confirmed as added. Retry adds any that are missing without uploading again.</source>
+        <translation>Es konnte nicht bestätigt werden, dass die Bilder hinzugefügt wurden. „Erneut versuchen“ fügt fehlende hinzu, ohne erneut hochzuladen.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>None of the images could be added. Retry adds them without uploading again.</source>
         <translation>Keines der Bilder konnte hinzugefügt werden. „Wiederholen“ fügt sie hinzu, ohne sie erneut hochzuladen.</translation>
     </message>
@@ -30449,15 +30459,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+2"/>
-        <source>%n failed; Retry adds them without uploading again.</source>
-        <translation>
-            <numerusform>%n fehlgeschlagen; „Wiederholen“ fügt es hinzu, ohne es erneut hochzuladen.</numerusform>
-            <numerusform>%n fehlgeschlagen; „Wiederholen“ fügt sie hinzu, ohne sie erneut hochzuladen.</numerusform>
-        </translation>
-    </message>
-    <message numerus="yes">
-        <location line="+3"/>
+        <location line="+12"/>
         <source>%n skipped.</source>
         <translation>
             <numerusform>%n übersprungen.</numerusform>
@@ -30523,15 +30525,29 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1"/>
+        <location line="-26"/>
+        <location line="+27"/>
         <source>%n failed.</source>
         <translation>
             <numerusform>%n fehlgeschlagen.</numerusform>
             <numerusform>%n fehlgeschlagen.</numerusform>
         </translation>
     </message>
+    <message numerus="yes">
+        <location line="-30"/>
+        <source>%n may have been added; the connection failed before the server answered.</source>
+        <translation>
+            <numerusform>%n wurde möglicherweise hinzugefügt; die Verbindung brach ab, bevor der Server antwortete.</numerusform>
+            <numerusform>%n wurden möglicherweise hinzugefügt; die Verbindung brach ab, bevor der Server antwortete.</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+334"/>
+        <location line="+5"/>
+        <source>Retry adds any that are missing without uploading again.</source>
+        <translation>„Erneut versuchen“ fügt fehlende hinzu, ohne erneut hochzuladen.</translation>
+    </message>
+    <message>
+        <location line="+359"/>
         <source>A pack</source>
         <translation>Ein Paket</translation>
     </message>

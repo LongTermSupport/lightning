@@ -8689,7 +8689,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>%1 (%2)</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+23"/>
         <source>%1 — %2</source>
         <translation>%1 — %2</translation>
     </message>
@@ -13075,12 +13075,12 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     <message>
         <location line="+91"/>
         <location line="+924"/>
-        <location line="+1123"/>
+        <location line="+1124"/>
         <source>Reply</source>
         <translation>Balas</translation>
     </message>
     <message>
-        <location line="-2032"/>
+        <location line="-2033"/>
         <source>(original message not loaded)</source>
         <translation>(pesan asli belum dimuat)</translation>
     </message>
@@ -13180,30 +13180,30 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2289"/>
+        <location line="+2290"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>Coba lagi</translation>
     </message>
     <message>
-        <location line="-3305"/>
-        <location line="+1226"/>
+        <location line="-3306"/>
+        <location line="+1227"/>
         <source>Cancel</source>
         <translation>Batal</translation>
     </message>
     <message>
-        <location line="-1221"/>
+        <location line="-1222"/>
         <source>Cancel sending this message</source>
         <translation>Batalkan pengiriman pesan ini</translation>
     </message>
     <message>
         <location line="+188"/>
-        <location line="+1380"/>
+        <location line="+1381"/>
         <source>Hide image</source>
         <translation>Sembunyikan gambar</translation>
     </message>
     <message>
-        <location line="-1376"/>
+        <location line="-1377"/>
         <source>Hide</source>
         <translation>Sembunyikan</translation>
     </message>
@@ -13294,19 +13294,19 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Dibaca oleh %1, %2 dan %3 lainnya</translation>
     </message>
     <message>
-        <location line="+566"/>
+        <location line="+567"/>
         <source>Message · %1 · %2</source>
         <translation>Pesan · %1 · %2</translation>
     </message>
     <message>
-        <location line="-996"/>
+        <location line="-997"/>
         <location line="+4"/>
-        <location line="+1108"/>
+        <location line="+1109"/>
         <source>Reply in thread</source>
         <translation>Balas di utas</translation>
     </message>
     <message>
-        <location line="-2044"/>
+        <location line="-2045"/>
         <source>Original message removed</source>
         <translation>Pesan asli dihapus</translation>
     </message>
@@ -13328,7 +13328,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         </translation>
     </message>
     <message>
-        <location line="+941"/>
+        <location line="+942"/>
         <source>Open in room</source>
         <translation>Buka di ruang</translation>
     </message>
@@ -13530,13 +13530,13 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Coba lagi</translation>
     </message>
     <message>
-        <location line="-3696"/>
-        <location line="+1106"/>
+        <location line="-3697"/>
+        <location line="+1107"/>
         <source>Edit</source>
         <translation>Sunting</translation>
     </message>
     <message>
-        <location line="-3659"/>
+        <location line="-3660"/>
         <source>%1 B</source>
         <translation>%1 B</translation>
     </message>
@@ -13570,22 +13570,22 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     <message>
         <location line="-564"/>
         <location line="+562"/>
-        <location line="+3627"/>
+        <location line="+3628"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5112"/>
+        <location line="-5113"/>
         <location line="+53"/>
         <location line="+508"/>
-        <location line="+4176"/>
+        <location line="+4177"/>
         <source>Image</source>
         <translation>Gambar</translation>
     </message>
     <message>
-        <location line="-4735"/>
+        <location line="-4736"/>
         <source>Attachment</source>
         <translation>Lampiran</translation>
     </message>
@@ -13649,7 +13649,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>(disunting)</translation>
     </message>
     <message>
-        <location line="+1598"/>
+        <location line="+1599"/>
         <source>Add :%1: to my emoji</source>
         <translation>Tambahkan :%1: ke emoji saya</translation>
     </message>
@@ -13786,12 +13786,12 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Target balasan</translation>
     </message>
     <message>
-        <location line="-1946"/>
+        <location line="-1947"/>
         <source>Show preview</source>
         <translation>Tampilkan pratinjau</translation>
     </message>
     <message>
-        <location line="+1804"/>
+        <location line="+1805"/>
         <source>Remove edits?</source>
         <translation>Hapus suntingan?</translation>
     </message>
@@ -13903,10 +13903,10 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Stiker gagal dimuat — klik untuk mencoba lagi</translation>
     </message>
     <message>
-        <location line="-5529"/>
+        <location line="-5530"/>
         <location line="+57"/>
         <location line="+511"/>
-        <location line="+4174"/>
+        <location line="+4175"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -13919,9 +13919,9 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>video</translation>
     </message>
     <message>
-        <location line="-5910"/>
+        <location line="-5911"/>
         <location line="+564"/>
-        <location line="+4277"/>
+        <location line="+4278"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -29838,7 +29838,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
 <context>
     <name>StickerPackEditor</name>
     <message>
-        <location filename="../qml/StickerPackEditor.qml" line="+108"/>
+        <location filename="../qml/StickerPackEditor.qml" line="+109"/>
         <source>Export pack</source>
         <translation>Ekspor paket</translation>
     </message>
@@ -30033,12 +30033,12 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
     </message>
     <message>
         <location line="+11"/>
-        <location line="+464"/>
+        <location line="+468"/>
         <source>Cancel</source>
         <translation>Batal</translation>
     </message>
     <message numerus="yes">
-        <location line="-434"/>
+        <location line="-438"/>
         <source>%n added</source>
         <translation>
             <numerusform>%n ditambahkan</numerusform>
@@ -30151,12 +30151,17 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Mengekspor paket (%1 dari %2)</translation>
     </message>
     <message>
+        <location line="+4"/>
+        <source>Adding images (%1 of %2)</source>
+        <translation>Menambahkan gambar (%1 dari %2)</translation>
+    </message>
+    <message>
         <location line="+61"/>
         <source>This deletes the pack from the room for everyone and turns it off for you. Messages already sent keep their images, and the images themselves are not deleted from the server.</source>
         <translation>Ini menghapus paket dari ruang untuk semua orang dan menonaktifkannya untuk Anda. Pesan yang sudah terkirim tetap memiliki gambarnya, dan gambar itu sendiri tidak dihapus dari server.</translation>
     </message>
     <message>
-        <location line="-164"/>
+        <location line="-168"/>
         <source>Empty pack</source>
         <translation>Kosongkan paket</translation>
     </message>
@@ -30206,7 +30211,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Impor…</translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+57"/>
         <source>Done</source>
         <translation>Selesai</translation>
     </message>
@@ -30224,7 +30229,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
 <context>
     <name>StickerPackManager</name>
     <message>
-        <location filename="../src/stickers/StickerPackManager.cpp" line="+1192"/>
+        <location filename="../src/stickers/StickerPackManager.cpp" line="+1206"/>
         <source>Enter a name.</source>
         <translation>Masukkan nama.</translation>
     </message>
@@ -30244,12 +30249,17 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Gambar lain di paket ini sudah memakai nama itu.</translation>
     </message>
     <message>
-        <location line="+347"/>
+        <location line="+353"/>
         <source>You do not have permission to change this pack.</source>
         <translation>Anda tidak memiliki izin mengubah paket ini.</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
+        <source>The images could not be confirmed as added. Retry adds any that are missing without uploading again.</source>
+        <translation>Tidak dapat memastikan gambar sudah ditambahkan. Coba lagi menambahkan yang belum ada tanpa mengunggah ulang.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>None of the images could be added. Retry adds them without uploading again.</source>
         <translation>Tidak ada gambar yang dapat ditambahkan. Coba lagi menambahkannya tanpa mengunggah ulang.</translation>
     </message>
@@ -30331,14 +30341,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+2"/>
-        <source>%n failed; Retry adds them without uploading again.</source>
-        <translation>
-            <numerusform>%n gagal; Coba lagi menambahkannya tanpa mengunggah ulang.</numerusform>
-        </translation>
-    </message>
-    <message numerus="yes">
-        <location line="+3"/>
+        <location line="+12"/>
         <source>%n skipped.</source>
         <translation>
             <numerusform>%n dilewati.</numerusform>
@@ -30397,14 +30400,27 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1"/>
+        <location line="-26"/>
+        <location line="+27"/>
         <source>%n failed.</source>
         <translation>
             <numerusform>%n gagal.</numerusform>
         </translation>
     </message>
+    <message numerus="yes">
+        <location line="-30"/>
+        <source>%n may have been added; the connection failed before the server answered.</source>
+        <translation>
+            <numerusform>%n mungkin sudah ditambahkan; koneksi gagal sebelum server menjawab.</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+334"/>
+        <location line="+5"/>
+        <source>Retry adds any that are missing without uploading again.</source>
+        <translation>Coba lagi menambahkan yang belum ada tanpa mengunggah ulang.</translation>
+    </message>
+    <message>
+        <location line="+359"/>
         <source>A pack</source>
         <translation>Sebuah paket</translation>
     </message>
