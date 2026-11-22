@@ -5257,6 +5257,18 @@ if(BUILD_TESTING)
         Qt6::Core Qt6::Gui Qt6::Multimedia Qt6::Qml Qt6::Test)
     add_test(NAME thread-controller COMMAND thread-controller-test)
 
+    # The experimental HTTP backend against a loopback homeserver: replacement
+    # validity, completions that outlive an account switch, and a restore that
+    # keeps the saved session through a transient failure.
+    qt_add_executable(cpp-http-client-test
+        tests/CppHttpMatrixClientTest.cpp
+    )
+    lightning_configure_qml_test(cpp-http-client-test)
+    target_include_directories(cpp-http-client-test PRIVATE src)
+    add_test(NAME cpp-http-client COMMAND cpp-http-client-test)
+    set_tests_properties(cpp-http-client PROPERTIES
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
     # Read-only event context view: routing, fallback, generation isolation.
     qt_add_executable(context-controller-test
         tests/ContextControllerTest.cpp

@@ -141,6 +141,7 @@ private Q_SLOTS:
     void cleanup();
 
     void voiceReplyPreviewsKeepCopyTextAsTheFileName();
+    void replyPreviewsOfASpoilerConcealIt();
     void aQuoteWithNoEmbeddedDetailsIsReadFromTheLoadedTarget();
     void aQuoteFollowsItsTargetWhenTheTargetChanges();
     void aQuoteOfASpoilerShowsNoThumbnail();
@@ -2139,6 +2140,32 @@ void TimelineModelDiffTest::voiceReplyPreviewsKeepCopyTextAsTheFileName()
     m_client->mirror = { voice, audio, quote };
     Q_EMIT m_client->timelineReset(kRoom);
     QVERIFY(m_model->replyPreviewForEvent(voice.eventId).isEmpty());
+}
+
+void TimelineModelDiffTest::replyPreviewsOfASpoilerConcealIt()
+{
+    auto spoiler = makeEvent(QStringLiteral("$spoiler"), QStringLiteral("a hidden ending b"));
+    spoiler.formattedBody = QStringLiteral("a <span data-mx-spoiler>hidden ending</span> b");
+    auto loaded = makeEvent(QStringLiteral("$loaded"), QStringLiteral("reply"));
+    loaded.replyToEventId = spoiler.eventId;
+    auto embedded = makeEvent(QStringLiteral("$embedded"), QStringLiteral("reply"));
+    embedded.replyToEventId = spoiler.eventId;
+    embedded.replyToPreview = spoiler.body;
+    m_client->mirror = { spoiler, loaded, embedded };
+    Q_EMIT m_client->timelineReset(kRoom);
+
+    const QString concealed = QStringLiteral("a \u2588\u2588\u2588\u2588\u2588 b");
+    QCOMPARE(m_model->replyPreviewForEvent(spoiler.eventId), concealed);
+    for (const QString &id : { loaded.eventId, embedded.eventId }) {
+        int row = -1;
+        for (int i = 0; i < m_model->rowCount(); ++i) {
+            if (m_model->eventIdAt(i) == id)
+                row = i;
+        }
+        QVERIFY(row >= 0);
+        QCOMPARE(m_model->data(m_model->index(row), TimelineModel::ReplyToPreviewRole).toString(),
+                 concealed);
+    }
 }
 
 void TimelineModelDiffTest::replyToSenderResolvesDisplayNameWithLocalpartFallback()

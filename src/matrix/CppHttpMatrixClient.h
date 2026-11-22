@@ -18,6 +18,7 @@ class QJsonObject;
 class CppHttpMatrixClient : public MatrixClient
 {
     Q_OBJECT
+    friend class CppHttpMatrixClientTest;
 public:
     explicit CppHttpMatrixClient(SettingsManager *settings, QObject *parent = nullptr);
     ~CppHttpMatrixClient() override;
@@ -114,7 +115,8 @@ private:
                         const QString &redactedEventId);
     void applyEdit(const QString &roomId,
                    const QString &targetEventId,
-                   const QString &newBody);
+                   const QString &newBody,
+                   const QString &editSender);
     QString cachedDisplayName(const RoomInfo &room, const QString &userId) const;
     void enrichReplyPreview(TimelineEvent &e) const;
 
@@ -129,6 +131,10 @@ private:
     QString m_syncToken;
 
     bool m_loggedIn = false;
+    bool m_logoutInFlight = false;
+    // Bumped whenever the session ends or another one begins; every network
+    // completion compares the value it captured and drops itself when stale.
+    quint64 m_sessionGeneration = 0;
     ConnectionState m_state = Disconnected;
 
     bool m_syncActive = false;

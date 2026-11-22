@@ -60,6 +60,18 @@ QString percentPath(const QString &segment)
     return QString::fromUtf8(QUrl::toPercentEncoding(segment));
 }
 
+// Only the homeserver's own invalid-token answer proves the session is gone;
+// any other 401 (a proxy, a captive portal) is treated as transient.
+bool tokenRejected(int status, const QByteArray &body, bool *softLogout)
+{
+    const auto obj = QJsonDocument::fromJson(body).object();
+    const QString code = obj.value(QStringLiteral("errcode")).toString();
+    *softLogout = obj.value(QStringLiteral("soft_logout")).toBool();
+    return status == 401
+        && (code == QLatin1String("M_UNKNOWN_TOKEN")
+            || code == QLatin1String("M_MISSING_TOKEN"));
+}
+
 }
 
 CppHttpMatrixClient::CppHttpMatrixClient(SettingsManager *settings, QObject *parent)
@@ -189,8 +201,11 @@ void CppHttpMatrixClient::login(const QString &homeserver,
 
     QNetworkReply *reply = m_nam->post(
         req, QJsonDocument(body).toJson(QJsonDocument::Compact));
-    QObject::connect(reply, &QNetworkReply::finished, this, [this, reply] {
+    const quint64 generation = m_sessionGeneration;
+    QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, generation] {
         reply->deleteLater();
+        if (generation != m_sessionGeneration)
+            return;
         const int status = reply->attribute(
             QNetworkRequest::HttpStatusCodeAttribute).toInt();
         if (reply->error() != QNetworkReply::NoError) {
@@ -249,8 +264,9 @@ void CppHttpMatrixClient::login(const QString &homeserver,
 
 bool CppHttpMatrixClient::restoreSession()
 {
-    if (!m_settings || !m_settings->hasSession())
+    if (m_logoutInFlight || !m_settings || !m_settings->hasSession())
         return false;
+    ++m_sessionGeneration;
 
     m_homeserver  = sanitizeHomeserver(m_settings->homeserverUrl());
     m_userId      = m_settings->userId();
@@ -292,27 +308,37 @@ void CppHttpMatrixClient::doWhoami()
     QNetworkRequest req(endpoint(QStringLiteral("/account/whoami")));
     applyBearer(req);
     QNetworkReply *reply = m_nam->get(req);
-    QObject::connect(reply, &QNetworkReply::finished, this, [this, reply] {
+    const quint64 generation = m_sessionGeneration;
+    QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, generation] {
         reply->deleteLater();
+        if (generation != m_sessionGeneration)
+            return;
         const int status = reply->attribute(
             QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        if (reply->error() != QNetworkReply::NoError) {
-            QString msg = (status == 401)
-                ? tr("Session expired — please sign in again.")
-                : extractMatrixError(reply->readAll(), reply->errorString());
-            qCWarning(lcHttp) << "whoami failed" << status;
-            clearLocalSession(true);
-            Q_EMIT loginFailed(msg);
+        const QByteArray body = reply->readAll();
+        bool soft = false;
+        if (tokenRejected(status, body, &soft)) {
+            qCWarning(lcHttp) << "whoami rejected the token; soft_logout=" << soft;
+            if (soft && m_cache) {
+                m_cache->close();
+                m_cache.reset();
+            }
+            clearLocalSession(!soft);
+            Q_EMIT loginFailed(tr("Session expired — please sign in again."));
             return;
         }
-        const auto doc = QJsonDocument::fromJson(reply->readAll());
-        if (!doc.isObject() ||
-            !doc.object().contains(QStringLiteral("user_id"))) {
-            clearLocalSession(true);
-            Q_EMIT loginFailed(tr("Invalid /whoami response."));
+        const auto doc = QJsonDocument::fromJson(body);
+        const QString confirmed = doc.object().value(QStringLiteral("user_id")).toString();
+        if (reply->error() != QNetworkReply::NoError || confirmed.isEmpty()) {
+            // Offline, DNS/TLS, 5xx or a garbled answer: the token is not shown
+            // to be invalid, so keep the session and let /sync retry.
+            qCWarning(lcHttp) << "whoami unavailable; continuing offline, status=" << status;
+            m_loggedIn = true;
+            setState(Offline);
+            Q_EMIT loginSucceeded(m_userId);
             return;
         }
-        m_userId  = doc.object().value(QStringLiteral("user_id")).toString();
+        m_userId  = confirmed;
         m_loggedIn = true;
         setState(Disconnected);
         qCInfo(lcHttp) << "session restored for" << m_userId;
@@ -331,8 +357,13 @@ void CppHttpMatrixClient::logout()
     QNetworkRequest req(endpoint(QStringLiteral("/logout")));
     applyBearer(req);
     QNetworkReply *reply = m_nam->post(req, QByteArray("{}"));
-    QObject::connect(reply, &QNetworkReply::finished, this, [this, reply] {
+    m_logoutInFlight = true;
+    const quint64 generation = m_sessionGeneration;
+    QObject::connect(reply, &QNetworkReply::finished, this, [this, reply, generation] {
         reply->deleteLater();
+        m_logoutInFlight = false;
+        if (generation != m_sessionGeneration)
+            return;
         if (reply->error() != QNetworkReply::NoError)
             qCWarning(lcHttp) << "logout returned error, clearing locally anyway";
         clearLocalSession(true);
@@ -345,6 +376,8 @@ bool CppHttpMatrixClient::detachSession()
     // Account switch: end the local session without a server logout. Session
     // metadata, tokens and the per-account cache file stay; only in-memory
     // state and the cache handle are released.
+    if (m_logoutInFlight)
+        return false;
     if (m_cache) {
         m_cache->close();
         m_cache.reset();
@@ -357,6 +390,7 @@ bool CppHttpMatrixClient::detachSession()
 void CppHttpMatrixClient::clearLocalSession(bool clearPersisted)
 {
     stopSync();
+    ++m_sessionGeneration;
     m_loggedIn = false;
     m_accessToken.clear();
     m_userId.clear();
@@ -367,6 +401,7 @@ void CppHttpMatrixClient::clearLocalSession(bool clearPersisted)
     m_timelines.clear();
     m_pendingSends.clear();
     m_lastReceiptSent.clear();
+    m_paginating.clear();
     if (m_initialSyncDone) {
         m_initialSyncDone = false;
         Q_EMIT initialSyncDoneChanged();
@@ -447,10 +482,15 @@ void CppHttpMatrixClient::startNextSync()
         const int status = reply->attribute(
             QNetworkRequest::HttpStatusCodeAttribute).toInt();
         if (reply->error() != QNetworkReply::NoError) {
-            if (status == 401) {
-                qCWarning(lcHttp) << "sync 401 — session expired";
+            bool soft = false;
+            if (tokenRejected(status, reply->readAll(), &soft)) {
+                qCWarning(lcHttp) << "sync 401 — session expired; soft_logout=" << soft;
                 Q_EMIT errorOccurred(tr("Session expired during sync."));
-                clearLocalSession(true);
+                if (soft && m_cache) {
+                    m_cache->close();
+                    m_cache.reset();
+                }
+                clearLocalSession(!soft);
                 Q_EMIT loggedOut();
                 return;
             }
@@ -563,12 +603,16 @@ void CppHttpMatrixClient::processStateEvent(RoomInfo &room, const QJsonObject &e
 
 void CppHttpMatrixClient::applyEdit(const QString &roomId,
                                      const QString &targetEventId,
-                                     const QString &newBody)
+                                     const QString &newBody,
+                                     const QString &editSender)
 {
     auto tlIt = m_timelines.find(roomId);
     if (tlIt == m_timelines.end()) return;
     for (auto &e : *tlIt) {
         if (e.eventId == targetEventId) {
+            // Spec: a replacement is valid only from the original's sender.
+            if (editSender.isEmpty() || e.sender != editSender || e.redacted)
+                return;
             e.body   = newBody;
             e.edited = true;
             if (m_cache) m_cache->updateEvent(e);
@@ -729,10 +773,14 @@ void CppHttpMatrixClient::processTimelineEvent(const QString &roomId,
 
     if (relType == QLatin1String("m.replace")) {
         const QString target  = relatesTo.value(QStringLiteral("event_id")).toString();
-        const auto newContent = content.value(QStringLiteral("m.new_content")).toObject();
-        const QString newBody = newContent.value(QStringLiteral("body")).toString();
-        if (!target.isEmpty())
-            applyEdit(roomId, target, newBody);
+        const QJsonValue newBody = content.value(QStringLiteral("m.new_content"))
+                                       .toObject().value(QStringLiteral("body"));
+        if (type == QLatin1String("m.room.message")
+            && !ev.contains(QStringLiteral("state_key"))
+            && !target.isEmpty() && newBody.isString()) {
+            applyEdit(roomId, target, newBody.toString(),
+                      ev.value(QStringLiteral("sender")).toString());
+        }
         return;
     }
 
@@ -1036,8 +1084,11 @@ void CppHttpMatrixClient::putSendJson(const QString &roomId,
         req, QJsonDocument(content).toJson(QJsonDocument::Compact));
 
     QObject::connect(reply, &QNetworkReply::finished, this,
-                     [this, reply, roomId, echoEventId, txnId, debugLabel] {
+                     [this, reply, roomId, echoEventId, txnId, debugLabel,
+                      generation = m_sessionGeneration] {
         reply->deleteLater();
+        if (generation != m_sessionGeneration)
+            return;
         if (reply->error() != QNetworkReply::NoError) {
             const QString msg = extractMatrixError(reply->readAll(),
                                                     reply->errorString());
@@ -1212,7 +1263,7 @@ void CppHttpMatrixClient::editMessage(const QString &roomId,
             "Cannot send to encrypted rooms yet: E2EE backend is not implemented."));
         return;
     }
-    applyEdit(roomId, targetEventId, newBody);
+    applyEdit(roomId, targetEventId, newBody, m_userId);
 
     const QJsonObject newContent{
         { QStringLiteral("msgtype"), QStringLiteral("m.text") },
@@ -1256,8 +1307,10 @@ void CppHttpMatrixClient::redactByHttp(const QString &roomId,
     QNetworkReply *reply = m_nam->put(
         req, QJsonDocument(body).toJson(QJsonDocument::Compact));
     QObject::connect(reply, &QNetworkReply::finished, this,
-                     [this, reply, roomId, eventId] {
+                     [this, reply, roomId, eventId, generation = m_sessionGeneration] {
         reply->deleteLater();
+        if (generation != m_sessionGeneration)
+            return;
         if (reply->error() != QNetworkReply::NoError) {
             const QString error = tr("Redaction failed: %1").arg(
                 extractMatrixError(reply->readAll(), reply->errorString()));
@@ -1437,8 +1490,10 @@ void CppHttpMatrixClient::sendImage(const QString &roomId, const QString &localP
     QObject::connect(reply, &QNetworkReply::finished, this,
                      [this, reply, roomId, echoEventId, fileName, mime,
                       width = echo.mediaWidth, height = echo.mediaHeight,
-                      size = echo.mediaSize] {
+                      size = echo.mediaSize, generation = m_sessionGeneration] {
         reply->deleteLater();
+        if (generation != m_sessionGeneration)
+            return;
         if (reply->error() != QNetworkReply::NoError) {
             for (auto &ev : m_timelines[roomId]) {
                 if (ev.eventId == echoEventId) {
@@ -1531,8 +1586,10 @@ void CppHttpMatrixClient::sendFile(const QString &roomId, const QString &localPa
 
     QObject::connect(reply, &QNetworkReply::finished, this,
                      [this, reply, roomId, echoEventId, fileName, mime,
-                      size = echo.mediaSize] {
+                      size = echo.mediaSize, generation = m_sessionGeneration] {
         reply->deleteLater();
+        if (generation != m_sessionGeneration)
+            return;
         if (reply->error() != QNetworkReply::NoError) {
             for (auto &ev : m_timelines[roomId]) {
                 if (ev.eventId == echoEventId) {
@@ -1599,8 +1656,10 @@ void CppHttpMatrixClient::loadOlderMessages(const QString &roomId)
     applyBearer(req);
     QNetworkReply *reply = m_nam->get(req);
     QObject::connect(reply, &QNetworkReply::finished, this,
-                     [this, reply, roomId] {
+                     [this, reply, roomId, generation = m_sessionGeneration] {
         reply->deleteLater();
+        if (generation != m_sessionGeneration)
+            return;
         m_paginating.remove(roomId);
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(lcHttp) << "pagination failed";

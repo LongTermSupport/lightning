@@ -1476,6 +1476,9 @@ QVariant TimelineModel::data(const QModelIndex &index, int role) const
         if (target && !target->redacted && target->type == TimelineEvent::Audio
             && target->mediaIsVoice)
             return replyPreviewForEvent(e.replyToEventId);
+        if (target && target->formattedBody.contains(QLatin1String("data-mx-spoiler"),
+                                                     Qt::CaseInsensitive))
+            return replyPreviewForEvent(e.replyToEventId);
         if (e.replyToPreview.isEmpty() && loadedReplyTarget(e))
             return replyPreviewForEvent(e.replyToEventId);
         return e.replyToPreview;
@@ -2812,6 +2815,13 @@ QString TimelineModel::replyPreviewForEvent(const QString &eventId) const
     if (event && !event->redacted && event->type == TimelineEvent::Audio
         && event->mediaIsVoice)
         return QCoreApplication::translate("EventPreview", "Voice message");
+    if (event && !event->redacted
+        && event->formattedBody.contains(QLatin1String("data-mx-spoiler"),
+                                         Qt::CaseInsensitive)) {
+        return MessageHtml::plainTextConcealingSpoilers(
+            event->formattedBody, QStringLiteral("\u2588\u2588\u2588\u2588\u2588"),
+            [this](const QString &userId) { return mentionNameFor(userId, false); });
+    }
     return visibleTextForEvent(eventId);
 }
 
