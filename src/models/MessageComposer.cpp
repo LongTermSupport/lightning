@@ -58,6 +58,19 @@ MessageComposer::MessageComposer(QObject *parent)
     });
     connect(m_attachments, &AttachmentQueueModel::entryPrepared,
             this, &MessageComposer::pumpAttachments);
+    m_attachments->setTakenEntryLookup(
+        [this](const QString &tag) -> AttachmentQueueModel::Entry * {
+            for (auto &entries : m_parkedAttachments)
+                for (auto &entry : entries)
+                    if (entry.posterTag == tag)
+                        return &entry;
+            return nullptr;
+        });
+    connect(m_attachments, &AttachmentQueueModel::takenEntryPrepared, this, [this] {
+        const QStringList keys = m_parkedAttachments.keys();
+        for (const QString &key : keys)
+            pumpParked(key);
+    });
     m_draftDebounce.setSingleShot(true);
     m_draftDebounce.setInterval(kDraftSaveMs);
     connect(&m_draftDebounce, &QTimer::timeout, this,
@@ -495,7 +508,17 @@ void MessageComposer::dispatchAttachment(int row)
     auto &entries = m_attachments->entries();
     if (row < 0 || row >= entries.size())
         return;
-    auto &entry = entries[row];
+    dispatchEntry(entries[row], m_roomId);
+    m_attachments->updateEntry(row);
+}
+
+// Room-addressed, not view-addressed: a parked row is sent to the room it was
+// sent from.
+void MessageComposer::dispatchEntry(AttachmentQueueModel::Entry &entry,
+                                    const QString &roomId)
+{
+    if (!m_client || roomId.isEmpty())
+        return;
     if (entry.state != QLatin1String("queued") || !entry.sendRequested
         || entry.posterPending)
         return;
@@ -508,21 +531,18 @@ void MessageComposer::dispatchAttachment(int row)
     const auto prepared = m_attachments->prepareImageForSend(
         entry, m_imagePrep, m_imageMetadataMode, !m_preparingForSchedule,
         sendPath, sendData, strippedSub);
-    if (prepared == AttachmentQueueModel::SendImage::Deferred) {
-        m_attachments->updateEntry(row);
+    if (prepared == AttachmentQueueModel::SendImage::Deferred)
         return;
-    }
     if (prepared == AttachmentQueueModel::SendImage::Refused) {
         entry.state = QStringLiteral("failed");
         entry.error = tr("Photo details could not be removed from this image, "
                          "so it was not sent. You can change this under "
                          "Settings, Privacy.");
-        m_attachments->updateEntry(row);
         return;
     }
     if (m_preparingForSchedule) {
         opId = entry.isSvg ? 0 : m_client->prepareScheduledMedia(
-            m_roomId, entry.threadRootId,
+            roomId, entry.threadRootId,
             entry.localPath.isEmpty() ? QString() : sendPath, sendData,
             entry.fileName.isEmpty() ? QFileInfo(entry.localPath).fileName()
                                      : entry.fileName,
@@ -531,7 +551,7 @@ void MessageComposer::dispatchAttachment(int row)
             entry.posterHeight, entry.replyToEventId);
     } else if (entry.spoiler) {
         opId = entry.isSvg ? 0 : m_client->sendSpoilerMedia(
-            m_roomId, entry.threadRootId,
+            roomId, entry.threadRootId,
             entry.localPath.isEmpty() ? QString() : sendPath, sendData,
             entry.fileName, entry.mime, caption, entry.width, entry.height,
             entry.durationMs, entry.animated, entry.poster, entry.posterWidth,
@@ -544,38 +564,38 @@ void MessageComposer::dispatchAttachment(int row)
             opId = 0;
         else if (entry.localPath.isEmpty() && !caption.isEmpty())
             opId = m_client->sendCaptionedAttachmentBytes(
-                m_roomId, root, sendData, entry.fileName, entry.mime, caption,
+                roomId, root, sendData, entry.fileName, entry.mime, caption,
                 entry.width, entry.height, entry.replyToEventId);
         else if (entry.localPath.isEmpty())
             opId = m_client->sendThreadAttachmentBytes(
-                m_roomId, root, sendData, entry.fileName, entry.mime,
+                roomId, root, sendData, entry.fileName, entry.mime,
                 entry.width, entry.height, entry.replyToEventId);
         else if (entry.isVideo)
             opId = m_client->sendThreadVideo(
-                m_roomId, root, entry.localPath, entry.mime, caption,
+                roomId, root, entry.localPath, entry.mime, caption,
                 entry.width, entry.height, entry.durationMs, entry.poster,
                 entry.posterWidth, entry.posterHeight, entry.replyToEventId);
         else
             opId = m_client->sendThreadAttachment(
-                m_roomId, root, sendPath, entry.mime, caption, entry.width,
+                roomId, root, sendPath, entry.mime, caption, entry.width,
                 entry.height, entry.animated, entry.durationMs,
                 entry.replyToEventId);
     } else if (entry.localPath.isEmpty() && !caption.isEmpty()
                && !entry.replyToEventId.isEmpty()) {
         opId = m_client->sendCaptionedAttachmentBytes(
-            m_roomId, QString(), sendData, entry.fileName, entry.mime, caption,
+            roomId, QString(), sendData, entry.fileName, entry.mime, caption,
             entry.width, entry.height, entry.replyToEventId);
     } else if (entry.localPath.isEmpty() && !caption.isEmpty()) {
         opId = m_client->sendAttachmentBytesToRoom(
-            m_roomId, sendData, entry.fileName, entry.mime, caption,
+            roomId, sendData, entry.fileName, entry.mime, caption,
             entry.width, entry.height);
     } else if (entry.localPath.isEmpty()) {
-        opId = m_client->sendAttachmentBytes(m_roomId, sendData,
+        opId = m_client->sendAttachmentBytes(roomId, sendData,
                                              entry.fileName, entry.mime,
                                              entry.width, entry.height,
                                              entry.replyToEventId);
     } else if (entry.isVideo) {
-        opId = m_client->sendVideo(m_roomId, entry.localPath, entry.mime,
+        opId = m_client->sendVideo(roomId, entry.localPath, entry.mime,
                                    caption, entry.width, entry.height,
                                    entry.durationMs, entry.poster,
                                    entry.posterWidth, entry.posterHeight,
@@ -583,7 +603,7 @@ void MessageComposer::dispatchAttachment(int row)
     } else if (entry.isSvg) {
         opId = 0;
     } else {
-        opId = m_client->sendAttachment(m_roomId, sendPath,
+        opId = m_client->sendAttachment(roomId, sendPath,
                                         entry.mime, caption, entry.width,
                                         entry.height, entry.animated,
                                         entry.durationMs,
@@ -598,7 +618,6 @@ void MessageComposer::dispatchAttachment(int row)
         entry.opId = opId;
         m_imagePrep.track(opId, strippedSub);
     }
-    m_attachments->updateEntry(row);
 }
 
 void MessageComposer::sendVoiceMessage(const QString &localPath,
@@ -757,14 +776,37 @@ void MessageComposer::parkAttachments()
             if (pending[row].state == QLatin1String("queued")
                 && pending[row].sendRequested)
                 dispatchAttachment(row);
+            // A row still preparing holds the rows behind it; pumpParked
+            // sends them once it lands.
+            if (pending[row].posterPending && pending[row].sendRequested)
+                break;
         }
     }
     const QList<AttachmentQueueModel::Entry> entries = m_attachments->takeAll();
     const QString key = draftKey();
-    if (key.isEmpty())
+    if (key.isEmpty()) {
         m_attachments->discardEntries(entries);
-    else if (!entries.isEmpty())
+    } else if (!entries.isEmpty()) {
         m_parkedAttachments[key].append(entries);
+        m_parkedRooms.insert(key, m_roomId);
+    }
+}
+
+void MessageComposer::pumpParked(const QString &key)
+{
+    const auto it = m_parkedAttachments.find(key);
+    const QString roomId = m_parkedRooms.value(key);
+    if (it == m_parkedAttachments.end() || roomId.isEmpty())
+        return;
+    for (auto &entry : it.value()) {
+        if (entry.posterPending)
+            return;
+        if (entry.state != QLatin1String("queued") || !entry.sendRequested)
+            continue;
+        dispatchEntry(entry, roomId);
+        if (entry.posterPending)
+            return;
+    }
 }
 
 void MessageComposer::unparkAttachments()
@@ -773,6 +815,7 @@ void MessageComposer::unparkAttachments()
     if (key.isEmpty())
         return;
     m_attachments->restoreEntries(m_parkedAttachments.take(key));
+    m_parkedRooms.remove(key);
     pumpAttachments();
 }
 
@@ -807,6 +850,7 @@ void MessageComposer::discardAllAttachments()
     for (const auto &entries : std::as_const(m_parkedAttachments))
         m_attachments->discardEntries(entries);
     m_parkedAttachments.clear();
+    m_parkedRooms.clear();
 }
 
 void MessageComposer::setText(const QString &t)

@@ -316,6 +316,8 @@ private:
     QPair<QString, QString> sendTarget() const;
     void pumpAttachments();
     void dispatchAttachment(int row);
+    void dispatchEntry(AttachmentQueueModel::Entry &entry, const QString &roomId);
+    void pumpParked(const QString &key);
     void parkAttachments();
     void unparkAttachments();
     bool finishParkedAttachment(quint64 opId, bool ok);
@@ -337,6 +339,7 @@ private:
     // Trays of the rooms (and inline threads) not on screen, keyed by draftKey().
     // Memory only: they can hold encrypted-room pictures.
     QHash<QString, QList<AttachmentQueueModel::Entry>> m_parkedAttachments;
+    QHash<QString, QString> m_parkedRooms;
     VimKeymap *m_vim = nullptr;
     VimKeymap *m_threadVim = nullptr;
     bool m_sendTextAsCaption = false;

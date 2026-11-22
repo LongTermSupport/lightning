@@ -79,9 +79,10 @@ public:
     bool supportsAttachmentSend() const override { return true; }
     qint64 maxUploadSize() const override { return serverLimit; }
     QString lastFilePath;
+    QStringList sent;
     int lastFileWidth = 0;
     int lastFileHeight = 0;
-    quint64 sendAttachment(const QString &, const QString &path,
+    quint64 sendAttachment(const QString &room, const QString &path,
                            const QString &mime, const QString &caption,
                            int width, int height, bool, qint64 durationMs,
                            const QString &replyTo) override
@@ -89,6 +90,7 @@ public:
         if (rejectSends)
             return 0;
         ++fileSends;
+        sent << room + QLatin1Char('|') + path;
         lastFilePath = path;
         lastFileWidth = width;
         lastFileHeight = height;
@@ -2422,25 +2424,41 @@ private Q_SLOTS:
         QCOMPARE(client.fileSends, 0);
         QCOMPARE(strippedCopies(root.path()), 0);
 
-        // The room changes while stripping: the late copy is dropped, and the
-        // row is stripped again and sent to its own room on return.
+        // The room changes while stripping: the row was sent, so it goes to
+        // the room it was sent from without the user returning, ahead of the
+        // row queued behind it, and nothing leaves before the strip lands.
+        const QString small =
+            writeFile(dir, QStringLiteral("small.jpg"), jpegWithGps());
         composer.addAttachment(QUrl::fromLocalFile(big));
+        composer.addAttachment(QUrl::fromLocalFile(small));
         {
             PoolHold hold;
             QVERIFY(hold.held());
             composer.send();
             composer.setRoomId(roomB);
             QCOMPARE(composer.attachments()->rowCount(), 0);
+            QCOMPARE(client.fileSends, 0);
         }
         settlePool();
-        QCOMPARE(client.fileSends, 0);
+        QCOMPARE(client.fileSends, 2);
+        QCOMPARE(client.sent.size(), 2);
+        QVERIFY(client.sent.at(0).startsWith(roomA + QLatin1Char('|')));
+        QVERIFY(client.sent.at(1).startsWith(roomA + QLatin1Char('|')));
+        QVERIFY(client.sent.at(0).endsWith(QStringLiteral("/camera.jpg")));
+        QVERIFY(client.sent.at(1).endsWith(QStringLiteral("/small.jpg")));
+        QVERIFY(!client.sent.contains(roomA + QLatin1Char('|') + big));
+        QVERIFY(!client.sent.contains(roomA + QLatin1Char('|') + small));
+        const QString bigCopy = client.sent.at(0).section(QLatin1Char('|'), 1);
+        QVERIFY(!readAll(bigCopy).contains(kGpsMarker));
+        QCOMPARE(strippedCopies(root.path()), 2);
+        for (quint64 op = client.lastOpId - 1; op <= client.lastOpId; ++op)
+            Q_EMIT client.attachmentQueueFinished(op, roomA, true, {});
         QCOMPARE(strippedCopies(root.path()), 0);
         composer.setRoomId(roomA);
-        QTRY_COMPARE_WITH_TIMEOUT(client.fileSends, 1, 30000);
-        QVERIFY(!readAll(client.lastFilePath).contains(kGpsMarker));
-        QCOMPARE(strippedCopies(root.path()), 1);
-        Q_EMIT client.attachmentQueueFinished(client.lastOpId, roomA, true, {});
-        QCOMPARE(strippedCopies(root.path()), 0);
+        QCOMPARE(composer.attachments()->rowCount(), 0);
+        QCOMPARE(client.fileSends, 2);
+        client.sent.clear();
+        client.fileSends = 0;
 
         // Back before the first strip ran: the restarted strip and the stale
         // one never share a copy, and the stale one never deletes the sent one.
@@ -2453,9 +2471,9 @@ private Q_SLOTS:
             composer.setRoomId(roomA);
         }
         settlePool();
-        QTRY_COMPARE_WITH_TIMEOUT(client.fileSends, 2, 30000);
+        QTRY_COMPARE_WITH_TIMEOUT(client.fileSends, 1, 30000);
         settlePool();
-        QCOMPARE(client.fileSends, 2);
+        QCOMPARE(client.fileSends, 1);
         QVERIFY(QFileInfo::exists(client.lastFilePath));
         QVERIFY(!readAll(client.lastFilePath).contains(kGpsMarker));
         QCOMPARE(strippedCopies(root.path()), 1);
