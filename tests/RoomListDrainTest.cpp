@@ -157,6 +157,59 @@ private Q_SLOTS:
         QCOMPARE(client.m_rooms.value(roomId(0)).name, QStringLiteral("Fresh"));
     }
 
+    void aLostResetIsAskedForAgainAndTheListRecovers()
+    {
+        SettingsManager settings;
+        RustSdkMatrixClient client(&settings);
+        client.drainEventsForTest({ reset(5) });
+        client.drainEventsForTest({ staleRemove(0) });
+        QCOMPARE(client.m_roomListResyncRequests, 1);
+
+        // The reset never arrives.
+        QTRY_COMPARE_WITH_TIMEOUT(client.m_roomListResyncRequests, 2, 5000);
+
+        // One request in flight: neither more stale diffs nor an overflow add one.
+        client.drainEventsForTest({
+            staleRemove(1),
+            wire({ { QStringLiteral("type"), QStringLiteral("queue_overflow") },
+                   { QStringLiteral("message"), QStringLiteral("x") } }),
+        });
+        QCOMPARE(client.m_roomListResyncRequests, 2);
+        client.drainEventsForTest({ set(0, QStringLiteral("Stale")) });
+        QCOMPARE(client.m_rooms.value(roomId(0)).name, QStringLiteral("Room 0"));
+
+        client.drainEventsForTest({ reset(5), set(0, QStringLiteral("Fresh")) });
+        QCOMPARE(client.m_rooms.value(roomId(0)).name, QStringLiteral("Fresh"));
+        QTest::qWait(2300);
+        QCOMPARE(client.m_roomListResyncRequests, 2);
+    }
+
+    void anotherAccountStartsWithNothingHeldOver()
+    {
+        SettingsManager settings;
+        RustSdkMatrixClient client(&settings);
+        client.drainEventsForTest({ reset(10) });
+        QList<QByteArray> burst{ staleRemove(0) };
+        for (int i = 0; i < kDrainCap; ++i)
+            burst.append(set(i % 10, QStringLiteral("N%1").arg(i)));
+        QCOMPARE(client.drainEventsForTest(burst), 1);
+        QVERIFY(client.m_roomListAwaitingReset);
+        QVERIFY(client.m_backlogPollPending);
+
+        client.clearLocalState();
+        QVERIFY(!client.m_roomListAwaitingReset);
+        QVERIFY(!client.m_backlogPollPending);
+        QVERIFY(!client.m_roomsChangedPending);
+
+        client.drainEventsForTest({
+            wire({ { QStringLiteral("type"), QStringLiteral("room_list_push_back") },
+                   { QStringLiteral("room"), room(42) } }),
+        });
+        QCOMPARE(client.rooms().size(), 1);
+        QTest::qWait(2300);
+        QCOMPARE(client.m_roomListResyncRequests, 1);
+    }
+
     void aBacklogIsPolledAgainWithoutWaitingForTheTimer()
     {
         SettingsManager settings;
