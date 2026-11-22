@@ -133,6 +133,8 @@ public:
         return m_playableWriting.size();
     }
     void setPlayablePendingBudgetForTest(qint64 bytes) { m_playablePendingBudget = bytes; }
+    // Runs on the save-writing thread before each write.
+    void setSaveWriteHookForTest(std::function<void()> hook) { m_saveWriteHook = std::move(hook); }
     qint64 pendingPlayableWriteBytes() const;
 
     Q_INVOKABLE void pinPlayable(const QString &mediaKey);
@@ -252,6 +254,10 @@ private:
     static QString sanitizedFileName(const QString &name);
     void writeSaveFile(const QUrl &destination, const QByteArray &bytes,
                        const QString &mediaKey, bool uniquify = false);
+public:
+    enum class SaveWriteOutcome { Saved, FolderUnavailable, NotWritable, WriteFailed, Cancelled };
+private:
+    void finishSaveWrite(quint64 serial, SaveWriteOutcome outcome, const QString &path);
     void startSave(const QString &mediaKey, const QUrl &destination,
                    bool uniquify);
     QString writeAnimatedFile(const QString &cacheKey, const QByteArray &bytes);
@@ -386,6 +392,15 @@ private:
         QString fileName;
     };
     QList<ActiveSave> m_activeSaves;
+    struct SaveWrite {
+        QString mediaKey;
+        std::shared_ptr<std::atomic<bool>> cancelled;
+    };
+    // Writes running on the pool. Absent = cancelled or session cleared, and
+    // the late result is dropped.
+    QHash<quint64, SaveWrite> m_saveWrites;
+    quint64 m_nextSaveWrite = 1;
+    std::function<void()> m_saveWriteHook;
     void removeActiveSave(const QString &mediaKey);
 
     struct PendingPlayableWrite {

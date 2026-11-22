@@ -13,10 +13,12 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QScopeGuard>
+#include <QSemaphore>
 #include <QDir>
 #include <QSignalSpy>
 #include <QtTest/QtTest>
 
+#include <atomic>
 #include <utility>
 
 namespace {
@@ -2450,6 +2452,71 @@ private Q_SLOTS:
         QCOMPARE(completed.count(), 1);
         QCOMPARE(QFileInfo(completed.at(0).at(1).toString()).canonicalFilePath(),
                  QFileInfo(root.filePath(leaf)).canonicalFilePath());
+    }
+
+    void aSaveIsWrittenOffTheCallingThreadAndEndsOnce()
+    {
+        QTemporaryDir dir;
+        QVERIFY(dir.isValid());
+        FakeClient client;
+        MediaBridge bridge;
+        bridge.setClient(&client);
+        QSemaphore gate;
+        const auto openGate = qScopeGuard([&] { gate.release(16); });
+        std::atomic<int> writes{0};
+        std::atomic<int> writesOnCaller{0};
+        QThread *const caller = QThread::currentThread();
+        bridge.setSaveWriteHookForTest([&] {
+            if (QThread::currentThread() == caller)
+                ++writesOnCaller;
+            ++writes;
+            gate.acquire();
+        });
+        QSignalSpy saved(&bridge, &MediaBridge::saveFinished);
+        QSignalSpy completed(&bridge, &MediaBridge::saveCompleted);
+        int beats = 0;
+        QTimer heartbeat;
+        heartbeat.setInterval(5);
+        connect(&heartbeat, &QTimer::timeout, [&] { ++beats; });
+
+        // A slow write: the caller returns, the event loop keeps turning, and
+        // the save stays listed until its one terminal signal.
+        bridge.saveAs(QStringLiteral("$a"),
+                      QUrl::fromLocalFile(dir.filePath(QStringLiteral("a.bin"))));
+        client.succeed(client.fetches.at(0).opId, QByteArray("payload-a"),
+                       QStringLiteral("application/octet-stream"));
+        QCOMPARE(saved.count(), 0);
+        QTRY_COMPARE(writes.load(), 1);
+        heartbeat.start();
+        QTRY_VERIFY(beats >= 3);
+        QCOMPARE(saved.count(), 0);
+        QCOMPARE(bridge.savingKeys(), QStringList{QStringLiteral("$a")});
+        gate.release();
+        QTRY_COMPARE(saved.count(), 1);
+        QTest::qWait(20);
+        QCOMPARE(saved.count(), 1);
+        QVERIFY(saved.at(0).at(0).toBool());
+        QCOMPARE(completed.count(), 1);
+        QFile a(dir.filePath(QStringLiteral("a.bin")));
+        QVERIFY(a.open(QIODevice::ReadOnly));
+        QCOMPARE(a.readAll(), QByteArray("payload-a"));
+        QVERIFY(bridge.savingKeys().isEmpty());
+
+        // Cancel while the write is blocked: one terminal signal, no file.
+        bridge.saveInto(QStringLiteral("$b"), dir.path(), QStringLiteral("b.bin"));
+        client.succeed(client.fetches.at(1).opId, QByteArray("payload-b"),
+                       QStringLiteral("application/octet-stream"));
+        QTRY_COMPARE(writes.load(), 2);
+        bridge.cancelSave(QStringLiteral("$b"));
+        QCOMPARE(saved.count(), 2);
+        QVERIFY(!saved.at(1).at(0).toBool());
+        gate.release();
+        QTest::qWait(150);
+        QCOMPARE(saved.count(), 2);
+        QCOMPARE(completed.count(), 1);
+        QCOMPARE(QDir(dir.path()).entryList(QDir::Files),
+                 QStringList{QStringLiteral("a.bin")});
+        QCOMPARE(writesOnCaller.load(), 0);
     }
 
     void clearingTheSessionDropsTheSaveList()
