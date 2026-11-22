@@ -1252,6 +1252,7 @@ void StickerPackManager::beginTransfer(const QString &kind, const QString &name,
                     const auto remaining = m_transfer.items.mid(m_transfer.index - 1);
                     m_transfer.retry.append(remaining);
                     m_transfer.failed += int(remaining.size());
+                    ++m_transfer.unconfirmed;
                 }
                 m_saveOp = 0;
                 finishTransfer(m_transfer.added > 0, QStringLiteral("timeout"));
@@ -1282,7 +1283,8 @@ void StickerPackManager::finishTransfer(bool ok, const QString &category)
     Q_EMIT transferFinished(done.kind, ok, category, done.added, done.skipped,
                             done.failed,
                             done.kind == QLatin1String("emoji") ? done.firstCode
-                                                                : done.name);
+                                                                : done.name,
+                            done.unconfirmed);
 }
 
 void StickerPackManager::startBatch(const QString &kind, const QString &name,
@@ -1362,6 +1364,9 @@ void StickerPackManager::onBatchItemFinished(bool ok, const QString &category,
         ++m_transfer.skipped;
     } else if (m_transfer.kind == QLatin1String("upload")) {
         ++m_transfer.failed;
+        // A transport failure may have lost only the reply to a write that landed.
+        if (category == QLatin1String("network"))
+            ++m_transfer.unconfirmed;
         if (m_transfer.category.isEmpty())
             m_transfer.category = category;
         if (m_transfer.index > 0 && m_transfer.index <= m_transfer.items.size()) {
@@ -1540,7 +1545,8 @@ void StickerPackManager::importPack(const QUrl &zipFile)
 QString StickerPackManager::transferMessage(const QString &kind, bool ok,
                                             const QString &category, int added,
                                             int skipped, int failed,
-                                            const QString &name) const
+                                            const QString &name,
+                                            int unconfirmed) const
 {
     Q_UNUSED(name);
     const bool isExport = kind == QLatin1String("export");
@@ -1548,6 +1554,9 @@ QString StickerPackManager::transferMessage(const QString &kind, bool ok,
     if (!ok && kind == QLatin1String("upload")) {
         if (category == QLatin1String("forbidden"))
             return tr("You do not have permission to change this pack.");
+        if (unconfirmed > 0)
+            return tr("The images could not be confirmed as added. Retry adds "
+                      "any that are missing without uploading again.");
         return tr("None of the images could be added. Retry adds them without "
                   "uploading again.");
     }
@@ -1585,9 +1594,16 @@ QString StickerPackManager::transferMessage(const QString &kind, bool ok,
     QString text;
     if (kind == QLatin1String("upload")) {
         text = tr("Added %n image(s) to the pack.", nullptr, added);
+        unconfirmed = qBound(0, unconfirmed, failed);
+        if (unconfirmed > 0)
+            text += QLatin1Char(' ')
+                    + tr("%n may have been added; the connection failed before "
+                         "the server answered.", nullptr, unconfirmed);
+        if (failed - unconfirmed > 0)
+            text += QLatin1Char(' ') + tr("%n failed.", nullptr, failed - unconfirmed);
         if (failed > 0)
-            text += QLatin1Char(' ') + tr("%n failed; Retry adds them without "
-                                          "uploading again.", nullptr, failed);
+            text += QLatin1Char(' ') + tr("Retry adds any that are missing "
+                                          "without uploading again.");
         if (skipped > 0)
             text += QLatin1Char(' ') + tr("%n skipped.", nullptr, skipped);
         return text;

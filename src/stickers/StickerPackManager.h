@@ -178,7 +178,8 @@ public:
     Q_INVOKABLE QString transferMessage(const QString &kind, bool ok,
                                         const QString &category, int added,
                                         int skipped, int failed,
-                                        const QString &name) const;
+                                        const QString &name,
+                                        int unconfirmed = 0) const;
 
     Q_INVOKABLE QVariantList emoticonsInHtml(const QString &html) const;
     Q_INVOKABLE void saveEmoticons(const QVariantList &emoticons);
@@ -219,7 +220,8 @@ Q_SIGNALS:
                            const QVariantMap &detail);
     void transferFinished(const QString &kind, bool ok,
                           const QString &category, int added, int skipped,
-                          int failed, const QString &name);
+                          int failed, const QString &name,
+                          int unconfirmed = 0);
 
 private:
     struct BatchItem {
@@ -243,6 +245,8 @@ private:
         int added = 0;
         int skipped = 0;
         int failed = 0;
+        // Of `failed`: the state write went out and its outcome is unknown.
+        int unconfirmed = 0;
         QString category;
         QString firstCode;
         QList<BatchItem> items;

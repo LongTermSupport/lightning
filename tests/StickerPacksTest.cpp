@@ -1711,6 +1711,42 @@ private Q_SLOTS:
         QCOMPARE(client.roomUploadCode, QStringLiteral("b-2"));
     }
 
+    void aWriteWhoseReplyWasLostIsNotReportedAsFailed()
+    {
+        FakeClient client;
+        StickerPackManager manager;
+        manager.setClient(&client);
+        QVariantMap target = pack("S", "room", "Animals", {});
+        target.insert("roomId", kRoom);
+        target.insert("canManage", true);
+        manager.applySnapshotForTest(kRoom, true, {target});
+        QSignalSpy done(&manager, &StickerPackManager::transferFinished);
+        manager.uploadImagesToPack("S", {QUrl::fromLocalFile("/tmp/a.png"),
+                                         QUrl::fromLocalFile("/tmp/b.png"),
+                                         QUrl::fromLocalFile("/tmp/c.png")});
+        Q_EMIT client.stickerPackAddFinished(client.lastRoomUploadOp, true, {}, "a");
+        Q_EMIT client.stickerPackAddFinished(client.lastRoomUploadOp, false, "network", {});
+        Q_EMIT client.stickerPackAddFinished(client.lastRoomUploadOp, false, "upload_failed", {});
+        QCOMPARE(done.count(), 1);
+        const QList<QVariant> args = done.first();
+        QCOMPARE(args.size(), 8);
+        QCOMPARE(args.at(3).toInt(), 1);
+        QCOMPARE(args.at(5).toInt(), 2);
+        QCOMPARE(args.at(7).toInt(), 1);
+        QCOMPARE(manager.failedUploadCount(), 2);
+
+        QString text;
+        QVERIFY(QMetaObject::invokeMethod(
+            &manager, "transferMessage", Q_RETURN_ARG(QString, text),
+            Q_ARG(QString, args.at(0).toString()), Q_ARG(bool, args.at(1).toBool()),
+            Q_ARG(QString, args.at(2).toString()), Q_ARG(int, args.at(3).toInt()),
+            Q_ARG(int, args.at(4).toInt()), Q_ARG(int, args.at(5).toInt()),
+            Q_ARG(QString, args.at(6).toString()), Q_ARG(int, args.at(7).toInt())));
+        QVERIFY2(text.contains(QStringLiteral("1 may have been added")), qPrintable(text));
+        QVERIFY2(text.contains(QStringLiteral("1 failed.")), qPrintable(text));
+        QVERIFY2(!text.contains(QStringLiteral("2 failed")), qPrintable(text));
+    }
+
     void addingImagesToARoomPackUploadsEachAndRetriesWithoutReuploading()
     {
         FakeClient client;
