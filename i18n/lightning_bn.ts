@@ -27111,12 +27111,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="+8"/>
         <location line="+448"/>
-        <location line="+366"/>
+        <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>কলে সংযোগ করা যায়নি।</translation>
     </message>
     <message>
-        <location line="-812"/>
+        <location line="-808"/>
         <source>The calling service is having trouble.</source>
         <translation>কলিং সার্ভিসে সমস্যা হচ্ছে।</translation>
     </message>
@@ -27234,7 +27234,7 @@ Note: importing keys does not verify this session.</source>
         <translation>কল করা এখনও প্রস্তুত নয়।</translation>
     </message>
     <message>
-        <location line="+657"/>
+        <location line="+653"/>
         <source>You can share your screen once the call has reconnected.</source>
         <translation>কল আবার সংযুক্ত হলে আপনি স্ক্রিন শেয়ার করতে পারবেন।</translation>
     </message>
@@ -27244,7 +27244,7 @@ Note: importing keys does not verify this session.</source>
         <translation>কলের অডিও থেমে গেছে: এই কম্পিউটারের শব্দ আউটপুট বিচ্ছিন্ন হয়েছে। আউটপুট আবার পাওয়া গেলে এটি চালু হবে; না হলে কল ছেড়ে আবার যোগ দিন।</translation>
     </message>
     <message>
-        <location line="+2085"/>
+        <location line="+2172"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>স্ক্রিন শেয়ারের শব্দ বন্ধ আছে: এই প্যাকেজে প্রয়োজনীয় অডিও ক্যাপচার প্লাগইন নেই।</translation>
     </message>
@@ -27329,7 +27329,7 @@ Note: importing keys does not verify this session.</source>
         <translation>অংশগ্রহণকারী</translation>
     </message>
     <message>
-        <location line="-4508"/>
+        <location line="-4591"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>এই রুমটি এনক্রিপ্ট করা হয়েছে, এবং এনক্রিপ্ট করা কল এখনও এই বিল্ডে উপলব্ধ নেই৷</translation>
     </message>
@@ -27339,7 +27339,7 @@ Note: importing keys does not verify this session.</source>
         <translation>কলে আপনাকে ঘোষণা করা যায়নি।</translation>
     </message>
     <message>
-        <location line="+528"/>
+        <location line="+524"/>
         <source>The call ended because the connection was lost.</source>
         <translation>সংযোগ বিচ্ছিন্ন হওয়ার কারণে কলটি শেষ হয়েছে৷</translation>
     </message>

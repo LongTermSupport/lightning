@@ -27111,12 +27111,12 @@ Nota: importar claves no verifica esta sesión.</translation>
     <message>
         <location line="+8"/>
         <location line="+448"/>
-        <location line="+366"/>
+        <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>No se pudo conectar con la llamada.</translation>
     </message>
     <message>
-        <location line="-812"/>
+        <location line="-808"/>
         <source>The calling service is having trouble.</source>
         <translation>El servicio de llamadas está teniendo problemas.</translation>
     </message>
@@ -27234,7 +27234,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>La llamada aún no está lista.</translation>
     </message>
     <message>
-        <location line="+657"/>
+        <location line="+653"/>
         <source>You can share your screen once the call has reconnected.</source>
         <translation>Puedes compartir tu pantalla cuando la llamada se haya vuelto a conectar.</translation>
     </message>
@@ -27244,7 +27244,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>El audio de la llamada se detuvo: la salida de sonido de este equipo se desconectó. Se reanuda cuando haya una salida disponible; si no lo hace, sal de la llamada y vuelve a entrar.</translation>
     </message>
     <message>
-        <location line="+2085"/>
+        <location line="+2172"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>El sonido de la pantalla compartida está desactivado: a este paquete le faltan los complementos de captura de audio necesarios.</translation>
     </message>
@@ -27329,7 +27329,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>Participante</translation>
     </message>
     <message>
-        <location line="-4508"/>
+        <location line="-4591"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>Esta sala está cifrada y las llamadas cifradas aún no están disponibles en esta compilación.</translation>
     </message>
@@ -27339,7 +27339,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>No pude anunciarte en la llamada.</translation>
     </message>
     <message>
-        <location line="+528"/>
+        <location line="+524"/>
         <source>The call ended because the connection was lost.</source>
         <translation>La llamada terminó porque se perdió la conexión.</translation>
     </message>

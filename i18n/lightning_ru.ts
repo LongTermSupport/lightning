@@ -27213,12 +27213,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="+8"/>
         <location line="+448"/>
-        <location line="+366"/>
+        <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>Не удалось подключиться к звонку.</translation>
     </message>
     <message>
-        <location line="-812"/>
+        <location line="-808"/>
         <source>The calling service is having trouble.</source>
         <translation>У службы вызовов возникли проблемы.</translation>
     </message>
@@ -27336,7 +27336,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Звонок еще не готов.</translation>
     </message>
     <message>
-        <location line="+657"/>
+        <location line="+653"/>
         <source>You can share your screen once the call has reconnected.</source>
         <translation>Демонстрацию экрана можно начать, когда звонок переподключится.</translation>
     </message>
@@ -27346,7 +27346,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Звук звонка остановлен: вывод звука на этом компьютере отключился. Он возобновится, когда вывод снова станет доступен; если нет — выйдите из звонка и присоединитесь снова.</translation>
     </message>
     <message>
-        <location line="+2085"/>
+        <location line="+2172"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>Звук демонстрации экрана отключён: в этом пакете отсутствуют необходимые плагины захвата звука.</translation>
     </message>
@@ -27431,7 +27431,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Участник</translation>
     </message>
     <message>
-        <location line="-4508"/>
+        <location line="-4591"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>Эта комната зашифрована, и зашифрованные звонки в этой сборке пока недоступны.</translation>
     </message>
@@ -27441,7 +27441,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Не удалось объявить вас во время звонка.</translation>
     </message>
     <message>
-        <location line="+528"/>
+        <location line="+524"/>
         <source>The call ended because the connection was lost.</source>
         <translation>Звонок прервался, поскольку связь была потеряна.</translation>
     </message>

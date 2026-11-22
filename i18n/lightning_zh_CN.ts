@@ -27009,12 +27009,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="+8"/>
         <location line="+448"/>
-        <location line="+366"/>
+        <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>无法接通通话。</translation>
     </message>
     <message>
-        <location line="-812"/>
+        <location line="-808"/>
         <source>The calling service is having trouble.</source>
         <translation>呼叫服务出现问题。</translation>
     </message>
@@ -27132,7 +27132,7 @@ Note: importing keys does not verify this session.</source>
         <translation>呼叫尚未准备好。</translation>
     </message>
     <message>
-        <location line="+657"/>
+        <location line="+653"/>
         <source>You can share your screen once the call has reconnected.</source>
         <translation>通话重新连接后，你即可共享屏幕。</translation>
     </message>
@@ -27142,7 +27142,7 @@ Note: importing keys does not verify this session.</source>
         <translation>通话声音已停止：此电脑的声音输出已断开。当有可用输出时将恢复；如果没有恢复，请离开并重新加入通话。</translation>
     </message>
     <message>
-        <location line="+2085"/>
+        <location line="+2172"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>屏幕共享声音已关闭：此软件包缺少所需的音频捕获插件。</translation>
     </message>
@@ -27227,7 +27227,7 @@ Note: importing keys does not verify this session.</source>
         <translation>参与者</translation>
     </message>
     <message>
-        <location line="-4508"/>
+        <location line="-4591"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>该房间已加密，并且在此版本中尚不支持加密呼叫。</translation>
     </message>
@@ -27237,7 +27237,7 @@ Note: importing keys does not verify this session.</source>
         <translation>无法在通话中通知您。</translation>
     </message>
     <message>
-        <location line="+528"/>
+        <location line="+524"/>
         <source>The call ended because the connection was lost.</source>
         <translation>由于连接丢失，通话结束。</translation>
     </message>
