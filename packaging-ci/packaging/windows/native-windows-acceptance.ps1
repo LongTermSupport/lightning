@@ -11,13 +11,21 @@
         default backend and the Windows Credential Manager secret store;
       * the app STARTS normally with no DISPLAY / WAYLAND_DISPLAY /
         QT_QPA_PLATFORM set, stays alive for a bounded window, and closes;
-      * the captured diagnostic log selects qwindows, the Rust backend and the
-        Windows secure store, opens the cache, and shows NONE of: the insecure
-        QSettings fallback, an invalid cache path, an "Invalid window handle"
-        shutdown warning, a QML binding loop, a pagination storm, or a startup
-        failure;
+      * the captured diagnostic log positively shows the windows platform
+        plugin, the Rust backend and the Windows secure store, and shows NONE
+        of: the insecure QSettings fallback, an invalid cache path, a cache
+        open failure, an "Invalid window handle" shutdown warning, a QML
+        binding loop, a pagination storm, or a startup failure;
+      * the app exits on a normal close request, without being killed;
       * a per-run diagnostic ZIP lists its entries in bundle-files.txt.
         Review the raw app log, stdout and installed paths before sharing.
+
+    Every check ends PASS, FAIL or NOT TESTED. The verdict is FAIL (exit 1)
+    on any failure, INCONCLUSIVE (exit 2) when a required check could not be
+    run, and PASS (exit 0) only when every required check ran and passed.
+    The account cache opens only once an account is signed in, so its check
+    is optional: run in a disposable Windows user account, sign in a test
+    account and re-run to get it.
 
 .PARAMETER InstallDir
     Directory containing Lightning.exe (e.g. the portable folder or
@@ -39,12 +47,15 @@ param(
 
 $ErrorActionPreference = "Stop"
 $exe = Join-Path $InstallDir "Lightning.exe"
-$results = [System.Collections.Generic.List[string]]::new()
-$failures = 0
+$results = [System.Collections.Generic.List[object]]::new()
+# Bump when a required check is added: a run that records fewer is INCONCLUSIVE.
+$requiredChecks = 22
 
-function Check([string]$name, [bool]$ok) {
-    if ($ok) { $script:results.Add("PASS  $name") }
-    else     { $script:results.Add("FAIL  $name"); $script:failures++ }
+function Record([string]$name, [string]$status, [switch]$Optional) {
+    $script:results.Add([pscustomobject]@{ Status = $status; Name = $name; Required = -not $Optional })
+}
+function Check([string]$name, [bool]$ok, [switch]$Optional) {
+    Record $name $(if ($ok) { "PASS" } else { "FAIL" }) -Optional:$Optional
 }
 
 $OutDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($OutDir)
@@ -77,10 +88,12 @@ function Invoke-AcceptanceChecks {
     try {
         $bytes = [System.IO.File]::ReadAllBytes($exe)
         $peOff = [BitConverter]::ToInt32($bytes, 0x3C)
+        $isPe = $bytes[0] -eq 0x4D -and $bytes[1] -eq 0x5A -and
+            [BitConverter]::ToUInt32($bytes, $peOff) -eq 0x00004550
         $subsystem = [BitConverter]::ToUInt16($bytes, $peOff + 4 + 20 + 68)
-        Check "production exe is GUI subsystem (2)" ($subsystem -eq 2)
+        Check "production exe is GUI subsystem (2)" ($isPe -and $subsystem -eq 2)
     } catch {
-        $results.Add("SKIP  PE subsystem read failed: $($_.Exception.Message)")
+        Record "production exe is GUI subsystem (2) [PE read failed: $($_.Exception.Message)]" "NOT TESTED"
     }
 
     # --- 5/6. Start with NO display env; stay alive; then close -----------------
@@ -93,26 +106,35 @@ function Invoke-AcceptanceChecks {
 
     $proc = Start-Process -FilePath $exe -PassThru `
         -RedirectStandardError $log -RedirectStandardOutput (Join-Path $runDir "stdout.log")
+    $closeName = "app exits on a close request within 10 s (not killed)"
     try {
         Start-Sleep -Seconds $AliveSeconds
-        Check "app stays alive $AliveSeconds s with no DISPLAY set" (-not $proc.HasExited)
+        $alive = -not $proc.HasExited
+        Check "app stays alive $AliveSeconds s with no DISPLAY set" $alive
     } finally {
         if (-not $proc.HasExited) {
             $proc.CloseMainWindow() | Out-Null
-            if (-not $proc.WaitForExit(10000)) { $proc.Kill(); $proc.WaitForExit() }
+            $closed = $proc.WaitForExit(10000)
+            if (-not $closed) { $proc.Kill(); $proc.WaitForExit() }
+            Check "$closeName, exit code $($proc.ExitCode)" ($closed -and $proc.ExitCode -eq 0)
         }
     }
+    if (-not $alive) { Record $closeName "NOT TESTED" }
 
     Start-Sleep -Milliseconds 500
     $logText = if (Test-Path -LiteralPath $log) { Get-Content -LiteralPath $log -Raw } else { "" }
 
     # --- 7/8. Positive log markers ---------------------------------------------
     Check "no 'no graphical display available' rejection" (-not ($logText -match "no graphical display available"))
-    Check "Rust backend active (no matrix.http session)" (-not ($logText -match "matrix\.http:\s*session restored"))
+    Check "log: windows platform plugin rendering" ($logText -match "scene graph backend=\S+ software=\d platform=windows\b")
+    Check "log: Rust SDK backend loaded" ($logText -match "Rust SDK backend loaded")
+    Check "no matrix.http session" (-not ($logText -match "matrix\.http:\s*session restored"))
     Check "no insecure QSettings fallback warning" (-not ($logText -match "InsecureFallbackSecretStore active"))
-    Check "Windows secure store active" ($logText -match "Windows secure credential store active" -or $buildInfoOut -match "windows-credential-manager")
+    Check "log: Windows secure store active" ($logText -match "Windows secure credential store active")
     Check "no invalid account cache path" (-not ($logText -match "refusing invalid account cache path"))
-    Check "cache did not fail to open" (-not ($logText -match "cache open failed"))
+    Check "no cache open failure" (-not ($logText -match "matrix\.cache.*open failed"))
+    if ($logText -match "matrix\.cache.*cache open") { Record "log: account cache opened" "PASS" -Optional }
+    else { Record "log: account cache opened (needs a signed-in account)" "NOT TESTED" -Optional }
 
     # --- 10. Negative log markers (regressions) --------------------------------
     Check "no 'Invalid window handle' shutdown race" (-not ($logText -match "Invalid window handle"))
@@ -136,7 +158,25 @@ try {
     $completed = $true
 } finally {
     if (-not $completed) { Check "diagnostic collection completed" $false }
-    $results | Set-Content -LiteralPath (Join-Path $runDir "acceptance-results.txt")
+    $required = @($results | Where-Object Required)
+    $failed = @($results | Where-Object Status -eq "FAIL").Count
+    $notTested = @($required | Where-Object Status -eq "NOT TESTED").Count
+    $verdict = if ($failed -gt 0) { "FAIL" }
+        elseif ($notTested -gt 0 -or $required.Count -lt $requiredChecks) { "INCONCLUSIVE" }
+        else { "PASS" }
+    $exeHash = try { (Get-FileHash -Algorithm SHA256 -LiteralPath $exe).Hash } catch { "unavailable" }
+    $source = if ((Test-Path -LiteralPath $buildInfoLog) -and
+                  ((Get-Content -LiteralPath $buildInfoLog -Raw) -match "(?m)^source:\s*(\S+)")) { $Matches[1] } else { "unknown" }
+    $summary = @(
+        "ACCEPTANCE: $verdict",
+        "artifact: Lightning.exe sha256 $exeHash, source $source",
+        ("checks: {0} passed, {1} failed, {2} not tested, {3} total ({4} of {5} required recorded)" -f
+            @($results | Where-Object Status -eq "PASS").Count, $failed,
+            @($results | Where-Object Status -eq "NOT TESTED").Count, $results.Count, $required.Count, $requiredChecks)
+    )
+    $lines = $summary + "" + ($results | ForEach-Object {
+        "{0,-10} {1}{2}" -f $_.Status, $_.Name, $(if ($_.Required) { "" } else { " (optional)" }) })
+    $lines | Set-Content -LiteralPath (Join-Path $runDir "acceptance-results.txt")
     $files = @("acceptance-results.txt", "build-info.txt", "lightning-app.log", "stdout.log",
                "os-version.txt", "display.txt", "installed-files.csv") | Where-Object {
         [System.IO.File]::Exists((Join-Path $runDir $_))
@@ -159,12 +199,9 @@ try {
 }
 
 Write-Host ""
-$results | ForEach-Object { Write-Host $_ }
-Write-Host ""
-if ($failures -gt 0) {
-    Write-Host "ACCEPTANCE: FAIL ($failures failing checks)" -ForegroundColor Red
-    exit 1
-} else {
-    Write-Host "ACCEPTANCE: PASS" -ForegroundColor Green
-    exit 0
+$lines | ForEach-Object { Write-Host $_ }
+switch ($verdict) {
+    "PASS" { exit 0 }
+    "FAIL" { exit 1 }
+    default { exit 2 }
 }

@@ -22,3 +22,21 @@ and then closes the DLL import graph recursively. It does not copy the Qt SDK.
 `validate-windows-artifacts.sh` checks PE architecture/import closure, required
 QML/plugins, MSI tables, forbidden paths/secrets, and hashes. Wine tests are
 supplemental only; native Windows behavior remains untested.
+
+`native-windows-acceptance.ps1` is the native check, run by hand on a real
+Windows host against the installed artifact. Each check ends PASS, FAIL or
+NOT TESTED; the verdict is PASS (exit 0) only when every required check ran and
+passed, FAIL (exit 1) on any failure, and INCONCLUSIVE (exit 2) when a required
+check could not run, such as an unreadable PE header. Runtime checks need
+positive log lines (the `windows` platform, the Rust backend, the Windows
+credential store), not just the absence of errors, and a normal close must end
+the process without a kill. `acceptance-results.txt` records the counts, the
+SHA-256 of the `Lightning.exe` it ran and the build's source commit. Run it in
+a disposable Windows user account: the account cache opens only after a
+sign-in, so that check stays NOT TESTED on a fresh profile and is optional.
+
+Component inventory: `write-build-info.sh` records one for each `.deb` only
+(every ELF file in the payload mapped to a component or `unknown`, the declared
+system dependencies, and every `Cargo.lock` package). The Windows bundle,
+whose Qt, GStreamer and MinGW DLLs are bundled rather than system packages, has
+no inventory yet, and there is no advisory triage step; neither may be assumed.

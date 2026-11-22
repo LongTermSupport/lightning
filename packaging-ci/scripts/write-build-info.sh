@@ -31,6 +31,53 @@ RUST_VERSION="$(rustc --version 2>/dev/null || true)"
 CMAKE_VERSION="$(cmake --version 2>/dev/null | head -1 || true)"
 BUILD_TIMESTAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
+# Component inventory, .deb only so far: every ELF file the package installs,
+# mapped to a component ("unknown" until someone names it), and the Rust lock
+# file, a superset of what is linked (it also lists other platforms' crates).
+INV="$(mktemp -d)"
+trap 'rm -rf "$INV"' EXIT
+printf 'null\n' >"$INV/components.json"
+deb_payload_json() {
+    mkdir "$INV/x"
+    dpkg-deb -x "$ROOT/dist/$1" "$INV/x"
+    (cd "$INV/x" && find . -type f -print0 | sort -z | while IFS= read -r -d '' f; do
+        [[ "$(head -c4 "$f" | od -An -tx1 | tr -d ' \n')" == 7f454c46 ]] || continue
+        case "$f" in
+            ./usr/bin/lightning-matrix) component=lightning ;;
+            *) component=unknown ;;
+        esac
+        jq -n --arg path "${f#.}" --arg sha256 "$(sha256sum "$f" | cut -d' ' -f1)" \
+            --arg component "$component" '{path:$path, sha256:$sha256, component:$component}'
+    done) | jq -s .
+    rm -rf "$INV/x"
+}
+if [[ "$FORMAT" == deb ]]; then
+    CARGO_LOCK="$ROOT/work/lightning/rust/Cargo.lock"
+    [[ -f "$CARGO_LOCK" ]] || die "no Cargo.lock at work/lightning/rust"
+    awk '
+        /^\[\[package\]\]/ { if (n != "") print n "\t" v "\t" s "\t" c; n = v = s = c = "" }
+        /^name = /     { n = $3 }
+        /^version = /  { v = $3 }
+        /^source = /   { s = $3 }
+        /^checksum = / { c = $3 }
+        END { if (n != "") print n "\t" v "\t" s "\t" c }' "$CARGO_LOCK" | tr -d '"' |
+        jq -R 'split("\t") | {name: .[0], version: .[1],
+            source: (if .[2] == "" then null else .[2] end),
+            checksum: (if .[3] == "" then null else .[3] end)}' | jq -s . >"$INV/crates.json"
+    [[ "$(jq length "$INV/crates.json")" == "$(grep -c '^\[\[package\]\]' "$CARGO_LOCK")" ]] \
+        || die "Cargo.lock inventory count differs from its [[package]] count"
+    for file in "${artifacts[@]}"; do
+        deb_payload_json "$file" >"$INV/binaries.json"
+        [[ "$(jq length "$INV/binaries.json")" -gt 0 ]] || die "$file installs no ELF binary to inventory"
+        jq -n --arg artifact "$file" --arg sha256 "$(cd "$ROOT/dist" && sha256sum "$file" | cut -d' ' -f1)" \
+            --arg depends "$(dpkg-deb -f "$ROOT/dist/$file" Depends)" \
+            --slurpfile binaries "$INV/binaries.json" --slurpfile crates "$INV/crates.json" \
+            '{artifact:$artifact, sha256:$sha256, bundled_binaries:$binaries[0],
+              system_dependencies:($depends | split(", ") | map(select(. != ""))),
+              rust_lock_packages:$crates[0]}'
+    done | jq -s . >"$INV/components.json"
+fi
+
 # The repository recorded here is the PUBLIC home (GitHub). The pipeline's own
 # clone URL and its CI job/project URLs are deliberately not written: they name
 # a host that may be private, and nothing reads them back.
@@ -61,6 +108,7 @@ jq -n \
     --arg build_timestamp "$BUILD_TIMESTAMP" \
     --argjson files "$FILES_JSON" \
     --argjson checksums "$CHECKSUMS_JSON" \
+    --slurpfile components "$INV/components.json" \
     '{project_name:$project_name,
       pipeline_id:$pipeline_id, job_id:$job_id,
       package_format:$package_format, lightning_repository:$repository,
@@ -72,5 +120,6 @@ jq -n \
       runner:{description:$runner_description,id:$runner_id,tags:$runner_tags},
       base_image:$base_image,
       toolchain:{qt:$qt_version,cmake:$cmake_version,rust:$rust_version},
-      build_timestamp_utc:$build_timestamp, artifacts:$files, checksums:$checksums}' \
+      build_timestamp_utc:$build_timestamp, artifacts:$files, checksums:$checksums,
+      component_inventory:$components[0]}' \
     >"$ROOT/dist/build-info.json"
