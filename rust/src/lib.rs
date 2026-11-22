@@ -7248,6 +7248,21 @@ pub unsafe extern "C" fn mx_rust_room_members(
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn mx_rust_room_member_check(
+    ptr: *mut c_void,
+    room_id: *const c_char,
+    users_json: *const c_char,
+    op_id: u64,
+) -> *mut c_char {
+    ffi_string(|| {
+        let bridge = unsafe { bridge(ptr)? };
+        let room_id = unsafe { cstr_arg(room_id) }?;
+        let users = unsafe { cstr_arg(users_json) }?;
+        rooms::room_member_check(bridge, room_id, users, op_id).map(|_| String::new())
+    })
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn mx_rust_room_own_permissions(
     ptr: *mut c_void,
     room_id: *const c_char,

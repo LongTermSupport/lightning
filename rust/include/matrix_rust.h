@@ -1435,6 +1435,12 @@ char *mx_rust_invite_users(void *client,
 char *mx_rust_room_members(void *client,
                            const char *room_id,
                            unsigned long long op_id);
+/* Asks whether each user in the JSON array is a member of the room, by store
+ * or targeted state request; answered as `room_member_check`. */
+char *mx_rust_room_member_check(void *client,
+                                const char *room_id,
+                                const char *users_json,
+                                unsigned long long op_id);
 /* The open room's own posting facts from local state (no request); answered
  * as {"type":"room_own_permissions","op_id","room_id","own_membership",
  * "own_can_send_message","own_can_redact_other"}, null meaning unknown. */

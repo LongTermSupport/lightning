@@ -2706,6 +2706,91 @@ pub(crate) fn room_members(
     Ok(())
 }
 
+const MEMBER_CHECK_CAP: usize = 50;
+const MEMBER_CHECK_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(15);
+
+/// Asks whether each listed user is a member of one room, without loading its
+/// roster: the store when it is synced, else one `/state/m.room.member/{user}`
+/// per user. Users left out of both answer lists are unknown.
+pub(crate) fn room_member_check(
+    bridge: &RustClient,
+    room_id: String,
+    users_json: String,
+    op_id: u64,
+) -> Result<(), String> {
+    let client = require_client(bridge)?;
+    let room = joined_room(&client, &room_id)?;
+    let users: Vec<OwnedUserId> = serde_json::from_str::<Vec<String>>(&users_json)
+        .map_err(|_| "invalid user list".to_owned())?
+        .into_iter()
+        .filter_map(|u| UserId::parse(u).ok())
+        .take(MEMBER_CHECK_CAP)
+        .collect();
+    let events = Arc::clone(&bridge.events);
+    let timelines = Arc::clone(&bridge.timelines);
+    let lifecycle = timelines.lifecycle();
+    bridge.spawn_room_action(async move {
+        let mut members = Vec::new();
+        let mut absent = Vec::new();
+        for user in &users {
+            if !timelines.lifecycle_current(lifecycle) {
+                return;
+            }
+            match member_check_one(&room, user).await {
+                Some(true) => members.push(user.to_string()),
+                Some(false) => absent.push(user.to_string()),
+                None => {}
+            }
+        }
+        if timelines.lifecycle_current(lifecycle) {
+            enqueue(&events, json!({
+                "type": "room_member_check",
+                "op_id": op_id,
+                "lifecycle": lifecycle,
+                "room_id": room_id,
+                "members": members,
+                "absent": absent,
+            }));
+        }
+    });
+    Ok(())
+}
+
+async fn member_check_one(room: &matrix_sdk::Room, user: &UserId) -> Option<bool> {
+    use matrix_sdk::ruma::events::room::member::MembershipState;
+    use matrix_sdk::{config::RequestConfig, ruma::api::client::state::get_state_event_for_key};
+    let synced = room.are_members_synced();
+    let stored = room.get_member_no_sync(user).await;
+    if let Ok(Some(member)) = &stored {
+        if matches!(member.membership(), MembershipState::Join | MembershipState::Invite) {
+            return Some(true);
+        }
+    }
+    if synced && stored.is_ok() {
+        return Some(false);
+    }
+    let request = get_state_event_for_key::v3::Request::new(
+        room.room_id().to_owned(),
+        StateEventType::RoomMember,
+        user.to_string(),
+    );
+    let config = RequestConfig::new().disable_retry().timeout(MEMBER_CHECK_TIMEOUT);
+    let client = room.client();
+    match client.send(request).with_request_config(config).await {
+        Ok(response) => member_content_active(response.event_or_content.get()),
+        Err(err) if err.as_client_api_error().is_some_and(|e| e.status_code.as_u16() == 404) => {
+            Some(false)
+        }
+        Err(_) => None,
+    }
+}
+
+fn member_content_active(content: &str) -> Option<bool> {
+    let value: serde_json::Value = serde_json::from_str(content).ok()?;
+    let membership = value.get("membership")?.as_str()?;
+    Some(membership == "join" || membership == "invite")
+}
+
 async fn members_snapshot_json(
     room: &matrix_sdk::Room,
     members: &[matrix_sdk::room::RoomMember],
@@ -6033,6 +6118,16 @@ pub(crate) fn fetch_upload_limit(bridge: &RustClient) -> Result<(), String> {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn a_member_check_reads_only_an_active_membership_as_in() {
+        assert_eq!(member_content_active(r#"{"membership":"join"}"#), Some(true));
+        assert_eq!(member_content_active(r#"{"membership":"invite"}"#), Some(true));
+        assert_eq!(member_content_active(r#"{"membership":"leave"}"#), Some(false));
+        assert_eq!(member_content_active(r#"{"membership":"ban"}"#), Some(false));
+        assert_eq!(member_content_active(r#"{}"#), None);
+        assert_eq!(member_content_active("not json"), None);
+    }
+
     use super::*;
 
     fn original() -> serde_json::Value {
@@ -7866,6 +7961,71 @@ mod member_freshness_tests {
                 .count()
         });
         assert_eq!(member_requests, 2, "one refetch per member change, none without");
+        drop(bridge);
+        drop(server);
+        drop(rt);
+    }
+
+    #[test]
+    fn a_member_check_answers_from_a_synced_roster_without_a_request() {
+        let room = room_id!("!big:example.org");
+        let rt = tokio::runtime::Runtime::new().expect("runtime");
+        let (server, client) = rt.block_on(async {
+            let server = MatrixMockServer::new().await;
+            let client = server.client_builder().build().await;
+            let me = client.user_id().unwrap().to_string();
+            server
+                .mock_get_members()
+                .ok(vec![
+                    in_room(member(&me, "join", "Me", "$m0"), room),
+                    in_room(member("@ada:example.org", "join", "Ada", "$m1"), room),
+                    in_room(member("@gone:example.org", "leave", "Gone", "$m2"), room),
+                ])
+                .mount()
+                .await;
+            let create = json!({
+                "type": "m.room.create", "state_key": "", "sender": me,
+                "event_id": "$create", "origin_server_ts": 1_700_000_000_000u64,
+                "content": { "room_version": "11", "creator": me },
+            });
+            sync(&client, room, "pos-1", vec![create, member(&me, "join", "Me", "$m0")], vec![])
+                .await;
+            client.get_room(room).unwrap().sync_members().await.expect("members synced");
+            (server, client)
+        });
+
+        let dir = std::env::temp_dir()
+            .join(format!("lightning-member-check-{}", std::process::id()));
+        let bridge = crate::RustClient::new(dir).expect("bridge");
+        *bridge.client.lock().unwrap() = Some(client.clone());
+        let requests = || {
+            rt.block_on(async {
+                server.server().received_requests().await.unwrap_or_default().len()
+            })
+        };
+        let before = requests();
+
+        let users = json!(["@ada:example.org", "@gone:example.org", "@zoe:example.org", "nope"]);
+        room_member_check(&bridge, room.to_string(), users.to_string(), 5).expect("joined room");
+        let started = std::time::Instant::now();
+        let answer = loop {
+            let found = bridge.events.lock().unwrap().iter().find_map(|raw| {
+                let value: serde_json::Value = serde_json::from_str(raw).ok()?;
+                (value["type"] == "room_member_check" && value["op_id"] == json!(5))
+                    .then_some(value)
+            });
+            if let Some(value) = found {
+                break value;
+            }
+            assert!(started.elapsed() < std::time::Duration::from_secs(20), "no answer");
+            std::thread::sleep(std::time::Duration::from_millis(20));
+        };
+        assert_eq!(answer["room_id"], json!(room.as_str()), "{answer}");
+        assert_eq!(answer["members"], json!(["@ada:example.org"]), "{answer}");
+        assert_eq!(answer["absent"], json!(["@gone:example.org", "@zoe:example.org"]), "{answer}");
+        assert_eq!(requests(), before, "a synced roster was asked again");
+        assert!(room_member_check(&bridge, "!nowhere:example.org".to_owned(), "[]".to_owned(), 6)
+            .is_err());
         drop(bridge);
         drop(server);
         drop(rt);
