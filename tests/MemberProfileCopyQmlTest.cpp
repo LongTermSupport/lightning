@@ -113,14 +113,14 @@ ApplicationWindow {
 }
 )QML";
 
-QByteArray pngBytes(const QColor &color)
+QByteArray imageBytes(const QColor &color, const char *format)
 {
-    QImage image(48, 48, QImage::Format_ARGB32);
+    QImage image(48, 48, QImage::Format_RGB32);
     image.fill(color);
     QByteArray bytes;
     QBuffer buffer(&bytes);
     buffer.open(QIODevice::WriteOnly);
-    image.save(&buffer, "PNG");
+    image.save(&buffer, format);
     return bytes;
 }
 
@@ -192,7 +192,8 @@ private:
     // Opens the picture through the avatar's own view action, then copies it
     // and downloads it from the viewer exactly as its menu and toolbar do.
     void copyAndSaveFromTheViewer(QObject *root, QQuickItem *avatar,
-                                  const QString &mxc, const QByteArray &png)
+                                  const QString &mxc, const QByteArray &bytes,
+                                  const QString &mime, const QString &extension)
     {
         QVERIFY(avatar);
         auto *action = findItem(avatar, QStringLiteral("avatarViewAction"));
@@ -219,7 +220,7 @@ private:
         QCOMPARE(copied.at(0).at(0).toBool(), true);
         const QMimeData *clip = QGuiApplication::clipboard()->mimeData();
         QVERIFY(clip);
-        QCOMPARE(clip->data(QStringLiteral("image/png")), png);
+        QCOMPARE(clip->data(mime), bytes);
 
         QTemporaryDir folder;
         QVERIFY(folder.isValid());
@@ -231,13 +232,29 @@ private:
         QCOMPARE(saved.at(0).at(0).toString(), mxc);
         const QString path = saved.at(0).at(1).toString();
         QVERIFY2(path.startsWith(folder.path()), qPrintable(path));
+        QCOMPARE(QFileInfo(path).suffix(), extension);
         QFile file(path);
         QVERIFY(file.open(QIODevice::ReadOnly));
-        QCOMPARE(file.readAll(), png);
+        QCOMPARE(file.readAll(), bytes);
         m_controller->settings()->setDownloadFolder(QString());
 
         QVERIFY(QMetaObject::invokeMethod(viewer, "close"));
         QTRY_VERIFY(!openViewer(root));
+    }
+
+    void createAvatarScene(std::unique_ptr<QObject> &root)
+    {
+        if (!m_engine->imageProvider(QStringLiteral("lightning-media")))
+            m_engine->addImageProvider(QStringLiteral("lightning-media"),
+                                       new MediaImageProvider(m_controller->mediaBridge()));
+        QQmlComponent component(m_engine);
+        component.setData(QByteArray(kAvatarScene),
+                          QUrl(QStringLiteral("avatar-scene.qml")));
+        root.reset(component.create());
+        QVERIFY2(root, qPrintable(component.errorString()));
+        auto *window = qobject_cast<QQuickWindow *>(root.get());
+        QVERIFY(window);
+        QVERIFY(QTest::qWaitForWindowExposed(window));
     }
 
 private slots:
@@ -619,30 +636,19 @@ private slots:
         QCOMPARE(rows, 10);
         QVERIFY2(failures.isEmpty(), qPrintable(failures.join(QLatin1Char('\n'))));
     }
-    void roomAndUserPicturesCanBeCopiedAndSavedFromTheViewer()
+    void aRoomPictureCanBeCopiedAndSavedFromTheViewer()
     {
         auto *mock = m_controller->findChild<MockMatrixClient *>();
         QVERIFY(mock);
         mock->setSupportsMediaBridgeForTest(true);
         auto restore = qScopeGuard([mock] { mock->setSupportsMediaBridgeForTest(false); });
         const QString roomMxc = QStringLiteral("mxc://mock.local/room-picture");
-        const QString userMxc = QStringLiteral("mxc://mock.local/user-picture");
-        const QByteArray roomPng = pngBytes(QColor(200, 40, 40));
-        const QByteArray userPng = pngBytes(QColor(40, 40, 200));
-        mock->setAvatarBytesForTest(roomMxc, roomPng, QStringLiteral("image/png"));
-        mock->setAvatarBytesForTest(userMxc, userPng, QStringLiteral("image/png"));
-
-        if (!m_engine->imageProvider(QStringLiteral("lightning-media")))
-            m_engine->addImageProvider(QStringLiteral("lightning-media"),
-                                       new MediaImageProvider(m_controller->mediaBridge()));
-        QQmlComponent component(m_engine);
-        component.setData(QByteArray(kAvatarScene),
-                          QUrl(QStringLiteral("avatar-scene.qml")));
-        std::unique_ptr<QObject> root(component.create());
-        QVERIFY2(root, qPrintable(component.errorString()));
-        auto *window = qobject_cast<QQuickWindow *>(root.get());
-        QVERIFY(window);
-        QVERIFY(QTest::qWaitForWindowExposed(window));
+        const QByteArray png = imageBytes(QColor(200, 40, 40), "PNG");
+        mock->setAvatarBytesForTest(roomMxc, png, QStringLiteral("image/png"));
+        std::unique_ptr<QObject> root;
+        createAvatarScene(root);
+        if (QTest::currentTestFailed())
+            return;
 
         auto *panel = root->property("panel").value<QQuickItem *>();
         QVERIFY(panel);
@@ -654,7 +660,22 @@ private slots:
                          .value(QStringLiteral("avatarUrl")).toString(), roomMxc);
         copyAndSaveFromTheViewer(root.get(),
                                  findItem(panel, QStringLiteral("roomInfoAvatar")),
-                                 roomMxc, roomPng);
+                                 roomMxc, png, QStringLiteral("image/png"),
+                                 QStringLiteral("png"));
+    }
+
+    void aUserPictureCanBeCopiedAndSavedFromTheViewer()
+    {
+        auto *mock = m_controller->findChild<MockMatrixClient *>();
+        QVERIFY(mock);
+        mock->setSupportsMediaBridgeForTest(true);
+        auto restore = qScopeGuard([mock] { mock->setSupportsMediaBridgeForTest(false); });
+        const QString userMxc = QStringLiteral("mxc://mock.local/user-picture");
+        const QByteArray jpeg = imageBytes(QColor(40, 40, 200), "JPG");
+        QVERIFY(jpeg.startsWith("\xff\xd8\xff"));
+        mock->setAvatarBytesForTest(userMxc, jpeg, QStringLiteral("image/jpeg"));
+        std::unique_ptr<QObject> root;
+        createAvatarScene(root);
         if (QTest::currentTestFailed())
             return;
 
@@ -677,7 +698,8 @@ private slots:
             }
             return cardAvatar != nullptr;
         }());
-        copyAndSaveFromTheViewer(root.get(), cardAvatar, userMxc, userPng);
+        copyAndSaveFromTheViewer(root.get(), cardAvatar, userMxc, jpeg,
+                                 QStringLiteral("image/jpeg"), QStringLiteral("jpg"));
         QMetaObject::invokeMethod(card, "close");
     }
 
