@@ -192,6 +192,9 @@ config-tests:
     # The COPR source spec declares the release RPM's dependencies and builds
     # with the same fail-closed options.
     - python3 ./packaging-ci/tests/test-copr-spec-parity.py
+    # The gitlab.com CI gates: producer exit status, first-attempt failures, run == registered.
+    - python3 ./packaging-ci/tests/test-ci-test-gates.py
+    - ./packaging-ci/tests/test-write-build-info.sh
 
 # Proves the GitHub mirror token works before anything is published, since the
 # mirror job only runs after the GitLab tag and release exist. Refuses a token
