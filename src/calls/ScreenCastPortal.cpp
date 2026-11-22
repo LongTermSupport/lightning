@@ -107,7 +107,10 @@ private:
 };
 #endif
 
-ScreenCastPortal::ScreenCastPortal(QObject *parent) : QObject(parent)
+ScreenCastPortal::ScreenCastPortal(QObject *parent)
+    : QObject(parent),
+      m_capability(this, "org.freedesktop.portal.ScreenCast",
+                   [this] { Q_EMIT capabilityChanged(); })
 {
     m_requestTimeout.setSingleShot(true);
     m_requestTimeout.setInterval(kRequestTimeoutMs);
@@ -143,22 +146,21 @@ ScreenCastPortal::~ScreenCastPortal()
     cancel();
 }
 
-bool ScreenCastPortal::available()
+portal::Capability ScreenCastPortal::capability()
 {
 #if defined(Q_OS_WIN) || defined(Q_OS_MACOS)
-    return QGuiApplication::screens().size() > 0;
-#elif defined(HAVE_QT_DBUS)
-    if (!QDBusConnection::sessionBus().isConnected())
-        return false;
-    QDBusMessage probe = QDBusMessage::createMethodCall(
-        kService, kPath, "org.freedesktop.DBus.Properties",
-        QStringLiteral("Get"));
-    probe << QString::fromLatin1(kScreenCast) << QStringLiteral("version");
-    const QDBusMessage reply =
-        QDBusConnection::sessionBus().call(probe, QDBus::Block, 2000);
-    return reply.type() == QDBusMessage::ReplyMessage;
+    return QGuiApplication::screens().size() > 0
+        ? portal::Capability::Available
+        : portal::Capability::Unavailable;
 #else
-    return false;
+    return m_capability.state();
+#endif
+}
+
+void ScreenCastPortal::refreshCapability()
+{
+#if !defined(Q_OS_WIN) && !defined(Q_OS_MACOS)
+    m_capability.refresh();
 #endif
 }
 

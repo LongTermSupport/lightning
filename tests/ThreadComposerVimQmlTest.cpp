@@ -19,6 +19,7 @@
 #include "models/VimKeymap.h"
 #include "stickers/StickerPackManager.h"
 #include "threads/ThreadController.h"
+#include "support/SettledClick.h"
 
 class ThreadComposerVimQmlTest : public QObject
 {
@@ -340,15 +341,11 @@ ApplicationWindow {
         QTRY_VERIFY(thread->state() == ThreadController::Ready);
         const QString root = thread->rootEventId();
         const int before = mock()->pollCreatesForTest();
-        const auto click = [this](QQuickItem *it) {
-            const QPointF c = it->mapToScene(QPointF(it->width() / 2, it->height() / 2));
-            QTest::mouseClick(m_window, Qt::LeftButton, {}, c.toPoint());
-        };
-
         auto *plus = item("threadAttachButton");
         QVERIFY(plus);
         QTRY_VERIFY(plus->isEnabled() && plus->width() > 0);
-        click(plus);
+        if (!testsupport::clickWhenSettled(m_window, plus))
+            return;
         auto *menu = m_window->findChild<QObject *>(QStringLiteral("threadAttachMenu"));
         QVERIFY2(menu, "the thread + has no menu");
         QTRY_VERIFY(menu->property("opened").toBool());
@@ -356,7 +353,8 @@ ApplicationWindow {
             QStringLiteral("threadCreatePollMenuItem"));
         QVERIFY(pollItem);
         QTRY_VERIFY(pollItem->isVisible() && pollItem->isEnabled() && pollItem->width() > 0);
-        click(pollItem);
+        if (!testsupport::clickWhenSettled(m_window, pollItem))
+            return;
 
         auto *dialog = m_window->findChild<QObject *>(QStringLiteral("threadCreatePollDialog"));
         QVERIFY(dialog);
@@ -372,7 +370,8 @@ ApplicationWindow {
         auto *submit = find(content, QStringLiteral("createPollSubmitButton"));
         QVERIFY(submit);
         QTRY_VERIFY(submit->isEnabled());
-        click(submit);
+        if (!testsupport::clickWhenSettled(m_window, submit))
+            return;
 
         QTRY_COMPARE(mock()->pollCreatesForTest(), before + 1);
         QCOMPARE(mock()->lastPollThreadRootForTest(), root);

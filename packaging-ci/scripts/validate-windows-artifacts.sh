@@ -204,20 +204,20 @@ done < <(find "$STAGE" -type f -print)
 # `/source/` is anchored: unanchored it matched upstream strings such as
 # webrtc's ".../system_wrappers/source/field_trial.cc" and the device category
 # "Sink/Source/Audio/Video". A path rooted at /source still matches.
-readonly FORBIDDEN_RE='(/home/roksme|/builds/[^ ]+|(^|[^[:alnum:]_.+-])/source/|Documents/API|loggins\.txt|10\.195\.35\.[26]|CI_JOB_TOKEN|glrt-|glpat-|gldt-)'
+readonly FORBIDDEN_RE='(/home/roksme|/builds/[^ ]+|(^|[^[:alnum:]_.+-])/source/|Documents/API|loggins\.txt|10\.195\.35\.[26]|CI_JOB_TOKEN|(glrt|glpat|gldt)-[[:alnum:]_-]{20,})'
 
 # Prove the scanner against known-bad and known-good samples on every run: a
 # regex that silently stops matching would pass a real leak.
 scan_self_test() {
     local bad good
     for bad in '/home/roksme/git/lightning' '/builds/Mizerd/lightning-deploy/work' \
-               '/source/lightning/main.cpp' 'glpat-EXAMPLETOKENVALUE' \
+               '/source/lightning/main.cpp' 'glpat-EXAMPLETOKENVALUE0123456789' \
                'CI_JOB_TOKEN=x' '10.195.35.2'; do
         printf '%s\n' "$bad" | grep -Eiq "$FORBIDDEN_RE" || \
             die "the forbidden-marker scanner no longer matches '$bad' — it would pass a real leak"
     done
     for good in '../webrtc/system_wrappers/source/field_trial.cc' \
-                'icu/source/tools/gencmn/gencmn' 'Sink/Source/Audio/Video'; do
+                'icu/source/tools/gencmn/gencmn' 'Sink/Source/Audio/Video' 'Gldt-'; do
         printf '%s\n' "$good" | grep -Eiq "$FORBIDDEN_RE" && \
             die "the forbidden-marker scanner matches upstream string '$good' — it will fail every build on a false positive"
     done
@@ -613,7 +613,7 @@ done < <(sed -n 's/^[^=]*=[[:space:]]*//p' "$EXTRACTED/qt.conf")
 # root) applies only to Lightning-owned PEs and packaged text files: upstream
 # Qt and FFmpeg are built inside /usr/x86_64-w64-mingw32 and legitimately
 # contain that string.
-leak_pattern='(/root/|/builds/|CI_JOB_TOKEN|glrt-|glpat-|gldt-)'
+leak_pattern='(/root/|/builds/|CI_JOB_TOKEN|(glrt|glpat|gldt)-[[:alnum:]_-]{20,})'
 own_pattern='(/home/[a-z_][a-z0-9_-]*|/usr/x86_64-w64-mingw32|/usr/src/lightning-deploy)'
 lightning_owned_pe='^(Lightning\.exe|lightning-updater\.exe)$'
 while IFS= read -r candidate; do

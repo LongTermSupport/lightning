@@ -29,6 +29,8 @@ struct Options {
     bool reachesStartOfRoom = false;
     /// Messages present but unreadable (no key). -1 when not counted.
     int undecryptableCount = -1;
+    /// Edits the walk could not apply (their originals are shown). -1 when not counted.
+    qint64 editsUnresolved = -1;
     bool includeAttachments = false;
     qint64 attachmentBudgetBytes = 0;
 };

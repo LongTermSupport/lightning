@@ -1,0 +1,16 @@
+# Expiry is exclusive (UTC). Scope decisions to an exact component version, revision or binary hash.
+[[triage]]
+id = "CVE-2026-55093"
+component = "cargo:tract-nnef"
+version = "0.21.14"
+decision = "not_affected"
+reason = "The advisory requires loading a hostile NNEF tensor archive. rust/src/denoise.rs embeds the tracked DeepFilterNet3 ONNX model. DfTract::new in third_party/deepfilternet/libDF/src/tract.rs passes its encoder and decoder bytes to the ONNX readers. The microphone FFI accepts samples and exposes no model input."
+expiry = 2026-12-22
+
+[[triage]]
+id = "CVE-2026-55832"
+component = "cargo:tract-onnx"
+version = "0.21.14"
+decision = "not_affected"
+reason = "The advisory requires an untrusted ONNX model with an external_data location. create in rust/src/denoise.rs supplies include_bytes! through DfParams::from_bytes. DfTract::new passes Cursors over the embedded models to model_for_read in third_party/deepfilternet/libDF/src/tract.rs. Revisit if model selection or loading changes."
+expiry = 2026-12-22

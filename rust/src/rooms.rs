@@ -4511,7 +4511,16 @@ pub(crate) fn request_edit_history(
                     }
                     _ => false,
                 };
-                if !sender_ok {
+                let sealed = parsed.event_type().to_string() == "m.room.encrypted";
+                let valid = sealed
+                    || matrix_sdk::check_validity_of_replacement_events(
+                        original.raw(),
+                        original.encryption_info().map(|info| &**info),
+                        related.raw(),
+                        related.encryption_info().map(|info| &**info),
+                    )
+                    .is_ok();
+                if !sender_ok || !valid {
                     return None;
                 }
                 revision(related.raw(), false)

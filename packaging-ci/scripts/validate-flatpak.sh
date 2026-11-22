@@ -30,6 +30,8 @@ trap cleanup EXIT
 
 flatpak remote-add --user --if-not-exists flathub "$FLATHUB_REPO"
 flatpak install --user --noninteractive --bundle "$bundle"
+appdir="$FLATPAK_USER_DIR/app/$APP_ID/current/active/files"
+"$SCRIPT_DIR/check-elf-stacks.sh" "$appdir/bin/lightning-matrix" "$appdir/bin/lightning-updater" "$appdir"
 flatpak info --user "$APP_ID" | tee dist/flatpak-info.txt
 grep -q "GPL-3.0-or-later" dist/flatpak-info.txt \
     || echo "note: licence not shown by flatpak info"
@@ -141,7 +143,6 @@ if [ "${PUBLISH_PACKAGES:-false}" = "true" ]; then
 fi
 
 # Leak audit inside the mounted app tree.
-appdir="$FLATPAK_USER_DIR/app/$APP_ID/current/active/files"
 test -d "$appdir" || die "installed app files missing"
 # Flatpak never runs the update helper, but its presence proves the install
 # rule placed both executables.

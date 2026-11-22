@@ -14,6 +14,7 @@
 #include "app/AppController.h"
 #include "app/SettingsManager.h"
 #include "auth/AccountManager.h"
+#include "support/SettledClick.h"
 
 namespace {
 
@@ -253,11 +254,7 @@ private slots:
         };
         QTRY_VERIFY2(findDeepTeal() != nullptr,
                      "no Deep Teal theme action after filtering");
-        QQuickItem *row = findDeepTeal();
-        const QPointF center = row->mapToScene(
-            QPointF(row->width() / 2, row->height() / 2));
-        QTest::mouseClick(m_window, Qt::LeftButton, Qt::NoModifier,
-                          center.toPoint());
+        QVERIFY(testsupport::clickWhenSettled(m_window, findDeepTeal()));
         QTRY_COMPARE(int(m_controller->settings()->theme()), 10);
         QTRY_VERIFY(!switcher()->property("visible").toBool());
         m_controller->settings()->setTheme(before);

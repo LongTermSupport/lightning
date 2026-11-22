@@ -43,7 +43,7 @@ deb_payload_json() {
     (cd "$INV/x" && find . -type f -print0 | sort -z | while IFS= read -r -d '' f; do
         [[ "$(head -c4 "$f" | od -An -tx1 | tr -d ' \n')" == 7f454c46 ]] || continue
         case "$f" in
-            ./usr/bin/lightning-matrix) component=lightning ;;
+            ./usr/bin/lightning-matrix|./usr/bin/lightning-updater) component=lightning ;;
             *) component=unknown ;;
         esac
         jq -n --arg path "${f#.}" --arg sha256 "$(sha256sum "$f" | cut -d' ' -f1)" \
@@ -66,13 +66,17 @@ if [[ "$FORMAT" == deb ]]; then
             checksum: (if .[3] == "" then null else .[3] end)}' | jq -s . >"$INV/crates.json"
     [[ "$(jq length "$INV/crates.json")" == "$(grep -c '^\[\[package\]\]' "$CARGO_LOCK")" ]] \
         || die "Cargo.lock inventory count differs from its [[package]] count"
+    cargo_hash="$(sha256sum "$CARGO_LOCK" | cut -d' ' -f1)"
+    flake_hash="$(sha256sum "$ROOT/work/lightning/flake.lock" | cut -d' ' -f1)"
     for file in "${artifacts[@]}"; do
         deb_payload_json "$file" >"$INV/binaries.json"
         [[ "$(jq length "$INV/binaries.json")" -gt 0 ]] || die "$file installs no ELF binary to inventory"
         jq -n --arg artifact "$file" --arg sha256 "$(cd "$ROOT/dist" && sha256sum "$file" | cut -d' ' -f1)" \
             --arg depends "$(dpkg-deb -f "$ROOT/dist/$file" Depends)" \
+            --arg cargo_hash "$cargo_hash" --arg flake_hash "$flake_hash" \
             --slurpfile binaries "$INV/binaries.json" --slurpfile crates "$INV/crates.json" \
             '{artifact:$artifact, sha256:$sha256, bundled_binaries:$binaries[0],
+              lock_sha256:{cargo:$cargo_hash, flake:$flake_hash},
               system_dependencies:($depends | split(", ") | map(select(. != ""))),
               rust_lock_packages:$crates[0]}'
     done | jq -s . >"$INV/components.json"

@@ -4074,6 +4074,8 @@ void AppController::enableCallMediaEngine()
     if (GstCallMediaBackend::runtimeAvailable(&whyNot)) {
         auto *engine = new GstCallMediaBackend(this);
         m_calls->setMediaBackend(engine);
+        auto *cameraPortal = new CameraPortal(engine);
+        cameraPortal->refreshCapability();
         engine->setAudioDeviceResolver([this] {
             GstCallMediaBackend::AudioDevicePlan plan;
             if (!m_settings || !m_callDevices)
@@ -4086,6 +4088,7 @@ void AppController::enableCallMediaEngine()
                 plan.microphoneFront =
                     SfuMediaEngine::microphoneFrontDescription(capture);
                 plan.microphoneBinding = capture.binding;
+                m_callDevices->noteMicrophoneBinding(mic.id, capture.fellBack);
             }
             if (!m_settings->preferredSpeakerId().isEmpty()) {
                 const auto speaker = m_callDevices->speakerSelection();
@@ -4097,7 +4100,7 @@ void AppController::enableCallMediaEngine()
             }
             return plan;
         });
-        engine->setCameraResolver([this](int portalFd) {
+        engine->setCameraResolver([this, cameraPortal](int portalFd) {
             GstCallMediaBackend::CameraPlan plan;
             if (qEnvironmentVariableIsSet("LIGHTNING_CALL_TEST_CAMERA")) {
                 plan.front = QStringLiteral(
@@ -4109,7 +4112,8 @@ void AppController::enableCallMediaEngine()
             const bool direct = portalFd < 0;
 #ifdef Q_OS_LINUX
             if (direct && sandboxenv::isSandboxed()) {
-                if (CameraPortal::available())
+                if (cameraPortal->capability()
+                    != portal::Capability::Unavailable)
                     plan.needsPortal = true;
                 else
                     plan.refusal = QStringLiteral("camera_unavailable");
@@ -4156,23 +4160,22 @@ void AppController::enableCallMediaEngine()
             }
             return plan;
         });
-        if (CameraPortal::available()) {
-            auto *portal = new CameraPortal(engine);
+        {
             auto callIdOnGrant = std::make_shared<QString>();
-            connect(engine, &GstCallMediaBackend::cameraAccessNeeded, portal,
-                    [portal, callIdOnGrant](const QString &callId) {
+            connect(engine, &GstCallMediaBackend::cameraAccessNeeded, cameraPortal,
+                    [cameraPortal, callIdOnGrant](const QString &callId) {
                         *callIdOnGrant = callId;
-                        portal->requestAccess();
+                        cameraPortal->requestAccess();
                     });
-            connect(portal, &CameraPortal::ready, engine,
+            connect(cameraPortal, &CameraPortal::ready, engine,
                     [engine, callIdOnGrant](int fd) {
                         engine->providePortalCamera(*callIdOnGrant, fd);
                     });
             const auto refused = [engine, callIdOnGrant] {
                 engine->providePortalCamera(*callIdOnGrant, -1);
             };
-            connect(portal, &CameraPortal::cancelled, engine, refused);
-            connect(portal, &CameraPortal::failed, engine, refused);
+            connect(cameraPortal, &CameraPortal::cancelled, engine, refused);
+            connect(cameraPortal, &CameraPortal::failed, engine, refused);
         }
         connect(m_calls.get(), &CallController::cameraFailed, this,
                 [this](const QString &category) {
@@ -4204,6 +4207,8 @@ void AppController::enableCallMediaEngine()
         connect(m_callDevices.get(),
                 &CallDeviceController::activeDevicesChanged, sfu,
                 applySfuDevices);
+        connect(sfu, &SfuMediaEngine::microphoneBound, m_callDevices.get(),
+                &CallDeviceController::noteMicrophoneBinding);
         connect(m_callDevices.get(),
                 &CallDeviceController::audioOutputsChanged, sfu,
                 [this, sfu] {
@@ -4216,19 +4221,25 @@ void AppController::enableCallMediaEngine()
             m_client->setCallMediaCapable(true);
         m_rtc->setMediaAvailable(true);
         m_rtc->setMediaEncryptionAvailable(true);
-        if (ScreenCastPortal::available()) {
-            m_groupCall->setScreenCastPortal(new ScreenCastPortal(this));
-            qCInfo(lcApp) << "screen-share portal available";
-        } else {
-            qCInfo(lcApp) << "screen-share portal unavailable";
-        }
-        if (CameraPortal::available()) {
-            m_groupCall->setCameraPortal(new CameraPortal(this));
-            qCInfo(lcApp) << "camera portal available present="
-                          << CameraPortal::cameraPresent();
-        } else {
-            qCInfo(lcApp) << "camera portal unavailable";
-        }
+        // Probed asynchronously: a slow portal must not hold up startup.
+        auto *screenCast = new ScreenCastPortal(this);
+        connect(screenCast, &ScreenCastPortal::capabilityChanged, this,
+                [screenCast] {
+                    qCInfo(lcApp) << "screen-share portal capability="
+                                  << int(screenCast->capability());
+                });
+        screenCast->refreshCapability();
+        m_groupCall->setScreenCastPortal(screenCast);
+        auto *groupCamera = new CameraPortal(this);
+        connect(groupCamera, &CameraPortal::capabilityChanged, this,
+                [groupCamera] {
+                    qCInfo(lcApp) << "camera portal capability="
+                                  << int(groupCamera->capability())
+                                  << "present="
+                                  << int(groupCamera->cameraPresence());
+                });
+        groupCamera->refreshCapability();
+        m_groupCall->setCameraPortal(groupCamera);
         qCInfo(lcApp) << "group-call media engine active (webrtcbin/SFU)";
     } else {
         qCInfo(lcApp) << "group-call media engine unavailable:" << sfuWhyNot;

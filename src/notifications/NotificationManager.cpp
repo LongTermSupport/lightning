@@ -718,7 +718,8 @@ bool NotificationManager::refreshFromEdit(const TimelineEvent &edit,
             break;
     }
     if (group == own.groups.end() || group->withdrawn
-        || group->sender != edit.sender)
+        || group->sender != edit.sender
+        || (group->encrypted && !edit.isEncrypted))
         return false;
     const qint64 stamp =
         edit.timestamp.isValid() ? edit.timestamp.toMSecsSinceEpoch() : 0;
@@ -936,8 +937,10 @@ void NotificationManager::deliverDecision(const TimelineEvent &event,
     currentGroup.title = decision.title;
     currentGroup.body = body;
     currentGroup.sender = event.sender;
-    if (!replacement)
+    if (!replacement) {
         currentGroup.editStampMs = 0;
+        currentGroup.encrypted = event.isEncrypted;
+    }
 
     Card card;
     card.title = title;

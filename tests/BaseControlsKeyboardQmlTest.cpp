@@ -7,6 +7,7 @@
 #include <QQmlEngine>
 #include <QQuickItem>
 #include <QQuickWindow>
+#include "support/SettledClick.h"
 
 namespace {
 
@@ -313,7 +314,7 @@ private slots:
         QTRY_VERIFY(QMetaObject::invokeMethod(list, "itemAtIndex", Q_RETURN_ARG(QQuickItem *, row),
                                               Q_ARG(int, 0))
                     && row);
-        QTest::mouseClick(m_window, Qt::LeftButton, Qt::NoModifier, center(row));
+        QVERIFY(testsupport::clickWhenSettled(m_window, row));
         QTRY_VERIFY(!popup->property("visible").toBool());
         QCOMPARE(combo->property("currentIndex").toInt(), 2);
         QCOMPARE(m_root->property("fontPicked").toString(), QStringLiteral("Fira Code"));

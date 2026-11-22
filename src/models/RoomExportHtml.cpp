@@ -351,6 +351,11 @@ bool HtmlWriter::writeHeader(int messageCount)
         h += QStringLiteral("<p class=\"warn\">Messages that could not be "
                             "decrypted: %1</p>\n")
                  .arg(m_options.undecryptableCount);
+    if (m_options.editsUnresolved > 0)
+        h += QStringLiteral("<p class=\"warn\">Edits that could not be "
+                            "applied: %1 (those messages are shown in their "
+                            "original form)</p>\n")
+                 .arg(m_options.editsUnresolved);
     const bool textAllowed =
         !m_options.encrypted || m_options.allowEncryptedPlaintext;
     if (m_options.encrypted) {

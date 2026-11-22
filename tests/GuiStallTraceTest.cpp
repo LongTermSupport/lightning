@@ -1,6 +1,9 @@
 #include <QtTest/QtTest>
 
 #include <QCoreApplication>
+#include <QThread>
+
+#include <memory>
 
 #include "app/GuiStallTracer.h"
 
@@ -59,6 +62,22 @@ private Q_SLOTS:
         QTRY_COMPARE_WITH_TIMEOUT(stalltrace::stallCount(), 3, 2000);
         QCOMPARE(stalltrace::lastStallCategory(),
                  QByteArrayLiteral("inner-section"));
+    }
+
+    void guiWorkIsCountedOnlyOnTheGuiThread()
+    {
+        stalltrace::resetGuiWork();
+        stalltrace::noteGuiWork("probe", 100);
+        stalltrace::noteGuiWork("probe", 23);
+        std::unique_ptr<QThread> worker(QThread::create(
+            [] { stalltrace::noteGuiWork("probe", 1000); }));
+        worker->start();
+        QVERIFY(worker->wait(5000));
+        QCOMPARE(stalltrace::guiWorkCalls("probe"), 2);
+        QCOMPARE(stalltrace::guiWorkBytes("probe"), qint64(123));
+        QCOMPARE(stalltrace::guiWorkCalls("other"), 0);
+        stalltrace::resetGuiWork();
+        QCOMPARE(stalltrace::guiWorkBytes("probe"), qint64(0));
     }
 };
 
