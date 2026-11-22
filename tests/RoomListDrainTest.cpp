@@ -58,7 +58,7 @@ private:
 
     static QByteArray spaces()
     {
-        return wire({ { QStringLiteral("type"), QStringLiteral("spaces") },
+        return wire({ { QStringLiteral("type"), QStringLiteral("space_list_reset") },
                       { QStringLiteral("spaces"), QJsonArray() } });
     }
 

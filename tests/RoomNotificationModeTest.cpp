@@ -1258,7 +1258,9 @@ private Q_SLOTS:
         const QString poll = body(QStringLiteral("void RustSdkMatrixClient::pollRustEvents()"));
         QVERIFY(!poll.isEmpty());
         QVERIFY(poll.contains(QLatin1String("const quint64 eventGeneration = m_handleGeneration;")));
-        QCOMPARE(poll.count(QStringLiteral("if (m_lifecycle.acceptsActive(eventGeneration)) {")), 2);
+        const QString drain = body(QStringLiteral("void RustSdkMatrixClient::drainSdkEvents("));
+        QCOMPARE((poll + drain).count(
+                     QStringLiteral("if (m_lifecycle.acceptsActive(eventGeneration)) {")), 2);
     }
 
     void anIgnoreListChangeReopensTheOpenTimelines()

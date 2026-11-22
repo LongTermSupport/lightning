@@ -1041,8 +1041,9 @@ private:
     QString rustStorePathForUser(const QString &userIdForStore) const;
     void pollRustEvents();
     void drainSdkEvents(const std::function<QByteArray()> &next,
-                        quint64 eventGeneration);
-    void requestRoomListResync();
+                        quint64 eventGeneration, bool handleBound);
+    void noteRoomsChanged();
+    void flushRoomsChanged();
     void armPaginationPoll(quint64 chain, int ticksLeft, int quietTicks);
     void handleRustEvent(const QJsonObject &event, quint64 eventGeneration);
 
@@ -1050,10 +1051,9 @@ private:
     {
         if (!m_lifecycle.acceptsActive(m_lifecycle.activeGeneration()))
             m_lifecycle.beginSession();
-        m_handleGeneration = m_lifecycle.activeGeneration();
         drainSdkEvents([&events] {
             return events.isEmpty() ? QByteArray() : events.takeFirst();
-        }, m_handleGeneration);
+        }, m_lifecycle.activeGeneration(), false);
         return int(events.size());
     }
 
@@ -1220,6 +1220,9 @@ private:
     bool m_coalesceTimelineInserts = false;
     int m_roomListResyncRequests = 0;
     bool m_backlogPollPending = false;
+    bool m_coalesceRoomsChanged = false;
+    bool m_roomsChangedPending = false;
+    bool m_roomListAwaitingReset = false;
     QString m_timelineInsertBatchRoom;
     quint64 m_timelineInsertBatchGeneration = 0;
     int m_timelineInsertBatchFirst = -1;

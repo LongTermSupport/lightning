@@ -12423,7 +12423,8 @@ async fn run_modern_sync(
                 }
                 _ = &mut watchdog => {}
                 batch = entries.next() => {
-                    let Some(batch) = batch else { break; };
+                    let Some(mut batch) = batch else { break; };
+                    extend_with_ready(&mut batch, &mut entries, 256);
                     if let Some(bg) = &background {
                         watch_room_list_diffs(batch, latest_events, &mut watched_latest,
                                               &mut watch_stamps, &mut watch_order,
@@ -13261,6 +13262,21 @@ async fn run_classic_sync_with(
                     }));
                 }
             }
+        }
+    }
+}
+
+// A first sync yields one diff per batch, and each batch costs a spaces
+// snapshot over every joined room.
+fn extend_with_ready<T, S>(batch: &mut Vec<T>, stream: &mut S, cap: usize)
+where
+    S: futures_util::Stream<Item = Vec<T>> + Unpin,
+{
+    use futures_util::FutureExt;
+    while batch.len() < cap {
+        match stream.next().now_or_never() {
+            Some(Some(more)) => batch.extend(more),
+            _ => break,
         }
     }
 }
@@ -15332,6 +15348,24 @@ mod thread_subscription_reason_tests {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn ready_room_list_batches_join_the_one_being_forwarded() {
+        let mut ready = futures_util::stream::iter((1..=1000).map(|n| vec![n]));
+        let mut batch = vec![0];
+        super::extend_with_ready(&mut batch, &mut ready, 256);
+        assert_eq!(batch, (0..256).collect::<Vec<_>>());
+
+        let mut short = futures_util::stream::iter([vec![1], vec![2, 3]]);
+        let mut batch = vec![0];
+        super::extend_with_ready(&mut batch, &mut short, 256);
+        assert_eq!(batch, vec![0, 1, 2, 3]);
+
+        let mut idle = futures_util::stream::pending::<Vec<i32>>();
+        let mut batch = vec![0];
+        super::extend_with_ready(&mut batch, &mut idle, 256);
+        assert_eq!(batch, vec![0]);
+    }
+
     #[test]
     fn mark_read_target_does_not_depend_on_latest_event() {
         let id = |s: &str| super::EventId::parse(s).unwrap();
