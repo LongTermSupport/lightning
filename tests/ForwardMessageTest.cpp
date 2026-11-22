@@ -7,6 +7,7 @@
 #include <QSignalSpy>
 #include <QBuffer>
 #include <QImage>
+#include <QImageReader>
 #include <QtTest/QtTest>
 
 namespace {
@@ -208,6 +209,32 @@ static QByteArray realGifBytes()
         "47494638396101000100800000000000ffffff21f90401000000"
         "002c00000000010001000002024401003b");
 }
+
+// A 64x32 stored JPEG, red 16x16 top-left on blue, carrying EXIF `orientation`.
+static QByteArray rotatedJpeg(int orientation)
+{
+    QImage image(64, 32, QImage::Format_RGB32);
+    image.fill(Qt::blue);
+    for (int y = 0; y < 16; ++y)
+        for (int x = 0; x < 16; ++x)
+            image.setPixel(x, y, qRgb(255, 0, 0));
+    QByteArray jpeg;
+    QBuffer buffer(&jpeg);
+    buffer.open(QIODevice::WriteOnly);
+    image.save(&buffer, "JPG", 95);
+    QByteArray tiff("MM\0*\0\0\0\x08\0\1\x01\x12\0\3\0\0\0\1", 18);
+    tiff.append(char(0));
+    tiff.append(char(orientation));
+    tiff.append(QByteArray(6, '\0'));
+    const QByteArray payload = QByteArray("Exif\0\0", 6) + tiff;
+    QByteArray segment("\xFF\xE1", 2);
+    segment.append(char((payload.size() + 2) >> 8));
+    segment.append(char((payload.size() + 2) & 0xFF));
+    jpeg.insert(2, segment + payload);
+    return jpeg;
+}
+
+static bool isRed(QRgb c) { return qRed(c) > 200 && qBlue(c) < 60; }
 
 QVariantMap textSnapshot(const QString &body = QStringLiteral("hello there"))
 {
@@ -1252,6 +1279,54 @@ private Q_SLOTS:
         QCOMPARE(client.attachmentSends.first().mime, QStringLiteral("image/png"));
         QCOMPARE(client.attachmentSends.first().width, 5120);
         QVERIFY2(fwd.error().isEmpty(), "a large PNG is ordinary content");
+    }
+
+    void aRotatedPhotoIsForwardedWithItsDisplayedSize_data()
+    {
+        QTest::addColumn<int>("orientation");
+        QTest::addColumn<QSize>("displayed");
+        QTest::addColumn<QPoint>("redAt");
+        QTest::newRow("upright") << 1 << QSize(64, 32) << QPoint(8, 8);
+        QTest::newRow("180") << 3 << QSize(64, 32) << QPoint(56, 24);
+        QTest::newRow("90cw") << 6 << QSize(32, 64) << QPoint(24, 8);
+        QTest::newRow("90ccw") << 8 << QSize(32, 64) << QPoint(8, 56);
+    }
+
+    void aRotatedPhotoIsForwardedWithItsDisplayedSize()
+    {
+        QFETCH(int, orientation);
+        QFETCH(QSize, displayed);
+        QFETCH(QPoint, redAt);
+        FakeClient client;
+        MediaBridge bridge;
+        bridge.setClient(&client);
+        ForwardController fwd;
+        fwd.setClient(&client);
+        fwd.setMediaBridge(&bridge);
+
+        const QByteArray original = rotatedJpeg(orientation);
+        fwd.begin(kRoomA, kEventA,
+                  mediaSnapshot(QStringLiteral("$photo"),
+                                QStringLiteral("photo.jpg"),
+                                QStringLiteral("image/jpeg")));
+        fwd.forwardTo(kRoomB);
+        client.succeed(client.fetches.first().opId, original,
+                       QStringLiteral("image/jpeg"));
+
+        QCOMPARE(client.attachmentSends.size(), 1);
+        const auto &sent = client.attachmentSends.first();
+        QCOMPARE(QSize(sent.width, sent.height), displayed);
+        QCOMPARE(sent.bytes, original);
+        QByteArray bytes = sent.bytes;
+        QBuffer buffer(&bytes);
+        buffer.open(QIODevice::ReadOnly);
+        QImageReader reader(&buffer);
+        reader.setAutoTransform(true);
+        const QImage shown = reader.read();
+        QCOMPARE(shown.size(), displayed);
+        QVERIFY(isRed(shown.pixel(redAt)));
+        QVERIFY(!isRed(shown.pixel(displayed.width() - 1 - redAt.x(),
+                                   displayed.height() - 1 - redAt.y())));
     }
 
 };

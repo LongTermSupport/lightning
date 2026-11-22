@@ -3,6 +3,7 @@
 #include "app/GuiStallTracer.h"
 #include "media/StagedImageStore.h"
 #include "media/AnimatedImageSniff.h"
+#include "media/ImageMetadataSize.h"
 
 #include "matrix/MatrixClient.h"
 #include "matrix/PresentableName.h"
@@ -423,7 +424,7 @@ QString AttachmentQueueModel::addFile(const QUrl &fileUrl)
     // unscreened. Its size comes from the conversion's PNG.
     if (entry.isImage && !entry.isSvg) {
         QImageReader reader(path);
-        const QSize size = reader.size();
+        const QSize size = imagemeta::displayedSize(reader);
         if (size.isValid()) {
             entry.width = size.width();
             entry.height = size.height();
@@ -497,6 +498,22 @@ void AttachmentQueueModel::cancelPosterJob(const Entry &entry)
         m_posterCancelHook(entry.posterTag);
     else if (m_posterExtractor)
         m_posterExtractor->cancel(entry.posterTag);
+}
+
+QImage AttachmentQueueModel::clipboardImage(const QMimeData *mime)
+{
+    // Qt's own clipboard conversion decodes JPEG without its EXIF orientation.
+    if (mime->hasFormat(QStringLiteral("image/jpeg"))) {
+        QByteArray bytes = mime->data(QStringLiteral("image/jpeg"));
+        QBuffer buffer(&bytes);
+        buffer.open(QIODevice::ReadOnly);
+        QImageReader reader(&buffer, "jpeg");
+        reader.setAutoTransform(true);
+        const QImage image = reader.read();
+        if (!image.isNull())
+            return image;
+    }
+    return mime->hasImage() ? qvariant_cast<QImage>(mime->imageData()) : QImage();
 }
 
 AttachmentQueueModel::SendImage AttachmentQueueModel::prepareImageForSend(

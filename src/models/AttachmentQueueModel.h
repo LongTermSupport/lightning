@@ -15,6 +15,7 @@
 #include <functional>
 #include <memory>
 
+class QImage;
 class QMimeData;
 class QTemporaryDir;
 
@@ -112,6 +113,8 @@ public:
 
     static QString portalKeyFrom(const QByteArray &raw);
     static QString portalKeyFromMimeData(const QMimeData *mime);
+    // The clipboard's image upright; null when it holds none.
+    static QImage clipboardImage(const QMimeData *mime);
     static bool isDocumentPortalUrl(const QUrl &url);
     static QUrl normalizeDroppedUrl(const QUrl &url);
     using PortalRetrieveHook = std::function<void(

@@ -130,6 +130,28 @@ public:
 
 const QString kMxc = QStringLiteral("mxc://example.org/avatar1");
 
+// A 64x32 stored JPEG, red 16x16 top-left on blue, carrying EXIF orientation 6.
+QByteArray orientation6Jpeg()
+{
+    QImage image(64, 32, QImage::Format_RGB32);
+    image.fill(Qt::blue);
+    for (int y = 0; y < 16; ++y)
+        for (int x = 0; x < 16; ++x)
+            image.setPixel(x, y, qRgb(255, 0, 0));
+    QByteArray jpeg;
+    QBuffer buffer(&jpeg);
+    buffer.open(QIODevice::WriteOnly);
+    image.save(&buffer, "JPG", 95);
+    QByteArray tiff("MM\0*\0\0\0\x08\0\1\x01\x12\0\3\0\0\0\1\0\6", 20);
+    tiff.append(QByteArray(6, '\0'));
+    const QByteArray payload = QByteArray("Exif\0\0", 6) + tiff;
+    QByteArray segment("\xFF\xE1", 2);
+    segment.append(char((payload.size() + 2) >> 8));
+    segment.append(char((payload.size() + 2) & 0xFF));
+    jpeg.insert(2, segment + payload);
+    return jpeg;
+}
+
 QByteArray makeGif(int w, int h, int frames, const QByteArray &extra);
 
 QByteArray makeGif(int w, int h, int frames)
@@ -1322,6 +1344,20 @@ private Q_SLOTS:
         QVERIFY(!QFileInfo::exists(path));
         QVERIFY(bridge.mxcAnimatedSource(QStringLiteral("https://evil.example/x.gif"))
                     .isEmpty());
+    }
+
+    void aRotatedImagesCachedSizeIsTheDisplayedOne()
+    {
+        FakeClient client;
+        MediaBridge bridge;
+        bridge.setClient(&client);
+        QCOMPARE(bridge.mxcImageSource(kMxc, 160), QString());
+        QCOMPARE(client.fetches.size(), 1);
+        client.succeed(client.fetches.first().opId, orientation6Jpeg(),
+                       QStringLiteral("image/jpeg"));
+        const QString source = bridge.mxcImageSource(kMxc, 160);
+        QVERIFY(source.startsWith(QStringLiteral("image://lightning-media/")));
+        QCOMPARE(bridge.cachedImageSize(source), QSize(32, 64));
     }
 
     void theStillTileAndTheAnimatedPickerTileAreSeparateFetches()

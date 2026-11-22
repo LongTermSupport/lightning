@@ -96,6 +96,7 @@
 #include <QSaveFile>
 #include <QScopedValueRollback>
 #include <QScreen>
+#include <QBuffer>
 #include <QImageReader>
 #include <QStandardPaths>
 #include <QSysInfo>
@@ -5801,8 +5802,13 @@ void AppController::copyImageBytesToClipboard(const QString &mediaKey,
         Q_EMIT copyImageFinished(false, tr("This isn't a copyable image."));
         return;
     }
-    QImage image;
-    if (!image.loadFromData(bytes) || image.isNull()) {
+    QByteArray decodeBytes = bytes;
+    QBuffer decodeBuffer(&decodeBytes);
+    decodeBuffer.open(QIODevice::ReadOnly);
+    QImageReader reader(&decodeBuffer);
+    reader.setAutoTransform(true);
+    const QImage image = reader.read();
+    if (image.isNull()) {
         Q_EMIT copyImageFinished(false, tr("Couldn't decode the image."));
         return;
     }
