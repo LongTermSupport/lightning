@@ -13082,7 +13082,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>MessageDelegate</name>
     <message>
-        <location filename="../qml/MessageDelegate.qml" line="+1232"/>
+        <location filename="../qml/MessageDelegate.qml" line="+1236"/>
         <source>Today</source>
         <translation>Hoje</translation>
     </message>
@@ -13102,7 +13102,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Novas mensagens</translation>
     </message>
     <message>
-        <location line="+268"/>
+        <location line="+277"/>
         <location line="+162"/>
         <source>Avatar for %1</source>
         <translation>Avatar de %1</translation>
@@ -13131,12 +13131,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     <message>
         <location line="+91"/>
         <location line="+924"/>
-        <location line="+1124"/>
+        <location line="+1150"/>
         <source>Reply</source>
         <translation>Responder</translation>
     </message>
     <message>
-        <location line="-2033"/>
+        <location line="-2059"/>
         <source>(original message not loaded)</source>
         <translation>(mensagem original não carregada)</translation>
     </message>
@@ -13180,8 +13180,8 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>À espera das chaves…</translation>
     </message>
     <message>
-        <location line="-1054"/>
-        <location line="+1063"/>
+        <location line="-1063"/>
+        <location line="+1072"/>
         <source>Retry decryption</source>
         <translation>Tentar desencriptar novamente</translation>
     </message>
@@ -13191,12 +13191,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Definições de segurança</translation>
     </message>
     <message>
-        <location line="-1977"/>
+        <location line="-1990"/>
         <source>Link</source>
         <translation>Ligação</translation>
     </message>
     <message>
-        <location line="+1348"/>
+        <location line="+1361"/>
         <source>Open this thread</source>
         <translation>Abrir este tópico</translation>
     </message>
@@ -13237,13 +13237,13 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2290"/>
+        <location line="+2340"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>Tentar novamente</translation>
     </message>
     <message>
-        <location line="-3306"/>
+        <location line="-3356"/>
         <location line="+1227"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
@@ -13255,12 +13255,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     </message>
     <message>
         <location line="+188"/>
-        <location line="+1381"/>
+        <location line="+1412"/>
         <source>Hide image</source>
         <translation>Ocultar imagem</translation>
     </message>
     <message>
-        <location line="-1377"/>
+        <location line="-1408"/>
         <source>Hide</source>
         <translation>Ocultar</translation>
     </message>
@@ -13358,12 +13358,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     <message>
         <location line="-997"/>
         <location line="+4"/>
-        <location line="+1109"/>
+        <location line="+1136"/>
         <source>Reply in thread</source>
         <translation>Responder num tópico</translation>
     </message>
     <message>
-        <location line="-2045"/>
+        <location line="-2072"/>
         <source>Original message removed</source>
         <translation>Mensagem original removida</translation>
     </message>
@@ -13386,12 +13386,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         </translation>
     </message>
     <message>
-        <location line="+942"/>
+        <location line="+969"/>
         <source>Open in room</source>
         <translation>Abrir na sala</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+23"/>
         <source>Pin message</source>
         <translation>Fixar a mensagem</translation>
     </message>
@@ -13401,7 +13401,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Desafixar a mensagem</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+15"/>
         <source>Remove from saved messages</source>
         <translation>Remover das mensagens guardadas</translation>
     </message>
@@ -13411,12 +13411,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Salvar mensagem</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+14"/>
         <source>Copy text</source>
         <translation>Copiar o texto</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+9"/>
         <source>Copy messages</source>
         <translation>Copiar mensagens</translation>
     </message>
@@ -13457,17 +13457,17 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     </message>
     <message>
         <location line="+10"/>
-        <location line="+628"/>
+        <location line="+647"/>
         <source>Show link preview</source>
         <translation>Mostrar visualização do link</translation>
     </message>
     <message>
-        <location line="-619"/>
+        <location line="-637"/>
         <source>Copy image</source>
         <translation>Copiar a imagem</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>Use as my background here</source>
         <translation>Usar como o meu fundo aqui</translation>
     </message>
@@ -13477,22 +13477,27 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Ver o perfil</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+11"/>
+        <source>Copy user ID</source>
+        <translation>Copiar ID do usuário</translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>View details</source>
         <translation>Ver os detalhes</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Edit history</source>
         <translation>Histórico de edições</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+9"/>
         <source>View source</source>
         <translation>Ver código-fonte</translation>
     </message>
     <message>
-        <location line="+545"/>
+        <location line="+548"/>
         <source>Your server sees this URL — never direct</source>
         <translation>O seu servidor vê este URL — nunca direto</translation>
     </message>
@@ -13588,13 +13593,13 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Tentar novamente</translation>
     </message>
     <message>
-        <location line="-3697"/>
-        <location line="+1107"/>
+        <location line="-3747"/>
+        <location line="+1135"/>
         <source>Edit</source>
         <translation>Editar</translation>
     </message>
     <message>
-        <location line="-3660"/>
+        <location line="-3701"/>
         <source>%1 B</source>
         <translation>%1 B</translation>
     </message>
@@ -13610,45 +13615,45 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     </message>
     <message>
         <location line="+19"/>
-        <location line="+572"/>
+        <location line="+576"/>
         <source>Sticker</source>
         <translation>Autocolante</translation>
     </message>
     <message>
-        <location line="-569"/>
+        <location line="-573"/>
         <source>Voice message</source>
         <translation>Mensagem de voz</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+566"/>
+        <location line="+570"/>
         <source>Audio</source>
         <translation>Áudio</translation>
     </message>
     <message>
-        <location line="-564"/>
-        <location line="+562"/>
-        <location line="+3628"/>
+        <location line="-568"/>
+        <location line="+566"/>
+        <location line="+3687"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5113"/>
+        <location line="-5176"/>
         <location line="+53"/>
-        <location line="+508"/>
-        <location line="+4177"/>
+        <location line="+512"/>
+        <location line="+4236"/>
         <source>Image</source>
         <translation>Imagem</translation>
     </message>
     <message>
-        <location line="-4736"/>
+        <location line="-4799"/>
         <source>Attachment</source>
         <translation>Anexo</translation>
     </message>
     <message numerus="yes">
-        <location line="+545"/>
+        <location line="+549"/>
         <source>%n image(s)</source>
         <translation>
             <numerusform>%n imagem</numerusform>
@@ -13674,7 +13679,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Abrir tópico</translation>
     </message>
     <message>
-        <location line="+459"/>
+        <location line="+468"/>
         <source>Back to the room</source>
         <translation>Voltar à sala</translation>
     </message>
@@ -13709,7 +13714,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>(editada)</translation>
     </message>
     <message>
-        <location line="+1599"/>
+        <location line="+1630"/>
         <source>Add :%1: to my emoji</source>
         <translation>Adicionar :%1: aos meus emojis</translation>
     </message>
@@ -13722,7 +13727,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         </translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+130"/>
         <location line="+12"/>
         <source>Remove edits</source>
         <translation>Remover as edições</translation>
@@ -13739,23 +13744,23 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Selecionar mensagens</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
         <source>Forward</source>
         <translation>Reencaminhar</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>Report message</source>
         <translation>Denunciar a mensagem</translation>
     </message>
     <message>
-        <location line="-651"/>
-        <location line="+665"/>
+        <location line="-701"/>
+        <location line="+715"/>
         <source>Delete</source>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location line="-660"/>
+        <location line="-710"/>
         <source>Remove message?</source>
         <translation>Remover mensagem?</translation>
     </message>
@@ -13770,7 +13775,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Remover</translation>
     </message>
     <message>
-        <location line="+698"/>
+        <location line="+748"/>
         <source>Message details</source>
         <translation>Detalhes da mensagem</translation>
     </message>
@@ -13847,12 +13852,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Alvo da resposta</translation>
     </message>
     <message>
-        <location line="-1947"/>
+        <location line="-1997"/>
         <source>Show preview</source>
         <translation>Mostrar a pré-visualização</translation>
     </message>
     <message>
-        <location line="+1805"/>
+        <location line="+1853"/>
         <source>Remove edits?</source>
         <translation>Remover as edições?</translation>
     </message>
@@ -13872,7 +13877,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Isto fecha a votação e publica o resultado. Uma sondagem não pode ser reaberta.</translation>
     </message>
     <message>
-        <location line="-609"/>
+        <location line="-657"/>
         <source>Delete message?</source>
         <translation>Eliminar a mensagem?</translation>
     </message>
@@ -13882,7 +13887,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Isto remove a mensagem para todos na sala. Não pode ser desfeito.</translation>
     </message>
     <message>
-        <location line="+914"/>
+        <location line="+964"/>
         <source>Open link in browser</source>
         <translation>Abrir a ligação no navegador</translation>
     </message>
@@ -13964,10 +13969,10 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>O autocolante não carregou — clique para tentar novamente</translation>
     </message>
     <message>
-        <location line="-5530"/>
+        <location line="-5593"/>
         <location line="+57"/>
-        <location line="+511"/>
-        <location line="+4175"/>
+        <location line="+515"/>
+        <location line="+4234"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -13980,9 +13985,9 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>vídeo</translation>
     </message>
     <message>
-        <location line="-5911"/>
-        <location line="+564"/>
-        <location line="+4278"/>
+        <location line="-5974"/>
+        <location line="+568"/>
+        <location line="+4337"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -27519,12 +27524,12 @@ Nota: importar chaves não verifica esta sessão.</translation>
 <context>
     <name>ShortcutRegistry</name>
     <message>
-        <location filename="../src/app/ShortcutRegistry.cpp" line="+351"/>
+        <location filename="../src/app/ShortcutRegistry.cpp" line="+360"/>
         <source>Dialogs</source>
         <translation>Diálogos</translation>
     </message>
     <message>
-        <location line="+85"/>
+        <location line="+86"/>
         <source>Select the previous item or Settings section</source>
         <translation>Selecionar o item ou a secção de definições anterior</translation>
     </message>
@@ -27539,27 +27544,27 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Fechar Atividade, o seletor rápido ou as definições</translation>
     </message>
     <message>
-        <location line="+500"/>
+        <location line="+518"/>
         <source>Use a single key combination for dialog navigation.</source>
         <translation>Utilize uma única combinação de teclas para navegar nos diálogos.</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+23"/>
         <source>Use Ctrl, Alt or Super. Dialog shortcuts must leave ordinary typing and navigation keys available.</source>
         <translation>Utilize Ctrl, Alt ou Super. Os atalhos dos diálogos devem manter disponíveis a escrita normal e as teclas de navegação.</translation>
     </message>
     <message>
-        <location line="+132"/>
+        <location line="+137"/>
         <source>Only in Activity, the quick switcher or Settings. Copying selected text takes priority over closing.</source>
         <translation>Apenas em Atividade, no seletor rápido ou nas definições. Copiar o texto selecionado tem prioridade sobre fechar.</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+19"/>
         <source>In Activity, the quick switcher or Settings, “%1” runs instead.</source>
         <translation>Em Atividade, no seletor rápido ou nas definições, «%1» é executado em vez disso.</translation>
     </message>
     <message>
-        <location line="-501"/>
+        <location line="-528"/>
         <source>Focus the message box</source>
         <translation>Focar a caixa de mensagem</translation>
     </message>
@@ -27599,17 +27604,17 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Responder à mensagem selecionada</translation>
     </message>
     <message>
-        <location line="+136"/>
+        <location line="+159"/>
         <source>closing the find bar, room information, a thread or Settings</source>
         <translation>fechar a barra de pesquisa, as informações da sala, um tópico ou as Definições</translation>
     </message>
     <message>
-        <location line="+307"/>
+        <location line="+302"/>
         <source>Use a single key combination for message selection.</source>
         <translation>Use uma única combinação de teclas para a seleção de mensagens.</translation>
     </message>
     <message>
-        <location line="+171"/>
+        <location line="+180"/>
         <source>While the timeline has focus this runs instead of “%1”.</source>
         <translation>Enquanto a linha do tempo tem o foco, isto é executado em vez de “%1”.</translation>
     </message>
@@ -27619,7 +27624,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Enquanto a linha do tempo tem o foco, “%1” é executado em vez disso.</translation>
     </message>
     <message>
-        <location line="-776"/>
+        <location line="-804"/>
         <source>Application</source>
         <translation>Aplicação</translation>
     </message>
@@ -27659,7 +27664,12 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Multimédia</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+3"/>
+        <source>Message menu</source>
+        <translation>Menu da mensagem</translation>
+    </message>
+    <message>
+        <location line="+21"/>
         <source>Quit Lightning</source>
         <translation>Sair de Lightning</translation>
     </message>
@@ -28029,7 +28039,62 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Ligação</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+2"/>
+        <source>Reply</source>
+        <translation>Responder</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Reply in thread</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Edit</source>
+        <translation>Editar</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Save message</source>
+        <translation>Salvar mensagem</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copy text</source>
+        <translation>Copiar o texto</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copy messages</source>
+        <translation>Copiar mensagens</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copy image</source>
+        <translation>Copiar a imagem</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copy user ID</source>
+        <translation>Copiar ID do usuário</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>View details</source>
+        <translation>Ver os detalhes</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>View source</source>
+        <translation>Ver código-fonte</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Forward</source>
+        <translation>Reencaminhar</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>the emoji picker&apos;s skin-tone selector</source>
         <translation>o seletor de tom de pele do seletor de emojis</translation>
     </message>
@@ -28044,29 +28109,12 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>o acelerador de cópia do menu de mensagens</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>the message menu&apos;s Reply accelerator</source>
-        <translation>o acelerador de resposta do menu de mensagens</translation>
+        <location line="+530"/>
+        <source>While a message&apos;s menu is open, %1 runs “%2” instead.</source>
+        <translation>Enquanto o menu de uma mensagem está aberto, %1 executa “%2” em vez disso.</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <location line="+2"/>
-        <location line="+2"/>
-        <source>a message&apos;s menu is open</source>
-        <translation>o menu de uma mensagem está aberto</translation>
-    </message>
-    <message>
-        <location line="-3"/>
-        <source>the message menu&apos;s Thread accelerator</source>
-        <translation>o acelerador de thread do menu de mensagens</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>the message menu&apos;s Edit accelerator</source>
-        <translation>o acelerador de edição do menu de mensagens</translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="-529"/>
         <source>the screenshot-demo controls</source>
         <translation>os controles de demonstração de captura de tela</translation>
     </message>
@@ -28092,17 +28140,22 @@ Nota: importar chaves não verifica esta sessão.</translation>
     </message>
     <message>
         <location line="+269"/>
-        <location line="+94"/>
+        <location line="+102"/>
         <source>Unknown action.</source>
         <translation>Ação desconhecida.</translation>
     </message>
     <message>
-        <location line="-90"/>
+        <location line="-98"/>
         <source>That is not a key combination Lightning can store.</source>
         <translation>Essa não é uma combinação de teclas que o Lightning pode armazenar.</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+22"/>
+        <source>Use a single key combination for the message menu.</source>
+        <translation>Use uma única combinação de teclas para o menu da mensagem.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>Use Ctrl, Alt or Super, or PgUp, PgDn or an F-key. Any other bare key is a character you type in the message box.</source>
         <translation>Use Ctrl, Alt ou Super, ou PgUp, PgDn ou uma tecla F. Qualquer outra tecla isolada é um carácter que escreve na caixa de mensagem.</translation>
     </message>
@@ -28118,6 +28171,11 @@ Nota: importar chaves não verifica esta sessão.</translation>
     </message>
     <message>
         <location line="+6"/>
+        <source>%1 moves through or closes the menu, so it cannot run a menu item.</source>
+        <translation>%1 percorre ou fecha o menu, por isso não pode executar um item do menu.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>%1 moves focus or navigates the conversation, so it cannot be used to select messages.</source>
         <translation>%1 move o foco ou navega pela conversa, por isso não pode ser usado para selecionar mensagens.</translation>
     </message>
@@ -28142,7 +28200,12 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Também usado para “%1” – nenhum dos dois funcionará.</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+18"/>
+        <source>Only while a message&apos;s menu is open.</source>
+        <translation>Apenas enquanto o menu de uma mensagem está aberto.</translation>
+    </message>
+    <message>
+        <location line="+26"/>
         <source>With text selected in the message box this runs instead of “%1”; with nothing selected, “%1” runs.</source>
         <translation>Com texto selecionado na caixa de mensagem, isto é executado em vez de “%1”; sem nada selecionado, é executado “%1”.</translation>
     </message>
@@ -28177,12 +28240,12 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Enquanto %1, %2 é usado para %3.</translation>
     </message>
     <message>
-        <location line="-808"/>
+        <location line="-836"/>
         <source>Settings navigation</source>
         <translation>Navegação nas definições</translation>
     </message>
     <message>
-        <location line="+94"/>
+        <location line="+95"/>
         <source>Open the previous Settings page</source>
         <translation>Abrir a página de definições anterior</translation>
     </message>
@@ -28202,27 +28265,27 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Ir para a subsecção de definições seguinte</translation>
     </message>
     <message>
-        <location line="+488"/>
+        <location line="+506"/>
         <source>Use a single key combination for Settings navigation.</source>
         <translation>Utilize uma única combinação de teclas para navegar nas definições.</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+23"/>
         <source>Use Ctrl, Alt or Super. Settings page actions also accept Tab or Shift+Tab.</source>
         <translation>Utilize Ctrl, Alt ou Super. As ações das páginas de definições também aceitam Tab ou Shift+Tab.</translation>
     </message>
     <message>
-        <location line="+132"/>
+        <location line="+137"/>
         <source>Only in Settings. Overrides shared navigation; Tab bindings replace normal focus traversal.</source>
         <translation>Apenas nas definições. Substitui a navegação partilhada; as atribuições de Tab substituem a navegação normal do foco.</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+19"/>
         <source>In Settings, “%1” runs instead.</source>
         <translation>Nas definições, «%1» é executado em vez disso.</translation>
     </message>
     <message>
-        <location line="-655"/>
+        <location line="-682"/>
         <source>Scroll Settings up half a page</source>
         <translation>Deslocar as definições meia página para cima</translation>
     </message>
@@ -28232,7 +28295,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Deslocar as definições meia página para baixo</translation>
     </message>
     <message>
-        <location line="+491"/>
+        <location line="+511"/>
         <source>%1 moves focus, navigates or edits text, so it cannot be a shortcut on its own.</source>
         <translation>%1 move o foco, navega ou edita texto, por isso não pode ser um atalho sozinha.</translation>
     </message>

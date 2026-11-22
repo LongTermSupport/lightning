@@ -30,6 +30,9 @@ They shadow no global or composer binding, which is why they are bare keys:
 Ctrl+K (quick switcher) and Ctrl+U (people panel) stay what they are while the
 timeline has focus. `R` is also the message menu's Reply accelerator, but that
 exists only while the menu is open and owns focus, so the two never meet.
+The message menu's own keys (R, T, E, S, Ctrl+C, Shift+C, C, U, I, V, F) are
+rebindable in their own "Message menu" scope: one key each, never shared
+with another menu item, free to repeat a global or selection key.
 Capital letters need an explicit Shift modifier in the stored sequence.
 
 Message selection refuses keys that move focus or navigate: Tab, Shift+Tab,

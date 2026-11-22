@@ -91,7 +91,7 @@ private Q_SLOTS:
         QVERIFY(glyphs <= 1);
     }
 
-    void messageMenuAcceleratorsArePresent()
+    void messageMenuAcceleratorsComeFromTheShortcutRegistry()
     {
         const QString delegate = read(QStringLiteral("MessageDelegate.qml"));
         const QString block = moreMenuBlock(delegate);
@@ -100,35 +100,33 @@ private Q_SLOTS:
                  "markers (id: moreMenu, or the Delete item's redactEvent "
                  "call) has moved, so every assertion below is testing an "
                  "empty string");
-        QVERIFY(block.contains(QStringLiteral("accel: \"R\"")));
-        QVERIFY(block.contains(QStringLiteral("accel: \"T\"")));
-        QVERIFY(block.contains(QStringLiteral("accel: \"Ctrl+C\"")));
-        QVERIFY(block.contains(QStringLiteral("accel: \"E\"")));
-        QVERIFY(!block.contains(QStringLiteral("accel: \"↑\"")));
-    }
-
-    void messageMenuKeyboardAcceleratorsCallExistingActionsOnly()
-    {
-        const QString delegate = read(QStringLiteral("MessageDelegate.qml"));
-        const QString block = moreMenuBlock(delegate);
-        QVERIFY2(!block.isEmpty(),
-                 "the more-menu block could not be extracted: one of its "
-                 "markers (id: moreMenu, or the Delete item's redactEvent "
-                 "call) has moved, so every assertion below is testing an "
-                 "empty string");
+        const QStringList items = {
+            QStringLiteral("reply"), QStringLiteral("replyInThread"),
+            QStringLiteral("edit"), QStringLiteral("save"),
+            QStringLiteral("copyText"), QStringLiteral("copyMessages"),
+            QStringLiteral("copyImage"), QStringLiteral("copyUserId"),
+            QStringLiteral("viewDetails"), QStringLiteral("viewSource"),
+            QStringLiteral("forward"),
+        };
+        for (const QString &n : items) {
+            QVERIFY2(block.contains(QStringLiteral("sequenceFor(\"menu.%1\")").arg(n)),
+                     qPrintable(n));
+            QVERIFY2(block.count(QStringLiteral("accel: moreMenu.menuKeys.%1\n").arg(n)) == 1,
+                     qPrintable(n));
+            QVERIFY2(block.count(QStringLiteral("sequence: moreMenu.menuKeys.%1\n").arg(n)) == 1,
+                     qPrintable(n));
+            QVERIFY2(block.contains(QStringLiteral("runItem(%1MenuItem)").arg(n)),
+                     qPrintable(n));
+            QVERIFY2(block.contains(QStringLiteral("id: %1MenuItem\n").arg(n)),
+                     qPrintable(n));
+        }
+        QVERIFY(!block.contains(QStringLiteral("accel: \"")));
+        QVERIFY(!block.contains(QStringLiteral("sequence: \"")));
         QVERIFY(!block.contains(QStringLiteral("Keys.onPressed")));
-        QVERIFY(block.count(QStringLiteral("Shortcut {")) == 4);
-        QVERIFY(block.count(QStringLiteral("enabled: moreMenu.opened")) == 4);
-        QVERIFY(block.count(QStringLiteral(
-            "context: Qt.ApplicationShortcut")) == 4);
-        QVERIFY(block.contains(QStringLiteral("sequence: \"R\"")));
-        QVERIFY(block.contains(QStringLiteral("sequence: \"T\"")));
-        QVERIFY(block.contains(QStringLiteral("sequence: \"E\"")));
-        QVERIFY(block.contains(QStringLiteral("sequence: \"Ctrl+C\"")));
-        QVERIFY(!block.contains(QStringLiteral("Qt.Key_Up")));
-        QVERIFY(block.count(QStringLiteral(
-            "root.copyToClipboard(\n")) >= 1);
-        QVERIFY(block.count(QStringLiteral("app.composer.beginEdit(")) == 2);
+        QCOMPARE(block.count(QStringLiteral("Shortcut {")), items.size());
+        QCOMPARE(block.count(QStringLiteral("enabled: moreMenu.opened")), items.size());
+        QCOMPARE(block.count(QStringLiteral("context: Qt.ApplicationShortcut")),
+                 items.size());
     }
 
     void starGifIsNotAMenuItem()
@@ -496,7 +494,8 @@ private Q_SLOTS:
         QVERIFY2(block.mid(item, 300).contains(
                      QStringLiteral("enabled: root.copyableText")),
                  "Copy text is not gated on root.copyableText");
-        QVERIFY2(block.contains(QStringLiteral("if (root.copyableText) {")),
+        QVERIFY2(block.contains(QStringLiteral("runItem(copyTextMenuItem)"))
+                     && block.contains(QStringLiteral("if (item.visible && item.enabled) {")),
                  "the Ctrl+C shortcut does not share Copy text's gate");
 
         const int gate = delegate.indexOf(
@@ -518,7 +517,7 @@ private Q_SLOTS:
         static const QRegularExpression maskedCopy(QStringLiteral(
             "copyToClipboard\\(\\s*root\\.timelineModel\\.copyTextForEvent\\("
             "\\s*root\\.menuEventId\\)"));
-        QCOMPARE(delegate.count(maskedCopy), 2);
+        QCOMPARE(delegate.count(maskedCopy), 1);
         const int gate = delegate.indexOf(
             QStringLiteral("readonly property bool copyableText:"));
         QVERIFY(gate >= 0);

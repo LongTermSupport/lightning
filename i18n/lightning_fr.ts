@@ -13082,7 +13082,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
 <context>
     <name>MessageDelegate</name>
     <message>
-        <location filename="../qml/MessageDelegate.qml" line="+1232"/>
+        <location filename="../qml/MessageDelegate.qml" line="+1236"/>
         <source>Today</source>
         <translation>Aujourd&apos;hui</translation>
     </message>
@@ -13102,7 +13102,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Nouveaux messages</translation>
     </message>
     <message>
-        <location line="+268"/>
+        <location line="+277"/>
         <location line="+162"/>
         <source>Avatar for %1</source>
         <translation>Avatar de %1</translation>
@@ -13131,12 +13131,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     <message>
         <location line="+91"/>
         <location line="+924"/>
-        <location line="+1124"/>
+        <location line="+1150"/>
         <source>Reply</source>
         <translation>Répondre</translation>
     </message>
     <message>
-        <location line="-2033"/>
+        <location line="-2059"/>
         <source>(original message not loaded)</source>
         <translation>(message d&apos;origine non chargé)</translation>
     </message>
@@ -13180,8 +13180,8 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>En attente des clés…</translation>
     </message>
     <message>
-        <location line="-1054"/>
-        <location line="+1063"/>
+        <location line="-1063"/>
+        <location line="+1072"/>
         <source>Retry decryption</source>
         <translation>Réessayer le déchiffrement</translation>
     </message>
@@ -13191,12 +13191,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Paramètres de sécurité</translation>
     </message>
     <message>
-        <location line="-1977"/>
+        <location line="-1990"/>
         <source>Link</source>
         <translation>Lien</translation>
     </message>
     <message>
-        <location line="+1348"/>
+        <location line="+1361"/>
         <source>Open this thread</source>
         <translation>Ouvrir ce fil</translation>
     </message>
@@ -13237,13 +13237,13 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2290"/>
+        <location line="+2340"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>Réessayer</translation>
     </message>
     <message>
-        <location line="-3306"/>
+        <location line="-3356"/>
         <location line="+1227"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
@@ -13255,12 +13255,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     </message>
     <message>
         <location line="+188"/>
-        <location line="+1381"/>
+        <location line="+1412"/>
         <source>Hide image</source>
         <translation>Masquer l&apos;image</translation>
     </message>
     <message>
-        <location line="-1377"/>
+        <location line="-1408"/>
         <source>Hide</source>
         <translation>Masquer</translation>
     </message>
@@ -13358,12 +13358,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     <message>
         <location line="-997"/>
         <location line="+4"/>
-        <location line="+1109"/>
+        <location line="+1136"/>
         <source>Reply in thread</source>
         <translation>Répondre dans un fil</translation>
     </message>
     <message>
-        <location line="-2045"/>
+        <location line="-2072"/>
         <source>Original message removed</source>
         <translation>Message d&apos;origine supprimé</translation>
     </message>
@@ -13386,12 +13386,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         </translation>
     </message>
     <message>
-        <location line="+942"/>
+        <location line="+969"/>
         <source>Open in room</source>
         <translation>Ouvrir dans le salon</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+23"/>
         <source>Pin message</source>
         <translation>Épingler le message</translation>
     </message>
@@ -13401,7 +13401,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Désépingler le message</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+15"/>
         <source>Remove from saved messages</source>
         <translation>Supprimer des messages enregistrés</translation>
     </message>
@@ -13411,12 +13411,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Enregistrer le message</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+14"/>
         <source>Copy text</source>
         <translation>Copier le texte</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+9"/>
         <source>Copy messages</source>
         <translation>Copier les messages</translation>
     </message>
@@ -13457,17 +13457,17 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     </message>
     <message>
         <location line="+10"/>
-        <location line="+628"/>
+        <location line="+647"/>
         <source>Show link preview</source>
         <translation>Afficher l&apos;aperçu du lien</translation>
     </message>
     <message>
-        <location line="-619"/>
+        <location line="-637"/>
         <source>Copy image</source>
         <translation>Copier l&apos;image</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>Use as my background here</source>
         <translation>Utiliser comme mon arrière-plan ici</translation>
     </message>
@@ -13477,22 +13477,27 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Voir le profil</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+11"/>
+        <source>Copy user ID</source>
+        <translation>Copier l&apos;ID utilisateur</translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>View details</source>
         <translation>Voir les détails</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Edit history</source>
         <translation>Historique des modifications</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+9"/>
         <source>View source</source>
         <translation>Voir la source</translation>
     </message>
     <message>
-        <location line="+545"/>
+        <location line="+548"/>
         <source>Your server sees this URL — never direct</source>
         <translation>Votre serveur voit cette URL — jamais en direct</translation>
     </message>
@@ -13588,13 +13593,13 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Réessayer</translation>
     </message>
     <message>
-        <location line="-3697"/>
-        <location line="+1107"/>
+        <location line="-3747"/>
+        <location line="+1135"/>
         <source>Edit</source>
         <translation>Modifier</translation>
     </message>
     <message>
-        <location line="-3660"/>
+        <location line="-3701"/>
         <source>%1 B</source>
         <translation>%1 o</translation>
     </message>
@@ -13610,45 +13615,45 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     </message>
     <message>
         <location line="+19"/>
-        <location line="+572"/>
+        <location line="+576"/>
         <source>Sticker</source>
         <translation>Autocollant</translation>
     </message>
     <message>
-        <location line="-569"/>
+        <location line="-573"/>
         <source>Voice message</source>
         <translation>Message vocal</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+566"/>
+        <location line="+570"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
     <message>
-        <location line="-564"/>
-        <location line="+562"/>
-        <location line="+3628"/>
+        <location line="-568"/>
+        <location line="+566"/>
+        <location line="+3687"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5113"/>
+        <location line="-5176"/>
         <location line="+53"/>
-        <location line="+508"/>
-        <location line="+4177"/>
+        <location line="+512"/>
+        <location line="+4236"/>
         <source>Image</source>
         <translation>Image</translation>
     </message>
     <message>
-        <location line="-4736"/>
+        <location line="-4799"/>
         <source>Attachment</source>
         <translation>Pièce jointe</translation>
     </message>
     <message numerus="yes">
-        <location line="+545"/>
+        <location line="+549"/>
         <source>%n image(s)</source>
         <translation>
             <numerusform>%n image</numerusform>
@@ -13674,7 +13679,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Ouvrir le fil</translation>
     </message>
     <message>
-        <location line="+459"/>
+        <location line="+468"/>
         <source>Back to the room</source>
         <translation>Retour au salon</translation>
     </message>
@@ -13709,7 +13714,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>(modifié)</translation>
     </message>
     <message>
-        <location line="+1599"/>
+        <location line="+1630"/>
         <source>Add :%1: to my emoji</source>
         <translation>Ajouter :%1: à mes emoji</translation>
     </message>
@@ -13722,7 +13727,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         </translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+130"/>
         <location line="+12"/>
         <source>Remove edits</source>
         <translation>Supprimer les modifications</translation>
@@ -13739,23 +13744,23 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Sélectionner des messages</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
         <source>Forward</source>
         <translation>Transférer</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>Report message</source>
         <translation>Signaler le message</translation>
     </message>
     <message>
-        <location line="-651"/>
-        <location line="+665"/>
+        <location line="-701"/>
+        <location line="+715"/>
         <source>Delete</source>
         <translation>Supprimer</translation>
     </message>
     <message>
-        <location line="-660"/>
+        <location line="-710"/>
         <source>Remove message?</source>
         <translation>Supprimer le message ?</translation>
     </message>
@@ -13770,7 +13775,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Supprimer</translation>
     </message>
     <message>
-        <location line="+698"/>
+        <location line="+748"/>
         <source>Message details</source>
         <translation>Détails du message</translation>
     </message>
@@ -13847,12 +13852,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Cible de la réponse</translation>
     </message>
     <message>
-        <location line="-1947"/>
+        <location line="-1997"/>
         <source>Show preview</source>
         <translation>Afficher l&apos;aperçu</translation>
     </message>
     <message>
-        <location line="+1805"/>
+        <location line="+1853"/>
         <source>Remove edits?</source>
         <translation>Supprimer les modifications ?</translation>
     </message>
@@ -13872,7 +13877,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Cela clôt le vote et publie le résultat. Un sondage ne peut pas être rouvert.</translation>
     </message>
     <message>
-        <location line="-609"/>
+        <location line="-657"/>
         <source>Delete message?</source>
         <translation>Supprimer le message ?</translation>
     </message>
@@ -13882,7 +13887,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Cela supprime le message pour tout le monde dans le salon. Cette action est irréversible.</translation>
     </message>
     <message>
-        <location line="+914"/>
+        <location line="+964"/>
         <source>Open link in browser</source>
         <translation>Ouvrir le lien dans le navigateur</translation>
     </message>
@@ -13964,10 +13969,10 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Échec du chargement de l&apos;autocollant — cliquez pour réessayer</translation>
     </message>
     <message>
-        <location line="-5530"/>
+        <location line="-5593"/>
         <location line="+57"/>
-        <location line="+511"/>
-        <location line="+4175"/>
+        <location line="+515"/>
+        <location line="+4234"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -13980,9 +13985,9 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>vidéo</translation>
     </message>
     <message>
-        <location line="-5911"/>
-        <location line="+564"/>
-        <location line="+4278"/>
+        <location line="-5974"/>
+        <location line="+568"/>
+        <location line="+4337"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -27519,12 +27524,12 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
 <context>
     <name>ShortcutRegistry</name>
     <message>
-        <location filename="../src/app/ShortcutRegistry.cpp" line="+351"/>
+        <location filename="../src/app/ShortcutRegistry.cpp" line="+360"/>
         <source>Dialogs</source>
         <translation>Boîtes de dialogue</translation>
     </message>
     <message>
-        <location line="+85"/>
+        <location line="+86"/>
         <source>Select the previous item or Settings section</source>
         <translation>Sélectionner l’élément ou la section des paramètres précédent</translation>
     </message>
@@ -27539,27 +27544,27 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Fermer Activité, le sélecteur rapide ou les paramètres</translation>
     </message>
     <message>
-        <location line="+500"/>
+        <location line="+518"/>
         <source>Use a single key combination for dialog navigation.</source>
         <translation>Utilisez une seule combinaison de touches pour naviguer dans les boîtes de dialogue.</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+23"/>
         <source>Use Ctrl, Alt or Super. Dialog shortcuts must leave ordinary typing and navigation keys available.</source>
         <translation>Utilisez Ctrl, Alt ou Super. Les raccourcis des boîtes de dialogue doivent laisser disponibles la saisie normale et les touches de navigation.</translation>
     </message>
     <message>
-        <location line="+132"/>
+        <location line="+137"/>
         <source>Only in Activity, the quick switcher or Settings. Copying selected text takes priority over closing.</source>
         <translation>Uniquement dans Activité, le sélecteur rapide ou les paramètres. Copier le texte sélectionné est prioritaire sur la fermeture.</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+19"/>
         <source>In Activity, the quick switcher or Settings, “%1” runs instead.</source>
         <translation>Dans Activité, le sélecteur rapide ou les paramètres, « %1 » est exécuté à la place.</translation>
     </message>
     <message>
-        <location line="-501"/>
+        <location line="-528"/>
         <source>Focus the message box</source>
         <translation>Placer le focus sur la zone de message</translation>
     </message>
@@ -27599,17 +27604,17 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Répondre au message sélectionné</translation>
     </message>
     <message>
-        <location line="+136"/>
+        <location line="+159"/>
         <source>closing the find bar, room information, a thread or Settings</source>
         <translation>fermer la barre de recherche, les informations du salon, un fil ou les Paramètres</translation>
     </message>
     <message>
-        <location line="+307"/>
+        <location line="+302"/>
         <source>Use a single key combination for message selection.</source>
         <translation>Utilisez une seule combinaison de touches pour la sélection de messages.</translation>
     </message>
     <message>
-        <location line="+171"/>
+        <location line="+180"/>
         <source>While the timeline has focus this runs instead of “%1”.</source>
         <translation>Tant que la chronologie a le focus, cette action s’exécute à la place de « %1 ».</translation>
     </message>
@@ -27619,7 +27624,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Tant que la chronologie a le focus, « %1 » s’exécute à la place.</translation>
     </message>
     <message>
-        <location line="-776"/>
+        <location line="-804"/>
         <source>Application</source>
         <translation>Demande</translation>
     </message>
@@ -27659,7 +27664,12 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Médias</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+3"/>
+        <source>Message menu</source>
+        <translation>Menu du message</translation>
+    </message>
+    <message>
+        <location line="+21"/>
         <source>Quit Lightning</source>
         <translation>Quitter Lightning</translation>
     </message>
@@ -28029,7 +28039,62 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Lien</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+2"/>
+        <source>Reply</source>
+        <translation>Répondre</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Reply in thread</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Edit</source>
+        <translation>Modifier</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Save message</source>
+        <translation>Enregistrer le message</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copy text</source>
+        <translation>Copier le texte</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copy messages</source>
+        <translation>Copier les messages</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copy image</source>
+        <translation>Copier l&apos;image</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copy user ID</source>
+        <translation>Copier l&apos;ID utilisateur</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>View details</source>
+        <translation>Voir les détails</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>View source</source>
+        <translation>Voir la source</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Forward</source>
+        <translation>Transférer</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>the emoji picker&apos;s skin-tone selector</source>
         <translation>le sélecteur de tons chair du sélecteur d&apos;emoji</translation>
     </message>
@@ -28044,29 +28109,12 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>l&apos;accélérateur de copie du menu des messages</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>the message menu&apos;s Reply accelerator</source>
-        <translation>l&apos;accélérateur de réponse du menu de messages</translation>
+        <location line="+530"/>
+        <source>While a message&apos;s menu is open, %1 runs “%2” instead.</source>
+        <translation>Tant que le menu d’un message est ouvert, %1 exécute « %2 » à la place.</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <location line="+2"/>
-        <location line="+2"/>
-        <source>a message&apos;s menu is open</source>
-        <translation>le menu d&apos;un message est ouvert</translation>
-    </message>
-    <message>
-        <location line="-3"/>
-        <source>the message menu&apos;s Thread accelerator</source>
-        <translation>l&apos;accélérateur de discussion du menu de messages</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>the message menu&apos;s Edit accelerator</source>
-        <translation>l&apos;accélérateur Modifier du menu Message</translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="-529"/>
         <source>the screenshot-demo controls</source>
         <translation>les commandes de capture d&apos;écran-démo</translation>
     </message>
@@ -28092,17 +28140,22 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
     </message>
     <message>
         <location line="+269"/>
-        <location line="+94"/>
+        <location line="+102"/>
         <source>Unknown action.</source>
         <translation>Action inconnue.</translation>
     </message>
     <message>
-        <location line="-90"/>
+        <location line="-98"/>
         <source>That is not a key combination Lightning can store.</source>
         <translation>Ce n’est pas une combinaison de touches que Lightning peut stocker.</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+22"/>
+        <source>Use a single key combination for the message menu.</source>
+        <translation>Utilisez une seule combinaison de touches pour le menu du message.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>Use Ctrl, Alt or Super, or PgUp, PgDn or an F-key. Any other bare key is a character you type in the message box.</source>
         <translation>Utilisez Ctrl, Alt ou Super, ou PgUp, PgDn ou une touche F. Toute autre touche seule est un caractère que vous saisissez dans la zone de message.</translation>
     </message>
@@ -28118,6 +28171,11 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
     </message>
     <message>
         <location line="+6"/>
+        <source>%1 moves through or closes the menu, so it cannot run a menu item.</source>
+        <translation>%1 parcourt ou ferme le menu, il ne peut donc pas exécuter un élément du menu.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>%1 moves focus or navigates the conversation, so it cannot be used to select messages.</source>
         <translation>%1 déplace le focus ou navigue dans la conversation ; il ne peut donc pas servir à sélectionner des messages.</translation>
     </message>
@@ -28142,7 +28200,12 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Également utilisé pour « %1 » – aucun des deux ne fonctionnera.</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+18"/>
+        <source>Only while a message&apos;s menu is open.</source>
+        <translation>Uniquement lorsque le menu d’un message est ouvert.</translation>
+    </message>
+    <message>
+        <location line="+26"/>
         <source>With text selected in the message box this runs instead of “%1”; with nothing selected, “%1” runs.</source>
         <translation>Lorsque du texte est sélectionné dans la zone de message, cette action remplace « %1 » ; sans sélection, « %1 » s&apos;exécute.</translation>
     </message>
@@ -28177,12 +28240,12 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Lorsque %1, %2 sert plutôt à %3.</translation>
     </message>
     <message>
-        <location line="-808"/>
+        <location line="-836"/>
         <source>Settings navigation</source>
         <translation>Navigation dans les paramètres</translation>
     </message>
     <message>
-        <location line="+94"/>
+        <location line="+95"/>
         <source>Open the previous Settings page</source>
         <translation>Ouvrir la page de paramètres précédente</translation>
     </message>
@@ -28202,27 +28265,27 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Aller à la sous-section suivante des paramètres</translation>
     </message>
     <message>
-        <location line="+488"/>
+        <location line="+506"/>
         <source>Use a single key combination for Settings navigation.</source>
         <translation>Utilisez une seule combinaison de touches pour naviguer dans les paramètres.</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+23"/>
         <source>Use Ctrl, Alt or Super. Settings page actions also accept Tab or Shift+Tab.</source>
         <translation>Utilisez Ctrl, Alt ou Super. Les actions des pages de paramètres acceptent aussi Tab ou Shift+Tab.</translation>
     </message>
     <message>
-        <location line="+132"/>
+        <location line="+137"/>
         <source>Only in Settings. Overrides shared navigation; Tab bindings replace normal focus traversal.</source>
         <translation>Uniquement dans les paramètres. Remplace la navigation partagée ; les raccourcis Tab remplacent le parcours normal du focus.</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+19"/>
         <source>In Settings, “%1” runs instead.</source>
         <translation>Dans les paramètres, « %1 » est exécuté à la place.</translation>
     </message>
     <message>
-        <location line="-655"/>
+        <location line="-682"/>
         <source>Scroll Settings up half a page</source>
         <translation>Faire défiler les paramètres d’une demi-page vers le haut</translation>
     </message>
@@ -28232,7 +28295,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Faire défiler les paramètres d’une demi-page vers le bas</translation>
     </message>
     <message>
-        <location line="+491"/>
+        <location line="+511"/>
         <source>%1 moves focus, navigates or edits text, so it cannot be a shortcut on its own.</source>
         <translation>%1 déplace le focus, navigue ou modifie le texte, et ne peut donc pas être un raccourci à lui seul.</translation>
     </message>

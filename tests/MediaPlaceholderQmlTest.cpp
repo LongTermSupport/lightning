@@ -1,4 +1,6 @@
 #include <QtTest/QtTest>
+#include <QClipboard>
+#include <QGuiApplication>
 
 #include <QTemporaryDir>
 #include <QImage>
@@ -16,6 +18,9 @@
 #include <QSignalSpy>
 
 #include "app/AppController.h"
+#include "app/ForwardController.h"
+#include "app/SettingsManager.h"
+#include "app/ShortcutRegistry.h"
 #include "auth/AuthManager.h"
 #include "models/MessageComposer.h"
 #include "matrix/MockMatrixClient.h"
@@ -1423,6 +1428,255 @@ QtObject {
                            barPoint.toPoint());
         QTest::qWait(50);
         QCOMPARE(controller.composer()->replyingToEventId(), QString());
+    }
+
+    static QString repliableMockEvent(AppController &controller)
+    {
+        auto *tl = controller.timeline();
+        for (int row = 0; row < tl->rowCount(); ++row) {
+            const QModelIndex idx = tl->index(row, 0);
+            const QString id = tl->data(idx, TimelineModel::EventIdRole).toString();
+            if (!id.isEmpty() && !id.startsWith(QLatin1String("local:"))
+                && !tl->data(idx, TimelineModel::RedactedRole).toBool()
+                && !tl->data(idx, TimelineModel::IsVirtualRole).toBool()
+                && !tl->messagePermalink(id).isEmpty())
+                return id;
+        }
+        return {};
+    }
+
+    static bool loginToGeneral(AppController &controller)
+    {
+        QSignalSpy loginSpy(controller.auth(), &AuthManager::loginSucceeded);
+        controller.auth()->login(QStringLiteral("https://mock.local"),
+                                 QStringLiteral("alice"),
+                                 QStringLiteral("unused"));
+        if (!loginSpy.wait(kSignalTimeoutMs))
+            return false;
+        controller.setCurrentRoomId(QStringLiteral("!general:mock.local"));
+        return true;
+    }
+
+    void doubleClickBesideTheBubbleStartsAReplyInEveryLayout_data()
+    {
+        QTest::addColumn<int>("layout");
+        QTest::addColumn<bool>("direct");
+        QTest::addColumn<bool>("own");
+        QTest::newRow("modern-room") << 0 << false << false;
+        QTest::newRow("modern-dm") << 0 << true << false;
+        QTest::newRow("bubbles-public-room") << 1 << false << false;
+        QTest::newRow("bubbles-dm") << 1 << true << false;
+        QTest::newRow("bubbles-dm-own") << 1 << true << true;
+        QTest::newRow("compact-dm") << 2 << true << false;
+    }
+
+    void doubleClickBesideTheBubbleStartsAReplyInEveryLayout()
+    {
+        QFETCH(int, layout);
+        QFETCH(bool, direct);
+        QFETCH(bool, own);
+        AppController controller(AppController::MockBackend);
+        QVERIFY(loginToGeneral(controller));
+        const QString id = repliableMockEvent(controller);
+        QVERIFY2(!id.isEmpty(), "the mock room has no repliable event");
+        const int previousLayout = controller.settings()->messageLayout();
+        const auto restore = qScopeGuard([&] {
+            controller.settings()->setMessageLayout(previousLayout);
+        });
+        controller.settings()->setMessageLayout(layout);
+
+        QVariantMap fixture = baseFixture(controller);
+        fixture.insert(QStringLiteral("eventId"), id);
+        fixture.insert(QStringLiteral("body"), QStringLiteral("hi there"));
+        fixture.insert(QStringLiteral("isOwn"), own);
+        Delegate d;
+        QVERIFY(createDelegate(controller, fixture, d,
+                               {{QStringLiteral("isDirectRoom"), direct}}));
+        QCOMPARE(d.root->property("bubbleMode").toBool(), layout == 1 && direct);
+        auto *row = d.root->findChild<QQuickItem *>(
+            QStringLiteral("messagePresentationRow"));
+        auto *bubble = d.root->findChild<QQuickItem *>(
+            QStringLiteral("messageContentColumn"));
+        auto *body = d.root->findChild<QQuickItem *>(
+            QStringLiteral("messageBody"));
+        QVERIFY(row && bubble && body && body->isVisible());
+
+        // The empty side of the row: right of the text (or of an others'
+        // bubble), left of an own bubble.
+        const QPointF bodyInRow = body->mapToItem(row, QPointF(0, body->height() / 2));
+        const QPointF bubbleInRow = bubble->mapToItem(row, QPointF(0, 0));
+        const qreal gutter = d.root->property("avatarGutterWidth").toReal();
+        const qreal x = own ? (gutter + bubbleInRow.x()) / 2
+                            : bodyInRow.x() + body->width() + 40;
+        QVERIFY2(x > gutter && x < (own ? bubbleInRow.x() : row->width() - 200),
+                 qPrintable(QStringLiteral("probe x=%1 outside the empty side")
+                                .arg(x)));
+        const QPoint probe = row->mapToScene(QPointF(x, bodyInRow.y())).toPoint();
+        QTest::mouseDClick(d.window.get(), Qt::LeftButton, {}, probe);
+        QTRY_COMPARE_WITH_TIMEOUT(controller.composer()->replyingToEventId(),
+                                  id, kSignalTimeoutMs);
+        controller.composer()->clearReplyTarget();
+
+        // Not where a reply cannot be sent.
+        auto *mock = controller.findChild<MockMatrixClient *>();
+        QVERIFY(mock != nullptr);
+        const QString room = QStringLiteral("!general:mock.local");
+        const auto unmute = qScopeGuard([&] {
+            mock->setOwnPermissionsForTest(room, {});
+        });
+        QVariantMap muted;
+        muted.insert(QStringLiteral("ownMembership"), QStringLiteral("joined"));
+        muted.insert(QStringLiteral("canSendMessages"), false);
+        mock->setOwnPermissionsForTest(room, muted);
+        QTRY_VERIFY_WITH_TIMEOUT(
+            controller.openRoomPermissions()->roomId() == room
+                && !controller.openRoomPermissions()->canSendMessages(),
+            kSignalTimeoutMs);
+        QTest::qWait(400);
+        QTest::mouseDClick(d.window.get(), Qt::LeftButton, {}, probe);
+        QTest::qWait(50);
+        QCOMPARE(controller.composer()->replyingToEventId(), QString());
+    }
+
+    void messageMenuLetterKeysRunTheirItems()
+    {
+        AppController controller(AppController::MockBackend);
+        auto *mock = controller.findChild<MockMatrixClient *>();
+        QVERIFY(mock != nullptr);
+        mock->setSupportsMediaBridgeForTest(true);
+        QVERIFY(loginToGeneral(controller));
+        const QString id = repliableMockEvent(controller);
+        QVERIFY2(!id.isEmpty(), "the mock room has no event to act on");
+        QVariantMap image = baseFixture(controller);
+        image.insert(QStringLiteral("eventId"), id);
+        image.insert(QStringLiteral("isImage"), true);
+        image.insert(QStringLiteral("mediaFilename"), QStringLiteral("cat.png"));
+        image.insert(QStringLiteral("mediaSourceAvailable"), true);
+        image.insert(QStringLiteral("mediaKey"), QStringLiteral("$fixture"));
+
+        const auto openMenu = [&](Delegate &d) -> QObject * {
+            QMetaObject::invokeMethod(d.root, "openContextMenu",
+                                      Q_ARG(QVariant, 10), Q_ARG(QVariant, 10),
+                                      Q_ARG(QVariant, false));
+            auto *menu = d.root->findChild<QObject *>(
+                QStringLiteral("messageContextMenu"));
+            for (int waited = 0; menu && !menu->property("opened").toBool()
+                                 && waited < kSignalTimeoutMs; waited += 20)
+                QTest::qWait(20);
+            return menu && menu->property("opened").toBool() ? menu : nullptr;
+        };
+
+        Delegate f;
+        QVERIFY(createDelegate(controller, image, f));
+        QObject *menu = openMenu(f);
+        QVERIFY(menu != nullptr);
+        QCOMPARE(menu->findChild<QObject *>(QStringLiteral("forwardMessageMenuItem"))
+                     ->property("accel").toString(), QStringLiteral("F"));
+        QCOMPARE(menu->findChild<QObject *>(QStringLiteral("copyImageMenuItem"))
+                     ->property("accel").toString(), QStringLiteral("C"));
+        QSignalSpy copies(&controller, &AppController::copyImageFinished);
+        QTest::keyClick(f.window.get(), Qt::Key_F);
+        QTRY_COMPARE_WITH_TIMEOUT(controller.forward()->sourceEventId(), id,
+                                  kSignalTimeoutMs);
+        QTRY_VERIFY(!menu->property("opened").toBool());
+        QCOMPARE(copies.count(), 0);
+        controller.forward()->cancel();
+
+        Delegate c;
+        QVERIFY(createDelegate(controller, image, c));
+        menu = openMenu(c);
+        QVERIFY(menu != nullptr);
+        QTest::keyClick(c.window.get(), Qt::Key_C);
+        QTRY_COMPARE_WITH_TIMEOUT(copies.count(), 1, kSignalTimeoutMs);
+        QTRY_VERIFY(!menu->property("opened").toBool());
+        QCOMPARE(controller.forward()->sourceEventId(), QString());
+
+        // V: View source (S is Save message's key).
+        Delegate v;
+        QVERIFY(createDelegate(controller, image, v));
+        menu = openMenu(v);
+        QVERIFY(menu != nullptr);
+        QCOMPARE(menu->findChild<QObject *>(QStringLiteral("viewSourceMenuItem"))
+                     ->property("accel").toString(), QStringLiteral("V"));
+        QCOMPARE(menu->findChild<QObject *>(QStringLiteral("saveMessageMenuItem"))
+                     ->property("accel").toString(), QStringLiteral("S"));
+        QTest::keyClick(v.window.get(), Qt::Key_V);
+        QTRY_VERIFY_WITH_TIMEOUT(
+            v.root->property("eventSourceDialogItem").value<QObject *>() != nullptr,
+            kSignalTimeoutMs);
+        QTRY_VERIFY(!menu->property("opened").toBool());
+        QCOMPARE(copies.count(), 1);
+
+        Delegate i;
+        QVERIFY(createDelegate(controller, image, i));
+        menu = openMenu(i);
+        QVERIFY(menu != nullptr);
+        QCOMPARE(menu->findChild<QObject *>(QStringLiteral("viewDetailsMenuItem"))
+                     ->property("accel").toString(), QStringLiteral("I"));
+        QTest::keyClick(i.window.get(), Qt::Key_I);
+        QTRY_VERIFY_WITH_TIMEOUT(
+            i.root->property("detailsDialogItem").value<QObject *>() != nullptr,
+            kSignalTimeoutMs);
+        QTRY_VERIFY(!menu->property("opened").toBool());
+
+        // C on a row with no image does nothing and leaves the menu open.
+        QVariantMap text = baseFixture(controller);
+        text.insert(QStringLiteral("eventId"), id);
+        text.insert(QStringLiteral("body"), QStringLiteral("words"));
+        Delegate t;
+        QVERIFY(createDelegate(controller, text, t));
+        menu = openMenu(t);
+        QVERIFY(menu != nullptr);
+        QTest::keyClick(t.window.get(), Qt::Key_C);
+        QTest::qWait(100);
+        QCOMPARE(copies.count(), 1);
+        QVERIFY(menu->property("opened").toBool());
+
+        // U copies the sender's user ID.
+        QGuiApplication::clipboard()->setText(QStringLiteral("before"));
+        auto *userId = menu->findChild<QObject *>(QStringLiteral("copyUserIdMenuItem"));
+        QVERIFY(userId != nullptr);
+        QVERIFY(userId->property("visible").toBool());
+        QCOMPARE(userId->property("accel").toString(), QStringLiteral("U"));
+        QTest::keyClick(t.window.get(), Qt::Key_U);
+        QTRY_COMPARE(QGuiApplication::clipboard()->text(),
+                     QStringLiteral("@fixture:mock.local"));
+        QTRY_VERIFY(!menu->property("opened").toBool());
+
+        // Not on your own message, where View profile is hidden too.
+        QVariantMap mine = text;
+        mine.insert(QStringLiteral("isOwn"), true);
+        Delegate o;
+        QVERIFY(createDelegate(controller, mine, o));
+        menu = openMenu(o);
+        QVERIFY(menu != nullptr);
+        QVERIFY(!menu->findChild<QObject *>(QStringLiteral("copyUserIdMenuItem"))
+                     ->property("visible").toBool());
+        QVERIFY(!menu->findChild<QObject *>(QStringLiteral("viewProfileMenuItem"))
+                     ->property("visible").toBool());
+        QMetaObject::invokeMethod(menu, "close");
+        QTRY_VERIFY(!menu->property("opened").toBool());
+
+        // A rebound key is what the menu shows and answers.
+        auto *shortcuts = controller.shortcuts();
+        const auto unbind = qScopeGuard([&] {
+            shortcuts->resetToDefault(QStringLiteral("menu.forward"));
+        });
+        QCOMPARE(shortcuts->setBinding(QStringLiteral("menu.forward"), QStringLiteral("W")),
+                 QString());
+        Delegate w;
+        QVERIFY(createDelegate(controller, image, w));
+        menu = openMenu(w);
+        QVERIFY(menu != nullptr);
+        QCOMPARE(menu->findChild<QObject *>(QStringLiteral("forwardMessageMenuItem"))
+                     ->property("accel").toString(), QStringLiteral("W"));
+        QTest::keyClick(w.window.get(), Qt::Key_F);
+        QTest::qWait(100);
+        QCOMPARE(controller.forward()->sourceEventId(), QString());
+        QTest::keyClick(w.window.get(), Qt::Key_W);
+        QTRY_COMPARE_WITH_TIMEOUT(controller.forward()->sourceEventId(), id,
+                                  kSignalTimeoutMs);
+        controller.forward()->cancel();
     }
 
     void formattedBodyRendersInsteadOfRawMarkdown()
