@@ -144,6 +144,8 @@ public:
     using PosterRequestHook =
         std::function<void(const QString &tag, const QString &localPath)>;
     void setPosterRequestHook(PosterRequestHook hook);
+    using PosterCancelHook = std::function<void(const QString &tag)>;
+    void setPosterCancelHook(PosterCancelHook hook) { m_posterCancelHook = std::move(hook); }
     void applyPoster(const QString &tag, const QByteArray &poster,
                      const QSize &posterSize, const QSize &sourceSize,
                      qint64 durationMs);
@@ -158,6 +160,7 @@ Q_SIGNALS:
 
 private:
     void startPosterJob(int row);
+    void cancelPosterJob(const Entry &entry);
     void startSvgConversion(int row);
     void finishSvgConversion(const QString &tag,
                              const lightning::svgraster::Result &result);
@@ -173,6 +176,7 @@ private:
     QList<Entry> m_entries;
     VideoPosterExtractor *m_posterExtractor = nullptr;
     PosterRequestHook m_posterHook;
+    PosterCancelHook m_posterCancelHook;
     TakenEntryLookup m_takenLookup;
     Entry *entryForTag(const QString &tag, int *row);
     void notifyPrepared(int row);

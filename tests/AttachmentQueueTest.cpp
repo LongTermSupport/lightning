@@ -1236,6 +1236,46 @@ private Q_SLOTS:
                  client.lastThumbHeight * client.lastVideoWidth);
     }
 
+    void removingAnAttachmentCancelsItsPosterJobAndParkingDoesNot()
+    {
+        FakeClient client;
+        MessageComposer composer;
+        composer.setClient(&client);
+        composer.setRoomId(QStringLiteral("!room:example.org"));
+        AttachmentQueueModel *model = composer.attachments();
+        QStringList requested;
+        QStringList cancelled;
+        model->setPosterRequestHook(
+            [&requested](const QString &tag, const QString &) { requested.append(tag); });
+        model->setPosterCancelHook(
+            [&cancelled](const QString &tag) { cancelled.append(tag); });
+
+        QTemporaryDir dir;
+        for (int i = 0; i < 5; ++i)
+            composer.addAttachment(QUrl::fromLocalFile(writeFile(
+                dir, QStringLiteral("clip%1.mp4").arg(i), tinyMp4Header())));
+        QCOMPARE(model->rowCount(), 5);
+        QCOMPARE(requested.size(), 5);
+        const QStringList tags = requested;
+
+        model->applyPoster(tags.at(4), {}, {}, {}, 1000);
+        model->removeAt(4);
+        model->removeAt(0);
+        model->removeAt(0);
+        QCOMPARE(cancelled, (QStringList{tags.at(0), tags.at(1)}));
+
+        const QList<AttachmentQueueModel::Entry> taken = model->takeAll();
+        QCOMPARE(taken.size(), 2);
+        QCOMPARE(cancelled.size(), 2);
+        model->restoreEntries(taken);
+        QCOMPARE(cancelled.size(), 2);
+        QCOMPARE(requested.mid(5), (QStringList{tags.at(2), tags.at(3)}));
+
+        composer.discardAllAttachments();
+        QCOMPARE(model->rowCount(), 0);
+        QCOMPARE(cancelled, (QStringList{tags.at(0), tags.at(1), tags.at(2), tags.at(3)}));
+    }
+
     void videoSendsWithoutPosterWhenExtractionFails()
     {
         FakeClient client;
