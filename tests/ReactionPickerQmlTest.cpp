@@ -34,6 +34,7 @@
 #include "models/EmojiCatalog.h"
 #include "models/RoomListModel.h"
 #include "matrix/MockMatrixClient.h"
+#include "support/SettledClick.h"
 
 namespace {
 constexpr int kSignalTimeoutMs = 4000;
@@ -454,6 +455,8 @@ private Q_SLOTS:
             QStringLiteral("popupResizeGrip"));
         QVERIFY(grip != nullptr);
         QTRY_VERIFY(grip->isVisible() && grip->width() > 0);
+        QPointF gripAt;
+        QVERIFY(testsupport::settledScenePoint(&s.window, grip, &gripAt));
         QQuickItem *panel = panelOf(s.picker);
         QVERIFY(panel != nullptr);
         const QRectF before = sceneRect(panel);
@@ -527,6 +530,8 @@ private Q_SLOTS:
             QStringLiteral("popupResizeGrip"));
         QVERIFY(grip != nullptr);
         QTRY_VERIFY(grip->isVisible());
+        QPointF gripAt;
+        QVERIFY(testsupport::settledScenePoint(&s.window, grip, &gripAt));
 
         const QRectF before = sceneRect(panel);
         const QPointF gripCentre = sceneRect(grip).center();

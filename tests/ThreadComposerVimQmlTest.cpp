@@ -19,6 +19,7 @@
 #include "models/VimKeymap.h"
 #include "stickers/StickerPackManager.h"
 #include "threads/ThreadController.h"
+#include "support/SettledClick.h"
 
 class ThreadComposerVimQmlTest : public QObject
 {
@@ -340,31 +341,10 @@ ApplicationWindow {
         QTRY_VERIFY(thread->state() == ThreadController::Ready);
         const QString root = thread->rootEventId();
         const int before = mock()->pollCreatesForTest();
-        // A just-opened popup is laid out in the next frame's polish, so click
-        // only once a rendered frame shows the item where it will stay.
-        const auto click = [this](QQuickItem *it) {
-            const auto centre = [it] {
-                return it->mapToScene(QPointF(it->width() / 2, it->height() / 2));
-            };
-            QPointF c = centre();
-            bool settled = false;
-            for (int i = 0; i < 5 && !settled; ++i) {
-                QSignalSpy frame(m_window, &QQuickWindow::frameSwapped);
-                m_window->update();
-                QVERIFY(frame.count() > 0 || frame.wait(5000));
-                const QPointF now = centre();
-                settled = i > 0 && now == c;
-                c = now;
-            }
-            QVERIFY2(settled, "the item never held still across two frames");
-            QTest::mouseClick(m_window, Qt::LeftButton, {}, c.toPoint());
-        };
-
         auto *plus = item("threadAttachButton");
         QVERIFY(plus);
         QTRY_VERIFY(plus->isEnabled() && plus->width() > 0);
-        click(plus);
-        if (QTest::currentTestFailed())
+        if (!testsupport::clickWhenSettled(m_window, plus))
             return;
         auto *menu = m_window->findChild<QObject *>(QStringLiteral("threadAttachMenu"));
         QVERIFY2(menu, "the thread + has no menu");
@@ -373,8 +353,7 @@ ApplicationWindow {
             QStringLiteral("threadCreatePollMenuItem"));
         QVERIFY(pollItem);
         QTRY_VERIFY(pollItem->isVisible() && pollItem->isEnabled() && pollItem->width() > 0);
-        click(pollItem);
-        if (QTest::currentTestFailed())
+        if (!testsupport::clickWhenSettled(m_window, pollItem))
             return;
 
         auto *dialog = m_window->findChild<QObject *>(QStringLiteral("threadCreatePollDialog"));
@@ -391,8 +370,7 @@ ApplicationWindow {
         auto *submit = find(content, QStringLiteral("createPollSubmitButton"));
         QVERIFY(submit);
         QTRY_VERIFY(submit->isEnabled());
-        click(submit);
-        if (QTest::currentTestFailed())
+        if (!testsupport::clickWhenSettled(m_window, submit))
             return;
 
         QTRY_COMPARE(mock()->pollCreatesForTest(), before + 1);

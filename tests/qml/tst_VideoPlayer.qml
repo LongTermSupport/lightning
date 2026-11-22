@@ -206,6 +206,7 @@ TestCase {
                 item = row
         }
         verify(item, "no 1.5× row in the speed menu")
+        waitForRendering(item)
         mouseClick(item)
         tryCompare(menu, "visible", false)
 

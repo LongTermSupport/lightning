@@ -19,6 +19,7 @@
 #include <functional>
 
 #include <cmath>
+#include "support/SettledClick.h"
 
 namespace {
 
@@ -163,9 +164,8 @@ private:
     {
         QQuickItem *item = rowItem(row);
         QVERIFY2(item, qPrintable(QStringLiteral("no delegate for row %1").arg(row)));
-        const QPointF centre = item->mapToScene(
-            QPointF(item->width() / 2, item->height() / 2));
-        QTest::mouseClick(m_window, Qt::LeftButton, modifiers, centre.toPoint());
+        testsupport::clickWhenSettled(m_window, item, QPointF(0.5, 0.5),
+                                      Qt::LeftButton, modifiers);
     }
 
     QStringList highlighted() const
@@ -195,9 +195,7 @@ private:
     {
         auto *button = qobject_cast<QQuickItem *>(child("fileChooserAccept"));
         QVERIFY(button);
-        const QPointF centre = button->mapToScene(
-            QPointF(button->width() / 2, button->height() / 2));
-        QTest::mouseClick(m_window, Qt::LeftButton, {}, centre.toPoint());
+        testsupport::clickWhenSettled(m_window, button);
     }
 
     QList<QUrl> urlsIn(const QString &dir, const QStringList &names) const

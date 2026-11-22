@@ -46,6 +46,7 @@
 #include "gif/GifStarredStore.h"
 #include "models/TimelineModel.h"
 #include "threads/ThreadController.h"
+#include "support/SettledClick.h"
 
 namespace {
 
@@ -228,23 +229,7 @@ private:
     void clickItem(QQuickItem *target, const QPointF &fraction = QPointF(0.5, 0.5))
     {
         ensureVisible(target);
-        const auto centerOf = [target, fraction] {
-            return target->mapToScene(QPointF(target->width() * fraction.x(),
-                                              target->height() * fraction.y()));
-        };
-        QPointF center = centerOf();
-        for (int i = 0; i < 5; ++i) {
-            QSignalSpy frame(m_window, &QQuickWindow::frameSwapped);
-            m_window->update();
-            const bool swapped = frame.count() > 0 || frame.wait(5000);
-            const QPointF now = centerOf();
-            const bool settled = i > 0 && now == center;
-            center = now;
-            if (settled || !swapped)
-                break;
-        }
-        QTest::mouseClick(m_window, Qt::LeftButton, Qt::NoModifier,
-                          center.toPoint());
+        testsupport::clickWhenSettled(m_window, target, fraction);
         QCoreApplication::processEvents();
     }
 

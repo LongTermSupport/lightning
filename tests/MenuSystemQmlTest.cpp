@@ -13,6 +13,7 @@
 #include <QSet>
 
 #include <cmath>
+#include "support/SettledClick.h"
 
 namespace {
 
@@ -441,10 +442,7 @@ private:
             }
         }
         QVERIFY(parentRow);
-        const QPointF centre = parentRow->mapToScene(
-            QPointF(parentRow->width() / 2, parentRow->height() / 2));
-        QTest::mouseClick(window, Qt::LeftButton, Qt::NoModifier,
-                          centre.toPoint());
+        QVERIFY(testsupport::clickWhenSettled(window, parentRow));
         QTRY_VERIFY(flyout->property("opened").toBool());
     }
 
@@ -755,10 +753,7 @@ private slots:
         QCOMPARE(parentRow->property("iconName").toString(),
                  QStringLiteral("notifications"));
 
-        const QPointF center = parentRow->mapToScene(
-            QPointF(parentRow->width() / 2, parentRow->height() / 2));
-        QTest::mouseClick(m_window, Qt::LeftButton, Qt::NoModifier,
-                          center.toPoint());
+        QVERIFY(testsupport::clickWhenSettled(m_window, parentRow));
         QTRY_VERIFY(flyout->property("opened").toBool());
         QVERIFY(menu->property("opened").toBool());
 
@@ -814,19 +809,13 @@ private slots:
             }
         }
         QVERIFY(parentRow);
-        QPointF center = parentRow->mapToScene(
-            QPointF(parentRow->width() / 2, parentRow->height() / 2));
-        QTest::mouseClick(m_window, Qt::LeftButton, Qt::NoModifier,
-                          center.toPoint());
+        QVERIFY(testsupport::clickWhenSettled(m_window, parentRow));
         QTRY_VERIFY(flyout->property("opened").toBool());
 
         auto *mentions = item("radioMentions");
         QVERIFY(mentions);
         QVERIFY(!mentions->property("radioSelected").toBool());
-        center = mentions->mapToScene(
-            QPointF(mentions->width() / 2, mentions->height() / 2));
-        QTest::mouseClick(m_window, Qt::LeftButton, Qt::NoModifier,
-                          center.toPoint());
+        QVERIFY(testsupport::clickWhenSettled(m_window, mentions));
         QTRY_VERIFY(!menu->property("opened").toBool());
         QVERIFY(!mentions->property("radioSelected").toBool());
 

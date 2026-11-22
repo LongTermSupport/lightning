@@ -11,6 +11,7 @@
 
 #include "app/AppController.h"
 #include "models/MessageComposer.h"
+#include "support/SettledClick.h"
 
 namespace {
 QStringList g_warnings;
@@ -102,8 +103,7 @@ class CreatePollDialogKeysTest : public QObject
     }
     void click(QQuickItem *it)
     {
-        const QPointF c = it->mapToScene(QPointF(it->width() / 2, it->height() / 2));
-        QTest::mouseClick(window, Qt::LeftButton, {}, c.toPoint());
+        testsupport::clickWhenSettled(window, it);
     }
     void fillValidPoll()
     {
