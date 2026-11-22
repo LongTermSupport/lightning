@@ -1202,21 +1202,33 @@ private Q_SLOTS:
         raw.sync();
     }
 
-    void theSettingIsOnByDefaultAndIsRemembered()
+    void theSettingIsOffUntilChosenAndAStoredChoiceIsRemembered()
     {
         {
             SettingsManager settings;
-            QVERIFY(settings.keepRoomListOrderStill());
+            QVERIFY(!settings.keepRoomListOrderStill());
             QSignalSpy changed(&settings,
                                &SettingsManager::keepRoomListOrderStillChanged);
-            settings.setKeepRoomListOrderStill(false);
-            QVERIFY(!settings.keepRoomListOrderStill());
+            settings.setKeepRoomListOrderStill(true);
+            QVERIFY(settings.keepRoomListOrderStill());
             QCOMPARE(changed.count(), 1);
-            settings.setKeepRoomListOrderStill(false);
+            settings.setKeepRoomListOrderStill(true);
             QCOMPARE(changed.count(), 1);
         }
+        QVERIFY(QSettings().value(QStringLiteral("shell/keepRoomListOrderStill")).toBool());
         SettingsManager again;
-        QVERIFY(!again.keepRoomListOrderStill());
+        QVERIFY(again.keepRoomListOrderStill());
+    }
+
+    void aStoredOnFromAnOlderReleaseStaysOn()
+    {
+        {
+            QSettings raw;
+            raw.setValue(QStringLiteral("shell/keepRoomListOrderStill"), true);
+            raw.sync();
+        }
+        SettingsManager settings;
+        QVERIFY(settings.keepRoomListOrderStill());
     }
 
     void theHostReleasesOnFocusAndWhenTheListIsAtRest()

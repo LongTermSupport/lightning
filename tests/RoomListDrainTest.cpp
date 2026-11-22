@@ -4,6 +4,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QSignalSpy>
+#include <QTemporaryDir>
 #include <QtTest>
 
 #ifdef ENABLE_RUST_SDK_BACKEND
@@ -153,7 +154,44 @@ private:
 #endif
 
 private Q_SLOTS:
+    void initTestCase()
+    {
+        QVERIFY(m_configHome.isValid());
+        qputenv("XDG_CONFIG_HOME", m_configHome.path().toUtf8());
+        QCoreApplication::setOrganizationName(QStringLiteral("MatrixClientTests"));
+        QCoreApplication::setApplicationName(QStringLiteral("room-list-drain-test"));
+    }
+
 #ifdef ENABLE_RUST_SDK_BACKEND
+    void aNewMessageMovesItsRoomToTheTopAtTheDefaultSetting_data() { movedRooms(); }
+    void aNewMessageMovesItsRoomToTheTopAtTheDefaultSetting()
+    {
+        QFETCH(int, rooms);
+        QFETCH(bool, burst);
+        Shown shown(rooms, SettingsManager().keepRoomListOrderStill());
+        const int at = rooms / 2;
+
+        QCOMPARE(shown.client.drainEventsForTest(newMessage(rooms, at, burst)), 0);
+
+        QCOMPARE(shown.rowOf(at), 0);
+    }
+
+    // Why releases before the drain coalesced moved rooms despite the setting.
+    void publishingEachDiffAloneDropsTheStillOrder_data() { movedRooms(); }
+    void publishingEachDiffAloneDropsTheStillOrder()
+    {
+        QFETCH(int, rooms);
+        QFETCH(bool, burst);
+        Shown shown(rooms, true);
+        const int at = rooms / 2;
+
+        for (const QByteArray &event : newMessage(rooms, at, burst))
+            shown.client.handleRustEventForTest(QJsonDocument::fromJson(event).object());
+
+        QCOMPARE(shown.rowOf(at), 0);
+        QVERIFY(!shown.model.orderHeld());
+    }
+
     void aNewMessageMovesItsRoomToTheTopOfALiveList_data() { movedRooms(); }
     void aNewMessageMovesItsRoomToTheTopOfALiveList()
     {
@@ -338,6 +376,9 @@ private Q_SLOTS:
 #else
     void skippedWithoutTheRustBackend() { QSKIP("needs ENABLE_RUST_SDK_BACKEND"); }
 #endif
+
+private:
+    QTemporaryDir m_configHome;
 };
 
 QTEST_MAIN(RoomListDrainTest)
