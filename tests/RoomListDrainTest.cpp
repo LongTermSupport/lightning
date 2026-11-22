@@ -8,6 +8,8 @@
 
 #ifdef ENABLE_RUST_SDK_BACKEND
 #include "matrix/RustSdkMatrixClient.h"
+#include "models/RoomListModel.h"
+#include "spaces/SpaceManager.h"
 #endif
 
 class RoomListDrainTest : public QObject
@@ -80,10 +82,114 @@ private:
         QTest::newRow("100") << 100;
         QTest::newRow("1000") << 1000;
     }
+
+    static constexpr qint64 kNewestMs = 1700000000000;
+
+    static QJsonObject activeRoom(int i, qint64 ms)
+    {
+        QJsonObject o = room(i);
+        o.insert(QStringLiteral("last_activity_ms"), double(ms));
+        return o;
+    }
+
+    struct Shown {
+        SettingsManager settings;
+        RustSdkMatrixClient client{ &settings };
+        SpaceManager spaces;
+        RoomListModel model;
+
+        Shown(int rooms, bool keepStill)
+        {
+            QJsonArray list;
+            for (int i = 0; i < rooms; ++i)
+                list.append(activeRoom(i, kNewestMs - i * 60000LL));
+            client.drainEventsForTest(
+                { wire({ { QStringLiteral("type"), QStringLiteral("room_list_reset") },
+                         { QStringLiteral("rooms"), list } }) });
+            spaces.setClient(&client);
+            model.setSpaceManager(&spaces);
+            model.setClient(&client);
+            model.setDeferReordering(keepStill);
+        }
+
+        int rowOf(int i) const
+        {
+            for (int row = 0; row < model.rowCount(); ++row) {
+                if (model.data(model.index(row), RoomListModel::RoomIdRole).toString()
+                    == roomId(i))
+                    return row;
+            }
+            return -1;
+        }
+    };
+
+    // The SDK's sorter reports a room that moved to the top as these two diffs.
+    static QList<QByteArray> newMessage(int rooms, int at, bool burst)
+    {
+        const QList<QByteArray> move{
+            wire({ { QStringLiteral("type"), QStringLiteral("room_list_remove") },
+                   { QStringLiteral("index"), at },
+                   { QStringLiteral("expected_id"), roomId(at) } }),
+            wire({ { QStringLiteral("type"), QStringLiteral("room_list_push_front") },
+                   { QStringLiteral("room"), activeRoom(at, kNewestMs + 60000) } }),
+        };
+        if (!burst)
+            return move;
+        QList<QByteArray> events{ set(0, QStringLiteral("Before")), spaces() };
+        events += move;
+        events += { spaces(), set(rooms - 1, QStringLiteral("After")) };
+        return events;
+    }
+
+    static void movedRooms()
+    {
+        QTest::addColumn<int>("rooms");
+        QTest::addColumn<bool>("burst");
+        for (int rooms : { 10, 100, 1000 }) {
+            QTest::addRow("%d single", rooms) << rooms << false;
+            QTest::addRow("%d burst", rooms) << rooms << true;
+        }
+    }
 #endif
 
 private Q_SLOTS:
 #ifdef ENABLE_RUST_SDK_BACKEND
+    void aNewMessageMovesItsRoomToTheTopOfALiveList_data() { movedRooms(); }
+    void aNewMessageMovesItsRoomToTheTopOfALiveList()
+    {
+        QFETCH(int, rooms);
+        QFETCH(bool, burst);
+        Shown shown(rooms, false);
+        const int at = rooms / 2;
+        QCOMPARE(shown.rowOf(at), at);
+
+        QCOMPARE(shown.client.drainEventsForTest(newMessage(rooms, at, burst)), 0);
+
+        QCOMPARE(shown.model.rowCount(), rooms);
+        QCOMPARE(shown.rowOf(at), 0);
+        QCOMPARE(shown.client.m_roomListResyncRequests, 0);
+    }
+
+    void aNewMessageLeavesAListKeptStillInPlaceUntilItIsReleased_data() { movedRooms(); }
+    void aNewMessageLeavesAListKeptStillInPlaceUntilItIsReleased()
+    {
+        QFETCH(int, rooms);
+        QFETCH(bool, burst);
+        Shown shown(rooms, true);
+        const int at = rooms / 2;
+
+        QCOMPARE(shown.client.drainEventsForTest(newMessage(rooms, at, burst)), 0);
+
+        QCOMPARE(shown.rowOf(at), at);
+        QVERIFY(shown.model.orderHeld());
+        QCOMPARE(shown.model.data(shown.model.index(at), RoomListModel::LastActivityRole)
+                     .toDateTime().toMSecsSinceEpoch(),
+                 kNewestMs + 60000);
+
+        shown.model.releaseOrder();
+        QCOMPARE(shown.rowOf(at), 0);
+        QVERIFY(!shown.model.orderHeld());
+    }
     void aBurstOfRoomListDiffsRefreshesConsumersOncePerDrain_data() { roomCounts(); }
     void aBurstOfRoomListDiffsRefreshesConsumersOncePerDrain()
     {
