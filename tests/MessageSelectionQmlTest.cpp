@@ -1408,6 +1408,13 @@ ApplicationWindow {
             { QStringLiteral("roomId"), roomId } } });
         disconnect(capture);
         QCOMPARE(sent.size(), 2);
+        const QString roomName = m_controller->roomList()->findRoom(roomId)
+                                     .value(QStringLiteral("name")).toString();
+        QVERIFY(!roomName.isEmpty());
+        for (const QString &copy : std::as_const(sent))
+            QVERIFY2(copy.section(QLatin1Char('\n'), 0, 0)
+                         .contains(QStringLiteral(" · in %1 · ").arg(roomName)),
+                     qPrintable(QStringLiteral("no source room in: %1").arg(copy)));
         const Row expected[] = { older, newer };
         for (int i = 0; i < 2; ++i) {
             const QString stamp = QLocale().toString(
