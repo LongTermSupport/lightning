@@ -81,6 +81,13 @@ struct AudioDeviceTester::Relay {
                 target->onFinished(generation);
         });
     }
+    void deliverMicrophoneBinding(const QString &chosenId, bool fellBack)
+    {
+        post([this, chosenId, fellBack] {
+            if (target && target->m_devices)
+                target->m_devices->noteMicrophoneBinding(chosenId, fellBack);
+        });
+    }
     void deliverLevel(quint64 generation, double peakDb)
     {
         post([this, generation, peakDb] {
@@ -240,6 +247,8 @@ void AudioDeviceTester::Relay::run(std::shared_ptr<Relay> relay,
                 : QStringLiteral("%1 name=micsrc").arg(plan.testMicSource);
         } else {
             capture = SfuMediaEngine::resolveMicrophoneCapture(plan.microphone);
+            relay->deliverMicrophoneBinding(plan.microphone.id,
+                                            capture.fellBack);
         }
         if (plan.testChannels > 0)
             capture.channels = plan.testChannels;

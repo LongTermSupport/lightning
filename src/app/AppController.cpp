@@ -4088,6 +4088,7 @@ void AppController::enableCallMediaEngine()
                 plan.microphoneFront =
                     SfuMediaEngine::microphoneFrontDescription(capture);
                 plan.microphoneBinding = capture.binding;
+                m_callDevices->noteMicrophoneBinding(mic.id, capture.fellBack);
             }
             if (!m_settings->preferredSpeakerId().isEmpty()) {
                 const auto speaker = m_callDevices->speakerSelection();
@@ -4206,6 +4207,8 @@ void AppController::enableCallMediaEngine()
         connect(m_callDevices.get(),
                 &CallDeviceController::activeDevicesChanged, sfu,
                 applySfuDevices);
+        connect(sfu, &SfuMediaEngine::microphoneBound, m_callDevices.get(),
+                &CallDeviceController::noteMicrophoneBinding);
         connect(m_callDevices.get(),
                 &CallDeviceController::audioOutputsChanged, sfu,
                 [this, sfu] {

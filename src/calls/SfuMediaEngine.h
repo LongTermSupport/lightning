@@ -210,6 +210,8 @@ public:
         QString source;
         lightning::calls::DeviceBinding binding;
         int channels = 0;
+        // A microphone was chosen and could not be bound: the default is used.
+        bool fellBack = false;
     };
     static MicrophoneCapture resolveMicrophoneCapture(const DeviceChoice &mic);
     static QString microphoneFrontDescription(const MicrophoneCapture &capture);
@@ -724,6 +726,7 @@ Q_SIGNALS:
     void failed(const QString &category);
     void publishFailed(const QString &cid, const QString &category);
     void microphoneRecovered(const QString &cid);
+    void microphoneBound(const QString &chosenId, bool fellBack);
     void echoCancellationFailed();
     void remotePlaybackFailed(bool failed);
 

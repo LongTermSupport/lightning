@@ -108,6 +108,53 @@ private Q_SLOTS:
             QStringLiteral("\"callDeviceCameraMissing\"")));
     }
 
+    void aChosenMicrophoneTheCallCouldNotOpenIsReported()
+    {
+        SettingsManager settings;
+        CallDeviceController devices;
+        devices.setSettings(&settings);
+        const QString chosen = QStringLiteral("lightning-test-mic-a");
+        devices.selectMicrophone(chosen);
+        QVERIFY(!devices.preferredMicrophoneUnusable());
+
+        QSignalSpy selection(&devices, &CallDeviceController::selectionChanged);
+        devices.noteMicrophoneBinding(chosen, true);
+        QVERIFY(devices.preferredMicrophoneUnusable());
+        QCOMPARE(selection.count(), 1);
+
+        devices.noteMicrophoneBinding(QString(), false);
+        devices.noteMicrophoneBinding(QStringLiteral("lightning-test-mic-b"),
+                                      false);
+        QVERIFY2(devices.preferredMicrophoneUnusable(),
+                 "a report about another microphone cleared the fallback");
+
+        devices.noteMicrophoneBinding(chosen, false);
+        QVERIFY(!devices.preferredMicrophoneUnusable());
+        QCOMPARE(selection.count(), 2);
+
+        devices.noteMicrophoneBinding(chosen, true);
+        devices.selectMicrophone(QStringLiteral("lightning-test-mic-b"));
+        QVERIFY2(!devices.preferredMicrophoneUnusable(),
+                 "choosing another microphone kept the old fallback notice");
+        devices.selectMicrophone(QString());
+        QVERIFY(!devices.preferredMicrophoneUnusable());
+
+        const auto read = [](const char *name) {
+            QFile file(QStringLiteral(QML_DIR "/") + QLatin1String(name));
+            return file.open(QIODevice::ReadOnly)
+                ? QString::fromUtf8(file.readAll()).simplified()
+                : QString();
+        };
+        QVERIFY(read("CallDeviceMenu.qml")
+                    .contains(QStringLiteral("\"callMenuMicrophoneUnusable\"")));
+        QVERIFY(read("CallDeviceSettings.qml")
+                    .contains(QStringLiteral(
+                        "\"callDeviceMicrophoneUnusable\"")));
+        QVERIFY(read("CallHeaderBar.qml")
+                    .contains(QStringLiteral(
+                        "|| app.callDevices.preferredMicrophoneUnusable")));
+    }
+
 private:
     QTemporaryDir m_configHome;
 };

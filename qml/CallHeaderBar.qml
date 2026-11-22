@@ -190,6 +190,10 @@ Rectangle {
                 Layout.alignment: Qt.AlignVCenter
                 Layout.leftMargin: 2
                 warn: app.callDevices.preferredMicrophoneMissing
+                      || app.callDevices.preferredMicrophoneUnusable
+                warnText: app.callDevices.preferredMicrophoneMissing
+                          ? qsTr("The chosen device isn't connected")
+                          : qsTr("The chosen microphone couldn't be opened")
             }
         }
 

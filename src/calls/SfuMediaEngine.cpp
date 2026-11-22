@@ -2273,6 +2273,10 @@ SfuMediaEngine::resolveMicrophoneCapture(const DeviceChoice &mic)
     capture.channels = choice.element == QLatin1String("pipewiresrc")
         ? choice.binding.channels
         : 0;
+    capture.fellBack = !mic.id.isEmpty() && choice.isEmpty();
+    if (capture.fellBack)
+        qCWarning(lcSfuMedia) << "the chosen microphone could not be bound; "
+                                 "capturing from the system default";
     return capture;
 }
 
@@ -4059,9 +4063,12 @@ void SfuMediaEngine::publishAudio(const QString &cid)
     if (m_publishedBins.contains(cid))
         return;
 
+    const DeviceChoice micChoice = microphoneChoice();
     MicrophoneCapture capture = m_testSources
         ? testMicrophoneCapture()
-        : resolveMicrophoneCapture(microphoneChoice());
+        : resolveMicrophoneCapture(micChoice);
+    if (!m_testSources)
+        Q_EMIT microphoneBound(micChoice.id, capture.fellBack);
     if (m_testDeviceChannels > 0)
         capture.channels = m_testDeviceChannels;
     const calls::noise::Mode noiseMode = noiseSuppressionMode();
@@ -10789,10 +10796,11 @@ void SfuMediaEngine::refreshMicrophoneCapture()
             MicrophoneCapture capture = resolveMicrophoneCapture(choice);
             if (channels > 0)
                 capture.channels = channels;
-            marshal(this, [this, capture, seq, generation, cid] {
+            marshal(this, [this, capture, seq, generation, cid, choice] {
                 if (seq != m_micResolveSeq || generation != m_generation.load()
                     || cid != m_micCid)
                     return;
+                Q_EMIT microphoneBound(choice.id, capture.fellBack);
                 swapMicrophoneFront(capture);
             });
         });

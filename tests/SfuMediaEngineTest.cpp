@@ -1249,6 +1249,7 @@ static void keyed(CallFrameCryptor &cryptor, int index, char fill)
     cryptor.setCurrentKeyIndex(index);
 }
 
+
 class SfuMediaEngineTest : public QObject
 {
     Q_OBJECT
@@ -1261,6 +1262,19 @@ private slots:
             QSKIP(qPrintable(
                 QStringLiteral("no SFU media runtime: %1").arg(whyNot)));
         }
+    }
+
+    void aChosenMicrophoneThatCannotBeBoundSaysSo()
+    {
+        const SfuMediaEngine::MicrophoneCapture unbound =
+            SfuMediaEngine::resolveMicrophoneCapture(
+                {QStringLiteral("lightning-test-no-such-microphone"),
+                 QStringLiteral("Lightning Test Absent Microphone")});
+        QVERIFY(unbound.binding.isEmpty());
+        QVERIFY2(unbound.fellBack,
+                 "a chosen microphone fell back to the default in silence");
+        QVERIFY(unbound.source.startsWith(QStringLiteral("autoaudiosrc")));
+        QVERIFY(!SfuMediaEngine::resolveMicrophoneCapture({}).fellBack);
     }
 
     void anIceRestartIsReadFromTheOffersUfrag()
