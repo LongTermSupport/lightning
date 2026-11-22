@@ -1073,7 +1073,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7362"/>
+        <location filename="../src/app/AppController.cpp" line="+7373"/>
         <source>Room invitation</source>
         <translation>دعوة إلى غرفة</translation>
     </message>
@@ -1198,7 +1198,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>مكالمة واردة</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5709"/>
+        <location filename="../src/app/AppController.cpp" line="-5720"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>أُلغي تسجيل الخروج لأن الحساب تغيّر. لم يُعَد ضبط أي شيء.</translation>
     </message>
@@ -1250,13 +1250,13 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4281"/>
+        <location line="+4292"/>
         <location line="+821"/>
         <source>Not connected</source>
         <translation>غير متصل</translation>
     </message>
     <message>
-        <location line="-5143"/>
+        <location line="-5154"/>
         <source>Connecting…</source>
         <translation>جارٍ الاتصال…</translation>
     </message>
@@ -1317,29 +1317,29 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+4"/>
-        <location line="+3077"/>
+        <location line="+3088"/>
         <location line="+9"/>
         <source>Lightning could not read the selected file.</source>
         <translation>تعذّر على Lightning قراءة الملف المحدد.</translation>
     </message>
     <message>
-        <location line="-3083"/>
+        <location line="-3094"/>
         <source>A room-key import is already in progress.</source>
         <translation>هناك استيراد لمفاتيح الغرف قيد التنفيذ بالفعل.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4076"/>
+        <location line="+4087"/>
         <source>Not signed in.</source>
         <translation>لم تسجّل الدخول.</translation>
     </message>
     <message>
-        <location line="-4074"/>
+        <location line="-4085"/>
         <source>Room-key import failed.</source>
         <translation>فشل استيراد مفاتيح الغرف.</translation>
     </message>
     <message>
-        <location line="+2251"/>
+        <location line="+2262"/>
         <source>Enter a size limit from 1 to 2000 MB.</source>
         <translation>أدخل حدًّا للحجم من 1 إلى 2000 ميغابايت.</translation>
     </message>
@@ -1354,7 +1354,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>استخدم تواريخ حقيقية بصيغة YYYY-MM-DD، على ألا يكون «من» بعد «إلى».</translation>
     </message>
     <message>
-        <location line="-4769"/>
+        <location line="-4780"/>
         <location line="+2707"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
@@ -1420,12 +1420,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>الاتصال غير متاح هنا.</translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+158"/>
         <source>Your camera couldn&apos;t be started. The call goes on without it.</source>
         <translation>تعذّر تشغيل كاميرتك. تستمر المكالمة بدونها.</translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+157"/>
         <source>Modern room list</source>
         <translation>قائمة غرف حديثة</translation>
     </message>
@@ -2654,7 +2654,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>CallDeviceChevron</name>
     <message>
-        <location filename="../qml/CallDeviceChevron.qml" line="+20"/>
+        <location filename="../qml/CallDeviceChevron.qml" line="+19"/>
         <source>The chosen device isn&apos;t connected</source>
         <translation>الجهاز المختار غير متصل</translation>
     </message>
@@ -2692,7 +2692,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>الميكروفون الذي اخترته غير متصل</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
+        <source>Your chosen microphone couldn&apos;t be opened. The call uses the system default.</source>
+        <translation>تعذّر فتح الميكروفون الذي اخترته. تستخدم المكالمة الميكروفون الافتراضي للنظام.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>Your chosen camera isn&apos;t connected</source>
         <translation>الكاميرا التي اخترتها غير متصلة</translation>
     </message>
@@ -2804,6 +2809,11 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <location line="+11"/>
         <source>Your chosen microphone isn&apos;t connected. Calls use the system default until it&apos;s back.</source>
         <translation>الميكروفون الذي اخترته غير متصل. تستخدم المكالمات الإعداد الافتراضي للنظام حتى يتم إعادته.</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Your chosen microphone couldn&apos;t be opened, so the system default was used. Choose it again or reconnect it.</source>
+        <translation>تعذّر فتح الميكروفون الذي اخترته، لذا استُخدم الافتراضي للنظام. اختره مجددًا أو أعد توصيله.</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -3153,7 +3163,17 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>مكالمة فيديو</translation>
     </message>
     <message>
-        <location line="+152"/>
+        <location line="+109"/>
+        <source>The chosen device isn&apos;t connected</source>
+        <translation>الجهاز المختار غير متصل</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The chosen microphone couldn&apos;t be opened</source>
+        <translation>تعذّر فتح الميكروفون المختار</translation>
+    </message>
+    <message>
+        <location line="+46"/>
         <location line="+28"/>
         <source>Turn off camera</source>
         <translation>قم بإيقاف تشغيل الكاميرا</translation>
@@ -3252,7 +3272,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>إخراج المكالمة في نافذة عائمة</translation>
     </message>
     <message>
-        <location line="-385"/>
+        <location line="-389"/>
         <source>Unmute microphone</source>
         <translation>إلغاء كتم صوت الميكروفون</translation>
     </message>
@@ -3287,7 +3307,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>اختر الميكروفون</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+19"/>
         <source>Undeafen</source>
         <translation>لا يصم</translation>
     </message>
@@ -27374,19 +27394,19 @@ Note: importing keys does not verify this session.</source>
     <name>SfuCallController</name>
     <message>
         <location filename="../src/calls/SfuCallController.cpp" line="+633"/>
-        <location line="+387"/>
-        <location line="+163"/>
+        <location line="+396"/>
+        <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
         <translation>مشاركة الشاشة غير متاحة على سطح المكتب هذا.</translation>
     </message>
     <message>
-        <location line="-548"/>
-        <location line="+918"/>
+        <location line="-559"/>
+        <location line="+929"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>تعذر بدء مشاركة الشاشة.</translation>
     </message>
     <message>
-        <location line="-561"/>
+        <location line="-563"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>تحتاج مشاركة الشاشة على Wayland إلى xdg-desktop-portal، وهي لا تستجيب. قم بتثبيت أو تشغيل البوابة الإلكترونية لسطح المكتب لديك — على سبيل المثال xdg-desktop-portal-kde أو xdg-desktop-portal-gnome — ثم حاول مرة أخرى.</translation>
     </message>
@@ -27402,7 +27422,7 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+53"/>
-        <location line="+159"/>
+        <location line="+161"/>
         <source>No display is available to share.</source>
         <translation>لا يوجد عرض متاح للمشاركة.</translation>
     </message>
@@ -27447,7 +27467,7 @@ Note: importing keys does not verify this session.</source>
         <translation>محاولات كثيرة جدًا. حاول مرة أخرى بعد قليل.</translation>
     </message>
     <message>
-        <location line="-722"/>
+        <location line="-733"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>لم تعرض بوابة الكاميرا في سطح مكتبك أي كاميرا على Lightning. إن كانت الكاميرا تعمل في تطبيقات أخرى، فاسمح لـ Lightning باستخدام كل الأجهزة (في Flatseal: «All devices»)، ثم شغّل الكاميرا مجددًا.</translation>
     </message>
@@ -27477,12 +27497,12 @@ Note: importing keys does not verify this session.</source>
         <translation>لا توجد بوابة كاميرا في سطح المكتب هذا، لذا لا يمكن استخدام الكاميرا.</translation>
     </message>
     <message>
-        <location line="+211"/>
+        <location line="+220"/>
         <source>Screen sharing isn&apos;t available in this sandboxed (Flatpak or Snap) build on an X11 session: it can only share through the desktop&apos;s screen-sharing portal, and none is available, and GStreamer plugins installed on your system cannot be used from the sandbox. To share your screen, use the AppImage or a distribution package of Lightning, which capture an X11 screen directly, or log into a Wayland session, where your desktop&apos;s portal provides screen sharing. If your desktop&apos;s xdg-desktop-portal supports screen casting on X11, make sure it is installed and running.</source>
         <translation>مشاركة الشاشة غير متاحة في هذا الإصدار المعزول (Flatpak أو Snap) على جلسة X11: فهي لا تعمل إلا عبر بوابة مشاركة الشاشة في سطح المكتب، ولا تتوفر أي بوابة، ولا يمكن استخدام إضافات GStreamer المثبّتة على نظامك من داخل البيئة المعزولة. لمشاركة شاشتك، استخدم AppImage أو حزمة Lightning الخاصة بتوزيعتك، فهي تلتقط شاشة X11 مباشرة، أو سجّل الدخول إلى جلسة Wayland حيث توفر بوابة سطح مكتبك مشاركة الشاشة. وإن كانت xdg-desktop-portal في سطح مكتبك تدعم بث الشاشة على X11، فتأكد من تثبيتها وتشغيلها.</translation>
     </message>
     <message>
-        <location line="+474"/>
+        <location line="+476"/>
         <source>You don&apos;t have permission to join calls in this room. A room admin can raise your power level in it; Lightning can&apos;t change what call membership itself requires.</source>
         <translation>ليست لديك صلاحية الانضمام إلى المكالمات في هذه الغرفة. يمكن لمشرف الغرفة رفع مستوى صلاحيتك فيها؛ ولا يستطيع Lightning تغيير ما تتطلبه عضوية المكالمة نفسها.</translation>
     </message>

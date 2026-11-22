@@ -1034,7 +1034,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     <name>AppController</name>
     <message>
         <location filename="../qml/LoginScreen.qml" line="+433"/>
-        <location filename="../src/app/AppController.cpp" line="+6399"/>
+        <location filename="../src/app/AppController.cpp" line="+6410"/>
         <location line="+25"/>
         <location line="+562"/>
         <location line="+454"/>
@@ -1042,7 +1042,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Lightning kann die gespeicherten Anmeldungen dieses Geräts gerade nicht lesen – der System-Schlüsselbund ist gesperrt oder nicht verfügbar. Entsperre ihn und versuche es erneut.</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-6840"/>
+        <location filename="../src/app/AppController.cpp" line="-6851"/>
         <location line="+2707"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
@@ -1115,13 +1115,13 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4281"/>
+        <location line="+4292"/>
         <location line="+821"/>
         <source>Not connected</source>
         <translation>Nicht verbunden</translation>
     </message>
     <message>
-        <location line="-5143"/>
+        <location line="-5154"/>
         <source>Connecting…</source>
         <translation>Verbindet …</translation>
     </message>
@@ -1177,24 +1177,24 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     </message>
     <message>
         <location line="+4"/>
-        <location line="+3077"/>
+        <location line="+3088"/>
         <location line="+9"/>
         <source>Lightning could not read the selected file.</source>
         <translation>Lightning konnte die ausgewählte Datei nicht lesen.</translation>
     </message>
     <message>
-        <location line="-3083"/>
+        <location line="-3094"/>
         <source>A room-key import is already in progress.</source>
         <translation>Ein Raumschlüssel-Import läuft bereits.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4076"/>
+        <location line="+4087"/>
         <source>Not signed in.</source>
         <translation>Nicht angemeldet.</translation>
     </message>
     <message>
-        <location line="-4074"/>
+        <location line="-4085"/>
         <source>Room-key import failed.</source>
         <translation>Der Raumschlüssel-Import ist fehlgeschlagen.</translation>
     </message>
@@ -1234,12 +1234,12 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Anrufe sind hier nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+158"/>
         <source>Your camera couldn&apos;t be started. The call goes on without it.</source>
         <translation>Deine Kamera konnte nicht gestartet werden. Der Anruf geht ohne sie weiter.</translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+157"/>
         <source>Modern room list</source>
         <translation>Moderne Raumliste</translation>
     </message>
@@ -2570,7 +2570,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
 <context>
     <name>CallDeviceChevron</name>
     <message>
-        <location filename="../qml/CallDeviceChevron.qml" line="+20"/>
+        <location filename="../qml/CallDeviceChevron.qml" line="+19"/>
         <source>The chosen device isn&apos;t connected</source>
         <translation>Das ausgewählte Gerät ist nicht verbunden</translation>
     </message>
@@ -2608,7 +2608,12 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Dein ausgewähltes Mikrofon ist nicht verbunden</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
+        <source>Your chosen microphone couldn&apos;t be opened. The call uses the system default.</source>
+        <translation>Dein ausgewähltes Mikrofon konnte nicht geöffnet werden. Der Anruf verwendet das Systemmikrofon.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>Your chosen camera isn&apos;t connected</source>
         <translation>Deine ausgewählte Kamera ist nicht verbunden</translation>
     </message>
@@ -2720,6 +2725,11 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <location line="+11"/>
         <source>Your chosen microphone isn&apos;t connected. Calls use the system default until it&apos;s back.</source>
         <translation>Dein ausgewähltes Mikrofon ist nicht verbunden. Anrufe verwenden den Systemstandard, bis es wieder da ist.</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Your chosen microphone couldn&apos;t be opened, so the system default was used. Choose it again or reconnect it.</source>
+        <translation>Dein ausgewähltes Mikrofon konnte nicht geöffnet werden, daher wurde das Systemmikrofon verwendet. Wähle es erneut aus oder schließe es neu an.</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -3104,7 +3114,17 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Mikrofon auswählen</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+6"/>
+        <source>The chosen device isn&apos;t connected</source>
+        <translation>Das ausgewählte Gerät ist nicht verbunden</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The chosen microphone couldn&apos;t be opened</source>
+        <translation>Das ausgewählte Mikrofon konnte nicht geöffnet werden</translation>
+    </message>
+    <message>
+        <location line="+12"/>
         <source>Undeafen</source>
         <translation>Wieder hören</translation>
     </message>
@@ -26958,19 +26978,19 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     <name>SfuCallController</name>
     <message>
         <location filename="../src/calls/SfuCallController.cpp" line="+633"/>
-        <location line="+387"/>
-        <location line="+163"/>
+        <location line="+396"/>
+        <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
         <translation>Bildschirmfreigabe ist auf diesem Desktop nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="-548"/>
-        <location line="+918"/>
+        <location line="-559"/>
+        <location line="+929"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>Die Bildschirmfreigabe konnte nicht gestartet werden.</translation>
     </message>
     <message>
-        <location line="-787"/>
+        <location line="-798"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>Das Kamera-Portal deines Desktops hat Lightning keine Kamera angeboten. Wenn die Kamera in anderen Apps funktioniert, erlaube Lightning die Nutzung aller Geräte (in Flatseal: „All devices“) und schalte die Kamera dann erneut ein.</translation>
     </message>
@@ -27000,7 +27020,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Dieser Desktop hat kein Kamera-Portal, daher kann die Kamera nicht verwendet werden.</translation>
     </message>
     <message>
-        <location line="+205"/>
+        <location line="+214"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>Die Bildschirmfreigabe unter Wayland benötigt xdg-desktop-portal, und es antwortet nicht. Installiere oder starte das Portal für deinen Desktop – zum Beispiel xdg-desktop-portal-kde oder xdg-desktop-portal-gnome – und versuche es dann erneut.</translation>
     </message>
@@ -27021,7 +27041,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location line="+53"/>
-        <location line="+159"/>
+        <location line="+161"/>
         <source>No display is available to share.</source>
         <translation>Es ist kein Bildschirm zum Freigeben verfügbar.</translation>
     </message>

@@ -1033,7 +1033,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7362"/>
+        <location filename="../src/app/AppController.cpp" line="+7373"/>
         <source>Room invitation</source>
         <translation>रूम का आमंत्रण</translation>
     </message>
@@ -1154,7 +1154,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>आने वाली कॉल</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5709"/>
+        <location filename="../src/app/AppController.cpp" line="-5720"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>खाता बदलने के कारण साइन-आउट रद्द कर दिया गया। कुछ भी रीसेट नहीं हुआ।</translation>
     </message>
@@ -1206,13 +1206,13 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4281"/>
+        <location line="+4292"/>
         <location line="+821"/>
         <source>Not connected</source>
         <translation>कनेक्ट नहीं है</translation>
     </message>
     <message>
-        <location line="-5143"/>
+        <location line="-5154"/>
         <source>Connecting…</source>
         <translation>कनेक्ट हो रहा है…</translation>
     </message>
@@ -1273,29 +1273,29 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+4"/>
-        <location line="+3077"/>
+        <location line="+3088"/>
         <location line="+9"/>
         <source>Lightning could not read the selected file.</source>
         <translation>Lightning चुनी गई फ़ाइल पढ़ नहीं सका।</translation>
     </message>
     <message>
-        <location line="-3083"/>
+        <location line="-3094"/>
         <source>A room-key import is already in progress.</source>
         <translation>रूम-कुंजी आयात पहले से चल रहा है।</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4076"/>
+        <location line="+4087"/>
         <source>Not signed in.</source>
         <translation>साइन इन नहीं है।</translation>
     </message>
     <message>
-        <location line="-4074"/>
+        <location line="-4085"/>
         <source>Room-key import failed.</source>
         <translation>रूम-कुंजी आयात विफल रहा।</translation>
     </message>
     <message>
-        <location line="+2251"/>
+        <location line="+2262"/>
         <source>Enter a size limit from 1 to 2000 MB.</source>
         <translation>1 से 2000 MB के बीच आकार सीमा दर्ज करें।</translation>
     </message>
@@ -1310,7 +1310,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>YYYY-MM-DD प्रारूप में वास्तविक तिथियाँ दें, जहाँ “से” तिथि “तक” तिथि के बाद की न हो।</translation>
     </message>
     <message>
-        <location line="-4769"/>
+        <location line="-4780"/>
         <location line="+2707"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
@@ -1376,12 +1376,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>यहां कॉलिंग उपलब्ध नहीं है.</translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+158"/>
         <source>Your camera couldn&apos;t be started. The call goes on without it.</source>
         <translation>आपका कैमरा शुरू नहीं हो सका। कॉल उसके बिना जारी है।</translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+157"/>
         <source>Modern room list</source>
         <translation>आधुनिक रूम सूची</translation>
     </message>
@@ -2570,7 +2570,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>CallDeviceChevron</name>
     <message>
-        <location filename="../qml/CallDeviceChevron.qml" line="+20"/>
+        <location filename="../qml/CallDeviceChevron.qml" line="+19"/>
         <source>The chosen device isn&apos;t connected</source>
         <translation>चुना गया डिवाइस कनेक्ट नहीं है</translation>
     </message>
@@ -2608,7 +2608,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>आपका चुना हुआ माइक्रोफ़ोन कनेक्ट नहीं है</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
+        <source>Your chosen microphone couldn&apos;t be opened. The call uses the system default.</source>
+        <translation>आपका चुना हुआ माइक्रोफ़ोन नहीं खुल सका। कॉल सिस्टम का डिफ़ॉल्ट उपयोग कर रही है।</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>Your chosen camera isn&apos;t connected</source>
         <translation>आपका चुना हुआ कैमरा कनेक्ट नहीं है</translation>
     </message>
@@ -2720,6 +2725,11 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <location line="+11"/>
         <source>Your chosen microphone isn&apos;t connected. Calls use the system default until it&apos;s back.</source>
         <translation>आपका चुना हुआ माइक्रोफ़ोन कनेक्ट नहीं है. कॉल वापस आने तक सिस्टम डिफ़ॉल्ट का उपयोग करते हैं।</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Your chosen microphone couldn&apos;t be opened, so the system default was used. Choose it again or reconnect it.</source>
+        <translation>आपका चुना हुआ माइक्रोफ़ोन नहीं खुल सका, इसलिए सिस्टम का डिफ़ॉल्ट उपयोग किया गया। इसे फिर से चुनें या दोबारा कनेक्ट करें।</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -3069,7 +3079,17 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>वीडियो कॉल</translation>
     </message>
     <message>
-        <location line="+152"/>
+        <location line="+109"/>
+        <source>The chosen device isn&apos;t connected</source>
+        <translation>चुना गया डिवाइस कनेक्ट नहीं है</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The chosen microphone couldn&apos;t be opened</source>
+        <translation>चुना हुआ माइक्रोफ़ोन नहीं खुल सका</translation>
+    </message>
+    <message>
+        <location line="+46"/>
         <location line="+28"/>
         <source>Turn off camera</source>
         <translation>कैमरा बंद करें</translation>
@@ -3168,7 +3188,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>कॉल को तैरती विंडो में निकालें</translation>
     </message>
     <message>
-        <location line="-385"/>
+        <location line="-389"/>
         <source>Unmute microphone</source>
         <translation>माइक्रोफ़ोन अनम्यूट करें</translation>
     </message>
@@ -3203,7 +3223,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>माइक्रोफ़ोन चुनें</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+19"/>
         <source>Undeafen</source>
         <translation>अंडरएफेन</translation>
     </message>
@@ -26958,19 +26978,19 @@ Note: importing keys does not verify this session.</source>
     <name>SfuCallController</name>
     <message>
         <location filename="../src/calls/SfuCallController.cpp" line="+633"/>
-        <location line="+387"/>
-        <location line="+163"/>
+        <location line="+396"/>
+        <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
         <translation>इस डेस्कटॉप पर स्क्रीन शेयरिंग उपलब्ध नहीं है.</translation>
     </message>
     <message>
-        <location line="-548"/>
-        <location line="+918"/>
+        <location line="-559"/>
+        <location line="+929"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>स्क्रीन शेयरिंग प्रारंभ नहीं हो सकी.</translation>
     </message>
     <message>
-        <location line="-561"/>
+        <location line="-563"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>वेलैंड पर स्क्रीन शेयरिंग के लिए xdg-डेस्कटॉप-पोर्टल की आवश्यकता है, और यह प्रतिक्रिया नहीं दे रहा है। अपने डेस्कटॉप के लिए पोर्टल स्थापित करें या प्रारंभ करें - उदाहरण के लिए xdg-desktop-portal-kde या xdg-desktop-portal-gnome - फिर पुनः प्रयास करें।</translation>
     </message>
@@ -26986,7 +27006,7 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+53"/>
-        <location line="+159"/>
+        <location line="+161"/>
         <source>No display is available to share.</source>
         <translation>साझा करने के लिए कोई डिस्प्ले उपलब्ध नहीं है.</translation>
     </message>
@@ -27031,7 +27051,7 @@ Note: importing keys does not verify this session.</source>
         <translation>बहुत अधिक प्रयास. थोड़ी देर में पुनः प्रयास करें.</translation>
     </message>
     <message>
-        <location line="-722"/>
+        <location line="-733"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>आपके डेस्कटॉप के कैमरा पोर्टल ने Lightning को कोई कैमरा नहीं दिया। यदि कैमरा अन्य ऐप में काम करता है, तो Lightning को सभी डिवाइस इस्तेमाल करने दें (Flatseal में: &quot;All devices&quot;), फिर कैमरा दोबारा चालू करें।</translation>
     </message>
@@ -27061,12 +27081,12 @@ Note: importing keys does not verify this session.</source>
         <translation>इस डेस्कटॉप में कैमरा पोर्टल नहीं है, इसलिए कैमरा इस्तेमाल नहीं हो सकता।</translation>
     </message>
     <message>
-        <location line="+211"/>
+        <location line="+220"/>
         <source>Screen sharing isn&apos;t available in this sandboxed (Flatpak or Snap) build on an X11 session: it can only share through the desktop&apos;s screen-sharing portal, and none is available, and GStreamer plugins installed on your system cannot be used from the sandbox. To share your screen, use the AppImage or a distribution package of Lightning, which capture an X11 screen directly, or log into a Wayland session, where your desktop&apos;s portal provides screen sharing. If your desktop&apos;s xdg-desktop-portal supports screen casting on X11, make sure it is installed and running.</source>
         <translation>X11 सत्र में इस सैंडबॉक्स वाले (Flatpak या Snap) बिल्ड में स्क्रीन शेयरिंग उपलब्ध नहीं है: यह केवल डेस्कटॉप के स्क्रीन-शेयरिंग पोर्टल से साझा कर सकता है, जो उपलब्ध नहीं है, और आपके सिस्टम पर इंस्टॉल GStreamer प्लगइन सैंडबॉक्स से इस्तेमाल नहीं हो सकते। अपनी स्क्रीन साझा करने के लिए Lightning का AppImage या डिस्ट्रीब्यूशन पैकेज इस्तेमाल करें, जो X11 स्क्रीन सीधे कैप्चर करते हैं, या Wayland सत्र में लॉग इन करें, जहाँ आपके डेस्कटॉप का पोर्टल स्क्रीन शेयरिंग देता है। यदि आपका xdg-desktop-portal X11 पर स्क्रीन कास्टिंग समर्थित करता है, तो सुनिश्चित करें कि वह इंस्टॉल और चालू है।</translation>
     </message>
     <message>
-        <location line="+474"/>
+        <location line="+476"/>
         <source>You don&apos;t have permission to join calls in this room. A room admin can raise your power level in it; Lightning can&apos;t change what call membership itself requires.</source>
         <translation>आपको इस रूम की कॉल में शामिल होने की अनुमति नहीं है। रूम का एडमिन इसमें आपका पावर लेवल बढ़ा सकता है; Lightning यह नहीं बदल सकता कि कॉल सदस्यता को स्वयं क्या चाहिए।</translation>
     </message>
