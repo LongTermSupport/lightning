@@ -1186,6 +1186,13 @@ bool ActivityModel::ingestEdit(const TimelineEvent &event, const QString &roomNa
     const QString target = event.replacesEventId;
     if (target.isEmpty() || m_redactedIds.contains(target))
         return false;
+    // An encrypted room's originals were encrypted, and only an encrypted
+    // replacement may change one (spec, m.replace).
+    if (!event.isEncrypted && m_client) {
+        const RoomInfo room = m_client->roomInfo(event.roomId);
+        if (room.encrypted || !room.encryptionKnown)
+            return false;
+    }
     const QString newPreview = event.undecryptable
         ? QString()
         : collapse(matrix::preview::stripReplyFallback(event.editNewBody));
