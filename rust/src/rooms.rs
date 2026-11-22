@@ -7567,7 +7567,19 @@ pub(crate) async fn activity_seed_entries(
 ) -> Vec<serde_json::Value> {
     let mut entries = Vec::new();
     for notification in notifications {
-        let _ = client;
+        // A still-encrypted edit carries no text here.
+        let sealed = notification.event.get_field::<String>("type").ok().flatten().as_deref()
+            == Some("m.room.encrypted");
+        if !sealed
+            && !crate::replacement_admitted(
+                client.get_room(&notification.room_id).as_ref(),
+                &notification.event,
+                None,
+            )
+            .await
+        {
+            continue;
+        }
         let value: serde_json::Value =
             notification.event.deserialize_as().unwrap_or(serde_json::Value::Null);
         if let Some(entry) = activity_seed_entry(

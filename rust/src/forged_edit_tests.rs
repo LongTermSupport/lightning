@@ -261,3 +261,15 @@ async fn a_plaintext_edit_of_an_encrypted_message_is_not_seeded_into_activity() 
     let ids: Vec<&str> = entries.iter().map(|e| e["event_id"].as_str().unwrap()).collect();
     assert_eq!(ids, ["$plain"]);
 }
+
+#[test]
+fn without_the_original_only_an_encrypted_edit_or_a_plain_rooms_is_admitted() {
+    let raw = Raw::from_json_string(edit(ALICE, "$e", "$o", "words", 2000).to_string()).unwrap();
+    assert!(!replacement_admitted_against(None, &raw, None, false));
+    assert!(replacement_admitted_against(None, &raw, None, true));
+    let sealed = json!({"type": "m.room.encrypted", "event_id": "$o", "sender": ALICE,
+        "origin_server_ts": 1000, "content": {"algorithm": "m.megolm.v1.aes-sha2"}});
+    let sealed = matrix_sdk::deserialized_responses::TimelineEvent::from_plaintext(
+        Raw::from_json_string(sealed.to_string()).unwrap());
+    assert!(!replacement_admitted_against(Some(&sealed), &raw, None, true));
+}
