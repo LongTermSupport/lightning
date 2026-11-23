@@ -355,18 +355,29 @@ pub(crate) struct BacklogMarker {
     opened_ms: u64,
     forwarded: HashSet<String>,
     reset_in_batch: bool,
+    history_before_ms: Option<u64>,
 }
 
 const MAX_FORWARDED: usize = 20_000;
 
 impl BacklogMarker {
     pub(crate) fn new(opened_ms: u64, snapshot: impl IntoIterator<Item = ItemFacts>) -> Self {
-        let mut marker =
-            Self { opened_ms, forwarded: HashSet::new(), reset_in_batch: false };
+        let mut marker = Self {
+            opened_ms,
+            forwarded: HashSet::new(),
+            reset_in_batch: false,
+            history_before_ms: None,
+        };
         for facts in snapshot {
             marker.remember(facts.event_id);
         }
         marker
+    }
+
+    /// An append sent before `floor_ms` is history however it arrives.
+    pub(crate) fn history_before(mut self, floor_ms: u64) -> Self {
+        self.history_before_ms = Some(floor_ms);
+        self
     }
 
     pub(crate) fn begin_batch(&mut self) {
@@ -386,7 +397,8 @@ impl BacklogMarker {
         for (item, slot) in live_append_slots(diff, payload) {
             let Some(facts) = facts(item) else { continue };
             let backlog = self.forwarded.contains(&facts.event_id)
-                || (self.reset_in_batch && self.arrived_before_open(&facts, now_ms));
+                || (self.reset_in_batch && self.arrived_before_open(&facts, now_ms))
+                || self.history_before_ms.is_some_and(|floor| facts.timestamp_ms < floor);
             if let (true, Some(object)) = (backlog, slot.as_object_mut()) {
                 object.insert("backlog".to_owned(), true.into());
             }
@@ -413,7 +425,7 @@ impl BacklogMarker {
         }
     }
 
-    fn remember(&mut self, event_id: String) {
+    pub(crate) fn remember(&mut self, event_id: String) {
         if self.forwarded.len() >= MAX_FORWARDED {
             self.forwarded.clear();
         }

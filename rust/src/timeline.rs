@@ -3549,10 +3549,14 @@ async fn open_thread_task(
         items.iter().map(|item| item_to_json(item, &room_id, &own_user, &registry)).collect();
     annotate_snapshot_verdicts(&room, &fallback_verdicts, &items, &mut snapshot).await;
     annotate_room_gone_rows(&room, &mut snapshot).await;
+    // An empty thread is filled by back-pagination, which arrives as appends:
+    // the root and old replies are history, and live replies notify through sync.
     let mut backlog = crate::push_verdict::BacklogMarker::new(
         opened_ms,
         items.iter().filter_map(|item| crate::push_verdict::item_facts(item)),
-    );
+    )
+    .history_before(opened_ms.saturating_sub(crate::syncnotify::TIMESTAMP_ALLOWANCE_MS));
+    backlog.remember(root_event_id.clone());
     let mut tail = LiveTail::new(items.clone());
     let mut stable_polls = crate::stablepoll::Watch::default();
     let polls_seen = stable_polls.observe(items.iter());
