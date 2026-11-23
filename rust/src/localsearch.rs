@@ -1276,6 +1276,20 @@ const GAP_PAGE_SIZE: u16 = 50;
 const GAP_QUEUE_MAX: usize = 200;
 const GAP_PACE_MS: u64 = 500;
 const GAP_HOLD_POLL_MS: u64 = 500;
+const GAP_SETTLE_MS: u64 = 2000;
+
+// A room is paged only once its limited syncs stop: each page writes to the
+// event-cache store the SDK's sync listener needs, and a listener that falls
+// 32 updates behind clears every room's cache.
+fn gap_settle() -> std::time::Duration {
+    static SETTLE: std::sync::OnceLock<u64> = std::sync::OnceLock::new();
+    std::time::Duration::from_millis(*SETTLE.get_or_init(|| {
+        std::env::var("LIGHTNING_GAP_FILL_SETTLE_MS")
+            .ok()
+            .and_then(|v| v.trim().parse().ok())
+            .unwrap_or(GAP_SETTLE_MS)
+    }))
+}
 
 /// What the gap filler must wait for: the start-up delay, and the same call
 /// and scroll holds as index-all.
@@ -1288,8 +1302,14 @@ pub(crate) struct GapGate {
 #[derive(Default)]
 struct GapQueue {
     order: std::collections::VecDeque<String>,
-    /// Newest `prev_batch` per room, and the index generation it was seen in.
-    tokens: std::collections::HashMap<String, (String, u64)>,
+    /// Newest `prev_batch` per room, the index generation it was seen in, and when.
+    tokens: std::collections::HashMap<String, (String, u64, std::time::Instant)>,
+}
+
+enum GapNext {
+    Ready(String, String, u64),
+    Wait(std::time::Duration),
+    Empty,
 }
 
 impl GapQueue {
@@ -1300,13 +1320,23 @@ impl GapQueue {
             }
             self.order.push_back(room_id.clone());
         }
-        self.tokens.insert(room_id, (token, generation));
+        self.tokens.insert(room_id, (token, generation, std::time::Instant::now()));
     }
 
-    fn pop(&mut self) -> Option<(String, String, u64)> {
-        let room_id = self.order.pop_front()?;
-        let (token, generation) = self.tokens.remove(&room_id)?;
-        Some((room_id, token, generation))
+    fn pop(&mut self, settle: std::time::Duration) -> GapNext {
+        let mut wait: Option<std::time::Duration> = None;
+        for at in 0..self.order.len() {
+            let Some((_, _, seen)) = self.tokens.get(&self.order[at]) else { continue };
+            let age = seen.elapsed();
+            if age >= settle {
+                let Some(room_id) = self.order.remove(at) else { break };
+                let Some((token, generation, _)) = self.tokens.remove(&room_id) else { break };
+                return GapNext::Ready(room_id, token, generation);
+            }
+            let left = settle - age;
+            wait = Some(wait.map_or(left, |w| w.min(left)));
+        }
+        wait.map_or(GapNext::Empty, GapNext::Wait)
     }
 }
 
@@ -1343,10 +1373,20 @@ pub(crate) fn spawn_gap_filler(
                 tokio::time::sleep(std::time::Duration::from_millis(GAP_HOLD_POLL_MS)).await;
                 continue;
             }
-            let next = worker_queue.lock().ok().and_then(|mut q| q.pop());
-            let Some((room_id, token, generation)) = next else {
-                worker_wake.notified().await;
-                continue;
+            let next = worker_queue
+                .lock()
+                .map(|mut q| q.pop(gap_settle()))
+                .unwrap_or(GapNext::Empty);
+            let (room_id, token, generation) = match next {
+                GapNext::Ready(room_id, token, generation) => (room_id, token, generation),
+                GapNext::Wait(left) => {
+                    tokio::time::sleep(left).await;
+                    continue;
+                }
+                GapNext::Empty => {
+                    worker_wake.notified().await;
+                    continue;
+                }
             };
             let (outcome, written) =
                 fill_gap(&worker_client, &worker_index, &room_id, &token, generation, &gate.stop)

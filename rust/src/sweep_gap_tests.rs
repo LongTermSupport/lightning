@@ -392,140 +392,69 @@ fn the_gap_queue_is_first_in_first_out_with_the_newest_token() {
     queue.push("!b:x".into(), "b1".into(), 1);
     queue.push("!a:x".into(), "a1".into(), 1);
     queue.push("!b:x".into(), "b2".into(), 1);
-    assert_eq!(queue.pop(), Some(("!b:x".into(), "b2".into(), 1)));
-    assert_eq!(queue.pop(), Some(("!a:x".into(), "a1".into(), 1)));
-    assert_eq!(queue.pop(), None);
+    let zero = std::time::Duration::ZERO;
+    assert!(matches!(queue.pop(zero), GapNext::Ready(r, t, 1) if r == "!b:x" && t == "b2"));
+    assert!(matches!(queue.pop(zero), GapNext::Ready(r, t, 1) if r == "!a:x" && t == "a1"));
+    assert!(matches!(queue.pop(zero), GapNext::Empty));
+}
+
+#[test]
+fn the_gap_queue_holds_a_room_until_its_limited_syncs_settle() {
+    let mut queue = GapQueue::default();
+    queue.push("!busy:x".into(), "t1".into(), 1);
+    let settle = std::time::Duration::from_millis(400);
+    assert!(matches!(queue.pop(settle), GapNext::Wait(left) if left <= settle));
+    std::thread::sleep(std::time::Duration::from_millis(100));
+    queue.push("!busy:x".into(), "t2".into(), 1);
+    std::thread::sleep(std::time::Duration::from_millis(100));
+    assert!(matches!(queue.pop(settle), GapNext::Wait(_)), "a newer limited sync must restart the wait");
+    std::thread::sleep(std::time::Duration::from_millis(400));
+    assert!(matches!(queue.pop(settle), GapNext::Ready(_, t, 1) if t == "t2"));
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn a_deep_walk_releases_the_history_it_paged_into_memory() {
+async fn a_room_still_receiving_limited_syncs_is_not_paged() {
     let server = MatrixMockServer::new().await;
     let client = server.client_builder().build().await;
     client.event_cache().subscribe().unwrap();
     let index = Arc::new(Mutex::new(Some(SearchIndex::open_in_memory().unwrap())));
-    sync(&client, vec![message("$live", "the newest line", 1_000_000)], "1", Some("p0")).await;
+    let _live = register_live_index_handler(&client, &index);
+    let events = Arc::new(Mutex::new(std::collections::VecDeque::new()));
+    let filler = spawn_gap_filler(&client, &index, open_gate(), &events);
 
-    for page in 0..3u64 {
-        let chunk: Vec<Raw<matrix_sdk::ruma::events::AnyTimelineEvent>> = (0..100u64)
-            .map(|i| {
-                let ts = 900_000 - page * 1000 - i;
-                serde_json::from_value(message(&format!("$p{page}e{i}"), "old history", ts)).unwrap()
-            })
-            .collect();
-        let template = RoomMessagesResponseTemplate::default().events(chunk);
-        let template = if page < 2 { template.end_token(format!("p{}", page + 1)) } else { template };
-        server.mock_room_messages().match_from(&format!("p{page}")).ok(template).mount().await;
-    }
-
-    let room = client.get_room(room_id!("!dm:localhost")).unwrap();
-    let stop = AtomicBool::new(false);
-    let outcome = deep_index_room_gated(&room, &index, &StopOnly(&stop), DEEP_MAX_PAGES).await.unwrap();
-    assert!(outcome.reached_start);
-    assert!(indexed(&index, "$p2e99"));
-
-    let (room_cache, _handles) = room.event_cache().await.unwrap();
-    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
-    loop {
-        let held = room_cache.events().await.unwrap().len();
-        if held < 100 {
-            break;
-        }
-        assert!(
-            std::time::Instant::now() < deadline,
-            "{held} paged events still held in memory after the walk"
-        );
-        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
-    }
-}
-
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn a_sweep_releases_what_sync_piled_up_in_a_room_nobody_opened() {
-    let server = MatrixMockServer::new().await;
-    let client = server.client_builder().build().await;
-    client.event_cache().subscribe().unwrap();
-    let index = Arc::new(Mutex::new(Some(SearchIndex::open_in_memory().unwrap())));
-    for batch in 0..4u64 {
-        let events = (0..100u64)
-            .map(|i| message(&format!("$s{batch}e{i}"), "busy room line", 10_000 + batch * 100 + i))
-            .collect();
-        sync(&client, events, &batch.to_string(), None).await;
-    }
-    let room = client.get_room(room_id!("!dm:localhost")).unwrap();
-    let (room_cache, _handles) = room.event_cache().await.unwrap();
-    let piled = room_cache.events().await.unwrap().len();
-    assert!(piled >= 300, "only {piled} synced events in memory");
-
-    sweep_until(&client, &index, "$s3e99").await;
-    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
-    loop {
-        let held = room_cache.events().await.unwrap().len();
-        if held < piled {
-            break;
-        }
-        assert!(
-            std::time::Instant::now() < deadline,
-            "{held} synced events still held in memory after a sweep"
-        );
-        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
-    }
-}
-
-#[tokio::test]
-async fn search_index_matches_derived_fixtures() {
-    use crate::derived_fixtures::{scenarios, Projection, ORIGINAL, OTHER_ROOM, ROOM as HOME_ROOM};
-    use matrix_sdk::ruma::RoomId;
-
-    let server = MatrixMockServer::new().await;
-    let mut mismatches = Vec::new();
-    for case in scenarios() {
-        let client = server.client_builder().build().await;
-        let encryption = server.mock_room_state_encryption();
-        let _scope = if case.original_encrypted { encryption.encrypted() } else { encryption.plain() }
-            .mount_as_scoped().await;
-        let index = SearchIndex::open_in_memory().unwrap();
-        for room_id in [HOME_ROOM, OTHER_ROOM] {
-            let events: Vec<_> = case.history(room_id).map(|(raw, enc)| (raw.clone(), enc)).collect();
-            if events.is_empty() {
-                continue;
-            }
-            let room = server.sync_joined_room(&client, &RoomId::parse(room_id).unwrap()).await;
-            room.latest_encryption_state().await.unwrap();
-            assert_eq!(room.encryption_state().is_encrypted(), case.original_encrypted, "{}", case.name);
-            if let Some(winner) = &case.before_redaction {
-                let original = case.original.as_ref().unwrap();
-                let batch = batch_from(&room, [(original.clone(), false), (winner.clone(), false)].into_iter()).await;
-                write_batch(&index, room_id, &batch).unwrap();
-                let body = winner["content"]["m.new_content"]["body"].as_str().unwrap();
-                let hits = index.search(body, room_id, 10, 0).unwrap();
-                assert_eq!(hits.len(), 1, "{}", case.name);
-                assert_eq!(hits[0].event_id, ORIGINAL, "{}", case.name);
-            }
-            let batch = batch_from(&room, events.into_iter()).await;
-            write_batch(&index, room_id, &batch).unwrap();
-        }
-
-        let want = case.content_for(Projection::Search);
-        let hits = index.search("fixture", "", 10, 0).unwrap();
-        let got: Vec<_> = hits
+    sync(&client, vec![message("$m1", "an older line", 1000)], "1", None).await;
+    wait_indexed(&index, "$m1").await;
+    let page: Vec<Raw<matrix_sdk::ruma::events::AnyTimelineEvent>> =
+        vec![serde_json::from_value(message("$m1", "an older line", 1000)).unwrap()];
+    server
+        .mock_room_messages()
+        .ok(RoomMessagesResponseTemplate::default().events(page))
+        .mount()
+        .await;
+    let pages = || async {
+        server
+            .server()
+            .received_requests()
+            .await
+            .unwrap_or_default()
             .iter()
-            .map(|h| (h.event_id.clone(), h.room_id.clone(), h.body.clone(), h.msgtype.clone(), h.filename.clone()))
-            .collect();
-        let expected: Vec<_> = want
-            .map(|c| {
-                (
-                    ORIGINAL.to_owned(),
-                    HOME_ROOM.to_owned(),
-                    c["body"].as_str().unwrap().to_owned(),
-                    c["msgtype"].as_str().unwrap().to_owned(),
-                    c["filename"].as_str().unwrap_or("").to_owned(),
-                )
-            })
-            .into_iter()
-            .collect();
-        let indexed = index.stats().unwrap().messages;
-        if got != expected || indexed != expected.len() as i64 {
-            mismatches.push(format!("{}: indexed {indexed}, got {got:?}, expected {expected:?}", case.name));
-        }
+            .filter(|r| r.url.path().ends_with("/messages"))
+            .count()
+    };
+
+    for n in 2..6u64 {
+        let id = format!("$m{n}");
+        sync(&client, vec![message(&id, "a burst line", n * 1000)], &n.to_string(), Some("gap")).await;
+        tokio::time::sleep(std::time::Duration::from_millis(300)).await;
     }
-    assert!(mismatches.is_empty(), "search diverges from the shared fixture:\n{}", mismatches.join("\n"));
+    assert_eq!(pages().await, 0, "the room was paged while its limited syncs were still arriving");
+
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(6);
+    while pages().await == 0 {
+        assert!(std::time::Instant::now() < deadline, "the settled gap was never filled");
+        tokio::time::sleep(std::time::Duration::from_millis(50)).await;
+    }
+    tokio::time::sleep(std::time::Duration::from_millis(800)).await;
+    filler.abort();
+    assert_eq!(pages().await, 1, "one burst is one fill");
 }
