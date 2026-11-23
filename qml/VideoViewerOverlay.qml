@@ -154,13 +154,14 @@ Popup {
             }
             contentItem: Row {
                 spacing: AppTheme.spacing8
-                Icon {
+                ControlIcon {
                     anchors.verticalCenter: parent.verticalCenter
+                    centreIn: parent
                     name: "refresh"
                     size: 28
                     color: AppTheme.scrimInk
                 }
-                Label {
+                ControlLabel {
                     anchors.verticalCenter: parent.verticalCenter
                     text: qsTr("Replay")
                     color: AppTheme.scrimInk

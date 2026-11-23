@@ -2232,13 +2232,14 @@ Rectangle {
                 Layout.fillWidth: true
                 spacing: AppTheme.spacing8
                 Item { Layout.fillWidth: true }
-                Button {
+                AppButton {
                     objectName: "roomInfoRemoveWidgetConfirmCancel"
                     text: qsTr("Cancel")
                     onClicked: removeWidgetConfirm.close()
                 }
-                Button {
+                AppButton {
                     objectName: "roomInfoRemoveWidgetConfirmAccept"
+                    kind: "danger"
                     text: qsTr("Remove")
                     onClicked: {
                         removeWidgetConfirm.close()

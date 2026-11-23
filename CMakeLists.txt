@@ -1162,6 +1162,8 @@ set(APP_QML_FILES
     qml/IconGlyphs.js
     qml/IconButton.qml
     qml/AppButton.qml
+    qml/ControlLabel.qml
+    qml/ControlIcon.qml
     qml/SegmentedControl.qml
     qml/PresetOriginLabel.qml
     qml/AppTextField.qml
@@ -4914,6 +4916,7 @@ if(BUILD_TESTING)
             space-lobby-keyboard-qml:SpaceLobbyKeyboardQmlTest
             theme-editor-parts-qml:ThemeEditorPartsQmlTest
             button-key-activation-qml:ButtonKeyActivationQmlTest
+            control-label-ink-qml:ControlLabelInkQmlTest
             space-text-edit-row-qml:SpaceTextEditRowQmlTest
             tooltip-plain-text-qml:ToolTipPlainTextQmlTest)
         string(REPLACE ":" ";" _p "${_t}")
@@ -4930,6 +4933,9 @@ if(BUILD_TESTING)
         set_tests_properties(${_name} PROPERTIES
             ENVIRONMENT "QT_QPA_PLATFORM=offscreen;LIGHTNING_DISABLE_MPRIS=1")
     endforeach()
+    add_test(NAME control-label-ink-qml-2x COMMAND control-label-ink-qml-test)
+    set_tests_properties(control-label-ink-qml-2x PROPERTIES
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen;LIGHTNING_DISABLE_MPRIS=1;QT_SCALE_FACTOR=2")
     # ...and the source contracts, which read QML/C++ as text.
     foreach(_t
             app-shell-contract:AppShellContractTest

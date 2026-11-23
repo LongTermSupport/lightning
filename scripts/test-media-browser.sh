@@ -10,7 +10,7 @@ mkdir -p "$imports/MatrixClient"
 ln -s "$repo/qml/IconGlyphs.js" "$imports/MatrixClient/IconGlyphs.js"
 printf 'module MatrixClient\n' > "$imports/MatrixClient/qmldir"
 for name in AppTheme MediaBrowser MediaBrowserTile MediaBrowserRow Icon AppMenu \
-            AppMenuItem AppMenuSeparator MenuKeycap StormNode AppButton AppTextField AppComboBox \
+            AppMenuItem AppMenuSeparator MenuKeycap StormNode AppButton ControlLabel ControlIcon AppTextField AppComboBox \
             AppScrollBar SmoothWheelArea MiddleClickScroller IconButton AppBusyIndicator \
             SpoilerCover SpoilerState; do
     ln -s "$repo/qml/$name.qml" "$imports/MatrixClient/$name.qml"

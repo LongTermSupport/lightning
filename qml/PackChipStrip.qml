@@ -67,7 +67,7 @@ ListView {
                 border.color: allChip.visualFocus || strip.allCurrent
                               ? AppTheme.bolt : AppTheme.stormBorder
             }
-            contentItem: Label {
+            contentItem: ControlLabel {
                 id: allLabel
                 text: qsTr("All")
                 horizontalAlignment: Text.AlignHCenter
@@ -139,7 +139,7 @@ ListView {
                 name: chip.label
                 colorKey: chip.packId
             }
-            Label {
+            ControlLabel {
                 id: chipLabel
                 objectName: "packChipLabel"
                 // Pack names are room state: never markup.
