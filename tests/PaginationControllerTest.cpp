@@ -5,6 +5,9 @@
 
 #include <QSignalSpy>
 #include <QtTest/QtTest>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QTemporaryDir>
 
 namespace {
 
@@ -1876,6 +1879,97 @@ private Q_SLOTS:
                      .arg(client.loadOlderCalls - loadsBefore)
                      .arg(latest.count()),
                  QStringLiteral("contextOpens=1 pagesAsked=0 latest=1"));
+    }
+
+    void aSavedPositionSurvivesARestartAndGoesWithTheAccount()
+    {
+        QTemporaryDir dir;
+        QVERIFY(dir.isValid());
+        const QString path = dir.filePath(QStringLiteral("scroll-positions.json"));
+        const auto resolver = [path](const QString &userId) {
+            return userId == QLatin1String("@me:example.org") ? path : QString();
+        };
+        {
+            FakeClient client;
+            PaginationController controller;
+            controller.setClient(&client);
+            controller.setAnchorFileResolver(resolver);
+            controller.setRoomId(kRoomA);
+            controller.saveScrollAnchor(kRoomA, QStringLiteral("$kept"), -64.0,
+                                        false);
+            controller.saveScrollAnchor(kRoomB, QStringLiteral("$other"), 0.0,
+                                        false);
+            controller.saveFollowingLatest(kRoomB);
+        }
+        QFile written(path);
+        QVERIFY2(written.open(QIODevice::ReadOnly),
+                 "the saved position was not written");
+        const QByteArray bytes = written.readAll();
+        QVERIFY(bytes.contains("$kept"));
+        QVERIFY2(!bytes.contains("$other"),
+                 "a room the reader left at the latest message kept a position");
+        QCOMPARE(written.permissions()
+                     & (QFileDevice::ReadGroup | QFileDevice::ReadOther),
+                 QFileDevice::Permissions{});
+
+        FakeClient client;
+        TimelineModel model;
+        model.setClient(&client);
+        model.setRoomId(kRoomA);
+        PaginationController controller;
+        controller.setClient(&client);
+        controller.setTimelineModel(&model);
+        controller.setAnchorFileResolver(resolver);
+        QStringList opened;
+        QList<qreal> offsets;
+        controller.setContextOpener([&](const QString &id, qreal offset) {
+            opened << id;
+            offsets << offset;
+            return true;
+        });
+        controller.setRoomId(kRoomA);
+        QVERIFY2(controller.hasHistoricalScrollAnchor(kRoomA),
+                 "the position was not read back after a restart");
+        QVERIFY(!controller.hasHistoricalScrollAnchor(kRoomB));
+        controller.restoreScrollAnchor(kRoomA);
+        for (int page = 0; page < 12 && opened.isEmpty(); ++page) {
+            client.beginLoading(kRoomA);
+            client.completeBatch(kRoomA, 5, false);
+            QTest::qWait(5);
+        }
+        QCOMPARE(opened, QStringList{ QStringLiteral("$kept") });
+        QCOMPARE(offsets.first(), -64.0);
+
+        controller.forgetAccount(QStringLiteral("@me:example.org"));
+        QVERIFY2(!QFile::exists(path), "sign-out left the positions on disk");
+        controller.saveScrollAnchor(kRoomA, QStringLiteral("$late"), 0.0, false);
+        controller.flushAnchors();
+        QVERIFY2(!QFile::exists(path),
+                 "a save after sign-out put the file back");
+    }
+
+    void theSavedPositionsFileIsCapped()
+    {
+        QTemporaryDir dir;
+        QVERIFY(dir.isValid());
+        const QString path = dir.filePath(QStringLiteral("scroll-positions.json"));
+        FakeClient client;
+        PaginationController controller;
+        controller.setClient(&client);
+        controller.setAnchorFileResolver(
+            [path](const QString &) { return path; });
+        for (int room = 0; room < 200; ++room)
+            controller.saveScrollAnchor(
+                QStringLiteral("!r%1:example.org").arg(room),
+                QStringLiteral("$e%1").arg(room), 0.0, false);
+        controller.flushAnchors();
+        QFile written(path);
+        QVERIFY(written.open(QIODevice::ReadOnly));
+        const int rooms = QJsonDocument::fromJson(written.readAll())
+                              .object().value(QLatin1String("rooms"))
+                              .toObject().size();
+        QVERIFY2(rooms > 0 && rooms <= 64,
+                 qPrintable(QStringLiteral("%1 rooms on disk").arg(rooms)));
     }
 
     void aSuccessfulRestoreShowsNoNotice()
