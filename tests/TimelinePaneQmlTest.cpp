@@ -8027,10 +8027,21 @@ kFilteredPages + 6);
 
         auto groups = [&] {
             QList<QQuickItem *> shown;
-            for (auto *group : findVisualChildren(
-                     root, QStringLiteral("stateActivityGroup")))
-                if (group->property("entryCount").toInt() > 0)
-                    shown.append(group);
+            auto *model = controller.timeline();
+            for (int row = 0; row < model->rowCount(); ++row) {
+                if (!model->data(model->index(row),
+                                 TimelineModel::StateGroupLeaderRole).toBool())
+                    continue;
+                QVariant item;
+                QMetaObject::invokeMethod(
+                    timeline, "itemAtViewRow", Q_RETURN_ARG(QVariant, item),
+                    Q_ARG(QVariant, viewRowForSourceRow(timeline, row)));
+                for (auto *group : findVisualChildren(
+                         item.value<QQuickItem *>(),
+                         QStringLiteral("stateActivityGroup")))
+                    if (group->property("entryCount").toInt() > 0)
+                        shown.append(group);
+            }
             return shown;
         };
         auto expandedIds = [&] {
@@ -8041,7 +8052,12 @@ kFilteredPages + 6);
             return ids;
         };
 
-        QTRY_COMPARE_WITH_TIMEOUT(groups().size(), 1, kSignalTimeoutMs);
+        QTest::qWaitFor([&] { return groups().size() == 1; }, kSignalTimeoutMs);
+        QVERIFY2(groups().size() == 1,
+                 qPrintable(QStringLiteral("rows=%1 stateGroups=%2 viewRows=%3")
+                                .arg(controller.timeline()->rowCount())
+                                .arg(controller.timeline()->stateGroupCount())
+                                .arg(timeline->property("count").toInt())));
         QCOMPARE(expandedIds(), QStringList{});
         QVERIFY(QMetaObject::invokeMethod(groups().first(), "toggleRequested"));
         QTRY_COMPARE_WITH_TIMEOUT(expandedIds().size(), 1, kSignalTimeoutMs);
