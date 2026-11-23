@@ -442,6 +442,7 @@ void PaginationController::restoreConversation(const QString &roomId,
     m_navigationPurpose = NavigationPurpose::Restore;
     m_navigationEventId = selection;
     m_navigationBatches = 0;
+    m_restoreWalk.start();
     m_restoreIsSelection = true;
     m_restoreOffset = offset;
     request(Reason::Navigation);
@@ -470,6 +471,7 @@ void PaginationController::restoreScrollAnchor(const QString &roomId)
     m_navigationPurpose = NavigationPurpose::Restore;
     m_navigationEventId = it->eventId;
     m_navigationBatches = 0;
+    m_restoreWalk.start();
     request(Reason::Navigation);
     if (!m_requestActive && m_client
         && m_client->paginationReady(m_roomId))
@@ -839,9 +841,10 @@ void PaginationController::continueNavigation(bool hitStart)
         locateNavigationTarget(row);
         return;
     }
-    const int budget = m_navigationPurpose == NavigationPurpose::Reply
-        ? m_jumpBatchBudget : kMaxNavigationBatches;
-    if (hitStart || ++m_navigationBatches >= budget) {
+    ++m_navigationBatches;
+    const bool spent = m_navigationPurpose == NavigationPurpose::Reply
+        ? m_navigationBatches >= m_jumpBatchBudget : restoreWalkSpent();
+    if (hitStart || spent) {
         // Walked pages come from the local event cache; /context only for
         // what they cannot reach.
         if (!hitStart && m_navigationPurpose == NavigationPurpose::Restore
@@ -853,6 +856,14 @@ void PaginationController::continueNavigation(bool hitStart)
     request(Reason::Navigation);
     if (!m_requestActive)
         failNavigation();
+}
+
+bool PaginationController::restoreWalkSpent() const
+{
+    if (m_navigationBatches >= kMaxRestoreBatches)
+        return true;
+    return m_navigationBatches >= kMaxNavigationBatches
+        && m_restoreWalk.elapsed() >= kRestoreWalkBudgetMs;
 }
 
 void PaginationController::locateNavigationTarget(int row)

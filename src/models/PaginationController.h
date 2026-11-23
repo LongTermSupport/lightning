@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QCoreApplication>
+#include <QElapsedTimer>
 #include <QList>
 #include <QHash>
 #include <QObject>
@@ -283,6 +284,13 @@ private:
 
     static constexpr int kMaxNoProgressStrikes = 12;
     static constexpr int kMaxNavigationBatches = 8;
+    // A restore keeps walking past kMaxNavigationBatches while pages come
+    // fast, which is what the local event cache does; a slow walk is the
+    // network and goes to the event context instead.
+    static constexpr int kMaxRestoreBatches = 30;
+    static constexpr int kRestoreWalkBudgetMs = 1500;
+    QElapsedTimer m_restoreWalk;
+    bool restoreWalkSpent() const;
     static constexpr int kMaxJumpBatches = 12;
     int m_jumpBatchBudget = kMaxJumpBatches;
     static constexpr int kMaxScrollAnchors = 64;
