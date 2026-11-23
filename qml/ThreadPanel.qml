@@ -349,7 +349,19 @@ Rectangle {
             closeLabel: qsTr("Close thread")
             closeButton.objectName: "threadCloseButton"
             onCloseClicked: panel.closeRequested()
+            // Every visible part at its own width, the room name at none.
+            readonly property real inlineWidth: leadingInset
+                + AppTheme.headerActionGutter + AppTheme.headerActionSize
+                + (backToRoomButton.visible ? backToRoomButton.implicitWidth + AppTheme.spacing8 : 0)
+                + (backToListButton.visible ? backToListButton.implicitWidth + AppTheme.spacing8 : 0)
+                + threadGlyph.implicitWidth + threadTitle.implicitWidth
+                + 3 * AppTheme.spacing8
+                + (app.thread.followSupported ? followButton.implicitWidth + AppTheme.spacing8 : 0)
+                + 2 * (AppTheme.headerActionSize + AppTheme.spacing8)
+            readonly property bool foldActions: app.thread.active
+                                                && width < inlineWidth
             IconButton {
+                id: backToRoomButton
                 objectName: "threadBackToRoomButton"
                 visible: panel.inMainView && app.thread.active
                          && !app.thread.listOpen
@@ -362,6 +374,7 @@ Rectangle {
                 onClicked: panel.closeRequested()
             }
             IconButton {
+                id: backToListButton
                 objectName: "threadBackToListButton"
                 visible: app.thread.active && app.thread.listOpen
                 iconName: "arrow_back"
@@ -370,11 +383,14 @@ Rectangle {
                 onClicked: app.thread.close()
             }
             Icon {
+                id: threadGlyph
                 name: "forum"
                 size: 20
                 color: AppTheme.accent
             }
             Label {
+                id: threadTitle
+                elide: Label.ElideRight
                 text: app.thread.active ? qsTr("Thread") : qsTr("Threads")
                 color: AppTheme.textPrimary
                 font.pixelSize: AppTheme.scaled(AppTheme.textTitle)
@@ -396,6 +412,7 @@ Rectangle {
                 id: followButton
                 objectName: "threadFollowButton"
                 visible: app.thread.active && app.thread.followSupported
+                         && !threadHeader.foldActions
                 enabled: !app.thread.followBusy
                 size: "sm"
                 minWidth: 0
@@ -410,7 +427,7 @@ Rectangle {
             }
             IconButton {
                 objectName: "threadMarkReadButton"
-                visible: app.thread.active
+                visible: app.thread.active && !threadHeader.foldActions
                 iconName: "done_all"
                 iconSize: 18
                 Accessible.name: qsTr("Mark this thread read")
@@ -420,8 +437,9 @@ Rectangle {
                 onClicked: app.thread.markReadNow()
             }
             IconButton {
+                id: placementButton
                 objectName: "threadPlacementButton"
-                visible: app.thread.active
+                visible: app.thread.active && !threadHeader.foldActions
                 iconName: panel.inMainView ? "close_fullscreen"
                                            : "open_in_full"
                 iconSize: 18
@@ -433,6 +451,44 @@ Rectangle {
                 ToolTip.delay: 500
                 onClicked: app.settings.threadPlacement =
                                panel.inMainView ? 0 : 1
+            }
+            IconButton {
+                id: overflowButton
+                objectName: "threadHeaderOverflowButton"
+                visible: threadHeader.foldActions
+                iconName: "more_vert"
+                active: overflowMenu.opened
+                Accessible.name: qsTr("More thread actions")
+                ToolTip.text: Accessible.name
+                ToolTip.visible: hovered && !overflowMenu.opened
+                ToolTip.delay: 500
+                onClicked: overflowMenu.popup(
+                    overflowButton, overflowButton.width - overflowMenu.width,
+                    overflowButton.height + AppTheme.spacing4)
+                AppMenu {
+                    id: overflowMenu
+                    objectName: "threadHeaderOverflowMenu"
+                    AppMenuItem {
+                        objectName: "threadFollowButtonItem"
+                        visible: app.thread.followSupported
+                        enabled: !app.thread.followBusy
+                        text: followButton.text
+                        onTriggered: app.thread.setFollowed(!app.thread.followed)
+                    }
+                    AppMenuItem {
+                        objectName: "threadMarkReadButtonItem"
+                        iconName: "done_all"
+                        text: qsTr("Mark this thread read")
+                        onTriggered: app.thread.markReadNow()
+                    }
+                    AppMenuItem {
+                        objectName: "threadPlacementButtonItem"
+                        iconName: placementButton.iconName
+                        text: placementButton.Accessible.name
+                        onTriggered: app.settings.threadPlacement =
+                                         panel.inMainView ? 0 : 1
+                    }
+                }
             }
         }
         Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: AppTheme.headerDivider }
