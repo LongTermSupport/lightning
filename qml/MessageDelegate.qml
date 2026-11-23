@@ -1573,9 +1573,9 @@ Item {
                     for (var i = 0; i < skip.length; ++i) {
                         var b = skip[i]
                         if (!b) continue
-                        var m = bubbleRow.mapToItem(b, pos.x, pos.y)
-                        if (m.x >= 0 && m.x <= b.width
-                            && m.y >= 0 && m.y <= b.height)
+                        // contains(), as pointer delivery does: an inclusive edge
+                        // here leaves a pixel neither handler takes.
+                        if (b.contains(bubbleRow.mapToItem(b, pos.x, pos.y)))
                             return true
                     }
                     return false
@@ -1727,17 +1727,13 @@ Item {
                         for (var i = 0; i < bands.length; ++i) {
                             var b = bands[i]
                             if (!b) continue
-                            var m = bubble.mapToItem(b, pos.x, pos.y)
-                            if (m.x >= 0 && m.x <= b.width
-                                && m.y >= 0 && m.y <= b.height)
+                            if (b.contains(bubble.mapToItem(b, pos.x, pos.y)))
                                 return true
                         }
                         var bar = messageActionBarLoader
                         if (bar.visible && bar.item) {
                             var mb = bubble.mapToItem(bar, pos.x, pos.y)
-                            if (mb.x >= 0 && mb.x <= bar.width
-                                && mb.y >= 0 && mb.y <= bar.height
-                                && root.pointTakesInput(bar, mb))
+                            if (bar.contains(mb) && root.pointTakesInput(bar, mb))
                                 return true
                         }
                         return false

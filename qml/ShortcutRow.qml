@@ -86,8 +86,7 @@ GridLayout {
         acceptedButtons: Qt.AllButtons
         onPressed: (mouse) => {
             var p = mapToItem(controlGroup, mouse.x, mouse.y)
-            var inside = p.x >= 0 && p.y >= 0 && p.x <= controlGroup.width
-                         && p.y <= controlGroup.height
+            var inside = controlGroup.contains(p)
             if (!inside)
                 row.endCapture()
             mouse.accepted = false
