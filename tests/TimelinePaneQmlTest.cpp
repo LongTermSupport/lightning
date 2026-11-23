@@ -8242,9 +8242,11 @@ kFilteredPages + 6);
         QQuickWindow window;
         QQuickItem *timeline = nullptr;
         QList<TimelineEvent> seed = textFixture(
-            roomId, 40, QStringLiteral("seed"),
-            QStringLiteral("a message tall enough that forty of them are "
-                           "more than one viewport of content"), 0);
+            roomId, 160, QStringLiteral("seed"),
+            QStringLiteral("a message long enough to wrap onto a second line "
+                           "in a seven hundred pixel pane, so that the seeded "
+                           "history is several viewports tall and the oldest "
+                           "row is nowhere near the live edge"), 0);
         for (int i = 0; i < seed.size(); ++i)
             seed[i].timestamp = noon.addSecs(600 + i * 30);
         QQuickItem *root = paneWithEvents(controller, engine, window, roomId,
@@ -8252,20 +8254,18 @@ kFilteredPages + 6);
         QVERIFY(root != nullptr);
         QVERIFY(timeline != nullptr);
         QVERIFY(timeline->property("contentHeight").toReal()
-                > timeline->property("height").toReal());
+                > 4 * timeline->property("height").toReal());
         QTRY_VERIFY_WITH_TIMEOUT(!controller.pagination()->busy(),
                                  kSignalTimeoutMs);
 
         QVERIFY(timeline->setProperty("stickToBottom", false));
         QVERIFY(positionAtTopEdge(timeline));
         const QPointF centre(window.width() / 2.0, window.height() / 2.0);
-        for (int gesture = 0; gesture < 4; ++gesture) {
-            for (int notch = 0; notch < 50; ++notch) {
-                sendWheelNotch(window, centre, 120, false);
-                QTest::qWait(40);
-            }
-            QTest::qWait(400);
+        for (int notch = 0; notch < 200 && served < 400; ++notch) {
+            sendWheelNotch(window, centre, 120, false);
+            QTest::qWait(40);
         }
+        QVERIFY(!timeline->property("stickToBottom").toBool());
         QVERIFY2(served >= 400,
                  qPrintable(QStringLiteral(
                      "wheeling at the oldest row loaded %1 collapsed events "
@@ -8298,9 +8298,11 @@ kFilteredPages + 6);
         QQuickWindow window;
         QQuickItem *timeline = nullptr;
         QList<TimelineEvent> seed = textFixture(
-            roomId, 40, QStringLiteral("seed"),
-            QStringLiteral("a message tall enough that forty of them are "
-                           "more than one viewport of content"), 0);
+            roomId, 160, QStringLiteral("seed"),
+            QStringLiteral("a message long enough to wrap onto a second line "
+                           "in a seven hundred pixel pane, so that the seeded "
+                           "history is several viewports tall and the oldest "
+                           "row is nowhere near the live edge"), 0);
         for (int i = 0; i < seed.size(); ++i)
             seed[i].timestamp = noon.addSecs(600 + i * 30);
         QQuickItem *root = paneWithEvents(controller, engine, window, roomId,
@@ -8310,6 +8312,8 @@ kFilteredPages + 6);
         QTRY_VERIFY_WITH_TIMEOUT(!controller.pagination()->busy(),
                                  kSignalTimeoutMs);
 
+        QVERIFY(timeline->property("contentHeight").toReal()
+                > 4 * timeline->property("height").toReal());
         QVERIFY(timeline->setProperty("stickToBottom", false));
         QVERIFY(positionAtTopEdge(timeline));
         const int budget =
