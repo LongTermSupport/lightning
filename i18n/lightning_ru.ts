@@ -9920,7 +9920,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>ImageViewerOverlay</name>
     <message>
-        <location filename="../qml/ImageViewerOverlay.qml" line="+356"/>
+        <location filename="../qml/ImageViewerOverlay.qml" line="+367"/>
         <source>Copy image</source>
         <translation>Копировать изображение</translation>
     </message>
@@ -11761,7 +11761,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Загрузка отменена.</translation>
     </message>
     <message>
-        <location line="+187"/>
+        <location line="+194"/>
         <source>The destination folder is not available.</source>
         <translation>Папка назначения недоступна.</translation>
     </message>
@@ -12060,7 +12060,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MediaHistoryModel</name>
     <message>
-        <location filename="../src/models/MediaHistoryModel.cpp" line="+121"/>
+        <location filename="../src/models/MediaHistoryModel.cpp" line="+134"/>
         <source>Today</source>
         <translation>Сегодня</translation>
     </message>
@@ -30217,7 +30217,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>StickerPackEditor</name>
     <message>
-        <location filename="../qml/StickerPackEditor.qml" line="+109"/>
+        <location filename="../qml/StickerPackEditor.qml" line="+110"/>
         <source>Export pack</source>
         <translation>Экспорт пака</translation>
     </message>
@@ -30626,7 +30626,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>StickerPackManager</name>
     <message>
-        <location filename="../src/stickers/StickerPackManager.cpp" line="+1206"/>
+        <location filename="../src/stickers/StickerPackManager.cpp" line="+1207"/>
         <source>Enter a name.</source>
         <translation>Введите название.</translation>
     </message>
@@ -30646,7 +30646,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Другое изображение в этом паке уже использует это название.</translation>
     </message>
     <message>
-        <location line="+353"/>
+        <location line="+359"/>
         <source>You do not have permission to change this pack.</source>
         <translation>У вас нет прав изменять этот набор.</translation>
     </message>
@@ -30740,7 +30740,16 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+12"/>
+        <location line="+9"/>
+        <source>%n cancelled.</source>
+        <translation>
+            <numerusform>%n отменено.</numerusform>
+            <numerusform>%n отменено.</numerusform>
+            <numerusform>%n отменено.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+5"/>
         <source>%n skipped.</source>
         <translation>
             <numerusform>%n пропущено.</numerusform>
@@ -30813,8 +30822,8 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-26"/>
-        <location line="+27"/>
+        <location line="-28"/>
+        <location line="+29"/>
         <source>%n failed.</source>
         <translation>
             <numerusform>Не удалось: %n.</numerusform>
@@ -30823,7 +30832,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-30"/>
+        <location line="-32"/>
         <source>%n may have been added; the connection failed before the server answered.</source>
         <translation>
             <numerusform>%n, возможно, добавлено; соединение прервалось до ответа сервера.</numerusform>
@@ -30832,7 +30841,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Retry adds any that are missing without uploading again.</source>
         <translation>Повтор добавит недостающие без повторной загрузки.</translation>
     </message>
@@ -31030,7 +31039,7 @@ Note: importing keys does not verify this session.</source>
         <translation>%1 из %2</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>That could not be changed. Try again in a moment.</source>
         <translation>Это не удалось изменить. Попробуйте через некоторое время.</translation>
     </message>
@@ -32757,7 +32766,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Отметить это обсуждение прочитанным</translation>
     </message>
     <message>
-        <location line="+1332"/>
+        <location line="+1328"/>
         <source>Jump to the newest reply</source>
         <translation>Перейти к последнему ответу</translation>
     </message>
@@ -32771,7 +32780,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message>
-        <location line="-1727"/>
+        <location line="-1723"/>
         <source>This room has been replaced.</source>
         <translation>Эта комната заменена.</translation>
     </message>
@@ -32876,12 +32885,11 @@ Note: importing keys does not verify this session.</source>
         <location line="-90"/>
         <location line="+92"/>
         <location line="+376"/>
-        <location line="+72"/>
         <source>Replies</source>
         <translation>Ответы</translation>
     </message>
     <message>
-        <location line="-538"/>
+        <location line="-466"/>
         <source>Unread</source>
         <translation>Непрочитано</translation>
     </message>
@@ -32971,7 +32979,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+21"/>
         <source>Search replies</source>
         <translation>Поиск ответов</translation>
     </message>

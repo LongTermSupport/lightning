@@ -10040,7 +10040,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>ImageViewerOverlay</name>
     <message>
-        <location filename="../qml/ImageViewerOverlay.qml" line="+356"/>
+        <location filename="../qml/ImageViewerOverlay.qml" line="+367"/>
         <source>Copy image</source>
         <translation>نسخ الصورة</translation>
     </message>
@@ -11896,7 +11896,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>أُلغي التنزيل.</translation>
     </message>
     <message>
-        <location line="+187"/>
+        <location line="+194"/>
         <source>The destination folder is not available.</source>
         <translation>مجلد الوجهة غير متاح.</translation>
     </message>
@@ -12207,7 +12207,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MediaHistoryModel</name>
     <message>
-        <location filename="../src/models/MediaHistoryModel.cpp" line="+121"/>
+        <location filename="../src/models/MediaHistoryModel.cpp" line="+134"/>
         <source>Today</source>
         <translation>اليوم</translation>
     </message>
@@ -30553,7 +30553,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>StickerPackEditor</name>
     <message>
-        <location filename="../qml/StickerPackEditor.qml" line="+109"/>
+        <location filename="../qml/StickerPackEditor.qml" line="+110"/>
         <source>Export pack</source>
         <translation>تصدير الحزمة</translation>
     </message>
@@ -30989,7 +30989,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>StickerPackManager</name>
     <message>
-        <location filename="../src/stickers/StickerPackManager.cpp" line="+1206"/>
+        <location filename="../src/stickers/StickerPackManager.cpp" line="+1207"/>
         <source>Enter a name.</source>
         <translation>أدخل اسمًا.</translation>
     </message>
@@ -31009,7 +31009,7 @@ Note: importing keys does not verify this session.</source>
         <translation>صورة أخرى في هذه الحزمة تستخدم هذا الاسم بالفعل.</translation>
     </message>
     <message>
-        <location line="+353"/>
+        <location line="+359"/>
         <source>You do not have permission to change this pack.</source>
         <translation>ليست لديك صلاحية تغيير هذه الحزمة.</translation>
     </message>
@@ -31106,7 +31106,19 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+12"/>
+        <location line="+9"/>
+        <source>%n cancelled.</source>
+        <translation>
+            <numerusform>لم يُلغَ أي شيء (%n).</numerusform>
+            <numerusform>أُلغي واحد (%n).</numerusform>
+            <numerusform>أُلغي اثنان (%n).</numerusform>
+            <numerusform>أُلغيت %n.</numerusform>
+            <numerusform>أُلغي %n.</numerusform>
+            <numerusform>أُلغي %n.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+5"/>
         <source>%n skipped.</source>
         <translation>
             <numerusform>تُخطيت %n.</numerusform>
@@ -31200,8 +31212,8 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-26"/>
-        <location line="+27"/>
+        <location line="-28"/>
+        <location line="+29"/>
         <source>%n failed.</source>
         <translation>
             <numerusform>لا شيء فشل.</numerusform>
@@ -31213,7 +31225,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-30"/>
+        <location line="-32"/>
         <source>%n may have been added; the connection failed before the server answered.</source>
         <translation>
             <numerusform>لم تُضف أي صورة على الأرجح.</numerusform>
@@ -31225,7 +31237,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Retry adds any that are missing without uploading again.</source>
         <translation>تضيف إعادة المحاولة الصور الناقصة دون رفعها مجددًا.</translation>
     </message>
@@ -31429,7 +31441,7 @@ Note: importing keys does not verify this session.</source>
         <translation>%1 من %2</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>That could not be changed. Try again in a moment.</source>
         <translation>تعذّر تغيير ذلك. حاول مجددًا بعد قليل.</translation>
     </message>
@@ -33222,7 +33234,7 @@ Note: importing keys does not verify this session.</source>
         <translation>تعليم هذا الخيط كمقروء</translation>
     </message>
     <message>
-        <location line="+1332"/>
+        <location line="+1328"/>
         <source>Jump to the newest reply</source>
         <translation>الانتقال إلى أحدث رد</translation>
     </message>
@@ -33239,7 +33251,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message>
-        <location line="-1727"/>
+        <location line="-1723"/>
         <source>This room has been replaced.</source>
         <translation>تم استبدال هذه الغرفة.</translation>
     </message>
@@ -33347,12 +33359,11 @@ Note: importing keys does not verify this session.</source>
         <location line="-90"/>
         <location line="+92"/>
         <location line="+376"/>
-        <location line="+72"/>
         <source>Replies</source>
         <translation>الردود</translation>
     </message>
     <message>
-        <location line="-538"/>
+        <location line="-466"/>
         <source>Unread</source>
         <translation>غير مقروء</translation>
     </message>
@@ -33445,7 +33456,7 @@ Note: importing keys does not verify this session.</source>
         <translation>إعادة المحاولة</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+21"/>
         <source>Search replies</source>
         <translation>ردود البحث</translation>
     </message>

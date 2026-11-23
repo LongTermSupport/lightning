@@ -9880,7 +9880,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>ImageViewerOverlay</name>
     <message>
-        <location filename="../qml/ImageViewerOverlay.qml" line="+356"/>
+        <location filename="../qml/ImageViewerOverlay.qml" line="+367"/>
         <source>Copy image</source>
         <translation>Copiar a imagem</translation>
     </message>
@@ -11716,7 +11716,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Transferência cancelada.</translation>
     </message>
     <message>
-        <location line="+187"/>
+        <location line="+194"/>
         <source>The destination folder is not available.</source>
         <translation>A pasta de destino não está disponível.</translation>
     </message>
@@ -12011,7 +12011,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>MediaHistoryModel</name>
     <message>
-        <location filename="../src/models/MediaHistoryModel.cpp" line="+121"/>
+        <location filename="../src/models/MediaHistoryModel.cpp" line="+134"/>
         <source>Today</source>
         <translation>Hoje</translation>
     </message>
@@ -30105,7 +30105,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
 <context>
     <name>StickerPackEditor</name>
     <message>
-        <location filename="../qml/StickerPackEditor.qml" line="+109"/>
+        <location filename="../qml/StickerPackEditor.qml" line="+110"/>
         <source>Export pack</source>
         <translation>Exportar pacote</translation>
     </message>
@@ -30505,7 +30505,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
 <context>
     <name>StickerPackManager</name>
     <message>
-        <location filename="../src/stickers/StickerPackManager.cpp" line="+1206"/>
+        <location filename="../src/stickers/StickerPackManager.cpp" line="+1207"/>
         <source>Enter a name.</source>
         <translation>Introduza um nome.</translation>
     </message>
@@ -30525,7 +30525,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Outra imagem deste pacote já usa esse nome.</translation>
     </message>
     <message>
-        <location line="+353"/>
+        <location line="+359"/>
         <source>You do not have permission to change this pack.</source>
         <translation>Não tem permissão para alterar este pacote.</translation>
     </message>
@@ -30618,7 +30618,15 @@ Nota: importar chaves não verifica esta sessão.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+12"/>
+        <location line="+9"/>
+        <source>%n cancelled.</source>
+        <translation>
+            <numerusform>%n cancelada.</numerusform>
+            <numerusform>%n canceladas.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+5"/>
         <source>%n skipped.</source>
         <translation>
             <numerusform>%n ignorada.</numerusform>
@@ -30684,8 +30692,8 @@ Nota: importar chaves não verifica esta sessão.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-26"/>
-        <location line="+27"/>
+        <location line="-28"/>
+        <location line="+29"/>
         <source>%n failed.</source>
         <translation>
             <numerusform>%n falhou.</numerusform>
@@ -30693,7 +30701,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-30"/>
+        <location line="-32"/>
         <source>%n may have been added; the connection failed before the server answered.</source>
         <translation>
             <numerusform>%n pode ter sido adicionada; a conexão falhou antes da resposta do servidor.</numerusform>
@@ -30701,7 +30709,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         </translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Retry adds any that are missing without uploading again.</source>
         <translation>Tentar novamente adiciona as que faltam sem enviar de novo.</translation>
     </message>
@@ -30897,7 +30905,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>%1 de %2</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>That could not be changed. Try again in a moment.</source>
         <translation>Não foi possível alterar. Tente novamente dentro de momentos.</translation>
     </message>
@@ -32602,7 +32610,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Marcar este tópico como lido</translation>
     </message>
     <message>
-        <location line="+1332"/>
+        <location line="+1328"/>
         <source>Jump to the newest reply</source>
         <translation>Ir para a resposta mais recente</translation>
     </message>
@@ -32615,7 +32623,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         </translation>
     </message>
     <message>
-        <location line="-1727"/>
+        <location line="-1723"/>
         <source>This room has been replaced.</source>
         <translation>Esta sala foi substituída.</translation>
     </message>
@@ -32719,12 +32727,11 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <location line="-90"/>
         <location line="+92"/>
         <location line="+376"/>
-        <location line="+72"/>
         <source>Replies</source>
         <translation>Respostas</translation>
     </message>
     <message>
-        <location line="-538"/>
+        <location line="-466"/>
         <source>Unread</source>
         <translation>Não lido</translation>
     </message>
@@ -32813,7 +32820,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Tentar novamente</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+21"/>
         <source>Search replies</source>
         <translation>Respostas de pesquisa</translation>
     </message>

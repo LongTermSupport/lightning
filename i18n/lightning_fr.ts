@@ -9880,7 +9880,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
 <context>
     <name>ImageViewerOverlay</name>
     <message>
-        <location filename="../qml/ImageViewerOverlay.qml" line="+356"/>
+        <location filename="../qml/ImageViewerOverlay.qml" line="+367"/>
         <source>Copy image</source>
         <translation>Copier l&apos;image</translation>
     </message>
@@ -11716,7 +11716,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Téléchargement annulé.</translation>
     </message>
     <message>
-        <location line="+187"/>
+        <location line="+194"/>
         <source>The destination folder is not available.</source>
         <translation>Le dossier de destination n’est pas disponible.</translation>
     </message>
@@ -12011,7 +12011,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
 <context>
     <name>MediaHistoryModel</name>
     <message>
-        <location filename="../src/models/MediaHistoryModel.cpp" line="+121"/>
+        <location filename="../src/models/MediaHistoryModel.cpp" line="+134"/>
         <source>Today</source>
         <translation>Aujourd&apos;hui</translation>
     </message>
@@ -30105,7 +30105,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
 <context>
     <name>StickerPackEditor</name>
     <message>
-        <location filename="../qml/StickerPackEditor.qml" line="+109"/>
+        <location filename="../qml/StickerPackEditor.qml" line="+110"/>
         <source>Export pack</source>
         <translation>Exporter le pack</translation>
     </message>
@@ -30505,7 +30505,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
 <context>
     <name>StickerPackManager</name>
     <message>
-        <location filename="../src/stickers/StickerPackManager.cpp" line="+1206"/>
+        <location filename="../src/stickers/StickerPackManager.cpp" line="+1207"/>
         <source>Enter a name.</source>
         <translation>Saisissez un nom.</translation>
     </message>
@@ -30525,7 +30525,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Une autre image de ce pack utilise déjà ce nom.</translation>
     </message>
     <message>
-        <location line="+353"/>
+        <location line="+359"/>
         <source>You do not have permission to change this pack.</source>
         <translation>Vous n’avez pas l’autorisation de modifier ce pack.</translation>
     </message>
@@ -30618,7 +30618,15 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+12"/>
+        <location line="+9"/>
+        <source>%n cancelled.</source>
+        <translation>
+            <numerusform>%n annulée.</numerusform>
+            <numerusform>%n annulées.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+5"/>
         <source>%n skipped.</source>
         <translation>
             <numerusform>%n ignorée.</numerusform>
@@ -30684,8 +30692,8 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-26"/>
-        <location line="+27"/>
+        <location line="-28"/>
+        <location line="+29"/>
         <source>%n failed.</source>
         <translation>
             <numerusform>%n échec.</numerusform>
@@ -30693,7 +30701,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-30"/>
+        <location line="-32"/>
         <source>%n may have been added; the connection failed before the server answered.</source>
         <translation>
             <numerusform>%n a peut-être été ajoutée ; la connexion a échoué avant la réponse du serveur.</numerusform>
@@ -30701,7 +30709,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         </translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Retry adds any that are missing without uploading again.</source>
         <translation>Réessayer ajoute celles qui manquent sans les renvoyer.</translation>
     </message>
@@ -30897,7 +30905,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>%1 sur %2</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>That could not be changed. Try again in a moment.</source>
         <translation>Impossible de modifier cela. Réessayez dans un instant.</translation>
     </message>
@@ -32602,7 +32610,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Marquer ce fil comme lu</translation>
     </message>
     <message>
-        <location line="+1332"/>
+        <location line="+1328"/>
         <source>Jump to the newest reply</source>
         <translation>Aller à la réponse la plus récente</translation>
     </message>
@@ -32615,7 +32623,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         </translation>
     </message>
     <message>
-        <location line="-1727"/>
+        <location line="-1723"/>
         <source>This room has been replaced.</source>
         <translation>Ce salon a été remplacé.</translation>
     </message>
@@ -32719,12 +32727,11 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <location line="-90"/>
         <location line="+92"/>
         <location line="+376"/>
-        <location line="+72"/>
         <source>Replies</source>
         <translation>Réponses</translation>
     </message>
     <message>
-        <location line="-538"/>
+        <location line="-466"/>
         <source>Unread</source>
         <translation>Non lu</translation>
     </message>
@@ -32813,7 +32820,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Réessayer</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+21"/>
         <source>Search replies</source>
         <translation>Rechercher des réponses</translation>
     </message>

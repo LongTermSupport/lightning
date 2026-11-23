@@ -9840,7 +9840,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
 <context>
     <name>ImageViewerOverlay</name>
     <message>
-        <location filename="../qml/ImageViewerOverlay.qml" line="+356"/>
+        <location filename="../qml/ImageViewerOverlay.qml" line="+367"/>
         <source>Copy image</source>
         <translation>Salin gambar</translation>
     </message>
@@ -11671,7 +11671,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Unduhan dibatalkan.</translation>
     </message>
     <message>
-        <location line="+187"/>
+        <location line="+194"/>
         <source>The destination folder is not available.</source>
         <translation>Folder tujuan tidak tersedia.</translation>
     </message>
@@ -11962,7 +11962,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
 <context>
     <name>MediaHistoryModel</name>
     <message>
-        <location filename="../src/models/MediaHistoryModel.cpp" line="+121"/>
+        <location filename="../src/models/MediaHistoryModel.cpp" line="+134"/>
         <source>Today</source>
         <translation>Hari ini</translation>
     </message>
@@ -29993,7 +29993,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
 <context>
     <name>StickerPackEditor</name>
     <message>
-        <location filename="../qml/StickerPackEditor.qml" line="+109"/>
+        <location filename="../qml/StickerPackEditor.qml" line="+110"/>
         <source>Export pack</source>
         <translation>Ekspor paket</translation>
     </message>
@@ -30384,7 +30384,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
 <context>
     <name>StickerPackManager</name>
     <message>
-        <location filename="../src/stickers/StickerPackManager.cpp" line="+1206"/>
+        <location filename="../src/stickers/StickerPackManager.cpp" line="+1207"/>
         <source>Enter a name.</source>
         <translation>Masukkan nama.</translation>
     </message>
@@ -30404,7 +30404,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Gambar lain di paket ini sudah memakai nama itu.</translation>
     </message>
     <message>
-        <location line="+353"/>
+        <location line="+359"/>
         <source>You do not have permission to change this pack.</source>
         <translation>Anda tidak memiliki izin mengubah paket ini.</translation>
     </message>
@@ -30496,7 +30496,14 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+12"/>
+        <location line="+9"/>
+        <source>%n cancelled.</source>
+        <translation>
+            <numerusform>%n dibatalkan.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+5"/>
         <source>%n skipped.</source>
         <translation>
             <numerusform>%n dilewati.</numerusform>
@@ -30555,22 +30562,22 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-26"/>
-        <location line="+27"/>
+        <location line="-28"/>
+        <location line="+29"/>
         <source>%n failed.</source>
         <translation>
             <numerusform>%n gagal.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-30"/>
+        <location line="-32"/>
         <source>%n may have been added; the connection failed before the server answered.</source>
         <translation>
             <numerusform>%n mungkin sudah ditambahkan; koneksi gagal sebelum server menjawab.</numerusform>
         </translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Retry adds any that are missing without uploading again.</source>
         <translation>Coba lagi menambahkan yang belum ada tanpa mengunggah ulang.</translation>
     </message>
@@ -30764,7 +30771,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>%1 dari %2</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>That could not be changed. Try again in a moment.</source>
         <translation>Itu tidak dapat diubah. Coba lagi sebentar lagi.</translation>
     </message>
@@ -32447,7 +32454,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Tandai utas ini sudah dibaca</translation>
     </message>
     <message>
-        <location line="+1332"/>
+        <location line="+1328"/>
         <source>Jump to the newest reply</source>
         <translation>Lompat ke balasan terbaru</translation>
     </message>
@@ -32459,7 +32466,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         </translation>
     </message>
     <message>
-        <location line="-1727"/>
+        <location line="-1723"/>
         <source>This room has been replaced.</source>
         <translation>Ruang ini telah diganti.</translation>
     </message>
@@ -32562,12 +32569,11 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <location line="-90"/>
         <location line="+92"/>
         <location line="+376"/>
-        <location line="+72"/>
         <source>Replies</source>
         <translation>Balasan</translation>
     </message>
     <message>
-        <location line="-538"/>
+        <location line="-466"/>
         <source>Unread</source>
         <translation>Belum dibaca</translation>
     </message>
@@ -32655,7 +32661,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Coba lagi</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+21"/>
         <source>Search replies</source>
         <translation>Cari balasan</translation>
     </message>

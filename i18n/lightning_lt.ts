@@ -9920,7 +9920,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>ImageViewerOverlay</name>
     <message>
-        <location filename="../qml/ImageViewerOverlay.qml" line="+356"/>
+        <location filename="../qml/ImageViewerOverlay.qml" line="+367"/>
         <source>Copy image</source>
         <translation>Kopijuoti vaizdą</translation>
     </message>
@@ -11761,7 +11761,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Atsisiuntimas atšauktas.</translation>
     </message>
     <message>
-        <location line="+187"/>
+        <location line="+194"/>
         <source>The destination folder is not available.</source>
         <translation>Paskirties aplankas nepasiekiamas.</translation>
     </message>
@@ -12060,7 +12060,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>MediaHistoryModel</name>
     <message>
-        <location filename="../src/models/MediaHistoryModel.cpp" line="+121"/>
+        <location filename="../src/models/MediaHistoryModel.cpp" line="+134"/>
         <source>Today</source>
         <translation>Šiandien</translation>
     </message>
@@ -30217,7 +30217,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
 <context>
     <name>StickerPackEditor</name>
     <message>
-        <location filename="../qml/StickerPackEditor.qml" line="+109"/>
+        <location filename="../qml/StickerPackEditor.qml" line="+110"/>
         <source>Export pack</source>
         <translation>Eksportuoti rinkinį</translation>
     </message>
@@ -30626,7 +30626,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
 <context>
     <name>StickerPackManager</name>
     <message>
-        <location filename="../src/stickers/StickerPackManager.cpp" line="+1206"/>
+        <location filename="../src/stickers/StickerPackManager.cpp" line="+1207"/>
         <source>Enter a name.</source>
         <translation>Įveskite pavadinimą.</translation>
     </message>
@@ -30646,7 +30646,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Kitas šio rinkinio paveikslėlis jau naudoja šį pavadinimą.</translation>
     </message>
     <message>
-        <location line="+353"/>
+        <location line="+359"/>
         <source>You do not have permission to change this pack.</source>
         <translation>Neturite leidimo keisti šio rinkinio.</translation>
     </message>
@@ -30740,7 +30740,16 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+12"/>
+        <location line="+9"/>
+        <source>%n cancelled.</source>
+        <translation>
+            <numerusform>%n atšauktas.</numerusform>
+            <numerusform>%n atšaukti.</numerusform>
+            <numerusform>%n atšauktų.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+5"/>
         <source>%n skipped.</source>
         <translation>
             <numerusform>%n praleistas.</numerusform>
@@ -30813,8 +30822,8 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-26"/>
-        <location line="+27"/>
+        <location line="-28"/>
+        <location line="+29"/>
         <source>%n failed.</source>
         <translation>
             <numerusform>Nepavyko: %n.</numerusform>
@@ -30823,7 +30832,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-30"/>
+        <location line="-32"/>
         <source>%n may have been added; the connection failed before the server answered.</source>
         <translation>
             <numerusform>%n galėjo būti pridėtas; ryšys nutrūko prieš atsakant serveriui.</numerusform>
@@ -30832,7 +30841,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         </translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Retry adds any that are missing without uploading again.</source>
         <translation>„Bandyti dar kartą“ pridės trūkstamus neįkeliant iš naujo.</translation>
     </message>
@@ -31030,7 +31039,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>%1 iš %2</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>That could not be changed. Try again in a moment.</source>
         <translation>Nepavyko pakeisti. Po akimirkos bandykite dar kartą.</translation>
     </message>
@@ -32757,7 +32766,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Pažymėti šią giją kaip perskaitytą</translation>
     </message>
     <message>
-        <location line="+1332"/>
+        <location line="+1328"/>
         <source>Jump to the newest reply</source>
         <translation>Pereiti prie naujausio atsakymo</translation>
     </message>
@@ -32771,7 +32780,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         </translation>
     </message>
     <message>
-        <location line="-1727"/>
+        <location line="-1723"/>
         <source>This room has been replaced.</source>
         <translation>Šis kambarys buvo pakeistas.</translation>
     </message>
@@ -32876,12 +32885,11 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <location line="-90"/>
         <location line="+92"/>
         <location line="+376"/>
-        <location line="+72"/>
         <source>Replies</source>
         <translation>Atsakymai</translation>
     </message>
     <message>
-        <location line="-538"/>
+        <location line="-466"/>
         <source>Unread</source>
         <translation>Neskaityta</translation>
     </message>
@@ -32971,7 +32979,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Bandykite dar kartą</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+21"/>
         <source>Search replies</source>
         <translation>Ieškokite atsakymų</translation>
     </message>
