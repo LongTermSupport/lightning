@@ -7990,6 +7990,7 @@ kFilteredPages + 6);
     {
         AppController controller(AppController::MockBackend);
         QVERIFY(!loginAndRoomIdAt(controller,0).isEmpty());
+        controller.settings()->setShowRoomActivity(true);
         auto *mock = controller.findChild<MockMatrixClient *>();
         QVERIFY(mock != nullptr);
         const QString roomId = QStringLiteral("!general:mock.local");
@@ -8009,7 +8010,7 @@ kFilteredPages + 6);
                 e.body = id;
             }
             if (type == TimelineEvent::StateChange)
-                e.stateKind = QStringLiteral("m.room.topic");
+                e.stateKind = QStringLiteral("m.room.join_rules");
             else if (type == TimelineEvent::TextMessage)
                 e.status = TimelineEvent::Sent;
             return e;
@@ -8056,10 +8057,19 @@ kFilteredPages + 6);
 
         QTest::qWaitFor([&] { return groups().size() == 1; }, kSignalTimeoutMs);
         QVERIFY2(groups().size() == 1,
-                 qPrintable(QStringLiteral("rows=%1 stateGroups=%2 viewRows=%3")
+                 qPrintable(QStringLiteral("rows=%1 stateGroups=%2 viewRows=%3 "
+                                           "groupItems=%4 leaderEntries=%5")
                                 .arg(controller.timeline()->rowCount())
                                 .arg(controller.timeline()->stateGroupCount())
-                                .arg(timeline->property("count").toInt())));
+                                .arg(timeline->property("count").toInt())
+                                .arg(findVisualChildren(
+                                         timeline,
+                                         QStringLiteral("stateActivityGroup"))
+                                         .size())
+                                .arg(controller.timeline()
+                                         ->data(controller.timeline()->index(1),
+                                                TimelineModel::StateGroupEntriesRole)
+                                         .toList().size())));
         QCOMPARE(expandedIds(), QStringList{});
         QVERIFY(QMetaObject::invokeMethod(groups().first(), "toggleRequested"));
         QTRY_COMPARE_WITH_TIMEOUT(expandedIds().size(), 1, kSignalTimeoutMs);
