@@ -340,7 +340,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>加密已就绪。请打开“安全与恢复”。</translation>
     </message>
     <message>
-        <location line="+101"/>
+        <location line="+102"/>
         <source>Add</source>
         <translation>添加</translation>
     </message>
@@ -361,7 +361,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>编辑状态…</translation>
     </message>
     <message>
-        <location line="-77"/>
+        <location line="-78"/>
         <source>Encrypted</source>
         <translation>已加密</translation>
     </message>
@@ -387,12 +387,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+10"/>
-        <location line="+83"/>
+        <location line="+84"/>
         <source>Security and recovery</source>
         <translation>安全与恢复</translation>
     </message>
     <message>
-        <location line="-81"/>
+        <location line="-82"/>
         <source>This device isn&apos;t verified yet. Verify it so your other sessions trust it.</source>
         <translation>此设备尚未验证。请验证它，以便你的其他会话信任它。</translation>
     </message>
@@ -402,7 +402,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>部分安全步骤尚未完成。请打开“安全与恢复”来完成它们。</translation>
     </message>
     <message>
-        <location line="+58"/>
+        <location line="+59"/>
         <source>Set a status…</source>
         <translation>设置状态…</translation>
     </message>
@@ -1834,7 +1834,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>取消</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Use edited image</source>
         <translation>使用编辑后的图像</translation>
     </message>
@@ -8419,12 +8419,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+29"/>
-        <location line="+272"/>
+        <location line="+273"/>
         <source>Home</source>
         <translation>主文件夹</translation>
     </message>
     <message>
-        <location line="-271"/>
+        <location line="-272"/>
         <source>Desktop</source>
         <translation>桌面</translation>
     </message>
@@ -8514,7 +8514,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>主文件夹（Alt+Home）</translation>
     </message>
     <message>
-        <location line="+111"/>
+        <location line="+112"/>
         <source>Type a path</source>
         <translation>输入路径</translation>
     </message>
@@ -18578,12 +18578,12 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="+21"/>
         <location line="+773"/>
-        <location line="+95"/>
+        <location line="+96"/>
         <source>Remove</source>
         <translation>移除</translation>
     </message>
     <message>
-        <location line="-848"/>
+        <location line="-849"/>
         <source>#another-name</source>
         <translation>#another-name</translation>
     </message>
@@ -32714,7 +32714,7 @@ Note: importing keys does not verify this session.</source>
         <translation>正在加载更早的回复…</translation>
     </message>
     <message>
-        <location line="+187"/>
+        <location line="+189"/>
         <location line="+48"/>
         <source>Replying to %1</source>
         <translation>正在回复 %1</translation>
@@ -33143,12 +33143,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location filename="../qml/SpaceLobby.qml" line="-519"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5428"/>
+        <location line="+5438"/>
         <source>Space</source>
         <translation>空间</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5427"/>
+        <location filename="../qml/TimelinePane.qml" line="-5437"/>
         <source>Home</source>
         <translation>主页</translation>
     </message>
@@ -33250,12 +33250,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="+16"/>
         <location line="+2"/>
-        <location line="+3896"/>
+        <location line="+3897"/>
         <source>Room information</source>
         <translation>房间信息</translation>
     </message>
     <message>
-        <location line="-3885"/>
+        <location line="-3886"/>
         <location line="+1"/>
         <source>More room actions</source>
         <translation>更多房间操作</translation>
@@ -33508,12 +33508,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="+2749"/>
         <location line="+27"/>
-        <location line="+455"/>
+        <location line="+463"/>
         <source>Loading older messages…</source>
         <translation>正在加载更早的消息…</translation>
     </message>
     <message>
-        <location line="-454"/>
+        <location line="-462"/>
         <source>Could not load older messages —</source>
         <translation>无法加载更早的消息 —</translation>
     </message>
@@ -33523,7 +33523,7 @@ Note: importing keys does not verify this session.</source>
         <translation>重试加载更早的消息</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+15"/>
         <source>Retry</source>
         <translation>重试</translation>
     </message>
@@ -33568,7 +33568,7 @@ Note: importing keys does not verify this session.</source>
         <translation>前往你上次停止阅读的位置</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+31"/>
         <source>First unread</source>
         <translation>第一条未读</translation>
     </message>
@@ -33588,7 +33588,7 @@ Note: importing keys does not verify this session.</source>
         <translation>返回最新消息</translation>
     </message>
     <message numerus="yes">
-        <location line="+268"/>
+        <location line="+274"/>
         <source>%n message(s) selected</source>
         <translation>
             <numerusform>已选中 %n 条消息</numerusform>
@@ -33884,8 +33884,8 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+298"/>
-        <location filename="../qml/TimelinePane.qml" line="-6726"/>
-        <location line="+6903"/>
+        <location filename="../qml/TimelinePane.qml" line="-6736"/>
+        <location line="+6913"/>
         <source>Room</source>
         <translation>房间</translation>
     </message>
@@ -33956,13 +33956,13 @@ Note: importing keys does not verify this session.</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location line="-6018"/>
+        <location line="-6028"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation>查看个人资料</translation>
     </message>
     <message>
-        <location line="+5247"/>
+        <location line="+5257"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation>图片 (*.png *.jpg *.jpeg *.gif *.webp *.svg)</translation>
     </message>
@@ -34038,7 +34038,7 @@ Note: importing keys does not verify this session.</source>
         <translation>拖放文件以添加附件</translation>
     </message>
     <message>
-        <location line="-5466"/>
+        <location line="-5476"/>
         <source>Join space</source>
         <translation>加入空间</translation>
     </message>
@@ -34114,17 +34114,17 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+139"/>
-        <location line="+16"/>
+        <location line="+17"/>
         <source>Verify</source>
         <translation>验证</translation>
     </message>
     <message>
-        <location line="-9"/>
+        <location line="-10"/>
         <source>Verify this session</source>
         <translation>验证此会话</translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="+41"/>
         <source>Use recovery key instead</source>
         <translation>改用恢复密钥</translation>
     </message>
@@ -35130,23 +35130,23 @@ Note: importing keys does not verify this session.</source>
         <translation>重播视频</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+24"/>
         <source>Replay</source>
         <translation>重播</translation>
     </message>
     <message>
-        <location line="-67"/>
-        <location line="+130"/>
+        <location line="-68"/>
+        <location line="+131"/>
         <source>Video</source>
         <translation>视频</translation>
     </message>
     <message>
-        <location line="-130"/>
+        <location line="-131"/>
         <source>Video: %1</source>
         <translation>视频：%1</translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+144"/>
         <source>%1 · %2</source>
         <translation>%1 · %2</translation>
     </message>

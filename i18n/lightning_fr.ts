@@ -343,7 +343,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>Chiffrement prêt. Ouvrez Sécurité et récupération.</translation>
     </message>
     <message>
-        <location line="+101"/>
+        <location line="+102"/>
         <source>Add</source>
         <translation>Ajouter</translation>
     </message>
@@ -364,7 +364,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>Modifier le statut…</translation>
     </message>
     <message>
-        <location line="-77"/>
+        <location line="-78"/>
         <source>Encrypted</source>
         <translation>Chiffré</translation>
     </message>
@@ -390,12 +390,12 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
     </message>
     <message>
         <location line="+10"/>
-        <location line="+83"/>
+        <location line="+84"/>
         <source>Security and recovery</source>
         <translation>Sécurité et récupération</translation>
     </message>
     <message>
-        <location line="-81"/>
+        <location line="-82"/>
         <source>This device isn&apos;t verified yet. Verify it so your other sessions trust it.</source>
         <translation>Cet appareil n&apos;est pas encore vérifié. Vérifiez-le pour que vos autres sessions lui fassent confiance.</translation>
     </message>
@@ -405,7 +405,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>Certaines étapes de sécurité ne sont pas encore terminées. Ouvrez Sécurité et récupération pour les finir.</translation>
     </message>
     <message>
-        <location line="+58"/>
+        <location line="+59"/>
         <source>Set a status…</source>
         <translation>Définir un statut…</translation>
     </message>
@@ -1845,7 +1845,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>Annuler</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Use edited image</source>
         <translation>Utiliser l&apos;image modifiée</translation>
     </message>
@@ -8454,12 +8454,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     </message>
     <message>
         <location line="+29"/>
-        <location line="+272"/>
+        <location line="+273"/>
         <source>Home</source>
         <translation>Dossier personnel</translation>
     </message>
     <message>
-        <location line="-271"/>
+        <location line="-272"/>
         <source>Desktop</source>
         <translation>Bureau</translation>
     </message>
@@ -8549,7 +8549,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Dossier personnel (Alt+Home)</translation>
     </message>
     <message>
-        <location line="+111"/>
+        <location line="+112"/>
         <source>Type a path</source>
         <translation>Saisir un chemin</translation>
     </message>
@@ -18654,12 +18654,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     <message>
         <location line="+21"/>
         <location line="+773"/>
-        <location line="+95"/>
+        <location line="+96"/>
         <source>Remove</source>
         <translation>Supprimer</translation>
     </message>
     <message>
-        <location line="-848"/>
+        <location line="-849"/>
         <source>#another-name</source>
         <translation>#autre-nom</translation>
     </message>
@@ -32873,7 +32873,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Chargement des réponses plus anciennes…</translation>
     </message>
     <message>
-        <location line="+187"/>
+        <location line="+189"/>
         <location line="+48"/>
         <source>Replying to %1</source>
         <translation>Réponse à %1</translation>
@@ -33305,12 +33305,12 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
     <message>
         <location filename="../qml/SpaceLobby.qml" line="-519"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5428"/>
+        <location line="+5438"/>
         <source>Space</source>
         <translation>Espace</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5427"/>
+        <location filename="../qml/TimelinePane.qml" line="-5437"/>
         <source>Home</source>
         <translation>Accueil</translation>
     </message>
@@ -33412,12 +33412,12 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
     <message>
         <location line="+16"/>
         <location line="+2"/>
-        <location line="+3896"/>
+        <location line="+3897"/>
         <source>Room information</source>
         <translation>Informations du salon</translation>
     </message>
     <message>
-        <location line="-3885"/>
+        <location line="-3886"/>
         <location line="+1"/>
         <source>More room actions</source>
         <translation>Autres actions du salon</translation>
@@ -33670,12 +33670,12 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
     <message>
         <location line="+2749"/>
         <location line="+27"/>
-        <location line="+455"/>
+        <location line="+463"/>
         <source>Loading older messages…</source>
         <translation>Chargement des messages plus anciens…</translation>
     </message>
     <message>
-        <location line="-454"/>
+        <location line="-462"/>
         <source>Could not load older messages —</source>
         <translation>Impossible de charger les messages plus anciens —</translation>
     </message>
@@ -33685,7 +33685,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Réessayer de charger les messages plus anciens</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+15"/>
         <source>Retry</source>
         <translation>Réessayer</translation>
     </message>
@@ -33730,7 +33730,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Aller à l&apos;endroit où vous vous êtes arrêté de lire</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+31"/>
         <source>First unread</source>
         <translation>Premier non lu</translation>
     </message>
@@ -33750,7 +33750,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Revenir au message le plus récent</translation>
     </message>
     <message numerus="yes">
-        <location line="+268"/>
+        <location line="+274"/>
         <source>%n message(s) selected</source>
         <translation>
             <numerusform>%n message sélectionné</numerusform>
@@ -34050,8 +34050,8 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
     </message>
     <message>
         <location line="+298"/>
-        <location filename="../qml/TimelinePane.qml" line="-6726"/>
-        <location line="+6903"/>
+        <location filename="../qml/TimelinePane.qml" line="-6736"/>
+        <location line="+6913"/>
         <source>Room</source>
         <translation>Salon</translation>
     </message>
@@ -34126,13 +34126,13 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location line="-6018"/>
+        <location line="-6028"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation>Voir le profil</translation>
     </message>
     <message>
-        <location line="+5247"/>
+        <location line="+5257"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</translation>
     </message>
@@ -34208,7 +34208,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Déposez des fichiers pour les joindre</translation>
     </message>
     <message>
-        <location line="-5466"/>
+        <location line="-5476"/>
         <source>Join space</source>
         <translation>Rejoindre l&apos;espace</translation>
     </message>
@@ -34285,17 +34285,17 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
     </message>
     <message>
         <location line="+139"/>
-        <location line="+16"/>
+        <location line="+17"/>
         <source>Verify</source>
         <translation>Vérifier</translation>
     </message>
     <message>
-        <location line="-9"/>
+        <location line="-10"/>
         <source>Verify this session</source>
         <translation>Vérifier cette session</translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="+41"/>
         <source>Use recovery key instead</source>
         <translation>Utiliser plutôt la clé de récupération</translation>
     </message>
@@ -35302,23 +35302,23 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Revoir la vidéo</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+24"/>
         <source>Replay</source>
         <translation>Revoir</translation>
     </message>
     <message>
-        <location line="-67"/>
-        <location line="+130"/>
+        <location line="-68"/>
+        <location line="+131"/>
         <source>Video</source>
         <translation>Vidéo</translation>
     </message>
     <message>
-        <location line="-130"/>
+        <location line="-131"/>
         <source>Video: %1</source>
         <translation>Vidéo : %1</translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+144"/>
         <source>%1 · %2</source>
         <translation>%1 · %2</translation>
     </message>
