@@ -2287,9 +2287,14 @@ true, ringSeconds, acceptOffered,
     m_mediaBridge->setClient(m_client.get());
     m_pagination->setClient(m_client.get());
     m_pagination->setTimelineModel(m_timeline.get());
-    if (m_backend == RustBackend)
-        m_pagination->setAnchorFileResolver(
-            &matrix::app_data::scrollPositionsFile);
+    if (m_backend == RustBackend) {
+        m_pagination->setAnchorFileResolver([this](const QString &userId) {
+            matrix::app_data::AccountIdentity identity;
+            return resolveRemovalIdentity(userId, &identity)
+                ? matrix::app_data::scrollPositionsFile(identity.accountRoot)
+                : QString{};
+        });
+    }
     m_pagination->setContextOpener([this](const QString &eventId,
                                           qreal restoreOffset) {
         return m_eventContext->open(m_currentRoomId, eventId, restoreOffset);

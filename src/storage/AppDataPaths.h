@@ -69,7 +69,8 @@ RemovalSummary removePersonalBackgrounds(const AccountIdentity &identity);
 
 QString bridgeLabelsFile(const QString &userId);
 
-QString scrollPositionsFile(const QString &userId);
+// Under the account's recorded root, like its store.
+QString scrollPositionsFile(const QString &accountRootDir);
 
 QString customAppIconFile();
 

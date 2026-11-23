@@ -325,12 +325,11 @@ QString bridgeLabelsFile(const QString &userId)
     return account + QLatin1String("/bridge-labels.json");
 }
 
-QString scrollPositionsFile(const QString &userId)
+QString scrollPositionsFile(const QString &accountRootDir)
 {
-    const QString account = accountRoot(userId);
-    if (account.isEmpty())
+    if (accountRootDir.trimmed().isEmpty())
         return {};
-    return account + QLatin1String("/scroll-positions.json");
+    return accountRootDir + QLatin1String("/scroll-positions.json");
 }
 
 QString customAppIconFile()
