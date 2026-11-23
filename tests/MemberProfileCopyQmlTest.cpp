@@ -7,7 +7,10 @@
 
 #include <QtTest/QtTest>
 
+#include <QBuffer>
 #include <QClipboard>
+#include <QImage>
+#include <QMimeData>
 #include <QGuiApplication>
 #include <QQmlComponent>
 #include <QQmlContext>
@@ -21,9 +24,14 @@
 #include <QSettings>
 #include <QTemporaryDir>
 
+#include <memory>
+
 #include "app/AppController.h"
 #include "app/ConversationController.h"
+#include "app/SettingsManager.h"
 #include "auth/AuthManager.h"
+#include "media/MediaBridge.h"
+#include "media/MediaImageProvider.h"
 #include "presence/PresenceManager.h"
 #include "matrix/MockMatrixClient.h"
 #include "profile/ProfileBioManager.h"
@@ -80,6 +88,42 @@ ApplicationWindow {
 }
 )QML";
 
+const char *kAvatarScene = R"QML(
+import QtQuick
+import QtQuick.Controls
+import MatrixClient
+
+ApplicationWindow {
+    width: 900
+    height: 700
+    visible: true
+    color: AppTheme.background
+    property alias panel: info
+    property alias card: card
+
+    RoomInfoPanel {
+        id: info
+        width: 360
+        height: 700
+    }
+    MemberProfilePopover {
+        id: card
+        parent: Overlay.overlay
+    }
+}
+)QML";
+
+QByteArray imageBytes(const QColor &color, const char *format)
+{
+    QImage image(48, 48, QImage::Format_RGB32);
+    image.fill(color);
+    QByteArray bytes;
+    QBuffer buffer(&bytes);
+    buffer.open(QIODevice::WriteOnly);
+    image.save(&buffer, format);
+    return bytes;
+}
+
 }
 
 class MemberProfileCopyQmlTest : public QObject
@@ -132,6 +176,85 @@ private:
     ConversationController *conversations() const
     {
         return m_controller->conversations();
+    }
+
+    static QObject *openViewer(QObject *root)
+    {
+        const auto popups = root->findChildren<QObject *>(
+            QStringLiteral("imageViewerOverlay"));
+        for (QObject *popup : popups) {
+            if (popup->property("opened").toBool())
+                return popup;
+        }
+        return nullptr;
+    }
+
+    // Opens the picture through the avatar's own view action, then copies it
+    // and downloads it from the viewer exactly as its menu and toolbar do.
+    void copyAndSaveFromTheViewer(QObject *root, QQuickItem *avatar,
+                                  const QString &mxc, const QByteArray &bytes,
+                                  const QString &mime, const QString &extension)
+    {
+        QVERIFY(avatar);
+        auto *action = findItem(avatar, QStringLiteral("avatarViewAction"));
+        QVERIFY(action);
+        QCOMPARE(avatar->property("mxc").toString(), mxc);
+        QTRY_COMPARE(avatar->property("presentationState").toString(),
+                     QStringLiteral("ready"));
+        QVERIFY(action->property("available").toBool());
+        QVERIFY(QMetaObject::invokeMethod(action, "activate"));
+        QObject *viewer = nullptr;
+        QTRY_VERIFY((viewer = openViewer(root)) != nullptr);
+        QCOMPARE(viewer->property("currentMxc").toString(), mxc);
+
+        auto *copy = viewer->findChild<QObject *>(QStringLiteral("viewerCopyImage"));
+        auto *save = viewer->findChild<QObject *>(QStringLiteral("viewerSaveImage"));
+        QVERIFY(copy && save);
+        QVERIFY(copy->property("enabled").toBool());
+        QVERIFY(save->property("enabled").toBool());
+
+        QGuiApplication::clipboard()->setText(QStringLiteral("untouched"));
+        QSignalSpy copied(m_controller, &AppController::copyImageFinished);
+        QVERIFY(QMetaObject::invokeMethod(copy, "triggered"));
+        QTRY_COMPARE(copied.count(), 1);
+        QCOMPARE(copied.at(0).at(0).toBool(), true);
+        const QMimeData *clip = QGuiApplication::clipboard()->mimeData();
+        QVERIFY(clip);
+        QCOMPARE(clip->data(mime), bytes);
+
+        QTemporaryDir folder;
+        QVERIFY(folder.isValid());
+        m_controller->settings()->setDownloadFolder(folder.path());
+        QSignalSpy saved(m_controller->mediaBridge(), &MediaBridge::saveCompleted);
+        QVERIFY(QMetaObject::invokeMethod(viewer, "saveCurrent",
+                                          Q_ARG(QVariant, QVariant(false))));
+        QTRY_COMPARE(saved.count(), 1);
+        QCOMPARE(saved.at(0).at(0).toString(), mxc);
+        const QString path = saved.at(0).at(1).toString();
+        QVERIFY2(path.startsWith(folder.path()), qPrintable(path));
+        QCOMPARE(QFileInfo(path).suffix(), extension);
+        QFile file(path);
+        QVERIFY(file.open(QIODevice::ReadOnly));
+        QCOMPARE(file.readAll(), bytes);
+        m_controller->settings()->setDownloadFolder(QString());
+
+        QVERIFY(QMetaObject::invokeMethod(viewer, "close"));
+        QTRY_VERIFY(!openViewer(root));
+    }
+
+    void createAvatarScene(std::unique_ptr<QObject> &root)
+    {
+        if (!m_engine->imageProvider(QStringLiteral("lightning-media")))
+            m_engine->addImageProvider(QStringLiteral("lightning-media"),
+                                       new MediaImageProvider(m_controller->mediaBridge()));
+        QQmlComponent component(m_engine);
+        component.setData(QByteArray(kAvatarScene),
+                          QUrl(QStringLiteral("avatar-scene.qml")));
+        root.reset(component.create());
+        QVERIFY2(root, qPrintable(component.errorString()));
+        auto *window = qobject_cast<QQuickWindow *>(root.get());
+        QVERIFY(window);
+        QVERIFY(QTest::qWaitForWindowExposed(window));
     }
 
 private slots:
@@ -512,6 +635,90 @@ private slots:
         }
         QCOMPARE(rows, 10);
         QVERIFY2(failures.isEmpty(), qPrintable(failures.join(QLatin1Char('\n'))));
+    }
+    void aRoomPictureCanBeCopiedAndSavedFromTheViewer()
+    {
+        auto *mock = m_controller->findChild<MockMatrixClient *>();
+        QVERIFY(mock);
+        mock->setSupportsMediaBridgeForTest(true);
+        auto restore = qScopeGuard([mock] { mock->setSupportsMediaBridgeForTest(false); });
+        const QString roomMxc = QStringLiteral("mxc://mock.local/room-picture");
+        const QByteArray png = imageBytes(QColor(200, 40, 40), "PNG");
+        mock->setAvatarBytesForTest(roomMxc, png, QStringLiteral("image/png"));
+        std::unique_ptr<QObject> root;
+        createAvatarScene(root);
+        if (QTest::currentTestFailed())
+            return;
+
+        auto *panel = root->property("panel").value<QQuickItem *>();
+        QVERIFY(panel);
+        const QString roomId = QStringLiteral("!general:mock.local");
+        mock->setRoomAvatarForTest(roomId, roomMxc);
+        QVERIFY(QMetaObject::invokeMethod(panel, "openForRoom",
+                                          Q_ARG(QVariant, QVariant(roomId))));
+        QTRY_COMPARE(panel->property("roomData").toMap()
+                         .value(QStringLiteral("avatarUrl")).toString(), roomMxc);
+        copyAndSaveFromTheViewer(root.get(),
+                                 findItem(panel, QStringLiteral("roomInfoAvatar")),
+                                 roomMxc, png, QStringLiteral("image/png"),
+                                 QStringLiteral("png"));
+    }
+
+    void aUserPictureCanBeCopiedAndSavedFromTheViewer()
+    {
+        auto *mock = m_controller->findChild<MockMatrixClient *>();
+        QVERIFY(mock);
+        mock->setSupportsMediaBridgeForTest(true);
+        auto restore = qScopeGuard([mock] { mock->setSupportsMediaBridgeForTest(false); });
+        const QString userMxc = QStringLiteral("mxc://mock.local/user-picture");
+        const QByteArray jpeg = imageBytes(QColor(40, 40, 200), "JPG");
+        QVERIFY(jpeg.startsWith("\xff\xd8\xff"));
+        mock->setAvatarBytesForTest(userMxc, jpeg, QStringLiteral("image/jpeg"));
+        std::unique_ptr<QObject> root;
+        createAvatarScene(root);
+        if (QTest::currentTestFailed())
+            return;
+
+        QObject *card = root->property("card").value<QObject *>();
+        QVERIFY(card);
+        QVariantMap member;
+        member.insert(QStringLiteral("userId"), QStringLiteral("@bob:mock.local"));
+        member.insert(QStringLiteral("avatarUrl"), userMxc);
+        member.insert(QStringLiteral("roomScoped"), false);
+        QVERIFY(QMetaObject::invokeMethod(card, "openFor",
+                                          Q_ARG(QVariant, QVariant(member)),
+                                          Q_ARG(QVariant, QVariant())));
+        QTRY_VERIFY(card->property("visible").toBool());
+        QQuickItem *cardAvatar = nullptr;
+        QTRY_VERIFY([&] {
+            for (auto *candidate : root->findChildren<QQuickItem *>(
+                     QStringLiteral("profileCardAvatar"))) {
+                if (candidate->property("mxc").toString() == userMxc)
+                    cardAvatar = candidate;
+            }
+            return cardAvatar != nullptr;
+        }());
+        copyAndSaveFromTheViewer(root.get(), cardAvatar, userMxc, jpeg,
+                                 QStringLiteral("image/jpeg"), QStringLiteral("jpg"));
+        QMetaObject::invokeMethod(card, "close");
+    }
+
+    void aMarkupPictureIsNeverCopied()
+    {
+        auto *mock = m_controller->findChild<MockMatrixClient *>();
+        QVERIFY(mock);
+        mock->setSupportsMediaBridgeForTest(true);
+        auto restore = qScopeGuard([mock] { mock->setSupportsMediaBridgeForTest(false); });
+        const QString svgMxc = QStringLiteral("mxc://mock.local/svg-picture");
+        mock->setAvatarBytesForTest(
+            svgMxc, QByteArray("<svg xmlns=\"http://www.w3.org/2000/svg\"/>"),
+            QStringLiteral("image/png"));
+        QGuiApplication::clipboard()->setText(QStringLiteral("untouched"));
+        QSignalSpy copied(m_controller, &AppController::copyImageFinished);
+        m_controller->copyImageToClipboard(svgMxc);
+        QTRY_COMPARE(copied.count(), 1);
+        QCOMPARE(copied.at(0).at(0).toBool(), false);
+        QCOMPARE(QGuiApplication::clipboard()->text(), QStringLiteral("untouched"));
     }
 };
 

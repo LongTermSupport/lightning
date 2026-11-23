@@ -149,6 +149,7 @@ public:
     QStringList savingKeys() const;
     Q_INVOKABLE void cancelSave(const QString &mediaKey);
     Q_INVOKABLE QString suggestedSaveName(const QString &rawName) const;
+    Q_INVOKABLE QString cachedRasterMime(const QString &mediaKey) const;
 
     /// True when the payload opens as markup (SVG) or gzip (SVGZ); image-class
     /// results are refused on this. Public so MediaImageProvider applies the
