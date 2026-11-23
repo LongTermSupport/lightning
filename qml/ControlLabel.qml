@@ -9,10 +9,12 @@ Label {
     // The parent, or the parent's parent (a Row/RowLayout inside the control).
     property Item centreIn: parent
 
-    readonly property rect capInk: inkMetrics.font, inkMetrics.tightBoundingRect("H")
+    // A property, not FontMetrics.tightBoundingRect(): a method call is not
+    // re-evaluated when the font changes.
+    readonly property rect capInk: capMetrics.tightBoundingRect
     readonly property real inkCentreY: baselineOffset + capInk.y + capInk.height / 2
 
-    FontMetrics { id: inkMetrics; font: root.font }
+    TextMetrics { id: capMetrics; font: root.font; text: "H" }
 
     transform: Translate {
         y: {
