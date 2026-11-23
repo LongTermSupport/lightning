@@ -364,17 +364,17 @@ private Q_SLOTS:
               keyedEntry(QStringLiteral("$img2"), QStringLiteral("image"),
                          QStringLiteral("@b:example.org")) },
             2, 2, 0, true, false);
+        const int role = model.roleNames().key("sender");
+        QCOMPARE(model.data(model.index(0), role).toString(),
+                 QStringLiteral("Alice"));
+        QCOMPARE(model.data(model.index(1), role).toString(),
+                 QStringLiteral("b"));
+
         const QVariantList images = model.imageEntries();
         QCOMPARE(images.size(), 2);
         QCOMPARE(images.at(0).toMap().value(QStringLiteral("sender")).toString(),
                  QStringLiteral("Alice"));
         QCOMPARE(images.at(1).toMap().value(QStringLiteral("sender")).toString(),
-                 QStringLiteral("b"));
-
-        const int role = model.roleNames().key("sender");
-        QCOMPARE(model.data(model.index(0), role).toString(),
-                 QStringLiteral("Alice"));
-        QCOMPARE(model.data(model.index(1), role).toString(),
                  QStringLiteral("b"));
     }
 
