@@ -1945,7 +1945,7 @@ advice) by `rust/src/profilefields.rs` and `ProfileFieldsManager`
 ### Show hidden events
 
 - Settings › Chat › Timeline › "Show hidden events" (`showHiddenEvents`), off
-  by default. Toggling it reopens the open room's timeline.
+  by default. Toggling it reopens the open room's timeline and thread panel.
 - On, `lightning_event_filter` also admits every unredacted message-like event
   the SDK filter drops. Those that become items (unknown or unsupported types,
   legacy 1:1 call signalling, in-room verification steps, stable poll
@@ -1953,11 +1953,13 @@ advice) by `rust/src/profilefields.rs` and `ProfileFieldsManager`
   room-activity group, italic, never their content. They stay visible when
   room activity is hidden.
 - Still hidden: MatrixRTC membership (a call room carries thousands);
-  reactions, edits and redactions, which the SDK folds into their targets;
   redacted reactions. State events already show as room activity under their
   own toggles.
-- §8 holds: a hidden event that names a thread (`thread_root_id`) never shows
-  in the main timeline, in either thread style.
+- Reactions, edits and redactions are folded by the SDK and never get rows of
+  their own.
+- §8 holds: hidden events inside threads are not shown anywhere, in either
+  thread style (the SDK cannot place an unknown type in a thread).
+- The mock and HTTP backends ignore the setting.
 
 ### Media rows and the viewport band (2026-09-05)
 

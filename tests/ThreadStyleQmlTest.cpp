@@ -259,6 +259,25 @@ ApplicationWindow {
         m_controller = nullptr;
     }
 
+    void showHiddenEventsReopensTheOpenThreadPanel()
+    {
+        QString root;
+        openThreadPanel(&root);
+        const QString composite = MatrixClient::threadTimelineId(
+            QString::fromLatin1(kDevRoom), root);
+        QSignalSpy resets(mock(), &MatrixClient::timelineReset);
+        QVERIFY(m_controller->settings()->setProperty("showHiddenEvents", true));
+        const auto panelReset = [&] {
+            for (const auto &args : resets)
+                if (args.at(0).toString() == composite)
+                    return true;
+            return false;
+        };
+        QTRY_VERIFY2(panelReset(), "the open thread panel kept its old filter");
+        QCOMPARE(m_controller->thread()->rootEventId(), root);
+        QTRY_VERIFY(m_controller->thread()->model()->rowCount() > 2);
+    }
+
     void threadStyleSettingPersistsAndSwitchesTheOpenTimeline()
     {
         QCOMPARE(m_controller->settings()->property("threadStyle").toInt(), 0);

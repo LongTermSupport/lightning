@@ -3388,8 +3388,11 @@ void AppController::applyShowHiddenEvents(bool reopen)
     if (!m_client || !m_settings)
         return;
     m_client->setShowHiddenEvents(m_settings->showHiddenEvents());
-    if (reopen)
-        reopenCurrentRoomTimeline();
+    if (!reopen)
+        return;
+    reopenCurrentRoomTimeline();
+    if (m_thread)
+        m_thread->reopen();
 }
 
 void AppController::reopenCurrentRoomTimeline()
