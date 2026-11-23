@@ -69,6 +69,8 @@ RemovalSummary removePersonalBackgrounds(const AccountIdentity &identity);
 
 QString bridgeLabelsFile(const QString &userId);
 
+QString scrollPositionsFile(const QString &userId);
+
 QString customAppIconFile();
 
 enum class DirRemoval { Deleted, Absent, Failed };

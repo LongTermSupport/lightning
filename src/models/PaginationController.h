@@ -75,6 +75,14 @@ public:
     Q_ENUM(InitialHistoryState)
 
     explicit PaginationController(QObject *parent = nullptr);
+    ~PaginationController() override;
+
+    // Where an account keeps its saved positions (room id, event id, offset;
+    // no content). Unset, positions live in memory only.
+    using AnchorFileResolver = std::function<QString(const QString &userId)>;
+    void setAnchorFileResolver(AnchorFileResolver resolver)
+    { m_anchorFile = std::move(resolver); }
+    void flushAnchors();
 
     static QString unavailableTargetMessage()
     {
@@ -279,6 +287,13 @@ private:
     QTimer m_navigationMessageTimer;
     QString navigationKey(const QString &roomId) const;
     QHash<QString, ScrollAnchor> m_scrollAnchors;
+    void loadAnchors(const QString &userId);
+    AnchorFileResolver m_anchorFile;
+    QSet<QString> m_anchorsLoaded;
+    QSet<QString> m_anchorsDirty;
+    // A late save must not put a signed-out account's file back.
+    QSet<QString> m_anchorsForgotten;
+    QTimer m_anchorSaveTimer;
     QHash<QString, QString> m_savedSelections;
     bool m_restoreIsSelection = false;
     qreal m_restoreOffset = 0;

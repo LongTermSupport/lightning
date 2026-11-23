@@ -5,8 +5,16 @@
 #include "matrix/MatrixClient.h"
 #include "models/TimelineModel.h"
 
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QLoggingCategory>
+#include <QSaveFile>
 #include <QTimer>
+
+#include <utility>
 
 Q_LOGGING_CATEGORY(lcPagination, "lightning.timeline.pagination")
 
@@ -18,6 +26,10 @@ PaginationController::PaginationController(QObject *parent)
     m_requestWatchdogTimer.setSingleShot(true);
     m_highlightTimer.setSingleShot(true);
     m_navigationMessageTimer.setSingleShot(true);
+    m_anchorSaveTimer.setSingleShot(true);
+    m_anchorSaveTimer.setInterval(2000);
+    connect(&m_anchorSaveTimer, &QTimer::timeout, this,
+            &PaginationController::flushAnchors);
     connect(&m_highlightTimer, &QTimer::timeout, this, [this] {
         m_highlightedEventId.clear();
         Q_EMIT navigationChanged();
@@ -71,8 +83,78 @@ void PaginationController::setClient(MatrixClient *client)
     emitStateChanged();
 }
 
+PaginationController::~PaginationController()
+{
+    flushAnchors();
+}
+
+void PaginationController::loadAnchors(const QString &userId)
+{
+    if (!m_anchorFile || userId.isEmpty() || m_anchorsLoaded.contains(userId))
+        return;
+    m_anchorsLoaded.insert(userId);
+    m_anchorsForgotten.remove(userId);
+    QFile file(m_anchorFile(userId));
+    if (file.fileName().isEmpty() || !file.open(QIODevice::ReadOnly))
+        return;
+    const QJsonObject rooms = QJsonDocument::fromJson(file.read(1 << 20))
+                                  .object().value(QLatin1String("rooms")).toObject();
+    for (auto it = rooms.constBegin(); it != rooms.constEnd(); ++it) {
+        if (m_scrollAnchors.size() >= kMaxScrollAnchors)
+            break;
+        const QJsonObject entry = it.value().toObject();
+        const QString eventId = entry.value(QLatin1String("e")).toString();
+        const QString key = userId + QChar(0x1f) + it.key();
+        if (eventId.isEmpty() || m_scrollAnchors.contains(key))
+            continue;
+        m_scrollAnchors.insert(key, { eventId,
+                                      entry.value(QLatin1String("o")).toDouble(),
+                                      false,
+                                      entry.value(QLatin1String("r")).toInt(-1) });
+    }
+}
+
+void PaginationController::flushAnchors()
+{
+    m_anchorSaveTimer.stop();
+    const QSet<QString> dirty = std::exchange(m_anchorsDirty, {});
+    if (!m_anchorFile)
+        return;
+    for (const QString &userId : dirty) {
+        const QString path = m_anchorFile(userId);
+        if (path.isEmpty() || m_anchorsForgotten.contains(userId))
+            continue;
+        const QString prefix = userId + QChar(0x1f);
+        QJsonObject rooms;
+        for (auto it = m_scrollAnchors.constBegin();
+             it != m_scrollAnchors.constEnd(); ++it) {
+            if (!it.key().startsWith(prefix) || it->followingLatest
+                || it->eventId.isEmpty())
+                continue;
+            rooms.insert(it.key().mid(prefix.size()),
+                         QJsonObject{ { QLatin1String("e"), it->eventId },
+                                      { QLatin1String("o"), it->pixelOffset },
+                                      { QLatin1String("r"), it->rowsFromNewest } });
+        }
+        if (rooms.isEmpty()) {
+            QFile::remove(path);
+            continue;
+        }
+        QDir().mkpath(QFileInfo(path).absolutePath());
+        QSaveFile out(path);
+        if (!out.open(QIODevice::WriteOnly))
+            continue;
+        out.setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner);
+        out.write(QJsonDocument(QJsonObject{ { QLatin1String("rooms"), rooms } })
+                      .toJson(QJsonDocument::Compact));
+        out.commit();
+    }
+}
+
 void PaginationController::setRoomId(const QString &roomId)
 {
+    if (m_client)
+        loadAnchors(m_client->currentUserId());
     if (m_roomId == roomId)
         return;
     m_roomId = roomId;
@@ -334,6 +416,10 @@ void PaginationController::saveScrollAnchor(const QString &roomId,
         return;
     const QString key = accountId.isEmpty()
         ? navigationKey(roomId) : accountId + QChar(0x1f) + roomId;
+    const QString account = key.section(QChar(0x1f), 0, 0);
+    if (m_anchorsForgotten.contains(account))
+        return;
+    loadAnchors(account);
     if (m_scrollAnchors.size() >= kMaxScrollAnchors
         && !m_scrollAnchors.contains(key))
         m_scrollAnchors.erase(m_scrollAnchors.begin());
@@ -349,6 +435,11 @@ void PaginationController::saveScrollAnchor(const QString &roomId,
     }
     m_scrollAnchors.insert(key, { eventId, pixelOffset, followingLatest,
                                   rowsFromNewest });
+    if (m_anchorFile && !account.isEmpty()) {
+        m_anchorsDirty.insert(account);
+        if (!m_anchorSaveTimer.isActive())
+            m_anchorSaveTimer.start();
+    }
 }
 
 void PaginationController::saveFollowingLatest(const QString &roomId)
@@ -410,6 +501,14 @@ void PaginationController::forgetAccount(const QString &userId)
     };
     drop(m_scrollAnchors);
     drop(m_savedSelections);
+    m_anchorsDirty.remove(userId);
+    m_anchorsLoaded.remove(userId);
+    if (m_anchorFile && !userId.isEmpty()) {
+        m_anchorsForgotten.insert(userId);
+        const QString path = m_anchorFile(userId);
+        if (!path.isEmpty())
+            QFile::remove(path);
+    }
 }
 
 bool PaginationController::hasHistoricalReturn(const QString &roomId,
