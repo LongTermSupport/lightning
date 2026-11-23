@@ -396,13 +396,10 @@ private Q_SLOTS:
             return v.toDouble();
         };
 
+        const double minBefore = bounds("wheelMinY");
         QTest::keyClick(&window, Qt::Key_Up, Qt::ControlModifier);
-        QTRY_VERIFY2_WITH_TIMEOUT(
-            replyList->property("contentY").toDouble() <= bounds("wheelMinY") + 1.0,
-            qPrintable(QStringLiteral("contentY=%1 start=%2")
-                           .arg(replyList->property("contentY").toDouble())
-                           .arg(bounds("wheelMinY"))),
-            kSignalTimeoutMs);
+        QCoreApplication::processEvents();
+        QVERIFY(replyList->property("contentY").toDouble() <= minBefore + 1.0);
         QCOMPARE(replyList->property("followLatest").toBool(), false);
         const double top = replyList->property("contentY").toDouble();
         QTest::keyClick(&window, Qt::Key_PageDown);
