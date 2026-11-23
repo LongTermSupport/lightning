@@ -7638,8 +7638,9 @@ QString AppController::accountRootFor(const QString &userId) const
         return identity.accountRoot;
     if (userId == m_lastSessionUserId && !m_sessionAccountRoot.isEmpty())
         return m_sessionAccountRoot;
-    return resolveRemovalIdentity(userId, &identity) ? identity.accountRoot
-                                                     : QString{};
+    return resolveRemovalIdentity(userId, &identity)
+        ? identity.accountRoot
+        : matrix::app_data::accountRoot(userId);
 }
 
 // The root derived from the user id, where these files used to live; empty
