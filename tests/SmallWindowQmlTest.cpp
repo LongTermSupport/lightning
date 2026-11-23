@@ -19,6 +19,7 @@
 #include <QQmlComponent>
 #include <QQmlContext>
 #include <QQmlExpression>
+#include <QQmlProperty>
 #include <QScopedPointer>
 #include <QQuickItem>
 #include <QQuickWindow>
@@ -26,6 +27,7 @@
 #include <QTemporaryDir>
 
 #include "app/AppController.h"
+#include "app/SettingsManager.h"
 #include "auth/AuthManager.h"
 #include "calls/CallController.h"
 #include "calls/CallMediaBackend.h"
@@ -124,6 +126,15 @@ private:
         }
         for (QQuickItem *c : it->childItems())
             controlsOutsideBox(c, box, out);
+    }
+
+    void setMirrored(bool rtl)
+    {
+        QQmlProperty mirror(m_window, QStringLiteral("LayoutMirroring.enabled"),
+                            qmlContext(m_window));
+        QVERIFY(mirror.isValid());
+        QVERIFY(mirror.write(rtl));
+        QCoreApplication::processEvents();
     }
 
 private Q_SLOTS:
@@ -774,6 +785,180 @@ private Q_SLOTS:
                                 .arg(cr.width()).arg(cr.height())
                                 .arg(win.width()).arg(win.height())));
         QVERIFY2(stray.isEmpty(), qPrintable(stray.join(QStringLiteral("; "))));
+    }
+
+    void everyPaneHeadersLastActionSitsOnTheRoomHeadersRail_data()
+    {
+        QTest::addColumn<QSize>("size");
+        QTest::addColumn<bool>("rtl");
+        for (const QSize &sz : { QSize(640, 360), QSize(960, 540),
+                                 QSize(1280, 720) })
+            for (bool rtl : { false, true })
+                QTest::newRow(qPrintable(QStringLiteral("%1x%2 %3")
+                                             .arg(sz.width()).arg(sz.height())
+                                             .arg(QLatin1String(rtl ? "rtl" : "ltr"))))
+                    << sz << rtl;
+    }
+
+    void everyPaneHeadersLastActionSitsOnTheRoomHeadersRail()
+    {
+        QFETCH(QSize, size);
+        QFETCH(bool, rtl);
+        m_controller->showMain();
+        m_controller->setCurrentRoomId(QStringLiteral("!general:mock.local"));
+        m_controller->settings()->setSpacesRailVisible(false);
+        m_window->resize(size);
+        setMirrored(rtl);
+        QTest::qWait(250);
+        QQuickItem *pane = item("timelinePane");
+        QVERIFY(pane);
+
+        struct Seen { QString name; qreal gutter, w, h, cy; };
+        QList<Seen> seen;
+        QStringList missing;
+        const auto measure = [&](const QString &name, const char *edgeName,
+                                 const char *buttonName, QQuickItem *edgeItem) {
+            QQuickItem *edge = edgeItem ? edgeItem : item(edgeName);
+            QQuickItem *button = item(buttonName);
+            if (!edge || !button || !edge->isVisible() || !button->isVisible()
+                || button->width() <= 0) {
+                missing << name;
+                return;
+            }
+            const QRectF e = edge->mapRectToScene(
+                QRectF(0, 0, edge->width(), edge->height()));
+            const QRectF b = button->mapRectToScene(
+                QRectF(0, 0, button->width(), button->height()));
+            seen.append({ name, rtl ? b.left() - e.left() : e.right() - b.right(),
+                          b.width(), b.height(), b.center().y() - e.top() });
+        };
+
+        QQuickItem *overflow = item("roomHeaderOverflowButton");
+        QVERIFY(overflow);
+        const qreal overflowX = overflow->mapToScene(
+            QPointF(overflow->width() / 2, 0)).x();
+        QVERIFY2(rtl == (overflowX < m_window->width() / 2.0),
+                 "the window did not mirror: nothing about RTL was measured");
+
+        measure(QStringLiteral("room"), "roomHeaderBand",
+                "roomHeaderOverflowButton", nullptr);
+        int expected = 1;
+        QQuickItem *railActions = item("railHiddenActions");
+        QVERIFY(railActions);
+        if (railActions->isVisible()) {
+            measure(QStringLiteral("roomList"), nullptr, "headerAccountTile",
+                    railActions->parentItem());
+            ++expected;
+        } else {
+            QVERIFY2(size.width() < 1280, "the room list header was never shown");
+        }
+
+        QVERIFY(QMetaObject::invokeMethod(pane, "toggleThreadSurface"));
+        QTest::qWait(300);
+        measure(QStringLiteral("thread"), "threadHeaderBar", "threadCloseButton",
+                nullptr);
+        QVERIFY(QMetaObject::invokeMethod(pane, "toggleThreadSurface"));
+        QTest::qWait(150);
+
+        QVERIFY(QMetaObject::invokeMethod(pane, "toggleSearchPanel"));
+        QTest::qWait(300);
+        measure(QStringLiteral("search"), "roomSearchPanel", "searchCloseButton",
+                nullptr);
+        QVERIFY(QMetaObject::invokeMethod(pane, "toggleSearchPanel"));
+        QTest::qWait(150);
+
+        QVERIFY(QMetaObject::invokeMethod(pane, "toggleRoomInfo"));
+        QTest::qWait(400);
+        measure(QStringLiteral("roomInfo"), "roomInfoHeaderBar",
+                "roomInfoCloseButton", nullptr);
+        QVERIFY(QMetaObject::invokeMethod(pane, "toggleRoomInfo"));
+        QTest::qWait(150);
+
+        QVERIFY(QMetaObject::invokeMethod(pane, "toggleMemberPanel"));
+        QTest::qWait(400);
+        measure(QStringLiteral("members"), "roomInfoHeaderBar",
+                "roomInfoCloseButton", nullptr);
+        QVERIFY(QMetaObject::invokeMethod(pane, "toggleMemberPanel"));
+        QTest::qWait(150);
+
+        m_controller->showSettings();
+        QTest::qWait(300);
+        measure(QStringLiteral("settings"), "settingsHeaderBar",
+                "settingsCloseButton", nullptr);
+        m_controller->showMain();
+        expected += 5;
+
+        m_controller->settings()->setSpacesRailVisible(true);
+        setMirrored(false);
+        QTest::qWait(150);
+
+        QVERIFY2(missing.isEmpty(), qPrintable(QStringLiteral("not shown: ")
+                                                   + missing.join(QStringLiteral(", "))));
+        QCOMPARE(seen.size(), expected);
+        const Seen ref = seen.first();
+        QStringList faults;
+        for (const Seen &h : seen) {
+            const QString got = QStringLiteral("%1: gutter %2 box %3x%4 centre %5")
+                                    .arg(h.name).arg(h.gutter).arg(h.w).arg(h.h)
+                                    .arg(h.cy);
+            if (qAbs(h.gutter - ref.gutter) > 0.5 || qAbs(h.w - ref.w) > 0.5
+                || qAbs(h.h - ref.h) > 0.5 || qAbs(h.cy - ref.cy) > 0.5)
+                faults << got;
+        }
+        QVERIFY2(faults.isEmpty(),
+                 qPrintable(QStringLiteral("room header: gutter %1 box %2x%3 "
+                                           "centre %4; differs: ")
+                                .arg(ref.gutter).arg(ref.w).arg(ref.h).arg(ref.cy)
+                            + faults.join(QStringLiteral("; "))));
+    }
+
+    void theRightmostHeaderTooltipsStayInsideTheWindow_data()
+    {
+        QTest::addColumn<bool>("rtl");
+        QTest::addColumn<bool>("settings");
+        QTest::newRow("room ltr") << false << false;
+        QTest::newRow("room rtl") << true << false;
+        QTest::newRow("settings ltr") << false << true;
+        QTest::newRow("settings rtl") << true << true;
+    }
+
+    void theRightmostHeaderTooltipsStayInsideTheWindow()
+    {
+        QFETCH(bool, rtl);
+        QFETCH(bool, settings);
+        m_controller->setCurrentRoomId(QStringLiteral("!general:mock.local"));
+        if (settings)
+            m_controller->showSettings();
+        else
+            m_controller->showMain();
+        m_window->resize(640, 360);
+        setMirrored(rtl);
+        QTest::qWait(250);
+        QQuickItem *button = item(settings ? "settingsCloseButton"
+                                           : "roomHeaderOverflowButton");
+        QVERIFY(button && button->isVisible());
+        QQmlExpression show(qmlContext(button), button,
+                            QStringLiteral("ToolTip.show(ToolTip.text, 5000), "
+                                           "ToolTip.toolTip"));
+        auto *tip = show.evaluate().value<QObject *>();
+        QVERIFY2(!show.hasError(), qPrintable(show.error().toString()));
+        QVERIFY(tip);
+        QTRY_VERIFY(tip->property("opened").toBool());
+        auto *content = tip->property("contentItem").value<QQuickItem *>();
+        QVERIFY(content && content->parentItem());
+        QQuickItem *box = content->parentItem();
+        const QRectF r = box->mapRectToScene(
+            QRectF(0, 0, box->width(), box->height()));
+        QQmlExpression(qmlContext(button), button,
+                       QStringLiteral("ToolTip.hide()")).evaluate();
+        setMirrored(false);
+        m_controller->showMain();
+        QVERIFY2(r.width() > 0
+                     && QRectF(0, 0, m_window->width(), m_window->height())
+                            .adjusted(-1, -1, 1, 1).contains(r),
+                 qPrintable(QStringLiteral("tooltip at %1,%2 %3x%4")
+                                .arg(r.x()).arg(r.y()).arg(r.width())
+                                .arg(r.height())));
     }
 };
 
