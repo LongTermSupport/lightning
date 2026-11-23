@@ -14,11 +14,11 @@ Popup {
     function saveCurrent(ask) {
         if (viewer.current === null || !app.downloads)
             return
-        var key = viewer.current.mediaKey || ""
+        var key = viewer.actionKey
         if (key.length === 0)
             return
         var name = viewer.current.filename || ""
-        var mime = viewer.current.mime || ""
+        var mime = viewer.current.mime || app.mediaBridge.cachedRasterMime(key)
         if (ask)
             app.downloads.saveAs(key, name, mime)
         else
@@ -38,6 +38,17 @@ Popup {
 
     property var entries: []
     property int currentIndex: -1
+    // A Media-tab entry carries its sender's id: re-read the name when the
+    // room's members arrive after the viewer opened.
+    readonly property string currentSender: {
+        if (current === null)
+            return ""
+        var history = app.mediaHistory
+        var id = current.senderId || ""
+        if (id.length > 0 && history && history.sendersRevision >= 0)
+            return history.senderName(id)
+        return current.sender || ""
+    }
     readonly property var current:
         (currentIndex >= 0 && currentIndex < entries.length)
         ? entries[currentIndex] : null
@@ -59,6 +70,9 @@ Popup {
         : Math.round(zoom * 100)
 
     readonly property string currentMxc: current !== null ? (current.mxc || "") : ""
+    // What Copy and Save hand the bridge: a timeline media key, or a picture's mxc.
+    readonly property string actionKey:
+        current !== null ? (current.mediaKey || currentMxc) : ""
     readonly property bool usesBridge:
         current !== null && (current.mediaKey.length > 0 || currentMxc.length > 0)
         && app.mediaBridge.supported
@@ -336,7 +350,7 @@ Popup {
         }
         function onSaveFinished(ok, message, mediaKey) {
             if (viewer.opened && viewer.current !== null
-                    && mediaKey === (viewer.current.mediaKey || "")) {
+                    && mediaKey === viewer.actionKey) {
                 saveNotice.text = message
                 saveNotice.ok = ok
                 saveNoticeTimer.restart()
@@ -351,18 +365,14 @@ Popup {
             objectName: "viewerCopyImage"
             iconName: "content_copy"
             text: qsTr("Copy image")
-            enabled: viewer.current !== null
-                     && (viewer.current.mediaKey || "").length > 0
-                     && app.mediaBridge.supported
-            onTriggered: app.copyImageToClipboard(viewer.current.mediaKey)
+            enabled: viewer.actionKey.length > 0 && app.mediaBridge.supported
+            onTriggered: app.copyImageToClipboard(viewer.actionKey)
         }
         AppMenuItem {
             objectName: "viewerSaveImage"
             iconName: "download"
             text: qsTr("Save image as…")
-            enabled: viewer.current !== null
-                     && (viewer.current.mediaKey || "").length > 0
-                     && app.mediaBridge.supported
+            enabled: viewer.actionKey.length > 0 && app.mediaBridge.supported
             onTriggered: viewer.saveCurrent(true)
         }
         AppMenuItem {
@@ -725,9 +735,9 @@ Popup {
                     textFormat: Text.PlainText
                     Layout.fillWidth: true
                     text: viewer.current !== null
-                          && (viewer.current.sender || "").length > 0
+                          && viewer.currentSender.length > 0
                           ? qsTr("%1 · %2")
-                                .arg(viewer.current.sender)
+                                .arg(viewer.currentSender)
                                 .arg(Qt.locale(AppLocale.name).toString(viewer.current.timestamp,
                                                        "d MMM yyyy hh:mm"))
                           : viewer.current !== null
@@ -1017,7 +1027,7 @@ Popup {
                     color: AppTheme.scrimBorder
                     Layout.leftMargin: 4
                     Layout.rightMargin: 4
-                    visible: viewer.usesBridge && viewer.currentMxc.length === 0
+                    visible: viewer.usesBridge
                 }
                 IconButton {
                     objectName: "viewerOpenInBrowserButton"
@@ -1034,7 +1044,7 @@ Popup {
                 }
                 IconButton {
                     objectName: "viewerSaveButton"
-                    visible: viewer.usesBridge && viewer.currentMxc.length === 0
+                    visible: viewer.usesBridge
                     iconName: "download"
                     iconSize: 20
                     implicitWidth: 32; implicitHeight: 32

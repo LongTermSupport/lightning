@@ -828,7 +828,7 @@ public Q_SLOTS:
     void handlePublishError(const QString &cid, bool resourceError = false,
                             bool busyError = false,
                             bool captureFormatError = false,
-                            int captureEpoch = -1);
+                            int captureEpoch = -1, bool sourceError = false);
     bool retryShareCaptureInOtherMemory(const QString &cid);
     int shareCaptureEpochForTest(const QString &cid) const
     {

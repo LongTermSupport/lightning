@@ -628,6 +628,8 @@ private:
 
     void applyPrivacyPreferences();
     void applyThreadStyle(bool reopen);
+    void applyShowHiddenEvents(bool reopen);
+    void reopenCurrentRoomTimeline();
     void applyReceiptThreading();
     void applyStrictDeviceTrust();
     void applyKeepMediaOnDevice();

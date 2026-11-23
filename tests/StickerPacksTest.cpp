@@ -1702,7 +1702,7 @@ private Q_SLOTS:
         QCOMPARE(client.roomUploadCalls, 1);
         QCOMPARE(done.count(), 1);
         QCOMPARE(done.first().at(3).toInt(), 1);
-        QCOMPARE(done.first().at(5).toInt(), 1);
+        QCOMPARE(done.first().at(5).toInt(), 0);
         QCOMPARE(manager.failedUploadCount(), 1);
         target.insert("images", QVariantList{image("b", kMxcA, true, false)});
         manager.applySnapshotForTest(kRoom, true, {target});
@@ -1711,6 +1711,81 @@ private Q_SLOTS:
         QCOMPARE(client.roomUploadCode, QStringLiteral("b-2"));
         Q_EMIT client.stickerPackAddFinished(client.lastRoomUploadOp, true, {}, "b-2");
         QCOMPARE(manager.failedUploadCount(), 0);
+    }
+
+    void aCancelledRemainderIsReportedAsCancelledNotFailed()
+    {
+        FakeClient client;
+        StickerPackManager manager;
+        manager.setClient(&client);
+        QVariantMap target = pack("S", "room", "Animals", {});
+        target.insert("roomId", kRoom);
+        target.insert("canManage", true);
+        manager.applySnapshotForTest(kRoom, true, {target});
+        QSignalSpy done(&manager, &StickerPackManager::transferFinished);
+        manager.uploadImagesToPack("S", {QUrl::fromLocalFile("/tmp/a.png"),
+                                         QUrl::fromLocalFile("/tmp/b.png"),
+                                         QUrl::fromLocalFile("/tmp/c.png")});
+        manager.cancelTransfer();
+        Q_EMIT client.stickerPackAddFinished(client.lastRoomUploadOp, true, {}, "a");
+        QCOMPARE(done.count(), 1);
+        const QList<QVariant> args = done.first();
+        QCOMPARE(args.size(), 9);
+        QVERIFY(args.at(1).toBool());
+        QCOMPARE(args.at(3).toInt(), 1);
+        QCOMPARE(args.at(5).toInt(), 0);
+        QCOMPARE(args.at(8).toInt(), 2);
+        QCOMPARE(manager.failedUploadCount(), 2);
+
+        QString text;
+        QVERIFY(QMetaObject::invokeMethod(
+            &manager, "transferMessage", Q_RETURN_ARG(QString, text),
+            Q_ARG(QString, args.at(0).toString()), Q_ARG(bool, args.at(1).toBool()),
+            Q_ARG(QString, args.at(2).toString()), Q_ARG(int, args.at(3).toInt()),
+            Q_ARG(int, args.at(4).toInt()), Q_ARG(int, args.at(5).toInt()),
+            Q_ARG(QString, args.at(6).toString()), Q_ARG(int, args.at(7).toInt()),
+            Q_ARG(int, args.at(8).toInt())));
+        QVERIFY2(text.contains(QStringLiteral("Added 1 image")), qPrintable(text));
+        QVERIFY2(text.contains(QStringLiteral("2 cancelled.")), qPrintable(text));
+        QVERIFY2(!text.contains(QStringLiteral("failed")), qPrintable(text));
+
+        QVERIFY(QMetaObject::invokeMethod(
+            &manager, "transferMessage", Q_RETURN_ARG(QString, text),
+            Q_ARG(QString, QStringLiteral("upload")), Q_ARG(bool, false),
+            Q_ARG(QString, QStringLiteral("rejected")), Q_ARG(int, 0),
+            Q_ARG(int, 0), Q_ARG(int, 1), Q_ARG(QString, QString()),
+            Q_ARG(int, 0), Q_ARG(int, 2)));
+        QVERIFY2(text.contains(QStringLiteral("1 failed.")), qPrintable(text));
+        QVERIFY2(text.contains(QStringLiteral("2 cancelled.")), qPrintable(text));
+    }
+
+    void anOwnUploadsEchoIsNotAChangeMadeElsewhere()
+    {
+        FakeClient client;
+        StickerPackManager manager;
+        manager.setClient(&client);
+        QVariantMap target = pack("S", "room", "Animals",
+                                  {image("cat", kMxcA, true, false)});
+        target.insert("roomId", kRoom);
+        target.insert("canManage", true);
+        manager.applySnapshotForTest(kRoom, true, {target});
+        const QVariantMap base = manager.packImageMap("S");
+        manager.uploadImagesToPack("S", {QUrl::fromLocalFile("/tmp/a.png")});
+        Q_EMIT client.stickerPackAddFinished(client.lastRoomUploadOp, true, {}, "a");
+
+        target.insert("images", QVariantList{image("cat", kMxcA, true, false),
+                                             image("a", kMxcB, true, false)});
+        manager.applySnapshotForTest(kRoom, true, {target});
+        QVariantMap change = manager.comparePack("S", base);
+        QVERIFY2(!change.value("any").toBool(),
+                 qPrintable(change.value("added").toStringList().join(',')));
+
+        target.insert("images", QVariantList{image("cat", kMxcA, true, false),
+                                             image("a", kMxcB, true, false),
+                                             image("dog", kMxcB, true, false)});
+        manager.applySnapshotForTest(kRoom, true, {target});
+        change = manager.comparePack("S", base);
+        QCOMPARE(change.value("added").toStringList(), QStringList{"dog"});
     }
 
     void aFailedUploadRetriesAgainstTheCurrentPack()
@@ -1754,7 +1829,7 @@ private Q_SLOTS:
         Q_EMIT client.stickerPackAddFinished(client.lastRoomUploadOp, false, "upload_failed", {});
         QCOMPARE(done.count(), 1);
         const QList<QVariant> args = done.first();
-        QCOMPARE(args.size(), 8);
+        QCOMPARE(args.size(), 9);
         QCOMPARE(args.at(3).toInt(), 1);
         QCOMPARE(args.at(5).toInt(), 2);
         QCOMPARE(args.at(7).toInt(), 1);

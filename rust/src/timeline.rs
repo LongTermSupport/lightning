@@ -134,14 +134,12 @@ pub(crate) fn lightning_event_filter(
     rules: &RoomVersionRules,
 ) -> bool {
     FILTER_OFFERED.fetch_add(1, Ordering::Relaxed);
-    if !default_event_filter(event, rules) && !is_visible_room_message(event)
-        && !crate::stablepoll::is_start(event)
-    {
-        FILTER_DROP_SDK.fetch_add(1, Ordering::Relaxed);
-        return false;
-    }
     if is_rtc_membership_event(event) {
         FILTER_DROP_RTC.fetch_add(1, Ordering::Relaxed);
+        return false;
+    }
+    if !shown_by_filter(event, rules, SHOW_HIDDEN_EVENTS.load(Ordering::Relaxed)) {
+        FILTER_DROP_SDK.fetch_add(1, Ordering::Relaxed);
         return false;
     }
     true
@@ -151,9 +149,35 @@ pub(crate) fn shown_by_lightning_filter(
     event: &AnySyncTimelineEvent,
     rules: &RoomVersionRules,
 ) -> bool {
-    (default_event_filter(event, rules) || is_visible_room_message(event)
-        || crate::stablepoll::is_start(event))
-        && !is_rtc_membership_event(event)
+    shown_by_filter(event, rules, SHOW_HIDDEN_EVENTS.load(Ordering::Relaxed))
+}
+
+/// "Show hidden events": read by every timeline built after it changes.
+static SHOW_HIDDEN_EVENTS: AtomicBool = AtomicBool::new(false);
+
+pub(crate) fn set_show_hidden_events(on: bool) {
+    SHOW_HIDDEN_EVENTS.store(on, Ordering::Relaxed);
+}
+
+/// MatrixRTC membership stays out even with hidden events shown: a busy call
+/// room carries thousands. Reactions, edits and redactions are folded into
+/// their targets by the SDK whatever the filter says, so they never become rows.
+pub(crate) fn shown_by_filter(
+    event: &AnySyncTimelineEvent,
+    rules: &RoomVersionRules,
+    show_hidden: bool,
+) -> bool {
+    if is_rtc_membership_event(event) {
+        return false;
+    }
+    default_event_filter(event, rules)
+        || is_visible_room_message(event)
+        || crate::stablepoll::is_start(event)
+        || (show_hidden && is_unredacted_message_like(event))
+}
+
+fn is_unredacted_message_like(event: &AnySyncTimelineEvent) -> bool {
+    matches!(event, AnySyncTimelineEvent::MessageLike(m) if m.original_content().is_some())
 }
 
 /// Every `m.room.message` that is not an edit, whatever its msgtype.
@@ -5274,6 +5298,7 @@ fn state_sentence_english(sentence: &str, actor: &str, target: &str) -> String {
         "invitation_rejected" => format!("{target} rejected the invitation."),
         "invitation_revoked" => format!("{actor} revoked {target}'s invitation."),
         "membership_changed" => format!("Membership for {target} changed."),
+        "unsupported_event" => format!("Unsupported event ({target})"),
         _ => format!("{actor} updated room settings."),
     }
 }
@@ -5669,8 +5694,12 @@ fn event_item_to_json(
                             own_user,
                         );
                     } else {
-                        out["msgtype"] = "unsupported".into();
-                        out["body"] = "[unsupported event]".into();
+                        fill_hidden_event(&mut out, &other.event_type().to_string());
+                        // The SDK reads no thread relation from an unknown type, so
+                        // C++ keeps such a thread reply out of the main timeline.
+                        if let Some(root) = event.original_json().and_then(raw_thread_root) {
+                            out["thread_root_id"] = root.into();
+                        }
                     }
                 }
                 MsgLikeKind::LiveLocation(state) => {
@@ -5786,6 +5815,16 @@ fn event_item_to_json(
     }
 
     out
+}
+
+/// A row only "Show hidden events" admits. Only the event type is shown, never
+/// its content.
+fn fill_hidden_event(out: &mut serde_json::Value, event_type: &str) {
+    out["msgtype"] = "state".into();
+    out["state_kind"] = "hidden_event".into();
+    out["state_sentence"] = "unsupported_event".into();
+    out["state_target"] = event_type.into();
+    out["body"] = state_sentence_english("unsupported_event", "", event_type).into();
 }
 
 fn set_formatted_body(out: &mut serde_json::Value, formatted: Option<&FormattedBody>) {
@@ -7431,6 +7470,10 @@ fn cleartext_thread_root(
     {
         return None;
     }
+    raw_thread_root(raw)
+}
+
+fn raw_thread_root(raw: &matrix_sdk::ruma::serde::Raw<AnySyncTimelineEvent>) -> Option<String> {
     let content = raw.get_field::<serde_json::Value>("content").ok().flatten()?;
     let relation = content.get("m.relates_to")?;
     if relation.get("rel_type")?.as_str()? != "m.thread" {
@@ -10588,4 +10631,156 @@ pub unsafe extern "C" fn mx_rust_send_text_acked(
             .send_room_text_op(&bridge.runtime, room, room_id, body, op_id);
         Ok(String::new())
     })
+}
+
+#[cfg(test)]
+mod hidden_event_tests {
+    use super::{event_item_to_json, shown_by_filter, TimelineRegistry};
+    use matrix_sdk::ruma::api::client::sync::sync_events::v5;
+    use matrix_sdk::ruma::events::AnySyncTimelineEvent;
+    use matrix_sdk::ruma::room_id;
+    use matrix_sdk::ruma::room_version_rules::RoomVersionRules;
+    use matrix_sdk::ruma::serde::Raw;
+    use matrix_sdk::test_utils::mocks::MatrixMockServer;
+    use matrix_sdk_base::RequestedRequiredStates;
+    use matrix_sdk_ui::timeline::{Timeline, TimelineBuilder, TimelineFocus};
+    use serde_json::{json, Value};
+    use std::collections::VecDeque;
+    use std::sync::{Arc, Mutex};
+    use std::time::Duration;
+
+    const ROOT: &str = "$root:hidden.example";
+
+    fn wire(id: &str, kind: &str, content: Value) -> Value {
+        json!({
+            "type": kind, "event_id": id, "sender": "@bob:hidden.example",
+            "origin_server_ts": 1_790_000_000_000u64, "content": content,
+        })
+    }
+
+    fn parsed(value: Value) -> AnySyncTimelineEvent {
+        serde_json::from_value(value).expect("the wire event deserializes")
+    }
+
+    fn hangup() -> Value {
+        wire("$hangup:hidden.example", "m.call.hangup",
+             json!({ "call_id": "c1", "version": "1", "party_id": "p" }))
+    }
+    fn verification_done() -> Value {
+        wire("$done:hidden.example", "m.key.verification.done",
+             json!({ "m.relates_to": { "rel_type": "m.reference", "event_id": "$req" } }))
+    }
+    fn custom() -> Value {
+        wire("$custom:hidden.example", "com.example.widget_ping", json!({ "n": 1 }))
+    }
+    fn threaded_custom() -> Value {
+        wire("$threaded:hidden.example", "com.example.widget_ping",
+             json!({ "m.relates_to": { "rel_type": "m.thread", "event_id": ROOT } }))
+    }
+
+    #[test]
+    fn hidden_types_are_admitted_only_with_the_setting_on() {
+        let rules = RoomVersionRules::V11;
+        for event in [hangup(), verification_done(), custom()] {
+            let kind = event["type"].as_str().unwrap().to_owned();
+            assert!(!shown_by_filter(&parsed(event.clone()), &rules, false), "{kind} shown while off");
+            assert!(shown_by_filter(&parsed(event), &rules, true), "{kind} still hidden while on");
+        }
+    }
+
+    #[test]
+    fn rtc_membership_and_redacted_reactions_stay_out_with_the_setting_on() {
+        let rules = RoomVersionRules::V11;
+        let mut member = wire("$m:hidden.example", "org.matrix.msc3401.call.member",
+                              json!({ "memberships": [] }));
+        member["state_key"] = json!("@bob:hidden.example");
+        assert!(!shown_by_filter(&parsed(member), &rules, true));
+        let mut reaction = wire("$r:hidden.example", "m.reaction", json!({}));
+        reaction["unsigned"] = json!({ "redacted_because": {
+            "type": "m.room.redaction", "event_id": "$x", "sender": "@bob:hidden.example",
+            "origin_server_ts": 1u64, "redacts": "$r:hidden.example",
+            "content": { "redacts": "$r:hidden.example" } } });
+        assert!(!shown_by_filter(&parsed(reaction), &rules, true));
+    }
+
+    async fn live_timeline(show_hidden: bool) -> (Timeline, Vec<(String, Value)>) {
+        let server = MatrixMockServer::new().await;
+        let client = server.client_builder().build().await;
+        client.event_cache().subscribe().expect("event cache");
+        let room = room_id!("!hidden:hidden.example");
+        let mut response = v5::Response::new("pos-1".to_owned());
+        let mut entry = v5::response::Room::default();
+        entry.timeline = [
+            wire(ROOT, "m.room.message", json!({ "msgtype": "m.text", "body": "root" })),
+            hangup(),
+            custom(),
+            threaded_custom(),
+            wire("$after:hidden.example", "m.room.message", json!({ "msgtype": "m.text", "body": "after" })),
+        ]
+        .iter()
+        .map(|v| Raw::from_json_string(v.to_string()).unwrap())
+        .collect();
+        response.rooms.insert(room.to_owned(), entry);
+        client
+            .process_sliding_sync_test_helper(&response, &RequestedRequiredStates::default())
+            .await
+            .expect("sync processed");
+        let room = client.get_room(room).expect("room known");
+        let timeline = TimelineBuilder::new(&room)
+            .event_filter(move |e, r| shown_by_filter(e, r, show_hidden))
+            .with_focus(TimelineFocus::Live { hide_threaded_events: true })
+            .build()
+            .await
+            .expect("timeline");
+        let mut rows = Vec::new();
+        for _ in 0..100 {
+            let items = timeline.items().await;
+            rows = items
+                .iter()
+                .filter_map(|item| {
+                    let event = item.as_event()?;
+                    let registry = TimelineRegistry::new(Arc::new(Mutex::new(VecDeque::new())));
+                    let row = event_item_to_json(
+                        &item.unique_id().0, event, room.room_id().as_str(), "@me:hidden.example", &registry,
+                    );
+                    Some((row["event_id"].as_str().unwrap_or_default().to_owned(), row))
+                })
+                .collect();
+            if rows.iter().any(|(id, _)| id == "$after:hidden.example") {
+                break;
+            }
+            tokio::time::sleep(Duration::from_millis(50)).await;
+        }
+        (timeline, rows)
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn the_live_timeline_shows_hidden_rows_only_with_the_setting_on() {
+        let (_off_timeline, off) = live_timeline(false).await;
+        let mut off_ids: Vec<&str> = off.iter().map(|(id, _)| id.as_str()).collect();
+        off_ids.sort_unstable();
+        off_ids.dedup();
+        assert_eq!(off_ids, ["$after:hidden.example", ROOT]);
+
+        let (_on_timeline, on) = live_timeline(true).await;
+        let on_ids: Vec<&str> = on.iter().map(|(id, _)| id.as_str()).collect();
+        assert!(on_ids.contains(&"$hangup:hidden.example"), "{on_ids:?}");
+        assert!(on_ids.contains(&"$custom:hidden.example"), "{on_ids:?}");
+        if let Some((_, threaded)) = on.iter().find(|(id, _)| id == "$threaded:hidden.example") {
+            assert_eq!(threaded["thread_root_id"], ROOT,
+                       "a hidden thread reply must name its thread so main can drop it");
+        }
+        assert!(on.iter().filter(|(id, _)| id != "$threaded:hidden.example")
+                    .all(|(_, row)| row.get("thread_root_id").is_none()));
+        for (id, kind) in [("$hangup:hidden.example", "m.call.hangup"),
+                           ("$custom:hidden.example", "com.example.widget_ping")] {
+            let row = &on.iter().find(|(i, _)| i == id).unwrap().1;
+            assert_eq!(row["msgtype"], "state");
+            assert_eq!(row["state_kind"], "hidden_event");
+            assert_eq!(row["state_sentence"], "unsupported_event");
+            assert_eq!(row["state_target"], kind);
+            assert_eq!(row["body"], format!("Unsupported event ({kind})"));
+            assert!(row.get("formatted_body").is_none());
+        }
+    }
 }

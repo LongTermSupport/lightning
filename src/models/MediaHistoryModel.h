@@ -35,6 +35,7 @@ class MediaHistoryModel : public QAbstractListModel
                    NOTIFY countsChanged)
     Q_PROPERTY(QString lastError READ lastError NOTIFY stateChanged)
     Q_PROPERTY(QStringList knownSenders READ knownSenders NOTIFY countsChanged)
+    Q_PROPERTY(int sendersRevision READ sendersRevision NOTIFY sendersChanged)
 
 public:
     enum Roles {
@@ -71,6 +72,8 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
     QString roomId() const { return m_roomId; }
+    int sendersRevision() const { return m_sendersRevision; }
+    Q_INVOKABLE QString senderName(const QString &userId) const;
     void setRoomId(const QString &roomId);
     QString category() const { return m_category; }
     void setCategory(const QString &category);
@@ -118,6 +121,7 @@ public:
 
 Q_SIGNALS:
     void roomIdChanged();
+    void sendersChanged();
     void filtersChanged();
     void stateChanged();
     void countsChanged();
@@ -156,6 +160,7 @@ private:
     void clearAll();
 
     QPointer<MatrixClient> m_client;
+    int m_sendersRevision = 0;
     QString m_roomId;
     QString m_category;
     QString m_sender;

@@ -305,12 +305,13 @@ ColumnLayout {
     Connections {
         target: section.available ? section.stickers : null
         function onTransferFinished(kind, ok, category, added, skipped, failed,
-                                    name, unconfirmed) {
+                                    name, unconfirmed, cancelled) {
             if (kind === "emoji" || editor.visible)
                 return
             section.noticeIsError = !ok
             section.notice = section.stickers.transferMessage(
-                kind, ok, category, added, skipped, failed, name, unconfirmed || 0)
+                kind, ok, category, added, skipped, failed, name, unconfirmed || 0,
+                cancelled || 0)
         }
         function onRoomPackToggleFinished(ok, category, enabled) {
             section.noticeIsError = !ok

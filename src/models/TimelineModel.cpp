@@ -695,6 +695,15 @@ bool isRtcMembershipKind(const QString &kind)
         || kind == QLatin1String("m.call.member")
         || kind == QLatin1String("m.rtc.member");
 }
+
+// The SDK cannot tell an unknown-type thread reply from a main-timeline event,
+// so a hidden event that names a thread never shows in the main timeline.
+bool isOmittedStateRow(const TimelineEvent &e)
+{
+    return isRtcMembershipKind(e.stateKind)
+        || (e.stateKind == QLatin1String("hidden_event")
+            && !e.threadRootId.isEmpty());
+}
 }
 
 int TimelineModel::stateGroupLeaderRow(int row) const
@@ -727,7 +736,7 @@ int TimelineModel::stateGroupLeaderRow(int row) const
 bool TimelineModel::isVisibleStateEntry(const TimelineEvent &e) const
 {
     return e.type == TimelineEvent::StateChange && !isCallEventRow(e)
-        && !isRtcMembershipKind(e.stateKind) && activityKindVisible(e.stateKind);
+        && !isOmittedStateRow(e) && activityKindVisible(e.stateKind);
 }
 
 // A divider sits inside a merged multi-day run when both neighbouring days hold
@@ -844,7 +853,7 @@ QVariantList TimelineModel::stateGroupEntriesFrom(int leaderRow) const
         if (isCallEventRow(e))
             break;
         if (e.type == TimelineEvent::StateChange) {
-            if (isRtcMembershipKind(e.stateKind)) {
+            if (isOmittedStateRow(e)) {
                 ++i;
                 continue;
             }
@@ -893,7 +902,7 @@ bool TimelineModel::rowHostsReceipts(int row) const
         return true;
     if (e.type != TimelineEvent::StateChange)
         return true;
-    if (isRtcMembershipKind(e.stateKind))
+    if (isOmittedStateRow(e))
         return false;
     if (stateGroupLeaderRow(row) != row)
         return false;
@@ -1236,7 +1245,8 @@ bool TimelineModel::activityKindVisible(const QString &stateKind) const
         || stateKind == QLatin1String("m.room.encryption")
         || stateKind == QLatin1String("m.room.join_rules")
         || stateKind == QLatin1String("m.room.history_visibility")
-        || stateKind == QLatin1String("m.room.server_acl"))
+        || stateKind == QLatin1String("m.room.server_acl")
+        || stateKind == QLatin1String("hidden_event"))
         return true;
     if (!m_showRoomActivity)
         return false;

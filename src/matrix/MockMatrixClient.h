@@ -246,6 +246,14 @@ public:
         }
         Q_EMIT roomsChanged();
     }
+    void setRoomAvatarForTest(const QString &roomId, const QString &mxc)
+    {
+        for (auto &r : m_rooms) {
+            if (r.id == roomId)
+                r.avatarUrl = mxc;
+        }
+        Q_EMIT roomsChanged();
+    }
     void setRoomThreadUnreadForTest(const QString &roomId, int kind)
     {
         for (auto &r : m_rooms) {

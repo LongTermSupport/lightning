@@ -199,6 +199,7 @@ void StickerPackManager::setClient(MatrixClient *client)
     if (m_client)
         m_client->disconnect(this);
     m_client = client;
+    m_ownAddedKeys.clear();
     if (m_client) {
         connect(m_client, &MatrixClient::stickerPacksReceived, this,
                 &StickerPackManager::onPacksReceived);
@@ -1298,7 +1299,7 @@ void StickerPackManager::finishTransfer(bool ok, const QString &category)
                             done.failed,
                             done.kind == QLatin1String("emoji") ? done.firstCode
                                                                 : done.name,
-                            done.unconfirmed);
+                            done.unconfirmed, done.cancelled);
 }
 
 void StickerPackManager::startBatch(const QString &kind, const QString &name,
@@ -1343,6 +1344,8 @@ void StickerPackManager::advanceBatch()
         m_saveScope = QStringLiteral("account");
         m_transfer.op = opId;
         m_transfer.taken.insert(item.shortcode);
+        if (!m_transfer.packId.isEmpty())
+            m_ownAddedKeys[m_transfer.packId].insert(item.shortcode);
         m_transfer.lastUploaded.clear();
         m_transferWatchdog->start();
         if (!item.roomId.isEmpty()) {
@@ -1372,6 +1375,8 @@ void StickerPackManager::onBatchItemFinished(bool ok, const QString &category,
     m_transfer.op = 0;
     if (ok) {
         ++m_transfer.added;
+        if (!m_transfer.packId.isEmpty() && !shortcode.isEmpty())
+            m_ownAddedKeys[m_transfer.packId].insert(shortcode);
         if (m_transfer.firstCode.isEmpty())
             m_transfer.firstCode = shortcode;
     } else if (category == QLatin1String("duplicate")) {
@@ -1456,7 +1461,7 @@ void StickerPackManager::cancelTransfer()
             return;
         m_transfer.retry.append(unsent);
         m_transfer.done += int(unsent.size());
-        m_transfer.failed += int(unsent.size());
+        m_transfer.cancelled += int(unsent.size());
         m_transfer.items.resize(m_transfer.index);
         emitStateChanged();
     }
@@ -1560,12 +1565,14 @@ QString StickerPackManager::transferMessage(const QString &kind, bool ok,
                                             const QString &category, int added,
                                             int skipped, int failed,
                                             const QString &name,
-                                            int unconfirmed) const
+                                            int unconfirmed,
+                                            int cancelled) const
 {
     Q_UNUSED(name);
     const bool isExport = kind == QLatin1String("export");
     const bool isEmoji = kind == QLatin1String("emoji");
-    if (!ok && kind == QLatin1String("upload")) {
+    if (!ok && kind == QLatin1String("upload")
+        && (category == QLatin1String("forbidden") || cancelled == 0)) {
         if (category == QLatin1String("forbidden"))
             return tr("You do not have permission to change this pack.");
         if (unconfirmed > 0)
@@ -1574,7 +1581,7 @@ QString StickerPackManager::transferMessage(const QString &kind, bool ok,
         return tr("None of the images could be added. Retry adds them without "
                   "uploading again.");
     }
-    if (!ok) {
+    if (!ok && kind != QLatin1String("upload")) {
         if (category == QLatin1String("no_images"))
             return isExport ? tr("This pack has no images to export.")
                             : tr("That pack has no usable images. SVG files "
@@ -1615,7 +1622,9 @@ QString StickerPackManager::transferMessage(const QString &kind, bool ok,
                          "the server answered.", nullptr, unconfirmed);
         if (failed - unconfirmed > 0)
             text += QLatin1Char(' ') + tr("%n failed.", nullptr, failed - unconfirmed);
-        if (failed > 0)
+        if (cancelled > 0)
+            text += QLatin1Char(' ') + tr("%n cancelled.", nullptr, cancelled);
+        if (failed > 0 || cancelled > 0)
             text += QLatin1Char(' ') + tr("Retry adds any that are missing "
                                           "without uploading again.");
         if (skipped > 0)
@@ -2000,11 +2009,13 @@ QVariantMap StickerPackManager::comparePack(const QString &packId,
                                             const QVariantMap &base) const
 {
     const QVariantMap now = packImageMap(packId);
+    const QSet<QString> own = m_ownAddedKeys.value(packId);
     QStringList added, removed, changed;
     for (auto it = now.cbegin(); it != now.cend(); ++it) {
-        if (!base.contains(it.key()))
-            added << it.key();
-        else if (base.value(it.key()) != it.value())
+        if (!base.contains(it.key())) {
+            if (!own.contains(it.key()))
+                added << it.key();
+        } else if (base.value(it.key()) != it.value())
             changed << it.key();
     }
     for (auto it = base.cbegin(); it != base.cend(); ++it)

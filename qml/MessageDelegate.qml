@@ -1459,11 +1459,11 @@ Item {
             groupId: model.stateGroupId || ""
             entries: root.stateActivityEntries
             expanded: root.timelineView
-                      ? root.timelineView.stateGroupExpanded(groupId)
+                      ? root.timelineView.stateGroupExpanded(groupId, entries)
                       : false
             onToggleRequested: {
                 if (root.timelineView)
-                    root.timelineView.toggleStateGroup(groupId)
+                    root.timelineView.toggleStateGroup(groupId, entries)
             }
         }
     }

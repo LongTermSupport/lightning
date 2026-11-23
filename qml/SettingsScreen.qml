@@ -216,6 +216,11 @@ Item {
           section: "chat", breadcrumb: qsTr("Chat · Timeline"),
           control: "showProfileChangeEvents",
           anchor: "showProfileChangeEventsCheck" },
+        { title: qsTr("Show hidden events"),
+          keywords: QT_TR_NOOP("hidden events unsupported unknown debug developer state"),
+          section: "chat", breadcrumb: qsTr("Chat · Timeline"),
+          control: "showHiddenEvents",
+          anchor: "showHiddenEventsCheck" },
         { title: qsTr("Collapse media and link embeds"),
           keywords: QT_TR_NOOP("embed embeds collapse collapsed compact single line "
                          + "clutter declutter media image picture gif sticker "
@@ -2295,6 +2300,14 @@ Item {
                                         Accessible.name: qsTr("Display name and avatar changes")
                                         onToggled: app.settings.showProfileChangeEvents =
                                             !app.settings.showProfileChangeEvents
+                                    }
+                                    AppSwitch {
+                                        objectName: "settingsSearchInlineShowHiddenEvents_" + resultRow.index
+                                        visible: resultRow.modelData.control === "showHiddenEvents"
+                                        checked: app.settings.showHiddenEvents
+                                        Accessible.name: qsTr("Show hidden events")
+                                        onToggled: app.settings.showHiddenEvents =
+                                            !app.settings.showHiddenEvents
                                     }
                                     AppSwitch {
                                         objectName: "settingsSearchInlineThreadRootCollapsed_" + resultRow.index
@@ -4874,6 +4887,15 @@ Item {
                                     Accessible.description: qsTr(
                                         "Show profile changes in timelines")
                                     SettingsNeedsBadge { needs: qsTr("Show room activity") }
+                                }
+                                SettingsCheckBox {
+                                    palette.windowText: AppTheme.stormText
+                                    objectName: "showHiddenEventsCheck"
+                                    text: qsTr("Show hidden events")
+                                    checked: app.settings.showHiddenEvents
+                                    onToggled: app.settings.showHiddenEvents = checked
+                                    Accessible.description: qsTr(
+                                        "Also list events the timeline normally hides, such as unsupported event types")
                                 }
                                 SettingsCheckBox {
                                     palette.windowText: AppTheme.stormText

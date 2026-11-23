@@ -7585,6 +7585,41 @@ pub(crate) fn activity_seed_entry(
     }))
 }
 
+pub(crate) async fn activity_seed_entries(
+    client: &matrix_sdk::Client,
+    notifications: Vec<matrix_sdk::ruma::api::client::push::get_notifications::v3::Notification>,
+    own: &str,
+) -> Vec<serde_json::Value> {
+    let mut entries = Vec::new();
+    for notification in notifications {
+        // A still-encrypted edit carries no text here.
+        let sealed = notification.event.get_field::<String>("type").ok().flatten().as_deref()
+            == Some("m.room.encrypted");
+        if !sealed
+            && !crate::replacement_admitted(
+                client.get_room(&notification.room_id).as_ref(),
+                &notification.event,
+                None,
+            )
+            .await
+        {
+            continue;
+        }
+        let value: serde_json::Value =
+            notification.event.deserialize_as().unwrap_or(serde_json::Value::Null);
+        if let Some(entry) = activity_seed_entry(
+            &value,
+            notification.room_id.as_str(),
+            u64::from(notification.ts.get()),
+            notification.read,
+            own,
+        ) {
+            entries.push(entry);
+        }
+    }
+    entries
+}
+
 pub(crate) fn request_activity_seed(bridge: &RustClient, limit: u32) -> Result<(), String> {
     request_activity_seed_page(bridge, limit, None)
 }
@@ -7623,20 +7658,7 @@ pub(crate) fn request_activity_seed_page(
             }
         };
         let next_token = response.next_token.clone().unwrap_or_default();
-        let mut entries: Vec<serde_json::Value> = Vec::new();
-        for notification in response.notifications {
-            let value: serde_json::Value =
-                notification.event.deserialize_as().unwrap_or(serde_json::Value::Null);
-            if let Some(entry) = activity_seed_entry(
-                &value,
-                notification.room_id.as_str(),
-                u64::from(notification.ts.get()),
-                notification.read,
-                &own,
-            ) {
-                entries.push(entry);
-            }
-        }
+        let entries = activity_seed_entries(&client, response.notifications, &own).await;
         enqueue(&events, json!({
             "type": if from.is_some() { "activity_seed_page" } else { "activity_seed" },
             "lifecycle": lifecycle, "ok": true, "entries": entries,

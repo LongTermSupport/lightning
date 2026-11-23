@@ -1746,16 +1746,20 @@ GstBusSyncReply onBusMessage(GstBus *, GstMessage *message, void *userData)
                     engine->handleMicDspError(publishCid, reason);
                 });
             } else {
+                const bool videoSourceError =
+                    element.startsWith(QLatin1String("capsrc"));
                 marshal(engine, [engine, publishCid, captureSource, front,
                                  captureResourceError, captureBusyError,
-                                 captureFormatError, captureEpoch] {
+                                 captureFormatError, captureEpoch,
+                                 videoSourceError] {
                     if (captureSource)
                         engine->handleCaptureError(publishCid, front);
                     engine->handlePublishError(publishCid,
                                                captureResourceError,
                                                captureBusyError,
                                                captureFormatError,
-                                               captureEpoch);
+                                               captureEpoch,
+                                               videoSourceError);
                 });
             }
         }
@@ -8425,6 +8429,13 @@ void SfuMediaEngine::retainReceiveNames(const QSet<QString> &live)
         else
             it = m_recvCryptors.erase(it);
     }
+    if (!qEnvironmentVariableIsEmpty("LIGHTNING_CALL_TRACE")) {
+        QSet<const CallFrameCryptor *> rings;
+        for (const auto &cryptor : std::as_const(m_recvCryptors))
+            rings.insert(cryptor.get());
+        qCInfo(lcSfuMedia) << "receive rings n=" << rings.size()
+                           << "aliases=" << m_recvCryptors.size();
+    }
 }
 
 int SfuMediaEngine::receiveNameCountForTest() const
@@ -9138,7 +9149,7 @@ void SfuMediaEngine::restartMicrophone(const QString &cid, quint64 generation)
 void SfuMediaEngine::handlePublishError(const QString &cid,
                                         bool resourceError, bool busyError,
                                         bool captureFormatError,
-                                        int captureEpoch)
+                                        int captureEpoch, bool sourceError)
 {
     if (!m_active)
         return;
@@ -9153,9 +9164,18 @@ void SfuMediaEngine::handlePublishError(const QString &cid,
         return;
     if (watch->retry && watch->retry->isStale(captureEpoch))
         return;
-    if (watch->state->captured.load() > 0)
-        return;
     const bool screenShare = watch->state->screenShare;
+    if (watch->state->captured.load() > 0) {
+        // Otherwise the keep-alive re-sends the last picture for ever.
+        if (screenShare && sourceError) {
+            m_publishWatch[cid].reported = true;
+            qCWarning(lcSfuMedia)
+                << "screen share source died mid-share; ending the share";
+            Q_EMIT publishFailed(cid,
+                                 QStringLiteral("screen_share_source_lost"));
+        }
+        return;
+    }
     if (screenShare && captureFormatError
         && retryShareCaptureInOtherMemory(cid))
         return;

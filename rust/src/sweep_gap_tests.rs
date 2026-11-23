@@ -392,9 +392,24 @@ fn the_gap_queue_is_first_in_first_out_with_the_newest_token() {
     queue.push("!b:x".into(), "b1".into(), 1);
     queue.push("!a:x".into(), "a1".into(), 1);
     queue.push("!b:x".into(), "b2".into(), 1);
-    assert_eq!(queue.pop(), Some(("!b:x".into(), "b2".into(), 1)));
-    assert_eq!(queue.pop(), Some(("!a:x".into(), "a1".into(), 1)));
-    assert_eq!(queue.pop(), None);
+    let zero = std::time::Duration::ZERO;
+    assert!(matches!(queue.pop(zero), GapNext::Ready(r, t, 1) if r == "!b:x" && t == "b2"));
+    assert!(matches!(queue.pop(zero), GapNext::Ready(r, t, 1) if r == "!a:x" && t == "a1"));
+    assert!(matches!(queue.pop(zero), GapNext::Empty));
+}
+
+#[test]
+fn the_gap_queue_holds_a_room_until_its_limited_syncs_settle() {
+    let mut queue = GapQueue::default();
+    queue.push("!busy:x".into(), "t1".into(), 1);
+    let settle = std::time::Duration::from_millis(400);
+    assert!(matches!(queue.pop(settle), GapNext::Wait(left) if left <= settle));
+    std::thread::sleep(std::time::Duration::from_millis(100));
+    queue.push("!busy:x".into(), "t2".into(), 1);
+    std::thread::sleep(std::time::Duration::from_millis(100));
+    assert!(matches!(queue.pop(settle), GapNext::Wait(_)), "a newer limited sync must restart the wait");
+    std::thread::sleep(std::time::Duration::from_millis(400));
+    assert!(matches!(queue.pop(settle), GapNext::Ready(_, t, 1) if t == "t2"));
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -476,6 +491,7 @@ async fn search_index_matches_derived_fixtures() {
     use matrix_sdk::ruma::RoomId;
 
     let server = MatrixMockServer::new().await;
+    let mut mismatches = Vec::new();
     for case in scenarios() {
         let client = server.client_builder().build().await;
         let encryption = server.mock_room_state_encryption();
@@ -505,15 +521,73 @@ async fn search_index_matches_derived_fixtures() {
 
         let want = case.content_for(Projection::Search);
         let hits = index.search("fixture", "", 10, 0).unwrap();
-        assert_eq!(index.stats().unwrap().messages, i64::from(want.is_some()), "{}", case.name);
-        assert_eq!(hits.len(), usize::from(want.is_some()), "{}", case.name);
-        if let Some(content) = want {
-            let hit = &hits[0];
-            assert_eq!(hit.event_id, ORIGINAL, "{}", case.name);
-            assert_eq!(hit.room_id, HOME_ROOM, "{}", case.name);
-            assert_eq!(hit.body, content["body"].as_str().unwrap(), "{}", case.name);
-            assert_eq!(hit.msgtype, content["msgtype"].as_str().unwrap(), "{}", case.name);
-            assert_eq!(hit.filename, content["filename"].as_str().unwrap_or(""), "{}", case.name);
+        let got: Vec<_> = hits
+            .iter()
+            .map(|h| (h.event_id.clone(), h.room_id.clone(), h.body.clone(), h.msgtype.clone(), h.filename.clone()))
+            .collect();
+        let expected: Vec<_> = want
+            .map(|c| {
+                (
+                    ORIGINAL.to_owned(),
+                    HOME_ROOM.to_owned(),
+                    c["body"].as_str().unwrap().to_owned(),
+                    c["msgtype"].as_str().unwrap().to_owned(),
+                    c["filename"].as_str().unwrap_or("").to_owned(),
+                )
+            })
+            .into_iter()
+            .collect();
+        let indexed = index.stats().unwrap().messages;
+        if got != expected || indexed != expected.len() as i64 {
+            mismatches.push(format!("{}: indexed {indexed}, got {got:?}, expected {expected:?}", case.name));
         }
     }
+    assert!(mismatches.is_empty(), "search diverges from the shared fixture:\n{}", mismatches.join("\n"));
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn a_room_still_receiving_limited_syncs_is_not_paged() {
+    let server = MatrixMockServer::new().await;
+    let client = server.client_builder().build().await;
+    client.event_cache().subscribe().unwrap();
+    let index = Arc::new(Mutex::new(Some(SearchIndex::open_in_memory().unwrap())));
+    let _live = register_live_index_handler(&client, &index);
+    let events = Arc::new(Mutex::new(std::collections::VecDeque::new()));
+    let filler = spawn_gap_filler(&client, &index, open_gate(), &events);
+
+    sync(&client, vec![message("$m1", "an older line", 1000)], "1", None).await;
+    wait_indexed(&index, "$m1").await;
+    let page: Vec<Raw<matrix_sdk::ruma::events::AnyTimelineEvent>> =
+        vec![serde_json::from_value(message("$m1", "an older line", 1000)).unwrap()];
+    server
+        .mock_room_messages()
+        .ok(RoomMessagesResponseTemplate::default().events(page))
+        .mount()
+        .await;
+    let pages = || async {
+        server
+            .server()
+            .received_requests()
+            .await
+            .unwrap_or_default()
+            .iter()
+            .filter(|r| r.url.path().ends_with("/messages"))
+            .count()
+    };
+
+    for n in 2..6u64 {
+        let id = format!("$m{n}");
+        sync(&client, vec![message(&id, "a burst line", n * 1000)], &n.to_string(), Some("gap")).await;
+        tokio::time::sleep(std::time::Duration::from_millis(300)).await;
+    }
+    assert_eq!(pages().await, 0, "the room was paged while its limited syncs were still arriving");
+
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(6);
+    while pages().await == 0 {
+        assert!(std::time::Instant::now() < deadline, "the settled gap was never filled");
+        tokio::time::sleep(std::time::Duration::from_millis(50)).await;
+    }
+    tokio::time::sleep(std::time::Duration::from_millis(800)).await;
+    filler.abort();
+    assert_eq!(pages().await, 1, "one burst is one fill");
 }

@@ -1,5 +1,9 @@
 # Open items and the NOT TESTED inventory
 
+## 2026-11-23 — KNOWN LIMIT: a forged edit's mention still raises the room badge
+
+A rejected edit never notifies, but the room's @ badge reads the server's `highlight_count`, which counts the forged mention.
+
 ## 2026-11-21 — OPEN from the 0.10.7 package and real-server tests
 
 - Resend requests are sent with no loss: a received share logs `rtx` climbing with `rtxOk=0` and duplicates arriving (Linux and Windows receivers), ~30/s. Likely the pinned 40 ms retry firing on late-but-not-lost packets. Upstream NACK load and a misleading "Resend requests" count; not a media fault.
