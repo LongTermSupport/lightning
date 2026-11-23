@@ -129,8 +129,9 @@ private Q_SLOTS:
         QQuickItem *root = win->contentItem();
         QList<Target> targets;
         auto addButton = [&](const QString &name, QQuickItem *b) {
+            QQuickItem *icon = findItem(b, QStringLiteral("buttonIcon"));
             targets.append({ name, b, findItem(b, QStringLiteral("buttonLabel")),
-                             findItem(b, QStringLiteral("buttonIcon")) });
+                             icon && icon->isVisible() ? icon : nullptr });
         };
         QQuickItem *choose = findItem(root, QStringLiteral("chatBackgroundChoose"));
         QVERIFY(choose);
@@ -158,7 +159,7 @@ private Q_SLOTS:
                 ++iconCount;
         }
         QCOMPARE(targets.size(), 13);
-        QCOMPARE(iconCount, 6);
+        QCOMPARE(iconCount, 5);
 
         int steps = 0;
         int checks = 0;
@@ -174,7 +175,7 @@ private Q_SLOTS:
                 const qreal labelOff = (ink - centre) * dpr;
                 qreal iconOff = 0;
                 qreal pairOff = 0;
-                if (t.icon && t.icon->isVisible()) {
+                if (t.icon) {
                     const qreal em = iconEmY(t.icon, t.control);
                     iconOff = (em - centre) * dpr;
                     pairOff = (ink - em) * dpr;
