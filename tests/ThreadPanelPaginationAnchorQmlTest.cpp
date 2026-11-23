@@ -396,20 +396,29 @@ private Q_SLOTS:
             return v.toDouble();
         };
 
-        const double minBefore = bounds("wheelMinY");
         QTest::keyClick(&window, Qt::Key_Up, Qt::ControlModifier);
-        QCoreApplication::processEvents();
-        QVERIFY(replyList->property("contentY").toDouble() <= minBefore + 1.0);
+        QTRY_VERIFY2_WITH_TIMEOUT(
+            replyList->property("contentY").toDouble() <= bounds("wheelMinY") + 1.0,
+            qPrintable(QStringLiteral("contentY=%1 start=%2")
+                           .arg(replyList->property("contentY").toDouble())
+                           .arg(bounds("wheelMinY"))),
+            kSignalTimeoutMs);
         QCOMPARE(replyList->property("followLatest").toBool(), false);
         const double top = replyList->property("contentY").toDouble();
         QTest::keyClick(&window, Qt::Key_PageDown);
         QTRY_VERIFY_WITH_TIMEOUT(
             replyList->property("contentY").toDouble() > top + 100,
             kSignalTimeoutMs);
-        const double maxBefore = bounds("wheelMaxY");
         QTest::keyClick(&window, Qt::Key_Down, Qt::ControlModifier);
-        QCoreApplication::processEvents();
-        QVERIFY(replyList->property("contentY").toDouble() >= maxBefore - 1.0);
+        // The list's extent is an estimate that moves as delegates are built,
+        // so the end is wherever it is once the jump has landed.
+        QTRY_VERIFY2_WITH_TIMEOUT(
+            replyList->property("contentY").toDouble() >= bounds("wheelMaxY") - 1.0,
+            qPrintable(QStringLiteral("contentY=%1 end=%2 follow=%3")
+                           .arg(replyList->property("contentY").toDouble())
+                           .arg(bounds("wheelMaxY"))
+                           .arg(replyList->property("followLatest").toBool())),
+            kSignalTimeoutMs);
         QCOMPARE(replyList->property("followLatest").toBool(), true);
         const double bottom = replyList->property("contentY").toDouble();
         QTest::keyClick(&window, Qt::Key_PageUp);
