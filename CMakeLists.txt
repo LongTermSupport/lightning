@@ -1405,6 +1405,7 @@ set(APP_QML_FILES
     qml/BackgroundSyncPrompt.qml
     qml/EncryptionBrokenPrompt.qml
     qml/PlainToolTip.qml
+    qml/PanelHeader.qml
     qml/QuickReactionStrip.qml
     qml/IdentityCard.qml
     qml/AccountActivityBadge.qml

@@ -343,111 +343,96 @@ Rectangle {
         anchors.fill: parent
         spacing: 0
 
-        Rectangle {
-            Layout.fillWidth: true
-            implicitHeight: AppTheme.headerBandHeight
+        PanelHeader {
+            id: threadHeader
             color: panel.color
-            RowLayout {
-                id: threadHeader
-                anchors.fill: parent
-                anchors.leftMargin: AppTheme.spacing16
-                anchors.rightMargin: AppTheme.headerActionGutter
-                spacing: AppTheme.spacing8
-                IconButton {
-                    objectName: "threadBackToRoomButton"
-                    visible: panel.inMainView && app.thread.active
-                             && !app.thread.listOpen
-                    iconName: "arrow_back"
-                    iconSize: 18
-                    Accessible.name: qsTr("Back to the room")
-                    ToolTip.text: qsTr("Back to the room")
-                    ToolTip.visible: hovered
-                    ToolTip.delay: 500
-                    onClicked: panel.closeRequested()
-                }
-                IconButton {
-                    objectName: "threadBackToListButton"
-                    visible: app.thread.active && app.thread.listOpen
-                    iconName: "arrow_back"
-                    iconSize: 18
-                    Accessible.name: qsTr("Back to threads")
-                    onClicked: app.thread.close()
-                }
-                Icon {
-                    name: "forum"
-                    size: 20
-                    color: AppTheme.accent
-                }
-                Label {
-                    text: app.thread.active ? qsTr("Thread") : qsTr("Threads")
-                    color: AppTheme.textPrimary
-                    font.pixelSize: AppTheme.scaled(AppTheme.textTitle)
-                    font.weight: AppTheme.weightBold
-                }
-                Label {
-                    textFormat: Text.PlainText
-                    Layout.fillWidth: true
-                    text: panel.panelRoomName
-                    color: AppTheme.textMuted
-                    font.pixelSize: AppTheme.scaled(AppTheme.textMeta)
-                    elide: Label.ElideRight
-                    HoverHandler { id: roomNameHover }
-                    ToolTip.visible: roomNameHover.hovered && truncated
-                    ToolTip.delay: 500
-                    ToolTip.text: text
-                }
-                AppButton {
-                    id: followButton
-                    objectName: "threadFollowButton"
-                    visible: app.thread.active && app.thread.followSupported
-                    enabled: !app.thread.followBusy
-                    size: "sm"
-                    minWidth: 0
-                    text: app.thread.followed ? qsTr("Unfollow")
-                                              : qsTr("Follow")
-                    ToolTip.text: app.thread.followed
-                                  ? qsTr("Stop following this thread")
-                                  : qsTr("Follow this thread")
-                    ToolTip.visible: hovered
-                    ToolTip.delay: 500
-                    onClicked: app.thread.setFollowed(!app.thread.followed)
-                }
-                IconButton {
-                    objectName: "threadMarkReadButton"
-                    visible: app.thread.active
-                    iconName: "done_all"
-                    iconSize: 18
-                    Accessible.name: qsTr("Mark this thread read")
-                    ToolTip.text: Accessible.name
-                    ToolTip.visible: hovered
-                    ToolTip.delay: 500
-                    onClicked: app.thread.markReadNow()
-                }
-                IconButton {
-                    objectName: "threadPlacementButton"
-                    visible: app.thread.active
-                    iconName: panel.inMainView ? "close_fullscreen"
-                                               : "open_in_full"
-                    iconSize: 18
-                    Accessible.name: panel.inMainView
-                                     ? qsTr("Show the thread in the side panel")
-                                     : qsTr("Show the thread in the main view")
-                    ToolTip.text: Accessible.name
-                    ToolTip.visible: hovered
-                    ToolTip.delay: 500
-                    onClicked: app.settings.threadPlacement =
-                                   panel.inMainView ? 0 : 1
-                }
-                IconButton {
-                    objectName: "threadCloseButton"
-                    iconName: "close"
-                    iconSize: 18
-                    Accessible.name: qsTr("Close thread")
-                    ToolTip.text: qsTr("Close thread")
-                    ToolTip.visible: hovered
-                    ToolTip.delay: 500
-                    onClicked: panel.closeRequested()
-                }
+            closeLabel: qsTr("Close thread")
+            closeButton.objectName: "threadCloseButton"
+            onCloseClicked: panel.closeRequested()
+            IconButton {
+                objectName: "threadBackToRoomButton"
+                visible: panel.inMainView && app.thread.active
+                         && !app.thread.listOpen
+                iconName: "arrow_back"
+                iconSize: 18
+                Accessible.name: qsTr("Back to the room")
+                ToolTip.text: qsTr("Back to the room")
+                ToolTip.visible: hovered
+                ToolTip.delay: 500
+                onClicked: panel.closeRequested()
+            }
+            IconButton {
+                objectName: "threadBackToListButton"
+                visible: app.thread.active && app.thread.listOpen
+                iconName: "arrow_back"
+                iconSize: 18
+                Accessible.name: qsTr("Back to threads")
+                onClicked: app.thread.close()
+            }
+            Icon {
+                name: "forum"
+                size: 20
+                color: AppTheme.accent
+            }
+            Label {
+                text: app.thread.active ? qsTr("Thread") : qsTr("Threads")
+                color: AppTheme.textPrimary
+                font.pixelSize: AppTheme.scaled(AppTheme.textTitle)
+                font.weight: AppTheme.weightBold
+            }
+            Label {
+                textFormat: Text.PlainText
+                Layout.fillWidth: true
+                text: panel.panelRoomName
+                color: AppTheme.textMuted
+                font.pixelSize: AppTheme.scaled(AppTheme.textMeta)
+                elide: Label.ElideRight
+                HoverHandler { id: roomNameHover }
+                ToolTip.visible: roomNameHover.hovered && truncated
+                ToolTip.delay: 500
+                ToolTip.text: text
+            }
+            AppButton {
+                id: followButton
+                objectName: "threadFollowButton"
+                visible: app.thread.active && app.thread.followSupported
+                enabled: !app.thread.followBusy
+                size: "sm"
+                minWidth: 0
+                text: app.thread.followed ? qsTr("Unfollow")
+                                          : qsTr("Follow")
+                ToolTip.text: app.thread.followed
+                              ? qsTr("Stop following this thread")
+                              : qsTr("Follow this thread")
+                ToolTip.visible: hovered
+                ToolTip.delay: 500
+                onClicked: app.thread.setFollowed(!app.thread.followed)
+            }
+            IconButton {
+                objectName: "threadMarkReadButton"
+                visible: app.thread.active
+                iconName: "done_all"
+                iconSize: 18
+                Accessible.name: qsTr("Mark this thread read")
+                ToolTip.text: Accessible.name
+                ToolTip.visible: hovered
+                ToolTip.delay: 500
+                onClicked: app.thread.markReadNow()
+            }
+            IconButton {
+                objectName: "threadPlacementButton"
+                visible: app.thread.active
+                iconName: panel.inMainView ? "close_fullscreen"
+                                           : "open_in_full"
+                iconSize: 18
+                Accessible.name: panel.inMainView
+                                 ? qsTr("Show the thread in the side panel")
+                                 : qsTr("Show the thread in the main view")
+                ToolTip.text: Accessible.name
+                ToolTip.visible: hovered
+                ToolTip.delay: 500
+                onClicked: app.settings.threadPlacement =
+                               panel.inMainView ? 0 : 1
             }
         }
         Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: AppTheme.headerDivider }

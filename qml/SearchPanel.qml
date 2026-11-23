@@ -213,12 +213,12 @@ Rectangle {
         anchors.fill: parent
         spacing: 0
 
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.preferredHeight: AppTheme.headerBandHeight
-            Layout.leftMargin: AppTheme.spacing12
-            Layout.rightMargin: AppTheme.headerActionGutter
-            spacing: AppTheme.spacing8
+        PanelHeader {
+            leadingInset: AppTheme.spacing12
+            closeLabel: root.filterEditing ? qsTr("Cancel filters")
+                                           : qsTr("Close search")
+            onCloseClicked: root.filterEditing ? root.filterEditing = false
+                                               : root.closeRequested()
             Label {
                 text: root.filterEditing ? qsTr("Search filters")
                                          : qsTr("Search messages")
@@ -236,13 +236,6 @@ Rectangle {
                 ToolTip.visible: hovered
                 ToolTip.delay: 500
                 onClicked: root.beginFilters()
-            }
-            IconButton {
-                iconName: "close"
-                Accessible.name: root.filterEditing ? qsTr("Cancel filters")
-                                                     : qsTr("Close search")
-                onClicked: root.filterEditing ? root.filterEditing = false
-                                               : root.closeRequested()
             }
         }
 
