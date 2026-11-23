@@ -214,8 +214,11 @@ Rectangle {
         spacing: 0
 
         RowLayout {
+            objectName: "searchHeaderBar"
             Layout.fillWidth: true
-            Layout.margins: AppTheme.spacing12
+            Layout.preferredHeight: AppTheme.headerBandHeight
+            Layout.leftMargin: AppTheme.spacing12
+            Layout.rightMargin: AppTheme.headerActionGutter
             spacing: AppTheme.spacing8
             Label {
                 text: root.filterEditing ? qsTr("Search filters")
@@ -236,6 +239,7 @@ Rectangle {
                 onClicked: root.beginFilters()
             }
             IconButton {
+                objectName: "searchCloseButton"
                 iconName: "close"
                 Accessible.name: root.filterEditing ? qsTr("Cancel filters")
                                                      : qsTr("Close search")

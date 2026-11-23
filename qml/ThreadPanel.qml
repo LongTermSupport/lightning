@@ -345,20 +345,19 @@ Rectangle {
 
         Rectangle {
             Layout.fillWidth: true
-            implicitHeight: AppTheme.threadHeaderHeight
+            objectName: "threadHeaderBar"
+            implicitHeight: AppTheme.headerBandHeight
             color: panel.color
             RowLayout {
                 id: threadHeader
                 anchors.fill: parent
                 anchors.leftMargin: AppTheme.spacing16
-                anchors.rightMargin: AppTheme.spacing16
+                anchors.rightMargin: AppTheme.headerActionGutter
                 spacing: AppTheme.spacing8
                 IconButton {
                     objectName: "threadBackToRoomButton"
                     visible: panel.inMainView && app.thread.active
                              && !app.thread.listOpen
-                    implicitWidth: 30; implicitHeight: 30
-                    radius: AppTheme.radiusControl
                     iconName: "arrow_back"
                     iconSize: 18
                     Accessible.name: qsTr("Back to the room")
@@ -370,8 +369,6 @@ Rectangle {
                 IconButton {
                     objectName: "threadBackToListButton"
                     visible: app.thread.active && app.thread.listOpen
-                    implicitWidth: 30; implicitHeight: 30
-                    radius: AppTheme.radiusControl
                     iconName: "arrow_back"
                     iconSize: 18
                     Accessible.name: qsTr("Back to threads")
@@ -419,8 +416,6 @@ Rectangle {
                 IconButton {
                     objectName: "threadMarkReadButton"
                     visible: app.thread.active
-                    implicitWidth: 30; implicitHeight: 30
-                    radius: AppTheme.radiusControl
                     iconName: "done_all"
                     iconSize: 18
                     Accessible.name: qsTr("Mark this thread read")
@@ -432,8 +427,6 @@ Rectangle {
                 IconButton {
                     objectName: "threadPlacementButton"
                     visible: app.thread.active
-                    implicitWidth: 30; implicitHeight: 30
-                    radius: AppTheme.radiusControl
                     iconName: panel.inMainView ? "close_fullscreen"
                                                : "open_in_full"
                     iconSize: 18
@@ -448,8 +441,6 @@ Rectangle {
                 }
                 IconButton {
                     objectName: "threadCloseButton"
-                    implicitWidth: 30; implicitHeight: 30
-                    radius: AppTheme.radiusControl
                     iconName: "close"
                     iconSize: 18
                     Accessible.name: qsTr("Close thread")

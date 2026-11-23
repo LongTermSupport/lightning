@@ -1977,7 +1977,7 @@ Item {
             RowLayout {
                 anchors.fill: parent
                 anchors.leftMargin: AppTheme.spacing24
-                anchors.rightMargin: AppTheme.spacing24
+                anchors.rightMargin: AppTheme.headerActionGutter
                 spacing: AppTheme.spacing8 + 2
                 Icon {
                     name: root.sectionIcon(root.section)

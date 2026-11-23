@@ -24,7 +24,7 @@ AbstractButton {
             return { box: 28, radius: AppTheme.radiusMd, glyph: 20 }
         if (size === "xl")
             return { box: 40, radius: AppTheme.radiusOmnibox, glyph: 22 }
-        return { box: 34, radius: AppTheme.radiusTile, glyph: 21 }
+        return { box: AppTheme.headerActionSize, radius: AppTheme.radiusTile, glyph: 21 }
     }
 
     readonly property bool _filled: fill

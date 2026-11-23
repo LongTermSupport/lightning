@@ -23,8 +23,6 @@ RowLayout {
     IconButton {
         id: settingsBtn
         objectName: "headerSettingsButton"
-        implicitWidth: 30; implicitHeight: 30
-        radius: AppTheme.radiusMd
         iconName: "settings"
         iconSize: 18
         active: app.currentScreen === 2
@@ -54,7 +52,8 @@ RowLayout {
     Item {
         id: accountTile
         objectName: "headerAccountTile"
-        implicitWidth: 30; implicitHeight: 30
+        implicitWidth: AppTheme.headerActionSize
+        implicitHeight: AppTheme.headerActionSize
         activeFocusOnTab: true
         Keys.onPressed: (event) => {
             var k = event.key
@@ -94,7 +93,7 @@ RowLayout {
 
         Avatar {
             anchors.fill: parent
-            size: 30
+            size: AppTheme.headerActionSize
             circle: true
             name: accountTile.activeAccount.displayName
                   || (app.accounts ? (app.accounts.activeUserId || "") : "")

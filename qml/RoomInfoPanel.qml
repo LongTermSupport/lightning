@@ -291,14 +291,15 @@ Rectangle {
         spacing: 0
 
         Rectangle {
+            objectName: "roomInfoHeaderBar"
             Layout.fillWidth: true
-            implicitHeight: Math.max(AppTheme.headerBandHeight,
-                headerRow.implicitHeight + AppTheme.spacing12 * 2)
+            implicitHeight: AppTheme.headerBandHeight
             color: AppTheme.surface
             RowLayout {
                 id: headerRow
                 anchors.fill: parent
-                anchors.margins: AppTheme.spacing12
+                anchors.leftMargin: AppTheme.spacing12
+                anchors.rightMargin: AppTheme.headerActionGutter
                 spacing: AppTheme.spacing8
                 Label {
                     Layout.fillWidth: true
@@ -318,8 +319,6 @@ Rectangle {
                 }
                 IconButton {
                     objectName: "roomPermissionsButton"
-                    implicitWidth: 30; implicitHeight: 30
-                    radius: AppTheme.radiusControl
                     iconName: "lock"
                     iconSize: 18
                     Accessible.name: qsTr("Room permissions")
@@ -332,8 +331,7 @@ Rectangle {
                     }
                 }
                 IconButton {
-                    implicitWidth: 30; implicitHeight: 30
-                    radius: AppTheme.radiusControl
+                    objectName: "roomInfoCloseButton"
                     iconName: "close"
                     iconSize: 18
                     Accessible.name: qsTr("Close room information")
