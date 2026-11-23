@@ -1084,6 +1084,10 @@ private Q_SLOTS:
         int reachable = 0;
         QObject *more = m_window->findChild<QObject *>(
             QStringLiteral("threadHeaderOverflowMenu"));
+        if (more) {
+            QMetaObject::invokeMethod(more, "open");
+            QTRY_VERIFY(more->property("opened").toBool());
+        }
         for (const char *action : { "threadFollowButton", "threadMarkReadButton",
                                     "threadPlacementButton" }) {
             QQuickItem *inline_ = item(action);
@@ -1095,6 +1099,10 @@ private Q_SLOTS:
                     && item("threadHeaderOverflowButton")
                     && item("threadHeaderOverflowButton")->isVisible()))
                 ++reachable;
+        }
+        if (more) {
+            QMetaObject::invokeMethod(more, "close");
+            QTRY_VERIFY(!more->property("visible").toBool());
         }
 
         thread->close();
