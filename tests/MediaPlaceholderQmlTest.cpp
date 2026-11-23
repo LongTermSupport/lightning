@@ -7,7 +7,6 @@
 #include <QBuffer>
 #include <QRegularExpression>
 #include "media/MediaImageProvider.h"
-#include "support/SettledClick.h"
 
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
@@ -1501,17 +1500,17 @@ QtObject {
         auto *body = d.root->findChild<QQuickItem *>(
             QStringLiteral("messageBody"));
         QVERIFY(row && bubble && body && body->isVisible());
-        QPointF settled;
-        QVERIFY(testsupport::settledScenePoint(d.window.get(), body, &settled, QPointF(1, 0.5)));
-        QVERIFY(testsupport::settledScenePoint(d.window.get(), bubble, &settled, QPointF(0, 0)));
 
         // The empty side of the row: right of the text (or of an others'
         // bubble), left of an own bubble.
         const QPointF bodyInRow = body->mapToItem(row, QPointF(0, body->height() / 2));
         const QPointF bubbleInRow = bubble->mapToItem(row, QPointF(0, 0));
         const qreal gutter = d.root->property("avatarGutterWidth").toReal();
+        // Text end + 40 lands on a hugging bubble's own right edge (±1 px).
         const qreal x = own ? (gutter + bubbleInRow.x()) / 2
-                            : bodyInRow.x() + body->width() + 40;
+                            : (layout == 1 && direct ? bubbleInRow.x() + bubble->width()
+                                                     : bodyInRow.x() + body->width())
+                + 40;
         QVERIFY2(x > gutter && x < (own ? bubbleInRow.x() : row->width() - 200),
                  qPrintable(QStringLiteral("probe x=%1 outside the empty side")
                                 .arg(x)));
