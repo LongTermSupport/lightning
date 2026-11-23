@@ -61,16 +61,34 @@ QString accountRoot(const QString &userId);
 
 QString rustSdkStorePath(const QString &userId);
 
-QString starredGifsDir(const QString &userId);
-
 QString personalBackgroundsDir(const QString &accountRootDir);
 
 RemovalSummary removePersonalBackgrounds(const AccountIdentity &identity);
 
-QString bridgeLabelsFile(const QString &userId);
+// These three live under the account's recorded root, like its store.
+QString starredGifsDir(const QString &accountRootDir);
 
-// Under the account's recorded root, like its store.
+QString bridgeLabelsFile(const QString &accountRootDir);
+
 QString scrollPositionsFile(const QString &accountRootDir);
+
+enum class LegacyMove { Moved, Absent, Kept, Failed };
+
+// Moves an entry from the root derived from the user id to the recorded root
+// by one rename, so an interrupted move leaves it whole in one place. Kept:
+// the recorded entry already exists, or the old one is a symlink; both stay.
+LegacyMove adoptLegacyEntry(const QString &legacyPath, const QString &recordedPath);
+
+inline const char *legacyMoveName(LegacyMove outcome)
+{
+    switch (outcome) {
+    case LegacyMove::Moved: return "moved";
+    case LegacyMove::Absent: return "absent";
+    case LegacyMove::Kept: return "kept_both";
+    case LegacyMove::Failed: return "failed";
+    }
+    return "failed";
+}
 
 QString customAppIconFile();
 

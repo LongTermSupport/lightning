@@ -7,10 +7,13 @@
 #include "accounts/StoreOwnershipRegistry.h"
 #include "auth/AccountManager.h"
 #include "models/AccountActivityModel.h"
+#include "gif/GifSearchController.h"
+#include "gif/GifStarredStore.h"
 #include "notifications/NotificationManager.h"
 
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QSignalSpy>
 #include <QTemporaryDir>
 #include <QtTest>
@@ -62,6 +65,33 @@ QString bodyOf(const QString &source, const QString &signature)
         return QString();
     const qsizetype end = source.indexOf(QStringLiteral("\n}\n"), start);
     return source.mid(start, end < 0 ? -1 : end - start);
+}
+
+bool touch(const QString &path, const QByteArray &bytes = "fixture")
+{
+    QDir().mkpath(QFileInfo(path).absolutePath());
+    QFile file(path);
+    return file.open(QIODevice::WriteOnly) && file.write(bytes) == bytes.size();
+}
+
+QStringList accountFilesUnder(const QString &root)
+{
+    return { matrix::app_data::bridgeLabelsFile(root),
+             matrix::app_data::starredGifsDir(root) + QStringLiteral("/marker"),
+             matrix::app_data::scrollPositionsFile(root) };
+}
+
+void signInAliceAt(AppController &app, const QString &storeSlug)
+{
+    SettingsManager *s = app.settings();
+    s->saveSession(kHsOne, kAlice, QStringLiteral("ALICEDEV"),
+                   QStringLiteral("alice-token-fixture"));
+    s->saveSession(kHsTwo, kBob, QStringLiteral("BOBDEV"),
+                   QStringLiteral("bob-token-fixture"));
+    s->setStoreSlugFor(kAlice, storeSlug);
+    app.switchToAccount(kAlice);
+    QTRY_VERIFY(!app.accountSwitching());
+    QTRY_VERIFY(app.loggedIn());
 }
 }
 
@@ -273,6 +303,93 @@ private Q_SLOTS:
         QTRY_VERIFY2_WITH_TIMEOUT(
             !QFile::exists(positions),
             "sign-out left the saved positions under the recorded root", 5000);
+    }
+
+    void accountFilesOpenUnderTheRecordedRoot()
+    {
+        ScriptedLabsBridge bridge;
+        BridgeScope bridgeScope(&bridge);
+        LabsEnvScope env(true);
+        AppController app(AppController::MockBackend, false, inMemoryKeyring());
+        signInAliceAt(app, QStringLiteral("Alice_open"));
+        const auto alice = identityOf(app, kAlice);
+        QVERIFY(alice.accountRoot != matrix::app_data::accountRoot(kAlice));
+        QTRY_COMPARE(app.gif()->starredStore()->currentDirectory(),
+                     matrix::app_data::starredGifsDir(alice.accountRoot));
+    }
+
+    void signOutDeletesAccountFilesUnderTheRecordedRootOnceTheRecordIsGone()
+    {
+        ScriptedLabsBridge bridge;
+        BridgeScope bridgeScope(&bridge);
+        LabsEnvScope env(true);
+        AppController app(AppController::MockBackend, false, inMemoryKeyring());
+        signInAliceAt(app, QStringLiteral("Alice_gone"));
+        const auto alice = identityOf(app, kAlice);
+        QVERIFY(alice.accountRoot != matrix::app_data::accountRoot(kAlice));
+        const QStringList files = accountFilesUnder(alice.accountRoot);
+        for (const QString &file : files)
+            QVERIFY(touch(file));
+
+        // A Rust sign-out drops the record before loggedOut is delivered.
+        QVERIFY(app.settings()->clearSessionForAccount(kAlice));
+        app.auth()->logout();
+
+        for (const QString &file : files) {
+            QTRY_VERIFY2_WITH_TIMEOUT(!QFileInfo::exists(file),
+                                      qPrintable(file), 5000);
+        }
+        QVERIFY(!QFileInfo::exists(alice.accountRoot));
+    }
+
+    void signInMovesAccountFilesFromTheDerivedRoot()
+    {
+        ScriptedLabsBridge bridge;
+        BridgeScope bridgeScope(&bridge);
+        LabsEnvScope env(true);
+        AppController app(AppController::MockBackend, false, inMemoryKeyring());
+        const QStringList legacy =
+            accountFilesUnder(matrix::app_data::accountRoot(kAlice));
+        for (const QString &file : legacy)
+            QVERIFY(touch(file, "{}"));
+        QVERIFY(touch(legacy.at(1), "moved"));
+
+        signInAliceAt(app, QStringLiteral("Alice_moved"));
+
+        const auto alice = identityOf(app, kAlice);
+        QVERIFY(alice.accountRoot != matrix::app_data::accountRoot(kAlice));
+        const QStringList recorded = accountFilesUnder(alice.accountRoot);
+        for (int i = 0; i < legacy.size(); ++i) {
+            QVERIFY2(!QFileInfo::exists(legacy.at(i)), qPrintable(legacy.at(i)));
+            QVERIFY2(QFileInfo::exists(recorded.at(i)), qPrintable(recorded.at(i)));
+        }
+        QFile marker(recorded.at(1));
+        QVERIFY(marker.open(QIODevice::ReadOnly));
+        QCOMPARE(marker.readAll(), QByteArray("moved"));
+    }
+
+    void signInLeavesAnotherAccountsRecordedRootAlone()
+    {
+        ScriptedLabsBridge bridge;
+        BridgeScope bridgeScope(&bridge);
+        LabsEnvScope env(true);
+        AppController app(AppController::MockBackend, false, inMemoryKeyring());
+        SettingsManager *s = app.settings();
+        s->saveSession(kHsTwo, kBob, QStringLiteral("BOBDEV"),
+                       QStringLiteral("bob-token-fixture"));
+        s->setStoreSlugFor(kBob, matrix::app_data::safeUserSlug(kAlice));
+        const QString shared = matrix::app_data::accountRoot(kAlice);
+        QCOMPARE(identityOf(app, kBob).accountRoot, shared);
+        const QString bobsFile = matrix::app_data::bridgeLabelsFile(shared);
+        QVERIFY(touch(bobsFile, "bob"));
+
+        signInAliceAt(app, QStringLiteral("Alice_other"));
+        app.auth()->logout();
+        QTRY_VERIFY(!app.accountSwitching());
+
+        QFile file(bobsFile);
+        QVERIFY(file.open(QIODevice::ReadOnly));
+        QCOMPARE(file.readAll(), QByteArray("bob"));
     }
 
     void aNonLiveAccountWhoseSignInIsStillBeingWrittenTakesTheLiveRemoval()

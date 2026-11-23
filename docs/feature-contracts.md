@@ -90,6 +90,15 @@ NOT TESTED**. Automated tests named in commits do not establish live behavior.
   left unresolved rather than assigned to the wrong device.
 
 ### Authentication and lifecycle
+- **Per-account files live under the RECORDED account root**, the directory
+  the saved record's store slug names (where the SDK store is):
+  `bridge-labels.json`, `starred-gifs/`, `scroll-positions.json`. Resolve it
+  with `AppController::accountRootFor()` (the record; else the root cached at
+  sign-in, because a Rust sign-out drops the record before `loggedOut`; else
+  derivation), never from the user id. Sign-in moves a copy left under the
+  root derived from the user id by one rename, never over an existing one and
+  never out of another saved account's recorded root. Sign-out deletes them
+  under both roots and logs deleted/absent/failed; removal deletes both roots.
 
 - Password login, persistent SDK session/store, session restoration, logout,
   sync/initial-sync state, and account-scoped local reset paths
