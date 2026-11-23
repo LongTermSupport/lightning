@@ -905,8 +905,8 @@ private Q_SLOTS:
 
         QQuickItem *infoPanel = item("roomInfoPanel");
         QVERIFY(infoPanel);
-        for (const char *section : { "overview", "pinned", "people", "media",
-                                     "widgets" }) {
+        // The mock has no pinned events, so the panel refuses that section.
+        for (const char *section : { "overview", "people", "media", "widgets" }) {
             infoPanel->setProperty("section", QString::fromLatin1(section));
             pane->setProperty("infoOpen", true);
             QTest::qWait(400);
@@ -921,7 +921,7 @@ private Q_SLOTS:
         measure(QStringLiteral("settings"), item("settingsHeaderBar"),
                 item("settingsCloseButton"));
         m_controller->showMain();
-        expected += 8;
+        expected += 7;
 
         m_controller->settings()->setSpacesRailVisible(true);
         setMirrored(false);
