@@ -1302,6 +1302,9 @@ TestCase {
     function test_escapeClosesTheVolumePopup() {
         var row = createTemporaryObject(volumeComponent, test)
         var control = row.control
+        // A pointer left over the control by an earlier case hovers it on a
+        // later frame, and hover re-opens a dismissed popup.
+        mouseMove(row.after, row.after.width / 2, row.after.height / 2)
         control.forceActiveFocus(Qt.TabFocusReason)
         var slider = find(Overlay.overlay, "volumeUnderTestSlider")
         verify(slider, "no popup")
@@ -1309,6 +1312,8 @@ TestCase {
         keyClick(Qt.Key_Escape)
         tryVerify(function() { return !slider.visible }, 2000,
                   "Escape left the popup open")
+        wait(300)
+        verify(!slider.visible, "the popup came back after Escape")
         control.focus = false
         control.forceActiveFocus(Qt.TabFocusReason)
         tryVerify(function() { return slider.visible }, 2000)
