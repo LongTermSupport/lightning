@@ -291,7 +291,6 @@ Rectangle {
         spacing: 0
 
         Rectangle {
-            objectName: "roomInfoHeaderBar"
             Layout.fillWidth: true
             implicitHeight: AppTheme.headerBandHeight
             color: AppTheme.surface
@@ -331,7 +330,6 @@ Rectangle {
                     }
                 }
                 IconButton {
-                    objectName: "roomInfoCloseButton"
                     iconName: "close"
                     iconSize: 18
                     Accessible.name: qsTr("Close room information")

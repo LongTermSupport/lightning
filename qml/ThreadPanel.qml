@@ -345,7 +345,6 @@ Rectangle {
 
         Rectangle {
             Layout.fillWidth: true
-            objectName: "threadHeaderBar"
             implicitHeight: AppTheme.headerBandHeight
             color: panel.color
             RowLayout {
