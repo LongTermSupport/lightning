@@ -3753,6 +3753,9 @@ void SfuCallController::noteParticipantIdentities()
         if (!receiver.isNull())
             receiver->retainReceiveNames(QSet<QString>(keyed).unite(live.value(receiver.data())));
     }
+    if (!qEnvironmentVariableIsEmpty("LIGHTNING_CALL_TRACE"))
+        qCInfo(lcSfuCall) << "media key rings keyed=" << m_inboundRingKeys.size()
+                          << "parked=" << m_parkedKeys.size();
 #endif
 }
 

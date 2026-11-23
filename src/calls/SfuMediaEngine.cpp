@@ -8425,6 +8425,13 @@ void SfuMediaEngine::retainReceiveNames(const QSet<QString> &live)
         else
             it = m_recvCryptors.erase(it);
     }
+    if (!qEnvironmentVariableIsEmpty("LIGHTNING_CALL_TRACE")) {
+        QSet<const CallFrameCryptor *> rings;
+        for (const auto &cryptor : std::as_const(m_recvCryptors))
+            rings.insert(cryptor.get());
+        qCInfo(lcSfuMedia) << "receive rings n=" << rings.size()
+                           << "aliases=" << m_recvCryptors.size();
+    }
 }
 
 int SfuMediaEngine::receiveNameCountForTest() const
