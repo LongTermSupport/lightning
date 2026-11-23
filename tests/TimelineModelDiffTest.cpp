@@ -137,6 +137,8 @@ class TimelineModelDiffTest : public QObject
 
 private Q_SLOTS:
     void consecutiveDeletionsCollapseIntoOneRow();
+    void removedMessagesLeaveNoRowWithThePlaceholderOff();
+    void aRootRedactedInPlaceStaysAThreadEntry();
     void init();
     void cleanup();
 
@@ -382,6 +384,92 @@ void TimelineModelDiffTest::consecutiveDeletionsCollapseIntoOneRow()
     QVERIFY(leader(4));
     QVERIFY(leader(6));
     QCOMPARE(count(0), 0);
+}
+
+void TimelineModelDiffTest::removedMessagesLeaveNoRowWithThePlaceholderOff()
+{
+    const QDateTime t0 = QDateTime::fromMSecsSinceEpoch(1700000000000);
+    auto at = [&](TimelineEvent e, int secs) {
+        e.timestamp = t0.addSecs(secs);
+        return e;
+    };
+    auto removed = [&](const QString &id, int secs) {
+        auto e = at(makeEvent(id, QString()), secs);
+        e.sender = QStringLiteral("@bob:example.org");
+        e.redacted = true;
+        return e;
+    };
+    TimelineEvent divider;
+    divider.type = TimelineEvent::DateDivider;
+    divider.roomId = kRoom;
+    auto firstDay = at(divider, -86400);
+    firstDay.itemId = QStringLiteral("uid-day1");
+    auto secondDay = at(divider, -1);
+    secondDay.itemId = QStringLiteral("uid-day2");
+    auto root = removed(QStringLiteral("$root"), 40);
+    root.isThreadRoot = true;
+    root.threadReplyCount = 3;
+    auto read = removed(QStringLiteral("$r2"), 50);
+    read.readBy = { ReadReceipt{ QStringLiteral("@carol:example.org"), 1 } };
+    m_client->mirror = {
+        firstDay,
+        removed(QStringLiteral("$r0"), -86399),
+        secondDay,
+        at(makeEvent(QStringLiteral("$a"), QStringLiteral("m0")), 0),
+        removed(QStringLiteral("$r1"), 10),
+        at(makeEvent(QStringLiteral("$b"), QStringLiteral("m1")), 20),
+        root,
+        read,
+        at(makeEvent(QStringLiteral("$c"), QStringLiteral("m2")), 60),
+    };
+    m_model->setShowRedactions(false);
+    Q_EMIT m_client->timelineReset(kRoom);
+    QCOMPARE(m_model->rowCount(), 9);
+
+    const auto role = [this](int row, int r) { return m_model->data(m_model->index(row), r); };
+    const auto leader = [&](int row) {
+        return role(row, TimelineModel::DeletedGroupLeaderRole).toBool();
+    };
+    QCOMPARE(QList<bool>({ leader(1), leader(4), leader(6), leader(7) }),
+             QList<bool>({ false, false, true, false }));
+    QCOMPARE(role(6, TimelineModel::DeletedGroupCountRole).toInt(), 1);
+    QVERIFY2(role(5, TimelineModel::ContinuesSenderGroupRole).toBool(),
+             "a removed message between two of Alice's still splits her group");
+    QVERIFY2(!role(0, TimelineModel::DividerIntroducesVisibleContentRole).toBool(),
+             "a day holding only removed messages keeps its divider");
+    QVERIFY(role(2, TimelineModel::DividerIntroducesVisibleContentRole).toBool());
+    QCOMPARE(role(7, TimelineModel::ReadReceiptsRole).toList().size(), 0);
+    const QVariantList onRoot = role(6, TimelineModel::ReadReceiptsRole).toList();
+    QCOMPARE(onRoot.size(), 1);
+    QCOMPARE(onRoot.first().toMap().value(QStringLiteral("userId")).toString(),
+             QStringLiteral("@carol:example.org"));
+
+    m_model->setShowRedactions(true);
+    QCOMPARE(QList<bool>({ leader(1), leader(4), leader(6), leader(7) }),
+             QList<bool>({ true, true, true, false }));
+    QCOMPARE(role(6, TimelineModel::DeletedGroupCountRole).toInt(), 2);
+}
+
+void TimelineModelDiffTest::aRootRedactedInPlaceStaysAThreadEntry()
+{
+    auto root = makeEvent(QStringLiteral("$root"), QStringLiteral("root"));
+    root.isThreadRoot = true;
+    root.threadReplyCount = 4;
+    root.threadLatestPreview = QStringLiteral("latest reply");
+    m_client->mirror = { root, makeEvent(QStringLiteral("$after"), QStringLiteral("after")) };
+    m_model->setShowRedactions(false);
+    Q_EMIT m_client->timelineReset(kRoom);
+    QCOMPARE(m_model->rowCount(), 2);
+
+    auto gone = makeEvent(QStringLiteral("$root"), QString());
+    gone.redacted = true;
+    Q_EMIT m_client->eventChangedAt(kRoom, 0, gone);
+    const auto role = [this](int r) { return m_model->data(m_model->index(0), r); };
+    QVERIFY(role(TimelineModel::RedactedRole).toBool());
+    QVERIFY2(role(TimelineModel::IsThreadRootRole).toBool(),
+             "the redaction took the thread's entry point with it");
+    QCOMPARE(role(TimelineModel::ThreadReplyCountRole).toInt(), 4);
+    QVERIFY(role(TimelineModel::DeletedGroupLeaderRole).toBool());
 }
 
 void TimelineModelDiffTest::realCountExcludesVirtualRows()

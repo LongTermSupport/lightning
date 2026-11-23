@@ -164,6 +164,17 @@ private Q_SLOTS:
         QCOMPARE(f->group, QStringLiteral("Timeline"));
     }
 
+    void showRedactionsIsOnByDefaultInBothCopies()
+    {
+        QSettings().clear();
+        SettingsManager settings;
+        QCOMPARE(settings.property("showRedactions"), QVariant(true));
+        const Field *f = find(QStringLiteral("showRedactions"));
+        QVERIFY2(f, "showRedactions is missing from the schema table");
+        QCOMPARE(f->def, QVariant(true));
+        QCOMPARE(f->group, QStringLiteral("Timeline"));
+    }
+
     void exportThenImportRoundTrips()
     {
         const QByteArray bytes = buildDocument(docOf(sample()), QStringLiteral("2026-10-13T00:00:00Z"));

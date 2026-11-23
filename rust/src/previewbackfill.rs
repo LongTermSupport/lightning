@@ -146,6 +146,7 @@ impl Backfill {
 pub(crate) fn pick_preview(newest_first: &[TimelineEvent]) -> Option<Outcome> {
     let (event, ts) = newest_first
         .iter()
+        .filter(|event| !crate::timeline::is_redacted(event.raw()))
         .find_map(|event| Some((event, crate::event_ordering_stamp_ms(event)?)))?;
     let raw = event.raw();
     if raw.get_field::<String>("type").ok().flatten().as_deref() == Some("m.room.encrypted") {
@@ -675,6 +676,20 @@ mod tests {
         let page = vec![raw(churn(40)), raw(churn(30)), raw(message(20, "last words")),
                         raw(message(10, "older"))];
         assert_eq!(pick_preview(&page), Some(Outcome::Found("last words".to_owned(), 20, Some(uid("@a:x")))));
+    }
+
+    #[test]
+    fn a_removed_newest_message_gives_way_to_the_one_before_it() {
+        let removed = raw(json!({
+            "type": "m.room.message", "event_id": "$gone:x", "sender": "@b:x",
+            "origin_server_ts": 30, "content": {},
+            "unsigned": { "redacted_because": {
+                "type": "m.room.redaction", "event_id": "$r:x", "sender": "@b:x",
+                "origin_server_ts": 31, "redacts": "$gone:x",
+                "content": { "redacts": "$gone:x" } } }
+        }));
+        let page = vec![removed, raw(message(20, "still here"))];
+        assert_eq!(pick_preview(&page), Some(Outcome::Found("still here".to_owned(), 20, Some(uid("@a:x")))));
     }
 
     #[test]

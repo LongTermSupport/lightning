@@ -80,6 +80,7 @@
     { QStringLiteral("showMembershipEvents"), Kind::Bool, 0, 0, 3, QStringLiteral("Timeline"), 0, {  }, QVariant(true) },
     { QStringLiteral("showProfileChangeEvents"), Kind::Bool, 0, 0, 3, QStringLiteral("Timeline"), 0, {  }, QVariant(true) },
     { QStringLiteral("showHiddenEvents"), Kind::Bool, 0, 0, 3, QStringLiteral("Timeline"), 0, {  }, QVariant(false) },
+    { QStringLiteral("showRedactions"), Kind::Bool, 0, 0, 3, QStringLiteral("Timeline"), 0, {  }, QVariant(true) },
     { QStringLiteral("timelineAvatars"), Kind::Int, 0, 2, 3, QStringLiteral("Timeline"), 0, {  }, QVariant(int(0)) },
     { QStringLiteral("timelineReactions"), Kind::Int, 0, 2, 3, QStringLiteral("Timeline"), 0, {  }, QVariant(int(0)) },
     { QStringLiteral("timelineReadReceipts"), Kind::Int, 0, 2, 3, QStringLiteral("Timeline"), 0, {  }, QVariant(int(0)) },

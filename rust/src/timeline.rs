@@ -4037,7 +4037,15 @@ fn lock_tally(tally: &Mutex<ThreadTally>) -> std::sync::MutexGuard<'_, ThreadTal
     tally.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
 }
 
-fn is_redacted(raw: &matrix_sdk::ruma::serde::Raw<AnySyncTimelineEvent>) -> bool {
+fn bundled_thread_count(raw: &matrix_sdk::ruma::serde::Raw<AnySyncTimelineEvent>) -> Option<u64> {
+    raw.get_field::<serde_json::Value>("unsigned")
+        .ok()
+        .flatten()?
+        .pointer("/m.relations/m.thread/count")?
+        .as_u64()
+}
+
+pub(crate) fn is_redacted(raw: &matrix_sdk::ruma::serde::Raw<AnySyncTimelineEvent>) -> bool {
     raw.get_field::<serde_json::Value>("unsigned")
         .ok()
         .flatten()
@@ -4348,15 +4356,7 @@ async fn adopt_new_threads(
             .await
             .ok()
             .and_then(Result::ok);
-            let bundled = fetched.as_ref().and_then(|event| {
-                event
-                    .raw()
-                    .get_field::<serde_json::Value>("unsigned")
-                    .ok()
-                    .flatten()?
-                    .pointer("/m.relations/m.thread/count")?
-                    .as_u64()
-            });
+            let bundled = fetched.as_ref().and_then(|event| bundled_thread_count(event.raw()));
             let root_event = match fetched {
                 Some(event) => Some(event),
                 None => match room.event_cache().await {
@@ -5610,6 +5610,14 @@ fn event_item_to_json(
                     out["msgtype"] = "redacted".into();
                     out["redacted"] = true.into();
                     out["body"] = "".into();
+                    // matrix-sdk gives a redacted root no thread summary; the
+                    // server's bundled count keeps its thread reachable.
+                    if msg_like.thread_summary.is_none() {
+                        if let Some(count) = event.original_json().and_then(bundled_thread_count) {
+                            out["is_thread_root"] = true.into();
+                            out["thread_reply_count"] = count.into();
+                        }
+                    }
                 }
                 MsgLikeKind::UnableToDecrypt(encrypted) => {
                     out["msgtype"] = "encrypted".into();
@@ -10704,22 +10712,30 @@ mod hidden_event_tests {
     }
 
     async fn live_timeline(show_hidden: bool) -> (Timeline, Vec<(String, Value)>) {
+        live_timeline_of(
+            vec![
+                wire(ROOT, "m.room.message", json!({ "msgtype": "m.text", "body": "root" })),
+                hangup(),
+                custom(),
+                threaded_custom(),
+                wire("$after:hidden.example", "m.room.message", json!({ "msgtype": "m.text", "body": "after" })),
+            ],
+            show_hidden,
+        )
+        .await
+    }
+
+    async fn live_timeline_of(events: Vec<Value>, show_hidden: bool) -> (Timeline, Vec<(String, Value)>) {
         let server = MatrixMockServer::new().await;
         let client = server.client_builder().build().await;
         client.event_cache().subscribe().expect("event cache");
         let room = room_id!("!hidden:hidden.example");
         let mut response = v5::Response::new("pos-1".to_owned());
         let mut entry = v5::response::Room::default();
-        entry.timeline = [
-            wire(ROOT, "m.room.message", json!({ "msgtype": "m.text", "body": "root" })),
-            hangup(),
-            custom(),
-            threaded_custom(),
-            wire("$after:hidden.example", "m.room.message", json!({ "msgtype": "m.text", "body": "after" })),
-        ]
-        .iter()
-        .map(|v| Raw::from_json_string(v.to_string()).unwrap())
-        .collect();
+        entry.timeline = events
+            .iter()
+            .map(|v| Raw::from_json_string(v.to_string()).unwrap())
+            .collect();
         response.rooms.insert(room.to_owned(), entry);
         client
             .process_sliding_sync_test_helper(&response, &RequestedRequiredStates::default())
@@ -10782,5 +10798,43 @@ mod hidden_event_tests {
             assert_eq!(row["body"], format!("Unsupported event ({kind})"));
             assert!(row.get("formatted_body").is_none());
         }
+    }
+
+    fn removed(id: &str, unsigned: Value) -> Value {
+        let mut event = wire(id, "m.room.message", json!({}));
+        let mut unsigned = unsigned;
+        unsigned["redacted_because"] = json!({
+            "type": "m.room.redaction", "event_id": "$why:hidden.example",
+            "sender": "@bob:hidden.example", "origin_server_ts": 1_790_000_000_001u64,
+            "redacts": id, "content": { "redacts": id } });
+        event["unsigned"] = unsigned;
+        event
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn a_removed_thread_root_still_names_its_thread() {
+        let (_timeline, rows) = live_timeline_of(
+            vec![
+                removed(ROOT, json!({ "m.relations": { "m.thread": {
+                    "count": 2, "current_user_participated": false,
+                    "latest_event": wire("$reply:hidden.example", "m.room.message", json!({
+                        "msgtype": "m.text", "body": "reply",
+                        "m.relates_to": { "rel_type": "m.thread", "event_id": ROOT } })) } } })),
+                removed("$plain:hidden.example", json!({})),
+                wire("$after:hidden.example", "m.room.message", json!({ "msgtype": "m.text", "body": "after" })),
+            ],
+            false,
+        )
+        .await;
+        let row = |id: &str| rows.iter().find(|(i, _)| i == id).map(|(_, r)| r.clone())
+            .unwrap_or_else(|| panic!("{id} has no row: {rows:?}"));
+        let root = row(ROOT);
+        assert_eq!(root["redacted"], true);
+        assert_eq!(root["body"], "");
+        assert_eq!(root["is_thread_root"], true, "{root}");
+        assert_eq!(root["thread_reply_count"], 2);
+        let plain = row("$plain:hidden.example");
+        assert_eq!(plain["redacted"], true);
+        assert!(plain.get("is_thread_root").is_none(), "{plain}");
     }
 }

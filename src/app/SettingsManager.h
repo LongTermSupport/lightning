@@ -258,6 +258,8 @@ class SettingsManager : public QObject
                    NOTIFY showProfileChangeEventsChanged)
     Q_PROPERTY(bool showHiddenEvents READ showHiddenEvents
                    WRITE setShowHiddenEvents NOTIFY showHiddenEventsChanged)
+    Q_PROPERTY(bool showRedactions READ showRedactions
+                   WRITE setShowRedactions NOTIFY showRedactionsChanged)
     Q_PROPERTY(bool collapseEmbeds READ collapseEmbeds WRITE setCollapseEmbeds
                    NOTIFY collapseEmbedsChanged)
     Q_PROPERTY(int bubbleScope READ bubbleScope WRITE setBubbleScope
@@ -740,6 +742,8 @@ public:
     void setShowProfileChangeEvents(bool v);
     bool showHiddenEvents() const;
     void setShowHiddenEvents(bool v);
+    bool showRedactions() const;
+    void setShowRedactions(bool v);
     bool collapseEmbeds() const;
     void setCollapseEmbeds(bool v);
     static constexpr int kTimelineShow = 0;
@@ -1111,6 +1115,7 @@ Q_SIGNALS:
     void showMembershipEventsChanged();
     void showProfileChangeEventsChanged();
     void showHiddenEventsChanged();
+    void showRedactionsChanged();
     void collapseEmbedsChanged();
     void bubbleScopeChanged();
     void timelineAvatarsChanged();

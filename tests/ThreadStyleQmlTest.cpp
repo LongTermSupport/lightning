@@ -297,6 +297,33 @@ ApplicationWindow {
         QTRY_VERIFY(m_controller->thread()->model()->rowCount() > 2);
     }
 
+    void showRedactionsReopensTheOpenThreadPanel()
+    {
+        QString root;
+        openThreadPanel(&root);
+        const QString composite = MatrixClient::threadTimelineId(
+            QString::fromLatin1(kDevRoom), root);
+        QSignalSpy resets(mock(), &MatrixClient::timelineReset);
+        QSignalSpy roomReloads(m_controller->timeline(), &QAbstractItemModel::modelReset);
+        QVERIFY(m_controller->settings()->setProperty("showRedactions", false));
+        const auto reset = [&](const QString &id) {
+            for (const auto &args : resets)
+                if (args.at(0).toString() == id)
+                    return true;
+            return false;
+        };
+        QTRY_VERIFY2(reset(composite), "the open thread panel kept its old filter");
+        QVERIFY2(!roomReloads.isEmpty(), "the room timeline was not reopened");
+        QVERIFY(!m_controller->thread()->model()->showRedactions());
+        QVERIFY(!m_controller->timeline()->showRedactions());
+        QCOMPARE(m_controller->thread()->rootEventId(), root);
+
+        QVERIFY(m_controller->settings()->setProperty("showHiddenEvents", true));
+        QTRY_VERIFY2(m_controller->timeline()->showRedactions(),
+                     "Show hidden events must bring removed messages back");
+        QVERIFY(m_controller->thread()->model()->showRedactions());
+    }
+
     void threadStyleSettingPersistsAndSwitchesTheOpenTimeline()
     {
         QCOMPARE(m_controller->settings()->property("threadStyle").toInt(), 0);

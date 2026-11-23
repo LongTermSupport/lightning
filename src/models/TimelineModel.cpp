@@ -199,7 +199,8 @@ int TimelineModel::previousMessageRowForGrouping(int row) const
     for (int probe = row - 1; probe >= 0; --probe) {
         const auto &candidate = m_events.at(probe);
         if (candidate.type == TimelineEvent::ReadMarker
-            || isThreadReplyAwaitingKeys(candidate))
+            || isThreadReplyAwaitingKeys(candidate)
+            || isOmittedRedaction(candidate))
             continue;
         if (!isVisualMessage(candidate))
             return -1;
@@ -213,7 +214,8 @@ int TimelineModel::nextMessageRowForGrouping(int row) const
     for (int probe = row + 1; probe < m_events.size(); ++probe) {
         const auto &candidate = m_events.at(probe);
         if (candidate.type == TimelineEvent::ReadMarker
-            || isThreadReplyAwaitingKeys(candidate))
+            || isThreadReplyAwaitingKeys(candidate)
+            || isOmittedRedaction(candidate))
             continue;
         if (!isVisualMessage(candidate))
             return -1;
@@ -724,7 +726,7 @@ int TimelineModel::stateGroupLeaderRow(int row) const
         }
         if (e.type == TimelineEvent::DateDivider && !dividerJoinsStateRun(probe))
             break;
-        if (e.isVirtual()) {
+        if (e.isVirtual() || isOmittedRedaction(e)) {
             --probe;
             continue;
         }
@@ -752,7 +754,7 @@ bool TimelineModel::dividerJoinsStateRun(int dividerRow) const
                 return visible;
             if (isVisibleStateEntry(e))
                 visible = true;
-            else if (!e.isVirtual()
+            else if (!e.isVirtual() && !isOmittedRedaction(e)
                      && (e.type != TimelineEvent::StateChange || isCallEventRow(e)))
                 return visible && !needDivider;
         }
@@ -761,10 +763,20 @@ bool TimelineModel::dividerJoinsStateRun(int dividerRow) const
     return daySide(dividerRow - 1, -1, false) && daySide(dividerRow + 1, 1, true);
 }
 
+// A redacted thread root keeps its row with the setting off, or its thread
+// would have no entry point in the timeline (§8).
+bool TimelineModel::isOmittedRedaction(const TimelineEvent &e) const
+{
+    return !m_showRedactions && e.redacted && !e.isThreadRoot
+        && !m_threadReplyCounts.contains(e.eventId);
+}
+
 int TimelineModel::deletedGroupLeaderRow(int row) const
 {
     if (row < 0 || row >= m_events.size() || !m_events.at(row).redacted)
         return -1;
+    if (!m_showRedactions)
+        return row;
 
     int leader = row;
     int probe = row - 1;
@@ -790,6 +802,8 @@ int TimelineModel::deletedGroupLengthFrom(int leaderRow) const
 {
     if (leaderRow < 0 || leaderRow >= m_events.size())
         return 0;
+    if (!m_showRedactions)
+        return m_events.at(leaderRow).redacted ? 1 : 0;
     int count = 0;
     for (int row = leaderRow; row < m_events.size(); ++row) {
         const auto &e = m_events.at(row);
@@ -880,7 +894,7 @@ QVariantList TimelineModel::stateGroupEntriesFrom(int leaderRow) const
         }
         if (e.type == TimelineEvent::DateDivider && !dividerJoinsStateRun(i))
             break;
-        if (e.isVirtual()) {
+        if (e.isVirtual() || isOmittedRedaction(e)) {
             ++i;
             continue;
         }
@@ -896,7 +910,7 @@ bool TimelineModel::rowHostsReceipts(int row) const
     const auto &e = m_events.at(row);
     if (e.isVirtual() || e.type == TimelineEvent::DateDivider)
         return false;
-    if (isThreadReplyAwaitingKeys(e))
+    if (isThreadReplyAwaitingKeys(e) || isOmittedRedaction(e))
         return false;
     if (isCallEventRow(e))
         return true;
@@ -1222,7 +1236,7 @@ bool TimelineModel::dividerIntroducesVisibleContent(int dividerRow) const
         const auto &e = m_events.at(row);
         if (e.type == TimelineEvent::DateDivider && !readMarker)
             return false;
-        if (e.isVirtual())
+        if (e.isVirtual() || isOmittedRedaction(e))
             continue;
         if (isCallEventRow(e))
             return true;
@@ -1282,6 +1296,16 @@ void TimelineModel::setShowProfileChangeEvents(bool show)
     m_showProfileChangeEvents = show;
     Q_EMIT showProfileChangeEventsChanged();
     refreshActivityPresentation();
+}
+
+void TimelineModel::setShowRedactions(bool show)
+{
+    if (m_showRedactions == show)
+        return;
+    m_showRedactions = show;
+    if (rowCount() > 0)
+        Q_EMIT dataChanged(index(0), index(rowCount() - 1));
+    Q_EMIT firstUnreadShownChanged();
 }
 
 void TimelineModel::refreshActivityPresentation()
@@ -1720,6 +1744,8 @@ QVariant TimelineModel::data(const QModelIndex &index, int role) const
         return stateGroupEntriesFrom(leader);
     }
     case DeletedGroupLeaderRole: {
+        if (isOmittedRedaction(e))
+            return false;
         const int leader = deletedGroupLeaderRow(raw);
         return leader < 0 || leader == raw;
     }
@@ -2336,7 +2362,24 @@ void TimelineModel::onEventChangedAt(const QString &roomId, int index,
     forgetRenderedHtml(m_events.at(index).eventId);
     forgetRenderedHtml(event.eventId);
     const bool hostedBefore = rowHostsReceipts(index);
+    // matrix-sdk drops the thread summary when it redacts a root in place.
+    const bool keepThread = event.redacted && !event.isThreadRoot
+        && m_events.at(index).isThreadRoot
+        && m_events.at(index).eventId == event.eventId;
+    const TimelineEvent before = keepThread ? m_events.at(index) : TimelineEvent{};
     m_events[index] = event;
+    if (keepThread) {
+        auto &kept = m_events[index];
+        kept.isThreadRoot = true;
+        kept.threadReplyCount = before.threadReplyCount;
+        kept.threadLatestPreview = before.threadLatestPreview;
+        kept.threadLatestKind = before.threadLatestKind;
+        kept.threadLatestSender = before.threadLatestSender;
+        kept.threadLatestSenderDisplayName = before.threadLatestSenderDisplayName;
+        kept.threadLatestSenderAvatarUrl = before.threadLatestSenderAvatarUrl;
+        kept.threadLatestTimestamp = before.threadLatestTimestamp;
+        kept.threadUnread = before.threadUnread;
+    }
     noteSenderProfile(event);
     invalidateRowIndex();
     invalidateReceiptIndex();
