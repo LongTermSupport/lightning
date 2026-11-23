@@ -9880,7 +9880,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>ImageViewerOverlay</name>
     <message>
-        <location filename="../qml/ImageViewerOverlay.qml" line="+356"/>
+        <location filename="../qml/ImageViewerOverlay.qml" line="+367"/>
         <source>Copy image</source>
         <translation>Bild kopieren</translation>
     </message>
@@ -11716,7 +11716,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Download abgebrochen.</translation>
     </message>
     <message>
-        <location line="+187"/>
+        <location line="+194"/>
         <source>The destination folder is not available.</source>
         <translation>Der Zielordner ist nicht verfügbar.</translation>
     </message>
@@ -12011,7 +12011,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>MediaHistoryModel</name>
     <message>
-        <location filename="../src/models/MediaHistoryModel.cpp" line="+121"/>
+        <location filename="../src/models/MediaHistoryModel.cpp" line="+134"/>
         <source>Today</source>
         <translation>Heute</translation>
     </message>
@@ -27402,7 +27402,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Anruf-Audio gestoppt: Die Tonausgabe dieses Computers wurde getrennt. Es läuft weiter, sobald wieder eine Ausgabe verfügbar ist; falls nicht, verlasse den Anruf und tritt erneut bei.</translation>
     </message>
     <message>
-        <location line="+2172"/>
+        <location line="+2175"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>Der Ton der Bildschirmfreigabe ist aus: Diesem Paket fehlen die nötigen Audioaufnahme-Plugins.</translation>
     </message>
@@ -30105,7 +30105,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>StickerPackEditor</name>
     <message>
-        <location filename="../qml/StickerPackEditor.qml" line="+109"/>
+        <location filename="../qml/StickerPackEditor.qml" line="+110"/>
         <source>Export pack</source>
         <translation>Paket exportieren</translation>
     </message>
@@ -30505,7 +30505,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>StickerPackManager</name>
     <message>
-        <location filename="../src/stickers/StickerPackManager.cpp" line="+1206"/>
+        <location filename="../src/stickers/StickerPackManager.cpp" line="+1207"/>
         <source>Enter a name.</source>
         <translation>Gib einen Namen ein.</translation>
     </message>
@@ -30525,7 +30525,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Ein anderes Bild in diesem Paket verwendet diesen Namen bereits.</translation>
     </message>
     <message>
-        <location line="+353"/>
+        <location line="+359"/>
         <source>You do not have permission to change this pack.</source>
         <translation>Du darfst dieses Paket nicht ändern.</translation>
     </message>
@@ -30618,7 +30618,15 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+12"/>
+        <location line="+9"/>
+        <source>%n cancelled.</source>
+        <translation>
+            <numerusform>%n abgebrochen.</numerusform>
+            <numerusform>%n abgebrochen.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+5"/>
         <source>%n skipped.</source>
         <translation>
             <numerusform>%n übersprungen.</numerusform>
@@ -30684,8 +30692,8 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-26"/>
-        <location line="+27"/>
+        <location line="-28"/>
+        <location line="+29"/>
         <source>%n failed.</source>
         <translation>
             <numerusform>%n fehlgeschlagen.</numerusform>
@@ -30693,7 +30701,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-30"/>
+        <location line="-32"/>
         <source>%n may have been added; the connection failed before the server answered.</source>
         <translation>
             <numerusform>%n wurde möglicherweise hinzugefügt; die Verbindung brach ab, bevor der Server antwortete.</numerusform>
@@ -30701,7 +30709,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         </translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Retry adds any that are missing without uploading again.</source>
         <translation>„Erneut versuchen“ fügt fehlende hinzu, ohne erneut hochzuladen.</translation>
     </message>
@@ -30897,7 +30905,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>%1 von %2</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>That could not be changed. Try again in a moment.</source>
         <translation>Das konnte nicht geändert werden. Versuche es gleich noch einmal.</translation>
     </message>
@@ -32602,7 +32610,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Diesen Thread als gelesen markieren</translation>
     </message>
     <message>
-        <location line="+1332"/>
+        <location line="+1328"/>
         <source>Jump to the newest reply</source>
         <translation>Zur neuesten Antwort springen</translation>
     </message>
@@ -32615,7 +32623,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         </translation>
     </message>
     <message>
-        <location line="-1727"/>
+        <location line="-1723"/>
         <source>This room has been replaced.</source>
         <translation>Dieser Raum wurde ersetzt.</translation>
     </message>
@@ -32719,12 +32727,11 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <location line="-90"/>
         <location line="+92"/>
         <location line="+376"/>
-        <location line="+72"/>
         <source>Replies</source>
         <translation>Antworten</translation>
     </message>
     <message>
-        <location line="-538"/>
+        <location line="-466"/>
         <source>Unread</source>
         <translation>Ungelesen</translation>
     </message>
@@ -32813,7 +32820,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Wiederholen</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+21"/>
         <source>Search replies</source>
         <translation>Suchantworten</translation>
     </message>

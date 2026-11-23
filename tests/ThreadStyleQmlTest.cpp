@@ -205,6 +205,25 @@ private slots:
         QTRY_COMPARE(label->property("replies").toInt(), live);
     }
 
+    void theSearchRowDoesNotRepeatTheRepliesHeading()
+    {
+        QString root;
+        openThreadPanel(&root);
+        auto *row = item("threadReplySearchRow");
+        QVERIFY(row);
+        QTRY_VERIFY(row->isVisible());
+        QList<QQuickItem *> pending{row};
+        QStringList texts;
+        while (!pending.isEmpty()) {
+            QQuickItem *next = pending.takeLast();
+            if (next->isVisible())
+                texts.append(next->property("text").toString());
+            pending.append(next->childItems());
+        }
+        QVERIFY2(!texts.contains(QStringLiteral("Replies")),
+                 "the search row repeats the divider's Replies heading");
+    }
+
     void initTestCase()
     {
         QVERIFY(m_home.isValid());

@@ -9840,7 +9840,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>ImageViewerOverlay</name>
     <message>
-        <location filename="../qml/ImageViewerOverlay.qml" line="+356"/>
+        <location filename="../qml/ImageViewerOverlay.qml" line="+367"/>
         <source>Copy image</source>
         <translation>复制图片</translation>
     </message>
@@ -11671,7 +11671,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>已取消下载。</translation>
     </message>
     <message>
-        <location line="+187"/>
+        <location line="+194"/>
         <source>The destination folder is not available.</source>
         <translation>目标文件夹不可用。</translation>
     </message>
@@ -11962,7 +11962,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MediaHistoryModel</name>
     <message>
-        <location filename="../src/models/MediaHistoryModel.cpp" line="+121"/>
+        <location filename="../src/models/MediaHistoryModel.cpp" line="+134"/>
         <source>Today</source>
         <translation>今天</translation>
     </message>
@@ -27279,7 +27279,7 @@ Note: importing keys does not verify this session.</source>
         <translation>通话声音已停止：此电脑的声音输出已断开。当有可用输出时将恢复；如果没有恢复，请离开并重新加入通话。</translation>
     </message>
     <message>
-        <location line="+2172"/>
+        <location line="+2175"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>屏幕共享声音已关闭：此软件包缺少所需的音频捕获插件。</translation>
     </message>
@@ -27364,7 +27364,7 @@ Note: importing keys does not verify this session.</source>
         <translation>参与者</translation>
     </message>
     <message>
-        <location line="-4591"/>
+        <location line="-4594"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>该房间已加密，并且在此版本中尚不支持加密呼叫。</translation>
     </message>
@@ -29993,7 +29993,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>StickerPackEditor</name>
     <message>
-        <location filename="../qml/StickerPackEditor.qml" line="+109"/>
+        <location filename="../qml/StickerPackEditor.qml" line="+110"/>
         <source>Export pack</source>
         <translation>导出表情包</translation>
     </message>
@@ -30384,7 +30384,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>StickerPackManager</name>
     <message>
-        <location filename="../src/stickers/StickerPackManager.cpp" line="+1206"/>
+        <location filename="../src/stickers/StickerPackManager.cpp" line="+1207"/>
         <source>Enter a name.</source>
         <translation>请输入名称。</translation>
     </message>
@@ -30404,7 +30404,7 @@ Note: importing keys does not verify this session.</source>
         <translation>此表情包中的另一张图片已使用该名称。</translation>
     </message>
     <message>
-        <location line="+353"/>
+        <location line="+359"/>
         <source>You do not have permission to change this pack.</source>
         <translation>您无权更改此包。</translation>
     </message>
@@ -30496,7 +30496,14 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+12"/>
+        <location line="+9"/>
+        <source>%n cancelled.</source>
+        <translation>
+            <numerusform>已取消 %n 个。</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+5"/>
         <source>%n skipped.</source>
         <translation>
             <numerusform>已跳过 %n 个。</numerusform>
@@ -30555,22 +30562,22 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-26"/>
-        <location line="+27"/>
+        <location line="-28"/>
+        <location line="+29"/>
         <source>%n failed.</source>
         <translation>
             <numerusform>%n 项失败。</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-30"/>
+        <location line="-32"/>
         <source>%n may have been added; the connection failed before the server answered.</source>
         <translation>
             <numerusform>可能已添加 %n 张；在服务器响应前连接已中断。</numerusform>
         </translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Retry adds any that are missing without uploading again.</source>
         <translation>重试会添加缺少的图片，无需重新上传。</translation>
     </message>
@@ -30764,7 +30771,7 @@ Note: importing keys does not verify this session.</source>
         <translation>%1 / %2</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>That could not be changed. Try again in a moment.</source>
         <translation>无法更改。请稍后再试。</translation>
     </message>
@@ -32447,7 +32454,7 @@ Note: importing keys does not verify this session.</source>
         <translation>将此话题标为已读</translation>
     </message>
     <message>
-        <location line="+1332"/>
+        <location line="+1328"/>
         <source>Jump to the newest reply</source>
         <translation>跳到最新回复</translation>
     </message>
@@ -32459,7 +32466,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message>
-        <location line="-1727"/>
+        <location line="-1723"/>
         <source>This room has been replaced.</source>
         <translation>此房间已被替换。</translation>
     </message>
@@ -32562,12 +32569,11 @@ Note: importing keys does not verify this session.</source>
         <location line="-90"/>
         <location line="+92"/>
         <location line="+376"/>
-        <location line="+72"/>
         <source>Replies</source>
         <translation>回复</translation>
     </message>
     <message>
-        <location line="-538"/>
+        <location line="-466"/>
         <source>Unread</source>
         <translation>未读</translation>
     </message>
@@ -32655,7 +32661,7 @@ Note: importing keys does not verify this session.</source>
         <translation>重试</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+21"/>
         <source>Search replies</source>
         <translation>搜索回复</translation>
     </message>

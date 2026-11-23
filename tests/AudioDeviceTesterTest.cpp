@@ -2,7 +2,12 @@
 #include <QSignalSpy>
 #include <QtTest/QtTest>
 
+#include "app/SettingsManager.h"
 #include "calls/AudioDeviceTester.h"
+#include "calls/CallDeviceController.h"
+
+#include <QStandardPaths>
+#include <QTemporaryDir>
 
 #ifdef HAVE_LIGHTNING_WEBRTC
 #include "calls/GstBootstrap.h"
@@ -95,6 +100,17 @@ class AudioDeviceTesterTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
+    void initTestCase()
+    {
+        QStandardPaths::setTestModeEnabled(true);
+        QVERIFY(m_configHome.isValid());
+        qputenv("XDG_CONFIG_HOME", m_configHome.path().toUtf8());
+        QCoreApplication::setOrganizationName(
+            QStringLiteral("MatrixClientTests"));
+        QCoreApplication::setApplicationName(
+            QStringLiteral("audio-device-tester-test"));
+    }
+
     void nothingStartsBeforeTheRuntimeIsKnown()
     {
         AudioDeviceTester tester;
@@ -297,6 +313,39 @@ private Q_SLOTS:
         QTest::qWait(300);
     }
 
+    void aDeviceListNotificationDoesNotRestartTheTest()
+    {
+        if (!gstreamerWithMeter())
+            QSKIP("GStreamer or its `level` element is absent");
+        SettingsManager settings;
+        CallDeviceController devices;
+        devices.setSettings(&settings);
+        devices.selectMicrophone(QString());
+        devices.selectSpeaker(QString());
+        AudioDeviceTester tester;
+        tester.setDeviceController(&devices);
+        tester.setTestSourceMode(true);
+        tester.setRuntimeAvailable(true);
+        QVERIFY(tester.startMicrophoneTest(true));
+        QTRY_COMPARE_WITH_TIMEOUT(tester.startsReportedForTest(), 1, 8000);
+
+        for (int i = 0; i < 10; ++i) {
+            Q_EMIT devices.selectionChanged();
+            QTest::qWait(100);
+        }
+        QTest::qWait(1000);
+        QCOMPARE(tester.startsReportedForTest(), 1);
+
+        devices.selectMicrophone(
+            QStringLiteral("lightning-test-mic-not-connected"));
+        QTRY_COMPARE_WITH_TIMEOUT(tester.startsReportedForTest(), 2, 8000);
+        QTest::qWait(1000);
+        QCOMPARE(tester.startsReportedForTest(), 2);
+        QCOMPARE(tester.mode(), AudioDeviceTester::Mode::Loopback);
+        tester.stop();
+        devices.selectMicrophone(QString());
+    }
+
     void aMicrophoneTestNeverWaitsOnASlowSoundServer()
     {
         if (!gstreamerWithMeter())
@@ -402,6 +451,9 @@ private Q_SLOTS:
         }
     }
 #endif
+
+private:
+    QTemporaryDir m_configHome;
 };
 
 QTEST_GUILESS_MAIN(AudioDeviceTesterTest)

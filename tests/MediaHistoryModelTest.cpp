@@ -69,6 +69,20 @@ public:
     quint64 nextOp = 100;
 };
 
+class NamedClient : public MockMatrixClient
+{
+public:
+    QString displayNameFor(const QString &roomId,
+                           const QString &userId) const override
+    {
+        return named && roomId == QLatin1String("!r:example.org")
+                && userId == QLatin1String("@a:example.org")
+            ? QStringLiteral("Alice")
+            : QString();
+    }
+    bool named = true;
+};
+
 class MediaHistoryModelTest : public QObject
 {
     Q_OBJECT
@@ -336,6 +350,63 @@ private Q_SLOTS:
         QCOMPARE(model.imageIndexForRow(3), -1);
         QCOMPARE(model.imageIndexForRow(99), -1);
         QCOMPARE(model.imageIndexForRow(-1), -1);
+    }
+
+    void theGridAndViewerNameTheSenderLikeTheTimeline()
+    {
+        NamedClient client;
+        QVERIFY(login(client));
+        MediaHistoryModel model;
+        model.setClient(&client);
+        model.setRoomId(QStringLiteral("!r:example.org"));
+        Q_EMIT client.mediaHistoryPage(
+            0, QStringLiteral("!r:example.org"),
+            { keyedEntry(QStringLiteral("$img1"), QStringLiteral("image")),
+              keyedEntry(QStringLiteral("$img2"), QStringLiteral("image"),
+                         QStringLiteral("@b:example.org")) },
+            2, 2, 0, true, false);
+        const int role = model.roleNames().key("sender");
+        QCOMPARE(model.data(model.index(0), role).toString(),
+                 QStringLiteral("Alice"));
+        QCOMPARE(model.data(model.index(1), role).toString(),
+                 QStringLiteral("b"));
+
+        const QVariantList images = model.imageEntries();
+        QCOMPARE(images.size(), 2);
+        QCOMPARE(images.at(0).toMap().value(QStringLiteral("sender")).toString(),
+                 QStringLiteral("Alice"));
+        QCOMPARE(images.at(1).toMap().value(QStringLiteral("sender")).toString(),
+                 QStringLiteral("b"));
+    }
+
+    void sendersAreRenamedWhenTheRoomsMembersArrive()
+    {
+        NamedClient client;
+        client.named = false;
+        QVERIFY(login(client));
+        MediaHistoryModel model;
+        model.setClient(&client);
+        model.setRoomId(QStringLiteral("!r:example.org"));
+        Q_EMIT client.mediaHistoryPage(
+            0, QStringLiteral("!r:example.org"),
+            { keyedEntry(QStringLiteral("$img1"), QStringLiteral("image")),
+              keyedEntry(QStringLiteral("$file"), QStringLiteral("file")) },
+            2, 2, 0, true, false);
+        const int role = model.roleNames().key("sender");
+        QCOMPARE(model.data(model.index(0), role).toString(), QStringLiteral("a"));
+        QSignalSpy changed(&model, &QAbstractItemModel::dataChanged);
+
+        Q_EMIT client.membersChanged(QStringLiteral("!other:example.org"));
+        QCOMPARE(changed.count(), 0);
+
+        client.named = true;
+        Q_EMIT client.membersChanged(QStringLiteral("!r:example.org"));
+        QCOMPARE(changed.count(), 1);
+        QCOMPARE(changed.first().at(0).toModelIndex().row(), 0);
+        QCOMPARE(changed.first().at(1).toModelIndex().row(), model.rowCount() - 1);
+        QVERIFY(changed.first().at(2).value<QList<int>>().contains(role));
+        QCOMPARE(model.data(model.index(0), role).toString(), QStringLiteral("Alice"));
+        QCOMPARE(model.property("sendersRevision").toInt(), 1);
     }
 
     void theImageIndexFollowsTheFilteredView()

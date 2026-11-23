@@ -38,6 +38,17 @@ Popup {
 
     property var entries: []
     property int currentIndex: -1
+    // A Media-tab entry carries its sender's id: re-read the name when the
+    // room's members arrive after the viewer opened.
+    readonly property string currentSender: {
+        if (current === null)
+            return ""
+        var history = app.mediaHistory
+        var id = current.senderId || ""
+        if (id.length > 0 && history && history.sendersRevision >= 0)
+            return history.senderName(id)
+        return current.sender || ""
+    }
     readonly property var current:
         (currentIndex >= 0 && currentIndex < entries.length)
         ? entries[currentIndex] : null
@@ -724,9 +735,9 @@ Popup {
                     textFormat: Text.PlainText
                     Layout.fillWidth: true
                     text: viewer.current !== null
-                          && (viewer.current.sender || "").length > 0
+                          && viewer.currentSender.length > 0
                           ? qsTr("%1 · %2")
-                                .arg(viewer.current.sender)
+                                .arg(viewer.currentSender)
                                 .arg(Qt.locale(AppLocale.name).toString(viewer.current.timestamp,
                                                        "d MMM yyyy hh:mm"))
                           : viewer.current !== null

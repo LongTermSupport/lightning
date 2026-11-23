@@ -9880,7 +9880,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>ImageViewerOverlay</name>
     <message>
-        <location filename="../qml/ImageViewerOverlay.qml" line="+356"/>
+        <location filename="../qml/ImageViewerOverlay.qml" line="+367"/>
         <source>Copy image</source>
         <translation>छवि कॉपी करें</translation>
     </message>
@@ -11716,7 +11716,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>डाउनलोड रद्द किया गया।</translation>
     </message>
     <message>
-        <location line="+187"/>
+        <location line="+194"/>
         <source>The destination folder is not available.</source>
         <translation>गंतव्य फ़ोल्डर उपलब्ध नहीं है।</translation>
     </message>
@@ -12011,7 +12011,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MediaHistoryModel</name>
     <message>
-        <location filename="../src/models/MediaHistoryModel.cpp" line="+121"/>
+        <location filename="../src/models/MediaHistoryModel.cpp" line="+134"/>
         <source>Today</source>
         <translation>आज</translation>
     </message>
@@ -27387,7 +27387,7 @@ Note: importing keys does not verify this session.</source>
         <translation>कॉल का ऑडियो रुक गया: इस कंप्यूटर का साउंड आउटपुट डिस्कनेक्ट हो गया। आउटपुट दोबारा उपलब्ध होने पर यह फिर शुरू होता है; न हो तो कॉल छोड़कर फिर शामिल हों।</translation>
     </message>
     <message>
-        <location line="+2172"/>
+        <location line="+2175"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>स्क्रीन शेयर की ध्वनि बंद है: इस पैकेज में आवश्यक ऑडियो कैप्चर प्लगइन नहीं हैं।</translation>
     </message>
@@ -27472,7 +27472,7 @@ Note: importing keys does not verify this session.</source>
         <translation>प्रतिभागी</translation>
     </message>
     <message>
-        <location line="-4591"/>
+        <location line="-4594"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>यह रूम एन्क्रिप्टेड है, और इस बिल्ड पर एन्क्रिप्टेड कॉल अभी तक उपलब्ध नहीं हैं।</translation>
     </message>
@@ -30105,7 +30105,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>StickerPackEditor</name>
     <message>
-        <location filename="../qml/StickerPackEditor.qml" line="+109"/>
+        <location filename="../qml/StickerPackEditor.qml" line="+110"/>
         <source>Export pack</source>
         <translation>पैक निर्यात करें</translation>
     </message>
@@ -30505,7 +30505,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>StickerPackManager</name>
     <message>
-        <location filename="../src/stickers/StickerPackManager.cpp" line="+1206"/>
+        <location filename="../src/stickers/StickerPackManager.cpp" line="+1207"/>
         <source>Enter a name.</source>
         <translation>कोई नाम दर्ज करें।</translation>
     </message>
@@ -30525,7 +30525,7 @@ Note: importing keys does not verify this session.</source>
         <translation>इस पैक की एक अन्य तस्वीर पहले से यह नाम इस्तेमाल करती है।</translation>
     </message>
     <message>
-        <location line="+353"/>
+        <location line="+359"/>
         <source>You do not have permission to change this pack.</source>
         <translation>आपको यह पैक बदलने की अनुमति नहीं है।</translation>
     </message>
@@ -30618,7 +30618,15 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+12"/>
+        <location line="+9"/>
+        <source>%n cancelled.</source>
+        <translation>
+            <numerusform>%n रद्द किया गया।</numerusform>
+            <numerusform>%n रद्द किए गए।</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+5"/>
         <source>%n skipped.</source>
         <translation>
             <numerusform>%n छोड़ा गया।</numerusform>
@@ -30684,8 +30692,8 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-26"/>
-        <location line="+27"/>
+        <location line="-28"/>
+        <location line="+29"/>
         <source>%n failed.</source>
         <translation>
             <numerusform>%n विफल रही।</numerusform>
@@ -30693,7 +30701,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-30"/>
+        <location line="-32"/>
         <source>%n may have been added; the connection failed before the server answered.</source>
         <translation>
             <numerusform>%n शायद जुड़ गया; सर्वर के जवाब से पहले कनेक्शन टूट गया।</numerusform>
@@ -30701,7 +30709,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Retry adds any that are missing without uploading again.</source>
         <translation>फिर से कोशिश करने पर जो छूट गए हैं वे दोबारा अपलोड किए बिना जुड़ जाएँगे।</translation>
     </message>
@@ -30897,7 +30905,7 @@ Note: importing keys does not verify this session.</source>
         <translation>%2 में से %1</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>That could not be changed. Try again in a moment.</source>
         <translation>यह बदला नहीं जा सका। थोड़ी देर बाद फिर कोशिश करें।</translation>
     </message>
@@ -32602,7 +32610,7 @@ Note: importing keys does not verify this session.</source>
         <translation>इस थ्रेड को पढ़ा हुआ चिह्नित करें</translation>
     </message>
     <message>
-        <location line="+1332"/>
+        <location line="+1328"/>
         <source>Jump to the newest reply</source>
         <translation>सबसे नए जवाब पर जाएँ</translation>
     </message>
@@ -32615,7 +32623,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message>
-        <location line="-1727"/>
+        <location line="-1723"/>
         <source>This room has been replaced.</source>
         <translation>यह रूम बदल दिया गया है।</translation>
     </message>
@@ -32719,12 +32727,11 @@ Note: importing keys does not verify this session.</source>
         <location line="-90"/>
         <location line="+92"/>
         <location line="+376"/>
-        <location line="+72"/>
         <source>Replies</source>
         <translation>उत्तर</translation>
     </message>
     <message>
-        <location line="-538"/>
+        <location line="-466"/>
         <source>Unread</source>
         <translation>अपठित</translation>
     </message>
@@ -32813,7 +32820,7 @@ Note: importing keys does not verify this session.</source>
         <translation>फिर से कोशिश करें</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+21"/>
         <source>Search replies</source>
         <translation>उत्तर खोजें</translation>
     </message>

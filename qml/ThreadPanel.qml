@@ -1090,10 +1090,6 @@ Rectangle {
                 anchors.leftMargin: AppTheme.spacing12
                 anchors.rightMargin: AppTheme.spacing12
                 visible: app.thread.state === ThreadController.Ready
-                Label {
-                    text: qsTr("Replies")
-                    color: AppTheme.textMuted
-                }
                 AppTextField {
                     id: threadSearchField
                     objectName: "threadReplySearchField"

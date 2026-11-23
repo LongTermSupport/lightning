@@ -106,6 +106,7 @@ private:
     void setLevel(double level);
     void endSession();
     int limitMs(Mode mode) const;
+    QString deviceKey(Mode mode) const;
     void applyGain();
     void applyNoiseMode();
 
@@ -129,6 +130,7 @@ private:
     int m_secondsLeft = 0;
     QString m_error;
     QString m_lastDescription;
+    QString m_deviceKey;
     quint64 m_generation = 0;
     lightning::calls::MeterThrottle m_throttle;
     std::shared_ptr<Session> m_session;

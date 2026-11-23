@@ -518,6 +518,21 @@ private slots:
         QCOMPARE(engine.receiveNameCountForTest(), 2);
         QVERIFY(engine.recvCryptorFor(QStringLiteral("PA_0"))->hasKey(0));
     }
+
+    void receiveRingTraceCountsRingsAndAliases()
+    {
+        qputenv("LIGHTNING_CALL_TRACE", "1");
+        SfuMediaEngine engine;
+        engine.noteParticipantIdentity(QStringLiteral("PA_1"), QStringLiteral("ring1"));
+        engine.noteParticipantIdentity(QStringLiteral("PA_2"), QStringLiteral("ring2"));
+        engine.noteParticipantIdentity(QStringLiteral("@b:x:B"), QStringLiteral("ring2"));
+        QTest::ignoreMessage(QtInfoMsg, "receive rings n= 2 aliases= 4");
+        engine.retainReceiveNames({QStringLiteral("ring1"), QStringLiteral("PA_1"),
+                                   QStringLiteral("ring2"), QStringLiteral("@b:x:B")});
+        QTest::ignoreMessage(QtInfoMsg, "receive rings n= 1 aliases= 1");
+        engine.retainReceiveNames({QStringLiteral("ring2")});
+        qunsetenv("LIGHTNING_CALL_TRACE");
+    }
 };
 
 QTEST_MAIN(SfuShareDeclarationTest)

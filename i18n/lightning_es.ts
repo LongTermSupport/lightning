@@ -9880,7 +9880,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
 <context>
     <name>ImageViewerOverlay</name>
     <message>
-        <location filename="../qml/ImageViewerOverlay.qml" line="+356"/>
+        <location filename="../qml/ImageViewerOverlay.qml" line="+367"/>
         <source>Copy image</source>
         <translation>Copiar imagen</translation>
     </message>
@@ -11716,7 +11716,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Descarga cancelada.</translation>
     </message>
     <message>
-        <location line="+187"/>
+        <location line="+194"/>
         <source>The destination folder is not available.</source>
         <translation>La carpeta de destino no está disponible.</translation>
     </message>
@@ -12011,7 +12011,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
 <context>
     <name>MediaHistoryModel</name>
     <message>
-        <location filename="../src/models/MediaHistoryModel.cpp" line="+121"/>
+        <location filename="../src/models/MediaHistoryModel.cpp" line="+134"/>
         <source>Today</source>
         <translation>Hoy</translation>
     </message>
@@ -27387,7 +27387,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>El audio de la llamada se detuvo: la salida de sonido de este equipo se desconectó. Se reanuda cuando haya una salida disponible; si no lo hace, sal de la llamada y vuelve a entrar.</translation>
     </message>
     <message>
-        <location line="+2172"/>
+        <location line="+2175"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>El sonido de la pantalla compartida está desactivado: a este paquete le faltan los complementos de captura de audio necesarios.</translation>
     </message>
@@ -27472,7 +27472,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>Participante</translation>
     </message>
     <message>
-        <location line="-4591"/>
+        <location line="-4594"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>Esta sala está cifrada y las llamadas cifradas aún no están disponibles en esta compilación.</translation>
     </message>
@@ -30105,7 +30105,7 @@ Nota: importar claves no verifica esta sesión.</translation>
 <context>
     <name>StickerPackEditor</name>
     <message>
-        <location filename="../qml/StickerPackEditor.qml" line="+109"/>
+        <location filename="../qml/StickerPackEditor.qml" line="+110"/>
         <source>Export pack</source>
         <translation>Exportar paquete</translation>
     </message>
@@ -30505,7 +30505,7 @@ Nota: importar claves no verifica esta sesión.</translation>
 <context>
     <name>StickerPackManager</name>
     <message>
-        <location filename="../src/stickers/StickerPackManager.cpp" line="+1206"/>
+        <location filename="../src/stickers/StickerPackManager.cpp" line="+1207"/>
         <source>Enter a name.</source>
         <translation>Escribe un nombre.</translation>
     </message>
@@ -30525,7 +30525,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>Otra imagen de este paquete ya usa ese nombre.</translation>
     </message>
     <message>
-        <location line="+353"/>
+        <location line="+359"/>
         <source>You do not have permission to change this pack.</source>
         <translation>No tienes permiso para cambiar este paquete.</translation>
     </message>
@@ -30618,7 +30618,15 @@ Nota: importar claves no verifica esta sesión.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+12"/>
+        <location line="+9"/>
+        <source>%n cancelled.</source>
+        <translation>
+            <numerusform>%n cancelada.</numerusform>
+            <numerusform>%n canceladas.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+5"/>
         <source>%n skipped.</source>
         <translation>
             <numerusform>%n omitida.</numerusform>
@@ -30684,8 +30692,8 @@ Nota: importar claves no verifica esta sesión.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-26"/>
-        <location line="+27"/>
+        <location line="-28"/>
+        <location line="+29"/>
         <source>%n failed.</source>
         <translation>
             <numerusform>%n falló.</numerusform>
@@ -30693,7 +30701,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-30"/>
+        <location line="-32"/>
         <source>%n may have been added; the connection failed before the server answered.</source>
         <translation>
             <numerusform>Puede que se haya añadido %n; la conexión falló antes de que respondiera el servidor.</numerusform>
@@ -30701,7 +30709,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         </translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Retry adds any that are missing without uploading again.</source>
         <translation>Reintentar añade las que falten sin volver a subirlas.</translation>
     </message>
@@ -30897,7 +30905,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>%1 de %2</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>That could not be changed. Try again in a moment.</source>
         <translation>No se pudo cambiar. Inténtalo de nuevo en un momento.</translation>
     </message>
@@ -32602,7 +32610,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>Marcar este hilo como leído</translation>
     </message>
     <message>
-        <location line="+1332"/>
+        <location line="+1328"/>
         <source>Jump to the newest reply</source>
         <translation>Ir a la respuesta más reciente</translation>
     </message>
@@ -32615,7 +32623,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         </translation>
     </message>
     <message>
-        <location line="-1727"/>
+        <location line="-1723"/>
         <source>This room has been replaced.</source>
         <translation>Esta sala ha sido reemplazada.</translation>
     </message>
@@ -32719,12 +32727,11 @@ Nota: importar claves no verifica esta sesión.</translation>
         <location line="-90"/>
         <location line="+92"/>
         <location line="+376"/>
-        <location line="+72"/>
         <source>Replies</source>
         <translation>Respuestas</translation>
     </message>
     <message>
-        <location line="-538"/>
+        <location line="-466"/>
         <source>Unread</source>
         <translation>Sin leer</translation>
     </message>
@@ -32813,7 +32820,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>Reintentar</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+21"/>
         <source>Search replies</source>
         <translation>Buscar respuestas</translation>
     </message>
