@@ -9864,17 +9864,17 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>ImageViewerOverlay</name>
     <message>
-        <location filename="../qml/ImageViewerOverlay.qml" line="+353"/>
+        <location filename="../qml/ImageViewerOverlay.qml" line="+356"/>
         <source>Copy image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+7"/>
         <source>Save image as…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+7"/>
         <location line="+658"/>
         <location line="+1"/>
         <source>Open in browser</source>
@@ -11673,7 +11673,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1365"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1373"/>
         <location line="+689"/>
         <source>The file could not be downloaded.</source>
         <translation type="unfinished"></translation>
@@ -11695,12 +11695,12 @@ Signing out and signing in again is the only fix.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+87"/>
+        <location line="+88"/>
         <source>Download cancelled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+187"/>
         <source>The destination folder is not available.</source>
         <translation type="unfinished"></translation>
     </message>

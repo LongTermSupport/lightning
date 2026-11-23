@@ -9915,17 +9915,17 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>ImageViewerOverlay</name>
     <message>
-        <location filename="../qml/ImageViewerOverlay.qml" line="+353"/>
+        <location filename="../qml/ImageViewerOverlay.qml" line="+356"/>
         <source>Copy image</source>
         <translation>Kopijuoti vaizdą</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+7"/>
         <source>Save image as…</source>
         <translation>Išsaugoti vaizdą kaip…</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+7"/>
         <location line="+658"/>
         <location line="+1"/>
         <source>Open in browser</source>
@@ -11729,7 +11729,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1365"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1373"/>
         <location line="+689"/>
         <source>The file could not be downloaded.</source>
         <translation>Failo atsisiųsti nepavyko.</translation>
@@ -11751,12 +11751,12 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Nepasirinktas joks tikslas.</translation>
     </message>
     <message>
-        <location line="+87"/>
+        <location line="+88"/>
         <source>Download cancelled.</source>
         <translation>Atsisiuntimas atšauktas.</translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+187"/>
         <source>The destination folder is not available.</source>
         <translation>Paskirties aplankas nepasiekiamas.</translation>
     </message>

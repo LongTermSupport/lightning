@@ -9875,17 +9875,17 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>ImageViewerOverlay</name>
     <message>
-        <location filename="../qml/ImageViewerOverlay.qml" line="+353"/>
+        <location filename="../qml/ImageViewerOverlay.qml" line="+356"/>
         <source>Copy image</source>
         <translation>Bild kopieren</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+7"/>
         <source>Save image as…</source>
         <translation>Bild speichern unter …</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+7"/>
         <location line="+658"/>
         <location line="+1"/>
         <source>Open in browser</source>
@@ -11684,7 +11684,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1365"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1373"/>
         <location line="+689"/>
         <source>The file could not be downloaded.</source>
         <translation>Die Datei konnte nicht heruntergeladen werden.</translation>
@@ -11706,12 +11706,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Kein Ziel ausgewählt.</translation>
     </message>
     <message>
-        <location line="+87"/>
+        <location line="+88"/>
         <source>Download cancelled.</source>
         <translation>Download abgebrochen.</translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+187"/>
         <source>The destination folder is not available.</source>
         <translation>Der Zielordner ist nicht verfügbar.</translation>
     </message>
