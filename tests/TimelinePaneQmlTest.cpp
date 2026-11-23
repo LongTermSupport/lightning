@@ -8298,6 +8298,9 @@ kFilteredPages + 6);
                         removedServed += e.redacted ? 1 : 0;
                     mock->setPaginationChunkForTest(nextPage());
                 });
+        // A page served before the pane's reset is dropped by it.
+        connect(mock, &MatrixClient::timelineReset, this,
+                [&](const QString &) { removedServed = 0; });
 
         QQmlApplicationEngine engine;
         QQuickWindow window;
