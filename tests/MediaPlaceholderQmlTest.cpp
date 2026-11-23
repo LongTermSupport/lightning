@@ -6,7 +6,9 @@
 #include <QImage>
 #include <QBuffer>
 #include <QRegularExpression>
+#include <QtMath>
 #include "media/MediaImageProvider.h"
+#include "support/SettledClick.h"
 
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
@@ -1506,11 +1508,8 @@ QtObject {
         const QPointF bodyInRow = body->mapToItem(row, QPointF(0, body->height() / 2));
         const QPointF bubbleInRow = bubble->mapToItem(row, QPointF(0, 0));
         const qreal gutter = d.root->property("avatarGutterWidth").toReal();
-        // Text end + 40 lands on a hugging bubble's own right edge (±1 px).
         const qreal x = own ? (gutter + bubbleInRow.x()) / 2
-                            : (layout == 1 && direct ? bubbleInRow.x() + bubble->width()
-                                                     : bodyInRow.x() + body->width())
-                + 40;
+                            : bodyInRow.x() + body->width() + 40;
         QVERIFY2(x > gutter && x < (own ? bubbleInRow.x() : row->width() - 200),
                  qPrintable(QStringLiteral("probe x=%1 outside the empty side")
                                 .arg(x)));
@@ -1539,6 +1538,35 @@ QtObject {
         QTest::mouseDClick(d.window.get(), Qt::LeftButton, {}, probe);
         QTest::qWait(50);
         QCOMPARE(controller.composer()->replyingToEventId(), QString());
+    }
+
+    void doubleClickOnAHuggingBubblesEdgePixelStartsAReply()
+    {
+        AppController controller(AppController::MockBackend);
+        QVERIFY(loginToGeneral(controller));
+        const QString id = repliableMockEvent(controller);
+        QVERIFY(!id.isEmpty());
+        const int previousLayout = controller.settings()->messageLayout();
+        const auto restore = qScopeGuard([&] {
+            controller.settings()->setMessageLayout(previousLayout);
+        });
+        controller.settings()->setMessageLayout(1);
+        QVariantMap fixture = baseFixture(controller);
+        fixture.insert(QStringLiteral("eventId"), id);
+        fixture.insert(QStringLiteral("body"), QStringLiteral("hi there"));
+        fixture.insert(QStringLiteral("isOwn"), false);
+        Delegate d;
+        QVERIFY(createDelegate(controller, fixture, d,
+                               {{QStringLiteral("isDirectRoom"), true}}));
+        auto *bubble = d.root->findChild<QQuickItem *>(
+            QStringLiteral("messageContentColumn"));
+        QVERIFY(bubble);
+        QPointF edge;
+        QVERIFY(testsupport::settledScenePoint(d.window.get(), bubble, &edge, QPointF(1, 0.5)));
+        const QPoint probe(qCeil(edge.x()), qRound(edge.y()));
+        QTest::mouseDClick(d.window.get(), Qt::LeftButton, {}, probe);
+        QTRY_COMPARE_WITH_TIMEOUT(controller.composer()->replyingToEventId(),
+                                  id, kSignalTimeoutMs);
     }
 
     void messageMenuLetterKeysRunTheirItems()
