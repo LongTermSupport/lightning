@@ -9875,17 +9875,17 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
 <context>
     <name>ImageViewerOverlay</name>
     <message>
-        <location filename="../qml/ImageViewerOverlay.qml" line="+353"/>
+        <location filename="../qml/ImageViewerOverlay.qml" line="+356"/>
         <source>Copy image</source>
         <translation>Copiar imagen</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+7"/>
         <source>Save image as…</source>
         <translation>Guardar imagen como…</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+7"/>
         <location line="+658"/>
         <location line="+1"/>
         <source>Open in browser</source>
@@ -11684,7 +11684,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1365"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1373"/>
         <location line="+689"/>
         <source>The file could not be downloaded.</source>
         <translation>No se ha podido descargar el archivo.</translation>
@@ -11706,12 +11706,12 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>No se ha seleccionado ningún destino.</translation>
     </message>
     <message>
-        <location line="+87"/>
+        <location line="+88"/>
         <source>Download cancelled.</source>
         <translation>Descarga cancelada.</translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+187"/>
         <source>The destination folder is not available.</source>
         <translation>La carpeta de destino no está disponible.</translation>
     </message>

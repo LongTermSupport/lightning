@@ -9875,17 +9875,17 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>ImageViewerOverlay</name>
     <message>
-        <location filename="../qml/ImageViewerOverlay.qml" line="+353"/>
+        <location filename="../qml/ImageViewerOverlay.qml" line="+356"/>
         <source>Copy image</source>
         <translation>Copiar a imagem</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+7"/>
         <source>Save image as…</source>
         <translation>Guardar a imagem como…</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+7"/>
         <location line="+658"/>
         <location line="+1"/>
         <source>Open in browser</source>
@@ -11684,7 +11684,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1365"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1373"/>
         <location line="+689"/>
         <source>The file could not be downloaded.</source>
         <translation>Não foi possível transferir o ficheiro.</translation>
@@ -11706,12 +11706,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Nenhum destino selecionado.</translation>
     </message>
     <message>
-        <location line="+87"/>
+        <location line="+88"/>
         <source>Download cancelled.</source>
         <translation>Transferência cancelada.</translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+187"/>
         <source>The destination folder is not available.</source>
         <translation>A pasta de destino não está disponível.</translation>
     </message>
