@@ -124,6 +124,8 @@ Q_SIGNALS:
     void availableChanged();
 
 private:
+    QString senderName(const QString &userId) const;
+
     struct Entry {
         QString eventId;
         QString sender;

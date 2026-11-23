@@ -1,6 +1,7 @@
 #include "models/MediaHistoryModel.h"
 
 #include "matrix/PresentableName.h"
+#include "models/UserLookup.h"
 
 #include <algorithm>
 
@@ -97,7 +98,7 @@ QVariant MediaHistoryModel::data(const QModelIndex &index, int role) const
     const Entry &e = m_all.at(m_shown.at(index.row()));
     switch (role) {
     case EventIdRole: return e.eventId;
-    case SenderRole: return e.sender;
+    case SenderRole: return senderName(e.sender);
     case TimestampMsRole: return e.timestampMs;
     case KindRole: return e.kind;
     case BodyRole: return e.body;
@@ -315,6 +316,17 @@ QVariantMap MediaHistoryModel::entryAt(int row) const
     };
 }
 
+QString MediaHistoryModel::senderName(const QString &userId) const
+{
+    const QString name = m_client
+        ? matrix::presentable_name::withoutDirectionalControls(
+              m_client->displayNameFor(m_roomId, userId))
+        : QString();
+    return name.isEmpty() || name == userId
+        ? matrix::user_lookup::localpartOrUserId(userId)
+        : name;
+}
+
 QVariantList MediaHistoryModel::imageEntries() const
 {
     QVariantList out;
@@ -329,12 +341,7 @@ QVariantList MediaHistoryModel::imageEntries() const
                      e.filename.isEmpty() ? e.body : e.filename);
         entry.insert(QStringLiteral("eventId"), e.eventId);
         entry.insert(QStringLiteral("spoiler"), e.spoiler);
-        const QString name = m_client
-            ? matrix::presentable_name::withoutDirectionalControls(
-                  m_client->displayNameFor(m_roomId, e.sender))
-            : QString();
-        entry.insert(QStringLiteral("sender"),
-                     name.isEmpty() ? e.sender : name);
+        entry.insert(QStringLiteral("sender"), senderName(e.sender));
         entry.insert(QStringLiteral("timestamp"),
                      QDateTime::fromMSecsSinceEpoch(e.timestampMs));
         entry.insert(QStringLiteral("mime"), e.mimetype);

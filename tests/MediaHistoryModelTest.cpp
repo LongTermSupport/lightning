@@ -351,7 +351,7 @@ private Q_SLOTS:
         QCOMPARE(model.imageIndexForRow(-1), -1);
     }
 
-    void theViewerNamesTheSenderLikeTheTimelineViewer()
+    void theGridAndViewerNameTheSenderLikeTheTimeline()
     {
         NamedClient client;
         QVERIFY(login(client));
@@ -369,7 +369,13 @@ private Q_SLOTS:
         QCOMPARE(images.at(0).toMap().value(QStringLiteral("sender")).toString(),
                  QStringLiteral("Alice"));
         QCOMPARE(images.at(1).toMap().value(QStringLiteral("sender")).toString(),
-                 QStringLiteral("@b:example.org"));
+                 QStringLiteral("b"));
+
+        const int role = model.roleNames().key("sender");
+        QCOMPARE(model.data(model.index(0), role).toString(),
+                 QStringLiteral("Alice"));
+        QCOMPARE(model.data(model.index(1), role).toString(),
+                 QStringLiteral("b"));
     }
 
     void theImageIndexFollowsTheFilteredView()
