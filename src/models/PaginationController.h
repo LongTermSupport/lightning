@@ -199,6 +199,8 @@ private:
         QString eventId;
         qreal pixelOffset = 0;
         bool followingLatest = true;
+        // Rows between the anchor and the newest row when saved; -1 unknown.
+        int rowsFromNewest = -1;
     };
     static const char *reasonName(Reason reason);
 
@@ -289,6 +291,9 @@ private:
     // network and goes to the event context instead.
     static constexpr int kMaxRestoreBatches = 30;
     static constexpr int kRestoreWalkBudgetMs = 1500;
+    // Further back than the long walk reaches: open the event context at once.
+    static constexpr int kRestoreReachRows = 500;
+    int m_restoreRows = -1;
     QElapsedTimer m_restoreWalk;
     bool restoreWalkSpent() const;
     static constexpr int kMaxJumpBatches = 12;
