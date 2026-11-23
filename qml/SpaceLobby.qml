@@ -374,8 +374,7 @@ ColumnLayout {
                         if (!b.visible)
                             continue
                         var p = sectionHeader.mapToItem(b, pt.x, pt.y)
-                        if (p.x >= 0 && p.x <= b.width
-                                && p.y >= 0 && p.y <= b.height)
+                        if (b.contains(p))
                             return true
                     }
                     return false
@@ -627,8 +626,7 @@ ColumnLayout {
                                     if (selectBox.visible) {
                                         var sp = row.mapToItem(selectBox, eventPoint.position.x,
                                                                eventPoint.position.y)
-                                        if (sp.x >= 0 && sp.x <= selectBox.width
-                                                && sp.y >= 0 && sp.y <= selectBox.height)
+                                        if (selectBox.contains(sp))
                                             return
                                     }
                                     row.activate()
