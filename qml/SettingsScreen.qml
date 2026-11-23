@@ -221,6 +221,11 @@ Item {
           section: "chat", breadcrumb: qsTr("Chat · Timeline"),
           control: "showHiddenEvents",
           anchor: "showHiddenEventsCheck" },
+        { title: qsTr("Show a placeholder for removed messages"),
+          keywords: QT_TR_NOOP("removed deleted redacted redaction message placeholder hide"),
+          section: "chat", breadcrumb: qsTr("Chat · Timeline"),
+          control: "showRedactions",
+          anchor: "showRedactionsCheck" },
         { title: qsTr("Collapse media and link embeds"),
           keywords: QT_TR_NOOP("embed embeds collapse collapsed compact single line "
                          + "clutter declutter media image picture gif sticker "
@@ -2308,6 +2313,14 @@ Item {
                                         Accessible.name: qsTr("Show hidden events")
                                         onToggled: app.settings.showHiddenEvents =
                                             !app.settings.showHiddenEvents
+                                    }
+                                    AppSwitch {
+                                        objectName: "settingsSearchInlineShowRedactions_" + resultRow.index
+                                        visible: resultRow.modelData.control === "showRedactions"
+                                        checked: app.settings.showRedactions
+                                        Accessible.name: qsTr("Show a placeholder for removed messages")
+                                        onToggled: app.settings.showRedactions =
+                                            !app.settings.showRedactions
                                     }
                                     AppSwitch {
                                         objectName: "settingsSearchInlineThreadRootCollapsed_" + resultRow.index
@@ -4896,6 +4909,15 @@ Item {
                                     onToggled: app.settings.showHiddenEvents = checked
                                     Accessible.description: qsTr(
                                         "Also list events the timeline normally hides, such as unsupported event types")
+                                }
+                                SettingsCheckBox {
+                                    palette.windowText: AppTheme.stormText
+                                    objectName: "showRedactionsCheck"
+                                    text: qsTr("Show a placeholder for removed messages")
+                                    checked: app.settings.showRedactions
+                                    onToggled: app.settings.showRedactions = checked
+                                    Accessible.description: qsTr(
+                                        "Leave a Message deleted row where a message was removed")
                                 }
                                 SettingsCheckBox {
                                     palette.windowText: AppTheme.stormText

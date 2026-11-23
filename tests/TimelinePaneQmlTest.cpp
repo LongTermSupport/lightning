@@ -8179,6 +8179,162 @@ kFilteredPages + 6);
         QVERIFY2(served >= 330, "the fixture's collapsed run was never walked");
     }
 
+    static QHash<QString, QQuickItem *> rowsByKey(QQuickItem *timeline)
+    {
+        QHash<QString, QQuickItem *> rows;
+        const int count = timeline->property("count").toInt();
+        for (int row = 0; row < count; ++row) {
+            QQuickItem *item = itemAtViewRow(timeline, row);
+            const QString key = item ? item->property("actionKey").toString() : QString();
+            if (!key.isEmpty())
+                rows.insert(key, item);
+        }
+        return rows;
+    }
+
+    void removedMessagesLeaveOnlyAThreadRootInEveryLayout_data()
+    {
+        QTest::addColumn<int>("layout");
+        for (int layout = 0; layout <= SettingsManager::kMaxMessageLayout; ++layout)
+            QTest::addRow("layout %d", layout) << layout;
+    }
+    void removedMessagesLeaveOnlyAThreadRootInEveryLayout()
+    {
+        QFETCH(int, layout);
+        AppController controller(AppController::MockBackend);
+        QVERIFY(!loginAndRoomIdAt(controller,0).isEmpty());
+        SettingsManager *settings = controller.settings();
+        const int layoutBefore = settings->messageLayout();
+        const bool shownBefore = settings->showRedactions();
+        const auto restore = qScopeGuard([&] {
+            settings->setMessageLayout(layoutBefore);
+            settings->setShowRedactions(shownBefore);
+        });
+        settings->setMessageLayout(layout);
+        settings->setShowRedactions(false);
+
+        const QString roomId = QStringLiteral("!general:mock.local");
+        QList<TimelineEvent> events = textFixture(
+            roomId, 4, QStringLiteral("rm"), QStringLiteral("visible words"), 600);
+        for (int i : {1, 2}) {
+            events[i].redacted = true;
+            events[i].body.clear();
+            events[i].sender = QStringLiteral("@bob:mock.local");
+            events[i].senderDisplayName = QStringLiteral("Bob");
+        }
+        events[2].isThreadRoot = true;
+        events[2].threadReplyCount = 2;
+
+        QQmlApplicationEngine engine;
+        QQuickWindow window;
+        QQuickItem *timeline = nullptr;
+        QQuickItem *root = paneWithEvents(controller, engine, window, roomId,
+                                          events, 0, 620, &timeline);
+        QVERIFY(root != nullptr);
+        QVERIFY(timeline != nullptr);
+
+        QHash<QString, QQuickItem *> rows;
+        QTRY_VERIFY_WITH_TIMEOUT((rows = rowsByKey(timeline)).size() == 4, kSignalTimeoutMs);
+        QCoreApplication::processEvents();
+        QQuickItem *removed = rows.value(QStringLiteral("uid-rm1"));
+        QQuickItem *rootRow = rows.value(QStringLiteral("uid-rm2"));
+        QVERIFY(removed && rootRow);
+        QCOMPARE(QStringLiteral("height=%1 visible=%2")
+                     .arg(removed->height()).arg(removed->isVisible()),
+                 QStringLiteral("height=0 visible=0"));
+        QVERIFY2(rootRow->isVisible() && rootRow->height() > 0,
+                 "a removed thread root lost the row its thread is reached through");
+        const QList<QQuickItem *> cards =
+            findVisualChildren(rootRow, QStringLiteral("threadSummaryCard"));
+        QVERIFY2(!cards.isEmpty() && cards.first()->isVisible(),
+                 "the removed root's thread summary is not shown");
+        for (const QString &key : {QStringLiteral("uid-rm0"), QStringLiteral("uid-rm3")})
+            QVERIFY2(rows.value(key)->height() > 0, qPrintable(key));
+    }
+
+    void aRoomOfMostlyRemovedMessagesStillFillsTheViewport()
+    {
+        AppController controller(AppController::MockBackend);
+        QVERIFY(!loginAndRoomIdAt(controller,0).isEmpty());
+        auto *mock = controller.findChild<MockMatrixClient *>();
+        QVERIFY(mock != nullptr);
+        const bool shownBefore = controller.settings()->showRedactions();
+        const auto restore = qScopeGuard([&] {
+            controller.settings()->setShowRedactions(shownBefore);
+        });
+        controller.settings()->setShowRedactions(false);
+        const QString roomId = QStringLiteral("!general:mock.local");
+        mock->setPaginationDelayForTest(1);
+
+        const QDateTime noon(QDate::currentDate().addDays(-1), QTime(12, 0),
+                             QTimeZone::UTC);
+        constexpr int kRemoved = 200;
+        int served = 0;
+        auto nextPage = [&] {
+            if (served < kRemoved) {
+                QList<TimelineEvent> page = collapsingPage(noon.addSecs(-served - 1), 20, true);
+                for (int i = 0; i < page.size(); ++i)
+                    page[i].itemId = QStringLiteral("uid-gone-%1").arg(served + i);
+                return page;
+            }
+            QList<TimelineEvent> real = textFixture(
+                roomId, 25, QStringLiteral("older"),
+                QStringLiteral("a real message from beyond the removed run, "
+                               "long enough that a page of them is taller "
+                               "than the viewport"),
+                200000 + served * 60);
+            for (auto &e : real) {
+                e.eventId.clear();
+                e.itemId.clear();
+            }
+            return real;
+        };
+        mock->setPaginationChunkForTest(nextPage());
+        connect(mock, &MatrixClient::eventsPrepended, this,
+                [&](const QString &, const QList<TimelineEvent> &events) {
+                    served += events.size();
+                    mock->setPaginationChunkForTest(nextPage());
+                });
+
+        QQmlApplicationEngine engine;
+        QQuickWindow window;
+        QQuickItem *timeline = nullptr;
+        QList<TimelineEvent> seed = textFixture(
+            roomId, 1, QStringLiteral("seed"), QStringLiteral("seed"), 0);
+        seed[0].timestamp = noon.addSecs(600);
+        QQuickItem *root = paneWithEvents(controller, engine, window, roomId,
+                                          seed, 60, 620, &timeline);
+        QVERIFY(root != nullptr);
+        QVERIFY(timeline != nullptr);
+
+        const qreal viewportHeight = timeline->property("height").toReal();
+        QVERIFY(viewportHeight > 0);
+        QTest::qWaitFor([&] {
+            return timeline->property("contentHeight").toReal() >= viewportHeight;
+        }, 60000);
+        QVERIFY2(timeline->property("contentHeight").toReal() >= viewportHeight,
+                 qPrintable(QStringLiteral(
+                     "the fill stopped at %1 px of content under a %2 px "
+                     "viewport after %3 events")
+                     .arg(timeline->property("contentHeight").toReal())
+                     .arg(viewportHeight).arg(served)));
+        QVERIFY2(served >= kRemoved, "the fixture's removed run was never walked");
+        QCoreApplication::processEvents();
+        int removedRows = 0;
+        QStringList drawn;
+        const auto rows = rowsByKey(timeline);
+        for (auto it = rows.cbegin(); it != rows.cend(); ++it) {
+            if (!it.key().startsWith(QStringLiteral("uid-gone-")))
+                continue;
+            ++removedRows;
+            if (it.value()->height() > 0)
+                drawn << it.key();
+        }
+        QCOMPARE(removedRows, kRemoved);
+        QVERIFY2(drawn.isEmpty(), qPrintable(QStringLiteral("removed messages drawn: ")
+                                             + drawn.join(u',')));
+    }
+
     void anEndlessCollapsedRunStillStopsTheAutomaticFill()
     {
         AppController controller(AppController::MockBackend);

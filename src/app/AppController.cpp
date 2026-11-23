@@ -2330,17 +2330,22 @@ true, ringSeconds, acceptOffered,
         m_timeline->setShowRoomActivity(shown);
         const bool members = m_settings->showMembershipEvents();
         const bool profiles = m_settings->showProfileChangeEvents();
+        const bool redactions =
+            m_settings->showRedactions() || m_settings->showHiddenEvents();
         m_timeline->setShowMembershipEvents(members);
         m_timeline->setShowProfileChangeEvents(profiles);
+        m_timeline->setShowRedactions(redactions);
         if (m_eventContext) {
             m_eventContext->model()->setShowRoomActivity(shown);
             m_eventContext->model()->setShowMembershipEvents(members);
             m_eventContext->model()->setShowProfileChangeEvents(profiles);
+            m_eventContext->model()->setShowRedactions(redactions);
         }
         if (m_thread) {
             m_thread->model()->setShowRoomActivity(shown);
             m_thread->model()->setShowMembershipEvents(members);
             m_thread->model()->setShowProfileChangeEvents(profiles);
+            m_thread->model()->setShowRedactions(redactions);
         }
     };
     applyRoomActivityVisibility();
@@ -2350,6 +2355,15 @@ true, ringSeconds, acceptOffered,
             this, applyRoomActivityVisibility);
     connect(m_settings.get(), &SettingsManager::showProfileChangeEventsChanged,
             this, applyRoomActivityVisibility);
+    connect(m_settings.get(), &SettingsManager::showHiddenEventsChanged,
+            this, applyRoomActivityVisibility);
+    connect(m_settings.get(), &SettingsManager::showRedactionsChanged, this,
+            [this, applyRoomActivityVisibility] {
+                applyRoomActivityVisibility();
+                reopenCurrentRoomTimeline();
+                if (m_thread)
+                    m_thread->reopen();
+            });
     m_linkPreviews->setClient(m_client.get());
     m_gifTransport->setClient(m_client.get());
     m_gifSend->setClient(m_client.get());

@@ -108,6 +108,7 @@ constexpr auto kCallFormat          = "calls/format";
 constexpr auto kShowMembership      = "timeline/showMembershipEvents";
 constexpr auto kShowProfileChanges  = "timeline/showProfileChangeEvents";
 constexpr auto kShowHiddenEvents    = "timeline/showHiddenEvents";
+constexpr auto kShowRedactions      = "timeline/showRedactions";
 constexpr auto kCollapseEmbeds      = "timeline/collapseEmbeds";
 constexpr auto kTimelineAvatars     = "timeline/avatars";
 constexpr auto kBubbleScope         = "ui/bubbleScope";
@@ -4308,6 +4309,19 @@ void SettingsManager::setShowHiddenEvents(bool v)
         return;
     m_store->setValue(kShowHiddenEvents, v);
     Q_EMIT showHiddenEventsChanged();
+}
+
+bool SettingsManager::showRedactions() const
+{
+    return m_store->value(kShowRedactions, true).toBool();
+}
+
+void SettingsManager::setShowRedactions(bool v)
+{
+    if (showRedactions() == v)
+        return;
+    m_store->setValue(kShowRedactions, v);
+    Q_EMIT showRedactionsChanged();
 }
 
 bool SettingsManager::collapseEmbeds() const

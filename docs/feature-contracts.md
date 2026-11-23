@@ -1961,6 +1961,23 @@ advice) by `rust/src/profilefields.rs` and `ProfileFieldsManager`
   thread style (the SDK cannot place an unknown type in a thread).
 - The mock and HTTP backends ignore the setting.
 
+### Removed messages
+
+- Settings › Chat › Timeline › "Show a placeholder for removed messages"
+  (`showRedactions`), on by default. Toggling it reopens the open room's
+  timeline and thread panel.
+- Off, `TimelineModel::isOmittedRedaction` makes a redacted row draw nothing:
+  no "Message deleted" row, no receipts (they move to the row above), and it
+  does not split a sender group, a room-update run or a day. The rows stay in
+  the model, so pagination and the fill see them as rows without height.
+- A redacted thread root keeps its placeholder and thread card (§8). matrix-sdk
+  drops a root's thread summary when it redacts it; the model keeps the one it
+  had, and a root that arrives redacted is a root when the server bundles an
+  `m.thread` count.
+- "Show hidden events" on shows the placeholders whatever this setting says.
+- The room-list preview never shows a removed message: matrix-sdk's latest
+  event skips them and the preview backfill does too.
+
 ### Media rows and the viewport band (2026-09-05)
 
 - An image row asks the media bridge for its picture only while it lies inside

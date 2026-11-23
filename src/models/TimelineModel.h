@@ -202,6 +202,8 @@ public:
     void setShowMembershipEvents(bool show);
     bool showProfileChangeEvents() const { return m_showProfileChangeEvents; }
     void setShowProfileChangeEvents(bool show);
+    bool showRedactions() const { return m_showRedactions; }
+    void setShowRedactions(bool show);
     bool threadRepliesInline() const { return m_threadRepliesInline; }
     void setThreadRepliesInline(bool on);
     QString threadFilterRootId() const { return m_threadFilterRootId; }
@@ -414,6 +416,7 @@ private:
     int stateGroupLeaderRow(int row) const;
     bool isVisibleStateEntry(const TimelineEvent &e) const;
     bool dividerJoinsStateRun(int dividerRow) const;
+    bool isOmittedRedaction(const TimelineEvent &e) const;
     int deletedGroupLeaderRow(int row) const;
     int deletedGroupLengthFrom(int leaderRow) const;
     QVariantList stateGroupEntriesFrom(int leaderRow) const;
@@ -490,6 +493,7 @@ private:
     bool m_showRoomActivity = true;
     bool m_showMembershipEvents = true;
     bool m_showProfileChangeEvents = true;
+    bool m_showRedactions = true;
     bool m_threadRepliesInline = false;
     QString m_threadFilterRootId;
     bool m_hideThreadReplies = false;
