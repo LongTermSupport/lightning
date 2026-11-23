@@ -5047,8 +5047,12 @@ Rectangle {
                 // Only while the reader is scrolling: a landed page can flip
                 // atYEnd by itself, and that must not ask for the next one.
                 onAtYEndChanged: {
-                    if (atYEnd && userScrollActive)
+                    if (!atYEnd)
+                        return
+                    if (userScrollActive)
                         checkNearTopEdge(true)
+                    else if (atYBeginning)
+                        maybeRequestNearTop(false)
                 }
 
                 // The loading/failure indicator is a top overlay
