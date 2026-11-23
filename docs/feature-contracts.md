@@ -1942,6 +1942,23 @@ advice) by `rust/src/profilefields.rs` and `ProfileFieldsManager`
   controller allows twelve consecutive empty pages (was two) so the fill can
   walk through such a run; the pane's row cap bounds what is inserted.
 
+### Show hidden events
+
+- Settings › Chat › Timeline › "Show hidden events" (`showHiddenEvents`), off
+  by default. Toggling it reopens the open room's timeline.
+- On, `lightning_event_filter` also admits every unredacted message-like event
+  the SDK filter drops. Those that become items (unknown or unsupported types,
+  legacy 1:1 call signalling, in-room verification steps, stable poll
+  responses) show as plain-text "Unsupported event (type)" entries in the
+  room-activity group, italic, never their content. They stay visible when
+  room activity is hidden.
+- Still hidden: MatrixRTC membership (a call room carries thousands);
+  reactions, edits and redactions, which the SDK folds into their targets;
+  redacted reactions. State events already show as room activity under their
+  own toggles.
+- §8 holds: a hidden event that names a thread (`thread_root_id`) never shows
+  in the main timeline, in either thread style.
+
 ### Media rows and the viewport band (2026-09-05)
 
 - An image row asks the media bridge for its picture only while it lies inside

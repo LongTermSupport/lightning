@@ -5300,6 +5300,11 @@ pub unsafe extern "C" fn mx_rust_timeline_set_threads_in_live(
 }
 
 #[no_mangle]
+pub extern "C" fn mx_rust_timeline_set_show_hidden_events(on: c_int) {
+    timeline::set_show_hidden_events(on != 0);
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn mx_rust_set_unthreaded_receipts(
     ptr: *mut c_void,
     on: c_int,

@@ -342,6 +342,9 @@ AppController::AppController(Backend backend, bool screenshotDemo,
     applyThreadStyle(false);
     connect(m_settings.get(), &SettingsManager::threadStyleChanged, this,
             [this] { applyThreadStyle(true); });
+    applyShowHiddenEvents(false);
+    connect(m_settings.get(), &SettingsManager::showHiddenEventsChanged, this,
+            [this] { applyShowHiddenEvents(true); });
     connect(m_timeline.get(), &TimelineModel::threadPresentationChanged, this,
             [this] {
                 m_composer->setThreadTargetRootId(
@@ -1288,6 +1291,7 @@ AppController::AppController(Backend backend, bool screenshotDemo,
     m_about->setClient(m_client.get());
     applyPrivacyPreferences();
     applyThreadStyle(false);
+    applyShowHiddenEvents(false);
     m_spaces->setClient(m_client.get());
     m_threads->setClient(m_client.get());
     m_presence->setClient(m_client.get());
@@ -3375,7 +3379,22 @@ void AppController::applyThreadStyle(bool reopen)
     if (m_timeline)
         m_timeline->setThreadRepliesInline(inlineThreads);
     applyReceiptThreading();
-    if (!reopen || !changed || !m_client || m_currentRoomId.isEmpty())
+    if (reopen && changed)
+        reopenCurrentRoomTimeline();
+}
+
+void AppController::applyShowHiddenEvents(bool reopen)
+{
+    if (!m_client || !m_settings)
+        return;
+    m_client->setShowHiddenEvents(m_settings->showHiddenEvents());
+    if (reopen)
+        reopenCurrentRoomTimeline();
+}
+
+void AppController::reopenCurrentRoomTimeline()
+{
+    if (!m_client || m_currentRoomId.isEmpty())
         return;
 #ifdef ENABLE_RUST_SDK_BACKEND
     if (m_backend == RustBackend) {

@@ -1,5 +1,6 @@
 #include <QtTest/QtTest>
 
+#include <QFont>
 #include <QFontDatabase>
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
@@ -2164,6 +2165,51 @@ private Q_SLOTS:
         d.window->contentItem()->setVisible(true);
         QCoreApplication::processEvents();
         QCOMPARE(d.root->implicitHeight(), shown);
+    }
+
+    void aHiddenEventRendersAsACompactPlainRowInEveryLayout_data()
+    {
+        QTest::addColumn<int>("layout");
+        for (int layout = 0; layout <= SettingsManager::kMaxMessageLayout; ++layout)
+            QTest::addRow("layout %d", layout) << layout;
+    }
+    void aHiddenEventRendersAsACompactPlainRowInEveryLayout()
+    {
+        QFETCH(int, layout);
+        AppController app(AppController::MockBackend);
+        app.settings()->setMessageLayout(layout);
+        QVariantMap f = baseFixture();
+        f.insert(QStringLiteral("isStateActivity"), true);
+        f.insert(QStringLiteral("stateGroupLeader"), true);
+        f.insert(QStringLiteral("stateGroupId"), QStringLiteral("g"));
+        const QString text = QStringLiteral("Unsupported event (<b>m.call.hangup</b>)");
+        QVariantMap hidden;
+        hidden.insert(QStringLiteral("eventKind"), QStringLiteral("hidden_event"));
+        hidden.insert(QStringLiteral("description"), text);
+        hidden.insert(QStringLiteral("timestamp"), QDateTime::currentDateTime());
+        f.insert(QStringLiteral("stateGroupEntries"), QVariantList{hidden});
+        Delegate d;
+        QVERIFY(build(app, f, d, kRowWidth, layout == 1));
+        auto *group = findVisual(d.root, QStringLiteral("stateActivityGroup"));
+        QVERIFY(group);
+        QQmlProperty::write(group, QStringLiteral("expanded"), true);
+        QCoreApplication::processEvents();
+
+        auto *summary = findVisual(group, QStringLiteral("stateActivitySummaryLabel"));
+        QVERIFY(summary);
+        QVERIFY2(summary->property("text").toString().startsWith(QStringLiteral("1 hidden event")),
+                 qPrintable(summary->property("text").toString()));
+        auto *row = findVisual(group, QStringLiteral("stateActivityEntryText"));
+        QVERIFY2(row, "the hidden event has no entry row");
+        QVERIFY(row->isVisible());
+        QCOMPARE(row->property("text").toString(), text);
+        QCOMPARE(row->property("textFormat").toInt(), int(Qt::PlainText));
+        QVERIFY2(row->property("font").value<QFont>().italic(),
+                 "a hidden event is not set apart from room updates");
+        QCOMPARE(QQmlProperty::read(row, QStringLiteral("Accessible.name"), qmlContext(row))
+                     .toString(), text);
+        QVERIFY(d.root->implicitHeight() > 0);
+        QVERIFY(d.root->implicitHeight() < 120);
     }
 
     void theActionBarIsNotKeptBuiltForARowThatIsOffScreen()
