@@ -476,6 +476,7 @@ async fn search_index_matches_derived_fixtures() {
     use matrix_sdk::ruma::RoomId;
 
     let server = MatrixMockServer::new().await;
+    let mut mismatches = Vec::new();
     for case in scenarios() {
         let client = server.client_builder().build().await;
         let encryption = server.mock_room_state_encryption();
@@ -505,15 +506,26 @@ async fn search_index_matches_derived_fixtures() {
 
         let want = case.content_for(Projection::Search);
         let hits = index.search("fixture", "", 10, 0).unwrap();
-        assert_eq!(index.stats().unwrap().messages, i64::from(want.is_some()), "{}", case.name);
-        assert_eq!(hits.len(), usize::from(want.is_some()), "{}", case.name);
-        if let Some(content) = want {
-            let hit = &hits[0];
-            assert_eq!(hit.event_id, ORIGINAL, "{}", case.name);
-            assert_eq!(hit.room_id, HOME_ROOM, "{}", case.name);
-            assert_eq!(hit.body, content["body"].as_str().unwrap(), "{}", case.name);
-            assert_eq!(hit.msgtype, content["msgtype"].as_str().unwrap(), "{}", case.name);
-            assert_eq!(hit.filename, content["filename"].as_str().unwrap_or(""), "{}", case.name);
+        let got: Vec<_> = hits
+            .iter()
+            .map(|h| (h.event_id.clone(), h.room_id.clone(), h.body.clone(), h.msgtype.clone(), h.filename.clone()))
+            .collect();
+        let expected: Vec<_> = want
+            .map(|c| {
+                (
+                    ORIGINAL.to_owned(),
+                    HOME_ROOM.to_owned(),
+                    c["body"].as_str().unwrap().to_owned(),
+                    c["msgtype"].as_str().unwrap().to_owned(),
+                    c["filename"].as_str().unwrap_or("").to_owned(),
+                )
+            })
+            .into_iter()
+            .collect();
+        let indexed = index.stats().unwrap().messages;
+        if got != expected || indexed != expected.len() as i64 {
+            mismatches.push(format!("{}: indexed {indexed}, got {got:?}, expected {expected:?}", case.name));
         }
     }
+    assert!(mismatches.is_empty(), "search diverges from the shared fixture:\n{}", mismatches.join("\n"));
 }
