@@ -74,6 +74,9 @@ void MockMatrixClient::logout()
 {
     stopSync();
     closeThread();
+    // As the Rust backend: the record is gone before loggedOut is delivered.
+    if (m_settings && m_settings->hasSavedAccount(m_userId))
+        m_settings->clearSessionForAccount(m_userId);
     m_loggedIn = false;
     m_userId.clear();
     Q_EMIT loggedOut();

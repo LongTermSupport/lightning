@@ -331,8 +331,6 @@ private Q_SLOTS:
         for (const QString &file : files)
             QVERIFY(touch(file));
 
-        // A Rust sign-out drops the record before loggedOut is delivered.
-        QVERIFY(app.settings()->clearSessionForAccount(kAlice));
         app.auth()->logout();
 
         for (const QString &file : files) {

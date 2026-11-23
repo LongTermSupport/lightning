@@ -648,9 +648,6 @@ private Q_SLOTS:
         QTRY_VERIFY(!app.accountSwitching());
         QTRY_COMPARE(app.auth()->currentUserId(), kBob);
 
-        // The mock does not remove the account record on logout (the Rust
-        // backend does); drop it so the fallback set is realistic.
-        app.settings()->clearSessionForAccount(kBob);
         app.auth()->logout();
 
         QTRY_VERIFY(!app.accountSwitching());
@@ -836,13 +833,9 @@ private Q_SLOTS:
 
         app.auth()->logout();
 
-        // The mock never clears the account record on logout, so with one saved
-        // account the fallback signs the same account back in. What matters is
-        // that the directory was deleted: reopening the store does not create
-        // it (creation waits for the first star), so the deletion stays
-        // observable.
         QTRY_VERIFY(!app.accountSwitching());
         QVERIFY(!QDir(starredDir).exists());
+        QVERIFY(!app.settings()->hasSavedAccount(kAlice));
         QCOMPARE(app.gif()->starredStore()->count(), 0);
     }
 
@@ -879,9 +872,6 @@ private Q_SLOTS:
         QVERIFY(!app.accountAvatars()->avatarUrlFor(kAlice).isEmpty());
         QVERIFY(QDir().mkpath(bobRoot));
 
-        // The mock keeps the record on logout (the Rust backend removes it);
-        // drop it so the fallback set is realistic.
-        app.settings()->clearSessionForAccount(kAlice);
         app.auth()->logout();
         QTRY_VERIFY(!app.accountSwitching());
         QTRY_COMPARE(app.auth()->currentUserId(), kBob);
