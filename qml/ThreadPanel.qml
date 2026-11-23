@@ -458,7 +458,7 @@ Rectangle {
                 visible: threadHeader.foldActions
                 iconName: "more_vert"
                 active: overflowMenu.opened
-                Accessible.name: qsTranslate("MemberProfilePopover", "More actions")
+                Accessible.name: qsTr("More actions")
                 ToolTip.text: Accessible.name
                 ToolTip.visible: hovered && !overflowMenu.opened
                 ToolTip.delay: 500
