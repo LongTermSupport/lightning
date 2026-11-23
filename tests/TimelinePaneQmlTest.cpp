@@ -8231,6 +8231,127 @@ kFilteredPages + 6);
                 < timeline->property("height").toReal());
     }
 
+private:
+    // A reader at the oldest row of a tall room whose near-top budget is
+    // spent, with endless pages of rows that add no height behind it.
+    struct PinnedReader {
+        AppController controller{AppController::MockBackend};
+        QQmlApplicationEngine engine;
+        QQuickWindow window;
+        QQuickItem *timeline = nullptr;
+        int served = 0;
+    };
+    void pinReaderWithASpentBudget(PinnedReader &r, bool spent = true)
+    {
+        QVERIFY(!loginAndRoomIdAt(r.controller,0).isEmpty());
+        auto *mock = r.controller.findChild<MockMatrixClient *>();
+        QVERIFY(mock != nullptr);
+        const QString roomId = QStringLiteral("!general:mock.local");
+        mock->setPaginationDelayForTest(1);
+        const QDateTime noon(QDate::currentDate().addDays(-1), QTime(12, 0),
+                             QTimeZone::UTC);
+        mock->setPaginationChunkForTest(collapsingPage(noon, 20, false));
+        connect(mock, &MatrixClient::eventsPrepended, this,
+                [&r, mock, noon](const QString &,
+                                 const QList<TimelineEvent> &events) {
+                    r.served += events.size();
+                    mock->setPaginationChunkForTest(collapsingPage(
+                        noon.addSecs(-r.served - 1), 20, false));
+                });
+        QList<TimelineEvent> seed = textFixture(
+            roomId, 160, QStringLiteral("seed"),
+            QStringLiteral("a message long enough to wrap onto a second line "
+                           "in a seven hundred pixel pane, so that the seeded "
+                           "history is several viewports tall and the oldest "
+                           "row is nowhere near the live edge"), 0);
+        for (int i = 0; i < seed.size(); ++i)
+            seed[i].timestamp = noon.addSecs(600 + i * 30);
+        QVERIFY(paneWithEvents(r.controller, r.engine, r.window, roomId, seed,
+                               5000, 620, &r.timeline) != nullptr);
+        QVERIFY(r.timeline->property("contentHeight").toReal()
+                > 4 * r.timeline->property("height").toReal());
+        QTRY_VERIFY_WITH_TIMEOUT(!r.controller.pagination()->busy(),
+                                 kSignalTimeoutMs);
+        QTest::qWait(600);
+        QVERIFY(r.timeline->setProperty("stickToBottom", false));
+        QVERIFY(positionAtTopEdge(r.timeline));
+        QCoreApplication::processEvents();
+        if (spent)
+            QVERIFY(r.timeline->setProperty(
+                "nearTopRowsThisApproach",
+                r.timeline->property("nearTopApproachRowBudget")));
+        QVERIFY(r.timeline->setProperty("nearTopArmed", true));
+        QVERIFY(positionAtTopEdge(r.timeline));
+        QVERIFY2(pinnedState(r).startsWith(QStringLiteral("stick=0 fromTop=0 ")),
+                 qPrintable(pinnedState(r)));
+    }
+    static QString pinnedState(const PinnedReader &r)
+    {
+        QVariant fromTop;
+        QMetaObject::invokeMethod(r.timeline, "distanceFromTop",
+                                  Q_RETURN_ARG(QVariant, fromTop));
+        return QStringLiteral("stick=%1 fromTop=%2 approachRows=%3 armed=%4 "
+                              "busy=%5 served=%6")
+            .arg(r.timeline->property("stickToBottom").toBool())
+            .arg(qRound(fromTop.toReal()))
+            .arg(r.timeline->property("nearTopRowsThisApproach").toInt())
+            .arg(r.timeline->property("nearTopArmed").toBool())
+            .arg(r.controller.pagination()->busy())
+            .arg(r.served);
+    }
+
+private Q_SLOTS:
+    void aWheelAtTheOldestRowRenewsASpentBudget()
+    {
+        PinnedReader r;
+        pinReaderWithASpentBudget(r);
+        if (QTest::currentTestFailed())
+            return;
+        const int budget =
+            r.timeline->property("nearTopApproachRowBudget").toInt();
+        const QPointF centre(r.window.width() / 2.0, r.window.height() / 2.0);
+        sendWheelNotch(r.window, centre, 120, false);
+        QVERIFY2(r.timeline->property("nearTopRowsThisApproach").toInt() < budget,
+                 qPrintable(QStringLiteral("the budget stayed spent: ")
+                            + pinnedState(r)));
+    }
+
+    void anIdleReaderAtTheOldestRowLoadsNothing()
+    {
+        PinnedReader r;
+        pinReaderWithASpentBudget(r, false);
+        if (QTest::currentTestFailed())
+            return;
+        QTest::qWait(1000);
+        const int before = r.served;
+        QTest::qWait(30000);
+        QVERIFY2(r.served == before,
+                 qPrintable(QStringLiteral("%1 events loaded with no input: ")
+                                .arg(r.served - before) + pinnedState(r)));
+    }
+
+    void momentumAtTheOldestRowDoesNotRenewASpentBudget()
+    {
+        PinnedReader r;
+        pinReaderWithASpentBudget(r);
+        if (QTest::currentTestFailed())
+            return;
+        const int budget =
+            r.timeline->property("nearTopApproachRowBudget").toInt();
+        const QPointF centre(r.window.width() / 2.0, r.window.height() / 2.0);
+        for (int frame = 0; frame < 30; ++frame) {
+            QWheelEvent wheel(centre, r.window.mapToGlobal(centre.toPoint()),
+                              QPoint(0, 24), QPoint(0, 288), Qt::NoButton,
+                              Qt::NoModifier, Qt::ScrollMomentum, false);
+            QCoreApplication::sendEvent(&r.window, &wheel);
+            QCoreApplication::processEvents();
+            QVERIFY2(r.timeline->property("nearTopRowsThisApproach").toInt()
+                         >= budget,
+                     qPrintable(QStringLiteral("a momentum frame renewed the "
+                                               "budget: ") + pinnedState(r)));
+        }
+    }
+
     void anApproachThatKeepsGettingEmptyPagesStillStops()
     {
         AppController controller(AppController::MockBackend);

@@ -4250,6 +4250,7 @@ Rectangle {
                 }
                 readonly property int explicitTopRowCeiling: 600
                 property int explicitTopStartRows: 0
+                property bool wheelPinnedAtTop: false
                 property bool explicitTopCeilingLogged: false
                 function renewPinnedTopBudget() {
                     if (app.pagination && app.pagination.busy)
@@ -4539,6 +4540,7 @@ Rectangle {
                     objectName: "scrollSettleTimer"
                     interval: 250
                     onTriggered: {
+                        timeline.wheelPinnedAtTop = false
                         rowWindowExtendTimer.stop()
                         timeline.refreshMediaBand()
                         timeline.updateStickAndPaginate()
@@ -4573,6 +4575,19 @@ Rectangle {
                         var canMove = timeline.wheelCanMove(towardsOlder)
                         var minY = timeline.wheelMinY()
                         var maxY = timeline.wheelMaxY()
+                        // Rows that add no height leave the reader pinned at
+                        // the oldest row, where no approach ever ends.
+                        // Momentum after the fingers lift is not the reader asking.
+                        if (event.phase !== Qt.ScrollMomentum) {
+                            if (!towardsOlder || canMove) {
+                                timeline.wheelPinnedAtTop = false
+                            } else if (timeline.wheelPinnedAtTop) {
+                                timeline.renewPinnedTopBudget()
+                            } else {
+                                timeline.wheelPinnedAtTop = true
+                                timeline.beginExplicitTopApproach()
+                            }
+                        }
                         if (towardsOlder && !canMove && maxY <= minY + 0.5
                                 && app.pagination && !app.pagination.reachedStart)
                             app.pagination.requestNearTop(true)
@@ -5029,8 +5044,14 @@ Rectangle {
                     }
                 }
 
+                // Only while the reader is scrolling: a landed page can flip
+                // atYEnd by itself, and that must not ask for the next one.
                 onAtYEndChanged: {
-                    if (atYEnd)
+                    if (!atYEnd)
+                        return
+                    if (userScrollActive)
+                        checkNearTopEdge(true)
+                    else if (atYBeginning)
                         maybeRequestNearTop(false)
                 }
 
