@@ -122,6 +122,8 @@ inline QString stateSentence(QStringView sentence, QString actor, QString target
         return t(QT_TRANSLATE_NOOP("EventPreview", "%1 revoked %2's invitation.")).arg(actor, target);
     if (sentence == QLatin1String("membership_changed"))
         return t(QT_TRANSLATE_NOOP("EventPreview", "Membership for %1 changed.")).arg(target);
+    if (sentence == QLatin1String("unsupported_event"))
+        return t(QT_TRANSLATE_NOOP("EventPreview", "Unsupported event (%1)")).arg(target);
     return {};
 }
 
@@ -140,6 +142,7 @@ inline const QSet<QString> &stateSentenceNames()
         QStringLiteral("member_kicked"), QStringLiteral("member_banned"),
         QStringLiteral("member_unbanned"), QStringLiteral("invitation_rejected"),
         QStringLiteral("invitation_revoked"), QStringLiteral("membership_changed"),
+        QStringLiteral("unsupported_event"),
     };
     return names;
 }

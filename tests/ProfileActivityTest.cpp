@@ -109,6 +109,7 @@ private Q_SLOTS:
     void modelRowsPhraseThemselvesFromTypedFields();
     void actorIsTheResolvedNameNeverABareMxid();
     void backendPhrasedRowsKeepTheirOwnSentence();
+    void hiddenEventRowsNameTheirTypeAndThreadRepliesStayOut();
 
 private:
     FakeClient *m_client = nullptr;
@@ -355,6 +356,48 @@ void ProfileActivityTest::backendPhrasedRowsKeepTheirOwnSentence()
     Q_EMIT m_client->eventAppended(kRoom, typed);
     QCOMPARE(m_model->data(m_model->index(1), TimelineModel::BodyRole).toString(),
              QStringLiteral("bob cleared their display name."));
+}
+
+void ProfileActivityTest::hiddenEventRowsNameTheirTypeAndThreadRepliesStayOut()
+{
+    const auto hidden = [](const QString &id, const QString &type,
+                           const QString &threadRoot) {
+        TimelineEvent e;
+        e.eventId = id;
+        e.itemId = QStringLiteral("uid-") + id;
+        e.roomId = kRoom;
+        e.sender = kActor;
+        e.type = TimelineEvent::StateChange;
+        e.stateKind = QStringLiteral("hidden_event");
+        e.stateSentence = QStringLiteral("unsupported_event");
+        e.stateTarget = type;
+        e.threadRootId = threadRoot;
+        e.timestamp = QDateTime::fromMSecsSinceEpoch(1700000000000);
+        return e;
+    };
+    m_client->mirror = {
+        hidden(QStringLiteral("$h0"), QStringLiteral("m.call.hangup"), QString()),
+        hidden(QStringLiteral("$h1"), QStringLiteral("com.example.ping"),
+               QStringLiteral("$root")),
+        hidden(QStringLiteral("$h2"), QStringLiteral("m.key.verification.done"), QString()),
+    };
+    // The user asked for these rows, so hiding room activity must not drop them.
+    m_model->setShowRoomActivity(false);
+    m_model->setRoomId(kRoom);
+
+    const QVariantList entries =
+        m_model->data(m_model->index(0),
+                      TimelineModel::StateGroupEntriesRole).toList();
+    QStringList descriptions;
+    for (const QVariant &entry : entries)
+        descriptions.append(entry.toMap().value(QStringLiteral("description")).toString());
+    const auto isolated = [](const QString &type) {
+        return QStringLiteral("Unsupported event (%1%2%3)")
+            .arg(QChar(0x2068), type, QChar(0x2069));
+    };
+    QCOMPARE(descriptions,
+             (QStringList{ isolated(QStringLiteral("m.call.hangup")),
+                           isolated(QStringLiteral("m.key.verification.done")) }));
 }
 
 QTEST_GUILESS_MAIN(ProfileActivityTest)

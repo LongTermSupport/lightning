@@ -256,6 +256,8 @@ class SettingsManager : public QObject
     Q_PROPERTY(bool showProfileChangeEvents READ showProfileChangeEvents
                    WRITE setShowProfileChangeEvents
                    NOTIFY showProfileChangeEventsChanged)
+    Q_PROPERTY(bool showHiddenEvents READ showHiddenEvents
+                   WRITE setShowHiddenEvents NOTIFY showHiddenEventsChanged)
     Q_PROPERTY(bool collapseEmbeds READ collapseEmbeds WRITE setCollapseEmbeds
                    NOTIFY collapseEmbedsChanged)
     Q_PROPERTY(int bubbleScope READ bubbleScope WRITE setBubbleScope
@@ -736,6 +738,8 @@ public:
     void setShowMembershipEvents(bool v);
     bool showProfileChangeEvents() const;
     void setShowProfileChangeEvents(bool v);
+    bool showHiddenEvents() const;
+    void setShowHiddenEvents(bool v);
     bool collapseEmbeds() const;
     void setCollapseEmbeds(bool v);
     static constexpr int kTimelineShow = 0;
@@ -1106,6 +1110,7 @@ Q_SIGNALS:
     void showRoomActivityChanged();
     void showMembershipEventsChanged();
     void showProfileChangeEventsChanged();
+    void showHiddenEventsChanged();
     void collapseEmbedsChanged();
     void bubbleScopeChanged();
     void timelineAvatarsChanged();

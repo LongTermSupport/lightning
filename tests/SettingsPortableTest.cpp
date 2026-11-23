@@ -153,6 +153,17 @@ private Q_SLOTS:
         QVERIFY2(wrong.isEmpty(), qPrintable(wrong.join("; ")));
     }
 
+    void showHiddenEventsIsOffByDefaultInBothCopies()
+    {
+        QSettings().clear();
+        SettingsManager settings;
+        QCOMPARE(settings.property("showHiddenEvents"), QVariant(false));
+        const Field *f = find(QStringLiteral("showHiddenEvents"));
+        QVERIFY2(f, "showHiddenEvents is missing from the schema table");
+        QCOMPARE(f->def, QVariant(false));
+        QCOMPARE(f->group, QStringLiteral("Timeline"));
+    }
+
     void exportThenImportRoundTrips()
     {
         const QByteArray bytes = buildDocument(docOf(sample()), QStringLiteral("2026-10-13T00:00:00Z"));

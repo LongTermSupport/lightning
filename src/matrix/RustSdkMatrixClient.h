@@ -256,6 +256,7 @@ public:
     void setReadReceiptPrivacy(int mode) override;
     void setThreadRepliesInLiveTimeline(bool inLive) override;
     void setUnthreadedReadReceipts(bool on) override;
+    void setShowHiddenEvents(bool on) override;
     /// MSC4153 "invisible crypto", process-wide. Static because Rust reads it
     /// when a client is built (matrix-sdk has no runtime setter), so it must be
     /// set before sign-in.

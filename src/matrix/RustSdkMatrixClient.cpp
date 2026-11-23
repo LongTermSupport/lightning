@@ -3774,6 +3774,11 @@ void RustSdkMatrixClient::setThreadRepliesInLiveTimeline(bool inLive)
         qCWarning(lcRust) << "thread style command rejected";
 }
 
+void RustSdkMatrixClient::setShowHiddenEvents(bool on)
+{
+    mx_rust_timeline_set_show_hidden_events(on ? 1 : 0);
+}
+
 void RustSdkMatrixClient::setUnthreadedReadReceipts(bool on)
 {
     m_unthreadedReceipts = on;

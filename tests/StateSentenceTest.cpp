@@ -295,8 +295,9 @@ private Q_SLOTS:
             { QStringLiteral("invitation_rejected"), b + QStringLiteral(" rejected the invitation.") },
             { QStringLiteral("invitation_revoked"), a + QStringLiteral(" revoked Bob's invitation.") },
             { QStringLiteral("membership_changed"), QStringLiteral("Membership for Bob changed.") },
+            { QStringLiteral("unsupported_event"), QStringLiteral("Unsupported event (Bob)") },
         };
-        QCOMPARE(table.size(), 24);
+        QCOMPARE(table.size(), 25);
         QCOMPARE(int(matrix::preview::stateSentenceNames().size()), int(table.size()));
         for (const auto &[sentence, english] : table) {
             QVERIFY2(matrix::preview::isStateSentence(sentence), qPrintable(sentence));

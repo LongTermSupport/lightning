@@ -211,6 +211,8 @@ public:
     virtual void closeThread() {}
     virtual void setThreadRepliesInLiveTimeline(bool inLive) { Q_UNUSED(inLive); }
     virtual void setUnthreadedReadReceipts(bool on) { Q_UNUSED(on); }
+    // Admits event types the timeline otherwise hides; applies to timelines built afterwards.
+    virtual void setShowHiddenEvents(bool on) { Q_UNUSED(on); }
     // Manual decryption retry for a room's unable-to-decrypt events against key
     // material that has arrived since. No-op without a crypto machine. Never
     // resets any store.

@@ -40,6 +40,13 @@ Item {
         return false
     }
     readonly property bool canExpand: entryCount > 0
+    readonly property bool onlyHiddenEvents: {
+        for (var i = 0; i < entriesWithoutCalls.length; ++i) {
+            if (entriesWithoutCalls[i].eventKind !== "hidden_event")
+                return false
+        }
+        return entriesWithoutCalls.length > 0
+    }
 
     function sameCalendarDay(a, b) {
         return a.getFullYear() === b.getFullYear()
@@ -123,6 +130,10 @@ Item {
                     text: {
                         if (root.entryCount === 0)
                             return qsTr("Room updated")
+                        if (root.onlyHiddenEvents)
+                            return qsTr("%n hidden event(s)",
+                                        "collapsed group of events the timeline normally hides",
+                                        root.entryCount)
                         var summary = root.spansDays
                             ? qsTr("%n room update(s) since %1",
                                    "collapsed state-event group spanning days",
@@ -204,8 +215,12 @@ Item {
                         width: entryBlock.width
                         spacing: 6
 
+                        readonly property bool hiddenEvent:
+                            entryRow.modelData.eventKind === "hidden_event"
                         readonly property string entryGlyph: {
                             var kind = entryRow.modelData.eventKind || ""
+                            if (kind === "hidden_event")
+                                return "visibility_off"
                             if (kind === "membership") {
                                 var change = entryRow.modelData.membershipChange || ""
                                 if (change === "joined")
@@ -249,9 +264,11 @@ Item {
                         }
 
                         Label {
+                        objectName: "stateActivityEntryText"
                         Layout.fillWidth: true
                         height: Math.max(16, implicitHeight)
                         text: entryRow.modelData.description || ""
+                        font.italic: entryRow.hiddenEvent
                         // Mandatory, a security control: the sentence embeds remote
                         // display names, and AutoText would promote markup to
                         // StyledText, so an <img> in a name would make every viewer

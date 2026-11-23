@@ -107,6 +107,7 @@ constexpr auto kThreadRootCollapsed = "timeline/threadRootCollapsed";
 constexpr auto kCallFormat          = "calls/format";
 constexpr auto kShowMembership      = "timeline/showMembershipEvents";
 constexpr auto kShowProfileChanges  = "timeline/showProfileChangeEvents";
+constexpr auto kShowHiddenEvents    = "timeline/showHiddenEvents";
 constexpr auto kCollapseEmbeds      = "timeline/collapseEmbeds";
 constexpr auto kTimelineAvatars     = "timeline/avatars";
 constexpr auto kBubbleScope         = "ui/bubbleScope";
@@ -4294,6 +4295,19 @@ void SettingsManager::setShowProfileChangeEvents(bool v)
         return;
     m_store->setValue(kShowProfileChanges, v);
     Q_EMIT showProfileChangeEventsChanged();
+}
+
+bool SettingsManager::showHiddenEvents() const
+{
+    return m_store->value(kShowHiddenEvents, false).toBool();
+}
+
+void SettingsManager::setShowHiddenEvents(bool v)
+{
+    if (showHiddenEvents() == v)
+        return;
+    m_store->setValue(kShowHiddenEvents, v);
+    Q_EMIT showHiddenEventsChanged();
 }
 
 bool SettingsManager::collapseEmbeds() const
