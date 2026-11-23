@@ -8,6 +8,7 @@
 #include <QBuffer>
 #include <QCryptographicHash>
 #include <QElapsedTimer>
+#include <QImage>
 #include <QImageReader>
 #include <QLoggingCategory>
 #include <QTemporaryDir>
@@ -2369,6 +2370,39 @@ private Q_SLOTS:
 
         bridge.cancelSave(QStringLiteral("$other"));
         QCOMPARE(saved.count(), 1);
+    }
+
+    void aPictureSavedBeforeItLoadedIsNamedFromItsBytes()
+    {
+        QTemporaryDir dir;
+        QVERIFY(dir.isValid());
+        QImage picture(4, 4, QImage::Format_RGB32);
+        picture.fill(Qt::red);
+        QByteArray png;
+        QBuffer buffer(&png);
+        QVERIFY(buffer.open(QIODevice::WriteOnly));
+        QVERIFY(picture.save(&buffer, "PNG"));
+        FakeClient client;
+        MediaBridge bridge;
+        bridge.setClient(&client);
+        QSignalSpy completed(&bridge, &MediaBridge::saveCompleted);
+        QCOMPARE(bridge.cachedRasterMime(kMxc), QString());
+
+        bridge.saveInto(kMxc, dir.path(), QStringLiteral("avatar"));
+        QCOMPARE(client.fetches.size(), 1);
+        client.succeed(client.fetches.at(0).opId, png,
+                       QStringLiteral("application/octet-stream"));
+        QVERIFY(completed.count() > 0 || completed.wait(3000));
+        QCOMPARE(QFileInfo(completed.at(0).at(1).toString()).fileName(),
+                 QStringLiteral("avatar.png"));
+
+        bridge.saveInto(QStringLiteral("$file"), dir.path(),
+                        QStringLiteral("notes"));
+        client.succeed(client.fetches.last().opId, QByteArray("plain text"),
+                       QStringLiteral("text/plain"));
+        QVERIFY(completed.count() > 1 || completed.wait(3000));
+        QCOMPARE(QFileInfo(completed.at(1).at(1).toString()).fileName(),
+                 QStringLiteral("notes"));
     }
 
     void saveIntoNeverReplacesAnExistingFile()

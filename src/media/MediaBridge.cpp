@@ -2398,7 +2398,14 @@ void MediaBridge::writeSaveFile(const QUrl &destination, const QByteArray &bytes
 {
     const QFileInfo chosen(destination.toLocalFile());
     const QString folder = chosen.absolutePath();
-    const QString leaf = sanitizedFileName(chosen.fileName());
+    QString leaf = sanitizedFileName(chosen.fileName());
+    // A save started before the picture loaded had no type to name it from.
+    if (savenaming::extensionOf(leaf).isEmpty()) {
+        const QString ext = savenaming::extensionForMime(
+            lightning::imagefmt::sniffRasterMime(bytes));
+        if (!ext.isEmpty())
+            leaf += QLatin1Char('.') + ext;
+    }
     const quint64 serial = m_nextSaveWrite++;
     auto cancelled = std::make_shared<std::atomic<bool>>(false);
     m_saveWrites.insert(serial, {mediaKey, cancelled});
