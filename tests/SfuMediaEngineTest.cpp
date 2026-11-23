@@ -7451,7 +7451,8 @@ true);
         const QByteArray whole = sender.encryptFrame(
             frame, CallFrameCryptor::FrameKind::VideoWhole, 7, 1000);
         QVERIFY(!whole.isEmpty());
-        QVERIFY(!whole.startsWith('v'));
+        // One ciphertext byte equals its plaintext byte 1 time in 256 (random IV).
+        QVERIFY(!whole.startsWith(frame.left(10)));
 
         for (const QString &codec : {QStringLiteral("VP9"), QStringLiteral("VP8")}) {
             SfuMediaEngine engine;

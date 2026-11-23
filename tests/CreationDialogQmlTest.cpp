@@ -27,6 +27,7 @@
 #include "app/ConversationController.h"
 #include "matrix/MatrixClient.h"
 #include "models/UserSearchModel.h"
+#include "support/SettledClick.h"
 
 namespace {
 
@@ -366,8 +367,9 @@ private slots:
         QVERIFY(!hint->isVisible());
         const qreal slotHeight = slot->height();
         QVERIFY2(slotHeight > 0, "the hint's slot must reserve a line");
-        const qreal createY = create->mapToItem(m_window->contentItem(),
-                                                QPointF(0, 0)).y();
+        QPointF createAt;
+        QVERIFY(testsupport::settledScenePoint(m_window, create, &createAt, QPointF(0, 0)));
+        const qreal createY = createAt.y();
         const qreal dialogHeight = m_dialog->property("height").toReal();
 
         QTest::keyClick(m_window, Qt::Key_A);
@@ -375,8 +377,7 @@ private slots:
         QTest::keyClick(m_window, Qt::Key_Backspace);
         QTRY_VERIFY(hint->isVisible());
         QCOMPARE(slot->height(), slotHeight);
-        QCOMPARE(create->mapToItem(m_window->contentItem(), QPointF(0, 0)).y(),
-                 createY);
+        QCOMPARE(create->mapToScene(QPointF(0, 0)).y(), createY);
         QCOMPARE(m_dialog->property("height").toReal(), dialogHeight);
 
         auto *flick = item("creationTabFlick");

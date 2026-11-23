@@ -65,6 +65,13 @@ private:
     }
 
 private Q_SLOTS:
+    void initTestCase()
+    {
+        // A process that cannot create a GL context aborts in Qt's scene graph
+        // (no sceneGraphError receiver); only the software mask branch runs here.
+        QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
+    }
+
     void loadsWithZeroWarningsAndFixedGeometry()
     {
         Loaded band;
