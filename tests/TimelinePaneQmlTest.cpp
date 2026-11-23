@@ -8228,7 +8228,7 @@ private:
         QQuickItem *timeline = nullptr;
         int served = 0;
     };
-    void pinReaderWithASpentBudget(PinnedReader &r)
+    void pinReaderWithASpentBudget(PinnedReader &r, bool spent = true)
     {
         QVERIFY(!loginAndRoomIdAt(r.controller,0).isEmpty());
         auto *mock = r.controller.findChild<MockMatrixClient *>();
@@ -8263,9 +8263,10 @@ private:
         QVERIFY(r.timeline->setProperty("stickToBottom", false));
         QVERIFY(positionAtTopEdge(r.timeline));
         QCoreApplication::processEvents();
-        QVERIFY(r.timeline->setProperty(
-            "nearTopRowsThisApproach",
-            r.timeline->property("nearTopApproachRowBudget")));
+        if (spent)
+            QVERIFY(r.timeline->setProperty(
+                "nearTopRowsThisApproach",
+                r.timeline->property("nearTopApproachRowBudget")));
         QVERIFY(r.timeline->setProperty("nearTopArmed", true));
         QVERIFY(positionAtTopEdge(r.timeline));
         QVERIFY2(pinnedState(r).startsWith(QStringLiteral("stick=0 fromTop=0 ")),
@@ -8300,6 +8301,20 @@ private Q_SLOTS:
         QVERIFY2(r.timeline->property("nearTopRowsThisApproach").toInt() < budget,
                  qPrintable(QStringLiteral("the budget stayed spent: ")
                             + pinnedState(r)));
+    }
+
+    void anIdleReaderAtTheOldestRowLoadsNothing()
+    {
+        PinnedReader r;
+        pinReaderWithASpentBudget(r, false);
+        if (QTest::currentTestFailed())
+            return;
+        QTest::qWait(1000);
+        const int before = r.served;
+        QTest::qWait(30000);
+        QVERIFY2(r.served == before,
+                 qPrintable(QStringLiteral("%1 events loaded with no input: ")
+                                .arg(r.served - before) + pinnedState(r)));
     }
 
     void momentumAtTheOldestRowDoesNotRenewASpentBudget()
