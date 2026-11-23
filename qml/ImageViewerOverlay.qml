@@ -1013,7 +1013,7 @@ Popup {
                         border.width: actualSizeButton.visualFocus ? 2 : 0
                         border.color: AppTheme.focusRing
                     }
-                    contentItem: Label {
+                    contentItem: ControlLabel {
                         text: "1:1"
                         color: AppTheme.scrimInkStrong
                         font.pixelSize: AppTheme.textMeta

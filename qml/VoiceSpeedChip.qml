@@ -38,7 +38,7 @@ AbstractButton {
         border.color: root.visualFocus ? AppTheme.focusRing
                       : (root.normal ? AppTheme.border : AppTheme.accent)
     }
-    contentItem: Label {
+    contentItem: ControlLabel {
         id: chipLabel
         text: logic.rateText(root.rate)
         color: logic.readable(root.normal ? AppTheme.textSecondary

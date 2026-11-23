@@ -514,7 +514,7 @@ Rectangle {
                 border.width: audioSpeedButton.visualFocus ? 2 : 0
                 border.color: AppTheme.focusRing
             }
-            contentItem: Label {
+            contentItem: ControlLabel {
                 text: audioSpeedButton.rate + "×"
                 color: root.readableInk(
                     Math.abs(audioSpeedButton.rate - 1.0) < 0.001

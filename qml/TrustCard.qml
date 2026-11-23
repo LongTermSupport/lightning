@@ -278,12 +278,13 @@ Item {
                 Accessible.name: qsTr("Verify this session")
                 contentItem: RowLayout {
                     spacing: AppTheme.spacing6
-                    Icon {
+                    ControlIcon {
                         name: "verified_user"
+                        centreIn: parent
                         size: 16
                         color: AppTheme.stormTextSecondary
                     }
-                    Label {
+                    ControlLabel {
                         text: qsTr("Verify")
                         color: AppTheme.stormTextSecondary
                         font.pixelSize: 13

@@ -114,7 +114,7 @@ Item {
                         border.color: AppTheme.bolt
                     }
                 }
-                contentItem: Label {
+                contentItem: ControlLabel {
                     id: entryLabel
                     text: entryRow.modelData.label
                     textFormat: Text.PlainText

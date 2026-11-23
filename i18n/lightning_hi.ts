@@ -343,7 +343,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>एन्क्रिप्शन तैयार है। सुरक्षा और रिकवरी खोलें।</translation>
     </message>
     <message>
-        <location line="+101"/>
+        <location line="+102"/>
         <source>Add</source>
         <translation>जोड़ें</translation>
     </message>
@@ -364,7 +364,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>स्टेटस संपादित करें…</translation>
     </message>
     <message>
-        <location line="-77"/>
+        <location line="-78"/>
         <source>Encrypted</source>
         <translation>एन्क्रिप्टेड</translation>
     </message>
@@ -390,12 +390,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+10"/>
-        <location line="+83"/>
+        <location line="+84"/>
         <source>Security and recovery</source>
         <translation>सुरक्षा और रिकवरी</translation>
     </message>
     <message>
-        <location line="-81"/>
+        <location line="-82"/>
         <source>This device isn&apos;t verified yet. Verify it so your other sessions trust it.</source>
         <translation>यह डिवाइस अभी सत्यापित नहीं है। इसे सत्यापित करें ताकि आपके अन्य सत्र इस पर भरोसा करें।</translation>
     </message>
@@ -405,7 +405,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>सुरक्षा के कुछ चरण अभी पूरे नहीं हुए हैं। उन्हें पूरा करने के लिए सुरक्षा और रिकवरी खोलें।</translation>
     </message>
     <message>
-        <location line="+58"/>
+        <location line="+59"/>
         <source>Set a status…</source>
         <translation>स्टेटस सेट करें…</translation>
     </message>
@@ -1845,7 +1845,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>रद्द करें</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Use edited image</source>
         <translation>संपादित छवि का उपयोग करें</translation>
     </message>
@@ -8454,12 +8454,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+29"/>
-        <location line="+272"/>
+        <location line="+273"/>
         <source>Home</source>
         <translation>होम</translation>
     </message>
     <message>
-        <location line="-271"/>
+        <location line="-272"/>
         <source>Desktop</source>
         <translation>डेस्कटॉप</translation>
     </message>
@@ -8549,7 +8549,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>होम फ़ोल्डर (Alt+Home)</translation>
     </message>
     <message>
-        <location line="+111"/>
+        <location line="+112"/>
         <source>Type a path</source>
         <translation>पथ लिखें</translation>
     </message>
@@ -18654,12 +18654,12 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="+21"/>
         <location line="+773"/>
-        <location line="+95"/>
+        <location line="+96"/>
         <source>Remove</source>
         <translation>हटाएँ</translation>
     </message>
     <message>
-        <location line="-848"/>
+        <location line="-849"/>
         <source>#another-name</source>
         <translation>#another-name</translation>
     </message>
@@ -32873,7 +32873,7 @@ Note: importing keys does not verify this session.</source>
         <translation>पुराने जवाब लोड हो रहे हैं…</translation>
     </message>
     <message>
-        <location line="+187"/>
+        <location line="+189"/>
         <location line="+48"/>
         <source>Replying to %1</source>
         <translation>%1 को जवाब</translation>
@@ -33305,12 +33305,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location filename="../qml/SpaceLobby.qml" line="-519"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5428"/>
+        <location line="+5438"/>
         <source>Space</source>
         <translation>स्पेस</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5427"/>
+        <location filename="../qml/TimelinePane.qml" line="-5437"/>
         <source>Home</source>
         <translation>होम</translation>
     </message>
@@ -33412,12 +33412,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="+16"/>
         <location line="+2"/>
-        <location line="+3896"/>
+        <location line="+3897"/>
         <source>Room information</source>
         <translation>कक्ष जानकारी</translation>
     </message>
     <message>
-        <location line="-3885"/>
+        <location line="-3886"/>
         <location line="+1"/>
         <source>More room actions</source>
         <translation>रूम की और कार्रवाइयाँ</translation>
@@ -33670,12 +33670,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="+2749"/>
         <location line="+27"/>
-        <location line="+455"/>
+        <location line="+463"/>
         <source>Loading older messages…</source>
         <translation>पुराने संदेश लोड हो रहे हैं…</translation>
     </message>
     <message>
-        <location line="-454"/>
+        <location line="-462"/>
         <source>Could not load older messages —</source>
         <translation>पुराने संदेश लोड नहीं हो सके —</translation>
     </message>
@@ -33685,7 +33685,7 @@ Note: importing keys does not verify this session.</source>
         <translation>पुराने संदेश फिर से लोड करने का प्रयास करें</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+15"/>
         <source>Retry</source>
         <translation>पुनः प्रयास करें</translation>
     </message>
@@ -33730,7 +33730,7 @@ Note: importing keys does not verify this session.</source>
         <translation>वहाँ जाएँ जहाँ आपने पढ़ना छोड़ा था</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+31"/>
         <source>First unread</source>
         <translation>पहला अपठित</translation>
     </message>
@@ -33750,7 +33750,7 @@ Note: importing keys does not verify this session.</source>
         <translation>नवीनतम संदेश पर लौटें</translation>
     </message>
     <message numerus="yes">
-        <location line="+268"/>
+        <location line="+274"/>
         <source>%n message(s) selected</source>
         <translation>
             <numerusform>%n संदेश चुना गया</numerusform>
@@ -34050,8 +34050,8 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+298"/>
-        <location filename="../qml/TimelinePane.qml" line="-6726"/>
-        <location line="+6903"/>
+        <location filename="../qml/TimelinePane.qml" line="-6736"/>
+        <location line="+6913"/>
         <source>Room</source>
         <translation>कक्ष</translation>
     </message>
@@ -34126,13 +34126,13 @@ Note: importing keys does not verify this session.</source>
         <translation>रद्द करें</translation>
     </message>
     <message>
-        <location line="-6018"/>
+        <location line="-6028"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation>प्रोफ़ाइल देखें</translation>
     </message>
     <message>
-        <location line="+5247"/>
+        <location line="+5257"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation>तस्वीरें (*.png *.jpg *.jpeg *.gif *.webp *.svg)</translation>
     </message>
@@ -34208,7 +34208,7 @@ Note: importing keys does not verify this session.</source>
         <translation>संलग्न करने के लिए फ़ाइलें छोड़ें</translation>
     </message>
     <message>
-        <location line="-5466"/>
+        <location line="-5476"/>
         <source>Join space</source>
         <translation>स्पेस में शामिल हों</translation>
     </message>
@@ -34285,17 +34285,17 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+139"/>
-        <location line="+16"/>
+        <location line="+17"/>
         <source>Verify</source>
         <translation>सत्यापित करें</translation>
     </message>
     <message>
-        <location line="-9"/>
+        <location line="-10"/>
         <source>Verify this session</source>
         <translation>इस सत्र को सत्यापित करें</translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="+41"/>
         <source>Use recovery key instead</source>
         <translation>इसकी जगह रिकवरी कुंजी इस्तेमाल करें</translation>
     </message>
@@ -35302,23 +35302,23 @@ Note: importing keys does not verify this session.</source>
         <translation>वीडियो दोबारा चलाएँ</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+24"/>
         <source>Replay</source>
         <translation>दोबारा चलाएँ</translation>
     </message>
     <message>
-        <location line="-67"/>
-        <location line="+130"/>
+        <location line="-68"/>
+        <location line="+131"/>
         <source>Video</source>
         <translation>वीडियो</translation>
     </message>
     <message>
-        <location line="-130"/>
+        <location line="-131"/>
         <source>Video: %1</source>
         <translation>वीडियो: %1</translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+144"/>
         <source>%1 · %2</source>
         <translation>%1 · %2</translation>
     </message>

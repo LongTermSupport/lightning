@@ -8,7 +8,7 @@ trap 'rm -rf "$imports"' EXIT
 mkdir -p "$imports/MatrixClient"
 ln -s "$repo/qml/IconGlyphs.js" "$imports/MatrixClient/IconGlyphs.js"
 printf 'module MatrixClient\n' > "$imports/MatrixClient/qmldir"
-for name in AppTheme DownloadNotices DownloadsCard AttachmentDownloadNotice PaneDownloadsCard AppButton IconButton Icon AppBusyIndicator; do
+for name in AppTheme DownloadNotices DownloadsCard AttachmentDownloadNotice PaneDownloadsCard AppButton ControlLabel ControlIcon IconButton Icon AppBusyIndicator; do
     ln -s "$repo/qml/$name.qml" "$imports/MatrixClient/$name.qml"
     if [[ $name = AppTheme || $name = DownloadNotices ]]; then
         printf 'singleton '

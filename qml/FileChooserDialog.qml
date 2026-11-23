@@ -722,15 +722,16 @@ Dialog {
                                     id: crumbRow
                                     spacing: AppTheme.spacing4
                                     leftPadding: AppTheme.spacing8
-                                    Icon {
+                                    ControlIcon {
                                         visible: crumb.modelData.kind !== "dir"
                                         name: crumb.modelData.kind === "home"
                                               ? "home" : "hard_drive"
                                         size: 16
                                         color: AppTheme.stormTextSecondary
                                         anchors.verticalCenter: parent.verticalCenter
+                                        centreIn: parent
                                     }
-                                    Label {
+                                    ControlLabel {
                                         id: crumbLabel
                                         textFormat: Text.PlainText
                                         visible: crumb.modelData.kind !== "root"

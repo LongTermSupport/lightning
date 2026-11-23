@@ -14,7 +14,7 @@ ln -s "$repo/qml/IconGlyphs.js" "$imports/MatrixClient/IconGlyphs.js"
 chmod 700 "$imports/runtime"
 printf 'module MatrixClient\n' > "$imports/MatrixClient/qmldir"
 for name in AppTheme VideoPlayerCard VideoControlBar VideoViewerOverlay \
-            MediaVolumeControl SoftwareVideoNotice IconButton Icon AppButton \
+            MediaVolumeControl SoftwareVideoNotice IconButton Icon AppButton ControlLabel ControlIcon \
             AppMenu AppMenuItem MenuKeycap StormNode AppBusyIndicator; do
     ln -s "$repo/qml/$name.qml" "$imports/MatrixClient/$name.qml"
     if [[ $name = AppTheme ]]; then
