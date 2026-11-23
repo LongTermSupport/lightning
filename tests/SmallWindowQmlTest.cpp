@@ -844,7 +844,7 @@ private Q_SLOTS:
         QQuickItem *pane = item("timelinePane");
         QVERIFY(pane);
 
-        struct Seen { QString name; qreal gutter, w, h, cy; };
+        struct Seen { QString name; qreal gutter, w, h, cy, radius; };
         QList<Seen> seen;
         QStringList missing;
         QQuickItem *band = item("roomHeaderBand");
@@ -864,7 +864,8 @@ private Q_SLOTS:
                 && button->property("iconName").toString() != QLatin1String("close"))
                 missing << name + QStringLiteral(" (last action is not its close)");
             seen.append({ name, rtl ? b.left() - e.left() : e.right() - b.right(),
-                          b.width(), b.height(), b.center().y() - e.top() });
+                          b.width(), b.height(), b.center().y() - e.top(),
+                          button->property("radius").toReal() });
         };
 
         QQuickItem *overflow = item("roomHeaderOverflowButton");
@@ -902,32 +903,25 @@ private Q_SLOTS:
         QVERIFY(QMetaObject::invokeMethod(pane, "toggleSearchPanel"));
         QTest::qWait(150);
 
-        QQuickItem *roomInfoPanel = item("roomInfoPanel");
-        QVERIFY(roomInfoPanel);
-        roomInfoPanel->setProperty("section", QStringLiteral("overview"));
-        pane->setProperty("infoOpen", true);
-        QTest::qWait(500);
-        measure(QStringLiteral("roomInfo"), roomInfoPanel,
-                trailingHeaderButton(roomInfoPanel, rtl));
-        pane->setProperty("infoOpen", false);
-        QTest::qWait(150);
-
-        QQuickItem *membersPanel = item("roomInfoPanel");
-        QVERIFY(membersPanel);
-        membersPanel->setProperty("section", QStringLiteral("people"));
-        pane->setProperty("infoOpen", true);
-        QTest::qWait(500);
-        measure(QStringLiteral("members"), membersPanel,
-                trailingHeaderButton(membersPanel, rtl));
-        pane->setProperty("infoOpen", false);
-        QTest::qWait(150);
+        QQuickItem *infoPanel = item("roomInfoPanel");
+        QVERIFY(infoPanel);
+        for (const char *section : { "overview", "pinned", "people", "media",
+                                     "widgets" }) {
+            infoPanel->setProperty("section", QString::fromLatin1(section));
+            pane->setProperty("infoOpen", true);
+            QTest::qWait(400);
+            measure(QStringLiteral("roomInfo/") + QLatin1String(section),
+                    infoPanel, trailingHeaderButton(infoPanel, rtl));
+            pane->setProperty("infoOpen", false);
+            QTest::qWait(100);
+        }
 
         m_controller->showSettings();
         QTest::qWait(300);
         measure(QStringLiteral("settings"), item("settingsHeaderBar"),
                 item("settingsCloseButton"));
         m_controller->showMain();
-        expected += 5;
+        expected += 8;
 
         m_controller->settings()->setSpacesRailVisible(true);
         setMirrored(false);
@@ -937,19 +931,23 @@ private Q_SLOTS:
         const Seen ref = seen.first();
         QStringList faults;
         for (const Seen &h : seen) {
-            const QString got = QStringLiteral("%1: gutter %2 box %3x%4 centre %5")
+            const QString got = QStringLiteral("%1: gutter %2 box %3x%4 centre %5 "
+                                               "radius %6")
                                     .arg(h.name).arg(h.gutter).arg(h.w).arg(h.h)
-                                    .arg(h.cy);
+                                    .arg(h.cy).arg(h.radius);
             if (qAbs(h.gutter - ref.gutter) > 0.5 || qAbs(h.w - ref.w) > 0.5
-                || qAbs(h.h - ref.h) > 0.5 || qAbs(h.cy - ref.cy) > 0.5)
+                || qAbs(h.h - ref.h) > 0.5 || qAbs(h.cy - ref.cy) > 0.5
+                || (h.name != QLatin1String("roomList")
+                    && qAbs(h.radius - ref.radius) > 0.5))
                 faults << got;
         }
         for (const QString &m : missing)
             faults << m + QStringLiteral(": not shown");
         QVERIFY2(faults.isEmpty(),
                  qPrintable(QStringLiteral("room header: gutter %1 box %2x%3 "
-                                           "centre %4; differs: ")
+                                           "centre %4 radius %5; differs: ")
                                 .arg(ref.gutter).arg(ref.w).arg(ref.h).arg(ref.cy)
+                                .arg(ref.radius)
                             + faults.join(QStringLiteral("; "))));
         QCOMPARE(seen.size(), expected);
     }
