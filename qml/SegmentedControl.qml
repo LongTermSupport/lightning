@@ -70,7 +70,7 @@ RowLayout {
                     segment.clicked()
             }
 
-            contentItem: Label {
+            contentItem: ControlLabel {
                 id: segText
                 text: segment.segLabel
                 color: {

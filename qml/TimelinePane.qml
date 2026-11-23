@@ -5224,8 +5224,9 @@ Rectangle {
                                     paginationRetryButton.visualFocus ? 2 : 0
                                 border.color: AppTheme.focusRing
                             }
-                            Label {
+                            ControlLabel {
                                 id: paginationRetryLabel
+                                objectName: "paginationRetryLabel"
                                 anchors.centerIn: parent
                                 text: qsTr("Retry")
                                 color: AppTheme.link
@@ -5491,15 +5492,18 @@ Rectangle {
                     id: firstUnreadPillRow
                     anchors.centerIn: parent
                     spacing: AppTheme.spacingXS
-                    Icon {
+                    ControlIcon {
                         objectName: "jumpToFirstUnreadIcon"
+                        centreIn: jumpToFirstUnreadButton
                         anchors.verticalCenter: parent.verticalCenter
                         name: timeline.firstUnreadBelow ? "expand_more"
                                                         : "expand_less"
                         size: 18
                         color: AppTheme.accentText
                     }
-                    Label {
+                    ControlLabel {
+                        objectName: "jumpToFirstUnreadLabel"
+                        centreIn: jumpToFirstUnreadButton
                         anchors.verticalCenter: parent.verticalCenter
                         text: qsTr("First unread")
                         color: AppTheme.accentText
@@ -5596,13 +5600,17 @@ Rectangle {
                     id: jumpRow
                     anchors.centerIn: parent
                     spacing: AppTheme.spacingXS
-                    Icon {
+                    ControlIcon {
+                        objectName: "jumpToLatestIcon"
+                        centreIn: jumpToLatestButton
                         anchors.verticalCenter: parent.verticalCenter
                         name: "expand_more"
                         size: 20
                         color: AppTheme.accentText
                     }
-                    Label {
+                    ControlLabel {
+                        objectName: "jumpToLatestCount"
+                        centreIn: jumpToLatestButton
                         anchors.verticalCenter: parent.verticalCenter
                         visible: jumpToLatestButton.newCount > 0
                         text: jumpToLatestButton.newCount > 99
@@ -5652,8 +5660,10 @@ Rectangle {
                         font.pixelSize: AppTheme.scaled(AppTheme.textMeta)
                         font.weight: AppTheme.weightMedium
                     }
-                    ToolButton {
+                    AppButton {
                         objectName: "jumpProgressCancel"
+                        size: "sm"
+                        kind: "ghost"
                         anchors.verticalCenter: parent.verticalCenter
                         text: qsTr("Cancel")
                         onClicked: app.pagination.cancelNavigation()

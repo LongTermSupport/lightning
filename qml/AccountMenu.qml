@@ -443,12 +443,13 @@ Popup {
                 contentItem: RowLayout {
                     id: trustInk
                     spacing: 3
-                    Icon {
+                    ControlIcon {
                         name: trustChip.full ? "verified_user" : "shield"
+                        centreIn: parent
                         size: AppTheme.scaled(AppTheme.textMeta)
                         color: trustChip.ink
                     }
-                    Label {
+                    ControlLabel {
                         objectName: "accountTrustWord"
                         text: trustChip.word
                         color: trustChip.ink

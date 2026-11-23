@@ -1462,7 +1462,7 @@ Item {
         }
         contentItem: RowLayout {
             spacing: AppTheme.spacing8
-            Icon {
+            ControlIcon {
                 objectName: "settingsNavIcon_" + navRow.sectionKey
                 name: navRow.iconName
                 size: 16
@@ -1471,7 +1471,7 @@ Item {
                 color: navRow.highlighted ? AppTheme.settingsNavSelectedMark
                                           : AppTheme.stormTextMuted
             }
-            Label {
+            ControlLabel {
                 horizontalAlignment: Text.AlignLeft
                 id: navRowText
                 // not-body-copy: body leading would lift the letters off the icon's centre line

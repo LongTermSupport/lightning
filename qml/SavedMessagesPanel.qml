@@ -105,7 +105,7 @@ Dialog {
         RowLayout {
             Layout.fillWidth: true
             spacing: AppTheme.spacing8
-            ComboBox {
+            AppComboBox {
                 objectName: "savedMessagesRoomFilter"
                 Layout.fillWidth: true
                 textRole: "name"

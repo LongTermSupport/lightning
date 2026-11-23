@@ -86,6 +86,7 @@ AbstractButton {
     }
 
     contentItem: Item {
+        id: contentBox
         implicitWidth: contentRow.implicitWidth
         implicitHeight: contentRow.implicitHeight
 
@@ -107,17 +108,19 @@ AbstractButton {
                 }
             }
 
-            Icon {
+            ControlIcon {
                 objectName: "buttonIcon"
+                centreIn: contentBox
                 visible: root.iconName.length > 0 && !root.busy
                 name: root.iconName
                 size: root.size === "sm" ? 15 : 17
                 color: root._ink
                 anchors.verticalCenter: parent.verticalCenter
             }
-            Label {
+            ControlLabel {
                 id: label
                 objectName: "buttonLabel"
+                centreIn: contentBox
                 visible: root.text.length > 0
                 text: root.text
                 color: root._ink
