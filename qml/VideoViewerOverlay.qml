@@ -154,7 +154,7 @@ Popup {
             }
             contentItem: Row {
                 spacing: AppTheme.spacing8
-                Icon {
+                ControlIcon {
                     anchors.verticalCenter: parent.verticalCenter
                     centreIn: parent
                     name: "refresh"

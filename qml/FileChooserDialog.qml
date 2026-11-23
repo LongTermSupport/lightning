@@ -722,7 +722,7 @@ Dialog {
                                     id: crumbRow
                                     spacing: AppTheme.spacing4
                                     leftPadding: AppTheme.spacing8
-                                    Icon {
+                                    ControlIcon {
                                         visible: crumb.modelData.kind !== "dir"
                                         name: crumb.modelData.kind === "home"
                                               ? "home" : "hard_drive"

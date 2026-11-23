@@ -13,7 +13,7 @@ mkdir -p "$imports/MatrixClient"
 ln -s "$repo/qml/IconGlyphs.js" "$imports/MatrixClient/IconGlyphs.js"
 printf 'module MatrixClient\n' > "$imports/MatrixClient/qmldir"
 for name in AppTheme VoiceMiniPlayer VoicePlayerBar VoicePlayerLogic \
-            VoiceSeekBar VoiceSpeedChip AudioPlayerCard CoverArtButton IconButton Icon \
+            VoiceSeekBar VoiceSpeedChip AudioPlayerCard CoverArtButton IconButton Icon ControlLabel \
             Avatar Skeleton AnimationFileHold MediaVolumeControl AppMenu \
             AppMenuItem MenuKeycap StormNode MotionPolicy PlainToolTip; do
     ln -s "$repo/qml/$name.qml" "$imports/MatrixClient/$name.qml"

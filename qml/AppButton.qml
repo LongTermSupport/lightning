@@ -108,7 +108,7 @@ AbstractButton {
                 }
             }
 
-            Icon {
+            ControlIcon {
                 objectName: "buttonIcon"
                 centreIn: contentBox
                 visible: root.iconName.length > 0 && !root.busy

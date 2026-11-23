@@ -1773,7 +1773,7 @@ Rectangle {
                     id: threadJumpRow
                     anchors.centerIn: parent
                     spacing: AppTheme.spacingXS
-                    Icon {
+                    ControlIcon {
                         anchors.verticalCenter: parent.verticalCenter
                         name: "expand_more"
                         centreIn: threadJumpToLatest

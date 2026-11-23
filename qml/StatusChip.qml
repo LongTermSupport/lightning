@@ -80,7 +80,7 @@ Rectangle {
         anchors.centerIn: parent
         spacing: AppTheme.spacing2
 
-        Icon {
+        ControlIcon {
             objectName: "chipIcon"
             visible: root.iconName.length > 0
             name: root.iconName
