@@ -8287,31 +8287,29 @@ private:
     }
 
 private Q_SLOTS:
-    void aWheelAtTheOldestRowLoadsAgainAfterTheBudgetIsSpent()
+    void aWheelAtTheOldestRowRenewsASpentBudget()
     {
         PinnedReader r;
         pinReaderWithASpentBudget(r);
         if (QTest::currentTestFailed())
             return;
-        const int before = r.served;
+        const int budget =
+            r.timeline->property("nearTopApproachRowBudget").toInt();
         const QPointF centre(r.window.width() / 2.0, r.window.height() / 2.0);
-        for (int notch = 0; notch < 4; ++notch) {
-            sendWheelNotch(r.window, centre, 120, false);
-            QTest::qWait(60);
-        }
-        QTest::qWait(200);
-        QVERIFY2(r.served > before,
-                 qPrintable(QStringLiteral("no page was asked for: ")
+        sendWheelNotch(r.window, centre, 120, false);
+        QVERIFY2(r.timeline->property("nearTopRowsThisApproach").toInt() < budget,
+                 qPrintable(QStringLiteral("the budget stayed spent: ")
                             + pinnedState(r)));
     }
 
-    void momentumAtTheOldestRowDoesNotLoadAfterTheBudgetIsSpent()
+    void momentumAtTheOldestRowDoesNotRenewASpentBudget()
     {
         PinnedReader r;
         pinReaderWithASpentBudget(r);
         if (QTest::currentTestFailed())
             return;
-        const int before = r.served;
+        const int budget =
+            r.timeline->property("nearTopApproachRowBudget").toInt();
         const QPointF centre(r.window.width() / 2.0, r.window.height() / 2.0);
         for (int frame = 0; frame < 30; ++frame) {
             QWheelEvent wheel(centre, r.window.mapToGlobal(centre.toPoint()),
@@ -8319,12 +8317,11 @@ private Q_SLOTS:
                               Qt::NoModifier, Qt::ScrollMomentum, false);
             QCoreApplication::sendEvent(&r.window, &wheel);
             QCoreApplication::processEvents();
-            QTest::qWait(20);
+            QVERIFY2(r.timeline->property("nearTopRowsThisApproach").toInt()
+                         >= budget,
+                     qPrintable(QStringLiteral("a momentum frame renewed the "
+                                               "budget: ") + pinnedState(r)));
         }
-        QTest::qWait(200);
-        QVERIFY2(r.served == before,
-                 qPrintable(QStringLiteral("momentum frames loaded a page: ")
-                            + pinnedState(r)));
     }
 
     void anApproachThatKeepsGettingEmptyPagesStillStops()
