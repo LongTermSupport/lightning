@@ -137,6 +137,37 @@ private:
         QCoreApplication::processEvents();
     }
 
+    // The panel's last header action: the outermost visible IconButton whose
+    // centre lies in the panel's top header band.
+    QQuickItem *trailingHeaderButton(QQuickItem *panel, bool rtl) const
+    {
+        if (!panel)
+            return nullptr;
+        const QRectF p = panel->mapRectToScene(
+            QRectF(0, 0, panel->width(), panel->height()));
+        const qreal bandBottom = p.top() + 64;
+        QQuickItem *best = nullptr;
+        qreal bestX = 0;
+        QList<QQuickItem *> stack{ panel };
+        while (!stack.isEmpty()) {
+            QQuickItem *it = stack.takeLast();
+            if (!it->isVisible() || it->opacity() <= 0.01)
+                continue;
+            if (QByteArray(it->metaObject()->className()).startsWith("IconButton")
+                && it->width() > 0) {
+                const QRectF r = it->mapRectToScene(
+                    QRectF(0, 0, it->width(), it->height()));
+                const qreal x = rtl ? -r.left() : r.right();
+                if (r.center().y() < bandBottom && (!best || x > bestX)) {
+                    best = it;
+                    bestX = x;
+                }
+            }
+            stack.append(it->childItems());
+        }
+        return best;
+    }
+
 private Q_SLOTS:
     void initTestCase()
     {
@@ -816,10 +847,8 @@ private Q_SLOTS:
         struct Seen { QString name; qreal gutter, w, h, cy; };
         QList<Seen> seen;
         QStringList missing;
-        const auto measure = [&](const QString &name, const char *edgeName,
-                                 const char *buttonName, QQuickItem *edgeItem) {
-            QQuickItem *edge = edgeItem ? edgeItem : item(edgeName);
-            QQuickItem *button = item(buttonName);
+        const auto measure = [&](const QString &name, QQuickItem *edge,
+                                 QQuickItem *button) {
             if (!edge || !button || !edge->isVisible() || !button->isVisible()
                 || button->width() <= 0) {
                 missing << name;
@@ -835,19 +864,22 @@ private Q_SLOTS:
 
         QQuickItem *overflow = item("roomHeaderOverflowButton");
         QVERIFY(overflow);
-        const qreal overflowX = overflow->mapToScene(
-            QPointF(overflow->width() / 2, 0)).x();
-        QVERIFY2(rtl == (overflowX < m_window->width() / 2.0),
-                 "the window did not mirror: nothing about RTL was measured");
+        QQuickItem *band = item("roomHeaderBand");
+        QVERIFY(band);
+        const qreal overflowX = overflow->mapToItem(
+            band, QPointF(overflow->width() / 2, 0)).x();
+        QVERIFY2(rtl == (overflowX < band->width() / 2.0),
+                 qPrintable(QStringLiteral("the header did not mirror: overflow "
+                                           "at %1 of %2").arg(overflowX)
+                                .arg(band->width())));
 
-        measure(QStringLiteral("room"), "roomHeaderBand",
-                "roomHeaderOverflowButton", nullptr);
+        measure(QStringLiteral("room"), band, overflow);
         int expected = 1;
         QQuickItem *railActions = item("railHiddenActions");
         QVERIFY(railActions);
         if (railActions->isVisible()) {
-            measure(QStringLiteral("roomList"), nullptr, "headerAccountTile",
-                    railActions->parentItem());
+            measure(QStringLiteral("roomList"), railActions->parentItem(),
+                    item("headerAccountTile"));
             ++expected;
         } else {
             QVERIFY2(size.width() < 1280, "the room list header was never shown");
@@ -855,36 +887,36 @@ private Q_SLOTS:
 
         QVERIFY(QMetaObject::invokeMethod(pane, "toggleThreadSurface"));
         QTest::qWait(300);
-        measure(QStringLiteral("thread"), "threadHeaderBar", "threadCloseButton",
-                nullptr);
+        measure(QStringLiteral("thread"), item("threadPanel"),
+                trailingHeaderButton(item("threadPanel"), rtl));
         QVERIFY(QMetaObject::invokeMethod(pane, "toggleThreadSurface"));
         QTest::qWait(150);
 
         QVERIFY(QMetaObject::invokeMethod(pane, "toggleSearchPanel"));
         QTest::qWait(300);
-        measure(QStringLiteral("search"), "roomSearchPanel", "searchCloseButton",
-                nullptr);
+        measure(QStringLiteral("search"), item("roomSearchPanel"),
+                trailingHeaderButton(item("roomSearchPanel"), rtl));
         QVERIFY(QMetaObject::invokeMethod(pane, "toggleSearchPanel"));
         QTest::qWait(150);
 
         QVERIFY(QMetaObject::invokeMethod(pane, "toggleRoomInfo"));
         QTest::qWait(400);
-        measure(QStringLiteral("roomInfo"), "roomInfoHeaderBar",
-                "roomInfoCloseButton", nullptr);
+        measure(QStringLiteral("roomInfo"), item("roomInfoPanel"),
+                trailingHeaderButton(item("roomInfoPanel"), rtl));
         QVERIFY(QMetaObject::invokeMethod(pane, "toggleRoomInfo"));
         QTest::qWait(150);
 
         QVERIFY(QMetaObject::invokeMethod(pane, "toggleMemberPanel"));
         QTest::qWait(400);
-        measure(QStringLiteral("members"), "roomInfoHeaderBar",
-                "roomInfoCloseButton", nullptr);
+        measure(QStringLiteral("members"), item("roomInfoPanel"),
+                trailingHeaderButton(item("roomInfoPanel"), rtl));
         QVERIFY(QMetaObject::invokeMethod(pane, "toggleMemberPanel"));
         QTest::qWait(150);
 
         m_controller->showSettings();
         QTest::qWait(300);
-        measure(QStringLiteral("settings"), "settingsHeaderBar",
-                "settingsCloseButton", nullptr);
+        measure(QStringLiteral("settings"), item("settingsHeaderBar"),
+                item("settingsCloseButton"));
         m_controller->showMain();
         expected += 5;
 
