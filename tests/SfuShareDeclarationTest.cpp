@@ -24,6 +24,8 @@ public:
     {
         if (name == QLatin1String("screen"))
             calls << QStringLiteral("add:") + cid;
+        else if (name == QLatin1String("camera"))
+            cameras << cid;
     }
     void sfuAddShareWithBackupFor(quint64, const QString &cid,
                                   const QString &backupCid, int, int,
@@ -39,6 +41,7 @@ public:
             calls << QStringLiteral("offer");
     }
     QStringList calls;
+    QStringList cameras;
 };
 
 class SessionClient : public MockMatrixClient
@@ -291,6 +294,58 @@ private slots:
         QCOMPARE(notices.first().first().toString(),
                  QStringLiteral("Screen sharing stopped: what you were "
                                 "sharing is no longer available."));
+        engine.stop();
+    }
+
+    void aCameraWhoseSourceDiesEndsWithANotice()
+    {
+        DeclaringClient client;
+        SfuCallController call;
+        SfuMediaEngine engine;
+        engine.setTestSourceMode(true);
+        call.setClient(&client);
+        call.setMediaEngine(&engine);
+        call.setCallStateForTest(SfuCallController::State::Connected);
+        engine.start();
+        QSignalSpy notices(&call, &SfuCallController::callFailed);
+        call.setCameraOn(true);
+        QVERIFY(call.cameraOn());
+        QCOMPARE(client.cameras.size(), 1);
+        const QString cid = client.cameras.first();
+        GstElement *bin = engine.publishedBinForTest(cid);
+        QVERIFY(bin);
+        GstElement *source = gst_bin_get_by_name(GST_BIN(bin), "capsrc");
+        QVERIFY(source);
+        GstPad *pad = gst_element_get_static_pad(source, "src");
+        QVERIFY(pad);
+        std::atomic<int> frames{0};
+        const gulong probe = gst_pad_add_probe(
+            pad, GST_PAD_PROBE_TYPE_BUFFER,
+            [](GstPad *, GstPadProbeInfo *, gpointer data) {
+                ++*static_cast<std::atomic<int> *>(data);
+                return GST_PAD_PROBE_OK;
+            },
+            &frames, nullptr);
+        QTRY_VERIFY_WITH_TIMEOUT(frames.load() > 0, 10000);
+        gst_pad_remove_probe(pad, probe);
+        gst_object_unref(pad);
+        QVERIFY(call.cameraOn());
+        notices.clear();
+
+        GError *error = g_error_new_literal(GST_RESOURCE_ERROR,
+                                            GST_RESOURCE_ERROR_READ,
+                                            "Could not read from resource.");
+        gst_element_post_message(
+            source, gst_message_new_error(GST_OBJECT(source), error, nullptr));
+        g_error_free(error);
+        gst_object_unref(source);
+
+        QTRY_VERIFY_WITH_TIMEOUT(!call.cameraOn(), 5000);
+        QVERIFY2(!engine.hasPublishedBinForTest(cid),
+                 "the dead camera's bin is still published on its last frame");
+        QCOMPARE(notices.size(), 1);
+        QCOMPARE(notices.first().first().toString(),
+                 QStringLiteral("Your camera stopped."));
         engine.stop();
     }
 
