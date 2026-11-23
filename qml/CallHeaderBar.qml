@@ -290,14 +290,18 @@ Rectangle {
                 spacing: 0
                 CallControlButton {
                     objectName: "callBarScreenShareButton"
-                    iconName: app.groupCall.screenSharing
-                              ? "stop_screen_share" : "screen_share"
-                    role: app.groupCall.screenSharing ? "active" : "neutral"
+                    readonly property bool engaged: app.groupCall.screenSharing
+                                                    || app.groupCall.screenShareStarting
+                    iconName: engaged ? "stop_screen_share" : "screen_share"
+                    role: engaged ? "active" : "neutral"
                     diameter: root.controlDiameter
                     glyphSize: root.controlGlyph
                     tooltip: app.groupCall.screenSharing
                              ? qsTr("Stop sharing your screen")
-                             : qsTr("Share your screen")
+                             : app.groupCall.screenShareStarting
+                               ? qsTr("Cancel screen sharing")
+                               : qsTr("Share your screen")
+                    // requestScreenShare() cancels a share that is still starting.
                     onClicked: {
                         if (app.groupCall.screenSharing)
                             app.groupCall.stopScreenShare()
