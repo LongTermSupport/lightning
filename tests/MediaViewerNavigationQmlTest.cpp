@@ -93,6 +93,22 @@ ApplicationWindow {
         return f.contentX > 1 && f.contentY > 1
     }
     function entryCount() { return viewer.entries.length }
+    function subtitle() {
+        var label = findNamed(viewer.contentItem, "viewerSubtitle")
+        return label ? label.text : ""
+    }
+    function findNamed(item, name) {
+        if (!item)
+            return null
+        if (item.objectName === name)
+            return item
+        for (var i = 0; i < item.children.length; ++i) {
+            var hit = findNamed(item.children[i], name)
+            if (hit)
+                return hit
+        }
+        return null
+    }
     function currentKey() {
         return viewer.current ? (viewer.current.mediaKey || "") : ""
     }
@@ -271,6 +287,33 @@ private Q_SLOTS:
         QCOMPARE(call("currentKey").toString(), QStringLiteral("$a"));
         QMetaObject::invokeMethod(m_root, "showAt", Q_ARG(QVariant, QVariant(-1)));
         QCOMPARE(call("currentKey").toString(), QStringLiteral("$c"));
+    }
+
+    void aMediaTabEntryRenamesItsSenderWhenTheMembersArrive()
+    {
+        const QString room = QStringLiteral("!general:mock.local");
+        m_controller->mediaHistory()->setProperty("roomId", room);
+        QVariantMap entry = historyEntry(QStringLiteral("$late"));
+        entry.insert(QStringLiteral("sender"), QStringLiteral("latecomer"));
+        entry.insert(QStringLiteral("senderId"),
+                     QStringLiteral("@latecomer:mock.local"));
+        QMetaObject::invokeMethod(m_root, "openAt",
+                                  Q_ARG(QVariant, QVariant(QVariantList{entry})),
+                                  Q_ARG(QVariant, QVariant(0)));
+        QVERIFY(call("isOpen").toBool());
+        QTRY_VERIFY2(call("subtitle").toString().startsWith(
+                         QStringLiteral("latecomer · ")),
+                     qPrintable(call("subtitle").toString()));
+
+        auto *mock = m_controller->findChild<MockMatrixClient *>();
+        QVERIFY(mock);
+        MemberInfo member;
+        member.userId = QStringLiteral("@latecomer:mock.local");
+        member.displayName = QStringLiteral("Late Comer");
+        mock->setRoomMemberForTest(room, member);
+        QTRY_VERIFY2(call("subtitle").toString().startsWith(
+                         QStringLiteral("Late Comer · ")),
+                     qPrintable(call("subtitle").toString()));
     }
 
     void anImpossibleIndexOpensNothing()

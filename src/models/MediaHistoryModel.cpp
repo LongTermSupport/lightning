@@ -43,6 +43,16 @@ void MediaHistoryModel::setClient(MatrixClient *client)
                 });
         connect(m_client, &MatrixClient::loginSucceeded, this,
                 [this] { Q_EMIT availableChanged(); });
+        connect(m_client, &MatrixClient::membersChanged, this,
+                [this](const QString &roomId) {
+                    if (roomId != m_roomId)
+                        return;
+                    ++m_sendersRevision;
+                    if (!m_shown.isEmpty())
+                        Q_EMIT dataChanged(index(0), index(rowCount() - 1),
+                                           {SenderRole});
+                    Q_EMIT sendersChanged();
+                });
     }
     Q_EMIT availableChanged();
 }
@@ -342,6 +352,7 @@ QVariantList MediaHistoryModel::imageEntries() const
         entry.insert(QStringLiteral("eventId"), e.eventId);
         entry.insert(QStringLiteral("spoiler"), e.spoiler);
         entry.insert(QStringLiteral("sender"), senderName(e.sender));
+        entry.insert(QStringLiteral("senderId"), e.sender);
         entry.insert(QStringLiteral("timestamp"),
                      QDateTime::fromMSecsSinceEpoch(e.timestampMs));
         entry.insert(QStringLiteral("mime"), e.mimetype);
