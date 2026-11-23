@@ -697,7 +697,7 @@ private Q_SLOTS:
                      "                            timeline.maybeFillViewport()")),
                  "a finished batch must re-check the fill at once, not after the retry timer");
         QVERIFY(pane.contains(QStringLiteral("mediaBandFirstRow = 0\n")));
-        QVERIFY(pane.contains(QStringLiteral("readonly property int maxViewportFillRows: 240")));
+        QVERIFY(pane.contains(QStringLiteral("readonly property int maxViewportFillRows: 600")));
         QVERIFY2(pane.contains(QStringLiteral("return \"rowBudget\"")),
                  "the fill must decline on the row cap, by name");
     }

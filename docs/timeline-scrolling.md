@@ -491,6 +491,19 @@ of real messages looks empty. A fully filtered near-top page also continues on
 the next event-loop turn instead of after the 250 ms row-delivery wait, since
 no row can arrive from it.
 
+**THE FILL STOPS ON VISIBLE HEIGHT (supersedes the 12-page invisible budget and
+the 240-row cap above).** `maybeFillViewport()` keeps asking until the content
+is as tall as the viewport, history ends, 60 consecutive pages add no height
+(`maxEmptyFillPages`: a page of rows that collapse counts the same as a page the
+filter emptied), or the room holds `maxViewportFillRows` (600) rows. The row
+ceiling stays because collapsed rows are delegates too. "No height" is read
+from `contentHeight`, never from an event kind, so any row that does not lay out
+counts.
+
+**ROOM-UPDATE EXPANSION IS KEYED BY THE GROUP'S MEMBERS** (`stateGroupKeys`), not
+by its leader: the leader is the oldest loaded row of the run, so it changes when
+history loads and a run splits when a message makes a date divider visible.
+
 ## A landing sets follow-latest from where it lands (2026-09-29)
 
 **Reported (Flathub 0.9.9):** after alt-tabbing back in, a message on screen
