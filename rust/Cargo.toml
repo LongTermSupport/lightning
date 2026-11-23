@@ -146,3 +146,7 @@ opt-level = 3
 lto = true
 codegen-units = 1
 strip = "symbols"
+
+# matrix-sdk 0.18.0 plus one upstream fix; see rust/patched/README.md.
+[patch.crates-io]
+matrix-sdk = { path = "patched/matrix-sdk-0.18.0-lightning" }
