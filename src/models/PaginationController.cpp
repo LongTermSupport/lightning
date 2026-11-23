@@ -90,7 +90,8 @@ PaginationController::~PaginationController()
 
 void PaginationController::loadAnchors(const QString &userId)
 {
-    if (!m_anchorFile || userId.isEmpty() || m_anchorsLoaded.contains(userId))
+    if (!m_anchorFile || !m_anchorsPersist || userId.isEmpty()
+        || m_anchorsLoaded.contains(userId))
         return;
     m_anchorsLoaded.insert(userId);
     m_anchorsForgotten.remove(userId);
@@ -435,7 +436,7 @@ void PaginationController::saveScrollAnchor(const QString &roomId,
     }
     m_scrollAnchors.insert(key, { eventId, pixelOffset, followingLatest,
                                   rowsFromNewest });
-    if (m_anchorFile && !account.isEmpty()) {
+    if (m_anchorFile && m_anchorsPersist && !account.isEmpty()) {
         m_anchorsDirty.insert(account);
         if (!m_anchorSaveTimer.isActive())
             m_anchorSaveTimer.start();

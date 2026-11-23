@@ -82,6 +82,8 @@ public:
     using AnchorFileResolver = std::function<QString(const QString &userId)>;
     void setAnchorFileResolver(AnchorFileResolver resolver)
     { m_anchorFile = std::move(resolver); }
+    // Off, nothing is written or read, but forgetAccount still deletes the file.
+    void setAnchorPersistence(bool on) { m_anchorsPersist = on; }
     void flushAnchors();
 
     static QString unavailableTargetMessage()
@@ -289,6 +291,7 @@ private:
     QHash<QString, ScrollAnchor> m_scrollAnchors;
     void loadAnchors(const QString &userId);
     AnchorFileResolver m_anchorFile;
+    bool m_anchorsPersist = true;
     QSet<QString> m_anchorsLoaded;
     QSet<QString> m_anchorsDirty;
     // A late save must not put a signed-out account's file back.
