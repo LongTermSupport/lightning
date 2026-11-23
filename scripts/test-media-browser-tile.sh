@@ -9,7 +9,7 @@ trap 'rm -rf "$imports"' EXIT
 mkdir -p "$imports/MatrixClient"
 ln -s "$repo/qml/IconGlyphs.js" "$imports/MatrixClient/IconGlyphs.js"
 printf 'module MatrixClient\n' > "$imports/MatrixClient/qmldir"
-for name in AppTheme MediaBrowserTile Icon AppMenu AppMenuItem MenuKeycap StormNode \
+for name in AppTheme MediaBrowserTile Icon ControlIcon ControlLabel AppMenu AppMenuItem MenuKeycap StormNode \
             SpoilerCover SpoilerState; do
     ln -s "$repo/qml/$name.qml" "$imports/MatrixClient/$name.qml"
     if [[ $name = AppTheme || $name = SpoilerState ]]; then

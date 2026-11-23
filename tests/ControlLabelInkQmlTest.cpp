@@ -1,7 +1,10 @@
 #include <QtTest/QtTest>
 
 #include <QFontDatabase>
+#include <QFontInfo>
 #include <QFontMetricsF>
+#include <QGuiApplication>
+#include <QSet>
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
 #include <QQmlContext>
@@ -25,7 +28,9 @@ ApplicationWindow {
     width: 900
     height: 900
     visible: true
-    function setTextScale(s) { AppTheme.textScale = s }
+    property string uiFamily: "Manrope"
+    font.family: uiFamily
+    function setLook(family, s) { uiFamily = family; AppTheme.uiFont = family; AppTheme.textScale = s }
     Column {
         spacing: 8
         ChatBackgroundEditor { width: 520; scopeKind: "default"; showTitle: false }
@@ -45,9 +50,16 @@ ApplicationWindow {
             StatusChip { objectName: "chip"; iconName: "verified_user"; label: "Verified" }
             VoiceSpeedChip {}
         }
+        AppMenuItem { objectName: "menuItem"; width: 240; text: "Copy link"; iconName: "link" }
     }
 }
 )QML";
+
+// Manrope is the default UI face; the tall-line face is Manrope with a short
+// ascent and a deep descent, the shape of a font like Helvetica Neue that
+// leaves box-centred text high.
+const QStringList kFamilies = { QStringLiteral("Manrope"),
+                                QStringLiteral("Lightning Tall Line Test") };
 
 const QList<int> kTextScales = { 75, 80, 85, 90, 95, 100, 105, 110, 115,
                                  120, 125, 130, 135, 140, 145, 150 };
@@ -106,6 +118,11 @@ private Q_SLOTS:
         for (const char *font : { "MaterialSymbolsRounded-subset.ttf", "Manrope[wght].ttf" })
             QFontDatabase::addApplicationFont(
                 QStringLiteral(":/qt/qml/MatrixClient/data/fonts/") + QLatin1String(font));
+        QVERIFY(QFontDatabase::addApplicationFont(
+                    QStringLiteral(LIGHTNING_SOURCE_DIR "/tests/data/TallLineTest.ttf")) >= 0);
+        for (const QString &family : kFamilies)
+            QVERIFY2(QFontDatabase::hasFamily(family), qPrintable(family));
+        QGuiApplication::setFont(QFont(QStringLiteral("Manrope"), 14));
 
         AppController controller(AppController::MockBackend);
         QSignalSpy loggedIn(controller.auth(), &AuthManager::loginSucceeded);
@@ -148,6 +165,10 @@ private Q_SLOTS:
         targets.append({ QStringLiteral("chip"), chip,
                          findItem(chip, QStringLiteral("chipLabel")),
                          findItem(chip, QStringLiteral("chipIcon")) });
+        QQuickItem *menuItem = findItem(root, QStringLiteral("menuItem"));
+        targets.append({ QStringLiteral("menuItem"), menuItem,
+                         findItem(menuItem, QStringLiteral("menuItemLabel")),
+                         findItem(menuItem, QStringLiteral("menuItemIcon")) });
 
         int iconCount = 0;
         for (const Target &t : std::as_const(targets)) {
@@ -158,37 +179,47 @@ private Q_SLOTS:
             if (t.icon)
                 ++iconCount;
         }
-        QCOMPARE(targets.size(), 13);
-        QCOMPARE(iconCount, 5);
+        QCOMPARE(targets.size(), 14);
+        QCOMPARE(iconCount, 6);
 
         int steps = 0;
         int checks = 0;
+        QSet<QString> familiesSeen;
         QStringList misses;
-        for (int scale : kTextScales) {
-            QMetaObject::invokeMethod(owner.get(), "setTextScale", Q_ARG(QVariant, scale / 100.0));
-            QTest::qWait(30);
-            ++steps;
-            for (const Target &t : std::as_const(targets)) {
-                const qreal centre = t.control->height() / 2.0;
-                const qreal ink = capInkY(t.label, t.control);
-                // Device pixels: a half-pixel error at 1x is a whole one at 2x.
-                const qreal labelOff = (ink - centre) * dpr;
-                qreal iconOff = 0;
-                qreal pairOff = 0;
-                if (t.icon) {
-                    const qreal em = iconEmY(t.icon, t.control);
-                    iconOff = (em - centre) * dpr;
-                    pairOff = (ink - em) * dpr;
+        for (const QString &family : kFamilies) {
+            for (int scale : kTextScales) {
+                QMetaObject::invokeMethod(owner.get(), "setLook", Q_ARG(QVariant, family),
+                                          Q_ARG(QVariant, scale / 100.0));
+                QTest::qWait(30);
+                ++steps;
+                for (const Target &t : std::as_const(targets)) {
+                    const QFont used = t.label->property("font").value<QFont>();
+                    QVERIFY2(QFontInfo(used).family() == family,
+                             qPrintable(t.name + u" draws in " + QFontInfo(used).family()
+                                        + u", not " + family));
+                    familiesSeen.insert(QFontInfo(used).family());
+                    const qreal centre = t.control->height() / 2.0;
+                    const qreal ink = capInkY(t.label, t.control);
+                    // Device pixels: a half-pixel error at 1x is a whole one at 2x.
+                    const qreal labelOff = (ink - centre) * dpr;
+                    qreal iconOff = 0;
+                    qreal pairOff = 0;
+                    if (t.icon) {
+                        const qreal em = iconEmY(t.icon, t.control);
+                        iconOff = (em - centre) * dpr;
+                        pairOff = (ink - em) * dpr;
+                    }
+                    ++checks;
+                    if (qAbs(labelOff) > 1.0 || qAbs(iconOff) > 1.0 || qAbs(pairOff) > 1.0)
+                        misses << QStringLiteral("%1@%2%/%6: label %3, icon %4, label-icon %5 device px")
+                                      .arg(t.name).arg(scale).arg(labelOff, 0, 'f', 2)
+                                      .arg(iconOff, 0, 'f', 2).arg(pairOff, 0, 'f', 2).arg(family);
                 }
-                ++checks;
-                if (qAbs(labelOff) > 1.0 || qAbs(iconOff) > 1.0 || qAbs(pairOff) > 1.0)
-                    misses << QStringLiteral("%1@%2%: label %3, icon %4, label-icon %5 device px")
-                                  .arg(t.name).arg(scale).arg(labelOff, 0, 'f', 2)
-                                  .arg(iconOff, 0, 'f', 2).arg(pairOff, 0, 'f', 2);
             }
         }
-        QCOMPARE(steps, 16);
-        QCOMPARE(checks, 16 * 13);
+        QCOMPARE(familiesSeen.size(), 2);
+        QCOMPARE(steps, 2 * 16);
+        QCOMPARE(checks, 2 * 16 * 14);
         QVERIFY2(misses.isEmpty(), qPrintable(misses.join(u"\n")));
     }
 };

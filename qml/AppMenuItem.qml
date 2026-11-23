@@ -48,7 +48,8 @@ MenuItem {
                 iconName: root.radioSelected ? "check" : ""
             }
         }
-        Icon {
+        ControlIcon {
+            objectName: "menuItemIcon"
             visible: !root.radio && root.iconName.length > 0
             name: root.iconName
             size: AppTheme.menuIconSize
@@ -57,7 +58,8 @@ MenuItem {
                    : root._active ? AppTheme.bolt
                    : AppTheme.stormTextMuted
         }
-        Label {
+        ControlLabel {
+            objectName: "menuItemLabel"
             Layout.fillWidth: true
             text: root.text
             // Menu rows carry remote text (room, member, file names) and
