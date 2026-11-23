@@ -2979,19 +2979,6 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/matrix-sdk/matrix-sdk-0.18.0.crate",
-        "sha256": "7083d580527511ac5d9369e03b9f2b20902e76949f1b3964051f978e4d3756ae",
-        "dest": "cargo/vendor/matrix-sdk-0.18.0"
-    },
-    {
-        "type": "inline",
-        "contents": "{\"package\": \"7083d580527511ac5d9369e03b9f2b20902e76949f1b3964051f978e4d3756ae\", \"files\": {}}",
-        "dest": "cargo/vendor/matrix-sdk-0.18.0",
-        "dest-filename": ".cargo-checksum.json"
-    },
-    {
-        "type": "archive",
-        "archive-type": "tar-gzip",
         "url": "https://static.crates.io/crates/matrix-sdk-base/matrix-sdk-base-0.18.0.crate",
         "sha256": "e09a917eb1f7643d9d9a06b2f131e2ceb39df6910a7b830dac18bfd6db37a1f5",
         "dest": "cargo/vendor/matrix-sdk-base-0.18.0"

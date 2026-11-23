@@ -1791,18 +1791,9 @@ private Q_SLOTS:
         return timeline;
     }
 
-    double pointerEventMicros(int rows, bool hover)
+    static double pointerBatchMicros(QQuickWindow &window, bool hover, int events)
     {
-        AppController controller(AppController::MockBackend);
-        QQmlApplicationEngine engine;
-        QQuickWindow window;
-        QQuickItem *timeline =
-            deepHistoryPane(controller, engine, window, rows, 0.5);
-        if (!timeline)
-            return -1;
-        QTest::qWait(300);
         const QPointF pos(window.width() / 2.0, window.height() / 2.0);
-        const int events = 400;
         QElapsedTimer t;
         t.start();
         for (int i = 0; i < events; ++i) {
@@ -1825,10 +1816,32 @@ private Q_SLOTS:
 
     void pointerDeliveryCostDoesNotGrowWithLoadedRows()
     {
+        struct Pane {
+            std::unique_ptr<AppController> controller;
+            std::unique_ptr<QQmlApplicationEngine> engine;
+            std::unique_ptr<QQuickWindow> window;
+        };
+        const int sizes[3] = {500, 1000, 2000};
         for (const bool hover : {false, true}) {
-            const double n500 = pointerEventMicros(500, hover);
-            const double n1000 = pointerEventMicros(1000, hover);
-            const double n2000 = pointerEventMicros(2000, hover);
+            Pane panes[3];
+            for (int k = 0; k < 3; ++k) {
+                panes[k].controller = std::make_unique<AppController>(AppController::MockBackend);
+                panes[k].engine = std::make_unique<QQmlApplicationEngine>();
+                panes[k].window = std::make_unique<QQuickWindow>();
+                QVERIFY(deepHistoryPane(*panes[k].controller, *panes[k].engine,
+                                        *panes[k].window, sizes[k], 0.5));
+            }
+            QTest::qWait(300);
+            // Batches interleaved across the sizes, best of each: load on the
+            // machine slows a batch, never speeds one up.
+            double best[3] = {1e12, 1e12, 1e12};
+            for (int round = 0; round < 8; ++round) {
+                for (int k = 0; k < 3; ++k)
+                    best[k] = qMin(best[k], pointerBatchMicros(*panes[k].window, hover, 50));
+            }
+            const double n500 = best[0];
+            const double n1000 = best[1];
+            const double n2000 = best[2];
             qInfo("pointer delivery %s us/event: 500 rows %.1f, 1000 rows %.1f, "
                   "2000 rows %.1f", hover ? "hover" : "wheel", n500, n1000,
                   n2000);

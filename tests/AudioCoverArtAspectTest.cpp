@@ -20,6 +20,7 @@
 #include "app/SettingsManager.h"
 #include "media/MediaBridge.h"
 #include "media/MediaImageProvider.h"
+#include "support/SettledClick.h"
 
 inline QList<QVariantMap> paintedWaveBars(QQuickItem *wave)
 {
@@ -191,6 +192,9 @@ private Q_SLOTS:
         bare.item->setProperty("isVoice", false);
         setLarge(bare, true);
         QVERIFY2(!coverBox(bare), "a file with no known cover drew a tile");
+        QPointF settled;
+        QVERIFY(testsupport::settledScenePoint(bare.window.get(), bare.item, &settled,
+                                               QPointF(0, 1)));
         const qreal bareHeight = bare.item->implicitHeight();
 
         Card good = makeCard(QUrl(), 360);
@@ -221,6 +225,9 @@ private Q_SLOTS:
         QTRY_VERIFY(broken.item->property("wireCoverFailed").toBool());
         QTRY_VERIFY(!coverBox(broken));
         QCOMPARE(broken.item->property("artworkSource").toString(), QString());
+        // The grid re-measures in the next polish, after the cover's Loader is gone.
+        QVERIFY(testsupport::settledScenePoint(broken.window.get(), broken.item, &settled,
+                                               QPointF(0, 1)));
         QCOMPARE(broken.item->implicitHeight(), bareHeight);
     }
 
