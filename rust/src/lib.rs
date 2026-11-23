@@ -22134,3 +22134,6 @@ mod ignore_preview_wiring_tests {
 
 #[cfg(test)]
 mod forged_edit_tests;
+
+#[cfg(test)]
+mod event_cache_burst_tests;
