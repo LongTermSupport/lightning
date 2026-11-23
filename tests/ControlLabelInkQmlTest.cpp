@@ -51,6 +51,7 @@ ApplicationWindow {
             VoiceSpeedChip {}
         }
         AppMenuItem { objectName: "menuItem"; width: 240; text: "Copy link"; iconName: "link" }
+        TimelinePane { objectName: "pane"; width: 700; height: 500 }
     }
 }
 )QML";
@@ -129,6 +130,7 @@ private Q_SLOTS:
         controller.auth()->login(QStringLiteral("https://mock.local"),
                                  QStringLiteral("alice"), QStringLiteral("unused"));
         QVERIFY(loggedIn.wait(3000));
+        controller.setCurrentRoomId(QStringLiteral("!general:mock.local"));
 
         QQmlApplicationEngine engine;
         engine.rootContext()->setContextProperty("app", &controller);
@@ -170,6 +172,30 @@ private Q_SLOTS:
                          findItem(menuItem, QStringLiteral("menuItemLabel")),
                          findItem(menuItem, QStringLiteral("menuItemIcon")) });
 
+        // The timeline's pills show only in states the fixture cannot reach
+        // cheaply; their geometry does not depend on why they are shown.
+        QQuickItem *pane = findItem(root, QStringLiteral("pane"));
+        QVERIFY(pane);
+        auto show = [&](QQuickItem *item) {
+            for (QQuickItem *p = item; p && p != pane; p = p->parentItem())
+                p->setVisible(true);
+        };
+        auto addPill = [&](const char *control, const char *label, const char *icon) {
+            QQuickItem *c = findItem(pane, QLatin1String(control));
+            QQuickItem *l = c ? findItem(c, QLatin1String(label)) : nullptr;
+            QQuickItem *i = icon && c ? findItem(c, QLatin1String(icon)) : nullptr;
+            QVERIFY2(c && l && (!icon || i), control);
+            show(l);
+            if (i)
+                show(i);
+            targets.append({ QLatin1String(control), c, l, i });
+        };
+        addPill("paginationRetryButton", "paginationRetryLabel", nullptr);
+        addPill("jumpToFirstUnreadButton", "jumpToFirstUnreadLabel", "jumpToFirstUnreadIcon");
+        addPill("jumpToLatestButton", "jumpToLatestCount", "jumpToLatestIcon");
+        addPill("jumpProgressCancel", "buttonLabel", nullptr);
+        QCoreApplication::processEvents();
+
         int iconCount = 0;
         for (const Target &t : std::as_const(targets)) {
             QVERIFY2(t.control && t.label, qPrintable(t.name + u" not found"));
@@ -179,8 +205,8 @@ private Q_SLOTS:
             if (t.icon)
                 ++iconCount;
         }
-        QCOMPARE(targets.size(), 14);
-        QCOMPARE(iconCount, 6);
+        QCOMPARE(targets.size(), 18);
+        QCOMPARE(iconCount, 8);
 
         int steps = 0;
         int checks = 0;
@@ -219,7 +245,7 @@ private Q_SLOTS:
         }
         QCOMPARE(familiesSeen.size(), 2);
         QCOMPARE(steps, 2 * 16);
-        QCOMPARE(checks, 2 * 16 * 14);
+        QCOMPARE(checks, 2 * 16 * 18);
         QVERIFY2(misses.isEmpty(), qPrintable(misses.join(u"\n")));
     }
 };
