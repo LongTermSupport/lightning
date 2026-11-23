@@ -36,6 +36,8 @@
 #include "calls/OneToOneDm.h"
 #include "calls/SfuCallController.h"
 #include "matrix/MockMatrixClient.h"
+#include "models/TimelineModel.h"
+#include "threads/ThreadController.h"
 
 namespace {
 constexpr int kSignalTimeoutMs = 5000;
@@ -999,6 +1001,107 @@ private Q_SLOTS:
                  qPrintable(QStringLiteral("tooltip at %1,%2 %3x%4")
                                 .arg(r.x()).arg(r.y()).arg(r.width())
                                 .arg(r.height())));
+    }
+
+    void anOpenThreadsHeaderFitsTheNarrowestPanel_data()
+    {
+        QTest::addColumn<bool>("rtl");
+        QTest::newRow("ltr") << false;
+        QTest::newRow("rtl") << true;
+    }
+
+    void anOpenThreadsHeaderFitsTheNarrowestPanel()
+    {
+        QFETCH(bool, rtl);
+        const QString room = QStringLiteral("!general:mock.local");
+        m_controller->showMain();
+        m_controller->setCurrentRoomId(room);
+        m_window->resize(1280, 720);
+        const int widthBefore = m_controller->settings()->sidePanelWidth();
+        m_controller->settings()->setSidePanelWidth(
+            SettingsManager::sidePanelMinWidth());
+        setMirrored(rtl);
+        QTRY_VERIFY(m_controller->timeline()->rowCount() > 2);
+        QString root;
+        for (const TimelineEvent &e : m_controller->timeline()->events())
+            if (e.isThreadRoot)
+                root = e.eventId;
+        QVERIFY2(!root.isEmpty(), "the room has no thread to open");
+        ThreadController *thread = m_controller->thread();
+        thread->openList(room);
+        thread->openThread(room, root);
+        QTRY_VERIFY(thread->active());
+        QTRY_VERIFY(thread->followSupported());
+        QTest::qWait(300);
+
+        QQuickItem *panel = item("threadPanel");
+        QQuickItem *close = item("threadCloseButton");
+        QVERIFY(panel && close && close->parentItem());
+        QQuickItem *header = close->parentItem()->parentItem();
+        QVERIFY(header);
+        const qreal panelWidth = panel->width();
+        const QRectF band = header->mapRectToScene(
+            QRectF(0, 0, header->width(), header->height()));
+        QList<QQuickItem *> parts{ close };
+        for (QQuickItem *c : close->parentItem()->childItems().first()->childItems())
+            if (c->isVisible() && c->width() > 0)
+                parts << c;
+        QStringList faults;
+        const auto name = [](QQuickItem *it) {
+            return it->objectName().isEmpty()
+                ? QString::fromLatin1(it->metaObject()->className())
+                : it->objectName();
+        };
+        const auto box = [](QQuickItem *it) {
+            return it->mapRectToScene(QRectF(0, 0, it->width(), it->height()));
+        };
+        for (int i = 0; i < parts.size(); ++i) {
+            const QRectF a = box(parts.at(i));
+            if (!band.adjusted(-0.5, -0.5, 0.5, 0.5).contains(a))
+                faults << name(parts.at(i)) + QStringLiteral(" leaves the header");
+            const QByteArray cls = parts.at(i)->metaObject()->className();
+            if (cls.startsWith("IconButton") && (qAbs(a.width() - 34) > 0.5
+                                                 || qAbs(a.height() - 34) > 0.5))
+                faults << name(parts.at(i))
+                              + QStringLiteral(" squeezed to %1x%2")
+                                    .arg(a.width()).arg(a.height());
+            if (cls.contains("Label")
+                && parts.at(i)->width() + 0.5 < parts.at(i)->implicitWidth()
+                && parts.at(i)->property("elide").toInt() == 0)
+                faults << name(parts.at(i)) + QStringLiteral(" is cut, not elided");
+            for (int j = i + 1; j < parts.size(); ++j) {
+                const QRectF o = a.intersected(box(parts.at(j)));
+                if (o.width() > 0.5 && o.height() > 0.5)
+                    faults << QStringLiteral("%1 overlaps %2 by %3 px")
+                                  .arg(name(parts.at(i)), name(parts.at(j)))
+                                  .arg(o.width());
+            }
+        }
+        int reachable = 0;
+        QObject *more = m_window->findChild<QObject *>(
+            QStringLiteral("threadHeaderOverflowMenu"));
+        for (const char *action : { "threadFollowButton", "threadMarkReadButton",
+                                    "threadPlacementButton" }) {
+            QQuickItem *inline_ = item(action);
+            QObject *row = more ? more->findChild<QObject *>(
+                                      QLatin1String(action) + QStringLiteral("Item"))
+                                : nullptr;
+            if ((inline_ && inline_->isVisible())
+                || (row && row->property("visible").toBool()
+                    && item("threadHeaderOverflowButton")
+                    && item("threadHeaderOverflowButton")->isVisible()))
+                ++reachable;
+        }
+
+        thread->close();
+        thread->closeList();
+        m_controller->settings()->setSidePanelWidth(widthBefore);
+        setMirrored(false);
+        QTest::qWait(150);
+        QCOMPARE(qRound(panelWidth), 260);
+        QVERIFY2(parts.size() >= 5, "the header shows less than it should");
+        QCOMPARE(reachable, 3);
+        QVERIFY2(faults.isEmpty(), qPrintable(faults.join(QStringLiteral("; "))));
     }
 };
 
