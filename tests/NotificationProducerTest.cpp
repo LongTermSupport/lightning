@@ -21,6 +21,7 @@ class NotificationProducerTest : public QObject
 #ifdef ENABLE_RUST_SDK_BACKEND
 private:
     static inline const QString kRoom = QStringLiteral("!r:example.org");
+    static constexpr int HighlightGapWaitMs = 3000;
 
     struct Sink {
         QList<TimelineEvent> appended;
@@ -140,9 +141,11 @@ private:
         return out;
     }
 
-    static QJsonObject roomJson(const QString &id, int highlights)
+    static QJsonObject roomJson(const QString &id, int highlights, bool encrypted = false)
     {
         QJsonObject room;
+        room.insert(QStringLiteral("encrypted"), encrypted);
+        room.insert(QStringLiteral("encryption_known"), true);
         room.insert(QStringLiteral("id"), id);
         room.insert(QStringLiteral("name"), QStringLiteral("r"));
         room.insert(QStringLiteral("membership"), QStringLiteral("joined"));
@@ -151,11 +154,12 @@ private:
         return room;
     }
 
-    static void listRoom(RustSdkMatrixClient &client, int highlights)
+    static void listRoom(RustSdkMatrixClient &client, int highlights, bool encrypted = false)
     {
         QJsonObject snapshot;
         snapshot.insert(QStringLiteral("type"), QStringLiteral("room_snapshot"));
-        snapshot.insert(QStringLiteral("rooms"), QJsonArray{ roomJson(kRoom, highlights) });
+        snapshot.insert(QStringLiteral("rooms"),
+                        QJsonArray{ roomJson(kRoom, highlights, encrypted) });
         client.handleRustEventForTest(snapshot);
     }
 
@@ -730,6 +734,110 @@ private slots:
         listRoom(client, 2);
         QTest::qWait(3000);
         QCOMPARE(sink.highlightGaps.size(), 1);
+#endif
+    }
+
+    static void startLive(RustSdkMatrixClient &client, bool encrypted)
+    {
+        listRoom(client, 0, encrypted);
+        QJsonObject done;
+        done.insert(QStringLiteral("type"), QStringLiteral("initial_sync_done"));
+        client.handleRustEventForTest(done);
+        QVERIFY(client.initialSyncDone());
+    }
+
+    void anEncryptedRoomsUndeliveredHighlightMovesTheBadgeOnly()
+    {
+#ifndef ENABLE_RUST_SDK_BACKEND
+        QSKIP("needs the Rust backend");
+#else
+        Sink sink;
+        SettingsManager settings;
+        RustSdkMatrixClient client(&settings);
+        watch(client, sink);
+        startLive(client, true);
+
+        listRoom(client, 1, true);
+        QCOMPARE(client.roomInfo(kRoom).highlightCount, 1);
+        QTest::qWait(HighlightGapWaitMs);
+        QVERIFY(sink.highlightGaps.isEmpty());
+#endif
+    }
+
+    void anEncryptedRoomOfUnknownEncryptionFailsClosed()
+    {
+#ifndef ENABLE_RUST_SDK_BACKEND
+        QSKIP("needs the Rust backend");
+#else
+        Sink sink;
+        SettingsManager settings;
+        RustSdkMatrixClient client(&settings);
+        watch(client, sink);
+        startLive(client, false);
+
+        QJsonObject room = roomJson(kRoom, 1);
+        room.insert(QStringLiteral("encryption_known"), false);
+        QJsonObject snapshot;
+        snapshot.insert(QStringLiteral("type"), QStringLiteral("room_snapshot"));
+        snapshot.insert(QStringLiteral("rooms"), QJsonArray{ room });
+        client.handleRustEventForTest(snapshot);
+        QTest::qWait(HighlightGapWaitMs);
+        QVERIFY(sink.highlightGaps.isEmpty());
+#endif
+    }
+
+    void aDecryptedMentionInAnEncryptedRoomStillReachesTheNotificationPath()
+    {
+#ifndef ENABLE_RUST_SDK_BACKEND
+        QSKIP("needs the Rust backend");
+#else
+        Sink sink;
+        SettingsManager settings;
+        RustSdkMatrixClient client(&settings);
+        watch(client, sink);
+        startLive(client, true);
+
+        QJsonObject mention = message(QStringLiteral("$enc"), QStringLiteral("@me"));
+        mention.insert(QStringLiteral("is_encrypted"), true);
+        mention.insert(QStringLiteral("is_decrypted"), true);
+        mention.insert(QStringLiteral("push_notify"), true);
+        mention.insert(QStringLiteral("push_highlight"), true);
+        client.handleRustEventForTest(envelope(QStringLiteral("timeline_event"), mention));
+        listRoom(client, 1, true);
+        const auto it = std::find_if(sink.appended.cbegin(), sink.appended.cend(),
+                                     [](const TimelineEvent &e) {
+                                         return e.eventId == QStringLiteral("$enc");
+                                     });
+        QVERIFY(it != sink.appended.cend());
+        QVERIFY(it->pushHighlight);
+        QVERIFY(!it->backlog);
+        QTest::qWait(HighlightGapWaitMs);
+        QVERIFY(sink.highlightGaps.isEmpty());
+#endif
+    }
+
+    void aPlainRoomRiseExplainedOnlyByARejectedEditIsNotReported()
+    {
+#ifndef ENABLE_RUST_SDK_BACKEND
+        QSKIP("needs the Rust backend");
+#else
+        Sink sink;
+        SettingsManager settings;
+        RustSdkMatrixClient client(&settings);
+        watch(client, sink);
+        startLive(client, false);
+
+        QJsonObject rejected;
+        rejected.insert(QStringLiteral("type"), QStringLiteral("rejected_edit_highlight"));
+        rejected.insert(QStringLiteral("room_id"), kRoom);
+        client.handleRustEventForTest(rejected);
+        listRoom(client, 1);
+        QTest::qWait(HighlightGapWaitMs);
+        QVERIFY(sink.highlightGaps.isEmpty());
+
+        listRoom(client, 2);
+        QTRY_COMPARE_WITH_TIMEOUT(sink.highlightGaps.size(), 1, 5000);
+        QCOMPARE(sink.highlightGaps.first().second, 1);
 #endif
     }
 

@@ -6784,6 +6784,11 @@ void RustSdkMatrixClient::handleRustEvent(const QJsonObject &event,
         handleTimelineEvent(event);
         return;
     }
+    if (type == QLatin1String("rejected_edit_highlight")) {
+        m_highlightGaps.creditHighlight(event.value(QStringLiteral("room_id")).toString(),
+                                        QDateTime::currentMSecsSinceEpoch());
+        return;
+    }
     if (type == QLatin1String("event_redacted")) {
         handleEventRedacted(event);
         return;
@@ -7362,7 +7367,10 @@ void RustSdkMatrixClient::flushHighlightGaps()
         qCInfo(lcRust) << "highlights not delivered as events room="
                        << matrix::e2ee::redactId(gap.first)
                        << "count=" << gap.second;
-        Q_EMIT roomHighlightsUnnotified(gap.first, gap.second);
+        const RoomInfo room = m_rooms.value(gap.first);
+        // A forged plaintext edit raises the server's count; encrypted rooms notify only admitted events.
+        if (!room.encrypted && room.encryptionKnown)
+            Q_EMIT roomHighlightsUnnotified(gap.first, gap.second);
         if (m_rustHandle) {
             const QByteArray room = gap.first.toUtf8();
             takeRustString(mx_rust_fetch_unread_events(m_rustHandle, room.constData()));
