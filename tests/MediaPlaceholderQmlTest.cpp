@@ -7,6 +7,7 @@
 #include <QBuffer>
 #include <QRegularExpression>
 #include "media/MediaImageProvider.h"
+#include "support/SettledClick.h"
 
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
@@ -1500,6 +1501,9 @@ QtObject {
         auto *body = d.root->findChild<QQuickItem *>(
             QStringLiteral("messageBody"));
         QVERIFY(row && bubble && body && body->isVisible());
+        QPointF settled;
+        QVERIFY(testsupport::settledScenePoint(d.window.get(), body, &settled, QPointF(1, 0.5)));
+        QVERIFY(testsupport::settledScenePoint(d.window.get(), bubble, &settled, QPointF(0, 0)));
 
         // The empty side of the row: right of the text (or of an others'
         // bubble), left of an own bubble.
