@@ -8335,7 +8335,12 @@ kFilteredPages + 6);
             if (it.value()->height() > 0)
                 drawn << it.key();
         }
-        QCOMPARE(removedRows, removedServed);
+        int removedInModel = 0;
+        for (int row = 0; row < controller.timeline()->rowCount(); ++row)
+            removedInModel += controller.timeline()->data(
+                controller.timeline()->index(row), TimelineModel::RedactedRole).toBool();
+        QCOMPARE(removedInModel, removedServed);
+        QVERIFY(removedRows > 0);
         QVERIFY2(drawn.isEmpty(), qPrintable(QStringLiteral("removed messages drawn: ")
                                              + drawn.join(u',')));
     }
