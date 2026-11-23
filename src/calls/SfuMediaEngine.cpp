@@ -9166,13 +9166,16 @@ void SfuMediaEngine::handlePublishError(const QString &cid,
         return;
     const bool screenShare = watch->state->screenShare;
     if (watch->state->captured.load() > 0) {
-        // Otherwise the keep-alive re-sends the last picture for ever.
-        if (screenShare && sourceError) {
+        // Otherwise the track stays published on its last picture for ever.
+        if (sourceError) {
             m_publishWatch[cid].reported = true;
-            qCWarning(lcSfuMedia)
-                << "screen share source died mid-share; ending the share";
+            qCWarning(lcSfuMedia) << "capture source died after its first "
+                                     "frame; retiring the publish"
+                                  << "screenShare=" << screenShare;
             Q_EMIT publishFailed(cid,
-                                 QStringLiteral("screen_share_source_lost"));
+                                 screenShare
+                                     ? QStringLiteral("screen_share_source_lost")
+                                     : QStringLiteral("camera_source_closed"));
         }
         return;
     }
