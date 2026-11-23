@@ -899,18 +899,24 @@ private Q_SLOTS:
         QVERIFY(QMetaObject::invokeMethod(pane, "toggleSearchPanel"));
         QTest::qWait(150);
 
-        QVERIFY(QMetaObject::invokeMethod(pane, "toggleRoomInfo"));
-        QTest::qWait(400);
-        measure(QStringLiteral("roomInfo"), item("roomInfoPanel"),
-                trailingHeaderButton(item("roomInfoPanel"), rtl));
-        QVERIFY(QMetaObject::invokeMethod(pane, "toggleRoomInfo"));
+        QQuickItem *roomInfoPanel = item("roomInfoPanel");
+        QVERIFY(roomInfoPanel);
+        roomInfoPanel->setProperty("section", QStringLiteral("overview"));
+        pane->setProperty("infoOpen", true);
+        QTest::qWait(500);
+        measure(QStringLiteral("roomInfo"), roomInfoPanel,
+                trailingHeaderButton(roomInfoPanel, rtl));
+        pane->setProperty("infoOpen", false);
         QTest::qWait(150);
 
-        QVERIFY(QMetaObject::invokeMethod(pane, "toggleMemberPanel"));
-        QTest::qWait(400);
-        measure(QStringLiteral("members"), item("roomInfoPanel"),
-                trailingHeaderButton(item("roomInfoPanel"), rtl));
-        QVERIFY(QMetaObject::invokeMethod(pane, "toggleMemberPanel"));
+        QQuickItem *membersPanel = item("roomInfoPanel");
+        QVERIFY(membersPanel);
+        membersPanel->setProperty("section", QStringLiteral("people"));
+        pane->setProperty("infoOpen", true);
+        QTest::qWait(500);
+        measure(QStringLiteral("members"), membersPanel,
+                trailingHeaderButton(membersPanel, rtl));
+        pane->setProperty("infoOpen", false);
         QTest::qWait(150);
 
         m_controller->showSettings();
@@ -924,9 +930,7 @@ private Q_SLOTS:
         setMirrored(false);
         QTest::qWait(150);
 
-        QVERIFY2(missing.isEmpty(), qPrintable(QStringLiteral("not shown: ")
-                                                   + missing.join(QStringLiteral(", "))));
-        QCOMPARE(seen.size(), expected);
+        QVERIFY(!seen.isEmpty());
         const Seen ref = seen.first();
         QStringList faults;
         for (const Seen &h : seen) {
@@ -937,11 +941,14 @@ private Q_SLOTS:
                 || qAbs(h.h - ref.h) > 0.5 || qAbs(h.cy - ref.cy) > 0.5)
                 faults << got;
         }
+        for (const QString &m : missing)
+            faults << m + QStringLiteral(": not shown");
         QVERIFY2(faults.isEmpty(),
                  qPrintable(QStringLiteral("room header: gutter %1 box %2x%3 "
                                            "centre %4; differs: ")
                                 .arg(ref.gutter).arg(ref.w).arg(ref.h).arg(ref.cy)
                             + faults.join(QStringLiteral("; "))));
+        QCOMPARE(seen.size(), expected);
     }
 
     void theRightmostHeaderTooltipsStayInsideTheWindow_data()
