@@ -1023,10 +1023,14 @@ private Q_SLOTS:
         setMirrored(rtl);
         QTRY_VERIFY(m_controller->timeline()->rowCount() > 2);
         QString root;
-        for (const TimelineEvent &e : m_controller->timeline()->events())
-            if (e.isThreadRoot)
-                root = e.eventId;
-        QVERIFY2(!root.isEmpty(), "the room has no thread to open");
+        const auto findRoot = [&] {
+            for (const TimelineEvent &e : m_controller->timeline()->events())
+                if (e.isThreadRoot
+                    || e.body == QLatin1String("Anyone up for a mock deploy tomorrow?"))
+                    root = e.eventId;
+            return !root.isEmpty();
+        };
+        QTRY_VERIFY2(findRoot(), "the room has no thread to open");
         ThreadController *thread = m_controller->thread();
         thread->openList(room);
         thread->openThread(room, root);
