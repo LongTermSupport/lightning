@@ -1776,11 +1776,13 @@ Rectangle {
                     Icon {
                         anchors.verticalCenter: parent.verticalCenter
                         name: "expand_more"
+                        centreIn: threadJumpToLatest
                         size: 20
                         color: AppTheme.buttonPrimaryInk
                     }
-                    Label {
+                    ControlLabel {
                         objectName: "threadUnseenReplies"
+                        centreIn: threadJumpToLatest
                         anchors.verticalCenter: parent.verticalCenter
                         visible: replyList.unseenReplies > 0
                         text: replyList.unseenReplies > 99

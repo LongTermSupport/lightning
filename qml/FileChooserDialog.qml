@@ -727,8 +727,9 @@ Dialog {
                                         size: 16
                                         color: AppTheme.stormTextSecondary
                                         anchors.verticalCenter: parent.verticalCenter
+                                        centreIn: parent
                                     }
-                                    Label {
+                                    ControlLabel {
                                         id: crumbLabel
                                         textFormat: Text.PlainText
                                         visible: crumb.modelData.kind !== "root"

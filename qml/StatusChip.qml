@@ -84,13 +84,15 @@ Rectangle {
             objectName: "chipIcon"
             visible: root.iconName.length > 0
             name: root.iconName
+            centreIn: root
             size: root.textSize + 1
             color: root._ink
             anchors.verticalCenter: parent.verticalCenter
         }
-        Text {
+        ControlLabel {
             textFormat: Text.PlainText
             objectName: "chipLabel"
+            centreIn: root
             visible: root.label.length > 0
             text: root.label
             font.family: AppTheme.uiFont

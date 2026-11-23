@@ -471,7 +471,7 @@ FocusScope {
                 border.color: AppTheme.scrimInk
             }
             contentItem: Item {
-                Label {
+                ControlLabel {
                     id: rateText
                     objectName: "videoSpeedLabel"
                     anchors.centerIn: parent

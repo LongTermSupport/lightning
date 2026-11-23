@@ -47,7 +47,7 @@ ComboBox {
         height: AppTheme.menuItemHeight
         clip: true
         hoverEnabled: true
-        contentItem: Label {
+        contentItem: ControlLabel {
             leftPadding: AppTheme.menuItemPadding
             text: row.label
             textFormat: Text.PlainText
@@ -205,7 +205,7 @@ ComboBox {
     font.pixelSize: AppTheme.settingsOptionSize
     hoverEnabled: true
 
-    contentItem: Label {
+    contentItem: ControlLabel {
         leftPadding: root.mirrored ? 28 : AppTheme.buttonPaddingH
         rightPadding: root.mirrored ? AppTheme.buttonPaddingH : 28
         text: root.displayText

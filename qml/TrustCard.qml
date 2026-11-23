@@ -280,10 +280,11 @@ Item {
                     spacing: AppTheme.spacing6
                     Icon {
                         name: "verified_user"
+                        centreIn: parent
                         size: 16
                         color: AppTheme.stormTextSecondary
                     }
-                    Label {
+                    ControlLabel {
                         text: qsTr("Verify")
                         color: AppTheme.stormTextSecondary
                         font.pixelSize: 13

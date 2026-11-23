@@ -201,10 +201,10 @@ AppDialog {
         }
         RowLayout {
             Layout.fillWidth: true
-            Button { text: qsTr("Rotate left"); onClicked: root.changeTransform(3, false) }
-            Button { text: qsTr("Rotate right"); onClicked: root.changeTransform(1, false) }
-            Button { text: qsTr("Mirror"); onClicked: root.changeTransform(0, true) }
-            Button {
+            AppButton { text: qsTr("Rotate left"); onClicked: root.changeTransform(3, false) }
+            AppButton { text: qsTr("Rotate right"); onClicked: root.changeTransform(1, false) }
+            AppButton { text: qsTr("Mirror"); onClicked: root.changeTransform(0, true) }
+            AppButton {
                 text: qsTr("Undo")
                 enabled: root.history.length > 0
                 onClicked: root.undo()
@@ -241,7 +241,7 @@ AppDialog {
         }
         RowLayout {
             Layout.fillWidth: true
-            Button {
+            AppButton {
                 text: qsTr("Reset")
                 onClicked: {
                     root.remember()
@@ -253,8 +253,9 @@ AppDialog {
                 }
             }
             Item { Layout.fillWidth: true }
-            Button { text: qsTr("Cancel"); onClicked: root.close() }
-            Button {
+            AppButton { text: qsTr("Cancel"); onClicked: root.close() }
+            AppButton {
+                kind: "primary"
                 text: qsTr("Use edited image")
                 enabled: root.errorText.length === 0 && root.previewUrl.length > 0
                          && root.pendingRender === 0
