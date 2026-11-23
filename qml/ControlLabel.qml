@@ -1,8 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 
-// A single-line control label whose cap-height ink sits on centreIn's vertical
-// centre. Centring the line box leaves the ink high. Not for wrapping text.
+// A control label whose cap-height ink sits on centreIn's vertical centre.
+// Centring the line box leaves the ink high. A label that wraps is left alone.
 Label {
     id: root
 
@@ -18,7 +18,7 @@ Label {
 
     transform: Translate {
         y: {
-            if (!root.centreIn || !root.parent)
+            if (!root.centreIn || !root.parent || root.lineCount > 1)
                 return 0
             const top = root.y + (root.parent === root.centreIn ? 0 : root.parent.y)
             const dpr = root.Screen.devicePixelRatio || 1
