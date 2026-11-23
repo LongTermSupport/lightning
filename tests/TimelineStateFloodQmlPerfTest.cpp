@@ -497,7 +497,8 @@ private Q_SLOTS:
         QElapsedTimer expandTimer;
         expandTimer.start();
         QVERIFY(QMetaObject::invokeMethod(timeline, "toggleStateGroup",
-                                          Q_ARG(QVariant, groupId)));
+                                          Q_ARG(QVariant, groupId),
+                                          Q_ARG(QVariant, QVariant())));
         for (int i = 0; i < 10; ++i)
             QCoreApplication::processEvents();
         const qint64 expandMs = expandTimer.elapsed();
@@ -505,7 +506,8 @@ private Q_SLOTS:
         QElapsedTimer collapseTimer;
         collapseTimer.start();
         QVERIFY(QMetaObject::invokeMethod(timeline, "toggleStateGroup",
-                                          Q_ARG(QVariant, groupId)));
+                                          Q_ARG(QVariant, groupId),
+                                          Q_ARG(QVariant, QVariant())));
         for (int i = 0; i < 10; ++i)
             QCoreApplication::processEvents();
         const qint64 collapseMs = collapseTimer.elapsed();

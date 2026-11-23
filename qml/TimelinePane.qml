@@ -3569,15 +3569,30 @@ Rectangle {
                 function stateGroupExpansionKey(groupId) {
                     return (app.currentRoomId || "") + "\u001f" + groupId
                 }
-                function stateGroupExpanded(groupId) {
-                    return expandedStateGroups[stateGroupExpansionKey(groupId)] === true
+                // Keyed by every member, not the leader: the leader changes as
+                // history loads and a run can split at a date divider.
+                function stateGroupKeys(groupId, entries) {
+                    var keys = [stateGroupExpansionKey(groupId)]
+                    for (var i = 0; entries && i < entries.length; ++i)
+                        keys.push(stateGroupExpansionKey(entries[i].stableEventId))
+                    return keys
                 }
-                function toggleStateGroup(groupId) {
+                function stateGroupExpanded(groupId, entries) {
+                    var open = expandedStateGroups
+                    return stateGroupKeys(groupId, entries).some(
+                                function(key) { return open[key] === true })
+                }
+                function toggleStateGroup(groupId, entries) {
                     if (!groupId || groupId.length === 0)
                         return
-                    var key = stateGroupExpansionKey(groupId)
+                    var expand = !stateGroupExpanded(groupId, entries)
                     var next = Object.assign({}, expandedStateGroups)
-                    next[key] = !stateGroupExpanded(groupId)
+                    stateGroupKeys(groupId, entries).forEach(function(key) {
+                        if (expand)
+                            next[key] = true
+                        else
+                            delete next[key]
+                    })
                     expandedStateGroups = next
                 }
 
@@ -4654,10 +4669,9 @@ Rectangle {
 
                 property bool viewportFillCheckScheduled: false
                 readonly property int maxViewportFillRetries: 8
-                readonly property int maxInvisibleFillRetries: 12
-                readonly property int maxViewportFillRows: 240
+                // Hidden rows are delegates too: this bounds what a fill instantiates.
+                readonly property int maxViewportFillRows: 600
                 readonly property int maxEmptyFillPages: 60
-                property int viewportFillInvisibleRetries: 0
                 property int viewportFillEmptyPages: 0
                 property int viewportFillRetries: 0
                 property real viewportFillLastHeight: -1
@@ -4679,7 +4693,6 @@ Rectangle {
                         if (app.currentRoomId === ""
                             || contentHeight >= height) {
                             viewportFillRetries = 0
-                            viewportFillInvisibleRetries = 0
                             viewportFillEmptyPages = 0
                             viewportFillLastHeight = -1
                             viewportFillLastRows = -1
@@ -4701,9 +4714,6 @@ Rectangle {
                             if (viewportFillRetries >= maxViewportFillRetries
                                     && (app.timeline ? app.timeline.count : 0) > 0)
                                 return "noProgressBudget"
-                            if (viewportFillInvisibleRetries
-                                >= maxInvisibleFillRetries)
-                                return "invisibleBudget"
                             if (viewportFillEmptyPages >= maxEmptyFillPages)
                                 return "emptyPageBudget"
                             return ""
@@ -4720,13 +4730,8 @@ Rectangle {
                                 && emptyPages > viewportFillLastEmptyPages
                         if (grewHeight) {
                             viewportFillRetries = 0
-                            viewportFillInvisibleRetries = 0
                             viewportFillEmptyPages = 0
-                        } else if (grewRows) {
-                            viewportFillRetries = 0
-                            viewportFillEmptyPages = 0
-                            ++viewportFillInvisibleRetries
-                        } else if (walkedFilteredHistory) {
+                        } else if (grewRows || walkedFilteredHistory) {
                             viewportFillRetries = 0
                             ++viewportFillEmptyPages
                         }
@@ -4741,7 +4746,6 @@ Rectangle {
                                     + " contentH=" + Math.round(contentHeight)
                                     + " height=" + Math.round(height)
                                     + " noProgress=" + viewportFillRetries
-                                    + " invisible=" + viewportFillInvisibleRetries
                                     + " emptyPages=" + viewportFillEmptyPages)
                             }
                             return
@@ -4756,7 +4760,6 @@ Rectangle {
                                 + " grewHeight=" + (grewHeight ? 1 : 0)
                                 + " filtered=" + (walkedFilteredHistory ? 1 : 0)
                                 + " noProgress=" + viewportFillRetries
-                                + " invisible=" + viewportFillInvisibleRetries
                                 + " emptyPages=" + viewportFillEmptyPages)
                         }
                         viewportFillRetryTimer.restart()
@@ -4986,7 +4989,7 @@ Rectangle {
                         timeline.viewportNewestRow = 0
                         timeline.viewportOldestRow = -1
                         timeline.viewportFillRetries = 0
-                        timeline.viewportFillInvisibleRetries = 0
+                        timeline.viewportFillEmptyPages = 0
                         timeline.viewportFillLastHeight = -1
                         timeline.viewportFillLastRows = -1
                         viewportFillRetryTimer.stop()

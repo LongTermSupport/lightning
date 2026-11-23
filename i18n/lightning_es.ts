@@ -3107,9 +3107,14 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
         <translation>Elige cámara</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+21"/>
         <source>Stop sharing your screen</source>
         <translation>Deja de compartir tu pantalla</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Cancel screen sharing</source>
+        <translation>Cancelar compartir pantalla</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3117,7 +3122,7 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
         <translation>Comparte tu pantalla</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+20"/>
         <source>Screen share options</source>
         <translation>Opciones para compartir pantalla</translation>
     </message>
@@ -3188,7 +3193,7 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
         <translation>Sacar la llamada a una ventana flotante</translation>
     </message>
     <message>
-        <location line="-389"/>
+        <location line="-393"/>
         <source>Unmute microphone</source>
         <translation>Activar micrófono</translation>
     </message>
@@ -3238,7 +3243,7 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
         <translation>Elija el dispositivo de salida</translation>
     </message>
     <message>
-        <location line="+365"/>
+        <location line="+369"/>
         <source>Leave call</source>
         <translation>dejar llamada</translation>
     </message>
@@ -27073,7 +27078,7 @@ Nota: importar claves no verifica esta sesión.</translation>
 <context>
     <name>SfuCallController</name>
     <message>
-        <location filename="../src/calls/SfuCallController.cpp" line="+633"/>
+        <location filename="../src/calls/SfuCallController.cpp" line="+637"/>
         <location line="+396"/>
         <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
@@ -27081,12 +27086,12 @@ Nota: importar claves no verifica esta sesión.</translation>
     </message>
     <message>
         <location line="-559"/>
-        <location line="+929"/>
+        <location line="+933"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>No se pudo iniciar el uso compartido de pantalla.</translation>
     </message>
     <message>
-        <location line="-563"/>
+        <location line="-567"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>Compartir pantalla en Wayland necesita xdg-desktop-portal y no responde. Instale o inicie el portal para su escritorio (por ejemplo, xdg-desktop-portal-kde o xdg-desktop-portal-gnome) y vuelva a intentarlo.</translation>
     </message>
@@ -27107,7 +27112,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>No hay ninguna pantalla disponible para compartir.</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+91"/>
         <source>That display isn&apos;t connected any more.</source>
         <translation>Esa pantalla ya no está conectada.</translation>
     </message>
@@ -27132,7 +27137,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>El servicio de esta llamada no respondió a tiempo en ninguna de sus direcciones.</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+45"/>
         <source>Lightning couldn&apos;t open the camera. It may be in use by another app, or unplugged.</source>
         <translation>Lightning no pudo abrir la cámara. Puede que otra aplicación la esté usando o que esté desconectada.</translation>
     </message>
@@ -27142,12 +27147,12 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>Las llamadas no están disponibles en este servidor doméstico.</translation>
     </message>
     <message>
-        <location line="-491"/>
+        <location line="-494"/>
         <source>Too many attempts. Try again in a moment.</source>
         <translation>Demasiados intentos. Inténtalo de nuevo en un momento.</translation>
     </message>
     <message>
-        <location line="-733"/>
+        <location line="-734"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>El portal de cámara de tu escritorio no le ofreció a Lightning ninguna cámara. Si la cámara funciona en otras aplicaciones, permite que Lightning use todos los dispositivos (en Flatseal: «Todos los dispositivos»), y luego vuelve a encender la cámara.</translation>
     </message>
@@ -27182,7 +27187,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>Compartir pantalla no está disponible en esta compilación aislada (Flatpak o Snap) en una sesión X11: solo puede compartir a través del portal de compartir pantalla del escritorio, no hay ninguno disponible, y los complementos de GStreamer instalados en tu sistema no se pueden usar desde el entorno aislado. Para compartir tu pantalla, usa el AppImage o un paquete de tu distribución de Lightning, que capturan una pantalla X11 directamente, o inicia sesión en una sesión Wayland, donde el portal de tu escritorio ofrece compartir pantalla. Si el xdg-desktop-portal de tu escritorio admite la emisión de pantalla en X11, asegúrate de que esté instalado y en ejecución.</translation>
     </message>
     <message>
-        <location line="+476"/>
+        <location line="+477"/>
         <source>You don&apos;t have permission to join calls in this room. A room admin can raise your power level in it; Lightning can&apos;t change what call membership itself requires.</source>
         <translation>No tienes permiso para unirte a llamadas en esta sala. Un administrador de la sala puede subir tu nivel de permisos; Lightning no puede cambiar lo que exige la pertenencia a llamadas.</translation>
     </message>
@@ -27253,13 +27258,13 @@ Nota: importar claves no verifica esta sesión.</translation>
     </message>
     <message>
         <location line="+8"/>
-        <location line="+448"/>
+        <location line="+451"/>
         <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>No se pudo conectar con la llamada.</translation>
     </message>
     <message>
-        <location line="-808"/>
+        <location line="-811"/>
         <source>The calling service is having trouble.</source>
         <translation>El servicio de llamadas está teniendo problemas.</translation>
     </message>
@@ -27274,7 +27279,12 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>La ventana que estabas compartiendo estaba cerrada.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+2"/>
+        <source>Screen sharing stopped: what you were sharing is no longer available.</source>
+        <translation>Se detuvo la pantalla compartida: lo que compartías ya no está disponible.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Your camera stopped.</source>
         <translation>Tu cámara se detuvo.</translation>
     </message>
@@ -27382,7 +27392,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>Puedes compartir tu pantalla cuando la llamada se haya vuelto a conectar.</translation>
     </message>
     <message>
-        <location line="+764"/>
+        <location line="+766"/>
         <source>Call audio stopped: this computer&apos;s sound output disconnected. It resumes when an output is available again; if it does not, leave and rejoin the call.</source>
         <translation>El audio de la llamada se detuvo: la salida de sonido de este equipo se desconectó. Se reanuda cuando haya una salida disponible; si no lo hace, sal de la llamada y vuelve a entrar.</translation>
     </message>
@@ -27457,7 +27467,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>No se oye nada ahora mismo.</translation>
     </message>
     <message>
-        <location line="+371"/>
+        <location line="+385"/>
         <source>The call was declined.</source>
         <translation>Se rechazó la llamada.</translation>
     </message>
@@ -27472,7 +27482,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>Participante</translation>
     </message>
     <message>
-        <location line="-4594"/>
+        <location line="-4610"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>Esta sala está cifrada y las llamadas cifradas aún no están disponibles en esta compilación.</translation>
     </message>
@@ -33277,12 +33287,12 @@ Nota: importar claves no verifica esta sesión.</translation>
     <message>
         <location filename="../qml/SpaceLobby.qml" line="-521"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5404"/>
+        <location line="+5407"/>
         <source>Space</source>
         <translation>Espacio</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5403"/>
+        <location filename="../qml/TimelinePane.qml" line="-5406"/>
         <source>Home</source>
         <translation>Inicio</translation>
     </message>
@@ -33384,12 +33394,12 @@ Nota: importar claves no verifica esta sesión.</translation>
     <message>
         <location line="+16"/>
         <location line="+2"/>
-        <location line="+3872"/>
+        <location line="+3875"/>
         <source>Room information</source>
         <translation>Información de la sala</translation>
     </message>
     <message>
-        <location line="-3861"/>
+        <location line="-3864"/>
         <location line="+1"/>
         <source>More room actions</source>
         <translation>Más acciones de la sala</translation>
@@ -33640,7 +33650,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>No se pudo completar la búsqueda.</translation>
     </message>
     <message>
-        <location line="+2725"/>
+        <location line="+2728"/>
         <location line="+27"/>
         <location line="+455"/>
         <source>Loading older messages…</source>
@@ -34022,8 +34032,8 @@ Nota: importar claves no verifica esta sesión.</translation>
     </message>
     <message>
         <location line="+299"/>
-        <location filename="../qml/TimelinePane.qml" line="-6702"/>
-        <location line="+6879"/>
+        <location filename="../qml/TimelinePane.qml" line="-6705"/>
+        <location line="+6882"/>
         <source>Room</source>
         <translation>Sala</translation>
     </message>
@@ -34098,13 +34108,13 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location line="-5994"/>
+        <location line="-5997"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation>Ver perfil</translation>
     </message>
     <message>
-        <location line="+5223"/>
+        <location line="+5226"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation>Imágenes (*.png *.jpg *.jpeg *.gif *.webp *.svg)</translation>
     </message>
@@ -34180,7 +34190,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>Suelta archivos para adjuntarlos</translation>
     </message>
     <message>
-        <location line="-5442"/>
+        <location line="-5445"/>
         <source>Join space</source>
         <translation>Unirse al espacio</translation>
     </message>

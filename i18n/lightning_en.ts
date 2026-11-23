@@ -3105,8 +3105,13 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+21"/>
         <source>Stop sharing your screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Cancel screen sharing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3115,7 +3120,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+20"/>
         <source>Screen share options</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3186,7 +3191,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-389"/>
+        <location line="-393"/>
         <source>Unmute microphone</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3236,7 +3241,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+365"/>
+        <location line="+369"/>
         <source>Leave call</source>
         <translation type="unfinished"></translation>
     </message>
@@ -27053,7 +27058,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SfuCallController</name>
     <message>
-        <location filename="../src/calls/SfuCallController.cpp" line="+633"/>
+        <location filename="../src/calls/SfuCallController.cpp" line="+637"/>
         <location line="+396"/>
         <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
@@ -27061,12 +27066,12 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="-559"/>
-        <location line="+929"/>
+        <location line="+933"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-563"/>
+        <location line="-567"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -27087,7 +27092,7 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+91"/>
         <source>That display isn&apos;t connected any more.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -27112,7 +27117,7 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+45"/>
         <source>Lightning couldn&apos;t open the camera. It may be in use by another app, or unplugged.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -27122,12 +27127,12 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-491"/>
+        <location line="-494"/>
         <source>Too many attempts. Try again in a moment.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-733"/>
+        <location line="-734"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -27162,7 +27167,7 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+476"/>
+        <location line="+477"/>
         <source>You don&apos;t have permission to join calls in this room. A room admin can raise your power level in it; Lightning can&apos;t change what call membership itself requires.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -27233,13 +27238,13 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+8"/>
-        <location line="+448"/>
+        <location line="+451"/>
         <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-808"/>
+        <location line="-811"/>
         <source>The calling service is having trouble.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -27254,7 +27259,12 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+2"/>
+        <source>Screen sharing stopped: what you were sharing is no longer available.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Your camera stopped.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -27362,7 +27372,7 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+764"/>
+        <location line="+766"/>
         <source>Call audio stopped: this computer&apos;s sound output disconnected. It resumes when an output is available again; if it does not, leave and rejoin the call.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -27437,7 +27447,7 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+371"/>
+        <location line="+385"/>
         <source>The call was declined.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -27452,7 +27462,7 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4594"/>
+        <location line="-4610"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -33237,12 +33247,12 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>TimelinePane</name>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="+6787"/>
+        <location filename="../qml/TimelinePane.qml" line="+6790"/>
         <source>Only Space admins can change this.</source>
         <translation>Only Space admins can change this.</translation>
     </message>
     <message>
-        <location line="-5979"/>
+        <location line="-5982"/>
         <source>Seen by 1 person</source>
         <translation type="unfinished"></translation>
     </message>
@@ -33262,12 +33272,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location filename="../qml/SpaceLobby.qml" line="-521"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5404"/>
+        <location line="+5407"/>
         <source>Space</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5403"/>
+        <location filename="../qml/TimelinePane.qml" line="-5406"/>
         <source>Home</source>
         <translation type="unfinished"></translation>
     </message>
@@ -33369,12 +33379,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="+16"/>
         <location line="+2"/>
-        <location line="+3872"/>
+        <location line="+3875"/>
         <source>Room information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3861"/>
+        <location line="-3864"/>
         <location line="+1"/>
         <source>More room actions</source>
         <translation type="unfinished"></translation>
@@ -33625,7 +33635,7 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2725"/>
+        <location line="+2728"/>
         <location line="+27"/>
         <location line="+455"/>
         <source>Loading older messages…</source>
@@ -34007,8 +34017,8 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+299"/>
-        <location filename="../qml/TimelinePane.qml" line="-6702"/>
-        <location line="+6879"/>
+        <location filename="../qml/TimelinePane.qml" line="-6705"/>
+        <location line="+6882"/>
         <source>Room</source>
         <translation type="unfinished"></translation>
     </message>
@@ -34083,13 +34093,13 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-5994"/>
+        <location line="-5997"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5223"/>
+        <location line="+5226"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -34160,7 +34170,7 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-5442"/>
+        <location line="-5445"/>
         <source>Join space</source>
         <translation type="unfinished"></translation>
     </message>

@@ -371,8 +371,9 @@ private Q_SLOTS:
                  "nothing distinguishes a page that advanced the pagination "
                  "cursor from one that did nothing, so a collapsed run stops "
                  "the reader dead and expanding it by hand is the only way on");
-        QVERIFY2(body.contains(QStringLiteral("maxInvisibleFillRetries")),
-                 "invisible progress has no bound of its own");
+        QVERIFY2(body.contains(QStringLiteral("grewRows || walkedFilteredHistory")),
+                 "a page of rows that add no height must spend the same "
+                 "bound as a page the filter emptied");
 
         QVERIFY2(body.contains(QStringLiteral("viewportFillLastEmptyPages")),
                  "nothing compares the controller's completed-empty-page "

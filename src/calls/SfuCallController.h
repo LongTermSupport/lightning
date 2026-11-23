@@ -53,6 +53,8 @@ class SfuCallController : public QObject
     Q_PROPERTY(bool deafened READ deafened NOTIFY mediaStateChanged)
     Q_PROPERTY(bool cameraOn READ cameraOn NOTIFY mediaStateChanged)
     Q_PROPERTY(bool screenSharing READ screenSharing NOTIFY mediaStateChanged)
+    Q_PROPERTY(bool screenShareStarting READ screenShareStarting
+                   NOTIFY mediaStateChanged)
     Q_PROPERTY(bool shareAudioEnabled READ shareAudioEnabled
                    WRITE setShareAudioEnabled NOTIFY mediaStateChanged)
     Q_PROPERTY(bool shareAudioSupported READ shareAudioSupported
@@ -157,6 +159,7 @@ public:
     bool deafened() const { return m_deafened; }
     bool cameraOn() const { return m_cameraOn; }
     bool screenSharing() const { return m_screenSharing; }
+    bool screenShareStarting() const;
     bool shareAudioEnabled() const { return m_shareAudioMode != 0; }
     void setShareAudioEnabled(bool on);
     bool shareAudioSupported() const;

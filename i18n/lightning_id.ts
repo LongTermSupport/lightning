@@ -3086,9 +3086,14 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Pilih kamera</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+21"/>
         <source>Stop sharing your screen</source>
         <translation>Berhenti membagikan layar Anda</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Cancel screen sharing</source>
+        <translation>Batalkan berbagi layar</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3096,7 +3101,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Bagikan layar Anda</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+20"/>
         <source>Screen share options</source>
         <translation>Opsi berbagi layar</translation>
     </message>
@@ -3167,7 +3172,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Lepaskan panggilan ke jendela mengambang</translation>
     </message>
     <message>
-        <location line="-389"/>
+        <location line="-393"/>
         <source>Unmute microphone</source>
         <translation>Suarakan mikrofon</translation>
     </message>
@@ -3217,7 +3222,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
         <translation>Pilih perangkat keluaran</translation>
     </message>
     <message>
-        <location line="+365"/>
+        <location line="+369"/>
         <source>Leave call</source>
         <translation>Tinggalkan panggilan</translation>
     </message>
@@ -26965,7 +26970,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
 <context>
     <name>SfuCallController</name>
     <message>
-        <location filename="../src/calls/SfuCallController.cpp" line="+633"/>
+        <location filename="../src/calls/SfuCallController.cpp" line="+637"/>
         <location line="+396"/>
         <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
@@ -26973,12 +26978,12 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
     </message>
     <message>
         <location line="-559"/>
-        <location line="+929"/>
+        <location line="+933"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>Berbagi layar tidak dapat dimulai.</translation>
     </message>
     <message>
-        <location line="-563"/>
+        <location line="-567"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>Berbagi layar di Wayland memerlukan xdg-desktop-portal, dan tidak merespons. Instal atau mulai portal untuk desktop Anda — misalnya xdg-desktop-portal-kde atau xdg-desktop-portal-gnome — lalu coba lagi.</translation>
     </message>
@@ -26999,7 +27004,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Tidak ada tampilan yang tersedia untuk dibagikan.</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+91"/>
         <source>That display isn&apos;t connected any more.</source>
         <translation>Layar itu tidak terhubung lagi.</translation>
     </message>
@@ -27024,7 +27029,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Layanan panggilan ini tidak menjawab tepat waktu di alamat mana pun.</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+45"/>
         <source>Lightning couldn&apos;t open the camera. It may be in use by another app, or unplugged.</source>
         <translation>Lightning tidak dapat membuka kamera. Kamera mungkin sedang dipakai aplikasi lain, atau tidak terpasang.</translation>
     </message>
@@ -27034,12 +27039,12 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Panggilan tidak tersedia di server rumah ini.</translation>
     </message>
     <message>
-        <location line="-491"/>
+        <location line="-494"/>
         <source>Too many attempts. Try again in a moment.</source>
         <translation>Terlalu banyak upaya. Coba lagi sebentar lagi.</translation>
     </message>
     <message>
-        <location line="-733"/>
+        <location line="-734"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>Portal kamera desktop Anda tidak memberi Lightning kamera. Jika kamera berfungsi di aplikasi lain, izinkan Lightning memakai semua perangkat (di Flatseal: &quot;All devices&quot;), lalu nyalakan kamera lagi.</translation>
     </message>
@@ -27074,7 +27079,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Berbagi layar tidak tersedia di build sandbox (Flatpak atau Snap) pada sesi X11: hanya dapat berbagi lewat portal berbagi layar desktop, dan tidak ada yang tersedia, serta plugin GStreamer yang terpasang di sistem Anda tidak dapat dipakai dari sandbox. Untuk berbagi layar, gunakan AppImage atau paket distribusi Lightning, yang menangkap layar X11 secara langsung, atau masuk ke sesi Wayland, tempat portal desktop Anda menyediakan berbagi layar. Jika xdg-desktop-portal desktop Anda mendukung screen casting di X11, pastikan terpasang dan berjalan.</translation>
     </message>
     <message>
-        <location line="+476"/>
+        <location line="+477"/>
         <source>You don&apos;t have permission to join calls in this room. A room admin can raise your power level in it; Lightning can&apos;t change what call membership itself requires.</source>
         <translation>Anda tidak memiliki izin untuk bergabung ke panggilan di ruang ini. Admin ruang dapat menaikkan level daya Anda di dalamnya; Lightning tidak dapat mengubah apa yang diperlukan keanggotaan panggilan itu sendiri.</translation>
     </message>
@@ -27145,13 +27150,13 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
     </message>
     <message>
         <location line="+8"/>
-        <location line="+448"/>
+        <location line="+451"/>
         <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>Tidak dapat tersambung ke panggilan.</translation>
     </message>
     <message>
-        <location line="-808"/>
+        <location line="-811"/>
         <source>The calling service is having trouble.</source>
         <translation>Layanan panggilan mengalami masalah.</translation>
     </message>
@@ -27166,7 +27171,12 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Jendela yang Anda bagikan telah ditutup.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+2"/>
+        <source>Screen sharing stopped: what you were sharing is no longer available.</source>
+        <translation>Berbagi layar dihentikan: yang Anda bagikan tidak tersedia lagi.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Your camera stopped.</source>
         <translation>Kamera Anda berhenti.</translation>
     </message>
@@ -27274,7 +27284,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Anda dapat berbagi layar setelah panggilan tersambung kembali.</translation>
     </message>
     <message>
-        <location line="+764"/>
+        <location line="+766"/>
         <source>Call audio stopped: this computer&apos;s sound output disconnected. It resumes when an output is available again; if it does not, leave and rejoin the call.</source>
         <translation>Suara panggilan berhenti: keluaran suara komputer ini terputus. Suara berlanjut saat keluaran tersedia lagi; jika tidak, keluar lalu bergabung kembali ke panggilan.</translation>
     </message>
@@ -27349,7 +27359,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Tidak ada yang terdengar sekarang.</translation>
     </message>
     <message>
-        <location line="+371"/>
+        <location line="+385"/>
         <source>The call was declined.</source>
         <translation>Panggilan ditolak.</translation>
     </message>
@@ -27364,7 +27374,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Peserta</translation>
     </message>
     <message>
-        <location line="-4594"/>
+        <location line="-4610"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>Ruangan ini dienkripsi, dan panggilan terenkripsi belum tersedia di build ini.</translation>
     </message>
@@ -33115,12 +33125,12 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
     <message>
         <location filename="../qml/SpaceLobby.qml" line="-521"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5404"/>
+        <location line="+5407"/>
         <source>Space</source>
         <translation>Space</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5403"/>
+        <location filename="../qml/TimelinePane.qml" line="-5406"/>
         <source>Home</source>
         <translation>Beranda</translation>
     </message>
@@ -33222,12 +33232,12 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
     <message>
         <location line="+16"/>
         <location line="+2"/>
-        <location line="+3872"/>
+        <location line="+3875"/>
         <source>Room information</source>
         <translation>Informasi ruang</translation>
     </message>
     <message>
-        <location line="-3861"/>
+        <location line="-3864"/>
         <location line="+1"/>
         <source>More room actions</source>
         <translation>Tindakan ruang lainnya</translation>
@@ -33478,7 +33488,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Pencarian tidak dapat diselesaikan.</translation>
     </message>
     <message>
-        <location line="+2725"/>
+        <location line="+2728"/>
         <location line="+27"/>
         <location line="+455"/>
         <source>Loading older messages…</source>
@@ -33856,8 +33866,8 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
     </message>
     <message>
         <location line="+299"/>
-        <location filename="../qml/TimelinePane.qml" line="-6702"/>
-        <location line="+6879"/>
+        <location filename="../qml/TimelinePane.qml" line="-6705"/>
+        <location line="+6882"/>
         <source>Room</source>
         <translation>Ruang</translation>
     </message>
@@ -33928,13 +33938,13 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Batal</translation>
     </message>
     <message>
-        <location line="-5994"/>
+        <location line="-5997"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation>Lihat profil</translation>
     </message>
     <message>
-        <location line="+5223"/>
+        <location line="+5226"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation>Gambar (*.png *.jpg *.jpeg *.gif *.webp *.svg)</translation>
     </message>
@@ -34010,7 +34020,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Lepaskan berkas untuk melampirkannya</translation>
     </message>
     <message>
-        <location line="-5442"/>
+        <location line="-5445"/>
         <source>Join space</source>
         <translation>Gabung ke space</translation>
     </message>

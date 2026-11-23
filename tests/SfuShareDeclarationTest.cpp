@@ -1,11 +1,13 @@
 #include "calls/CallFrameCryptor.h"
 #include "calls/RtcController.h"
+#include "calls/ScreenCastPortal.h"
 #include "calls/SfuCallController.h"
 #include "calls/SfuMediaEngine.h"
 #include "matrix/MockMatrixClient.h"
 #include "matrix/RtcSession.h"
 
 #include <QLoggingCategory>
+#include <atomic>
 #include <QSignalSpy>
 #include <QtTest/QtTest>
 
@@ -237,6 +239,119 @@ private slots:
             QVERIFY(call.startScreenShare(0));
         QVERIFY(!notices.isEmpty());
         QCOMPARE(notices.first().first().toString(), QString());
+        engine.stop();
+    }
+
+    void aShareWhoseSourceDiesEndsWithANotice()
+    {
+        useHardware(false);
+        DeclaringClient client;
+        SfuCallController call;
+        SfuMediaEngine engine;
+        engine.setTestSourceMode(true);
+        call.setClient(&client);
+        call.setMediaEngine(&engine);
+        call.setCallStateForTest(SfuCallController::State::Connected);
+        engine.start();
+        QSignalSpy notices(&call, &SfuCallController::callFailed);
+        QVERIFY(call.startScreenShare(0));
+        QTRY_VERIFY_WITH_TIMEOUT(!client.calls.isEmpty(), 10000);
+        const QString cid = client.calls.first().mid(4);
+        GstElement *bin = engine.publishedBinForTest(cid);
+        QVERIFY(bin);
+        GstElement *source = gst_bin_get_by_name(GST_BIN(bin), "capsrc");
+        QVERIFY(source);
+        GstPad *pad = gst_element_get_static_pad(source, "src");
+        QVERIFY(pad);
+        std::atomic<int> frames{0};
+        const gulong probe = gst_pad_add_probe(
+            pad, GST_PAD_PROBE_TYPE_BUFFER,
+            [](GstPad *, GstPadProbeInfo *, gpointer data) {
+                ++*static_cast<std::atomic<int> *>(data);
+                return GST_PAD_PROBE_OK;
+            },
+            &frames, nullptr);
+        QTRY_VERIFY_WITH_TIMEOUT(frames.load() > 0, 10000);
+        gst_pad_remove_probe(pad, probe);
+        gst_object_unref(pad);
+
+        GError *error = g_error_new_literal(GST_RESOURCE_ERROR,
+                                            GST_RESOURCE_ERROR_FAILED,
+                                            "stream error: target not found");
+        gst_element_post_message(
+            source, gst_message_new_error(GST_OBJECT(source), error, nullptr));
+        g_error_free(error);
+        gst_object_unref(source);
+
+        QTRY_VERIFY_WITH_TIMEOUT(!call.screenSharing(), 5000);
+        QVERIFY2(!engine.hasPublishedBinForTest(cid),
+                 "the dead share's bin is still published, so its keep-alive "
+                 "keeps re-sending the last picture");
+        QCOMPARE(notices.size(), 1);
+        QCOMPARE(notices.first().first().toString(),
+                 QStringLiteral("Screen sharing stopped: what you were "
+                                "sharing is no longer available."));
+        engine.stop();
+    }
+
+    // Runs under the test bus, where no portal answers, so the request stays pending.
+    void aSecondShareClickWhileStartingCancelsTheStart()
+    {
+        DeclaringClient client;
+        SfuCallController call;
+        SfuMediaEngine engine;
+        ScreenCastPortal portal;
+        engine.setTestSourceMode(true);
+        call.setClient(&client);
+        call.setMediaEngine(&engine);
+        call.setScreenCastPortal(&portal);
+        call.setCallStateForTest(SfuCallController::State::Connected);
+        engine.start();
+        QSignalSpy changed(&call, &SfuCallController::mediaStateChanged);
+
+        call.requestScreenShare();
+        QVERIFY2(portal.busy(), "the test bus failed the request at once");
+        QVERIFY(call.property("screenShareStarting").toBool());
+        QVERIFY(changed.size() > 0);
+
+        changed.clear();
+        call.requestScreenShare();
+        QVERIFY2(!portal.busy(), "a second click left the start pending");
+        QVERIFY(!call.property("screenShareStarting").toBool());
+        QVERIFY(changed.size() > 0);
+
+        call.requestScreenShare();
+        QVERIFY(portal.busy());
+        call.stopScreenShare();
+        QVERIFY2(!portal.busy(), "stop left the start pending");
+        QVERIFY(!call.screenSharing());
+        engine.stop();
+    }
+
+    void aStopAfterAFailedStartIsNotSilent()
+    {
+        DeclaringClient client;
+        SfuCallController call;
+        SfuMediaEngine engine;
+        ScreenCastPortal portal;
+        engine.setTestSourceMode(true);
+        call.setClient(&client);
+        call.setMediaEngine(&engine);
+        call.setScreenCastPortal(&portal);
+        call.setCallStateForTest(SfuCallController::State::Connected);
+        engine.start();
+        QSignalSpy changed(&call, &SfuCallController::mediaStateChanged);
+
+        Q_EMIT portal.failed(QStringLiteral("session_refused"));
+        QVERIFY2(changed.size() > 0,
+                 "a failed start never told the share button to refresh");
+
+        changed.clear();
+        QTest::ignoreMessage(QtInfoMsg,
+                             "screen share stop: nothing is being shared");
+        call.stopScreenShare();
+        QVERIFY2(changed.size() > 0,
+                 "a stop with nothing to stop left the button as it was");
         engine.stop();
     }
 
