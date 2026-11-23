@@ -4578,16 +4578,15 @@ Rectangle {
                         // Rows that add no height leave the reader pinned at
                         // the oldest row, where no approach ever ends.
                         // Momentum after the fingers lift is not the reader asking.
-                        if (event.phase === Qt.ScrollMomentum) {
-                        } else if (towardsOlder && !canMove) {
-                            if (timeline.wheelPinnedAtTop) {
+                        if (event.phase !== Qt.ScrollMomentum) {
+                            if (!towardsOlder || canMove) {
+                                timeline.wheelPinnedAtTop = false
+                            } else if (timeline.wheelPinnedAtTop) {
                                 timeline.renewPinnedTopBudget()
                             } else {
                                 timeline.wheelPinnedAtTop = true
                                 timeline.beginExplicitTopApproach()
                             }
-                        } else {
-                            timeline.wheelPinnedAtTop = false
                         }
                         if (towardsOlder && !canMove && maxY <= minY + 0.5
                                 && app.pagination && !app.pagination.reachedStart)

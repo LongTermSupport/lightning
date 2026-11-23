@@ -500,6 +500,13 @@ ceiling stays because collapsed rows are delegates too. "No height" is read
 from `contentHeight`, never from an event kind, so any row that does not lay out
 counts.
 
+**A WHEEL HELD AT THE OLDEST ROW RENEWS THE APPROACH BUDGET**, as the scroll
+bar's top hold and pinned autoscroll do, up to the same 600 rows a gesture
+(`wheelPinnedAtTop`). Pages of rows that add no height leave the reader pinned,
+so the band is never left and the 240-row budget was never renewed. Only input
+the reader is making counts: a `Qt.ScrollMomentum` frame renews nothing, and the
+settle ends the gesture.
+
 **ROOM-UPDATE EXPANSION IS KEYED BY THE GROUP'S MEMBERS** (`stateGroupKeys`), not
 by its leader: the leader is the oldest loaded row of the run, so it changes when
 history loads and a run splits when a message makes a date divider visible.
