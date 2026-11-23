@@ -34,6 +34,7 @@ private Q_SLOTS:
     void aStoreThatStaysOpenIsReportedFailedNeverRemoved();
     void retriesShareOneBudgetAcrossEveryDirectory();
     void anAccountRootGoesOnlyWhenEmpty();
+    void scrollPositionsLiveUnderTheRecordedRoot();
     void personalBackgroundsGoSoTheRecordedRootCanGo();
     void aFailedAttemptLeavesNoEmptyAccountDirectory();
 
@@ -548,6 +549,19 @@ void AppDataPathsTest::anAccountRootGoesOnlyWhenEmpty()
     QVERIFY(QDir(target.path()).exists());
     QVERIFY(QFile::remove(link));
 #endif
+}
+
+void AppDataPathsTest::scrollPositionsLiveUnderTheRecordedRoot()
+{
+    matrix::app_data::AccountIdentity erin;
+    QVERIFY(matrix::app_data::resolveAccountIdentity(
+        QStringLiteral("https://matrix.example"), QStringLiteral("erin"), &erin));
+    const QString canonicalRoot = erin.accountRoot;
+    QVERIFY(matrix::app_data::bindStoreSlug(&erin, QStringLiteral("Erin_typed")));
+    QVERIFY(erin.accountRoot != canonicalRoot);
+    QCOMPARE(matrix::app_data::scrollPositionsFile(erin.accountRoot),
+             erin.accountRoot + QStringLiteral("/scroll-positions.json"));
+    QVERIFY(matrix::app_data::scrollPositionsFile(QString()).isEmpty());
 }
 
 void AppDataPathsTest::personalBackgroundsGoSoTheRecordedRootCanGo()

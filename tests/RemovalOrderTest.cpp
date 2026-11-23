@@ -9,6 +9,7 @@
 #include "models/AccountActivityModel.h"
 #include "notifications/NotificationManager.h"
 
+#include <QDir>
 #include <QFile>
 #include <QSignalSpy>
 #include <QTemporaryDir>
@@ -216,6 +217,62 @@ private Q_SLOTS:
         QVERIFY(app.liveAccountsStepsForTest().contains(
             QStringLiteral("removal:not-live ") + kCarol));
         QVERIFY(app.sessionPoolForTest()->holdsStore(kBob));
+    }
+
+    void removalDeletesSavedPositionsUnderTheRecordedRoot()
+    {
+        ScriptedLabsBridge bridge;
+        BridgeScope bridgeScope(&bridge);
+        LabsEnvScope env(true);
+        AppController app(AppController::MockBackend, false, inMemoryKeyring());
+        saveAccountsAndSignInAlice(app);
+        app.settings()->setStoreSlugFor(kCarol, QStringLiteral("Carol_typed"));
+        const auto carol = identityOf(app, kCarol);
+        QVERIFY(!carol.accountRoot.isEmpty());
+        QVERIFY2(carol.accountRoot != matrix::app_data::accountRoot(kCarol),
+                 "the fixture's recorded root must differ from the derived one");
+        const QString positions =
+            matrix::app_data::scrollPositionsFile(carol.accountRoot);
+        QVERIFY(QDir().mkpath(carol.accountRoot));
+        QFile file(positions);
+        QVERIFY(file.open(QIODevice::WriteOnly));
+        file.write(R"({"rooms":{"!r:three.example":{"e":"$e","o":0,"r":3}}})");
+        file.close();
+
+        app.removeAccount(kCarol);
+
+        QVERIFY(!app.settings()->hasSavedAccount(kCarol));
+        QVERIFY2(!QFile::exists(positions),
+                 "removal left the saved positions under the recorded root");
+    }
+
+    // Removal deletes the recorded and the canonical root whole; sign-out
+    // deletes nothing but this file, so it is where the path has to be right.
+    void signOutDeletesSavedPositionsUnderTheRecordedRoot()
+    {
+        ScriptedLabsBridge bridge;
+        BridgeScope bridgeScope(&bridge);
+        LabsEnvScope env(true);
+        AppController app(AppController::MockBackend, false, inMemoryKeyring());
+        saveAccountsAndSignInAlice(app);
+        app.settings()->setStoreSlugFor(kAlice, QStringLiteral("Alice_typed"));
+        const auto alice = identityOf(app, kAlice);
+        QVERIFY(!alice.accountRoot.isEmpty());
+        QVERIFY2(alice.accountRoot != matrix::app_data::accountRoot(kAlice),
+                 "the fixture's recorded root must differ from the derived one");
+        const QString positions =
+            matrix::app_data::scrollPositionsFile(alice.accountRoot);
+        QVERIFY(QDir().mkpath(alice.accountRoot));
+        QFile file(positions);
+        QVERIFY(file.open(QIODevice::WriteOnly));
+        file.write(R"({"rooms":{"!r:one.example":{"e":"$e","o":0,"r":3}}})");
+        file.close();
+
+        app.auth()->logout();
+
+        QTRY_VERIFY2_WITH_TIMEOUT(
+            !QFile::exists(positions),
+            "sign-out left the saved positions under the recorded root", 5000);
     }
 
     void aNonLiveAccountWhoseSignInIsStillBeingWrittenTakesTheLiveRemoval()
