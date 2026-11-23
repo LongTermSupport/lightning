@@ -418,9 +418,12 @@ private Q_SLOTS:
         QTest::keyClick(m_window, Qt::Key_Backspace);
         QTRY_COMPARE(m_model->folder(),
                      QUrl::fromLocalFile(QDir::cleanPath(dir.path())));
-        QTRY_COMPARE(list->property("currentIndex").toInt(),
-                     m_model->indexOfName(QStringLiteral("sub")));
-        QTRY_VERIFY(m_model->indexOfName(QStringLiteral("a.txt")) >= 0);
+        // The folder we left is reselected in a callLater after the reset;
+        // typing before it runs is overwritten by it.
+        QTRY_VERIFY(m_dialog->property("pendingSelect").toString().isEmpty());
+        QVERIFY(m_model->indexOfName(QStringLiteral("a.txt")) >= 0);
+        QCOMPARE(list->property("currentIndex").toInt(),
+                 m_model->indexOfName(QStringLiteral("sub")));
         QTRY_VERIFY(list->property("activeFocus").toBool());
 
         QTest::keyClick(m_window, Qt::Key_A);
