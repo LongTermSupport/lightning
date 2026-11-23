@@ -102,6 +102,7 @@ Dialog {
         creatingFolder = false
         failure = ""
         pendingSelect = ""
+        typeAhead = ""
         places = browser.places()
         browser.foldersOnly = pickingFolder
         browser.nameFilters = currentFilter ? currentFilter.patterns : []
@@ -170,6 +171,7 @@ Dialog {
         creatingFolder = false
         selection = ({})
         anchorName = ""
+        typeAhead = ""
         fileList.currentIndex = -1
         browser.folder = url
     }

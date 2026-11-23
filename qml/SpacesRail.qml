@@ -1123,9 +1123,7 @@ Rectangle {
                         var cp = spaceItem.mapToItem(expandChevronArea,
                                                      eventPoint.position.x,
                                                      eventPoint.position.y)
-                        return cp.x >= 0 && cp.x <= expandChevronArea.width
-                               && cp.y >= 0
-                               && cp.y <= expandChevronArea.height
+                        return expandChevronArea.contains(cp)
                     }
                     onTapped: (eventPoint) => {
                         if (eventPoint.position.y > spaceItem.tileBandHeight)

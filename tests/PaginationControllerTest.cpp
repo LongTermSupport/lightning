@@ -1761,6 +1761,123 @@ private Q_SLOTS:
         }
     }
 
+    // Saves an anchor `rowsBack` rows behind the newest row, then reopens the
+    // timeline empty, as leaving and returning to a room does.
+    static void saveAnchorThenReopen(FakeClient &client,
+                                     PaginationController &controller,
+                                     int rowsBack, qreal offset)
+    {
+        controller.requestViewportFill();
+        client.beginLoading(kRoomA);
+        client.completeBatch(kRoomA, rowsBack, false);
+        controller.requestNearTop(true);
+        client.beginLoading(kRoomA);
+        client.completeEvents(
+            kRoomA, { makeEvent(QStringLiteral("$deep-anchor")) }, false);
+        controller.saveScrollAnchor(kRoomA, QStringLiteral("$deep-anchor"),
+                                    offset, false);
+        Q_EMIT client.timelineReset(kRoomA);
+        QCoreApplication::processEvents();
+    }
+
+    void aRestoreFromFastPagesLandsInTheTimelineNotTheEventContext()
+    {
+        FakeClient client;
+        TimelineModel model;
+        model.setClient(&client);
+        model.setRoomId(kRoomA);
+        PaginationController controller;
+        controller.setClient(&client);
+        controller.setTimelineModel(&model);
+        controller.setRoomId(kRoomA);
+        saveAnchorThenReopen(client, controller, 300, -120.0);
+        QCOMPARE(model.rowCount(), 0);
+
+        int contextOpens = 0;
+        controller.setContextOpener([&](const QString &, qreal) {
+            ++contextOpens;
+            return true;
+        });
+        QSignalSpy located(&controller, &PaginationController::targetLocated);
+        QSignalSpy latest(&controller,
+                          &PaginationController::restoreLatestRequested);
+        controller.restoreScrollAnchor(kRoomA);
+        for (int page = 0; page < 20 && latest.isEmpty(); ++page) {
+            client.beginLoading(kRoomA);
+            client.completeBatch(kRoomA, 5, false);
+            QTest::qWait(5);
+        }
+        if (latest.isEmpty()) {
+            client.beginLoading(kRoomA);
+            client.completeEvents(
+                kRoomA, { makeEvent(QStringLiteral("$deep-anchor")) }, false);
+        }
+        QTRY_COMPARE(located.count() + latest.count(), 1);
+        QCOMPARE(QStringLiteral("located=%1 contextOpens=%2")
+                     .arg(located.count()).arg(contextOpens),
+                 QStringLiteral("located=1 contextOpens=0"));
+        QCOMPARE(located.first().at(1).toReal(), -120.0);
+    }
+
+    void aRestoreFromSlowPagesStillGoesToTheEventContextAfterEightPages()
+    {
+        FakeClient client;
+        TimelineModel model;
+        model.setClient(&client);
+        model.setRoomId(kRoomA);
+        PaginationController controller;
+        controller.setClient(&client);
+        controller.setTimelineModel(&model);
+        controller.setRoomId(kRoomA);
+        saveAnchorThenReopen(client, controller, 300, 0.0);
+
+        int contextOpens = 0;
+        controller.setContextOpener([&](const QString &, qreal) {
+            ++contextOpens;
+            return true;
+        });
+        QSignalSpy latest(&controller,
+                          &PaginationController::restoreLatestRequested);
+        controller.restoreScrollAnchor(kRoomA);
+        int pages = 0;
+        while (latest.isEmpty() && pages < 30) {
+            client.beginLoading(kRoomA);
+            client.completeBatch(kRoomA, 5, false);
+            ++pages;
+            QTest::qWait(250);
+        }
+        QCOMPARE(contextOpens, 1);
+        QCOMPARE(pages, 8);
+    }
+
+    void anAnchorBeyondTheWalksReachOpensTheEventContextWithoutWalking()
+    {
+        FakeClient client;
+        TimelineModel model;
+        model.setClient(&client);
+        model.setRoomId(kRoomA);
+        PaginationController controller;
+        controller.setClient(&client);
+        controller.setTimelineModel(&model);
+        controller.setRoomId(kRoomA);
+        saveAnchorThenReopen(client, controller, 800, -40.0);
+
+        int contextOpens = 0;
+        controller.setContextOpener([&](const QString &, qreal) {
+            ++contextOpens;
+            return true;
+        });
+        QSignalSpy latest(&controller,
+                          &PaginationController::restoreLatestRequested);
+        const int loadsBefore = client.loadOlderCalls;
+        controller.restoreScrollAnchor(kRoomA);
+        QCOMPARE(QStringLiteral("contextOpens=%1 pagesAsked=%2 latest=%3")
+                     .arg(contextOpens)
+                     .arg(client.loadOlderCalls - loadsBefore)
+                     .arg(latest.count()),
+                 QStringLiteral("contextOpens=1 pagesAsked=0 latest=1"));
+    }
+
     void aSuccessfulRestoreShowsNoNotice()
     {
         FakeClient client;

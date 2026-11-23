@@ -3157,9 +3157,14 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Kamera auswählen</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+21"/>
         <source>Stop sharing your screen</source>
         <translation>Bildschirmfreigabe beenden</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Cancel screen sharing</source>
+        <translation>Bildschirmfreigabe abbrechen</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3167,7 +3172,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Bildschirm freigeben</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+20"/>
         <source>Screen share options</source>
         <translation>Optionen der Bildschirmfreigabe</translation>
     </message>
@@ -27073,7 +27078,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>SfuCallController</name>
     <message>
-        <location filename="../src/calls/SfuCallController.cpp" line="+633"/>
+        <location filename="../src/calls/SfuCallController.cpp" line="+637"/>
         <location line="+396"/>
         <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
@@ -27081,12 +27086,12 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location line="-559"/>
-        <location line="+929"/>
+        <location line="+933"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>Die Bildschirmfreigabe konnte nicht gestartet werden.</translation>
     </message>
     <message>
-        <location line="-798"/>
+        <location line="-802"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>Das Kamera-Portal deines Desktops hat Lightning keine Kamera angeboten. Wenn die Kamera in anderen Apps funktioniert, erlaube Lightning die Nutzung aller Geräte (in Flatseal: „All devices“) und schalte die Kamera dann erneut ein.</translation>
     </message>
@@ -27142,7 +27147,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Es ist kein Bildschirm zum Freigeben verfügbar.</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+91"/>
         <source>That display isn&apos;t connected any more.</source>
         <translation>Dieser Bildschirm ist nicht mehr verbunden.</translation>
     </message>
@@ -27243,13 +27248,13 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location line="+8"/>
-        <location line="+448"/>
+        <location line="+451"/>
         <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>Verbindung zum Anruf konnte nicht hergestellt werden.</translation>
     </message>
     <message>
-        <location line="-808"/>
+        <location line="-811"/>
         <source>The calling service is having trouble.</source>
         <translation>Der Anrufdienst hat Probleme.</translation>
     </message>
@@ -27264,7 +27269,12 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Das Fenster, das du freigegeben hast, wurde geschlossen.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+2"/>
+        <source>Screen sharing stopped: what you were sharing is no longer available.</source>
+        <translation>Bildschirmfreigabe beendet: Was du geteilt hast, ist nicht mehr verfügbar.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Your camera stopped.</source>
         <translation>Deine Kamera wurde angehalten.</translation>
     </message>
@@ -27397,12 +27407,12 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Du kannst deinen Bildschirm freigeben, sobald der Anruf wieder verbunden ist.</translation>
     </message>
     <message>
-        <location line="+764"/>
+        <location line="+766"/>
         <source>Call audio stopped: this computer&apos;s sound output disconnected. It resumes when an output is available again; if it does not, leave and rejoin the call.</source>
         <translation>Anruf-Audio gestoppt: Die Tonausgabe dieses Computers wurde getrennt. Es läuft weiter, sobald wieder eine Ausgabe verfügbar ist; falls nicht, verlasse den Anruf und tritt erneut bei.</translation>
     </message>
     <message>
-        <location line="+2172"/>
+        <location line="+2175"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>Der Ton der Bildschirmfreigabe ist aus: Diesem Paket fehlen die nötigen Audioaufnahme-Plugins.</translation>
     </message>
@@ -27472,7 +27482,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Gerade ist nichts zu hören.</translation>
     </message>
     <message>
-        <location line="+371"/>
+        <location line="+385"/>
         <source>The call was declined.</source>
         <translation>Der Anruf wurde abgelehnt.</translation>
     </message>
@@ -33271,7 +33281,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location line="+21"/>
-        <location filename="../qml/TimelinePane.qml" line="+7103"/>
+        <location filename="../qml/TimelinePane.qml" line="+7106"/>
         <source>Remove</source>
         <translation>Entfernen</translation>
     </message>
@@ -33315,8 +33325,8 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location line="+29"/>
-        <location filename="../qml/TimelinePane.qml" line="-5887"/>
-        <location line="+5404"/>
+        <location filename="../qml/TimelinePane.qml" line="-5890"/>
+        <location line="+5407"/>
         <source>Space</source>
         <translation>Space</translation>
     </message>
@@ -33340,8 +33350,8 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location filename="../qml/SpaceLobby.qml" line="+141"/>
-        <location filename="../qml/TimelinePane.qml" line="-6239"/>
-        <location line="+6879"/>
+        <location filename="../qml/TimelinePane.qml" line="-6242"/>
+        <location line="+6882"/>
         <source>Room</source>
         <translation>Raum</translation>
     </message>
@@ -33395,7 +33405,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>%1 auswählen</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-6472"/>
+        <location filename="../qml/TimelinePane.qml" line="-6475"/>
         <source>Seen by 1 person</source>
         <translation>Von 1 Person gesehen</translation>
     </message>
@@ -33521,12 +33531,12 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     <message>
         <location line="+16"/>
         <location line="+2"/>
-        <location line="+3872"/>
+        <location line="+3875"/>
         <source>Room information</source>
         <translation>Rauminformationen</translation>
     </message>
     <message>
-        <location line="-3861"/>
+        <location line="-3864"/>
         <location line="+1"/>
         <source>More room actions</source>
         <translation>Weitere Raumaktionen</translation>
@@ -33777,7 +33787,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Die Suche konnte nicht abgeschlossen werden.</translation>
     </message>
     <message>
-        <location line="+2725"/>
+        <location line="+2728"/>
         <location line="+27"/>
         <location line="+455"/>
         <source>Loading older messages…</source>
@@ -34180,7 +34190,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Dateien zum Anhängen hier ablegen</translation>
     </message>
     <message>
-        <location line="-5442"/>
+        <location line="-5445"/>
         <source>Join space</source>
         <translation>Space beitreten</translation>
     </message>

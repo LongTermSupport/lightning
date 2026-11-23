@@ -418,9 +418,12 @@ private Q_SLOTS:
         QTest::keyClick(m_window, Qt::Key_Backspace);
         QTRY_COMPARE(m_model->folder(),
                      QUrl::fromLocalFile(QDir::cleanPath(dir.path())));
-        QTRY_COMPARE(list->property("currentIndex").toInt(),
-                     m_model->indexOfName(QStringLiteral("sub")));
-        QTRY_VERIFY(m_model->indexOfName(QStringLiteral("a.txt")) >= 0);
+        // The folder we left is reselected in a callLater after the reset;
+        // typing before it runs is overwritten by it.
+        QTRY_VERIFY(m_dialog->property("pendingSelect").toString().isEmpty());
+        QVERIFY(m_model->indexOfName(QStringLiteral("a.txt")) >= 0);
+        QCOMPARE(list->property("currentIndex").toInt(),
+                 m_model->indexOfName(QStringLiteral("sub")));
         QTRY_VERIFY(list->property("activeFocus").toBool());
 
         QTest::keyClick(m_window, Qt::Key_A);
@@ -434,6 +437,33 @@ private Q_SLOTS:
                  QList<QUrl>{QUrl::fromLocalFile(QDir::cleanPath(dir.path())
                                                  + QStringLiteral("/a.txt"))});
         m_answers.clear();
+    }
+
+    void typeAheadStartsOverInAFolderJustEntered()
+    {
+        QTemporaryDir dir;
+        QVERIFY(dir.isValid());
+        QVERIFY(QDir(dir.path()).mkdir(QStringLiteral("sub")));
+        touch(dir.path() + QStringLiteral("/sub/inner.txt"));
+        touch(dir.path() + QStringLiteral("/a.txt"));
+        request({{QStringLiteral("mode"), QStringLiteral("open")},
+                 {QStringLiteral("folder"), QUrl::fromLocalFile(dir.path())}});
+        QTRY_COMPARE(m_model->rowCount(), 2);
+        QTRY_VERIFY(!m_dialog->property("resetting").toBool());
+        QObject *list = child("fileChooserList");
+        QVERIFY(list);
+        QMetaObject::invokeMethod(list, "forceActiveFocus");
+        QTRY_VERIFY(list->property("activeFocus").toBool());
+
+        QTest::keyClick(m_window, Qt::Key_S);
+        QTRY_COMPARE(list->property("currentIndex").toInt(),
+                     m_model->indexOfName(QStringLiteral("sub")));
+        QTest::keyClick(m_window, Qt::Key_Return);
+        QTRY_COMPARE(m_model->indexOfName(QStringLiteral("inner.txt")), 0);
+        QTRY_VERIFY(!m_dialog->property("resetting").toBool());
+        QTRY_VERIFY(list->property("activeFocus").toBool());
+        QTest::keyClick(m_window, Qt::Key_I);
+        QTRY_COMPARE(list->property("currentIndex").toInt(), 0);
     }
 
     void openManyReturnsEverySelectedFile()

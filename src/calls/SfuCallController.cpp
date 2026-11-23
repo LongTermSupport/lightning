@@ -601,16 +601,20 @@ void SfuCallController::setScreenCastPortal(ScreenCastPortal *portal)
                     closePortalFd(pipewireFd);
                     if (m_portal)
                         m_portal->cancel();
+                    Q_EMIT mediaStateChanged();
                     if (reconnecting)
                         Q_EMIT callFailed(shareWhileReconnectingMessage());
                 }
             });
-    connect(m_portal, &ScreenCastPortal::cancelled, this, [] {
+    connect(m_portal, &ScreenCastPortal::cancelled, this, [this] {
+        qCInfo(lcSfuCall) << "screen share declined in the portal";
+        Q_EMIT mediaStateChanged();
     });
     connect(m_portal, &ScreenCastPortal::failed, this,
             [this](const QString &category) {
                 qCWarning(lcSfuCall) << "screen share portal failed category="
                                      << category;
+                Q_EMIT mediaStateChanged();
 #if defined(HAVE_LIGHTNING_WEBRTC) && !defined(Q_OS_WIN) && !defined(Q_OS_MACOS)
                 if (active()
                     && portalFailureFallsBackToDisplays(
@@ -1197,8 +1201,8 @@ void SfuCallController::requestScreenShare()
 #endif
     if (m_screenSharing)
         stopScreenShare();
-    if (!m_portal.isNull() && m_portal->busy()) {
-        qCInfo(lcSfuCall) << "screen share already being chosen; ignoring";
+    if (screenShareStarting()) {
+        stopScreenShare();
         return;
     }
     qCInfo(lcSfuCall) << "screen share requested";
@@ -1275,6 +1279,7 @@ void SfuCallController::requestScreenShare()
             ScreenCastPortal::Monitor | ScreenCastPortal::Window,
             x11FallbackPossible ? kX11PortalPreparationBoundMs : 0,
             x11FallbackPossible ? kX11PortalPickerBoundMs : 0);
+        Q_EMIT mediaStateChanged();
         return;
     }
     case LinuxShareRoute::FallbackDisplays:
@@ -1560,6 +1565,9 @@ QString SfuCallController::userFacingError(const QString &category) const
                   "couldn't connect to it.");
     if (category == QLatin1String("screen_share_source_closed"))
         return tr("The window you were sharing was closed.");
+    if (category == QLatin1String("screen_share_source_lost"))
+        return tr("Screen sharing stopped: what you were sharing is no "
+                  "longer available.");
     if (category.startsWith(QLatin1String("screen_share")))
         return tr("Screen sharing couldn't start.");
     if (category == QLatin1String("camera_source_closed"))
@@ -2426,8 +2434,10 @@ void SfuCallController::beginReconnect(const QString &reason)
         m_reconnectClock.start();
         m_reconnectDeadlineTimer.start();
         setState(State::Reconnecting);
-        if (m_portal && m_portal->busy())
+        if (m_portal && m_portal->busy()) {
             m_portal->cancel();
+            Q_EMIT mediaStateChanged();
+        }
         if (!m_screenShareSources.isEmpty()) {
             m_screenShareSources.clear();
             Q_EMIT screenShareSourcesChanged();
@@ -3753,6 +3763,9 @@ void SfuCallController::noteParticipantIdentities()
         if (!receiver.isNull())
             receiver->retainReceiveNames(QSet<QString>(keyed).unite(live.value(receiver.data())));
     }
+    if (!qEnvironmentVariableIsEmpty("LIGHTNING_CALL_TRACE"))
+        qCInfo(lcSfuCall) << "media key rings keyed=" << m_inboundRingKeys.size()
+                          << "parked=" << m_parkedKeys.size();
 #endif
 }
 
@@ -5347,12 +5360,26 @@ QString SfuCallController::shareAudioStatusText(const ShareAudioStatusInput &in)
     return what + QLatin1Char(' ') + notes.join(QLatin1Char(' '));
 }
 
+bool SfuCallController::screenShareStarting() const
+{
+    return !m_screenSharing && m_portal && m_portal->busy();
+}
+
 void SfuCallController::stopScreenShare()
 {
 #ifdef HAVE_LIGHTNING_WEBRTC
     withdrawNotice(std::exchange(m_shareNotice, {}));
-    if (!m_screenSharing || m_engine.isNull())
+    if (screenShareStarting()) {
+        qCInfo(lcSfuCall) << "screen share start cancelled";
+        m_portal->cancel();
+        Q_EMIT mediaStateChanged();
         return;
+    }
+    if (!m_screenSharing || m_engine.isNull()) {
+        qCInfo(lcSfuCall) << "screen share stop: nothing is being shared";
+        Q_EMIT mediaStateChanged();
+        return;
+    }
     unpublishTrack(m_screenCid);
     if (!m_shareAudioCid.isEmpty()) {
         unpublishTrack(m_shareAudioCid);

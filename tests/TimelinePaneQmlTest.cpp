@@ -22,6 +22,7 @@
 #include <QQuickWindow>
 #include <QSignalSpy>
 #include <QTimer>
+#include <QTimeZone>
 #include <QPointer>
 #include <QScopeGuard>
 #include <QTemporaryDir>
@@ -1790,18 +1791,9 @@ private Q_SLOTS:
         return timeline;
     }
 
-    double pointerEventMicros(int rows, bool hover)
+    static double pointerBatchMicros(QQuickWindow &window, bool hover, int events)
     {
-        AppController controller(AppController::MockBackend);
-        QQmlApplicationEngine engine;
-        QQuickWindow window;
-        QQuickItem *timeline =
-            deepHistoryPane(controller, engine, window, rows, 0.5);
-        if (!timeline)
-            return -1;
-        QTest::qWait(300);
         const QPointF pos(window.width() / 2.0, window.height() / 2.0);
-        const int events = 400;
         QElapsedTimer t;
         t.start();
         for (int i = 0; i < events; ++i) {
@@ -1824,10 +1816,32 @@ private Q_SLOTS:
 
     void pointerDeliveryCostDoesNotGrowWithLoadedRows()
     {
+        struct Pane {
+            std::unique_ptr<AppController> controller;
+            std::unique_ptr<QQmlApplicationEngine> engine;
+            std::unique_ptr<QQuickWindow> window;
+        };
+        const int sizes[3] = {500, 1000, 2000};
         for (const bool hover : {false, true}) {
-            const double n500 = pointerEventMicros(500, hover);
-            const double n1000 = pointerEventMicros(1000, hover);
-            const double n2000 = pointerEventMicros(2000, hover);
+            Pane panes[3];
+            for (int k = 0; k < 3; ++k) {
+                panes[k].controller = std::make_unique<AppController>(AppController::MockBackend);
+                panes[k].engine = std::make_unique<QQmlApplicationEngine>();
+                panes[k].window = std::make_unique<QQuickWindow>();
+                QVERIFY(deepHistoryPane(*panes[k].controller, *panes[k].engine,
+                                        *panes[k].window, sizes[k], 0.5));
+            }
+            QTest::qWait(300);
+            // Batches interleaved across the sizes, best of each: load on the
+            // machine slows a batch, never speeds one up.
+            double best[3] = {1e12, 1e12, 1e12};
+            for (int round = 0; round < 8; ++round) {
+                for (int k = 0; k < 3; ++k)
+                    best[k] = qMin(best[k], pointerBatchMicros(*panes[k].window, hover, 50));
+            }
+            const double n500 = best[0];
+            const double n1000 = best[1];
+            const double n2000 = best[2];
             qInfo("pointer delivery %s us/event: 500 rows %.1f, 1000 rows %.1f, "
                   "2000 rows %.1f", hover ? "hover" : "wheel", n500, n1000,
                   n2000);
@@ -4491,12 +4505,14 @@ false);
             QVariant result;
             QMetaObject::invokeMethod(listView, "stateGroupExpanded",
                                       Q_RETURN_ARG(QVariant, result),
-                                      Q_ARG(QVariant, groupId));
+                                      Q_ARG(QVariant, groupId),
+                                      Q_ARG(QVariant, QVariant()));
             return result.toBool();
         };
         auto toggle = [&] {
             QMetaObject::invokeMethod(listView, "toggleStateGroup",
-                                      Q_ARG(QVariant, groupId));
+                                      Q_ARG(QVariant, groupId),
+                                      Q_ARG(QVariant, QVariant()));
         };
 
         QVERIFY(!isExpanded());
@@ -7958,6 +7974,261 @@ kFilteredPages + 6);
         QTRY_VERIFY_WITH_TIMEOUT(controller.pagination()->fillStopped(), 30000);
         QVERIFY2(controller.pagination()->fillStopped(),
                  "an unending filtered run must still stop the automatic fill");
+    }
+
+    static QList<TimelineEvent> collapsingPage(const QDateTime &newest,
+                                               int count, bool redacted)
+    {
+        QList<TimelineEvent> page;
+        for (int i = count - 1; i >= 0; --i) {
+            TimelineEvent e;
+            e.sender = QStringLiteral("@dave:mock.local");
+            e.senderDisplayName = QStringLiteral("Dave");
+            e.timestamp = newest.addSecs(-i);
+            if (redacted) {
+                e.type = TimelineEvent::TextMessage;
+                e.status = TimelineEvent::Sent;
+                e.redacted = true;
+            } else {
+                e.type = TimelineEvent::StateChange;
+                e.stateKind = QStringLiteral("membership");
+                e.body = QStringLiteral("Dave joined");
+            }
+            page.append(e);
+        }
+        return page;
+    }
+
+    void anExpandedRoomUpdateGroupFollowsItsEventsAndNothingOpensUnclicked()
+    {
+        AppController controller(AppController::MockBackend);
+        QVERIFY(!loginAndRoomIdAt(controller,0).isEmpty());
+        controller.settings()->setShowRoomActivity(true);
+        auto *mock = controller.findChild<MockMatrixClient *>();
+        QVERIFY(mock != nullptr);
+        const QString roomId = QStringLiteral("!general:mock.local");
+
+        const QDateTime day0(QDate(2026, 3, 10), QTime(12, 0), QTimeZone::UTC);
+        auto event = [&](const QString &id, int day, int minute,
+                         TimelineEvent::Type type) {
+            TimelineEvent e;
+            e.eventId = id;
+            e.itemId = QStringLiteral("uid-") + id;
+            e.roomId = roomId;
+            e.type = type;
+            e.timestamp = day0.addDays(day).addSecs(minute * 60);
+            if (type != TimelineEvent::DateDivider) {
+                e.sender = QStringLiteral("@alice:mock.local");
+                e.senderDisplayName = QStringLiteral("Alice");
+                e.body = id;
+            }
+            if (type == TimelineEvent::StateChange)
+                e.stateKind = QStringLiteral("m.room.join_rules");
+            else if (type == TimelineEvent::TextMessage)
+                e.status = TimelineEvent::Sent;
+            return e;
+        };
+
+        QQmlApplicationEngine engine;
+        QQuickWindow window;
+        QQuickItem *timeline = nullptr;
+        QQuickItem *root = paneWithEvents(
+            controller, engine, window, roomId,
+            {event(QStringLiteral("$div2"), 2, 0, TimelineEvent::DateDivider),
+             event(QStringLiteral("$b1"), 2, 1, TimelineEvent::StateChange),
+             event(QStringLiteral("$b2"), 2, 2, TimelineEvent::StateChange)},
+            0, 620, &timeline);
+        QVERIFY(root != nullptr);
+        QVERIFY(timeline != nullptr);
+
+        auto groups = [&] {
+            QList<QQuickItem *> shown;
+            auto *model = controller.timeline();
+            for (int row = 0; row < model->rowCount(); ++row) {
+                if (!model->data(model->index(row),
+                                 TimelineModel::StateGroupLeaderRole).toBool())
+                    continue;
+                QVariant item;
+                QMetaObject::invokeMethod(
+                    timeline, "itemAtViewRow", Q_RETURN_ARG(QVariant, item),
+                    Q_ARG(QVariant, viewRowForSourceRow(timeline, row)));
+                for (auto *group : findVisualChildren(
+                         item.value<QQuickItem *>(),
+                         QStringLiteral("stateActivityGroup")))
+                    if (group->property("entryCount").toInt() > 0)
+                        shown.append(group);
+            }
+            return shown;
+        };
+        auto expandedIds = [&] {
+            QStringList ids;
+            for (auto *group : groups())
+                if (group->property("expanded").toBool())
+                    ids << group->property("groupId").toString();
+            return ids;
+        };
+
+        QTest::qWaitFor([&] { return groups().size() == 1; }, kSignalTimeoutMs);
+        QVERIFY2(groups().size() == 1,
+                 qPrintable(QStringLiteral("rows=%1 stateGroups=%2 viewRows=%3 "
+                                           "groupItems=%4 leaderEntries=%5")
+                                .arg(controller.timeline()->rowCount())
+                                .arg(controller.timeline()->stateGroupCount())
+                                .arg(timeline->property("count").toInt())
+                                .arg(findVisualChildren(
+                                         timeline,
+                                         QStringLiteral("stateActivityGroup"))
+                                         .size())
+                                .arg(controller.timeline()
+                                         ->data(controller.timeline()->index(1),
+                                                TimelineModel::StateGroupEntriesRole)
+                                         .toList().size())));
+        QCOMPARE(expandedIds(), QStringList{});
+        QVERIFY(QMetaObject::invokeMethod(groups().first(), "toggleRequested"));
+        QTRY_COMPARE_WITH_TIMEOUT(expandedIds().size(), 1, kSignalTimeoutMs);
+
+        Q_EMIT mock->eventsPrepended(
+            roomId,
+            {event(QStringLiteral("$old"), 0, 0, TimelineEvent::TextMessage),
+             event(QStringLiteral("$div1"), 1, 0, TimelineEvent::DateDivider),
+             event(QStringLiteral("$a1"), 1, 1, TimelineEvent::StateChange),
+             event(QStringLiteral("$a2"), 1, 2, TimelineEvent::StateChange)});
+        QTRY_VERIFY_WITH_TIMEOUT(
+            groups().size() == 1
+                && groups().first()->property("entryCount").toInt() == 4,
+            kSignalTimeoutMs);
+        QCoreApplication::processEvents();
+        const bool followed = groups().first()->property("expanded").toBool();
+        if (followed)
+            QVERIFY(QMetaObject::invokeMethod(groups().first(),
+                                              "toggleRequested"));
+        QTRY_COMPARE_WITH_TIMEOUT(expandedIds(), QStringList{},
+                                  kSignalTimeoutMs);
+
+        mock->appendEventForTest(
+            roomId, event(QStringLiteral("$new"), 2, 3,
+                          TimelineEvent::TextMessage));
+        QTRY_COMPARE_WITH_TIMEOUT(groups().size(), 2, kSignalTimeoutMs);
+        QCoreApplication::processEvents();
+        QCOMPARE(QStringLiteral("stayedOpenAsHistoryLoaded=%1 openedUnclicked=%2")
+                     .arg(followed).arg(expandedIds().join(u',')),
+                 QStringLiteral("stayedOpenAsHistoryLoaded=1 openedUnclicked="));
+    }
+
+    void aRoomWhoseRecentHistoryCollapsesStillFillsTheViewport()
+    {
+        AppController controller(AppController::MockBackend);
+        QVERIFY(!loginAndRoomIdAt(controller,0).isEmpty());
+        auto *mock = controller.findChild<MockMatrixClient *>();
+        QVERIFY(mock != nullptr);
+        const QString roomId = QStringLiteral("!general:mock.local");
+        mock->setPaginationDelayForTest(1);
+
+        const QDateTime noon(QDate::currentDate().addDays(-1), QTime(12, 0),
+                             QTimeZone::UTC);
+        int served = 0;
+        auto nextPage = [&] {
+            const QDateTime newest = noon.addSecs(-served - 1);
+            if (served < 300)
+                return collapsingPage(newest, 20, false);
+            if (served < 330)
+                return collapsingPage(newest, 15, true);
+            QList<TimelineEvent> real = textFixture(
+                roomId, 25, QStringLiteral("older"),
+                QStringLiteral("a real message from beyond the collapsed run, "
+                               "long enough that a page of them is taller "
+                               "than the viewport"),
+                200000 + served * 60);
+            for (auto &e : real) {
+                e.eventId.clear();
+                e.itemId.clear();
+            }
+            return real;
+        };
+        mock->setPaginationChunkForTest(nextPage());
+        connect(mock, &MatrixClient::eventsPrepended, this,
+                [&](const QString &, const QList<TimelineEvent> &events) {
+                    served += events.size();
+                    mock->setPaginationChunkForTest(nextPage());
+                });
+
+        QQmlApplicationEngine engine;
+        QQuickWindow window;
+        QQuickItem *timeline = nullptr;
+        QList<TimelineEvent> seed = textFixture(
+            roomId, 1, QStringLiteral("seed"), QStringLiteral("seed"), 0);
+        seed[0].timestamp = noon.addSecs(600);
+        QQuickItem *root = paneWithEvents(controller, engine, window, roomId,
+                                          seed, 60, 620, &timeline);
+        QVERIFY(root != nullptr);
+        QVERIFY(timeline != nullptr);
+
+        const qreal viewportHeight = timeline->property("height").toReal();
+        QVERIFY(viewportHeight > 0);
+        QTest::qWaitFor([&] {
+            return timeline->property("contentHeight").toReal()
+                    >= viewportHeight;
+        }, 60000);
+        QVERIFY2(timeline->property("contentHeight").toReal() >= viewportHeight,
+                 qPrintable(QStringLiteral(
+                     "the fill stopped at %1 px of content under a %2 px "
+                     "viewport after %3 collapsed events (%4 rows)")
+                     .arg(timeline->property("contentHeight").toReal())
+                     .arg(viewportHeight).arg(served)
+                     .arg(controller.timeline()->rowCount())));
+        QVERIFY2(served >= 330, "the fixture's collapsed run was never walked");
+    }
+
+    void anEndlessCollapsedRunStillStopsTheAutomaticFill()
+    {
+        AppController controller(AppController::MockBackend);
+        QVERIFY(!loginAndRoomIdAt(controller,0).isEmpty());
+        auto *mock = controller.findChild<MockMatrixClient *>();
+        QVERIFY(mock != nullptr);
+        const QString roomId = QStringLiteral("!general:mock.local");
+        mock->setPaginationDelayForTest(1);
+
+        const QDateTime noon(QDate::currentDate().addDays(-1), QTime(12, 0),
+                             QTimeZone::UTC);
+        int served = 0;
+        mock->setPaginationChunkForTest(collapsingPage(noon, 20, false));
+        connect(mock, &MatrixClient::eventsPrepended, this,
+                [&](const QString &, const QList<TimelineEvent> &events) {
+                    served += events.size();
+                    mock->setPaginationChunkForTest(collapsingPage(
+                        noon.addSecs(-served - 1), 20, false));
+                });
+
+        QQmlApplicationEngine engine;
+        QQuickWindow window;
+        QQuickItem *timeline = nullptr;
+        QList<TimelineEvent> seed = textFixture(
+            roomId, 1, QStringLiteral("seed"), QStringLiteral("seed"), 0);
+        seed[0].timestamp = noon.addSecs(600);
+        QQuickItem *root = paneWithEvents(controller, engine, window, roomId,
+                                          seed, 5000, 620, &timeline);
+        QVERIFY(root != nullptr);
+        QVERIFY(timeline != nullptr);
+
+        const int ceiling = timeline->property("maxViewportFillRows").toInt();
+        QVERIFY(ceiling > 0);
+        int last = -1;
+        QTRY_VERIFY_WITH_TIMEOUT([&] {
+            const int now = served;
+            const bool settled = now == last
+                    && !controller.pagination()->busy();
+            last = now;
+            if (!settled)
+                return false;
+            QTest::qWait(1500);
+            return served == now;
+        }(), 90000);
+        QVERIFY2(served > 0 && served <= ceiling + 20,
+                 qPrintable(QStringLiteral("the fill walked %1 hidden events "
+                                           "against a ceiling of %2")
+                                .arg(served).arg(ceiling)));
+        QVERIFY(timeline->property("contentHeight").toReal()
+                < timeline->property("height").toReal());
     }
 
     void anApproachThatKeepsGettingEmptyPagesStillStops()

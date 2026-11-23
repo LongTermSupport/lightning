@@ -3107,9 +3107,14 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>ক্যামেরা বেছে নিন</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+21"/>
         <source>Stop sharing your screen</source>
         <translation>আপনার স্ক্রিন শেয়ার করা বন্ধ করুন</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Cancel screen sharing</source>
+        <translation>স্ক্রিন শেয়ারিং বাতিল করুন</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3117,7 +3122,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>আপনার পর্দা শেয়ার করুন</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+20"/>
         <source>Screen share options</source>
         <translation>স্ক্রিন শেয়ার অপশন</translation>
     </message>
@@ -3188,7 +3193,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>কলটি ভাসমান উইন্ডোতে আলাদা করুন</translation>
     </message>
     <message>
-        <location line="-389"/>
+        <location line="-393"/>
         <source>Unmute microphone</source>
         <translation>মাইক্রোফোন আনমিউট করুন</translation>
     </message>
@@ -3238,7 +3243,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>আউটপুট ডিভাইস নির্বাচন করুন</translation>
     </message>
     <message>
-        <location line="+365"/>
+        <location line="+369"/>
         <source>Leave call</source>
         <translation>কল ছেড়ে দিন</translation>
     </message>
@@ -27073,7 +27078,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SfuCallController</name>
     <message>
-        <location filename="../src/calls/SfuCallController.cpp" line="+633"/>
+        <location filename="../src/calls/SfuCallController.cpp" line="+637"/>
         <location line="+396"/>
         <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
@@ -27081,12 +27086,12 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="-559"/>
-        <location line="+929"/>
+        <location line="+933"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>স্ক্রিন শেয়ারিং শুরু করা যায়নি।</translation>
     </message>
     <message>
-        <location line="-563"/>
+        <location line="-567"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>ওয়েল্যান্ডে স্ক্রিন শেয়ার করার জন্য xdg-ডেস্কটপ-পোর্টাল প্রয়োজন, এবং এটি সাড়া দিচ্ছে না। আপনার ডেস্কটপের জন্য পোর্টাল ইনস্টল বা শুরু করুন — যেমন xdg-desktop-portal-kde বা xdg-desktop-portal-gnome — তারপর আবার চেষ্টা করুন।</translation>
     </message>
@@ -27107,7 +27112,7 @@ Note: importing keys does not verify this session.</source>
         <translation>ভাগ করার জন্য কোনো প্রদর্শন উপলব্ধ নেই৷</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+91"/>
         <source>That display isn&apos;t connected any more.</source>
         <translation>সেই ডিসপ্লে আর কানেক্ট করা নেই।</translation>
     </message>
@@ -27132,7 +27137,7 @@ Note: importing keys does not verify this session.</source>
         <translation>এই কলের সেবা তার কোনো ঠিকানাতেই সময়মতো সাড়া দেয়নি।</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+45"/>
         <source>Lightning couldn&apos;t open the camera. It may be in use by another app, or unplugged.</source>
         <translation>Lightning ক্যামেরা খুলতে পারেনি। এটি অন্য কোনো অ্যাপে ব্যবহৃত হচ্ছে বা সংযোগ বিচ্ছিন্ন থাকতে পারে।</translation>
     </message>
@@ -27142,12 +27147,12 @@ Note: importing keys does not verify this session.</source>
         <translation>এই হোমসার্ভারে কলিং উপলব্ধ নেই৷</translation>
     </message>
     <message>
-        <location line="-491"/>
+        <location line="-494"/>
         <source>Too many attempts. Try again in a moment.</source>
         <translation>অনেক চেষ্টা. কিছুক্ষণের মধ্যে আবার চেষ্টা করুন।</translation>
     </message>
     <message>
-        <location line="-733"/>
+        <location line="-734"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>আপনার ডেস্কটপের ক্যামেরা পোর্টাল Lightning-কে কোনো ক্যামেরা দেয়নি। ক্যামেরা অন্য অ্যাপে কাজ করলে Lightning-কে সব ডিভাইস ব্যবহারের অনুমতি দিন (Flatseal-এ: &quot;All devices&quot;), তারপর আবার ক্যামেরা চালু করুন।</translation>
     </message>
@@ -27182,7 +27187,7 @@ Note: importing keys does not verify this session.</source>
         <translation>X11 সেশনে এই স্যান্ডবক্সড (Flatpak বা Snap) বিল্ডে স্ক্রিন শেয়ার উপলব্ধ নয়: এটি কেবল ডেস্কটপের স্ক্রিন-শেয়ারিং পোর্টালের মাধ্যমে শেয়ার করতে পারে, যা নেই, আর আপনার সিস্টেমে ইনস্টল করা GStreamer প্লাগইন স্যান্ডবক্স থেকে ব্যবহার করা যায় না। স্ক্রিন শেয়ার করতে AppImage বা Lightning-এর ডিস্ট্রিবিউশন প্যাকেজ ব্যবহার করুন, যা সরাসরি X11 স্ক্রিন ধরে, অথবা Wayland সেশনে লগ ইন করুন, যেখানে আপনার ডেস্কটপের পোর্টাল স্ক্রিন শেয়ার দেয়। আপনার ডেস্কটপের xdg-desktop-portal X11-এ স্ক্রিন কাস্টিং সমর্থন করলে সেটি ইনস্টল ও চালু আছে কি না দেখুন।</translation>
     </message>
     <message>
-        <location line="+476"/>
+        <location line="+477"/>
         <source>You don&apos;t have permission to join calls in this room. A room admin can raise your power level in it; Lightning can&apos;t change what call membership itself requires.</source>
         <translation>এই রুমের কলে যোগ দেওয়ার অনুমতি আপনার নেই। রুমের অ্যাডমিন এখানে আপনার পাওয়ার লেভেল বাড়াতে পারেন; কল সদস্যপদের নিজস্ব যে প্রয়োজন তা Lightning বদলাতে পারে না।</translation>
     </message>
@@ -27253,13 +27258,13 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+8"/>
-        <location line="+448"/>
+        <location line="+451"/>
         <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>কলে সংযোগ করা যায়নি।</translation>
     </message>
     <message>
-        <location line="-808"/>
+        <location line="-811"/>
         <source>The calling service is having trouble.</source>
         <translation>কলিং সার্ভিসে সমস্যা হচ্ছে।</translation>
     </message>
@@ -27274,7 +27279,12 @@ Note: importing keys does not verify this session.</source>
         <translation>আপনি যে উইন্ডোটি শেয়ার করছেন সেটি বন্ধ ছিল।</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+2"/>
+        <source>Screen sharing stopped: what you were sharing is no longer available.</source>
+        <translation>স্ক্রিন শেয়ারিং বন্ধ হয়েছে: আপনি যা শেয়ার করছিলেন তা আর উপলব্ধ নেই।</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Your camera stopped.</source>
         <translation>আপনার ক্যামেরা থেমে গেছে।</translation>
     </message>
@@ -27382,12 +27392,12 @@ Note: importing keys does not verify this session.</source>
         <translation>কল আবার সংযুক্ত হলে আপনি স্ক্রিন শেয়ার করতে পারবেন।</translation>
     </message>
     <message>
-        <location line="+764"/>
+        <location line="+766"/>
         <source>Call audio stopped: this computer&apos;s sound output disconnected. It resumes when an output is available again; if it does not, leave and rejoin the call.</source>
         <translation>কলের অডিও থেমে গেছে: এই কম্পিউটারের শব্দ আউটপুট বিচ্ছিন্ন হয়েছে। আউটপুট আবার পাওয়া গেলে এটি চালু হবে; না হলে কল ছেড়ে আবার যোগ দিন।</translation>
     </message>
     <message>
-        <location line="+2172"/>
+        <location line="+2175"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>স্ক্রিন শেয়ারের শব্দ বন্ধ আছে: এই প্যাকেজে প্রয়োজনীয় অডিও ক্যাপচার প্লাগইন নেই।</translation>
     </message>
@@ -27457,7 +27467,7 @@ Note: importing keys does not verify this session.</source>
         <translation>এখন কিছুই শোনা যাচ্ছে না।</translation>
     </message>
     <message>
-        <location line="+371"/>
+        <location line="+385"/>
         <source>The call was declined.</source>
         <translation>কলটি প্রত্যাখ্যান করা হয়েছে।</translation>
     </message>
@@ -27472,7 +27482,7 @@ Note: importing keys does not verify this session.</source>
         <translation>অংশগ্রহণকারী</translation>
     </message>
     <message>
-        <location line="-4591"/>
+        <location line="-4610"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>এই রুমটি এনক্রিপ্ট করা হয়েছে, এবং এনক্রিপ্ট করা কল এখনও এই বিল্ডে উপলব্ধ নেই৷</translation>
     </message>
@@ -33277,12 +33287,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location filename="../qml/SpaceLobby.qml" line="-521"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5404"/>
+        <location line="+5407"/>
         <source>Space</source>
         <translation>স্পেস</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5403"/>
+        <location filename="../qml/TimelinePane.qml" line="-5406"/>
         <source>Home</source>
         <translation>হোম</translation>
     </message>
@@ -33384,12 +33394,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="+16"/>
         <location line="+2"/>
-        <location line="+3872"/>
+        <location line="+3875"/>
         <source>Room information</source>
         <translation>রুমের তথ্য</translation>
     </message>
     <message>
-        <location line="-3861"/>
+        <location line="-3864"/>
         <location line="+1"/>
         <source>More room actions</source>
         <translation>রুমের আরও কাজ</translation>
@@ -33640,7 +33650,7 @@ Note: importing keys does not verify this session.</source>
         <translation>অনুসন্ধান সম্পূর্ণ করা যায়নি।</translation>
     </message>
     <message>
-        <location line="+2725"/>
+        <location line="+2728"/>
         <location line="+27"/>
         <location line="+455"/>
         <source>Loading older messages…</source>
@@ -34022,8 +34032,8 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+299"/>
-        <location filename="../qml/TimelinePane.qml" line="-6702"/>
-        <location line="+6879"/>
+        <location filename="../qml/TimelinePane.qml" line="-6705"/>
+        <location line="+6882"/>
         <source>Room</source>
         <translation>রুম</translation>
     </message>
@@ -34098,13 +34108,13 @@ Note: importing keys does not verify this session.</source>
         <translation>বাতিল</translation>
     </message>
     <message>
-        <location line="-5994"/>
+        <location line="-5997"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation>প্রোফাইল দেখুন</translation>
     </message>
     <message>
-        <location line="+5223"/>
+        <location line="+5226"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation>ছবি (*.png *.jpg *.jpeg *.gif *.webp *.svg)</translation>
     </message>
@@ -34180,7 +34190,7 @@ Note: importing keys does not verify this session.</source>
         <translation>সংযুক্ত করতে ফাইল ছেড়ে দিন</translation>
     </message>
     <message>
-        <location line="-5442"/>
+        <location line="-5445"/>
         <source>Join space</source>
         <translation>স্পেসে যোগ দিন</translation>
     </message>

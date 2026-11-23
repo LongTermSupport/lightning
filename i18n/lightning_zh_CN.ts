@@ -3086,9 +3086,14 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>选择相机</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+21"/>
         <source>Stop sharing your screen</source>
         <translation>停止共享您的屏幕</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Cancel screen sharing</source>
+        <translation>取消屏幕共享</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3096,7 +3101,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>分享您的屏幕</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+20"/>
         <source>Screen share options</source>
         <translation>屏幕共享选项</translation>
     </message>
@@ -3167,7 +3172,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>将通话弹出为浮动窗口</translation>
     </message>
     <message>
-        <location line="-389"/>
+        <location line="-393"/>
         <source>Unmute microphone</source>
         <translation>取消麦克风静音</translation>
     </message>
@@ -3217,7 +3222,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>选择输出设备</translation>
     </message>
     <message>
-        <location line="+365"/>
+        <location line="+369"/>
         <source>Leave call</source>
         <translation>留下电话</translation>
     </message>
@@ -26965,7 +26970,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SfuCallController</name>
     <message>
-        <location filename="../src/calls/SfuCallController.cpp" line="+633"/>
+        <location filename="../src/calls/SfuCallController.cpp" line="+637"/>
         <location line="+396"/>
         <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
@@ -26973,12 +26978,12 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="-559"/>
-        <location line="+929"/>
+        <location line="+933"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>屏幕共享无法启动。</translation>
     </message>
     <message>
-        <location line="-563"/>
+        <location line="-567"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>Wayland 上的屏幕共享需要 xdg-desktop-portal，但它没有响应。安装或启动桌面门户（例如 xdg-desktop-portal-kde 或 xdg-desktop-portal-gnome），然后重试。</translation>
     </message>
@@ -26999,7 +27004,7 @@ Note: importing keys does not verify this session.</source>
         <translation>没有可供共享的显示。</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+91"/>
         <source>That display isn&apos;t connected any more.</source>
         <translation>该显示器不再连接。</translation>
     </message>
@@ -27024,7 +27029,7 @@ Note: importing keys does not verify this session.</source>
         <translation>此通话的服务在其任何地址上都没有及时响应。</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+45"/>
         <source>Lightning couldn&apos;t open the camera. It may be in use by another app, or unplugged.</source>
         <translation>Lightning 无法打开摄像头。它可能正被其他应用使用，或已被拔出。</translation>
     </message>
@@ -27034,12 +27039,12 @@ Note: importing keys does not verify this session.</source>
         <translation>此家庭服务器上无法进行呼叫。</translation>
     </message>
     <message>
-        <location line="-491"/>
+        <location line="-494"/>
         <source>Too many attempts. Try again in a moment.</source>
         <translation>尝试次数太多。稍后再试一次。</translation>
     </message>
     <message>
-        <location line="-733"/>
+        <location line="-734"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>你桌面的摄像头门户没有向 Lightning 提供摄像头。如果其他应用中摄像头可以工作，请允许 Lightning 使用所有设备（在 Flatseal 中：“All devices”），然后重新开启摄像头。</translation>
     </message>
@@ -27074,7 +27079,7 @@ Note: importing keys does not verify this session.</source>
         <translation>在 X11 会话中，此沙盒版本（Flatpak 或 Snap）无法进行屏幕共享：它只能通过桌面的屏幕共享门户进行共享，而该门户不可用，并且系统上安装的 GStreamer 插件无法从沙盒内使用。要共享屏幕，请使用 Lightning 的 AppImage 或发行版软件包（它们可直接捕获 X11 屏幕），或登录 Wayland 会话，此时桌面门户可提供屏幕共享。如果你桌面的 xdg-desktop-portal 支持在 X11 上进行屏幕投射，请确保它已安装并正在运行。</translation>
     </message>
     <message>
-        <location line="+476"/>
+        <location line="+477"/>
         <source>You don&apos;t have permission to join calls in this room. A room admin can raise your power level in it; Lightning can&apos;t change what call membership itself requires.</source>
         <translation>你无权加入此房间中的通话。房间管理员可以提高你在其中的权限级别；Lightning 无法更改通话成员资格本身的要求。</translation>
     </message>
@@ -27145,13 +27150,13 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+8"/>
-        <location line="+448"/>
+        <location line="+451"/>
         <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>无法接通通话。</translation>
     </message>
     <message>
-        <location line="-808"/>
+        <location line="-811"/>
         <source>The calling service is having trouble.</source>
         <translation>呼叫服务出现问题。</translation>
     </message>
@@ -27166,7 +27171,12 @@ Note: importing keys does not verify this session.</source>
         <translation>您共享的窗口已关闭。</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+2"/>
+        <source>Screen sharing stopped: what you were sharing is no longer available.</source>
+        <translation>屏幕共享已停止：你共享的内容已不可用。</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Your camera stopped.</source>
         <translation>你的相机停了下来。</translation>
     </message>
@@ -27274,12 +27284,12 @@ Note: importing keys does not verify this session.</source>
         <translation>通话重新连接后，你即可共享屏幕。</translation>
     </message>
     <message>
-        <location line="+764"/>
+        <location line="+766"/>
         <source>Call audio stopped: this computer&apos;s sound output disconnected. It resumes when an output is available again; if it does not, leave and rejoin the call.</source>
         <translation>通话声音已停止：此电脑的声音输出已断开。当有可用输出时将恢复；如果没有恢复，请离开并重新加入通话。</translation>
     </message>
     <message>
-        <location line="+2172"/>
+        <location line="+2175"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>屏幕共享声音已关闭：此软件包缺少所需的音频捕获插件。</translation>
     </message>
@@ -27349,7 +27359,7 @@ Note: importing keys does not verify this session.</source>
         <translation>当前没有听到任何声音。</translation>
     </message>
     <message>
-        <location line="+371"/>
+        <location line="+385"/>
         <source>The call was declined.</source>
         <translation>通话已被拒绝。</translation>
     </message>
@@ -27364,7 +27374,7 @@ Note: importing keys does not verify this session.</source>
         <translation>参与者</translation>
     </message>
     <message>
-        <location line="-4591"/>
+        <location line="-4610"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>该房间已加密，并且在此版本中尚不支持加密呼叫。</translation>
     </message>
@@ -33115,12 +33125,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location filename="../qml/SpaceLobby.qml" line="-521"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5404"/>
+        <location line="+5407"/>
         <source>Space</source>
         <translation>空间</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5403"/>
+        <location filename="../qml/TimelinePane.qml" line="-5406"/>
         <source>Home</source>
         <translation>主页</translation>
     </message>
@@ -33222,12 +33232,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="+16"/>
         <location line="+2"/>
-        <location line="+3872"/>
+        <location line="+3875"/>
         <source>Room information</source>
         <translation>房间信息</translation>
     </message>
     <message>
-        <location line="-3861"/>
+        <location line="-3864"/>
         <location line="+1"/>
         <source>More room actions</source>
         <translation>更多房间操作</translation>
@@ -33478,7 +33488,7 @@ Note: importing keys does not verify this session.</source>
         <translation>搜索无法完成。</translation>
     </message>
     <message>
-        <location line="+2725"/>
+        <location line="+2728"/>
         <location line="+27"/>
         <location line="+455"/>
         <source>Loading older messages…</source>
@@ -33856,8 +33866,8 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+299"/>
-        <location filename="../qml/TimelinePane.qml" line="-6702"/>
-        <location line="+6879"/>
+        <location filename="../qml/TimelinePane.qml" line="-6705"/>
+        <location line="+6882"/>
         <source>Room</source>
         <translation>房间</translation>
     </message>
@@ -33928,13 +33938,13 @@ Note: importing keys does not verify this session.</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location line="-5994"/>
+        <location line="-5997"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation>查看个人资料</translation>
     </message>
     <message>
-        <location line="+5223"/>
+        <location line="+5226"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation>图片 (*.png *.jpg *.jpeg *.gif *.webp *.svg)</translation>
     </message>
@@ -34010,7 +34020,7 @@ Note: importing keys does not verify this session.</source>
         <translation>拖放文件以添加附件</translation>
     </message>
     <message>
-        <location line="-5442"/>
+        <location line="-5445"/>
         <source>Join space</source>
         <translation>加入空间</translation>
     </message>

@@ -337,7 +337,18 @@ void PaginationController::saveScrollAnchor(const QString &roomId,
     if (m_scrollAnchors.size() >= kMaxScrollAnchors
         && !m_scrollAnchors.contains(key))
         m_scrollAnchors.erase(m_scrollAnchors.begin());
-    m_scrollAnchors.insert(key, { eventId, pixelOffset, followingLatest });
+    int rowsFromNewest = -1;
+    const int row = (m_timelineModel && roomId == m_roomId && !eventId.isEmpty())
+        ? m_timelineModel->rowForStableId(eventId) : -1;
+    if (row >= 0) {
+        rowsFromNewest = m_timelineModel->rowCount() - 1 - row;
+    } else {
+        const auto known = m_scrollAnchors.constFind(key);
+        if (known != m_scrollAnchors.cend() && known->eventId == eventId)
+            rowsFromNewest = known->rowsFromNewest;
+    }
+    m_scrollAnchors.insert(key, { eventId, pixelOffset, followingLatest,
+                                  rowsFromNewest });
 }
 
 void PaginationController::saveFollowingLatest(const QString &roomId)
@@ -442,6 +453,8 @@ void PaginationController::restoreConversation(const QString &roomId,
     m_navigationPurpose = NavigationPurpose::Restore;
     m_navigationEventId = selection;
     m_navigationBatches = 0;
+    m_restoreWalk.start();
+    m_restoreRows = -1;
     m_restoreIsSelection = true;
     m_restoreOffset = offset;
     request(Reason::Navigation);
@@ -470,6 +483,10 @@ void PaginationController::restoreScrollAnchor(const QString &roomId)
     m_navigationPurpose = NavigationPurpose::Restore;
     m_navigationEventId = it->eventId;
     m_navigationBatches = 0;
+    m_restoreWalk.start();
+    m_restoreRows = it->rowsFromNewest;
+    if (m_restoreRows > kRestoreReachRows && restoreThroughContext())
+        return;
     request(Reason::Navigation);
     if (!m_requestActive && m_client
         && m_client->paginationReady(m_roomId))
@@ -839,9 +856,10 @@ void PaginationController::continueNavigation(bool hitStart)
         locateNavigationTarget(row);
         return;
     }
-    const int budget = m_navigationPurpose == NavigationPurpose::Reply
-        ? m_jumpBatchBudget : kMaxNavigationBatches;
-    if (hitStart || ++m_navigationBatches >= budget) {
+    ++m_navigationBatches;
+    const bool spent = m_navigationPurpose == NavigationPurpose::Reply
+        ? m_navigationBatches >= m_jumpBatchBudget : restoreWalkSpent();
+    if (hitStart || spent) {
         // Walked pages come from the local event cache; /context only for
         // what they cannot reach.
         if (!hitStart && m_navigationPurpose == NavigationPurpose::Restore
@@ -853,6 +871,16 @@ void PaginationController::continueNavigation(bool hitStart)
     request(Reason::Navigation);
     if (!m_requestActive)
         failNavigation();
+}
+
+bool PaginationController::restoreWalkSpent() const
+{
+    if (m_restoreRows < 0 || m_restoreRows > kRestoreReachRows)
+        return m_navigationBatches >= kMaxNavigationBatches;
+    if (m_navigationBatches >= kMaxRestoreBatches)
+        return true;
+    return m_navigationBatches >= kMaxNavigationBatches
+        && m_restoreWalk.elapsed() >= kRestoreWalkBudgetMs;
 }
 
 void PaginationController::locateNavigationTarget(int row)

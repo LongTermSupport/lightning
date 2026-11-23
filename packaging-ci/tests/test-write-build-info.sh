@@ -62,9 +62,9 @@ inv() { jq -c "$1" "$J" 2>/dev/null; }
     && note "the declared system dependencies are recorded" || bad "system dependencies"
 [[ "$(inv '.component_inventory[0].rust_lock_packages | length')" == "$(grep -c '^\[\[package\]\]' "$REPO/rust/Cargo.lock")" ]] \
     && note "every Cargo.lock package is listed" || bad "Cargo.lock package count"
-[[ "$(inv '[.component_inventory[0].rust_lock_packages[] | select(.name == "matrix-sdk")][0] | [.version, (.source | startswith("registry+")), (.checksum | length)]')" \
-   == "[\"$(awk '/^name = "matrix-sdk"$/{getline; gsub(/"/, "", $3); print $3; exit}' "$REPO/rust/Cargo.lock")\",true,64]" ]] \
-    && note "a crate carries its version, source and checksum" || bad "matrix-sdk entry"
+[[ "$(inv '[.component_inventory[0].rust_lock_packages[] | select(.name == "matrix-sdk-base")][0] | [.version, (.source | startswith("registry+")), (.checksum | length)]')" \
+   == "[\"$(awk '/^name = "matrix-sdk-base"$/{getline; gsub(/"/, "", $3); print $3; exit}' "$REPO/rust/Cargo.lock")\",true,64]" ]] \
+    && note "a crate carries its version, source and checksum" || bad "matrix-sdk-base entry"
 ! grep -qF "$WORK" "$J" && note "no builder path in build-info.json" || bad "a builder path leaked into build-info.json"
 
 printf '== a .deb with no binary ==\n'
