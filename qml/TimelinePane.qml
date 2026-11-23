@@ -4577,7 +4577,9 @@ Rectangle {
                         var maxY = timeline.wheelMaxY()
                         // Rows that add no height leave the reader pinned at
                         // the oldest row, where no approach ever ends.
-                        if (towardsOlder && !canMove) {
+                        // Momentum after the fingers lift is not the reader asking.
+                        if (event.phase === Qt.ScrollMomentum) {
+                        } else if (towardsOlder && !canMove) {
                             if (timeline.wheelPinnedAtTop) {
                                 timeline.renewPinnedTopBudget()
                             } else {

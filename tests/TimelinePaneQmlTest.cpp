@@ -8274,6 +8274,63 @@ kFilteredPages + 6);
                 > timeline->property("height").toReal());
     }
 
+    void momentumAtTheOldestRowDoesNotKeepLoading()
+    {
+        AppController controller(AppController::MockBackend);
+        QVERIFY(!loginAndRoomIdAt(controller,0).isEmpty());
+        auto *mock = controller.findChild<MockMatrixClient *>();
+        QVERIFY(mock != nullptr);
+        const QString roomId = QStringLiteral("!general:mock.local");
+        mock->setPaginationDelayForTest(1);
+
+        const QDateTime noon(QDate::currentDate().addDays(-1), QTime(12, 0),
+                             QTimeZone::UTC);
+        int served = 0;
+        mock->setPaginationChunkForTest(collapsingPage(noon, 20, false));
+        connect(mock, &MatrixClient::eventsPrepended, this,
+                [&](const QString &, const QList<TimelineEvent> &events) {
+                    served += events.size();
+                    mock->setPaginationChunkForTest(collapsingPage(
+                        noon.addSecs(-served - 1), 20, false));
+                });
+
+        QQmlApplicationEngine engine;
+        QQuickWindow window;
+        QQuickItem *timeline = nullptr;
+        QList<TimelineEvent> seed = textFixture(
+            roomId, 40, QStringLiteral("seed"),
+            QStringLiteral("a message tall enough that forty of them are "
+                           "more than one viewport of content"), 0);
+        for (int i = 0; i < seed.size(); ++i)
+            seed[i].timestamp = noon.addSecs(600 + i * 30);
+        QQuickItem *root = paneWithEvents(controller, engine, window, roomId,
+                                          seed, 5000, 620, &timeline);
+        QVERIFY(root != nullptr);
+        QVERIFY(timeline != nullptr);
+        QTRY_VERIFY_WITH_TIMEOUT(!controller.pagination()->busy(),
+                                 kSignalTimeoutMs);
+
+        QVERIFY(timeline->setProperty("stickToBottom", false));
+        QVERIFY(positionAtTopEdge(timeline));
+        const int budget =
+            timeline->property("nearTopApproachRowBudget").toInt();
+        QVERIFY(budget > 0);
+        const QPointF centre(window.width() / 2.0, window.height() / 2.0);
+        for (int frame = 0; frame < 200; ++frame) {
+            QWheelEvent wheel(centre, window.mapToGlobal(centre.toPoint()),
+                              QPoint(0, 24), QPoint(0, 288), Qt::NoButton,
+                              Qt::NoModifier, Qt::ScrollMomentum, false);
+            QCoreApplication::sendEvent(&window, &wheel);
+            QCoreApplication::processEvents();
+            QTest::qWait(20);
+        }
+        QTest::qWait(400);
+        QVERIFY2(served <= budget + 40,
+                 qPrintable(QStringLiteral(
+                     "momentum frames alone loaded %1 collapsed events past a "
+                     "budget of %2").arg(served).arg(budget)));
+    }
+
     void anApproachThatKeepsGettingEmptyPagesStillStops()
     {
         AppController controller(AppController::MockBackend);
