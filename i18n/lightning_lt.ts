@@ -3128,9 +3128,14 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Pasirinkite fotoaparatą</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+21"/>
         <source>Stop sharing your screen</source>
         <translation>Nustokite bendrinti ekraną</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Cancel screen sharing</source>
+        <translation>Atšaukti ekrano bendrinimą</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3138,7 +3143,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Bendrinkite savo ekraną</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+20"/>
         <source>Screen share options</source>
         <translation>Ekrano bendrinimo parinktys</translation>
     </message>
@@ -3209,7 +3214,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Iškelti skambutį į plaukiojantį langą</translation>
     </message>
     <message>
-        <location line="-389"/>
+        <location line="-393"/>
         <source>Unmute microphone</source>
         <translation>Įjungti mikrofono garsą</translation>
     </message>
@@ -3259,7 +3264,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Pasirinkite išvesties įrenginį</translation>
     </message>
     <message>
-        <location line="+365"/>
+        <location line="+369"/>
         <source>Leave call</source>
         <translation>Palikite skambutį</translation>
     </message>
@@ -27181,7 +27186,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
 <context>
     <name>SfuCallController</name>
     <message>
-        <location filename="../src/calls/SfuCallController.cpp" line="+633"/>
+        <location filename="../src/calls/SfuCallController.cpp" line="+637"/>
         <location line="+396"/>
         <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
@@ -27189,12 +27194,12 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     </message>
     <message>
         <location line="-559"/>
-        <location line="+929"/>
+        <location line="+933"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>Nepavyko pradėti bendrinti ekrano.</translation>
     </message>
     <message>
-        <location line="-563"/>
+        <location line="-567"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>Ekrano bendrinimui „Wayland“ reikia xdg-desktop-portal, ir jis nereaguoja. Įdiekite arba paleiskite darbalaukio portalą, pvz., xdg-desktop-portal-kde arba xdg-desktop-portal-gnome, tada bandykite dar kartą.</translation>
     </message>
@@ -27215,7 +27220,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Nėra ekrano, kurį būtų galima bendrinti.</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+91"/>
         <source>That display isn&apos;t connected any more.</source>
         <translation>Tas ekranas nebeprijungtas.</translation>
     </message>
@@ -27240,7 +27245,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Šio skambučio tarnyba laiku neatsakė nė vienu savo adresu.</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+45"/>
         <source>Lightning couldn&apos;t open the camera. It may be in use by another app, or unplugged.</source>
         <translation>Lightning nepavyko atidaryti kameros. Ją gali naudoti kita programa arba ji atjungta.</translation>
     </message>
@@ -27250,12 +27255,12 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Šiame namų serveryje skambinti negalima.</translation>
     </message>
     <message>
-        <location line="-491"/>
+        <location line="-494"/>
         <source>Too many attempts. Try again in a moment.</source>
         <translation>Per daug bandymų. Po akimirkos bandykite dar kartą.</translation>
     </message>
     <message>
-        <location line="-733"/>
+        <location line="-734"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>Jūsų darbalaukio kameros portalas nesiūlė „Lightning“ jokios kameros. Jei kamera veikia kitose programose, leiskite „Lightning“ naudoti visus įrenginius („Flatseal“: „All devices“), tada vėl įjunkite kamerą.</translation>
     </message>
@@ -27290,7 +27295,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Ekrano bendrinimas šioje izoliuotoje („Flatpak“ ar „Snap“) versijoje X11 seanse nepasiekiamas: jį galima bendrinti tik per darbalaukio ekrano bendrinimo portalą, o jo nėra, o jūsų sistemoje įdiegtų GStreamer papildinių iš izoliuotos aplinkos naudoti negalima. Norėdami bendrinti ekraną, naudokite „Lightning“ AppImage arba distribucijos paketą, kurie fiksuoja X11 ekraną tiesiogiai, arba prisijunkite prie Wayland seanso, kuriame ekrano bendrinimą suteikia jūsų darbalaukio portalas. Jei jūsų darbalaukio xdg-desktop-portal palaiko ekrano transliavimą X11, įsitikinkite, kad jis įdiegtas ir veikia.</translation>
     </message>
     <message>
-        <location line="+476"/>
+        <location line="+477"/>
         <source>You don&apos;t have permission to join calls in this room. A room admin can raise your power level in it; Lightning can&apos;t change what call membership itself requires.</source>
         <translation>Neturite teisės jungtis prie skambučių šiame kambaryje. Kambario administratorius gali pakelti jūsų galios lygį; „Lightning“ negali pakeisti to, ko reikalauja pats prisijungimas prie skambučio.</translation>
     </message>
@@ -27361,13 +27366,13 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     </message>
     <message>
         <location line="+8"/>
-        <location line="+448"/>
+        <location line="+451"/>
         <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>Nepavyko prisijungti prie skambučio.</translation>
     </message>
     <message>
-        <location line="-808"/>
+        <location line="-811"/>
         <source>The calling service is having trouble.</source>
         <translation>Skambinimo tarnyba turi problemų.</translation>
     </message>
@@ -27382,7 +27387,12 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Langas, kurį bendrinote, buvo uždarytas.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+2"/>
+        <source>Screen sharing stopped: what you were sharing is no longer available.</source>
+        <translation>Ekrano bendrinimas sustabdytas: tai, ką bendrinote, nebepasiekiama.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Your camera stopped.</source>
         <translation>Jūsų fotoaparatas sustojo.</translation>
     </message>
@@ -27490,7 +27500,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Ekraną galėsite bendrinti, kai skambutis vėl prisijungs.</translation>
     </message>
     <message>
-        <location line="+764"/>
+        <location line="+766"/>
         <source>Call audio stopped: this computer&apos;s sound output disconnected. It resumes when an output is available again; if it does not, leave and rejoin the call.</source>
         <translation>Skambučio garsas sustojo: šio kompiuterio garso išvestis atsijungė. Jis tęsis, kai išvestis vėl bus prieinama; jei ne, išeikite iš skambučio ir prisijunkite iš naujo.</translation>
     </message>
@@ -27565,7 +27575,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Šiuo metu nieko negirdėti.</translation>
     </message>
     <message>
-        <location line="+371"/>
+        <location line="+385"/>
         <source>The call was declined.</source>
         <translation>Skambutis atmestas.</translation>
     </message>
@@ -27580,7 +27590,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Dalyvis</translation>
     </message>
     <message>
-        <location line="-4594"/>
+        <location line="-4610"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>Šis kambarys yra užšifruotas, o šifruoti skambučiai šioje versijoje dar nepasiekiami.</translation>
     </message>

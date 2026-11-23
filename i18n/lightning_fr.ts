@@ -3107,9 +3107,14 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>Choisir l&apos;appareil photo</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+21"/>
         <source>Stop sharing your screen</source>
         <translation>Arrêtez de partager votre écran</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Cancel screen sharing</source>
+        <translation>Annuler le partage d’écran</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3117,7 +3122,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>Partagez votre écran</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+20"/>
         <source>Screen share options</source>
         <translation>Options de partage d&apos;écran</translation>
     </message>
@@ -3188,7 +3193,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>Détacher l&apos;appel dans une fenêtre flottante</translation>
     </message>
     <message>
-        <location line="-389"/>
+        <location line="-393"/>
         <source>Unmute microphone</source>
         <translation>Activer le microphone</translation>
     </message>
@@ -3238,7 +3243,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>Choisir le périphérique de sortie</translation>
     </message>
     <message>
-        <location line="+365"/>
+        <location line="+369"/>
         <source>Leave call</source>
         <translation>Quitter l&apos;appel</translation>
     </message>
@@ -27073,7 +27078,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
 <context>
     <name>SfuCallController</name>
     <message>
-        <location filename="../src/calls/SfuCallController.cpp" line="+633"/>
+        <location filename="../src/calls/SfuCallController.cpp" line="+637"/>
         <location line="+396"/>
         <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
@@ -27081,12 +27086,12 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
     </message>
     <message>
         <location line="-559"/>
-        <location line="+929"/>
+        <location line="+933"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>Le partage d&apos;écran n&apos;a pas pu démarrer.</translation>
     </message>
     <message>
-        <location line="-563"/>
+        <location line="-567"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>Le partage d&apos;écran sur Wayland nécessite xdg-desktop-portal et il ne répond pas. Installez ou démarrez le portail pour votre bureau — par exemple xdg-desktop-portal-kde ou xdg-desktop-portal-gnome — puis réessayez.</translation>
     </message>
@@ -27107,7 +27112,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Aucun affichage n&apos;est disponible pour le partage.</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+91"/>
         <source>That display isn&apos;t connected any more.</source>
         <translation>Cet écran n&apos;est plus connecté.</translation>
     </message>
@@ -27132,7 +27137,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Le service de cet appel n&apos;a répondu à temps à aucune de ses adresses.</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+45"/>
         <source>Lightning couldn&apos;t open the camera. It may be in use by another app, or unplugged.</source>
         <translation>Lightning n&apos;a pas pu ouvrir la caméra. Elle est peut-être utilisée par une autre application, ou débranchée.</translation>
     </message>
@@ -27142,12 +27147,12 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Les appels ne sont pas disponibles sur ce serveur domestique.</translation>
     </message>
     <message>
-        <location line="-491"/>
+        <location line="-494"/>
         <source>Too many attempts. Try again in a moment.</source>
         <translation>Trop de tentatives. Réessayez dans un instant.</translation>
     </message>
     <message>
-        <location line="-733"/>
+        <location line="-734"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>Le portail caméra de votre bureau n&apos;a fourni à Lightning aucune caméra. Si la caméra fonctionne dans d&apos;autres applications, autorisez Lightning à utiliser tous les périphériques (dans Flatseal : « All devices »), puis réactivez la caméra.</translation>
     </message>
@@ -27182,7 +27187,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Le partage d&apos;écran n&apos;est pas disponible dans cette version isolée (Flatpak ou Snap) sur une session X11 : il ne peut passer que par le portail de partage d&apos;écran du bureau, qui n&apos;est pas disponible, et les modules GStreamer installés sur votre système ne peuvent pas être utilisés depuis l&apos;environnement isolé. Pour partager votre écran, utilisez l&apos;AppImage ou un paquet de distribution de Lightning, qui capturent directement un écran X11, ou connectez-vous à une session Wayland, où le portail de votre bureau fournit le partage d&apos;écran. Si le xdg-desktop-portal de votre bureau gère la diffusion d&apos;écran sur X11, vérifiez qu&apos;il est installé et lancé.</translation>
     </message>
     <message>
-        <location line="+476"/>
+        <location line="+477"/>
         <source>You don&apos;t have permission to join calls in this room. A room admin can raise your power level in it; Lightning can&apos;t change what call membership itself requires.</source>
         <translation>Vous n&apos;avez pas la permission de rejoindre les appels dans ce salon. Un administrateur du salon peut augmenter votre niveau de droits ; Lightning ne peut pas modifier ce que l&apos;appartenance à l&apos;appel exige elle-même.</translation>
     </message>
@@ -27253,13 +27258,13 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
     </message>
     <message>
         <location line="+8"/>
-        <location line="+448"/>
+        <location line="+451"/>
         <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>Impossible de se connecter à l&apos;appel.</translation>
     </message>
     <message>
-        <location line="-808"/>
+        <location line="-811"/>
         <source>The calling service is having trouble.</source>
         <translation>Le service appelant rencontre des problèmes.</translation>
     </message>
@@ -27274,7 +27279,12 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>La fenêtre que vous partagiez était fermée.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+2"/>
+        <source>Screen sharing stopped: what you were sharing is no longer available.</source>
+        <translation>Partage d’écran arrêté : ce que vous partagiez n’est plus disponible.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Your camera stopped.</source>
         <translation>Votre caméra s&apos;est arrêtée.</translation>
     </message>
@@ -27382,7 +27392,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Vous pourrez partager votre écran une fois l&apos;appel reconnecté.</translation>
     </message>
     <message>
-        <location line="+764"/>
+        <location line="+766"/>
         <source>Call audio stopped: this computer&apos;s sound output disconnected. It resumes when an output is available again; if it does not, leave and rejoin the call.</source>
         <translation>Le son de l&apos;appel s&apos;est arrêté : la sortie audio de cet ordinateur s&apos;est déconnectée. Il reprend lorsqu&apos;une sortie est à nouveau disponible ; sinon, quittez l&apos;appel et rejoignez-le.</translation>
     </message>
@@ -27457,7 +27467,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Rien n&apos;est entendu en ce moment.</translation>
     </message>
     <message>
-        <location line="+371"/>
+        <location line="+385"/>
         <source>The call was declined.</source>
         <translation>L&apos;appel a été refusé.</translation>
     </message>
@@ -27472,7 +27482,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Participant</translation>
     </message>
     <message>
-        <location line="-4594"/>
+        <location line="-4610"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>Cette salle est cryptée et les appels cryptés ne sont pas encore disponibles sur cette version.</translation>
     </message>

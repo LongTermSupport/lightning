@@ -3191,9 +3191,14 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>اختر الكاميرا</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+21"/>
         <source>Stop sharing your screen</source>
         <translation>توقف عن مشاركة شاشتك</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Cancel screen sharing</source>
+        <translation>إلغاء مشاركة الشاشة</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3201,7 +3206,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>شارك شاشتك</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+20"/>
         <source>Screen share options</source>
         <translation>خيارات مشاركة الشاشة</translation>
     </message>
@@ -3272,7 +3277,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>إخراج المكالمة في نافذة عائمة</translation>
     </message>
     <message>
-        <location line="-389"/>
+        <location line="-393"/>
         <source>Unmute microphone</source>
         <translation>إلغاء كتم صوت الميكروفون</translation>
     </message>
@@ -3322,7 +3327,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>اختر جهاز الإخراج</translation>
     </message>
     <message>
-        <location line="+365"/>
+        <location line="+369"/>
         <source>Leave call</source>
         <translation>اترك المكالمة</translation>
     </message>
@@ -27505,7 +27510,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SfuCallController</name>
     <message>
-        <location filename="../src/calls/SfuCallController.cpp" line="+633"/>
+        <location filename="../src/calls/SfuCallController.cpp" line="+637"/>
         <location line="+396"/>
         <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
@@ -27513,12 +27518,12 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="-559"/>
-        <location line="+929"/>
+        <location line="+933"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>تعذر بدء مشاركة الشاشة.</translation>
     </message>
     <message>
-        <location line="-563"/>
+        <location line="-567"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>تحتاج مشاركة الشاشة على Wayland إلى xdg-desktop-portal، وهي لا تستجيب. قم بتثبيت أو تشغيل البوابة الإلكترونية لسطح المكتب لديك — على سبيل المثال xdg-desktop-portal-kde أو xdg-desktop-portal-gnome — ثم حاول مرة أخرى.</translation>
     </message>
@@ -27539,7 +27544,7 @@ Note: importing keys does not verify this session.</source>
         <translation>لا يوجد عرض متاح للمشاركة.</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+91"/>
         <source>That display isn&apos;t connected any more.</source>
         <translation>لم تعد هذه الشاشة متصلة بعد الآن.</translation>
     </message>
@@ -27564,7 +27569,7 @@ Note: importing keys does not verify this session.</source>
         <translation>لم تستجب خدمة هذه المكالمة على أيٍّ من عناوينها في الوقت المحدد.</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+45"/>
         <source>Lightning couldn&apos;t open the camera. It may be in use by another app, or unplugged.</source>
         <translation>تعذّر على Lightning فتح الكاميرا. قد تكون قيد الاستخدام من تطبيق آخر، أو غير موصولة.</translation>
     </message>
@@ -27574,12 +27579,12 @@ Note: importing keys does not verify this session.</source>
         <translation>الاتصال غير متاح على هذا الخادم المنزلي.</translation>
     </message>
     <message>
-        <location line="-491"/>
+        <location line="-494"/>
         <source>Too many attempts. Try again in a moment.</source>
         <translation>محاولات كثيرة جدًا. حاول مرة أخرى بعد قليل.</translation>
     </message>
     <message>
-        <location line="-733"/>
+        <location line="-734"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>لم تعرض بوابة الكاميرا في سطح مكتبك أي كاميرا على Lightning. إن كانت الكاميرا تعمل في تطبيقات أخرى، فاسمح لـ Lightning باستخدام كل الأجهزة (في Flatseal: «All devices»)، ثم شغّل الكاميرا مجددًا.</translation>
     </message>
@@ -27614,7 +27619,7 @@ Note: importing keys does not verify this session.</source>
         <translation>مشاركة الشاشة غير متاحة في هذا الإصدار المعزول (Flatpak أو Snap) على جلسة X11: فهي لا تعمل إلا عبر بوابة مشاركة الشاشة في سطح المكتب، ولا تتوفر أي بوابة، ولا يمكن استخدام إضافات GStreamer المثبّتة على نظامك من داخل البيئة المعزولة. لمشاركة شاشتك، استخدم AppImage أو حزمة Lightning الخاصة بتوزيعتك، فهي تلتقط شاشة X11 مباشرة، أو سجّل الدخول إلى جلسة Wayland حيث توفر بوابة سطح مكتبك مشاركة الشاشة. وإن كانت xdg-desktop-portal في سطح مكتبك تدعم بث الشاشة على X11، فتأكد من تثبيتها وتشغيلها.</translation>
     </message>
     <message>
-        <location line="+476"/>
+        <location line="+477"/>
         <source>You don&apos;t have permission to join calls in this room. A room admin can raise your power level in it; Lightning can&apos;t change what call membership itself requires.</source>
         <translation>ليست لديك صلاحية الانضمام إلى المكالمات في هذه الغرفة. يمكن لمشرف الغرفة رفع مستوى صلاحيتك فيها؛ ولا يستطيع Lightning تغيير ما تتطلبه عضوية المكالمة نفسها.</translation>
     </message>
@@ -27685,13 +27690,13 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+8"/>
-        <location line="+448"/>
+        <location line="+451"/>
         <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>تعذر الاتصال بالمكالمة.</translation>
     </message>
     <message>
-        <location line="-808"/>
+        <location line="-811"/>
         <source>The calling service is having trouble.</source>
         <translation>تواجه خدمة الاتصال مشكلة.</translation>
     </message>
@@ -27706,7 +27711,12 @@ Note: importing keys does not verify this session.</source>
         <translation>تم إغلاق النافذة التي كنت تشاركها.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+2"/>
+        <source>Screen sharing stopped: what you were sharing is no longer available.</source>
+        <translation>توقفت مشاركة الشاشة: ما كنت تشاركه لم يعد متاحًا.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Your camera stopped.</source>
         <translation>توقفت الكاميرا الخاصة بك.</translation>
     </message>
@@ -27814,7 +27824,7 @@ Note: importing keys does not verify this session.</source>
         <translation>يمكنك مشاركة شاشتك بعد أن تعيد المكالمة اتصالها.</translation>
     </message>
     <message>
-        <location line="+764"/>
+        <location line="+766"/>
         <source>Call audio stopped: this computer&apos;s sound output disconnected. It resumes when an output is available again; if it does not, leave and rejoin the call.</source>
         <translation>توقف صوت المكالمة: انقطع جهاز إخراج الصوت في هذا الحاسوب. يُستأنف عندما يتوفر جهاز إخراج مجددًا؛ وإن لم يحدث ذلك، فغادر المكالمة وانضم إليها من جديد.</translation>
     </message>
@@ -27889,7 +27899,7 @@ Note: importing keys does not verify this session.</source>
         <translation>لا يُسمع شيء الآن.</translation>
     </message>
     <message>
-        <location line="+371"/>
+        <location line="+385"/>
         <source>The call was declined.</source>
         <translation>رُفضت المكالمة.</translation>
     </message>
@@ -27904,7 +27914,7 @@ Note: importing keys does not verify this session.</source>
         <translation>مشارك</translation>
     </message>
     <message>
-        <location line="-4594"/>
+        <location line="-4610"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>هذه الغرفة مشفرة، والمكالمات المشفرة غير متاحة بعد في هذا الإصدار.</translation>
     </message>

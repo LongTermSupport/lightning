@@ -3107,9 +3107,14 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>कैमरा चुनें</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+21"/>
         <source>Stop sharing your screen</source>
         <translation>अपनी स्क्रीन साझा करना बंद करें</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Cancel screen sharing</source>
+        <translation>स्क्रीन शेयरिंग रद्द करें</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3117,7 +3122,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>अपनी स्क्रीन साझा करें</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+20"/>
         <source>Screen share options</source>
         <translation>स्क्रीन शेयर विकल्प</translation>
     </message>
@@ -3188,7 +3193,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>कॉल को तैरती विंडो में निकालें</translation>
     </message>
     <message>
-        <location line="-389"/>
+        <location line="-393"/>
         <source>Unmute microphone</source>
         <translation>माइक्रोफ़ोन अनम्यूट करें</translation>
     </message>
@@ -3238,7 +3243,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>आउटपुट डिवाइस चुनें</translation>
     </message>
     <message>
-        <location line="+365"/>
+        <location line="+369"/>
         <source>Leave call</source>
         <translation>कॉल छोड़ें</translation>
     </message>
@@ -27073,7 +27078,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SfuCallController</name>
     <message>
-        <location filename="../src/calls/SfuCallController.cpp" line="+633"/>
+        <location filename="../src/calls/SfuCallController.cpp" line="+637"/>
         <location line="+396"/>
         <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
@@ -27081,12 +27086,12 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="-559"/>
-        <location line="+929"/>
+        <location line="+933"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>स्क्रीन शेयरिंग प्रारंभ नहीं हो सकी.</translation>
     </message>
     <message>
-        <location line="-563"/>
+        <location line="-567"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>वेलैंड पर स्क्रीन शेयरिंग के लिए xdg-डेस्कटॉप-पोर्टल की आवश्यकता है, और यह प्रतिक्रिया नहीं दे रहा है। अपने डेस्कटॉप के लिए पोर्टल स्थापित करें या प्रारंभ करें - उदाहरण के लिए xdg-desktop-portal-kde या xdg-desktop-portal-gnome - फिर पुनः प्रयास करें।</translation>
     </message>
@@ -27107,7 +27112,7 @@ Note: importing keys does not verify this session.</source>
         <translation>साझा करने के लिए कोई डिस्प्ले उपलब्ध नहीं है.</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+91"/>
         <source>That display isn&apos;t connected any more.</source>
         <translation>वह डिस्प्ले अब कनेक्ट नहीं है.</translation>
     </message>
@@ -27132,7 +27137,7 @@ Note: importing keys does not verify this session.</source>
         <translation>इस कॉल की सेवा ने अपने किसी भी पते पर समय पर उत्तर नहीं दिया।</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+45"/>
         <source>Lightning couldn&apos;t open the camera. It may be in use by another app, or unplugged.</source>
         <translation>Lightning कैमरा नहीं खोल सका। हो सकता है वह किसी दूसरे ऐप में उपयोग में हो, या निकाला हुआ हो।</translation>
     </message>
@@ -27142,12 +27147,12 @@ Note: importing keys does not verify this session.</source>
         <translation>इस होमसर्वर पर कॉलिंग उपलब्ध नहीं है.</translation>
     </message>
     <message>
-        <location line="-491"/>
+        <location line="-494"/>
         <source>Too many attempts. Try again in a moment.</source>
         <translation>बहुत अधिक प्रयास. थोड़ी देर में पुनः प्रयास करें.</translation>
     </message>
     <message>
-        <location line="-733"/>
+        <location line="-734"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>आपके डेस्कटॉप के कैमरा पोर्टल ने Lightning को कोई कैमरा नहीं दिया। यदि कैमरा अन्य ऐप में काम करता है, तो Lightning को सभी डिवाइस इस्तेमाल करने दें (Flatseal में: &quot;All devices&quot;), फिर कैमरा दोबारा चालू करें।</translation>
     </message>
@@ -27182,7 +27187,7 @@ Note: importing keys does not verify this session.</source>
         <translation>X11 सत्र में इस सैंडबॉक्स वाले (Flatpak या Snap) बिल्ड में स्क्रीन शेयरिंग उपलब्ध नहीं है: यह केवल डेस्कटॉप के स्क्रीन-शेयरिंग पोर्टल से साझा कर सकता है, जो उपलब्ध नहीं है, और आपके सिस्टम पर इंस्टॉल GStreamer प्लगइन सैंडबॉक्स से इस्तेमाल नहीं हो सकते। अपनी स्क्रीन साझा करने के लिए Lightning का AppImage या डिस्ट्रीब्यूशन पैकेज इस्तेमाल करें, जो X11 स्क्रीन सीधे कैप्चर करते हैं, या Wayland सत्र में लॉग इन करें, जहाँ आपके डेस्कटॉप का पोर्टल स्क्रीन शेयरिंग देता है। यदि आपका xdg-desktop-portal X11 पर स्क्रीन कास्टिंग समर्थित करता है, तो सुनिश्चित करें कि वह इंस्टॉल और चालू है।</translation>
     </message>
     <message>
-        <location line="+476"/>
+        <location line="+477"/>
         <source>You don&apos;t have permission to join calls in this room. A room admin can raise your power level in it; Lightning can&apos;t change what call membership itself requires.</source>
         <translation>आपको इस रूम की कॉल में शामिल होने की अनुमति नहीं है। रूम का एडमिन इसमें आपका पावर लेवल बढ़ा सकता है; Lightning यह नहीं बदल सकता कि कॉल सदस्यता को स्वयं क्या चाहिए।</translation>
     </message>
@@ -27253,13 +27258,13 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+8"/>
-        <location line="+448"/>
+        <location line="+451"/>
         <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>कॉल से कनेक्ट नहीं हो सका.</translation>
     </message>
     <message>
-        <location line="-808"/>
+        <location line="-811"/>
         <source>The calling service is having trouble.</source>
         <translation>कॉलिंग सेवा में दिक्कत आ रही है.</translation>
     </message>
@@ -27274,7 +27279,12 @@ Note: importing keys does not verify this session.</source>
         <translation>जो विंडो आप साझा कर रहे थे वह बंद थी.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+2"/>
+        <source>Screen sharing stopped: what you were sharing is no longer available.</source>
+        <translation>स्क्रीन शेयरिंग रुक गई: आप जो शेयर कर रहे थे वह अब उपलब्ध नहीं है।</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Your camera stopped.</source>
         <translation>आपका कैमरा बंद हो गया.</translation>
     </message>
@@ -27382,7 +27392,7 @@ Note: importing keys does not verify this session.</source>
         <translation>कॉल के दोबारा कनेक्ट होने के बाद आप अपनी स्क्रीन साझा कर सकते हैं।</translation>
     </message>
     <message>
-        <location line="+764"/>
+        <location line="+766"/>
         <source>Call audio stopped: this computer&apos;s sound output disconnected. It resumes when an output is available again; if it does not, leave and rejoin the call.</source>
         <translation>कॉल का ऑडियो रुक गया: इस कंप्यूटर का साउंड आउटपुट डिस्कनेक्ट हो गया। आउटपुट दोबारा उपलब्ध होने पर यह फिर शुरू होता है; न हो तो कॉल छोड़कर फिर शामिल हों।</translation>
     </message>
@@ -27457,7 +27467,7 @@ Note: importing keys does not verify this session.</source>
         <translation>अभी कुछ भी सुनाई नहीं दे रहा।</translation>
     </message>
     <message>
-        <location line="+371"/>
+        <location line="+385"/>
         <source>The call was declined.</source>
         <translation>कॉल अस्वीकार कर दी गई।</translation>
     </message>
@@ -27472,7 +27482,7 @@ Note: importing keys does not verify this session.</source>
         <translation>प्रतिभागी</translation>
     </message>
     <message>
-        <location line="-4594"/>
+        <location line="-4610"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>यह रूम एन्क्रिप्टेड है, और इस बिल्ड पर एन्क्रिप्टेड कॉल अभी तक उपलब्ध नहीं हैं।</translation>
     </message>
