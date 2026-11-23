@@ -847,6 +847,8 @@ private Q_SLOTS:
         struct Seen { QString name; qreal gutter, w, h, cy; };
         QList<Seen> seen;
         QStringList missing;
+        QQuickItem *band = item("roomHeaderBand");
+        QVERIFY(band);
         const auto measure = [&](const QString &name, QQuickItem *edge,
                                  QQuickItem *button) {
             if (!edge || !button || !edge->isVisible() || !button->isVisible()
@@ -858,14 +860,15 @@ private Q_SLOTS:
                 QRectF(0, 0, edge->width(), edge->height()));
             const QRectF b = button->mapRectToScene(
                 QRectF(0, 0, button->width(), button->height()));
+            if (edge != band && name != QLatin1String("roomList")
+                && button->property("iconName").toString() != QLatin1String("close"))
+                missing << name + QStringLiteral(" (last action is not its close)");
             seen.append({ name, rtl ? b.left() - e.left() : e.right() - b.right(),
                           b.width(), b.height(), b.center().y() - e.top() });
         };
 
         QQuickItem *overflow = item("roomHeaderOverflowButton");
         QVERIFY(overflow);
-        QQuickItem *band = item("roomHeaderBand");
-        QVERIFY(band);
         const qreal overflowX = overflow->mapToItem(
             band, QPointF(overflow->width() / 2, 0)).x();
         QVERIFY2(rtl == (overflowX < band->width() / 2.0),
