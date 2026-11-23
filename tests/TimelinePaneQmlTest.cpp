@@ -8218,6 +8218,7 @@ kFilteredPages + 6);
                 < timeline->property("height").toReal());
     }
 
+private:
     // A reader at the oldest row of a tall room whose near-top budget is
     // spent, with endless pages of rows that add no height behind it.
     struct PinnedReader {
@@ -8285,6 +8286,7 @@ kFilteredPages + 6);
             .arg(r.served);
     }
 
+private Q_SLOTS:
     void aWheelAtTheOldestRowLoadsAgainAfterTheBudgetIsSpent()
     {
         PinnedReader r;
