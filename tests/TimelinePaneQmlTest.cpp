@@ -4492,12 +4492,14 @@ false);
             QVariant result;
             QMetaObject::invokeMethod(listView, "stateGroupExpanded",
                                       Q_RETURN_ARG(QVariant, result),
-                                      Q_ARG(QVariant, groupId));
+                                      Q_ARG(QVariant, groupId),
+                                      Q_ARG(QVariant, QVariant()));
             return result.toBool();
         };
         auto toggle = [&] {
             QMetaObject::invokeMethod(listView, "toggleStateGroup",
-                                      Q_ARG(QVariant, groupId));
+                                      Q_ARG(QVariant, groupId),
+                                      Q_ARG(QVariant, QVariant()));
         };
 
         QVERIFY(!isExpanded());
