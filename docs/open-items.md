@@ -1,5 +1,9 @@
 # Open items and the NOT TESTED inventory
 
+## 2026-11-24 — KNOWN LIMIT: a room misordered by an older build stays misordered
+
+The back-pagination fix prevents own known pages from being moved above a room's creation; a store an older build already misordered is not repaired, and only a fresh sign-in rebuilds it in order.
+
 ## 2026-11-24 — KNOWN LIMIT: a room export shows one revision, and a loaded-timeline export shows what the SDK selected
 
 Walked exports select edits through the shared reducer and say which edit they show; an export of the loaded timeline reports the SDK's choice, and no export carries the revision history.
