@@ -61,6 +61,12 @@ void MediaManager::openWebUrl(const QUrl &url)
         lightning::urls::openExternally(url);
 }
 
+void MediaManager::openMapLocation(double lat, double lon, const QString &provider)
+{
+    if (!lightning::urls::openMapPoint(lat, lon, provider))
+        Q_EMIT noticeReported(tr("No app could open this location."));
+}
+
 bool MediaManager::refuseWithNotice(const QUrl &url)
 {
     const QString notice = lightning::urls::refusalNotice(url);

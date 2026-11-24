@@ -455,6 +455,10 @@ TimelineEvent eventFromItemJson(const QJsonObject &item, const QString &roomId)
             item.value(QStringLiteral("locationLive")).toBool(false);
         e.locationLiveActive =
             item.value(QStringLiteral("locationLiveActive")).toBool(false);
+        e.locationTs = static_cast<qint64>(
+            item.value(QStringLiteral("locationTs")).toDouble(0));
+        e.locationLiveUntil = static_cast<qint64>(
+            item.value(QStringLiteral("locationLiveUntil")).toDouble(0));
     }
 
     if (e.type == TimelineEvent::Poll) {

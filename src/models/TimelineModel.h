@@ -169,6 +169,8 @@ public:
         ReplyToKindRole,
         ReplyToCountRole,
         SentReceiptRole,
+        LocationTsRole,
+        LocationLiveUntilRole,
     };
 
     explicit TimelineModel(QObject *parent = nullptr);

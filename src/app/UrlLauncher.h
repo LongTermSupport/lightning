@@ -24,4 +24,9 @@ bool openExternally(const QUrl &url);
 
 QProcessEnvironment childEnvironment();
 
+// A map handoff for a point: provider "geo" (the system's map app) or "osm"
+// (openstreetmap.org). Empty for an unknown provider or a point not on Earth.
+QUrl mapUrl(double lat, double lon, const QString &provider);
+bool openMapPoint(double lat, double lon, const QString &provider);
+
 }

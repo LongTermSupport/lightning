@@ -240,8 +240,8 @@ default browser (`src/media/MediaManager.cpp`, `openWebUrl`). From that point th
 browser's own privacy behaviour applies. The same holds for a room's widgets
 (opened in the browser with the user's Matrix id, display name and device id
 substituted into the widget URL where it asks for them; the widget list says
-what each will learn, see `docs/widgets.md`), for a shared location (opened on
-`www.openstreetmap.org`), for OAuth and SSO sign-in pages, and for the
+what each will learn, see `docs/widgets.md`), for a shared location (opened, when the user picks it, in the system map app
+or on `www.openstreetmap.org`; only the coordinates are sent), for OAuth and SSO sign-in pages, and for the
 "Report an issue" link (GitHub). Authenticated Matrix media URLs are
 never handed to an external application; media is fetched and decrypted through
 Lightning's own media bridge.

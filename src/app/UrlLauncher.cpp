@@ -6,6 +6,8 @@
 #include <QRegularExpression>
 #include <QUrlQuery>
 
+#include <cmath>
+
 namespace lightning::urls {
 
 QProcessEnvironment childEnvironment()
@@ -76,7 +78,7 @@ bool isOpenableExternally(const QUrl &url)
         return false;
     // Only web and mail links. Everything else (file:, javascript:, data:, and
     // Windows handlers that have been RCE vectors such as ms-msdt:) is refused
-    // here, at the single exit to ShellExecute / xdg-open.
+    // here; the only other exit is openMapPoint's geo: URI built from numbers.
     const QString scheme = url.scheme().toLower();
     if (scheme == QLatin1String("http") || scheme == QLatin1String("https"))
         return !url.host().isEmpty() && url.userInfo().isEmpty()
@@ -86,11 +88,9 @@ bool isOpenableExternally(const QUrl &url)
     return false;
 }
 
-bool openExternally(const QUrl &url)
+namespace {
+bool launch(const QUrl &url)
 {
-    if (!isOpenableExternally(url))
-        return false;
-
     const QProcessEnvironment env = childEnvironment();
     if (!env.contains(QStringLiteral("APPDIR")))
         return QDesktopServices::openUrl(url);
@@ -102,6 +102,36 @@ bool openExternally(const QUrl &url)
     if (opener.startDetached())
         return true;
     return QDesktopServices::openUrl(url);
+}
+}
+
+bool openExternally(const QUrl &url)
+{
+    return isOpenableExternally(url) && launch(url);
+}
+
+QUrl mapUrl(double lat, double lon, const QString &provider)
+{
+    if (!std::isfinite(lat) || !std::isfinite(lon) || lat < -90.0 || lat > 90.0
+        || lon < -180.0 || lon > 180.0)
+        return {};
+    const QString la = QString::number(lat, 'f', 6);
+    const QString lo = QString::number(lon, 'f', 6);
+    if (provider == QLatin1String("geo"))
+        return QUrl(QStringLiteral("geo:%1,%2").arg(la, lo));
+    if (provider == QLatin1String("osm"))
+        return QUrl(QStringLiteral(
+            "https://www.openstreetmap.org/?mlat=%1&mlon=%2#map=16/%1/%2").arg(la, lo));
+    return {};
+}
+
+bool openMapPoint(double lat, double lon, const QString &provider)
+{
+    const QUrl url = mapUrl(lat, lon, provider);
+    if (url.isEmpty())
+        return false;
+    // A geo: URI is built here from two numbers, never taken from a message.
+    return url.scheme() == QLatin1String("geo") ? launch(url) : openExternally(url);
 }
 
 }
