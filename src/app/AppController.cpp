@@ -4936,7 +4936,10 @@ void AppController::handleLiveEvent(const QString &composedRoomId,
         : composedRoomId;
     if (roomId.isEmpty())
         return;
-    if (!event.eventId.isEmpty() && !m_notifiedEventIds.insert(event.eventId))
+    // A backlog copy is never delivered, so it must not shadow a live copy.
+    if (!event.eventId.isEmpty()
+        && (event.backlog ? m_notifiedEventIds.contains(event.eventId)
+                          : !m_notifiedEventIds.insert(event.eventId)))
         return;
     if (m_presence && event.sender != m_client->currentUserId())
         m_presence->noteActivity(event.sender);
