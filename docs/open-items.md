@@ -4,6 +4,10 @@
 
 A rejected edit never notifies, but the room's @ badge reads the server's `highlight_count`, which counts the forged mention.
 
+## 2026-11-24 — KNOWN LIMIT: the @ badge cannot see a mention fetched after a limited sync
+
+An encrypted mention found by the post-gap fetch gets its summary card and Activity row, but the room's @ badge stays the SDK's count, which covers only events the sync delivered.
+
 ## 2026-11-21 — OPEN from the 0.10.7 package and real-server tests
 
 - Resend requests are sent with no loss: a received share logs `rtx` climbing with `rtxOk=0` and duplicates arriving (Linux and Windows receivers), ~30/s. Likely the pinned 40 ms retry firing on late-but-not-lost packets. Upstream NACK load and a misleading "Resend requests" count; not a media fault.
@@ -75,7 +79,7 @@ instantiated delegates or bindings per row.
 ## 2026-11-20 — ACCEPTED FOLLOW-UPS from the review of `fix-data-0107`
 
 - The threads-only room badge confirms itself from the room's event cache, so a room the server reports unread (and that the client claims is threads-only) creates its event cache if none exists. Thread replies are counted against our per-thread read receipts by timestamp, not by event order.
-- A skipped mention is fetched only when the highlight-gap tracker reports it; the tracker's first count after start-up and a room with backlog in the window report nothing, so those mentions still miss Activity.
+- A skipped mention is fetched only when the highlight-gap tracker reports it or a limited sync leaves a gap in an encrypted room; the tracker's first count after start-up and a room with backlog in the window report nothing, so those mentions still miss Activity.
 - A real change to the thread list (a re-sort after new activity) still replaces the QVariantList model and scrolls the list to its top; keeping the place there needs a list model or a contentY restore in the thread list QML.
 - L5: fetched events that fail to decrypt are dropped (`held_event_json` returns `None`): no Activity row and no late-decryption retry for them.
 - L6: `mx_rust_fetch_unread_events` has no per-room in-flight guard; it is bounded by the 2 s gap window and the 20 s timeout.

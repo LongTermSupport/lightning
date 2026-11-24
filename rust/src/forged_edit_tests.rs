@@ -273,3 +273,121 @@ fn without_the_original_only_an_encrypted_edit_or_a_plain_rooms_is_admitted() {
         Raw::from_json_string(sealed.to_string()).unwrap());
     assert!(!replacement_admitted_against(Some(&sealed), &raw, None, true));
 }
+
+fn messages_page(events: &[serde_json::Value]) -> matrix_sdk::test_utils::mocks::RoomMessagesResponseTemplate {
+    matrix_sdk::test_utils::mocks::RoomMessagesResponseTemplate::default().events(
+        events
+            .iter()
+            .map(|v| serde_json::from_value::<Raw<matrix_sdk::ruma::events::AnyTimelineEvent>>(v.clone()).unwrap())
+            .collect::<Vec<_>>(),
+    )
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn the_unread_fetch_pages_past_thirty_events_to_a_mention() {
+    let server = MatrixMockServer::new().await;
+    let (client, alice) = encrypted_room(&server).await;
+    sync(&client, vec![seal(&alice, message(ALICE, "$live", "newest", 9000)).await], "1").await;
+    let mut newest_first = Vec::new();
+    for i in (0..36u64).rev() {
+        let mut event = message(ALICE, &format!("$g{i}"), "gap line", 2000 + i);
+        if i == 2 {
+            event["content"]["m.mentions"] = json!({"user_ids": [ME]});
+        }
+        newest_first.push(seal(&alice, event).await);
+    }
+    newest_first.push(message(ME, "$mine", "my last words", 1000));
+    server.mock_room_messages().match_limit(30)
+        .ok(messages_page(&newest_first[..30]).end_token("p1")).mount().await;
+    server.mock_room_messages().match_from("p1").ok(messages_page(&newest_first[30..])).mount().await;
+
+    let room = client.get_room(room()).unwrap();
+    let tail = unread_gap_events(&room, 0).await;
+    let ids: Vec<String> = tail.iter().map(|e| e.event_id().unwrap().to_string()).collect();
+    assert_eq!(ids.len(), 36, "{ids:?}");
+    assert_eq!((ids[0].as_str(), ids[35].as_str()), ("$g0", "$g35"));
+    let verdicts = push_verdict::SyncVerdicts::default();
+    let mention = held_event_json(&room, &tail[2], true, &verdicts).await.expect("the mention");
+    assert_eq!((mention["event_id"].as_str(), mention["mentions_me"].as_bool()), (Some("$g2"), Some(true)));
+    assert_eq!(mention["is_decrypted"], true);
+
+    let recent = unread_gap_events(&room, 2020 + syncnotify::TIMESTAMP_ALLOWANCE_MS).await;
+    assert_eq!(recent.len(), 16);
+    assert_eq!(recent[0].event_id().unwrap().as_str(), "$g20");
+}
+
+async fn sync_limited(client: &Client, room: &RoomId, event: serde_json::Value, pos: &str, limited: bool) {
+    let mut response = v5::Response::new(pos.to_owned());
+    let mut entry = v5::response::Room::default();
+    entry.timeline = vec![Raw::from_json_string(event.to_string()).unwrap()];
+    entry.limited = limited;
+    response.rooms.insert(room.to_owned(), entry);
+    client
+        .process_sliding_sync_test_helper(&response, &RequestedRequiredStates::default())
+        .await
+        .unwrap();
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn a_limited_sync_reports_a_gap_only_when_it_may_hide_unread_events() {
+    let server = MatrixMockServer::new().await;
+    let client = plain_room(&server).await;
+    let events: Queue = Arc::new(Mutex::new(VecDeque::new()));
+    let watch = spawn_unread_gap_watch(&client, &events);
+    let gaps = || -> Vec<String> {
+        events
+            .lock()
+            .unwrap()
+            .iter()
+            .map(|raw| serde_json::from_str::<serde_json::Value>(raw).unwrap())
+            .filter(|row| row["type"] == "room_gap")
+            .map(|row| row["room_id"].as_str().unwrap().to_owned())
+            .collect()
+    };
+    sync_limited(&client, room_id!("!own:localhost"), message(ME, "$b", "my own", 2000), "1", true).await;
+    sync_limited(&client, room_id!("!whole:localhost"), message(ALICE, "$c", "no gap", 3000), "2", false).await;
+    sync_limited(&client, room(), message(ALICE, "$a", "after a gap", 1000), "3", true).await;
+    sync_limited(&client, room(), message(ALICE, "$d", "the same gap, still arriving", 4000), "4", true).await;
+    let done = || events.lock().unwrap().iter().filter(|raw| raw.contains("unread_fetch_done")).count();
+    let deadline = Instant::now() + Duration::from_secs(40);
+    while done() == 0 {
+        assert!(Instant::now() < deadline, "the gap was never fetched");
+        tokio::time::sleep(Duration::from_millis(20)).await;
+    }
+    tokio::time::sleep(Duration::from_millis(500)).await;
+    assert_eq!(gaps(), [ROOM]);
+    assert_eq!(done(), 1);
+    watch.abort();
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn a_forged_mention_edit_inside_the_gap_is_not_fetched_as_evidence() {
+    let server = MatrixMockServer::new().await;
+    let (client, alice) = encrypted_room(&server).await;
+    sync(&client, vec![seal(&alice, message(ALICE, "$live", "newest", 9000)).await], "1").await;
+    let mut real = message(ALICE, "$real", "a real mention", 4000);
+    real["content"]["m.mentions"] = json!({"user_ids": [ME]});
+    let page = vec![
+        seal(&alice, real).await,
+        edit(ALICE, "$forged", "$original", "FORGED words", 3000),
+        seal(&alice, message(ALICE, "$original", "original words", 2000)).await,
+        message(ME, "$mine", "my last words", 1000),
+    ];
+    server.mock_room_messages().ok(messages_page(&page)).mount().await;
+
+    let events: Queue = Arc::new(Mutex::new(VecDeque::new()));
+    let room = client.get_room(room()).unwrap();
+    enqueue_unread_gap_events(&room, 0, &events, || true).await;
+    let rows: Vec<serde_json::Value> =
+        events.lock().unwrap().iter().map(|raw| serde_json::from_str(raw).unwrap()).collect();
+    assert!(!rows.iter().any(|row| row.to_string().contains("FORGED")), "{rows:?}");
+    let (done, fetched) = rows.split_last().expect("the fetch reported its end");
+    assert_eq!((done["type"].as_str(), done["room_id"].as_str()), (Some("unread_fetch_done"), Some(ROOM)));
+    let ids: Vec<&str> = fetched.iter().map(|row| row["event"]["event_id"].as_str().unwrap()).collect();
+    assert_eq!(ids, ["$original", "$real"]);
+    for row in fetched {
+        assert_eq!((row["type"].as_str(), row["event"]["fetched"].as_bool(), row["event"]["backlog"].as_bool()),
+            (Some("timeline_event"), Some(true), Some(true)));
+    }
+    assert_eq!(fetched[1]["event"]["mentions_me"], true);
+}

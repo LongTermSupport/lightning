@@ -6779,6 +6779,9 @@ void RustSdkMatrixClient::handleRustEvent(const QJsonObject &event,
 
     if (type == QLatin1String("initial_sync_done")) {
         setInitialSyncDone(true);
+        const auto startupGaps = std::exchange(m_startupGaps, {});
+        for (auto it = startupGaps.cbegin(); it != startupGaps.cend(); ++it)
+            Q_EMIT roomHighlightsUnnotified(it.key(), it.value());
         if (!m_uploadLimitRequested && m_rustHandle) {
             m_uploadLimitRequested = true;
             takeRustString(mx_rust_fetch_upload_limit(m_rustHandle));
@@ -6793,6 +6796,15 @@ void RustSdkMatrixClient::handleRustEvent(const QJsonObject &event,
     if (type == QLatin1String("rejected_edit_highlight")) {
         m_highlightGaps.creditHighlight(event.value(QStringLiteral("room_id")).toString(),
                                         QDateTime::currentMSecsSinceEpoch());
+        return;
+    }
+    if (type == QLatin1String("room_gap")) {
+        m_highlightGaps.awaitEvidence(event.value(QStringLiteral("room_id")).toString(),
+                                      QDateTime::currentMSecsSinceEpoch());
+        return;
+    }
+    if (type == QLatin1String("unread_fetch_done")) {
+        handleUnreadFetchDone(event.value(QStringLiteral("room_id")).toString());
         return;
     }
     if (type == QLatin1String("event_redacted")) {
@@ -7390,8 +7402,22 @@ void RustSdkMatrixClient::flushHighlightGaps()
             due - now, 0, matrix::notification_producer::HighlightGapTracker::kWindowMs)));
 }
 
+void RustSdkMatrixClient::handleUnreadFetchDone(const QString &roomId)
+{
+    const int found =
+        m_highlightGaps.closeEvidence(roomId, QDateTime::currentMSecsSinceEpoch());
+    if (found <= 0)
+        return;
+    // The summary is refused before the initial sync is done; a gap found at startup ends first.
+    if (m_initialSyncDone)
+        Q_EMIT roomHighlightsUnnotified(roomId, found);
+    else if (m_startupGaps.size() < 512)
+        m_startupGaps[roomId] += found;
+}
+
 void RustSdkMatrixClient::resetNotificationProducerState()
 {
+    m_startupGaps.clear();
     m_undecryptableSeen.clear();
     m_highlightsNotified.clear();
     m_highlightGaps.reset();
@@ -7563,8 +7589,8 @@ void RustSdkMatrixClient::handleTimelineEvent(const QJsonObject &event)
         timelineEvent.senderDisplayName = displayNameFor(roomId, timelineEvent.sender);
         if (highlightsMe(timelineEvent) && !timelineEvent.undecryptable
             && !m_highlightsNotified.contains(eventId)
-            && m_highlightGaps.takeEvidence(roomId, QDateTime::currentMSecsSinceEpoch()))
-            Q_EMIT roomHighlightsUnnotified(roomId, 1);
+            && m_highlightGaps.countEvidence(roomId, QDateTime::currentMSecsSinceEpoch()))
+            m_highlightsNotified.insert(eventId, false);
         Q_EMIT liveEventObserved(roomId, timelineEvent);
         return;
     }
