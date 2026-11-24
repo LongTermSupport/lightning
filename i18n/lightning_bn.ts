@@ -1033,7 +1033,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7397"/>
+        <location filename="../src/app/AppController.cpp" line="+7457"/>
         <source>Room invitation</source>
         <translation>রুমের আমন্ত্রণ</translation>
     </message>
@@ -1154,7 +1154,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>আগত কল</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5738"/>
+        <location filename="../src/app/AppController.cpp" line="-5741"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>অ্যাকাউন্ট বদলে যাওয়ায় সাইন আউট বাতিল হয়েছে। কিছুই রিসেট হয়নি।</translation>
     </message>
@@ -1174,7 +1174,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>আপনি %1-এ একটি ভয়েস কল মিস করেছেন</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+697"/>
+        <location filename="../src/app/AppController.cpp" line="+699"/>
         <source>The room was created, but adding it to the Space failed.</source>
         <translation>রুম তৈরি হয়েছে, তবে স্পেসে যোগ করা যায়নি।</translation>
     </message>
@@ -1206,13 +1206,13 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4292"/>
-        <location line="+920"/>
+        <location line="+4293"/>
+        <location line="+942"/>
         <source>Not connected</source>
         <translation>সংযুক্ত নয়</translation>
     </message>
     <message>
-        <location line="-5253"/>
+        <location line="-5276"/>
         <source>Connecting…</source>
         <translation>সংযোগ করা হচ্ছে…</translation>
     </message>
@@ -1285,12 +1285,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4087"/>
+        <location line="+4088"/>
         <source>Not signed in.</source>
         <translation>সাইন ইন করা নেই।</translation>
     </message>
     <message>
-        <location line="-4085"/>
+        <location line="-4086"/>
         <source>Room-key import failed.</source>
         <translation>রুম-কী আমদানি ব্যর্থ হয়েছে।</translation>
     </message>
@@ -1315,28 +1315,28 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>YYYY-MM-DD ফরম্যাটে প্রকৃত তারিখ দিন; “শুরু” তারিখ “শেষ” তারিখের পরে হতে পারবে না।</translation>
     </message>
     <message>
-        <location line="-4820"/>
-        <location line="+2726"/>
+        <location line="-4854"/>
+        <location line="+2760"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
     <message>
-        <location line="-2725"/>
+        <location line="-2759"/>
         <source>This is a test notification. If you can read it, desktop notifications work.</source>
         <translation>এটি একটি পরীক্ষামূলক বিজ্ঞপ্তি। এটি পড়তে পারলে ডেস্কটপ বিজ্ঞপ্তি কাজ করছে।</translation>
     </message>
     <message>
-        <location line="+354"/>
+        <location line="+385"/>
         <source>New mentions</source>
         <translation>নতুন উল্লেখ</translation>
     </message>
     <message>
-        <location line="+554"/>
+        <location line="+555"/>
         <source>Call started</source>
         <translation>কল শুরু হয়েছে</translation>
     </message>
     <message>
-        <location line="+959"/>
+        <location line="+961"/>
         <source>Joined the space</source>
         <translation>স্পেসে যোগ দিয়েছেন</translation>
     </message>
@@ -1552,15 +1552,15 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>এই ডিভাইসের স্থানীয় ডেটা মুছলে এটি ঠিক হবে না, বরং আপনার এখনও প্রয়োজনীয় এনক্রিপশন কী নষ্ট হবে।</translation>
     </message>
     <message>
-        <location line="+499"/>
-        <location line="+910"/>
+        <location line="+500"/>
+        <location line="+932"/>
         <location line="+748"/>
         <location line="+15"/>
         <source>Removal did not finish: the account&apos;s data is still in use. Nothing was deleted.</source>
         <translation>অপসারণ সম্পন্ন হয়নি: অ্যাকাউন্টের ডেটা এখনও ব্যবহৃত হচ্ছে। কিছুই মোছা হয়নি।</translation>
     </message>
     <message>
-        <location line="-1476"/>
+        <location line="-1498"/>
         <source>This backend cannot change your display name.</source>
         <translation>এই ব্যাকএন্ড আপনার প্রদর্শিত নাম বদলাতে পারে না।</translation>
     </message>
@@ -1587,12 +1587,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+148"/>
-        <location line="+677"/>
+        <location line="+699"/>
         <source>That account is not signed in on this device.</source>
         <translation>ওই অ্যাকাউন্টটি এই ডিভাইসে সাইন ইন করা নেই।</translation>
     </message>
     <message>
-        <location line="-654"/>
+        <location line="-676"/>
         <source>That account&apos;s sign-in has expired. Sign in to it again.</source>
         <translation>ওই অ্যাকাউন্টের সাইন-ইনের মেয়াদ শেষ হয়েছে। আবার সাইন ইন করুন।</translation>
     </message>
@@ -1602,7 +1602,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>আপনার সিস্টেম কীরিং আর ওই অ্যাকাউন্টের সংরক্ষিত সাইন-ইন ফেরত দিচ্ছে না। কিছুই মোছা হয়নি: এই ডিভাইসে চালিয়ে যেতে আবার সাইন ইন করুন।</translation>
     </message>
     <message>
-        <location line="+413"/>
+        <location line="+435"/>
         <location line="+731"/>
         <source>This account can&apos;t be removed while the system keyring can&apos;t be read: its saved sign-in is there and would be left behind. Unlock the keyring, or start it, and try again.</source>
         <translation>সিস্টেম কীরিং পড়া না গেলে এই অ্যাকাউন্ট সরানো যাবে না: এর সংরক্ষিত সাইন-ইন সেখানে আছে এবং পেছনে থেকে যাবে। কীরিং আনলক করুন বা চালু করুন, তারপর আবার চেষ্টা করুন।</translation>
@@ -1645,9 +1645,9 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location filename="../qml/LoginScreen.qml" line="+433"/>
-        <location filename="../src/app/AppController.cpp" line="-2251"/>
+        <location filename="../src/app/AppController.cpp" line="-2274"/>
         <location line="+25"/>
-        <location line="+530"/>
+        <location line="+531"/>
         <location line="+454"/>
         <source>Lightning can&apos;t read this device&apos;s saved sign-ins right now — the system keyring is locked or unavailable. Unlock it and try again.</source>
         <translation>Lightning এখন এই ডিভাইসের সংরক্ষিত সাইন-ইন পড়তে পারছে না — সিস্টেম কীরিং লক করা বা অনুপলব্ধ। এটি আনলক করে আবার চেষ্টা করুন।</translation>
@@ -13260,13 +13260,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2346"/>
+        <location line="+2390"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>আবার চেষ্টা করুন</translation>
     </message>
     <message>
-        <location line="-3362"/>
+        <location line="-3406"/>
         <location line="+1229"/>
         <source>Cancel</source>
         <translation>বাতিল</translation>
@@ -13278,12 +13278,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+188"/>
-        <location line="+1418"/>
+        <location line="+1462"/>
         <source>Hide image</source>
         <translation>ছবি লুকান</translation>
     </message>
     <message>
-        <location line="-1414"/>
+        <location line="-1458"/>
         <source>Hide</source>
         <translation>লুকান</translation>
     </message>
@@ -13434,7 +13434,22 @@ Signing out and signing in again is the only fix.</source>
         <translation>বার্তা সংরক্ষণ করুন</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+30"/>
+        <source>Remind me in 1 hour</source>
+        <translation>১ ঘণ্টা পরে মনে করিয়ে দিন</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Remind me tomorrow</source>
+        <translation>আগামীকাল মনে করিয়ে দিন</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Cancel reminder (%1)</source>
+        <translation>রিমাইন্ডার বাতিল করুন (%1)</translation>
+    </message>
+    <message>
+        <location line="+12"/>
         <source>Copy text</source>
         <translation>লেখা অনুলিপি করুন</translation>
     </message>
@@ -13651,7 +13666,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>এখনও কোনো অবস্থান পাওয়া যায়নি।</translation>
     </message>
     <message>
-        <location line="-3938"/>
+        <location line="-3982"/>
         <location line="+1139"/>
         <source>Edit</source>
         <translation>সম্পাদনা</translation>
@@ -13691,22 +13706,22 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="-570"/>
         <location line="+568"/>
-        <location line="+3692"/>
+        <location line="+3736"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5183"/>
+        <location line="-5227"/>
         <location line="+53"/>
         <location line="+514"/>
-        <location line="+4241"/>
+        <location line="+4285"/>
         <source>Image</source>
         <translation>ছবি</translation>
     </message>
     <message>
-        <location line="-4806"/>
+        <location line="-4850"/>
         <source>Attachment</source>
         <translation>সংযুক্তি</translation>
     </message>
@@ -13772,7 +13787,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>(সম্পাদিত)</translation>
     </message>
     <message>
-        <location line="+1636"/>
+        <location line="+1680"/>
         <source>Add :%1: to my emoji</source>
         <translation>আমার ইমোজিতে :%1: যোগ করুন</translation>
     </message>
@@ -13812,13 +13827,13 @@ Signing out and signing in again is the only fix.</source>
         <translation>বার্তার অভিযোগ করুন</translation>
     </message>
     <message>
-        <location line="-705"/>
-        <location line="+719"/>
+        <location line="-749"/>
+        <location line="+763"/>
         <source>Delete</source>
         <translation>মুছুন</translation>
     </message>
     <message>
-        <location line="-714"/>
+        <location line="-758"/>
         <source>Remove message?</source>
         <translation>বার্তা সরাবেন?</translation>
     </message>
@@ -13833,7 +13848,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>সরান</translation>
     </message>
     <message>
-        <location line="+752"/>
+        <location line="+796"/>
         <source>Message details</source>
         <translation>বার্তার বিস্তারিত</translation>
     </message>
@@ -13910,12 +13925,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>উত্তরের লক্ষ্য</translation>
     </message>
     <message>
-        <location line="-2003"/>
+        <location line="-2047"/>
         <source>Show preview</source>
         <translation>প্রাকদর্শন দেখান</translation>
     </message>
     <message>
-        <location line="+1859"/>
+        <location line="+1903"/>
         <source>Remove edits?</source>
         <translation>সম্পাদনা সরাবেন?</translation>
     </message>
@@ -13935,7 +13950,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>এতে ভোট বন্ধ হয় এবং ফলাফল প্রকাশিত হয়। ভোট আবার খোলা যায় না।</translation>
     </message>
     <message>
-        <location line="-661"/>
+        <location line="-705"/>
         <source>Delete message?</source>
         <translation>বার্তা মুছবেন?</translation>
     </message>
@@ -13945,7 +13960,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>এতে রুমের সবার জন্য বার্তাটি সরে যায়। এটি ফেরানো যায় না।</translation>
     </message>
     <message>
-        <location line="+968"/>
+        <location line="+1012"/>
         <source>Open link in browser</source>
         <translation>লিঙ্কটি ব্রাউজারে খুলুন</translation>
     </message>
@@ -14027,10 +14042,10 @@ Signing out and signing in again is the only fix.</source>
         <translation>স্টিকার লোড হয়নি — আবার চেষ্টা করতে ক্লিক করুন</translation>
     </message>
     <message>
-        <location line="-5600"/>
+        <location line="-5644"/>
         <location line="+57"/>
         <location line="+517"/>
-        <location line="+4239"/>
+        <location line="+4283"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -14043,9 +14058,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>ভিডিও</translation>
     </message>
     <message>
-        <location line="-5981"/>
+        <location line="-6025"/>
         <location line="+570"/>
-        <location line="+4342"/>
+        <location line="+4386"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -14991,7 +15006,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+2021"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+2085"/>
         <location line="+1016"/>
         <source>Open</source>
         <translation>খুলুন</translation>
@@ -15101,11 +15116,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+13"/>
+        <location line="+360"/>
         <source>Direct messages</source>
         <translation>সরাসরি বার্তা</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="-357"/>
         <location line="+8"/>
         <source>All messages</source>
         <translation>সব বার্তা</translation>
@@ -15237,6 +15253,110 @@ Signing out and signing in again is the only fix.</source>
         <translation>বটের বার্তা হলো কিছু ব্রিজ ও বটের দেওয়া স্বয়ংক্রিয় নোটিশ। &quot;বন্ধ&quot; এগুলো নীরব রাখে; &quot;বিজ্ঞপ্তি&quot; সেগুলোকে ওই রুমের অন্য যেকোনো বার্তার মতো গণ্য করে।</translation>
     </message>
     <message>
+        <location line="+44"/>
+        <location line="+21"/>
+        <source>Quiet hours</source>
+        <translation>নীরব সময়</translation>
+    </message>
+    <message>
+        <location line="-6"/>
+        <source>On this device only, notifications are held during these hours and summed up when they end. Activity and unread counts still update, and calls still ring.</source>
+        <translation>শুধু এই ডিভাইসে, এই সময়ে বিজ্ঞপ্তিগুলো আটকে রাখা হয় এবং শেষ হলে সারসংক্ষেপ দেওয়া হয়। কার্যকলাপ ও অপঠিত সংখ্যা আপডেট হতে থাকে, এবং কল বাজতে থাকে।</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>From</source>
+        <translation>থেকে</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Quiet hours start</source>
+        <translation>নীরব সময় শুরু</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>to</source>
+        <translation>পর্যন্ত</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Quiet hours end</source>
+        <translation>নীরব সময় শেষ</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Still notify for</source>
+        <translation>তবুও বিজ্ঞপ্তি দিন</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Mentions of you</source>
+        <translation>আপনার উল্লেখ</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Choose rooms that may still notify from a room&apos;s menu.</source>
+        <translation>রুমের মেনু থেকে বেছে নিন কোন রুম তবুও বিজ্ঞপ্তি দিতে পারবে।</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>%n chosen room(s) may still notify. Change them from a room&apos;s menu.</source>
+        <translation>
+            <numerusform>%nটি বেছে নেওয়া রুম তবুও বিজ্ঞপ্তি দিতে পারে। রুমের মেনু থেকে এটি বদলান।</numerusform>
+            <numerusform>%nটি বেছে নেওয়া রুম তবুও বিজ্ঞপ্তি দিতে পারে। রুমের মেনু থেকে এগুলো বদলান।</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Quiet now, until %1.</source>
+        <translation>এখন নীরব, %1 পর্যন্ত।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Next quiet hours start at %1.</source>
+        <translation>পরবর্তী নীরব সময় শুরু হবে %1-এ।</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Who can interrupt: %1.</source>
+        <translation>কে বিরক্ত করতে পারে: %1।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>calls</source>
+        <translation>কল</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>mentions</source>
+        <translation>উল্লেখ</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>direct messages</source>
+        <translation>সরাসরি বার্তা</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>chosen rooms</source>
+        <translation>বেছে নেওয়া রুম</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Snoozed conversations</source>
+        <translation>স্নুজ করা আলাপ</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>%1, until %2</source>
+        <translation>%1, %2 পর্যন্ত</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Unsnooze</source>
+        <translation>স্নুজ তুলুন</translation>
+    </message>
+    <message>
         <location line="+9"/>
         <source>Not getting notifications?</source>
         <translation>বিজ্ঞপ্তি পাচ্ছেন না?</translation>
@@ -15287,12 +15407,89 @@ Signing out and signing in again is the only fix.</source>
         <translation>Lightning কোনো সমস্যা দেখতে পাচ্ছে না। নিশ্চিত হতে একটি পরীক্ষামূলক বিজ্ঞপ্তি পাঠান।</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+6"/>
+        <source>Test a message against your rules</source>
+        <translation>আপনার নিয়মে একটি বার্তা পরীক্ষা করুন</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Asks your account&apos;s rules what they would do with a message in the room you have open. Nothing is sent and no rule is changed.</source>
+        <translation>আপনার অ্যাকাউন্টের নিয়মগুলোকে জিজ্ঞাসা করে খোলা রুমের একটি বার্তা নিয়ে তারা কী করবে। কিছুই পাঠানো হয় না এবং কোনো নিয়ম বদলায় না।</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Hello</source>
+        <translation>হ্যালো</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Sample message</source>
+        <translation>নমুনা বার্তা</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <location line="+3"/>
+        <source>Mentions me</source>
+        <translation>আমাকে উল্লেখ করে</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Open a room first.</source>
+        <translation>আগে একটি রুম খুলুন।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This account cannot check its rules here.</source>
+        <translation>এই অ্যাকাউন্ট এখানে তার নিয়ম পরীক্ষা করতে পারে না।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Checking…</source>
+        <translation>পরীক্ষা করা হচ্ছে…</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The rules could not be read. Try again.</source>
+        <translation>নিয়মগুলো পড়া যায়নি। আবার চেষ্টা করুন।</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Rule: %1.</source>
+        <translation>নিয়ম: %1।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>No rule matches.</source>
+        <translation>কোনো নিয়ম মেলে না।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>It would not notify.</source>
+        <translation>এটি বিজ্ঞপ্তি দেবে না।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>It would notify and highlight.</source>
+        <translation>এটি বিজ্ঞপ্তি দেবে ও হাইলাইট করবে।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>It would notify.</source>
+        <translation>এটি বিজ্ঞপ্তি দেবে।</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Lightning would show it.</source>
+        <translation>Lightning এটি দেখাবে।</translation>
+    </message>
+    <message>
+        <location line="+16"/>
         <source>OK</source>
         <translation>ঠিক আছে</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-45"/>
+        <location line="+46"/>
         <source>Check</source>
         <translation>পরীক্ষা</translation>
     </message>
@@ -15340,7 +15537,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>NotificationTroubleshooter</name>
     <message>
-        <location filename="../src/app/NotificationTroubleshooter.cpp" line="+77"/>
+        <location filename="../src/app/NotificationTroubleshooter.cpp" line="+80"/>
         <source>A notification service is running</source>
         <translation>একটি বিজ্ঞপ্তি সেবা চলছে</translation>
     </message>
@@ -15400,12 +15597,22 @@ Signing out and signing in again is the only fix.</source>
         <translation>আপনার ডেস্কটপ বিরক্ত করবেন না মোডে আছে কি না বা Lightning-কে নিঃশব্দ করেছে কি না, Lightning তা পড়তে পারে না। নিচের পরীক্ষা না দেখা গেলে আপনার ডেস্কটপের বিজ্ঞপ্তি সেটিংস দেখুন।</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
+        <source>Your desktop is in Do Not Disturb</source>
+        <translation>আপনার ডেস্কটপ বিরক্ত করবেন না মোডে আছে</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Your notification service says it is not showing notifications right now. Lightning still sends them, and your desktop keeps them in its history.</source>
+        <translation>আপনার বিজ্ঞপ্তি পরিষেবা বলছে এটি এখন বিজ্ঞপ্তি দেখাচ্ছে না। Lightning তবুও সেগুলো পাঠায়, এবং আপনার ডেস্কটপ সেগুলো ইতিহাসে রাখে।</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>System permission and Do Not Disturb</source>
         <translation>সিস্টেমের অনুমতি ও বিরক্ত করবেন না</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>Desktop notifications are on</source>
         <translation>ডেস্কটপ বিজ্ঞপ্তি চালু আছে</translation>
     </message>
@@ -15520,11 +15727,116 @@ Signing out and signing in again is the only fix.</source>
         <source>It has no setting of its own, and your account default could not be read, so whether ordinary messages notify is not known.</source>
         <translation>এর নিজস্ব কোনো সেটিং নেই, আর আপনার অ্যাকাউন্টের ডিফল্ট পড়া যায়নি, তাই সাধারণ বার্তায় বিজ্ঞপ্তি আসবে কি না তা জানা নেই।</translation>
     </message>
+    <message>
+        <location line="+8"/>
+        <source>This conversation is snoozed</source>
+        <translation>এই আলাপ স্নুজ করা আছে</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Its notifications are held until the snooze ends, then summed up in one notification. Unsnooze it from the room&apos;s menu.</source>
+        <translation>স্নুজ শেষ না হওয়া পর্যন্ত এর বিজ্ঞপ্তিগুলো আটকে রাখা হয়, তারপর একটি বিজ্ঞপ্তিতে সারসংক্ষেপ দেওয়া হয়। রুমের মেনু থেকে স্নুজ তুলুন।</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Mentions still notify.</source>
+        <translation>উল্লেখ এখনও বিজ্ঞপ্তি দেয়।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Direct messages still notify.</source>
+        <translation>সরাসরি বার্তা এখনও বিজ্ঞপ্তি দেয়।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This room still notifies.</source>
+        <translation>এই রুম এখনও বিজ্ঞপ্তি দেয়।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Calls still ring.</source>
+        <translation>কল এখনও বাজে।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Quiet hours are on</source>
+        <translation>নীরব সময় চালু আছে</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Notifications are held until quiet hours end, then summed up in one notification. They still reach Activity and the unread counts.</source>
+        <translation>নীরব সময় শেষ না হওয়া পর্যন্ত বিজ্ঞপ্তিগুলো আটকে রাখা হয়, তারপর একটি বিজ্ঞপ্তিতে সারসংক্ষেপ দেওয়া হয়। সেগুলো এখনও কার্যকলাপ ও অপঠিত সংখ্যায় পৌঁছায়।</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Lightning would not show it: desktop notifications are off on this device.</source>
+        <translation>Lightning এটি দেখাবে না: এই ডিভাইসে ডেস্কটপ বিজ্ঞপ্তি বন্ধ।</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Lightning would not show it: this room is muted.</source>
+        <translation>Lightning এটি দেখাবে না: এই রুম নিঃশব্দ করা আছে।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Lightning would hold it until this conversation&apos;s snooze ends.</source>
+        <translation>এই আলাপের স্নুজ শেষ না হওয়া পর্যন্ত Lightning এটি আটকে রাখবে।</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Lightning would hold it until quiet hours end.</source>
+        <translation>নীরব সময় শেষ না হওয়া পর্যন্ত Lightning এটি আটকে রাখবে।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Lightning would send it, but your desktop is in Do Not Disturb and will not show it now.</source>
+        <translation>Lightning এটি পাঠাবে, কিন্তু আপনার ডেস্কটপ বিরক্ত করবেন না মোডে আছে এবং এখন এটি দেখাবে না।</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>This room&apos;s own setting</source>
+        <translation>এই রুমের নিজস্ব সেটিং</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Your user name</source>
+        <translation>আপনার ব্যবহারকারী নাম</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Keyword “%1”</source>
+        <translation>কীওয়ার্ড “%1”</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Mute all notifications</source>
+        <translation>সব বিজ্ঞপ্তি নিঃশব্দ করুন</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Mentions of you</source>
+        <translation>আপনার উল্লেখ</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Mentions of the whole room</source>
+        <translation>পুরো রুমের উল্লেখ</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Direct messages</source>
+        <translation>সরাসরি বার্তা</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Messages in group rooms</source>
+        <translation>গ্রুপ রুমের বার্তা</translation>
+    </message>
 </context>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2917"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2981"/>
         <source>(spoiler)</source>
         <translation>(স্পয়লার)</translation>
     </message>
@@ -15590,8 +15902,8 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message numerus="yes">
         <location line="+272"/>
-        <location line="+218"/>
-        <location line="+1752"/>
+        <location line="+235"/>
+        <location line="+1799"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n টি নতুন বার্তা</numerusform>
@@ -15599,16 +15911,47 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1966"/>
-        <location line="+212"/>
+        <location line="-2030"/>
+        <location line="+229"/>
         <source>%n new Matrix notifications</source>
         <translation>
             <numerusform>%n টি নতুন Matrix বিজ্ঞপ্তি</numerusform>
             <numerusform>%n টি নতুন Matrix বিজ্ঞপ্তি</numerusform>
         </translation>
     </message>
+    <message>
+        <location line="+118"/>
+        <source>Snooze ended</source>
+        <translation>স্নুজ শেষ হয়েছে</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Quiet hours ended</source>
+        <translation>নীরব সময় শেষ হয়েছে</translation>
+    </message>
     <message numerus="yes">
-        <location line="+1757"/>
+        <location line="+4"/>
+        <source>%n notification(s) arrived while this conversation was snoozed.</source>
+        <translation>
+            <numerusform>এই আলাপ স্নুজ থাকার সময় %nটি বিজ্ঞপ্তি এসেছে।</numerusform>
+            <numerusform>এই আলাপ স্নুজ থাকার সময় %nটি বিজ্ঞপ্তি এসেছে।</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+4"/>
+        <source>%n notification(s) arrived during quiet hours.</source>
+        <translation>
+            <numerusform>নীরব সময়ে %nটি বিজ্ঞপ্তি এসেছে।</numerusform>
+            <numerusform>নীরব সময়ে %nটি বিজ্ঞপ্তি এসেছে।</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>You were mentioned.</source>
+        <translation>আপনাকে উল্লেখ করা হয়েছে।</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1669"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>%n টি রুমে</numerusform>
@@ -16168,7 +16511,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/settings/SettingsSyncController.cpp" line="+34"/>
+        <location filename="../src/settings/SettingsSyncController.cpp" line="+35"/>
         <source>out of range</source>
         <translation>সীমার বাইরে</translation>
     </message>
@@ -17045,6 +17388,74 @@ Signing out and signing in again is the only fix.</source>
     </message>
 </context>
 <context>
+    <name>RemindersController</name>
+    <message>
+        <location filename="../src/app/RemindersController.cpp" line="+301"/>
+        <location line="+88"/>
+        <source>a room</source>
+        <translation>একটি রুম</translation>
+    </message>
+    <message numerus="yes">
+        <location line="-80"/>
+        <source>%n reminder(s) are due.</source>
+        <translation>
+            <numerusform>%nটি রিমাইন্ডারের সময় হয়েছে।</numerusform>
+            <numerusform>%nটি রিমাইন্ডারের সময় হয়েছে।</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>In %1.</source>
+        <translation>%1 পরে।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Reminders</source>
+        <translation>রিমাইন্ডার</translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>An attachment</source>
+        <translation>একটি সংযুক্তি</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>A sticker</source>
+        <translation>একটি স্টিকার</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <location line="+6"/>
+        <source>Reminder</source>
+        <translation>রিমাইন্ডার</translation>
+    </message>
+    <message>
+        <location line="-5"/>
+        <source>A message you asked to be reminded about was removed.</source>
+        <translation>যে বার্তার জন্য আপনি রিমাইন্ডার চেয়েছিলেন সেটি সরানো হয়েছে।</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>%1: %2</source>
+        <translation>%1: %2</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>A message from %1</source>
+        <translation>%1-এর একটি বার্তা</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>A message in this room</source>
+        <translation>এই রুমের একটি বার্তা</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Reminder: %1</source>
+        <translation>রিমাইন্ডার: %1</translation>
+    </message>
+</context>
+<context>
     <name>ReportMessageDialog</name>
     <message>
         <location filename="../qml/ReportMessageDialog.qml" line="+48"/>
@@ -17175,7 +17586,32 @@ Signing out and signing in again is the only fix.</source>
         <translation>স্থানীয় সেটিং: এটি এই রুমের সার্ভার পুশ নিয়ম বদলায় না।</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+24"/>
+        <source>Snooze for 1 hour</source>
+        <translation>১ ঘণ্টার জন্য স্নুজ করুন</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Snooze until tomorrow</source>
+        <translation>আগামীকাল পর্যন্ত স্নুজ করুন</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Unsnooze (snoozed until %1)</source>
+        <translation>স্নুজ তুলুন (%1 পর্যন্ত স্নুজ করা)</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Keep quiet during quiet hours</source>
+        <translation>নীরব সময়ে নীরব থাকুন</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Notify during quiet hours</source>
+        <translation>নীরব সময়ে বিজ্ঞপ্তি দিন</translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>Chat background…</source>
         <translation>চ্যাট ব্যাকগ্রাউন্ড…</translation>
     </message>
@@ -18118,7 +18554,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RoomExportController</name>
     <message>
-        <location filename="../src/models/RoomExportController.cpp" line="+177"/>
+        <location filename="../src/models/RoomExportController.cpp" line="+178"/>
         <source>An export is already running.</source>
         <translation>একটি এক্সপোর্ট ইতিমধ্যে চলছে।</translation>
     </message>
@@ -21670,7 +22106,22 @@ Signing out and signing in again is the only fix.</source>
         <translation>ঠিক আছে</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+18"/>
+        <source>Removing your settings from your homeserver…</source>
+        <translation>আপনার হোমসার্ভার থেকে আপনার সেটিংস সরানো হচ্ছে…</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Removed from your homeserver. A device that turns sync back on will upload its settings again.</source>
+        <translation>আপনার হোমসার্ভার থেকে সরানো হয়েছে। যে ডিভাইস আবার সিঙ্ক চালু করবে, সেটি তার সেটিংস আবার আপলোড করবে।</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Could not confirm that your settings were removed from your homeserver. Try again.</source>
+        <translation>আপনার সেটিংস হোমসার্ভার থেকে সরানো হয়েছে কিনা নিশ্চিত করা যায়নি। আবার চেষ্টা করুন।</translation>
+    </message>
+    <message>
+        <location line="+13"/>
         <source>Turn off and remove from my homeserver</source>
         <translation>বন্ধ করে আমার হোমসার্ভার থেকে সরান</translation>
     </message>
@@ -27130,7 +27581,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SettingsSyncController</name>
     <message>
-        <location filename="../src/settings/SettingsSyncController.cpp" line="+543"/>
+        <location filename="../src/settings/SettingsSyncController.cpp" line="+603"/>
         <location line="+48"/>
         <source>Settings are not available.</source>
         <translation>সেটিংস উপলব্ধ নয়।</translation>
@@ -32679,7 +33130,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ThreadController</name>
     <message>
-        <location filename="../src/threads/ThreadController.cpp" line="+768"/>
+        <location filename="../src/threads/ThreadController.cpp" line="+770"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>এই ব্যাকএন্ডে সংযুক্তি সমর্থিত নয়।</translation>
@@ -33210,7 +33661,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ThreadSummaryCard</name>
     <message>
-        <location filename="../qml/ThreadSummaryCard.qml" line="+40"/>
+        <location filename="../qml/ThreadSummaryCard.qml" line="+42"/>
         <source>Image</source>
         <translation>ছবি</translation>
     </message>

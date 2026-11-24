@@ -7,6 +7,7 @@
 #include <QBuffer>
 #include <QDir>
 #include <QFile>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QSet>
@@ -509,6 +510,37 @@ private Q_SLOTS:
             QStringLiteral("!r:example.org"));
         QCOMPARE(voice.type, TimelineEvent::Audio);
         QVERIFY(voice.mediaIsVoice);
+    }
+
+    void aJsonExportNamesTheReplacementItShows()
+    {
+        QVariantMap row = walkRow(QStringLiteral("$o"), QStringLiteral("text"), 1,
+                                  QStringLiteral("now text"));
+        row.insert(QStringLiteral("edited"), true);
+        row.insert(QStringLiteral("replacedBy"), QStringLiteral("$e2"));
+        const QList<TimelineEvent> events{
+            RoomExportController::eventFromWalkRow(row, QStringLiteral("!r:example.org")),
+            RoomExportController::eventFromWalkRow(
+                walkRow(QStringLiteral("$p"), QStringLiteral("text"), 2, QStringLiteral("plain")),
+                QStringLiteral("!r:example.org")),
+        };
+        roomexport::Options options = plainRoom();
+        options.scope = QStringLiteral("from-beginning");
+        const QJsonObject root =
+            QJsonDocument::fromJson(roomexport::renderJson(events, options).toUtf8()).object();
+        QCOMPARE(root.value(QStringLiteral("projection_version")).toInt(), 1);
+        const QJsonArray rows = root.value(QStringLiteral("messages")).toArray();
+        QCOMPARE(rows.size(), 2);
+        QCOMPARE(rows[0].toObject().value(QStringLiteral("edited")).toBool(), true);
+        QCOMPARE(rows[0].toObject().value(QStringLiteral("replacement_event_id")).toString(),
+                 QStringLiteral("$e2"));
+        QVERIFY(!rows[1].toObject().contains(QStringLiteral("edited")));
+        QVERIFY(!rows[1].toObject().contains(QStringLiteral("replacement_event_id")));
+
+        options.scope = QStringLiteral("loaded-timeline");
+        const QJsonObject loaded =
+            QJsonDocument::fromJson(roomexport::renderJson(events, options).toUtf8()).object();
+        QVERIFY(!loaded.contains(QStringLiteral("projection_version")));
     }
 
     void aStalledOrBoundedWalkIsNotDescribedAsTheWholeRoom()

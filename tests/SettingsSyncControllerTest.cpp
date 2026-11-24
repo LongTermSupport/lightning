@@ -369,6 +369,82 @@ private Q_SLOTS:
         QCOMPARE(r.settings.textScale(), 130);
     }
 
+    static QString removalOf(const SettingsSyncController &sync)
+    {
+        return sync.property("removal").toString();
+    }
+
+    void aRemovalIsConfirmedOnlyByTheServersAnswer()
+    {
+        Rig r;
+        r.settleOn({ { "textScale", 130 } });
+        r.sync.removeFromServer();
+        QCOMPARE(removalOf(r.sync), QStringLiteral("pending"));
+        r.answerWrite();
+        QCOMPARE(r.client.writesOf(2).size(), 1);
+        QCOMPARE(removalOf(r.sync), QStringLiteral("pending"));
+        r.answerWrite();
+        QCOMPARE(removalOf(r.sync), QStringLiteral("confirmed"));
+    }
+
+    void anUnconfirmedRemovalIsRetriedBoundedlyAndNeverReportedAsDone()
+    {
+        Rig r;
+        r.settleOn({ { "textScale", 130 } });
+        r.sync.removeFromServer();
+        QStringList seen;
+        for (int i = 0; i < 10 && removalOf(r.sync) == QLatin1String("pending"); ++i) {
+            QVERIFY(!r.client.writes.isEmpty());
+            if (r.client.writes.last().kind == 1) {
+                r.answerWrite();
+            } else {
+                r.answerWrite(false, QStringLiteral("removal_not_confirmed"));
+                seen.append(removalOf(r.sync));
+                if (removalOf(r.sync) == QLatin1String("pending"))
+                    QVERIFY(QMetaObject::invokeMethod(&r.sync, "retry"));
+            }
+        }
+        QCOMPARE(removalOf(r.sync), QStringLiteral("failed"));
+        QVERIFY(!seen.contains(QStringLiteral("confirmed")));
+        QVERIFY(r.client.writesOf(2).size() >= 2);
+        QVERIFY(r.client.writesOf(2).size() <= 5);
+        const int writes = r.client.writes.size();
+        QVERIFY(QMetaObject::invokeMethod(&r.sync, "retry"));
+        QCOMPARE(r.client.writes.size(), writes);
+    }
+
+    void anOfflineTurnOffStaysPendingAcrossARestart()
+    {
+        Rig r;
+        r.settleOn({ { "textScale", 130 } });
+        r.sync.removeFromServer();
+        r.answerWrite(false, QStringLiteral("network"));
+        QCOMPARE(removalOf(r.sync), QStringLiteral("pending"));
+        r.sync.setClient(nullptr);
+        r.sync.setClient(&r.client);
+        QCOMPARE(r.client.writesOf(1).size(), 2);
+        QCOMPARE(removalOf(r.sync), QStringLiteral("pending"));
+        r.answerWrite();
+        QCOMPARE(r.client.writesOf(2).size(), 1);
+        r.answerWrite();
+        QCOMPARE(removalOf(r.sync), QStringLiteral("confirmed"));
+    }
+
+    void aRemovalWaitsForTheWriteAlreadyInFlight()
+    {
+        Rig r;
+        r.settleOn({});
+        r.settings.setReducedMotion(true);
+        QTRY_VERIFY(r.client.reads.size() >= 2);
+        r.answerRead("absent", QString(), 1);
+        QCOMPARE(r.client.writesOf(0).size(), 1);
+        r.sync.removeFromServer();
+        QVERIFY(r.client.writesOf(1).isEmpty());
+        r.answerWrite();
+        QCOMPARE(r.client.writesOf(1).size(), 1);
+        QCOMPARE(removalOf(r.sync), QStringLiteral("pending"));
+    }
+
     void nothingTheServerReceivesCanBeASecretOrADeviceSetting()
     {
         Rig r;

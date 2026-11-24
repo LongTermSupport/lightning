@@ -3121,7 +3121,7 @@ async fn open_room_task(
     shrink_first: bool,
     previous_task: Option<tokio::task::JoinHandle<()>>,
 ) {
-    let opened_ms = crate::push_verdict::now_ms();
+    let opened = crate::syncnotify::now();
     let own_user = client.user_id().map(|u| u.to_string()).unwrap_or_default();
     let fallback_verdicts = crate::push_verdict::SyncVerdicts::default();
 
@@ -3264,7 +3264,7 @@ send queue owes nothing for them: {in_flight:?}"
     annotate_snapshot_verdicts(&room, &fallback_verdicts, &items, &mut snapshot).await;
     annotate_room_gone_rows(&room, &mut snapshot).await;
     let mut backlog = crate::push_verdict::BacklogMarker::new(
-        opened_ms,
+        opened,
         items.iter().filter_map(|item| crate::push_verdict::item_facts(item)),
     );
     let mut stable_polls = crate::stablepoll::Watch::default();
@@ -3357,10 +3357,10 @@ send queue owes nothing for them: {in_flight:?}"
                     let mut value = diff_to_json(
                         &room_id, room_gen, lifecycle, &diff, &own_user, &registry,
                     );
-                    let now = crate::push_verdict::now_ms();
+                    let now = crate::syncnotify::now();
                     let decrypted = tail.decrypts_in_place(&diff, item_is_utd, item_event_id);
                     let live_insert = tail.classify_and_apply(&diff, |item| {
-                        arrived_since_open(item, opened_ms, now)
+                        arrived_since_open(item, opened, now)
                     });
                     let judged = mark_live_insert(&diff, live_insert.as_ref(), &mut value);
                     annotate_push_verdicts(
@@ -3368,7 +3368,7 @@ send queue owes nothing for them: {in_flight:?}"
                     ).await;
                     annotate_room_gone(&room, &mut value).await;
                     if decrypted {
-                        annotate_decrypted_set(&diff, &mut value, opened_ms, now);
+                        annotate_decrypted_set(&diff, &mut value, opened, now);
                     }
                     backlog.mark(
                         judged,
@@ -3479,7 +3479,7 @@ async fn open_thread_task(
     lifecycle: u64,
     events: EventQueue,
 ) {
-    let opened_ms = crate::push_verdict::now_ms();
+    let opened = crate::syncnotify::now();
     let own_user = client.user_id().map(|u| u.to_string()).unwrap_or_default();
     let fallback_verdicts = crate::push_verdict::SyncVerdicts::default();
 
@@ -3554,10 +3554,10 @@ async fn open_thread_task(
     // The floor is on the server's clock when the room holds any event.
     let history_floor = match newest_held_timestamp(&room).await {
         Some(newest) => newest.saturating_add(1),
-        None => opened_ms.saturating_sub(crate::syncnotify::TIMESTAMP_ALLOWANCE_MS),
+        None => opened.wall_ms.saturating_sub(crate::syncnotify::TIMESTAMP_ALLOWANCE_MS),
     };
     let mut backlog = crate::push_verdict::BacklogMarker::new(
-        opened_ms,
+        opened,
         items.iter().filter_map(|item| crate::push_verdict::item_facts(item)),
     )
     .history_before(history_floor);
@@ -3640,10 +3640,10 @@ async fn open_thread_task(
                         "lifecycle": lifecycle,
                     });
                     let mut value = fill_diff_json(base, &diff, &own_user, &registry);
-                    let now = crate::push_verdict::now_ms();
+                    let now = crate::syncnotify::now();
                     let decrypted = tail.decrypts_in_place(&diff, item_is_utd, item_event_id);
                     let live_insert = tail.classify_and_apply(&diff, |item| {
-                        arrived_since_open(item, opened_ms, now)
+                        arrived_since_open(item, opened, now)
                     });
                     let judged = mark_live_insert(&diff, live_insert.as_ref(), &mut value);
                     annotate_push_verdicts(
@@ -3651,7 +3651,7 @@ async fn open_thread_task(
                     ).await;
                     annotate_room_gone(&room, &mut value).await;
                     if decrypted {
-                        annotate_decrypted_set(&diff, &mut value, opened_ms, now);
+                        annotate_decrypted_set(&diff, &mut value, opened, now);
                     }
                     backlog.mark(
                         judged,
@@ -4820,11 +4820,13 @@ fn mark_live_insert<'a>(
     }
 }
 
-fn arrived_since_open(item: &Arc<TimelineItem>, opened_ms: u64, now_ms: u64) -> bool {
-    crate::push_verdict::item_facts(item).is_some_and(|facts| match facts.age_ms {
-        Some(age) => now_ms.saturating_sub(age) >= opened_ms,
-        None => facts.timestamp_ms >= opened_ms,
-    })
+fn arrived_since_open(
+    item: &Arc<TimelineItem>,
+    opened: crate::syncnotify::Now,
+    now: crate::syncnotify::Now,
+) -> bool {
+    crate::push_verdict::item_facts(item)
+        .is_some_and(|facts| !crate::push_verdict::arrived_before(&facts, opened, now))
 }
 
 fn item_is_utd(item: &Arc<TimelineItem>) -> bool {
@@ -5084,11 +5086,11 @@ fn raw_reply_kind_and_preview(event: &AnySyncTimelineEvent) -> (&'static str, St
 fn annotate_decrypted_set(
     diff: &VectorDiff<Arc<TimelineItem>>,
     value: &mut serde_json::Value,
-    opened_ms: u64,
-    now_ms: u64,
+    opened: crate::syncnotify::Now,
+    now: crate::syncnotify::Now,
 ) {
     let VectorDiff::Set { value: item, .. } = diff else { return };
-    if !arrived_since_open(item, opened_ms, now_ms) {
+    if !arrived_since_open(item, opened, now) {
         if let Some(slot) = value.get_mut("item").and_then(|slot| slot.as_object_mut()) {
             slot.insert("backlog".to_owned(), true.into());
         }
@@ -10423,12 +10425,13 @@ mod live_tail_tests {
         assert_eq!(slots.len(), 1, "the verdict slot is the insert's own `item`");
         assert_eq!(slots[0].0.id, "$new");
 
-        let mut backlog = BacklogMarker::new(1_000, std::iter::empty());
+        let at = |ms| crate::syncnotify::Now { wall_ms: ms, mono_ms: ms };
+        let mut backlog = BacklogMarker::new(at(1_000), std::iter::empty());
         backlog.begin_batch();
-        backlog.mark(&judged, &mut payload, 3_000, facts);
+        backlog.mark(&judged, &mut payload, at(3_000), facts);
         assert!(payload["item"].get("backlog").is_none());
         let mut again = json!({ "op": "insert", "index": 3, "item": { "event_id": "$new" } });
-        backlog.mark(&judged, &mut again, 3_000, facts);
+        backlog.mark(&judged, &mut again, at(3_000), facts);
         assert_eq!(again["item"]["backlog"], json!(true));
 
         let next = VectorDiff::Insert { index: 3, value: remote("$next") };

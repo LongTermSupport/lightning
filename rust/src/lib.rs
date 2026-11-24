@@ -9115,6 +9115,22 @@ pub unsafe extern "C" fn mx_rust_push_rules_snapshot(
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn mx_rust_push_rules_simulate(
+    ptr: *mut c_void,
+    room_id: *const c_char,
+    body: *const c_char,
+    mention: i32,
+    op_id: u64,
+) -> *mut c_char {
+    ffi_string(|| {
+        let bridge = unsafe { bridge(ptr)? };
+        let room_id = unsafe { cstr_arg(room_id) }?;
+        let body = unsafe { cstr_arg(body) }?;
+        pushrules::simulate(bridge, room_id, body, mention != 0, op_id).map(|_| String::new())
+    })
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn mx_rust_push_rules_write(
     ptr: *mut c_void,
     kind: *const c_char,

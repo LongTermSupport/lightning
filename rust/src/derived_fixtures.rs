@@ -31,6 +31,18 @@ impl Scenario {
             .filter(move |(e, _)| e["room_id"] == room)
     }
 
+    /// The replacement whose content the projection shows, if any.
+    pub fn selected_edit(&self) -> Option<&str> {
+        let original = self.original.as_ref()?;
+        let expected = self.expected.as_ref()?;
+        if original["content"] == *expected {
+            return None;
+        }
+        self.edits.iter()
+            .find(|e| e["room_id"] == ROOM && e["content"]["m.new_content"] == *expected)
+            .and_then(|e| e["event_id"].as_str())
+    }
+
     /// What the projection should show for the original; `None` when it has no row.
     pub fn content_for(&self, projection: Projection) -> Option<&Value> {
         // Scope, not divergence: search and media history never list state events, and search only messages.
@@ -132,5 +144,7 @@ pub(crate) fn scenarios() -> Vec<Scenario> {
             ..case("attachment edit swaps the file", vec![edit("$file", 20, &next_file)], &next_file) },
         Scenario { original: Some(message(ORIGINAL, 10, &first_file)),
             ..case("incomplete attachment edit", vec![edit("$file", 20, &incomplete)], &first_file) },
+        Scenario { original: Some(message(ORIGINAL, 10, &first_file)),
+            ..case("attachment edited to text", vec![edit("$text", 20, &updated)], &updated) },
     ]
 }

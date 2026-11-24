@@ -195,8 +195,23 @@ public:
                      const QString &roomId = QString(),
                      const QString &avatarMxc = QString(),
                      bool sound = false, const QString &key = QString(),
-                     const QString &accountUserId = QString());
+                     const QString &accountUserId = QString(),
+                     const QString &eventId = QString(),
+                     const QString &threadRootId = QString());
     void withdrawGeneric(const QString &key);
+
+    // Returns a hold key ("quiet:<account>", "snooze:<roomId>") when a message
+    // card that would be shown must be held instead, or empty. Calls never
+    // ask it.
+    using HoldCheck = std::function<QString(
+        const QString &roomId, bool direct, bool mention,
+        const QString &accountUserId)>;
+    void setHoldCheck(HoldCheck check) { m_holdCheck = std::move(check); }
+    int heldCount(const QString &key) const
+    { return m_held.value(key).count; }
+    // One summary card per held key equal to `key` or under "<key>:".
+    void releaseHeld(const QString &key);
+    void dropHeld(const QString &key) { m_held.remove(key); }
 
     void showIncomingCall(const QString &roomId, const QString &callId,
                           const QString &title, const QString &safeBody,
@@ -603,6 +618,18 @@ private:
     qint64 m_callRingDeadlineMs = 0;
     QTimer m_callRingTimer;
     int m_genericNoticeCount = 0;
+    struct Held {
+        int count = 0;
+        int mentions = 0;
+        QString roomId;
+        QString roomName;
+        bool oneRoom = true;
+        bool hideRoom = false;
+        QString accountUserId;
+    };
+    QHash<QString, Held> m_held;
+    HoldCheck m_holdCheck;
+    void showHeldSummary(const QString &key, const Held &held);
     std::function<QImage(const QString &, bool)> m_avatarImage;
     std::function<bool(const QString &)> m_avatarFailed;
     QList<Card> m_avatarWaits;

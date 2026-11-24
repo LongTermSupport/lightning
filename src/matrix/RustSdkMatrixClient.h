@@ -696,6 +696,8 @@ public:
     quint64 requestIgnoredUsers() override;
     bool supportsPushRules() const override { return true; }
     quint64 requestPushRules() override;
+    quint64 simulatePushRule(const QString &roomId, const QString &body,
+                             bool mentionMe) override;
     quint64 writePushRule(const QString &kind, const QString &key,
                           const QString &value) override;
     bool supportsEventReporting() const override { return true; }

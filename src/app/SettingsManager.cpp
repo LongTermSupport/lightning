@@ -2480,6 +2480,110 @@ void SettingsManager::setNotificationSoundVolume(int percent)
     Q_EMIT notificationSoundVolumeChanged();
 }
 
+namespace {
+int minuteOfDay(const QVariant &stored, int fallback)
+{
+    bool ok = false;
+    const int v = stored.toInt(&ok);
+    return (!ok || v < 0 || v >= 24 * 60) ? fallback : v;
+}
+}
+
+bool SettingsManager::quietHoursEnabled() const
+{
+    return m_store->value(QStringLiteral("notifications/quietEnabled"), false)
+        .toBool();
+}
+
+void SettingsManager::setQuietHoursEnabled(bool on)
+{
+    if (quietHoursEnabled() == on)
+        return;
+    m_store->setValue(QStringLiteral("notifications/quietEnabled"), on);
+    Q_EMIT quietHoursChanged();
+}
+
+int SettingsManager::quietHoursStart() const
+{
+    return minuteOfDay(
+        m_store->value(QStringLiteral("notifications/quietStart"),
+                       kDefaultQuietHoursStart),
+        kDefaultQuietHoursStart);
+}
+
+void SettingsManager::setQuietHoursStart(int minute)
+{
+    if (minute < 0 || minute >= 24 * 60 || quietHoursStart() == minute)
+        return;
+    m_store->setValue(QStringLiteral("notifications/quietStart"), minute);
+    Q_EMIT quietHoursChanged();
+}
+
+int SettingsManager::quietHoursEnd() const
+{
+    return minuteOfDay(
+        m_store->value(QStringLiteral("notifications/quietEnd"),
+                       kDefaultQuietHoursEnd),
+        kDefaultQuietHoursEnd);
+}
+
+void SettingsManager::setQuietHoursEnd(int minute)
+{
+    if (minute < 0 || minute >= 24 * 60 || quietHoursEnd() == minute)
+        return;
+    m_store->setValue(QStringLiteral("notifications/quietEnd"), minute);
+    Q_EMIT quietHoursChanged();
+}
+
+bool SettingsManager::quietHoursAllowMentions() const
+{
+    return m_store->value(QStringLiteral("notifications/quietAllowMentions"),
+                          false).toBool();
+}
+
+void SettingsManager::setQuietHoursAllowMentions(bool on)
+{
+    if (quietHoursAllowMentions() == on)
+        return;
+    m_store->setValue(QStringLiteral("notifications/quietAllowMentions"), on);
+    Q_EMIT quietHoursChanged();
+}
+
+bool SettingsManager::quietHoursAllowDirect() const
+{
+    return m_store->value(QStringLiteral("notifications/quietAllowDirect"),
+                          false).toBool();
+}
+
+void SettingsManager::setQuietHoursAllowDirect(bool on)
+{
+    if (quietHoursAllowDirect() == on)
+        return;
+    m_store->setValue(QStringLiteral("notifications/quietAllowDirect"), on);
+    Q_EMIT quietHoursChanged();
+}
+
+QStringList SettingsManager::quietHoursRooms() const
+{
+    return m_store->value(QStringLiteral("notifications/quietRooms"))
+        .toStringList();
+}
+
+void SettingsManager::setQuietHoursRoomAllowed(const QString &roomId, bool on)
+{
+    if (!roomId.startsWith(QLatin1Char('!')))
+        return;
+    QStringList rooms = quietHoursRooms();
+    if (rooms.contains(roomId) == on)
+        return;
+    if (on)
+        rooms.append(roomId);
+    else
+        rooms.removeAll(roomId);
+    m_store->setValue(QStringLiteral("notifications/quietRooms"), rooms);
+    Q_EMIT quietHoursChanged();
+}
+
 bool SettingsManager::ringForCalls() const
 {
     return m_store->value(QStringLiteral("notifications/ringForCalls"), true)
