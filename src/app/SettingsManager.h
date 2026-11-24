@@ -961,6 +961,9 @@ public:
                                     const QString &checkedDeviceId);
     bool keyringBackendChanged(const QString &userId) const;
     void setStoreSlugFor(const QString &userId, const QString &storeSlug);
+    // True when `root` is where another saved account's store lives.
+    bool isRecordedRootOfAnotherAccount(const QString &userId,
+                                        const QString &root) const;
     bool resolveSavedIdentity(const QString &userId,
                               matrix::app_data::AccountIdentity *out) const;
     QString activeAccountUserId() const;

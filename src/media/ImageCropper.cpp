@@ -1,6 +1,7 @@
 #include "media/ImageCropper.h"
 
 #include "media/AnimatedImageSniff.h"
+#include "media/ImageMetadataSize.h"
 
 #include "media/StagedImageStore.h"
 #include "media/SvgRasterJob.h"
@@ -220,11 +221,13 @@ QVariantMap ImageCropper::loadBytes(const QByteArray &bytes)
     QImageReader reader(&buffer);
     reader.setAutoTransform(true);
     const QSize natural = reader.size();
+    QSize target = natural;
     if (natural.isValid()
-        && qMax(natural.width(), natural.height()) > kMaxSourceEdge) {
-        reader.setScaledSize(natural.scaled(kMaxSourceEdge, kMaxSourceEdge,
-                                            Qt::KeepAspectRatio));
-    }
+        && qMax(natural.width(), natural.height()) > kMaxSourceEdge)
+        target = natural.scaled(kMaxSourceEdge, kMaxSourceEdge, Qt::KeepAspectRatio);
+    target = imagemeta::decodeSizeWithinBudget(reader, target, qint64(64) << 20);
+    if (target.isValid() && target != natural)
+        reader.setScaledSize(target);
     QImage decoded = reader.read();
     if (decoded.isNull() || decoded.width() < 1 || decoded.height() < 1) {
         setError(QStringLiteral("undecodable"));

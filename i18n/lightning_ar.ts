@@ -1073,7 +1073,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7422"/>
+        <location filename="../src/app/AppController.cpp" line="+7397"/>
         <source>Room invitation</source>
         <translation>دعوة إلى غرفة</translation>
     </message>
@@ -1198,7 +1198,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>مكالمة واردة</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5764"/>
+        <location filename="../src/app/AppController.cpp" line="-5738"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>أُلغي تسجيل الخروج لأن الحساب تغيّر. لم يُعَد ضبط أي شيء.</translation>
     </message>
@@ -1218,7 +1218,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>فاتتك مكالمة صوتية في %1</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+700"/>
+        <location filename="../src/app/AppController.cpp" line="+697"/>
         <source>The room was created, but adding it to the Space failed.</source>
         <translation>أُنشئت الغرفة، لكن تعذّرت إضافتها إلى الفضاء.</translation>
     </message>
@@ -1250,13 +1250,13 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4315"/>
-        <location line="+821"/>
+        <location line="+4292"/>
+        <location line="+920"/>
         <source>Not connected</source>
         <translation>غير متصل</translation>
     </message>
     <message>
-        <location line="-5177"/>
+        <location line="-5253"/>
         <source>Connecting…</source>
         <translation>جارٍ الاتصال…</translation>
     </message>
@@ -1317,29 +1317,29 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+4"/>
-        <location line="+3111"/>
+        <location line="+3120"/>
         <location line="+9"/>
         <source>Lightning could not read the selected file.</source>
         <translation>تعذّر على Lightning قراءة الملف المحدد.</translation>
     </message>
     <message>
-        <location line="-3117"/>
+        <location line="-3126"/>
         <source>A room-key import is already in progress.</source>
         <translation>هناك استيراد لمفاتيح الغرف قيد التنفيذ بالفعل.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4110"/>
+        <location line="+4087"/>
         <source>Not signed in.</source>
         <translation>لم تسجّل الدخول.</translation>
     </message>
     <message>
-        <location line="-4108"/>
+        <location line="-4085"/>
         <source>Room-key import failed.</source>
         <translation>فشل استيراد مفاتيح الغرف.</translation>
     </message>
     <message>
-        <location line="+2280"/>
+        <location line="+2283"/>
         <source>Enter a size limit from 1 to 2000 MB.</source>
         <translation>أدخل حدًّا للحجم من 1 إلى 2000 ميغابايت.</translation>
     </message>
@@ -1355,12 +1355,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="-4820"/>
-        <location line="+2729"/>
+        <location line="+2726"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
     <message>
-        <location line="-2728"/>
+        <location line="-2725"/>
         <source>This is a test notification. If you can read it, desktop notifications work.</source>
         <translation>هذا إشعار تجريبي. إن استطعت قراءته فإشعارات سطح المكتب تعمل.</translation>
     </message>
@@ -1375,7 +1375,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>بدأت المكالمة</translation>
     </message>
     <message>
-        <location line="+962"/>
+        <location line="+959"/>
         <source>Joined the space</source>
         <translation>انضممت إلى الفضاء</translation>
     </message>
@@ -1456,14 +1456,14 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+8"/>
-        <location line="+1847"/>
+        <location line="+1856"/>
         <location line="+41"/>
         <location line="+201"/>
         <source>This build has no Rust SDK backend.</source>
         <translation>هذه النسخة لا تتضمن خلفية Rust SDK.</translation>
     </message>
     <message>
-        <location line="-1800"/>
+        <location line="-1809"/>
         <source>Choose a local image file.</source>
         <translation>اختر ملف صورة محلي.</translation>
     </message>
@@ -1507,7 +1507,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>تعذّر حفظ الأيقونة.</translation>
     </message>
     <message>
-        <location line="+421"/>
+        <location line="+424"/>
         <source>You are no longer in that room, so it cannot be opened.</source>
         <translation>لم تعد في تلك الغرفة، لذا لا يمكن فتحها.</translation>
     </message>
@@ -1533,7 +1533,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>هذه الصورة غير قابلة للنسخ.</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+15"/>
         <source>Couldn&apos;t decode the image.</source>
         <translation>تعذّر فك ترميز الصورة.</translation>
     </message>
@@ -1543,7 +1543,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>الحافظة غير متاحة.</translation>
     </message>
     <message>
-        <location line="+163"/>
+        <location line="+164"/>
         <source>Verification is only available on the Rust backend.</source>
         <translation>التحقّق متاح فقط على خلفية Rust.</translation>
     </message>
@@ -1596,15 +1596,15 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>مسح البيانات المحلية لهذا الجهاز لن يصلح هذا، وسيدمّر مفاتيح تعمية ما زلت بحاجة إليها.</translation>
     </message>
     <message>
-        <location line="+531"/>
-        <location line="+812"/>
-        <location line="+747"/>
+        <location line="+499"/>
+        <location line="+910"/>
+        <location line="+748"/>
         <location line="+15"/>
         <source>Removal did not finish: the account&apos;s data is still in use. Nothing was deleted.</source>
         <translation>لم تكتمل الإزالة: بيانات الحساب ما زالت قيد الاستخدام. لم يُحذف شيء.</translation>
     </message>
     <message>
-        <location line="-1377"/>
+        <location line="-1476"/>
         <source>This backend cannot change your display name.</source>
         <translation>هذه الخلفية لا يمكنها تغيير اسمك الظاهر.</translation>
     </message>
@@ -1631,12 +1631,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+148"/>
-        <location line="+578"/>
+        <location line="+677"/>
         <source>That account is not signed in on this device.</source>
         <translation>هذا الحساب غير مسجّل الدخول على هذا الجهاز.</translation>
     </message>
     <message>
-        <location line="-555"/>
+        <location line="-654"/>
         <source>That account&apos;s sign-in has expired. Sign in to it again.</source>
         <translation>انتهت صلاحية تسجيل دخول ذلك الحساب. سجّل الدخول إليه مجددًا.</translation>
     </message>
@@ -1646,8 +1646,8 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>لم تعد حلقة مفاتيح نظامك تُعيد تسجيل الدخول المحفوظ لذلك الحساب. لم يُحذف شيء: سجّل الدخول إليه مجددًا للمتابعة على هذا الجهاز.</translation>
     </message>
     <message>
-        <location line="+315"/>
-        <location line="+730"/>
+        <location line="+413"/>
+        <location line="+731"/>
         <source>This account can&apos;t be removed while the system keyring can&apos;t be read: its saved sign-in is there and would be left behind. Unlock the keyring, or start it, and try again.</source>
         <translation>لا يمكن إزالة هذا الحساب ما دامت حلقة مفاتيح النظام غير قابلة للقراءة: تسجيل دخوله المحفوظ فيها وسيبقى خلفها. افتح قفل حلقة المفاتيح أو شغّلها وحاول مجددًا.</translation>
     </message>
@@ -1689,9 +1689,9 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location filename="../qml/LoginScreen.qml" line="+433"/>
-        <location filename="../src/app/AppController.cpp" line="-2184"/>
+        <location filename="../src/app/AppController.cpp" line="-2251"/>
         <location line="+25"/>
-        <location line="+562"/>
+        <location line="+530"/>
         <location line="+454"/>
         <source>Lightning can&apos;t read this device&apos;s saved sign-ins right now — the system keyring is locked or unavailable. Unlock it and try again.</source>
         <translation>لا يستطيع Lightning قراءة تسجيلات الدخول المحفوظة على هذا الجهاز الآن — حلقة مفاتيح النظام مقفلة أو غير متاحة. افتح قفلها وحاول مجددًا.</translation>
@@ -1751,7 +1751,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+606"/>
+        <location filename="../qml/AppTheme.qml" line="+609"/>
         <source>Storm</source>
         <translation>Storm</translation>
     </message>
@@ -1952,7 +1952,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>الصورة أكبر من حد الرفع في الخادوم (%1).</translation>
     </message>
     <message>
-        <location line="+215"/>
+        <location line="+218"/>
         <source>The attachment is no longer available.</source>
         <translation>المرفق لم يعد متوفرا.</translation>
     </message>
@@ -1967,18 +1967,18 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>تعديل الصورة غير صالح.</translation>
     </message>
     <message>
-        <location line="-113"/>
-        <location line="+144"/>
+        <location line="-116"/>
+        <location line="+147"/>
         <source>This image is too large to edit.</source>
         <translation>هذه الصورة كبيرة جدًا بحيث لا يمكن تعديلها.</translation>
     </message>
     <message>
-        <location line="-162"/>
+        <location line="-165"/>
         <source>This image format cannot be edited.</source>
         <translation>لا يمكن تحرير تنسيق الصورة هذا.</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+29"/>
         <source>This image could not be decoded safely.</source>
         <translation>لا يمكن فك تشفير هذه الصورة بشكل آمن.</translation>
     </message>
@@ -10056,13 +10056,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+7"/>
-        <location line="+658"/>
+        <location line="+659"/>
         <location line="+1"/>
         <source>Open in browser</source>
         <translation>فتح في المتصفح</translation>
     </message>
     <message>
-        <location line="-651"/>
+        <location line="-652"/>
         <source>Close</source>
         <translation>إغلاق</translation>
     </message>
@@ -10097,7 +10097,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>إغلاق عارض الصور</translation>
     </message>
     <message>
-        <location line="+154"/>
+        <location line="+155"/>
         <source>Image %1 of %2, shown</source>
         <translation>الصورة %1 من %2، معروضة</translation>
     </message>
@@ -11874,7 +11874,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1373"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1378"/>
         <location line="+689"/>
         <source>The file could not be downloaded.</source>
         <translation>تعذّر تنزيل الملف.</translation>
@@ -14427,7 +14427,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MockMatrixClient</name>
     <message>
-        <location filename="../src/matrix/MockMatrixClient.cpp" line="+357"/>
+        <location filename="../src/matrix/MockMatrixClient.cpp" line="+360"/>
         <location line="+33"/>
         <location line="+28"/>
         <location line="+46"/>
@@ -17173,7 +17173,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>الإعدادات</translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+56"/>
         <source>Account menu for %1</source>
         <translation>قائمة حساب %1</translation>
     </message>
@@ -18610,7 +18610,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>اختر صورة الغرفة الرمزية</translation>
     </message>
     <message>
-        <location line="+62"/>
+        <location line="+58"/>
         <source>Room information</source>
         <translation>معلومات الغرفة</translation>
     </message>
@@ -18630,12 +18630,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1أعضاء</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="-11"/>
         <source>Close room information</source>
         <translation>إغلاق معلومات الغرفة</translation>
     </message>
     <message>
-        <location line="-309"/>
+        <location line="-267"/>
         <source>Overview</source>
         <translation>نظرة عامة</translation>
     </message>
@@ -18655,7 +18655,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>الوسائط</translation>
     </message>
     <message>
-        <location line="+389"/>
+        <location line="+375"/>
         <source>Notifications</source>
         <translation>الإشعارات</translation>
     </message>
@@ -18718,12 +18718,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>غير معمّاة</translation>
     </message>
     <message>
-        <location line="-546"/>
+        <location line="-532"/>
         <source>Widgets</source>
         <translation>الودجات</translation>
     </message>
     <message>
-        <location line="+2121"/>
+        <location line="+2107"/>
         <source>Open</source>
         <translation>فتح</translation>
     </message>
@@ -18733,7 +18733,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>تصدير الغرفة…</translation>
     </message>
     <message>
-        <location line="-549"/>
+        <location line="-535"/>
         <source>Anyone can read this room&apos;s history without joining, even though not everyone can join it.</source>
         <translation>يمكن لأي شخص قراءة سجل هذه الغرفة دون الانضمام إليها، رغم أن الانضمام إليها ليس متاحًا للجميع.</translation>
     </message>
@@ -18774,12 +18774,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>اختر صورتك الرمزية لهذه الغرفة</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+62"/>
         <source>Room permissions</source>
         <translation>أذونات الغرفة</translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+166"/>
         <source>This room has no override — your account&apos;s notification settings apply.</source>
         <translation>ليس لهذه الغرفة تجاوز — تسري إعدادات إشعارات حسابك.</translation>
     </message>
@@ -19967,7 +19967,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RoomsPanel</name>
     <message>
-        <location filename="../qml/RoomsPanel.qml" line="+207"/>
+        <location filename="../qml/RoomsPanel.qml" line="+208"/>
         <location line="+3"/>
         <location line="+5"/>
         <source>Lightning</source>
@@ -20304,7 +20304,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RustSdkMatrixClient</name>
     <message>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+603"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+605"/>
         <source>Lightning could not create its local storage directory for this account. Check filesystem permissions and free space.</source>
         <translation>تعذّر على Lightning إنشاء مجلد التخزين المحلي لهذا الحساب. تحقّق من أذونات نظام الملفات والمساحة الحرة.</translation>
     </message>
@@ -20497,12 +20497,12 @@ Signing out and signing in again is the only fix.</source>
         <location line="+7"/>
         <location line="+10"/>
         <location line="+50"/>
-        <location line="+2789"/>
+        <location line="+2793"/>
         <source>Lightning could not completely reset the local session for this account. Check the application logs and filesystem permissions, then try again.</source>
         <translation>تعذّر على Lightning إعادة ضبط الجلسة المحلية لهذا الحساب بالكامل. تحقّق من سجلات التطبيق وأذونات نظام الملفات ثم أعد المحاولة.</translation>
     </message>
     <message>
-        <location line="-2803"/>
+        <location line="-2807"/>
         <source>Local Lightning session rebuilt. The previous encryption store was moved aside, not deleted, and is still in this account&apos;s data directory. You can sign in again.</source>
         <translation>أُعيد بناء جلسة Lightning المحلية. نُحّي مخزن التعمية السابق جانبًا ولم يُحذف، وما زال في مجلد بيانات هذا الحساب. يمكنك تسجيل الدخول مجددًا.</translation>
     </message>
@@ -20515,7 +20515,7 @@ Signing out and signing in again is the only fix.</source>
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4712"/>
+        <location line="+4716"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -20524,15 +20524,15 @@ Signing out and signing in again is the only fix.</source>
         <translation>لم تسجّل الدخول.</translation>
     </message>
     <message>
-        <location line="-5068"/>
+        <location line="-5072"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4875"/>
+        <location line="+4879"/>
         <source>Unknown room: %1</source>
         <translation>غرفة غير معروفة: %1</translation>
     </message>
     <message>
-        <location line="-5070"/>
+        <location line="-5074"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
@@ -20540,13 +20540,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+777"/>
-        <location line="+2705"/>
+        <location line="+2709"/>
         <location line="+64"/>
         <source>The sticker could not be sent.</source>
         <translation>لا يمكن إرسال الملصق.</translation>
     </message>
     <message>
-        <location line="-1444"/>
+        <location line="-1448"/>
         <source>Lightning cannot send that yet.</source>
         <translation>لا يستطيع Lightning إرسال ذلك بعد.</translation>
     </message>
@@ -20556,7 +20556,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>لا تزال هذه الغرفة قيد التحميل. حاول ذلك مجددًا بعد قليل.</translation>
     </message>
     <message>
-        <location line="+284"/>
+        <location line="+288"/>
         <source>Local Lightning session reset. You can sign in again.</source>
         <translation>أُعيد ضبط جلسة Lightning المحلية. يمكنك تسجيل الدخول مجددًا.</translation>
     </message>
@@ -20638,7 +20638,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>تعذّر إكمال إجراء الاستطلاع.</translation>
     </message>
     <message>
-        <location line="-6624"/>
+        <location line="-6628"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>بيانات هذا الحساب ما زالت قيد الاستخدام من جلسة في الخلفية. انتظر قليلًا ثم حاول مرة أخرى.</translation>
     </message>
@@ -20668,7 +20668,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>أدخل كلمة المرور.</translation>
     </message>
     <message>
-        <location line="+5753"/>
+        <location line="+5757"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>تعذّر إرسال الرسالة. يمكنك إعادة المحاولة من إجراء «إعادة المحاولة» الخاص بالرسالة.</translation>
     </message>
@@ -21410,7 +21410,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>ملصق</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+52"/>
         <location line="+11"/>
         <source>Search filters</source>
         <translation>مرشّحات البحث</translation>
@@ -21421,7 +21421,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>البحث في الرسائل</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="-6"/>
         <source>Cancel filters</source>
         <translation>إلغاء المرشّحات</translation>
     </message>
@@ -21431,7 +21431,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>إغلاق البحث</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+41"/>
         <source>Search room history…</source>
         <translation>ابحث في سجل الغرفة…</translation>
     </message>
@@ -21451,7 +21451,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>فتح رسالة من %1</translation>
     </message>
     <message>
-        <location line="-243"/>
+        <location line="-238"/>
         <source>Search could not be completed.</source>
         <translation>تعذّر إتمام البحث.</translation>
     </message>
@@ -21466,12 +21466,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>اكتب %1 من الأحرف على الأقل.</translation>
     </message>
     <message>
-        <location line="+179"/>
+        <location line="+174"/>
         <source>Nothing is indexed yet.</source>
         <translation>لم يُفهرس شيء بعد.</translation>
     </message>
     <message>
-        <location line="-176"/>
+        <location line="-171"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>لا رسائل مطابقة. جرّب كلمة أقل شيوعًا، أو ابحث في الفهرس المحلي.</translation>
     </message>
@@ -21481,7 +21481,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>لا توجد رسائل مطابقة</translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+102"/>
         <source>Indexed</source>
         <translation>مفهرس</translation>
     </message>
@@ -33257,12 +33257,13 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ThreadPanel</name>
     <message>
-        <location filename="../qml/ThreadPanel.qml" line="+426"/>
+        <location filename="../qml/ThreadPanel.qml" line="+433"/>
+        <location line="+48"/>
         <source>Mark this thread read</source>
         <translation>تعليم هذا الخيط كمقروء</translation>
     </message>
     <message>
-        <location line="+1328"/>
+        <location line="+1304"/>
         <source>Jump to the newest reply</source>
         <translation>الانتقال إلى أحدث رد</translation>
     </message>
@@ -33279,7 +33280,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message>
-        <location line="-1723"/>
+        <location line="-1754"/>
         <source>This room has been replaced.</source>
         <translation>تم استبدال هذه الغرفة.</translation>
     </message>
@@ -33294,18 +33295,18 @@ Note: importing keys does not verify this session.</source>
         <translation>أمس</translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+183"/>
         <location line="+1"/>
         <source>Back to the room</source>
         <translation>العودة إلى الغرفة</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+11"/>
         <source>Back to threads</source>
         <translation>العودة إلى الخيوط</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Thread</source>
         <translation>خيط</translation>
     </message>
@@ -33315,7 +33316,7 @@ Note: importing keys does not verify this session.</source>
         <translation>الخيوط</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source>Unfollow</source>
         <translation>إلغاء المتابعة</translation>
     </message>
@@ -33335,7 +33336,7 @@ Note: importing keys does not verify this session.</source>
         <translation>متابعة هذا الخيط</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+24"/>
         <source>Show the thread in the side panel</source>
         <translation>عرض الخيط في اللوحة الجانبية</translation>
     </message>
@@ -33345,13 +33346,12 @@ Note: importing keys does not verify this session.</source>
         <translation>عرض الخيط في العرض الرئيسي</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+1"/>
+        <location line="-99"/>
         <source>Close thread</source>
         <translation>إغلاق الخيط</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+162"/>
         <source>Loading threads…</source>
         <translation>جارٍ تحميل الخيوط…</translation>
     </message>
@@ -33414,7 +33414,7 @@ Note: importing keys does not verify this session.</source>
         <translation>فتح في الغرفة</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-707"/>
         <source>Message deleted</source>
         <translation>حُذفت الرسالة</translation>
     </message>
@@ -33424,7 +33424,12 @@ Note: importing keys does not verify this session.</source>
         <translation>تعذّر فك تعمية هذه الرسالة</translation>
     </message>
     <message>
-        <location line="+687"/>
+        <location line="+347"/>
+        <source>More actions</source>
+        <translation>إجراءات أخرى</translation>
+    </message>
+    <message>
+        <location line="+371"/>
         <location line="+1"/>
         <source>Collapse thread root</source>
         <translation>طي جذر الخيط</translation>

@@ -1283,8 +1283,13 @@ QImage MediaBridge::cachedAvatarImage(const QString &mxcUri) const
     const QSize natural = reader.size();
     if (!natural.isValid())
         return {};
-    if (natural.width() > 4096 || natural.height() > 4096)
-        return {};
+    QSize target = natural;
+    if (qMax(natural.width(), natural.height()) > kAvatarCanonicalEdge)
+        target = natural.scaled(kAvatarCanonicalEdge, kAvatarCanonicalEdge,
+                                Qt::KeepAspectRatio);
+    target = imagemeta::decodeSizeWithinBudget(reader, target, qint64(64) << 20);
+    if (target != natural)
+        reader.setScaledSize(target);
     return reader.read();
 }
 

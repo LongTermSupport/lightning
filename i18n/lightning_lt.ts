@@ -1043,7 +1043,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7422"/>
+        <location filename="../src/app/AppController.cpp" line="+7397"/>
         <source>Room invitation</source>
         <translation>Kvietimas į kambarį</translation>
     </message>
@@ -1165,7 +1165,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Įeinantis skambutis</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5764"/>
+        <location filename="../src/app/AppController.cpp" line="-5738"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>Atsijungimas atšauktas, nes paskyra pasikeitė. Nieko iš naujo nenustatyta.</translation>
     </message>
@@ -1185,7 +1185,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Praleidote balso skambutį %1</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+700"/>
+        <location filename="../src/app/AppController.cpp" line="+697"/>
         <source>The room was created, but adding it to the Space failed.</source>
         <translation>Kambarys buvo sukurtas, bet nepavyko jo pridėti prie erdvės.</translation>
     </message>
@@ -1217,13 +1217,13 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4315"/>
-        <location line="+821"/>
+        <location line="+4292"/>
+        <location line="+920"/>
         <source>Not connected</source>
         <translation>Neprisijungęs</translation>
     </message>
     <message>
-        <location line="-5177"/>
+        <location line="-5253"/>
         <source>Connecting…</source>
         <translation>Jungiamasi…</translation>
     </message>
@@ -1284,29 +1284,29 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
     </message>
     <message>
         <location line="+4"/>
-        <location line="+3111"/>
+        <location line="+3120"/>
         <location line="+9"/>
         <source>Lightning could not read the selected file.</source>
         <translation>Lightning nepavyko nuskaityti pasirinkto failo.</translation>
     </message>
     <message>
-        <location line="-3117"/>
+        <location line="-3126"/>
         <source>A room-key import is already in progress.</source>
         <translation>Jau vyksta kambario rakto importavimas.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4110"/>
+        <location line="+4087"/>
         <source>Not signed in.</source>
         <translation>Neprisijungęs.</translation>
     </message>
     <message>
-        <location line="-4108"/>
+        <location line="-4085"/>
         <source>Room-key import failed.</source>
         <translation>Nepavyko importuoti kambario rakto.</translation>
     </message>
     <message>
-        <location line="+2280"/>
+        <location line="+2283"/>
         <source>Enter a size limit from 1 to 2000 MB.</source>
         <translation>Įveskite dydžio ribą nuo 1 iki 2000 MB.</translation>
     </message>
@@ -1322,12 +1322,12 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
     </message>
     <message>
         <location line="-4820"/>
-        <location line="+2729"/>
+        <location line="+2726"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
     <message>
-        <location line="-2728"/>
+        <location line="-2725"/>
         <source>This is a test notification. If you can read it, desktop notifications work.</source>
         <translation>Tai bandomasis pranešimas. Jei jį matote, darbalaukio pranešimai veikia.</translation>
     </message>
@@ -1342,7 +1342,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Skambutis prasidėjo</translation>
     </message>
     <message>
-        <location line="+962"/>
+        <location line="+959"/>
         <source>Joined the space</source>
         <translation>Prisijungta prie erdvės</translation>
     </message>
@@ -1423,14 +1423,14 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
     </message>
     <message>
         <location line="+8"/>
-        <location line="+1847"/>
+        <location line="+1856"/>
         <location line="+41"/>
         <location line="+201"/>
         <source>This build has no Rust SDK backend.</source>
         <translation>Šioje versijoje nėra Rust SDK posistemės.</translation>
     </message>
     <message>
-        <location line="-1800"/>
+        <location line="-1809"/>
         <source>Choose a local image file.</source>
         <translation>Pasirinkite vietinį vaizdo failą.</translation>
     </message>
@@ -1474,7 +1474,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Nepavyko išsaugoti piktogramos.</translation>
     </message>
     <message>
-        <location line="+421"/>
+        <location line="+424"/>
         <source>You are no longer in that room, so it cannot be opened.</source>
         <translation>Jūs nebesate tame kambaryje, todėl jo atidaryti negalima.</translation>
     </message>
@@ -1500,7 +1500,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Tai nėra kopijuojamas vaizdas.</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+15"/>
         <source>Couldn&apos;t decode the image.</source>
         <translation>Nepavyko iššifruoti vaizdo.</translation>
     </message>
@@ -1510,7 +1510,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Iškarpinė nepasiekiama.</translation>
     </message>
     <message>
-        <location line="+163"/>
+        <location line="+164"/>
         <source>Verification is only available on the Rust backend.</source>
         <translation>Patvirtinimas galimas tik Rust posistemėje.</translation>
     </message>
@@ -1563,15 +1563,15 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Išvalius šio įrenginio vietinius duomenis problema neišspręstų ir būtų sunaikinti šifravimo raktai, kurių vis dar reikia.</translation>
     </message>
     <message>
-        <location line="+531"/>
-        <location line="+812"/>
-        <location line="+747"/>
+        <location line="+499"/>
+        <location line="+910"/>
+        <location line="+748"/>
         <location line="+15"/>
         <source>Removal did not finish: the account&apos;s data is still in use. Nothing was deleted.</source>
         <translation>Šalinimas nebaigtas: paskyros duomenys vis dar naudojami. Nieko neištrinta.</translation>
     </message>
     <message>
-        <location line="-1377"/>
+        <location line="-1476"/>
         <source>This backend cannot change your display name.</source>
         <translation>Ši posistemė negali pakeisti rodomo vardo.</translation>
     </message>
@@ -1598,12 +1598,12 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
     </message>
     <message>
         <location line="+148"/>
-        <location line="+578"/>
+        <location line="+677"/>
         <source>That account is not signed in on this device.</source>
         <translation>Prie tos paskyros šiame įrenginyje neprisijungta.</translation>
     </message>
     <message>
-        <location line="-555"/>
+        <location line="-654"/>
         <source>That account&apos;s sign-in has expired. Sign in to it again.</source>
         <translation>Tos paskyros prisijungimo galiojimo laikas baigėsi. Prisijunkite prie jo dar kartą.</translation>
     </message>
@@ -1613,8 +1613,8 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Sistemos raktų saugykla nebegrąžina tos paskyros įrašyto prisijungimo. Nieko neištrinta: prisijunkite prie jos dar kartą, kad galėtumėte tęsti šiame įrenginyje.</translation>
     </message>
     <message>
-        <location line="+315"/>
-        <location line="+730"/>
+        <location line="+413"/>
+        <location line="+731"/>
         <source>This account can&apos;t be removed while the system keyring can&apos;t be read: its saved sign-in is there and would be left behind. Unlock the keyring, or start it, and try again.</source>
         <translation>Šios paskyros pašalinti negalima, kol sistemos raktų saugyklos neįmanoma nuskaityti: joje yra paskyros įrašytas prisijungimas ir jis liktų. Atrakinkite raktų saugyklą arba ją paleiskite ir bandykite dar kartą.</translation>
     </message>
@@ -1656,9 +1656,9 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
     </message>
     <message>
         <location filename="../qml/LoginScreen.qml" line="+433"/>
-        <location filename="../src/app/AppController.cpp" line="-2184"/>
+        <location filename="../src/app/AppController.cpp" line="-2251"/>
         <location line="+25"/>
-        <location line="+562"/>
+        <location line="+530"/>
         <location line="+454"/>
         <source>Lightning can&apos;t read this device&apos;s saved sign-ins right now — the system keyring is locked or unavailable. Unlock it and try again.</source>
         <translation>„Lightning“ šiuo metu negali nuskaityti šio įrenginio įrašytų prisijungimų – sistemos raktų saugykla užrakinta arba nepasiekiama. Atrakinkite ją ir bandykite dar kartą.</translation>
@@ -1718,7 +1718,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+606"/>
+        <location filename="../qml/AppTheme.qml" line="+609"/>
         <source>Storm</source>
         <translation>Audra</translation>
     </message>
@@ -1919,7 +1919,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Vaizdas didesnis nei serverio įkėlimo limitas (%1).</translation>
     </message>
     <message>
-        <location line="+215"/>
+        <location line="+218"/>
         <source>The attachment is no longer available.</source>
         <translation>Priedas nebepasiekiamas.</translation>
     </message>
@@ -1934,18 +1934,18 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Neteisingas vaizdo redagavimas.</translation>
     </message>
     <message>
-        <location line="-113"/>
-        <location line="+144"/>
+        <location line="-116"/>
+        <location line="+147"/>
         <source>This image is too large to edit.</source>
         <translation>Šis vaizdas per didelis, kad jį būtų galima redaguoti.</translation>
     </message>
     <message>
-        <location line="-162"/>
+        <location line="-165"/>
         <source>This image format cannot be edited.</source>
         <translation>Šio vaizdo formato redaguoti negalima.</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+29"/>
         <source>This image could not be decoded safely.</source>
         <translation>Šio vaizdo nepavyko saugiai iššifruoti.</translation>
     </message>
@@ -9936,13 +9936,13 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location line="+658"/>
+        <location line="+659"/>
         <location line="+1"/>
         <source>Open in browser</source>
         <translation>Atidaryti naršyklėje</translation>
     </message>
     <message>
-        <location line="-651"/>
+        <location line="-652"/>
         <source>Close</source>
         <translation>Uždaryti</translation>
     </message>
@@ -9977,7 +9977,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Uždaryti vaizdų peržiūros priemonę</translation>
     </message>
     <message>
-        <location line="+154"/>
+        <location line="+155"/>
         <source>Image %1 of %2, shown</source>
         <translation>Paveikslėlis %1 iš %2, rodomas</translation>
     </message>
@@ -11739,7 +11739,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1373"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1378"/>
         <location line="+689"/>
         <source>The file could not be downloaded.</source>
         <translation>Failo atsisiųsti nepavyko.</translation>
@@ -14256,7 +14256,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>MockMatrixClient</name>
     <message>
-        <location filename="../src/matrix/MockMatrixClient.cpp" line="+357"/>
+        <location filename="../src/matrix/MockMatrixClient.cpp" line="+360"/>
         <location line="+33"/>
         <location line="+28"/>
         <location line="+46"/>
@@ -16981,7 +16981,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Nustatymai</translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+56"/>
         <source>Account menu for %1</source>
         <translation>%1 paskyros meniu</translation>
     </message>
@@ -18388,7 +18388,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Pasirinkite kambario avatarą</translation>
     </message>
     <message>
-        <location line="+62"/>
+        <location line="+58"/>
         <source>Room information</source>
         <translation>Informacija apie kambarį</translation>
     </message>
@@ -18408,12 +18408,12 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>%1 narių</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="-11"/>
         <source>Close room information</source>
         <translation>Uždaryti kambario informaciją</translation>
     </message>
     <message>
-        <location line="-309"/>
+        <location line="-267"/>
         <source>Overview</source>
         <translation>Apžvalga</translation>
     </message>
@@ -18433,7 +18433,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Medija</translation>
     </message>
     <message>
-        <location line="+389"/>
+        <location line="+375"/>
         <source>Notifications</source>
         <translation>Pranešimai</translation>
     </message>
@@ -18496,12 +18496,12 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Nešifruota</translation>
     </message>
     <message>
-        <location line="-546"/>
+        <location line="-532"/>
         <source>Widgets</source>
         <translation>Valdikliai</translation>
     </message>
     <message>
-        <location line="+2121"/>
+        <location line="+2107"/>
         <source>Open</source>
         <translation>Atidaryti</translation>
     </message>
@@ -18511,7 +18511,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Eksportuoti kambarį…</translation>
     </message>
     <message>
-        <location line="-549"/>
+        <location line="-535"/>
         <source>Anyone can read this room&apos;s history without joining, even though not everyone can join it.</source>
         <translation>Šio kambario istoriją gali skaityti visi, net ir neprisijungę, nors prisijungti prie jo gali ne kiekvienas.</translation>
     </message>
@@ -18552,12 +18552,12 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Pasirinkite savo avatarą šiam kambariui</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+62"/>
         <source>Room permissions</source>
         <translation>Kambario leidimai</translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+166"/>
         <source>This room has no override — your account&apos;s notification settings apply.</source>
         <translation>Šis kambarys neturi išimties – taikomi jūsų paskyros pranešimų nustatymai.</translation>
     </message>
@@ -19727,7 +19727,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>RoomsPanel</name>
     <message>
-        <location filename="../qml/RoomsPanel.qml" line="+207"/>
+        <location filename="../qml/RoomsPanel.qml" line="+208"/>
         <location line="+3"/>
         <location line="+5"/>
         <source>Lightning</source>
@@ -20049,7 +20049,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>RustSdkMatrixClient</name>
     <message>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+603"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+605"/>
         <source>Lightning could not create its local storage directory for this account. Check filesystem permissions and free space.</source>
         <translation>„Lightning“ negalėjo sukurti šios paskyros vietinės saugyklos katalogo. Patikrinkite failų sistemos leidimus ir laisvą vietą.</translation>
     </message>
@@ -20242,12 +20242,12 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <location line="+7"/>
         <location line="+10"/>
         <location line="+50"/>
-        <location line="+2789"/>
+        <location line="+2793"/>
         <source>Lightning could not completely reset the local session for this account. Check the application logs and filesystem permissions, then try again.</source>
         <translation>„Lightning“ nepavyko visiškai iš naujo nustatyti šios paskyros vietinio seanso. Patikrinkite programų žurnalus ir failų sistemos leidimus, tada bandykite dar kartą.</translation>
     </message>
     <message>
-        <location line="-2803"/>
+        <location line="-2807"/>
         <source>Local Lightning session rebuilt. The previous encryption store was moved aside, not deleted, and is still in this account&apos;s data directory. You can sign in again.</source>
         <translation>Vietinis Lightning seansas atkurtas. Ankstesnė šifravimo saugykla buvo perkelta, neištrinta ir vis dar yra šios paskyros duomenų kataloge. Galite prisijungti dar kartą.</translation>
     </message>
@@ -20260,7 +20260,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4712"/>
+        <location line="+4716"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -20269,15 +20269,15 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Neprisijungęs.</translation>
     </message>
     <message>
-        <location line="-5068"/>
+        <location line="-5072"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4875"/>
+        <location line="+4879"/>
         <source>Unknown room: %1</source>
         <translation>Nežinomas kambarys: %1</translation>
     </message>
     <message>
-        <location line="-5070"/>
+        <location line="-5074"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
@@ -20285,13 +20285,13 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     </message>
     <message>
         <location line="+777"/>
-        <location line="+2705"/>
+        <location line="+2709"/>
         <location line="+64"/>
         <source>The sticker could not be sent.</source>
         <translation>Nepavyko išsiųsti lipduko.</translation>
     </message>
     <message>
-        <location line="-1444"/>
+        <location line="-1448"/>
         <source>Lightning cannot send that yet.</source>
         <translation>„Lightning“ to dar negali išsiųsti.</translation>
     </message>
@@ -20301,7 +20301,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Šis kambarys vis dar įkeliamas. Po akimirkos bandykite dar kartą.</translation>
     </message>
     <message>
-        <location line="+284"/>
+        <location line="+288"/>
         <source>Local Lightning session reset. You can sign in again.</source>
         <translation>Vietinis Lightning seansas nustatytas iš naujo. Galite prisijungti dar kartą.</translation>
     </message>
@@ -20383,7 +20383,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Nepavyko atlikti apklausos veiksmo.</translation>
     </message>
     <message>
-        <location line="-6624"/>
+        <location line="-6628"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>Šios paskyros duomenis vis dar naudoja fonu veikiantis seansas. Palaukite akimirką ir bandykite dar kartą.</translation>
     </message>
@@ -20413,7 +20413,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Įveskite slaptažodį.</translation>
     </message>
     <message>
-        <location line="+5753"/>
+        <location line="+5757"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>Nepavyko išsiųsti žinutės. Galite bandyti dar kartą naudodami žinutės veiksmą Bandyti iš naujo.</translation>
     </message>
@@ -21140,7 +21140,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Lipdukas</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+52"/>
         <location line="+11"/>
         <source>Search filters</source>
         <translation>Paieškos filtrai</translation>
@@ -21151,7 +21151,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Ieškoti žinučių</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="-6"/>
         <source>Cancel filters</source>
         <translation>Atšaukti filtrus</translation>
     </message>
@@ -21161,7 +21161,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Uždaryti paiešką</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+41"/>
         <source>Search room history…</source>
         <translation>Ieškoti kambario istorijoje…</translation>
     </message>
@@ -21181,7 +21181,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Atidaryti žinutę nuo %1</translation>
     </message>
     <message>
-        <location line="-243"/>
+        <location line="-238"/>
         <source>Search could not be completed.</source>
         <translation>Paieškos užbaigti nepavyko.</translation>
     </message>
@@ -21196,12 +21196,12 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Įveskite bent %1 simbolius.</translation>
     </message>
     <message>
-        <location line="+179"/>
+        <location line="+174"/>
         <source>Nothing is indexed yet.</source>
         <translation>Dar nieko neindeksuota.</translation>
     </message>
     <message>
-        <location line="-176"/>
+        <location line="-171"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>Atitinkančių žinučių nėra. Pabandykite retesnį žodį arba ieškokite vietiniame indekse.</translation>
     </message>
@@ -21211,7 +21211,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Nėra atitinkančių žinučių</translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+102"/>
         <source>Indexed</source>
         <translation>Indeksuota</translation>
     </message>
@@ -32789,12 +32789,13 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
 <context>
     <name>ThreadPanel</name>
     <message>
-        <location filename="../qml/ThreadPanel.qml" line="+426"/>
+        <location filename="../qml/ThreadPanel.qml" line="+433"/>
+        <location line="+48"/>
         <source>Mark this thread read</source>
         <translation>Pažymėti šią giją kaip perskaitytą</translation>
     </message>
     <message>
-        <location line="+1328"/>
+        <location line="+1304"/>
         <source>Jump to the newest reply</source>
         <translation>Pereiti prie naujausio atsakymo</translation>
     </message>
@@ -32808,7 +32809,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         </translation>
     </message>
     <message>
-        <location line="-1723"/>
+        <location line="-1754"/>
         <source>This room has been replaced.</source>
         <translation>Šis kambarys buvo pakeistas.</translation>
     </message>
@@ -32823,18 +32824,18 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>vakar</translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+183"/>
         <location line="+1"/>
         <source>Back to the room</source>
         <translation>Grįžti į kambarį</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+11"/>
         <source>Back to threads</source>
         <translation>Grįžti į gijas</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Thread</source>
         <translation>Gija</translation>
     </message>
@@ -32844,7 +32845,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Gijos</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source>Unfollow</source>
         <translation>Nebestebėti</translation>
     </message>
@@ -32864,7 +32865,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Sekti šią giją</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+24"/>
         <source>Show the thread in the side panel</source>
         <translation>Rodyti giją šoniniame skydelyje</translation>
     </message>
@@ -32874,13 +32875,12 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Rodyti giją pagrindiniame rodinyje</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+1"/>
+        <location line="-99"/>
         <source>Close thread</source>
         <translation>Uždaryti giją</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+162"/>
         <source>Loading threads…</source>
         <translation>Įkeliamos gijos…</translation>
     </message>
@@ -32940,7 +32940,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Atidaryti kambaryje</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-707"/>
         <source>Message deleted</source>
         <translation>Žinutė ištrinta</translation>
     </message>
@@ -32950,7 +32950,12 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Nepavyko iššifruoti šios žinutės</translation>
     </message>
     <message>
-        <location line="+687"/>
+        <location line="+347"/>
+        <source>More actions</source>
+        <translation>Daugiau veiksmų</translation>
+    </message>
+    <message>
+        <location line="+371"/>
         <location line="+1"/>
         <source>Collapse thread root</source>
         <translation>Sutraukti gijos pradžią</translation>

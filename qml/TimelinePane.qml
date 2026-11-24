@@ -1114,7 +1114,7 @@ Rectangle {
                 id: header
                 anchors.fill: parent
                 anchors.leftMargin: AppTheme.spacing20
-                anchors.rightMargin: AppTheme.spacing20
+                anchors.rightMargin: AppTheme.headerActionGutter
                 spacing: AppTheme.spacing12
 
                 readonly property real identityFloor:
@@ -1123,7 +1123,7 @@ Rectangle {
                 readonly property int actionSlots: {
                     if (width <= 0)
                         return 99
-                    var step = 34 + AppTheme.spacing6
+                    var step = AppTheme.headerActionSize + AppTheme.spacing6
                     var budget = width
                                  - (roomHeaderAvatar.visible
                                     ? roomHeaderAvatar.size + spacing : 0)

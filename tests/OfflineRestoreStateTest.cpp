@@ -202,8 +202,8 @@ private slots:
         QVERIFY(restoredOnMain(app, rust, alice, {bob}));
 
         const QString starred =
-            matrix::app_data::starredGifsDir(alice) + QStringLiteral("/marker");
-        const QString bridge = matrix::app_data::bridgeLabelsFile(alice);
+            matrix::app_data::starredGifsDir(matrix::app_data::accountRoot(alice)) + QStringLiteral("/marker");
+        const QString bridge = matrix::app_data::bridgeLabelsFile(matrix::app_data::accountRoot(alice));
         matrix::app_data::AccountIdentity identity;
         QVERIFY(matrix::app_data::resolveAccountIdentity(revokeServer(), alice,
                                                          &identity));

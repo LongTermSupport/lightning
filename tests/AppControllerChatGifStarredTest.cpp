@@ -15,6 +15,8 @@
 
 #include <QBuffer>
 #include <QClipboard>
+#include <QImageReader>
+#include <QScopeGuard>
 #include <QMimeData>
 
 namespace {
@@ -350,6 +352,46 @@ private Q_SLOTS:
         QCOMPARE(image.size(), QSize(32, 64));
         QVERIFY(qRed(image.pixel(24, 8)) > 200 && qBlue(image.pixel(24, 8)) < 60);
         QCOMPARE(mime->data(QStringLiteral("image/jpeg")), jpeg);
+    }
+
+    void copyingAPhotoOverTheDecodeLimitKeepsTheOriginalBytes()
+    {
+        // The media provider sets this process-wide limit on every decode.
+        const int limit = QImageReader::allocationLimit();
+        QImageReader::setAllocationLimit(64);
+        const auto restore = qScopeGuard([limit] { QImageReader::setAllocationLimit(limit); });
+
+        FakeClient fake;
+        AppController app(AppController::MockBackend);
+        FakeSecretStore secrets;
+        app.settings()->setSecretStore(&secrets);
+        app.settings()->saveSession(kHsOne, kAlice,
+                                    QStringLiteral("ALICEDEV"),
+                                    QStringLiteral("alice-token-fixture"));
+        app.switchToAccount(kAlice);
+        QTRY_VERIFY(!app.accountSwitching());
+        app.mediaBridge()->setClient(&fake);
+
+        QImage photo(4500, 4500, QImage::Format_RGB32);
+        photo.fill(Qt::darkGreen);
+        QByteArray jpeg;
+        {
+            QBuffer buffer(&jpeg);
+            buffer.open(QIODevice::WriteOnly);
+            QVERIFY(photo.save(&buffer, "JPG", 90));
+        }
+        QSignalSpy copied(&app, &AppController::copyImageFinished);
+        app.copyImageToClipboard(QStringLiteral("mk-big"));
+        QVERIFY(!fake.fetches.isEmpty());
+        fake.succeed(fake.fetches.last().opId, jpeg);
+        QCoreApplication::processEvents();
+
+        QTRY_COMPARE(copied.count(), 1);
+        QVERIFY2(copied.at(0).at(0).toBool(), qPrintable(copied.at(0).at(1).toString()));
+        const QMimeData *mime = QGuiApplication::clipboard()->mimeData();
+        QVERIFY(mime);
+        QCOMPARE(mime->data(QStringLiteral("image/jpeg")), jpeg);
+        QVERIFY(!mime->hasImage());
     }
 
     void starAndCopyRacingOnOneKeyBothComplete()

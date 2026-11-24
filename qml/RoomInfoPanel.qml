@@ -290,57 +290,43 @@ Rectangle {
         anchors.fill: parent
         spacing: 0
 
-        Rectangle {
-            Layout.fillWidth: true
-            implicitHeight: Math.max(AppTheme.headerBandHeight,
-                headerRow.implicitHeight + AppTheme.spacing12 * 2)
+        PanelHeader {
+            id: headerRow
             color: AppTheme.surface
-            RowLayout {
-                id: headerRow
-                anchors.fill: parent
-                anchors.margins: AppTheme.spacing12
-                spacing: AppTheme.spacing8
-                Label {
-                    Layout.fillWidth: true
-                    text: {
-                        if (root.section !== "people")
-                            return qsTr("Room information");
-                        var n = app.roomInfo.joinedCount;
-                        if (n <= 0)
-                            return qsTr("Members");
-                        return n === 1 ? qsTr("1 member")
-                                       : qsTr("%1 members").arg(n);
-                    }
-                    color: AppTheme.textPrimary
-                    elide: Label.ElideRight
-                    font.pixelSize: AppTheme.textTitle
-                    font.weight: AppTheme.weightDisplay
+            leadingInset: AppTheme.spacing12
+            closeLabel: qsTr("Close room information")
+            onCloseClicked: root.closeRequested()
+            Label {
+                Layout.fillWidth: true
+                text: {
+                    if (root.section !== "people")
+                        return qsTr("Room information");
+                    var n = app.roomInfo.joinedCount;
+                    if (n <= 0)
+                        return qsTr("Members");
+                    return n === 1 ? qsTr("1 member")
+                                   : qsTr("%1 members").arg(n);
                 }
-                IconButton {
-                    objectName: "roomPermissionsButton"
-                    implicitWidth: 30; implicitHeight: 30
-                    radius: AppTheme.radiusControl
-                    iconName: "lock"
-                    iconSize: 18
-                    Accessible.name: qsTr("Room permissions")
-                    onClicked: {
-                        if (!root.roomPermissionsDialog)
-                            root.roomPermissionsDialog =
-                                roomPermissionsDialogComponent.createObject(root)
-                        root.roomPermissionsDialog.openPermissionsForRoom(
-                            app.roomInfo.roomId, root.roomData.name || "")
-                    }
-                }
-                IconButton {
-                    implicitWidth: 30; implicitHeight: 30
-                    radius: AppTheme.radiusControl
-                    iconName: "close"
-                    iconSize: 18
-                    Accessible.name: qsTr("Close room information")
-                    onClicked: root.closeRequested()
+                color: AppTheme.textPrimary
+                elide: Label.ElideRight
+                font.pixelSize: AppTheme.textTitle
+                font.weight: AppTheme.weightDisplay
+            }
+            IconButton {
+                objectName: "roomPermissionsButton"
+                iconName: "lock"
+                iconSize: 18
+                Accessible.name: qsTr("Room permissions")
+                onClicked: {
+                    if (!root.roomPermissionsDialog)
+                        root.roomPermissionsDialog =
+                            roomPermissionsDialogComponent.createObject(root)
+                    root.roomPermissionsDialog.openPermissionsForRoom(
+                        app.roomInfo.roomId, root.roomData.name || "")
                 }
             }
         }
+
         Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: AppTheme.headerDivider }
 
         SegmentedControl {

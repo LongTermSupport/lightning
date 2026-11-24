@@ -795,6 +795,116 @@ async fn a_stable_poll_thread_root_in_the_panel_gets_its_tally_live() {
     task.abort();
 }
 
+async fn open_thread_over(
+    held: Vec<serde_json::Value>,
+    uncached_replies: Vec<serde_json::Value>,
+) -> (MatrixMockServer, Client, EventQueue, tokio::task::JoinHandle<()>) {
+    let server = MatrixMockServer::new().await;
+    let client = server
+        .client_builder()
+        .on_builder(|b| {
+            b.with_threading_support(matrix_sdk::ThreadingSupport::Enabled {
+                with_subscriptions: false,
+            })
+        })
+        .build()
+        .await;
+    client.event_cache().subscribe().unwrap();
+    let root = held.iter().find(|v| v["event_id"] == "$root").unwrap().clone();
+    sync(&client, held, "1").await;
+    let mut fetched = root;
+    fetched["room_id"] = json!(ROOM);
+    server
+        .mock_room_event()
+        .match_event_id()
+        .ok(matrix_sdk::deserialized_responses::TimelineEvent::from_plaintext(
+            Raw::from_json_string(fetched.to_string()).unwrap()))
+        .mount()
+        .await;
+    let replies = uncached_replies
+        .into_iter()
+        .map(|mut reply| {
+            reply["room_id"] = json!(ROOM);
+            Raw::from_json_string(reply.to_string()).unwrap()
+        })
+        .collect();
+    server
+        .mock_room_relations()
+        .match_target_event(matrix_sdk::ruma::EventId::parse("$root").unwrap())
+        .ok(matrix_sdk::test_utils::mocks::RoomRelationsResponseTemplate::default()
+            .events(replies))
+        .mount()
+        .await;
+
+    let events: EventQueue = Arc::new(Mutex::new(VecDeque::new()));
+    let registry = Arc::new(TimelineRegistry::new(Arc::clone(&events)));
+    registry.thread_gen.store(1, Ordering::SeqCst);
+    *registry.active_thread.lock().unwrap() = Some(ActiveThread {
+        room_id: ROOM.to_owned(),
+        root_event_id: "$root".to_owned(),
+        thread_gen: 1,
+        timeline: None,
+        task: None,
+        pagination_busy: Arc::new(AtomicBool::new(false)),
+        reached_start: Arc::new(AtomicBool::new(false)),
+        clear_epoch: Arc::new(AtomicU64::new(0)),
+    });
+    let lifecycle = registry.lifecycle_gen.load(Ordering::SeqCst);
+    let task = tokio::spawn(open_thread_task(
+        Arc::clone(&registry), client.clone(), ROOM.to_owned(), "$root".to_owned(),
+        1, lifecycle, Arc::clone(&events)));
+    (server, client, events, task)
+}
+
+fn thread_reply(id: &str, sender: &str, ts: u64) -> serde_json::Value {
+    let mut reply = message(id, id, ts);
+    reply["sender"] = json!(sender);
+    reply["content"]["m.relates_to"] = json!({"rel_type":"m.thread", "event_id":"$root",
+        "is_falling_back":true, "m.in_reply_to":{"event_id":"$root"}});
+    reply
+}
+
+async fn thread_row(events: &EventQueue, id: &str) -> serde_json::Value {
+    let rows = |v: &serde_json::Value| {
+        v["items"].as_array().cloned().unwrap_or_else(|| vec![v["item"].clone()])
+    };
+    let found = next_event(events, |v| {
+        (v["type"] == "thread_reset" || v["type"] == "thread_diff")
+            && rows(v).iter().any(|r| r["event_id"] == id)
+    })
+    .await;
+    assert_eq!(found["type"], "thread_diff", "{id} was in the snapshot, not appended");
+    rows(&found).into_iter().find(|r| r["event_id"] == id).unwrap()
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn opening_a_thread_on_a_message_without_one_forwards_its_root_as_history() {
+    let now = crate::push_verdict::now_ms();
+    let (_server, client, events, task) =
+        open_thread_over(vec![message("$root", "root", now - 5_000)], Vec::new()).await;
+    let root = thread_row(&events, "$root").await;
+    assert_eq!(root["backlog"], json!(true), "the root was announced as new: {root}");
+
+    sync(&client, vec![thread_reply("$new", "@bob:localhost", crate::push_verdict::now_ms())],
+         "2").await;
+    let reply = thread_row(&events, "$new").await;
+    assert!(reply.get("backlog").is_none(), "a live reply was marked as history: {reply}");
+    task.abort();
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn opening_an_uncached_old_thread_forwards_its_replies_as_history() {
+    let now = crate::push_verdict::now_ms();
+    let (_server, _client, events, task) = open_thread_over(
+        vec![message("$root", "root", now - 60_000), message("$later", "later", now - 10_000)],
+        vec![thread_reply("$old", "@bob:localhost", now - 30_000)],
+    )
+    .await;
+    let old = thread_row(&events, "$old").await;
+    assert_eq!(old["backlog"], json!(true), "an old reply was announced as new: {old}");
+    task.abort();
+}
+
 async fn sync_without_cache_wait(client: &Client, events: Vec<serde_json::Value>, pos: &str) {
     let mut response = v5::Response::new(pos.to_owned());
     let mut room = v5::response::Room::default();

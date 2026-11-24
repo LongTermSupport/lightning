@@ -189,7 +189,9 @@ void finishInterruptedSignOuts(SettingsManager *settings)
         const bool sessionOk =
             settings->clearSessionForAccount(identity.userId, &matchedRecord);
         const auto files = matrix::app_data::removeAccountRustState(identity);
-        const auto backgrounds = matrix::app_data::removePersonalBackgrounds(identity);
+        const auto backgrounds = matrix::app_data::removePersonalBackgrounds(
+            identity, !settings->isRecordedRootOfAnotherAccount(
+                          identity.userId, matrix::app_data::accountRoot(identity.userId)));
         const auto accountDir =
             matrix::app_data::removeAccountRootIfEmpty(identity.accountRoot);
         if (files.ok() && sessionOk)
@@ -5845,7 +5847,11 @@ void RustSdkMatrixClient::finishSignOut(const QString &serverResult,
     const bool didSomething = matchedRecord || files.removedAnything();
     const bool ok = sessionOk && files.ok() && didSomething;
     const auto backgrounds = (identity.isValid() && claimGranted)
-        ? matrix::app_data::removePersonalBackgrounds(identity)
+        ? matrix::app_data::removePersonalBackgrounds(
+              identity, !m_settings
+                            || !m_settings->isRecordedRootOfAnotherAccount(
+                                identity.userId,
+                                matrix::app_data::accountRoot(identity.userId)))
         : matrix::app_data::RemovalSummary{0, 0, 0};
     if (!backgrounds.ok()) {
         qCWarning(lcRust) << "personal backgrounds sign-out cleanup FAILED slug="

@@ -190,8 +190,9 @@ Rectangle {
                         - AppTheme.spacing12 * 2 - headerRow.spacing
                         - wordmarkBolt.implicitWidth
                         - (railHiddenActions.visible
-                           ? railHiddenActions.implicitWidth
-                             + AppTheme.spacing8 : 0))
+                           ? railHiddenActions.implicitWidth + AppTheme.spacing8
+                             + AppTheme.headerActionGutter - AppTheme.spacing12
+                           : 0))
                     readonly property bool channelsLayout:
                         app.settings && app.settings.roomNavigationLayout === 1
                     property int spacesRevision: 0
@@ -253,7 +254,7 @@ Rectangle {
                 anchors {
                     right: parent.right
                     verticalCenter: parent.verticalCenter
-                    rightMargin: AppTheme.spacing12
+                    rightMargin: AppTheme.headerActionGutter
                 }
             }
         }

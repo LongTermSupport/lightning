@@ -637,8 +637,6 @@ private Q_SLOTS:
         QVERIFY(vp->active());
         vp->pause();
         QTRY_VERIFY(!vp->playing());
-        // The mock keeps the record on logout; drop it so nothing falls back.
-        app.settings()->clearSessionForAccount(kAlice);
         app.auth()->logout();
         QTRY_VERIFY2_WITH_TIMEOUT(!vp->active(), "the clip survived sign-out",
                                   2000);

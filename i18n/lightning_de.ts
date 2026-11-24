@@ -1034,21 +1034,21 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     <name>AppController</name>
     <message>
         <location filename="../qml/LoginScreen.qml" line="+433"/>
-        <location filename="../src/app/AppController.cpp" line="+6459"/>
+        <location filename="../src/app/AppController.cpp" line="+6466"/>
         <location line="+25"/>
-        <location line="+562"/>
+        <location line="+530"/>
         <location line="+454"/>
         <source>Lightning can&apos;t read this device&apos;s saved sign-ins right now — the system keyring is locked or unavailable. Unlock it and try again.</source>
         <translation>Lightning kann die gespeicherten Anmeldungen dieses Geräts gerade nicht lesen – der System-Schlüsselbund ist gesperrt oder nicht verfügbar. Entsperre ihn und versuche es erneut.</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-6896"/>
-        <location line="+2729"/>
+        <location filename="../src/app/AppController.cpp" line="-6870"/>
+        <location line="+2726"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
     <message>
-        <location line="-2728"/>
+        <location line="-2725"/>
         <source>This is a test notification. If you can read it, desktop notifications work.</source>
         <translation>Dies ist eine Testbenachrichtigung. Wenn du sie lesen kannst, funktionieren Desktop-Benachrichtigungen.</translation>
     </message>
@@ -1073,7 +1073,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Verpasster Anruf</translation>
     </message>
     <message>
-        <location line="+700"/>
+        <location line="+697"/>
         <source>The room was created, but adding it to the Space failed.</source>
         <translation>Der Raum wurde erstellt, aber das Hinzufügen zum Space ist fehlgeschlagen.</translation>
     </message>
@@ -1115,13 +1115,13 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4315"/>
-        <location line="+821"/>
+        <location line="+4292"/>
+        <location line="+920"/>
         <source>Not connected</source>
         <translation>Nicht verbunden</translation>
     </message>
     <message>
-        <location line="-5177"/>
+        <location line="-5253"/>
         <source>Connecting…</source>
         <translation>Verbindet …</translation>
     </message>
@@ -1177,24 +1177,24 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     </message>
     <message>
         <location line="+4"/>
-        <location line="+3111"/>
+        <location line="+3120"/>
         <location line="+9"/>
         <source>Lightning could not read the selected file.</source>
         <translation>Lightning konnte die ausgewählte Datei nicht lesen.</translation>
     </message>
     <message>
-        <location line="-3117"/>
+        <location line="-3126"/>
         <source>A room-key import is already in progress.</source>
         <translation>Ein Raumschlüssel-Import läuft bereits.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4110"/>
+        <location line="+4087"/>
         <source>Not signed in.</source>
         <translation>Nicht angemeldet.</translation>
     </message>
     <message>
-        <location line="-4108"/>
+        <location line="-4085"/>
         <source>Room-key import failed.</source>
         <translation>Der Raumschlüssel-Import ist fehlgeschlagen.</translation>
     </message>
@@ -1270,14 +1270,14 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     </message>
     <message>
         <location line="+8"/>
-        <location line="+1847"/>
+        <location line="+1856"/>
         <location line="+41"/>
         <location line="+201"/>
         <source>This build has no Rust SDK backend.</source>
         <translation>Diese Version enthält kein Rust-SDK-Backend.</translation>
     </message>
     <message>
-        <location line="-1800"/>
+        <location line="-1809"/>
         <source>Choose a local image file.</source>
         <translation>Wähle eine lokale Bilddatei aus.</translation>
     </message>
@@ -1321,7 +1321,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Das Symbol konnte nicht gespeichert werden.</translation>
     </message>
     <message>
-        <location line="+421"/>
+        <location line="+424"/>
         <source>You are no longer in that room, so it cannot be opened.</source>
         <translation>Du bist nicht mehr in diesem Raum, daher kann er nicht geöffnet werden.</translation>
     </message>
@@ -1362,7 +1362,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Dies ist kein kopierbares Bild.</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+15"/>
         <source>Couldn&apos;t decode the image.</source>
         <translation>Das Bild konnte nicht dekodiert werden.</translation>
     </message>
@@ -1372,7 +1372,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Zwischenablage nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="+163"/>
+        <location line="+164"/>
         <source>Verification is only available on the Rust backend.</source>
         <translation>Verifizierung ist nur mit dem Rust-Backend verfügbar.</translation>
     </message>
@@ -1425,15 +1425,15 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Das Löschen der lokalen Daten dieses Geräts würde das nicht beheben und Verschlüsselungsschlüssel zerstören, die du noch brauchst.</translation>
     </message>
     <message>
-        <location line="+531"/>
-        <location line="+812"/>
-        <location line="+747"/>
+        <location line="+499"/>
+        <location line="+910"/>
+        <location line="+748"/>
         <location line="+15"/>
         <source>Removal did not finish: the account&apos;s data is still in use. Nothing was deleted.</source>
         <translation>Entfernen nicht abgeschlossen: Die Daten des Kontos sind noch in Gebrauch. Es wurde nichts gelöscht.</translation>
     </message>
     <message>
-        <location line="-1377"/>
+        <location line="-1476"/>
         <source>This backend cannot change your display name.</source>
         <translation>Dieses Backend kann deinen Anzeigenamen nicht ändern.</translation>
     </message>
@@ -1465,12 +1465,12 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     </message>
     <message>
         <location line="+40"/>
-        <location line="+578"/>
+        <location line="+677"/>
         <source>That account is not signed in on this device.</source>
         <translation>Dieses Konto ist auf diesem Gerät nicht angemeldet.</translation>
     </message>
     <message>
-        <location line="-555"/>
+        <location line="-654"/>
         <source>That account&apos;s sign-in has expired. Sign in to it again.</source>
         <translation>Die Anmeldung dieses Kontos ist abgelaufen. Melde dich erneut an.</translation>
     </message>
@@ -1490,8 +1490,8 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Das ausgewählte Konto konnte nicht aktiviert werden.</translation>
     </message>
     <message>
-        <location line="+238"/>
-        <location line="+730"/>
+        <location line="+336"/>
+        <location line="+731"/>
         <source>This account can&apos;t be removed while the system keyring can&apos;t be read: its saved sign-in is there and would be left behind. Unlock the keyring, or start it, and try again.</source>
         <translation>Dieses Konto kann nicht entfernt werden, solange der System-Schlüsselbund nicht gelesen werden kann: Seine gespeicherte Anmeldung liegt dort und würde zurückbleiben. Entsperre oder starte den Schlüsselbund und versuche es erneut.</translation>
     </message>
@@ -1707,7 +1707,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+606"/>
+        <location filename="../qml/AppTheme.qml" line="+609"/>
         <source>Storm</source>
         <translation>Storm</translation>
     </message>
@@ -1908,7 +1908,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Das Bild ist größer als das Upload-Limit des Servers (%1).</translation>
     </message>
     <message>
-        <location line="+215"/>
+        <location line="+218"/>
         <source>The attachment is no longer available.</source>
         <translation>Der Anhang ist nicht mehr verfügbar.</translation>
     </message>
@@ -1923,18 +1923,18 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Ungültige Bildbearbeitung.</translation>
     </message>
     <message>
-        <location line="-113"/>
-        <location line="+144"/>
+        <location line="-116"/>
+        <location line="+147"/>
         <source>This image is too large to edit.</source>
         <translation>Dieses Bild ist zu groß zum Bearbeiten.</translation>
     </message>
     <message>
-        <location line="-162"/>
+        <location line="-165"/>
         <source>This image format cannot be edited.</source>
         <translation>Dieses Bildformat kann nicht bearbeitet werden.</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+29"/>
         <source>This image could not be decoded safely.</source>
         <translation>Dieses Bild konnte nicht sicher dekodiert werden.</translation>
     </message>
@@ -9896,13 +9896,13 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location line="+658"/>
+        <location line="+659"/>
         <location line="+1"/>
         <source>Open in browser</source>
         <translation>Im Browser öffnen</translation>
     </message>
     <message>
-        <location line="-651"/>
+        <location line="-652"/>
         <source>Close</source>
         <translation>Schließen</translation>
     </message>
@@ -9937,7 +9937,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Bildbetrachter schließen</translation>
     </message>
     <message>
-        <location line="+154"/>
+        <location line="+155"/>
         <source>Image %1 of %2, shown</source>
         <translation>Bild %1 von %2, angezeigt</translation>
     </message>
@@ -11694,7 +11694,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1373"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1378"/>
         <location line="+689"/>
         <source>The file could not be downloaded.</source>
         <translation>Die Datei konnte nicht heruntergeladen werden.</translation>
@@ -14199,7 +14199,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>MockMatrixClient</name>
     <message>
-        <location filename="../src/matrix/MockMatrixClient.cpp" line="+357"/>
+        <location filename="../src/matrix/MockMatrixClient.cpp" line="+360"/>
         <location line="+33"/>
         <location line="+28"/>
         <location line="+46"/>
@@ -16917,7 +16917,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+56"/>
         <source>Account menu for %1</source>
         <translation>Kontomenü für %1</translation>
     </message>
@@ -18380,7 +18380,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Deinen Avatar für diesen Raum auswählen</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+46"/>
         <source>Room information</source>
         <translation>Rauminformationen</translation>
     </message>
@@ -18400,17 +18400,17 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>%1 Mitglieder</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+11"/>
         <source>Room permissions</source>
         <translation>Raumberechtigungen</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="-22"/>
         <source>Close room information</source>
         <translation>Rauminformationen schließen</translation>
     </message>
     <message>
-        <location line="+84"/>
+        <location line="+112"/>
         <source>Notifications</source>
         <translation>Benachrichtigungen</translation>
     </message>
@@ -19647,7 +19647,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>RoomsPanel</name>
     <message>
-        <location filename="../qml/RoomsPanel.qml" line="+207"/>
+        <location filename="../qml/RoomsPanel.qml" line="+208"/>
         <location line="+3"/>
         <location line="+5"/>
         <source>Lightning</source>
@@ -20009,7 +20009,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Anmeldung fehlgeschlagen. Prüfe deine Angaben und die Serveradresse und versuche es dann erneut.</translation>
     </message>
     <message>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+411"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+413"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>Die Daten dieses Kontos werden noch von einer Hintergrundsitzung verwendet. Warte einen Moment und versuche es erneut.</translation>
     </message>
@@ -20187,12 +20187,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="+7"/>
         <location line="+10"/>
         <location line="+50"/>
-        <location line="+2789"/>
+        <location line="+2793"/>
         <source>Lightning could not completely reset the local session for this account. Check the application logs and filesystem permissions, then try again.</source>
         <translation>Lightning konnte die lokale Sitzung dieses Kontos nicht vollständig zurücksetzen. Prüfe die Anwendungsprotokolle und die Dateisystemberechtigungen und versuche es dann erneut.</translation>
     </message>
     <message>
-        <location line="-2803"/>
+        <location line="-2807"/>
         <source>Local Lightning session rebuilt. The previous encryption store was moved aside, not deleted, and is still in this account&apos;s data directory. You can sign in again.</source>
         <translation>Lokale Lightning-Sitzung neu aufgebaut. Der vorherige Verschlüsselungsspeicher wurde beiseitegelegt, nicht gelöscht, und liegt weiterhin im Datenverzeichnis dieses Kontos. Du kannst dich erneut anmelden.</translation>
     </message>
@@ -20205,7 +20205,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4712"/>
+        <location line="+4716"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -20214,15 +20214,15 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Nicht angemeldet.</translation>
     </message>
     <message>
-        <location line="-5068"/>
+        <location line="-5072"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4875"/>
+        <location line="+4879"/>
         <source>Unknown room: %1</source>
         <translation>Unbekannter Raum: %1</translation>
     </message>
     <message>
-        <location line="-5070"/>
+        <location line="-5074"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
@@ -20230,13 +20230,13 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+777"/>
-        <location line="+2705"/>
+        <location line="+2709"/>
         <location line="+64"/>
         <source>The sticker could not be sent.</source>
         <translation>Der Sticker konnte nicht gesendet werden.</translation>
     </message>
     <message>
-        <location line="-1444"/>
+        <location line="-1448"/>
         <source>Lightning cannot send that yet.</source>
         <translation>Lightning kann das noch nicht senden.</translation>
     </message>
@@ -20246,7 +20246,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Dieser Raum wird noch geladen. Versuche es gleich noch einmal.</translation>
     </message>
     <message>
-        <location line="+284"/>
+        <location line="+288"/>
         <source>Local Lightning session reset. You can sign in again.</source>
         <translation>Lokale Lightning-Sitzung zurückgesetzt. Du kannst dich erneut anmelden.</translation>
     </message>
@@ -21065,12 +21065,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Gib mindestens %1 Zeichen ein.</translation>
     </message>
     <message>
-        <location line="+179"/>
+        <location line="+174"/>
         <source>Nothing is indexed yet.</source>
         <translation>Es ist noch nichts indiziert.</translation>
     </message>
     <message>
-        <location line="-176"/>
+        <location line="-171"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>Keine passenden Nachrichten. Versuche ein weniger gebräuchliches Wort oder durchsuche den lokalen Index.</translation>
     </message>
@@ -21080,7 +21080,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Keine passenden Nachrichten</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+19"/>
         <location line="+11"/>
         <source>Search filters</source>
         <translation>Suchfilter</translation>
@@ -21091,7 +21091,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Nachrichten durchsuchen</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="-6"/>
         <source>Cancel filters</source>
         <translation>Filter abbrechen</translation>
     </message>
@@ -21101,7 +21101,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Suche schließen</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+41"/>
         <source>Search room history…</source>
         <translation>Raumverlauf durchsuchen …</translation>
     </message>
@@ -32633,12 +32633,13 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>ThreadPanel</name>
     <message>
-        <location filename="../qml/ThreadPanel.qml" line="+426"/>
+        <location filename="../qml/ThreadPanel.qml" line="+433"/>
+        <location line="+48"/>
         <source>Mark this thread read</source>
         <translation>Diesen Thread als gelesen markieren</translation>
     </message>
     <message>
-        <location line="+1328"/>
+        <location line="+1304"/>
         <source>Jump to the newest reply</source>
         <translation>Zur neuesten Antwort springen</translation>
     </message>
@@ -32651,7 +32652,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         </translation>
     </message>
     <message>
-        <location line="-1723"/>
+        <location line="-1754"/>
         <source>This room has been replaced.</source>
         <translation>Dieser Raum wurde ersetzt.</translation>
     </message>
@@ -32666,18 +32667,18 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Gestern</translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+183"/>
         <location line="+1"/>
         <source>Back to the room</source>
         <translation>Zurück zum Raum</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+11"/>
         <source>Back to threads</source>
         <translation>Zurück zu den Threads</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Thread</source>
         <translation>Thread</translation>
     </message>
@@ -32687,7 +32688,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Threads</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source>Unfollow</source>
         <translation>Nicht mehr folgen</translation>
     </message>
@@ -32707,7 +32708,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Diesem Thread folgen</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+24"/>
         <source>Show the thread in the side panel</source>
         <translation>Thread in der Seitenleiste anzeigen</translation>
     </message>
@@ -32717,13 +32718,12 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Thread in der Hauptansicht anzeigen</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+1"/>
+        <location line="-99"/>
         <source>Close thread</source>
         <translation>Thread schließen</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+162"/>
         <source>Loading threads…</source>
         <translation>Threads werden geladen …</translation>
     </message>
@@ -32782,7 +32782,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Im Raum öffnen</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-707"/>
         <source>Message deleted</source>
         <translation>Nachricht gelöscht</translation>
     </message>
@@ -32792,7 +32792,12 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Diese Nachricht kann nicht entschlüsselt werden</translation>
     </message>
     <message>
-        <location line="+687"/>
+        <location line="+347"/>
+        <source>More actions</source>
+        <translation>Weitere Aktionen</translation>
+    </message>
+    <message>
+        <location line="+371"/>
         <location line="+1"/>
         <source>Collapse thread root</source>
         <translation>Thread-Ursprung einklappen</translation>
