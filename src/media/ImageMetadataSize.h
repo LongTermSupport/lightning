@@ -77,7 +77,7 @@ inline qint64 decodeAllocationBytes(QImageReader &reader, QSize target)
         decoded = QSize((natural.width() * eighths + 7) / 8,
                         (natural.height() * eighths + 7) / 8);
     }
-    const int bpp = qMax(32, QImage::toPixelFormat(reader.imageFormat()).bitsPerPixel());
+    const int bpp = qMax(32, int(QImage::toPixelFormat(reader.imageFormat()).bitsPerPixel()));
     return qint64(decoded.width()) * decoded.height() * (bpp / 8);
 }
 
