@@ -39,6 +39,8 @@ ColumnLayout {
 
     signal filterEdited(string text)
     signal retryRequested()
+    signal cancelRequested()
+    signal addressRequested()
     signal openRoomRequested(string roomId)
     signal openSpaceRequested(string spaceId)
     signal joinRequested(string roomId, var via, bool isSpace)
@@ -218,18 +220,16 @@ ColumnLayout {
 
     RowLayout {
         objectName: "spaceLobbyPartial"
-        visible: root.coverage !== "" && !root.homeLoading
+        visible: root.coverage !== ""
         Layout.fillWidth: true
         spacing: AppTheme.spacingS
         Label {
             objectName: "spaceLobbyPartialText"
             Layout.fillWidth: true
-            text: root.coverage === "limit"
-                  ? qsTr("Only the first %n room(s) of this Space are listed. A room that is not "
-                         + "listed can still be opened by its address.", "", root.loadedCount)
-                  : root.coverage === "stale"
-                    ? qsTr("This Space could not be refreshed. Showing the rooms loaded earlier.")
-                    : qsTr("Loading stopped early, so some rooms of this Space may be missing.")
+            text: root.coverage === "loading" ? qsTr("Loading rooms…")
+                  : root.coverage === "limit"
+                    ? qsTr("Only the first %n room(s) of a Space are listed. More rooms may be available.", "", root.loadedCount)
+                    : qsTr("The Space listing is incomplete. Showing %n previously loaded room(s) for this Space.", "", root.loadedCount)
             textFormat: Text.PlainText
             color: AppTheme.textMuted
             font.family: AppTheme.uiFont
@@ -238,11 +238,16 @@ ColumnLayout {
         }
         AppButton {
             objectName: "spaceLobbyPartialRetry"
-            visible: root.coverage !== "limit"
+            visible: root.coverage !== ""
             kind: "secondary"
             size: "sm"
-            text: qsTr("Retry")
-            onClicked: root.retryRequested()
+            text: root.coverage === "loading" ? qsTr("Cancel")
+                  : root.coverage === "limit" ? qsTr("Find by address") : qsTr("Retry")
+            onClicked: {
+                if (root.coverage === "loading") root.cancelRequested()
+                else if (root.coverage === "limit") root.addressRequested()
+                else root.retryRequested()
+            }
         }
     }
 
@@ -266,8 +271,9 @@ ColumnLayout {
         objectName: "spaceLobbyNoMatches"
         visible: root.sections.length === 0 && root.filterText !== ""
         Layout.fillWidth: true
-        text: qsTranslate("TimelinePane", "No rooms or spaces match “%1”.")
-                  .arg(root.filterText)
+        text: (root.coverage || root.homeLoading
+               ? qsTr("No loaded rooms or spaces match “%1”.")
+               : qsTranslate("TimelinePane", "No rooms or spaces match “%1”.")).arg(root.filterText)
         textFormat: Text.PlainText
         color: AppTheme.textMuted
         font.family: AppTheme.uiFont
@@ -277,7 +283,7 @@ ColumnLayout {
 
     Rectangle {
         objectName: "spaceLobbyEmpty"
-        visible: root.sections.length === 0 && root.filterText === ""
+        visible: root.sections.length === 0 && root.filterText === "" && root.coverage === ""
         Layout.fillWidth: true
         radius: AppTheme.radiusMd
         color: AppTheme.cardElevated
@@ -557,7 +563,8 @@ ColumnLayout {
                         text: root.loadingIds[sectionItem.modelData.sectionId]
                               === true
                               ? qsTr("Loading rooms…")
-                              : qsTranslate("TimelinePane", "No rooms yet")
+                              : root.coverage ? qsTr("No rooms loaded")
+                                              : qsTranslate("TimelinePane", "No rooms yet")
                         color: AppTheme.textMuted
                         font.family: AppTheme.uiFont
                         font.pixelSize: AppTheme.scaled(AppTheme.textMeta)

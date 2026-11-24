@@ -38,7 +38,7 @@ ColumnLayout {
         Layout.fillWidth: true
         horizontalAlignment: Text.AlignHCenter
         wrapMode: Text.Wrap
-        text: qsTr("No messages found")
+        text: qsTr("No matches in indexed messages")
         color: root.storm ? AppTheme.stormTextMuted : AppTheme.textMuted
         font.pixelSize: AppTheme.textBody
     }
@@ -60,7 +60,7 @@ ColumnLayout {
             if (s.sweeping || s.indexing)
                 return qsTr("Indexing new messages…") + "\n"
                     + qsTr("Results may be incomplete.")
-            if (!root.offerIndexing)
+            if (!root.offerIndexing || s.roomId)
                 return ""
             // Reading clockRevision re-evaluates the relative time every minute.
             if (s.indexAllFinishedMs > 0 && root.clockRevision >= 0)

@@ -521,6 +521,11 @@ impl SearchIndex {
         Ok(removed as i64)
     }
 
+    pub(crate) fn room_count(&self, room: &str) -> Result<i64, String> {
+        self.conn.query_row("SELECT count(*) FROM messages WHERE room_id = ?1", [room], |r| r.get(0))
+            .map_err(|e| e.to_string())
+    }
+
     pub(crate) fn stats(&self) -> Result<IndexStats, String> {
         let messages: i64 = self
             .conn
@@ -724,11 +729,14 @@ fn indexable_from(raw: &serde_json::Value) -> Option<Indexable> {
 pub(crate) async fn deep_index_room(
     room: &Room,
     index: &std::sync::Arc<std::sync::Mutex<Option<SearchIndex>>>,
-    stop: &std::sync::atomic::AtomicBool,
+    gate: &crate::indexall::ManualGate,
     max_pages: u16,
 ) -> Result<(u16, bool, usize), DeepError> {
-    let outcome = deep_index_room_gated(room, index, &StopOnly(stop), max_pages).await?;
-    Ok((outcome.pages, outcome.reached_start, outcome.written))
+    let outcome = deep_index_room_gated(room, index, gate, max_pages).await?;
+    if outcome.interrupted {
+        return Err(DeepError::plain("indexing cancelled".to_owned()));
+    }
+    Ok((outcome.pages, outcome.reached_start && outcome.undecryptable == 0, outcome.written))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -740,14 +748,18 @@ pub(crate) enum Gate {
 
 pub(crate) trait PageGate: Sync {
     fn gate(&self) -> Gate;
+    fn receipts(&self) -> Option<&crate::indexall::Control> { None }
+    fn session_active(&self) -> bool { true }
     fn page_gap(&self) -> std::time::Duration {
         std::time::Duration::ZERO
     }
     fn on_page(&self, _so_far: &DeepOutcome) {}
 }
 
+#[cfg(test)]
 pub(crate) struct StopOnly<'a>(pub &'a std::sync::atomic::AtomicBool);
 
+#[cfg(test)]
 impl PageGate for StopOnly<'_> {
     fn gate(&self) -> Gate {
         if self.0.load(std::sync::atomic::Ordering::Relaxed) {
@@ -762,6 +774,7 @@ impl PageGate for StopOnly<'_> {
 pub(crate) struct DeepOutcome {
     pub pages: u16,
     pub reached_start: bool,
+    pub oldest_ms: Option<i64>,
     pub written: usize,
     pub undecryptable: usize,
     pub interrupted: bool,
@@ -908,7 +921,52 @@ pub(crate) async fn deep_index_room_gated<G: PageGate>(
     gate: &G,
     max_pages: u16,
 ) -> Result<DeepOutcome, DeepError> {
+    use crate::indexall::ScanState;
     let generation = current_generation(index);
+    let room_id = room.room_id().as_str();
+    let mut outcome = DeepOutcome { utd_sessions: Some(Default::default()), ..Default::default() };
+    if gate.gate() == Gate::Stop {
+        outcome.interrupted = true;
+        return Ok(outcome);
+    }
+    let receipt = if let Some(control) = gate.receipts() {
+        let serial = control.start_scan(room_id)
+            .ok_or_else(|| DeepError::plain("room scan already running".to_owned()))?;
+        Some((control, serial))
+    } else {
+        None
+    };
+    let result = walk_pages(room, index, generation, gate, max_pages, &mut outcome, receipt).await;
+    if let Some((control, serial)) = receipt {
+        let state = match &result {
+            Err(error) if error.storage => ScanState::StorageFailed,
+            Err(_) => ScanState::FetchFailed,
+            Ok(()) if outcome.interrupted => ScanState::Interrupted,
+            Ok(()) if outcome.undecryptable > 0 => ScanState::WaitingForKeys,
+            Ok(()) if outcome.reached_start => ScanState::Covered,
+            Ok(()) => ScanState::Capped,
+        };
+        if !gate.session_active() {
+            control.abandon_scan(room_id, serial);
+            outcome.interrupted = true;
+            return Ok(outcome);
+        }
+        if !control.finish_scan(room_id, serial, &outcome, state) {
+            return Err(DeepError::storage());
+        }
+    }
+    result.map(|()| outcome)
+}
+
+async fn walk_pages<G: PageGate>(
+    room: &Room,
+    index: &std::sync::Arc<std::sync::Mutex<Option<SearchIndex>>>,
+    generation: u64,
+    gate: &G,
+    max_pages: u16,
+    outcome: &mut DeepOutcome,
+    receipt: Option<(&crate::indexall::Control, u64)>,
+) -> Result<(), DeepError> {
     let (room_cache, _drop_handles) = room
         .event_cache()
         .await
@@ -916,21 +974,28 @@ pub(crate) async fn deep_index_room_gated<G: PageGate>(
     let (_, _shrink_on_drop) = shrink_guard(&room_cache).await;
     let room_id = room.room_id().as_str();
 
-    let mut outcome = DeepOutcome { utd_sessions: Some(Default::default()), ..Default::default() };
-    let mut undecryptable: HashSet<String> = HashSet::new();
-    if let Ok(batch) = collect_from(room, &room_cache).await {
-        let written = match write_locked(index, generation, room_id, &batch) {
-            Written::Rows(n) => n,
+    let mut undecryptable = HashSet::new();
+    let batch = collect_from(room, &room_cache).await.map_err(DeepError::plain)?;
+    let mut commit = |batch: &RoomBatch, outcome: &mut DeepOutcome| -> Result<(), DeepError> {
+        match write_locked(index, generation, room_id, batch) {
+            Written::Rows(n) => outcome.written += n,
             Written::Cleared => {
                 outcome.interrupted = true;
-                return Ok(outcome);
+                return Ok(());
             }
             Written::Failed => return Err(DeepError::storage()),
-        };
-        outcome.written += written;
-        note_undecryptable(&mut undecryptable, &mut outcome.utd_sessions, &batch);
+        }
+        if let Some(ts) = batch.ordinary.iter().map(|event| event.ts).min() {
+            outcome.oldest_ms = Some(outcome.oldest_ms.map_or(ts, |old| old.min(ts)));
+        }
+        note_undecryptable(&mut undecryptable, &mut outcome.utd_sessions, batch);
+        outcome.undecryptable = undecryptable.len();
+        Ok(())
+    };
+    commit(&batch, outcome)?;
+    if outcome.interrupted {
+        return Ok(());
     }
-
     let pagination = room_cache.pagination();
     for page in 0..max_pages {
         let gap = if page == 0 { std::time::Duration::ZERO } else { gate.page_gap() };
@@ -947,28 +1012,22 @@ pub(crate) async fn deep_index_room_gated<G: PageGate>(
             break;
         };
         let page_outcome = result.map_err(|e| DeepError::from_pagination(&e))?;
-        outcome.pages += 1;
-        if let Ok(batch) = collect_from(room, &room_cache).await {
-            let written = match write_locked(index, generation, room_id, &batch) {
-                Written::Rows(n) => n,
-                Written::Cleared => {
-                    outcome.interrupted = true;
-                    break;
-                }
-                Written::Failed => return Err(DeepError::storage()),
-            };
-            outcome.written += written;
-            note_undecryptable(&mut undecryptable, &mut outcome.utd_sessions, &batch);
+        let batch = collect_from(room, &room_cache).await.map_err(DeepError::plain)?;
+        commit(&batch, outcome)?;
+        if outcome.interrupted {
+            break;
         }
-        outcome.undecryptable = undecryptable.len();
-        gate.on_page(&outcome);
+        outcome.pages += 1;
+        if let Some((control, serial)) = receipt {
+            control.scan_page(room_id, serial, outcome);
+        }
+        gate.on_page(outcome);
         if page_outcome.reached_start {
             outcome.reached_start = true;
             break;
         }
     }
-    outcome.undecryptable = undecryptable.len();
-    Ok(outcome)
+    Ok(())
 }
 
 pub(crate) const MAX_TRACKED_UTD_SESSIONS: usize = 16;

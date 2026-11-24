@@ -3829,3 +3829,13 @@ wall-clock number from one machine is never a threshold.
   idle 1 wakeup/s with tracing off (3 runs). `LIGHTNING_GUI_STALL_TRACE=<ms>`
   is the harness; it adds about 60 wakeups/s itself, so measure idle power
   with it unset.
+
+### Saved collection capacity
+
+At ten remaining slots or 10% remaining bytes, Save and the hub show both v1 limits. A full merge keeps the server list. Oversized or unknown records require a valid server reread before editing. V1 needs no migration. Each edit applies its delta to a fresh read. Overlapping writes are last-write-wins. During the session, a reread that restores one of the last 100 local removals with its old save time shows a conflict in the hub.
+
+A Space filter searches loaded sections. A capped section offers Find by address. Retry refreshes one section, up to ten pages or 200 rooms with a 46-second deadline. A partial refresh retains earlier rows within that bound. Cancel keeps the displayed rows and discards late results.
+
+### Room search coverage
+
+Room search counts the rows currently in that room's local index. Each bounded history scan records the last committed page count, oldest scanned message time, decryption gaps and outcome in the account's index-all progress file. A pre-v3 queue keeps its position and has no inferred scan boundary. A scan that reaches the room start describes that scan only. Clear index and forget room discard the corresponding receipts. An explicit retry walks only the selected room. Changing rooms preserves the original scan and its Cancel action.

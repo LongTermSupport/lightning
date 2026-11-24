@@ -9451,6 +9451,22 @@ quint64 RustSdkMatrixClient::sweepSearchIndex()
     return error.isEmpty() ? opId : 0;
 }
 
+quint64 RustSdkMatrixClient::requestRoomSearchCoverage(const QString &roomId)
+{
+    if (!m_rustHandle || roomId.isEmpty())
+        return 0;
+    const quint64 op = nextOpId();
+    const QString error = takeRustString(mx_rust_room_search_coverage(
+        m_rustHandle, roomId.toUtf8().constData(), op));
+    return error.isEmpty() ? op : 0;
+}
+
+void RustSdkMatrixClient::cancelRoomSearchIndex(quint64 opId)
+{
+    if (m_rustHandle && opId)
+        takeRustString(mx_rust_cancel_room_search_index(m_rustHandle, opId));
+}
+
 quint64 RustSdkMatrixClient::deepenSearchIndex(const QString &roomId)
 {
     if (!m_rustHandle || roomId.isEmpty())
@@ -10517,6 +10533,12 @@ quint64 RustSdkMatrixClient::searchMessages(const QString &term,
         batchBytes.constData(), filterBytes.constData(),
         static_cast<unsigned long long>(qMax(1, limit)), opId));
     return result.isEmpty() ? opId : 0;
+}
+
+void RustSdkMatrixClient::cancelSpaceChildren(quint64 opId)
+{
+    if (m_rustHandle && opId)
+        takeRustString(mx_rust_cancel_space_children(m_rustHandle, opId));
 }
 
 quint64 RustSdkMatrixClient::requestSpaceChildren(const QString &spaceId)
@@ -13092,6 +13114,12 @@ bool RustSdkMatrixClient::handleRoomCommandEvent(const QString &type,
                           count("indexed_rooms"));
         }
         Q_EMIT searchIndexAllProgress(opId(), status);
+        return true;
+    }
+    if (type == QLatin1String("room_search_coverage")) {
+        auto coverage = event.value(QStringLiteral("receipt")).toObject().toVariantMap();
+        coverage.insert(QStringLiteral("messages"), event.value(QStringLiteral("messages")).toInt(-1));
+        Q_EMIT roomSearchCoverageReceived(opId(), event.value(QStringLiteral("room_id")).toString(), coverage);
         return true;
     }
     if (type == QLatin1String("search_index_deepened")) {

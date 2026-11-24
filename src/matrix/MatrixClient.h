@@ -839,6 +839,8 @@ public:
     virtual QString mediaKeepState() const { return {}; }
     virtual quint64 searchIndexStats() { return 0; }
     virtual quint64 sweepSearchIndex() { return 0; }
+    virtual quint64 requestRoomSearchCoverage(const QString &) { return 0; }
+    virtual void cancelRoomSearchIndex(quint64) {}
     virtual quint64 deepenSearchIndex(const QString &roomId)
     { Q_UNUSED(roomId); return 0; }
     virtual void forgetIndexedEvent(const QString &eventId) { Q_UNUSED(eventId); }
@@ -993,6 +995,7 @@ public:
     { Q_UNUSED(target); Q_UNUSED(via); Q_UNUSED(reason); return 0; }
     virtual quint64 cancelKnock(const QString &roomId)
     { Q_UNUSED(roomId); return 0; }
+    virtual void cancelSpaceChildren(quint64) {}
     virtual quint64 requestSpaceChildren(const QString &spaceId)
     { Q_UNUSED(spaceId); return 0; }
     virtual bool supportsIgnoredUsers() const { return false; }
@@ -1733,6 +1736,7 @@ Q_SIGNALS:
     void searchIndexStatsReceived(quint64 opId, qint64 messages, qint64 rooms);
     void searchIndexSwept(quint64 opId, int rooms, int written,
                           qint64 messages, qint64 indexedRooms);
+    void roomSearchCoverageReceived(quint64 opId, const QString &roomId, const QVariantMap &coverage);
     void searchIndexDeepened(quint64 opId, bool ok, const QString &roomId,
                              int pages, bool reachedStart, int written,
                              qint64 messages, const QString &category);

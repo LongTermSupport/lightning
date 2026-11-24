@@ -19,6 +19,7 @@ class SavedMessagesController : public QObject
     Q_PROPERTY(QVariantList entries READ entries NOTIFY changed)
     Q_PROPERTY(QVariantList rooms READ rooms NOTIFY changed)
     Q_PROPERTY(int count READ count NOTIFY changed)
+    Q_PROPERTY(QString capacityNotice READ capacityNotice NOTIFY changed)
     Q_PROPERTY(bool loaded READ loaded NOTIFY changed)
     Q_PROPERTY(bool supported READ supported NOTIFY changed)
     Q_PROPERTY(bool busy READ busy NOTIFY changed)
@@ -38,6 +39,7 @@ public:
     QVariantList entries() const;
     QVariantList rooms() const;
     int count() const { return m_refs.size(); }
+    QString capacityNotice() const;
     bool loaded() const { return m_loaded; }
     bool supported() const;
     bool busy() const { return m_busy; }
@@ -102,7 +104,8 @@ private:
     void reset();
     void emitChanged();
     void write();
-    void sendWrite();
+    void sendWrite(const QVector<Ref> &remote);
+    QVariantMap referenceContent() const;
     bool parseRefs(const QVariantMap &content, bool present, QVector<Ref> &refs) const;
     void failWrite(const QString &message);
     void pumpResolve();
@@ -123,6 +126,7 @@ private:
     QVector<Ref> m_beforeWrite;
     QVector<Ref> m_desiredBeforeMerge;
     bool m_staleRetried = false;
+    QList<QPair<QString, qint64>> m_removed;
     Ref m_undo;
     bool m_undoValid = false;
     bool m_loaded = false;

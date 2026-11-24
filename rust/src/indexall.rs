@@ -2,7 +2,7 @@
 use std::collections::{BTreeMap, BTreeSet, HashSet};
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicU32, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU32, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 use crate::localsearch::{DeepOutcome, Gate, PageGate};
 
 pub(crate) const PROGRESS_FILE: &str = "lightning-index-all.json";
-const PROGRESS_VERSION: u32 = 2;
+const PROGRESS_VERSION: u32 = 3;
 
 pub(crate) const PAGE_GAP_MS: u64 = 5_000;
 pub(crate) const ROOM_GAP_MS: u64 = 10_000;
@@ -27,10 +27,37 @@ pub(crate) const MAX_COMPLETE: usize = 20_000;
 pub(crate) const HOLD_CALL: u32 = 1;
 pub(crate) const HOLD_SCROLL: u32 = 2;
 
+#[derive(Debug, Copy, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub(crate) enum ScanState {
+    #[default]
+    Unscanned,
+    Scanning,
+    Interrupted,
+    Capped,
+    Covered,
+    WaitingForKeys,
+    StorageFailed,
+    FetchFailed,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub(crate) struct RoomReceipt {
+    pub state: ScanState,
+    pub scanned_ms: u64,
+    pub pages: u16,
+    pub oldest_ms: Option<i64>,
+    pub undecryptable: usize,
+    pub reached_start: bool,
+    pub reducer_version: u16,
+}
+
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct Progress {
     #[serde(default)]
     pub version: u32,
+    #[serde(default)]
+    pub receipts: BTreeMap<String, RoomReceipt>,
     #[serde(default)]
     pub queue: Vec<String>,
     #[serde(default)]
@@ -82,6 +109,9 @@ impl Progress {
 
     fn sanitized(mut self) -> Self {
         self.queue.truncate(MAX_QUEUE);
+        while self.receipts.len() > MAX_COMPLETE {
+            self.receipts.pop_last();
+        }
         if self.position > self.queue.len() {
             self.position = self.queue.len();
         }
@@ -198,6 +228,8 @@ struct Inner {
     epoch: u64,
     progress: Option<Progress>,
     in_room_written: u64,
+    scans: BTreeMap<String, u64>,
+    scan_serial: u64,
     retry_in_ms: u64,
     held_reported: bool,
     walked_utd_sessions: Option<(String, Option<BTreeSet<String>>)>,
@@ -214,6 +246,7 @@ pub(crate) struct Control {
     path: Option<PathBuf>,
     inner: Mutex<Inner>,
     hold: AtomicU32,
+    manual_op: AtomicU64,
 }
 
 impl Control {
@@ -227,6 +260,7 @@ impl Control {
             path,
             inner: Mutex::new(Inner::default()),
             hold: AtomicU32::new(0),
+            manual_op: AtomicU64::new(0),
         }
     }
 
@@ -261,22 +295,22 @@ impl Control {
             // user starts a run, at the existing pacing. The upgraded version
             // is written by the next persist.
             progress.complete.clear();
-            progress.version = PROGRESS_VERSION;
         }
+        progress.version = PROGRESS_VERSION;
         progress
     }
 
     /// Write the record atomically (temp file, then rename), 0600 on unix.
     /// Never creates the directory: a store deleted under a late write stays
     /// deleted.
-    fn persist(&self, progress: &Progress) {
+    fn persist(&self, progress: &Progress) -> bool {
         let Some(path) = self.path.as_ref() else {
-            return;
+            return true;
         };
         let mut record = progress.clone();
         record.version = PROGRESS_VERSION;
         let Ok(bytes) = serde_json::to_vec(&record) else {
-            return;
+            return false;
         };
         let tmp = path.with_extension("json.tmp");
         let written = (|| -> std::io::Result<()> {
@@ -296,6 +330,7 @@ impl Control {
         if written.is_err() {
             let _ = std::fs::remove_file(&tmp);
         }
+        written.is_ok()
     }
 
     pub(crate) fn begin(
@@ -369,7 +404,8 @@ impl Control {
             // arrived finds nothing new, and made every Stop and start re-queue them.
             let joined = joined
                 .into_iter()
-                .filter(|(id, _, _)| !progress.utd_rooms.contains(id))
+                .filter(|(id, _, _)| !progress.utd_rooms.contains(id)
+                    && !progress.receipts.get(id).is_some_and(|r| r.state == ScanState::Capped))
                 .collect();
             let (queue, skipped) = plan_queue(joined, &progress.complete);
             progress.reset_run();
@@ -389,7 +425,6 @@ impl Control {
         inner.in_room_written = 0;
         inner.retry_in_ms = 0;
         inner.held_reported = false;
-        drop(inner);
         self.persist(&snapshot);
         Begin::Started
     }
@@ -428,6 +463,8 @@ impl Control {
         if inner.running {
             inner.cancel_requested = true;
         }
+        inner.scans.clear();
+        self.manual_op.store(0, Ordering::Release);
         inner.progress = Some(Progress::default());
         if let Some(path) = self.path.as_ref() {
             let _ = std::fs::remove_file(path);
@@ -463,7 +500,6 @@ impl Control {
         inner.keys_during_walk = during;
         if changed {
             let snapshot = self.loaded(&mut inner).clone();
-            drop(inner);
             self.persist(&snapshot);
         }
     }
@@ -479,7 +515,6 @@ impl Control {
             progress.utd_rooms.clear();
             progress.utd_sessions.clear();
             let snapshot = progress.clone();
-            drop(inner);
             self.persist(&snapshot);
         }
     }
@@ -490,11 +525,109 @@ impl Control {
 
     pub(crate) fn forget_room(&self, room_id: &str) {
         let mut inner = self.lock();
+        inner.scans.remove(room_id);
         let progress = self.loaded(&mut inner);
-        if progress.complete.remove(room_id) {
+        let removed_receipt = progress.receipts.remove(room_id).is_some();
+        let removed_wait = progress.utd_rooms.remove(room_id);
+        progress.utd_sessions.remove(room_id);
+        if progress.complete.remove(room_id) || removed_receipt || removed_wait {
             let snapshot = progress.clone();
             self.persist(&snapshot);
         }
+    }
+
+    pub(crate) fn room_receipt(&self, room: &str) -> RoomReceipt {
+        let mut inner = self.lock();
+        let active = inner.scans.contains_key(room);
+        let progress = self.loaded(&mut inner);
+        let mut receipt = progress.receipts.get(room).cloned().unwrap_or_else(|| RoomReceipt {
+            state: if progress.utd_rooms.contains(room) {
+                ScanState::WaitingForKeys
+            } else {
+                ScanState::Unscanned
+            },
+            ..Default::default()
+        });
+        if active { receipt.state = ScanState::Scanning; }
+        receipt
+    }
+
+    pub(crate) fn start_scan(&self, room: &str) -> Option<u64> {
+        let mut inner = self.lock();
+        if inner.scans.contains_key(room) {
+            return None;
+        }
+        inner.scan_serial += 1;
+        let serial = inner.scan_serial;
+        inner.scans.insert(room.to_owned(), serial);
+        let progress = self.loaded(&mut inner);
+        if progress.receipts.len() >= MAX_COMPLETE && !progress.receipts.contains_key(room) {
+            if let Some(oldest) = progress.receipts.iter().min_by_key(|(_, r)| r.scanned_ms)
+                .map(|(id, _)| id.clone()) {
+                progress.receipts.remove(&oldest);
+            }
+        }
+        progress.complete.remove(room);
+        progress.receipts.insert(room.to_owned(), RoomReceipt {
+            state: ScanState::Interrupted, scanned_ms: now_ms(), reducer_version: 1,
+            ..Default::default()
+        });
+        self.persist(progress);
+        Some(serial)
+    }
+
+    pub(crate) fn abandon_scan(&self, room: &str, serial: u64) {
+        let mut inner = self.lock();
+        if inner.scans.get(room) == Some(&serial) {
+            inner.scans.remove(room);
+        }
+    }
+
+    pub(crate) fn scan_page(&self, room: &str, serial: u64, outcome: &DeepOutcome) {
+        let mut inner = self.lock();
+        if inner.scans.get(room) == Some(&serial) {
+            if let Some(receipt) = self.loaded(&mut inner).receipts.get_mut(room) {
+                receipt.pages = outcome.pages;
+                receipt.oldest_ms = outcome.oldest_ms;
+                receipt.undecryptable = outcome.undecryptable;
+            }
+        }
+    }
+
+    pub(crate) fn finish_scan(&self, room: &str, serial: u64, outcome: &DeepOutcome,
+                              state: ScanState) -> bool {
+        let mut inner = self.lock();
+        if inner.scans.get(room) != Some(&serial) {
+            return false;
+        }
+        inner.scans.remove(room);
+        let progress = self.loaded(&mut inner);
+        let receipt = RoomReceipt {
+            state, scanned_ms: now_ms(), pages: outcome.pages, oldest_ms: outcome.oldest_ms,
+            undecryptable: outcome.undecryptable, reached_start: outcome.reached_start,
+            reducer_version: 1,
+        };
+        progress.receipts.insert(room.to_owned(), receipt);
+        if state != ScanState::WaitingForKeys {
+            progress.utd_rooms.remove(room);
+            progress.utd_sessions.remove(room);
+        }
+        if !self.persist(progress) {
+            if let Some(r) = progress.receipts.get_mut(room) {
+                r.state = ScanState::StorageFailed;
+            }
+            return false;
+        }
+        true
+    }
+
+    pub(crate) fn manual_gate(self: &Arc<Self>, stop: Arc<AtomicBool>, op: u64) -> ManualGate {
+        self.manual_op.store(op, Ordering::Release);
+        ManualGate { control: Arc::clone(self), stop, op }
+    }
+
+    pub(crate) fn cancel_manual(&self, op: u64) {
+        let _ = self.manual_op.compare_exchange(op, 0, Ordering::AcqRel, Ordering::Acquire);
     }
 
     pub(crate) fn set_hold(&self, bits: u32) {
@@ -623,7 +756,8 @@ impl Control {
                     }
                 } else {
                     progress.utd_rooms.remove(room_id);
-                    if progress.complete.len() < MAX_COMPLETE {
+                    if progress.complete.len() < MAX_COMPLETE
+                        && progress.receipts.get(room_id).is_none_or(|r| r.state == ScanState::Covered) {
                         progress.complete.insert(room_id.to_owned());
                     }
                 }
@@ -633,7 +767,6 @@ impl Control {
         }
         progress.position += 1;
         let snapshot = progress.clone();
-        drop(inner);
         self.persist(&snapshot);
     }
 
@@ -666,7 +799,6 @@ impl Control {
             Ending::Stopped => return,
         }
         let snapshot = progress.clone();
-        drop(inner);
         self.persist(&snapshot);
     }
 
@@ -698,6 +830,26 @@ impl Progress {
     }
 }
 
+pub(crate) struct ManualGate {
+    control: Arc<Control>,
+    stop: Arc<AtomicBool>,
+    op: u64,
+}
+
+impl PageGate for ManualGate {
+    fn session_active(&self) -> bool { !self.stop.load(Ordering::Relaxed) }
+
+    fn gate(&self) -> Gate {
+        if self.stop.load(Ordering::Relaxed) || self.control.manual_op.load(Ordering::Acquire) != self.op {
+            Gate::Stop
+        } else {
+            Gate::Go
+        }
+    }
+
+    fn receipts(&self) -> Option<&Control> { Some(&self.control) }
+}
+
 #[derive(Clone)]
 pub(crate) struct RunGate {
     pub control: Arc<Control>,
@@ -706,6 +858,10 @@ pub(crate) struct RunGate {
 }
 
 impl PageGate for RunGate {
+    fn session_active(&self) -> bool { (self.alive)() }
+
+    fn receipts(&self) -> Option<&Control> { Some(&self.control) }
+
     fn gate(&self) -> Gate {
         if !(self.alive)() || self.control.stop_requested() {
             Gate::Stop
@@ -985,6 +1141,50 @@ mod tests {
         let restarted = Control::new(&store.0);
         assert_eq!(restarted.begin(false, joined), Begin::Started);
         assert_eq!(restarted.status(None).current_room, "!private:x");
+    }
+
+    #[test]
+    fn version_two_queue_migrates_without_inventing_scan_boundaries() {
+        let store = Store::new("receipt-upgrade");
+        let path = store.0.join(PROGRESS_FILE);
+        std::fs::write(&path, br#"{"version":2,"paused":true,"queue":["!todo:x"],"complete":["!old:x"],"utd_rooms":["!keys:x"]}"#).unwrap();
+        let control = Control::new(&store.0);
+        assert_eq!(control.room_receipt("!old:x").state, ScanState::Unscanned);
+        assert_eq!(control.room_receipt("!keys:x").state, ScanState::WaitingForKeys);
+        let serial = control.start_scan("!old:x").unwrap();
+        let outcome = DeepOutcome { pages: 2, oldest_ms: Some(123), ..Default::default() };
+        assert!(control.finish_scan("!old:x", serial, &outcome, ScanState::Capped));
+        let record: Progress = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+        assert_eq!(record.version, PROGRESS_VERSION);
+        assert!(record.paused);
+        assert_eq!(record.queue, vec!["!todo:x"]);
+        let reopened = Control::new(&store.0);
+        let receipt = reopened.room_receipt("!old:x");
+        assert_eq!(receipt.pages, 2);
+        assert_eq!(receipt.oldest_ms, Some(123));
+        assert_eq!(receipt.state, ScanState::Capped);
+        assert!(!receipt.reached_start);
+        let active = reopened.start_scan("!old:x").unwrap();
+        reopened.forget_room("!old:x");
+        assert!(!reopened.finish_scan("!old:x", active, &outcome, ScanState::Covered));
+        assert_eq!(Control::new(&store.0).room_receipt("!old:x").state, ScanState::Unscanned);
+    }
+
+    #[test]
+    fn refused_receipt_commit_leaves_the_room_repairable() {
+        let store = Store::new("receipt-fault");
+        let control = Control::new(&store.0);
+        let path = store.0.join(PROGRESS_FILE);
+        let serial = control.start_scan("!room:x").unwrap();
+        std::fs::create_dir(path.with_extension("json.tmp")).unwrap();
+        let outcome = DeepOutcome { reached_start: true, ..Default::default() };
+        assert!(!control.finish_scan("!room:x", serial, &outcome, ScanState::Covered));
+        assert_eq!(control.room_receipt("!room:x").state, ScanState::StorageFailed);
+        assert_eq!(Control::new(&store.0).room_receipt("!room:x").state, ScanState::Interrupted);
+        std::fs::remove_dir(path.with_extension("json.tmp")).unwrap();
+        let retry = control.start_scan("!room:x").unwrap();
+        assert!(control.finish_scan("!room:x", retry, &outcome, ScanState::Covered));
+        assert_eq!(Control::new(&store.0).room_receipt("!room:x").state, ScanState::Covered);
     }
 
     #[test]
