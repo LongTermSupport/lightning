@@ -37,6 +37,7 @@
 #include "gif/GifProviderSelfTest.h"
 #include "app/StormBandPainter.h"
 #include "media/ImageFormatSupport.h"
+#include "media/ImageMetadataSize.h"
 #include "media/MediaImageProvider.h"
 #include "media/SvgRasterJob.h"
 #include "media/StagedImageProvider.h"
@@ -2310,6 +2311,7 @@ int main(int argc, char *argv[])
     // watcher, QSystemTrayIcon on X11 falls back to the XEmbed tray, which is
     // a QWidget.
     QApplication app(argc, argv);
+    QImageReader::setAllocationLimit(imagemeta::kProcessAllocationLimitMiB);
     qCInfo(lcQtAudioBackend).noquote() << g_qtAudioBackendLine;
     lightning::svgraster::hooks().scratchRoot = [] {
         return lightning::portable::mediaScratchRoot();

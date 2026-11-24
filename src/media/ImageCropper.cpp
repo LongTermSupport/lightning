@@ -226,6 +226,13 @@ QVariantMap ImageCropper::loadBytes(const QByteArray &bytes)
         && qMax(natural.width(), natural.height()) > kMaxSourceEdge)
         target = natural.scaled(kMaxSourceEdge, kMaxSourceEdge, Qt::KeepAspectRatio);
     target = imagemeta::decodeSizeWithinBudget(reader, target, qint64(64) << 20);
+    // A one-off pick the user made, like a backdrop: it may use the whole process ceiling.
+    if (!imagemeta::decodeFitsBudget(reader, target,
+                                     qint64(imagemeta::kProcessAllocationLimitMiB) << 20)) {
+        setError(QStringLiteral("too_large"));
+        result.insert(QStringLiteral("error"), m_lastError);
+        return result;
+    }
     if (target.isValid() && target != natural)
         reader.setScaledSize(target);
     QImage decoded = reader.read();

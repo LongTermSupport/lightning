@@ -6,6 +6,7 @@
 #include "matrix/RoomInfo.h"
 #include "media/AnimatedImageSniff.h"
 #include "media/ImageFormatSupport.h"
+#include "media/ImageMetadataSize.h"
 #include "media/MediaBridge.h"
 #include "media/StagedImageStore.h"
 #include "media/SvgRasterJob.h"
@@ -158,12 +159,16 @@ QImage decodeSmall(const QByteArray &bytes, int edge)
     reader.setAutoDetectImageFormat(false);
     reader.setDecideFormatFromContent(false);
     reader.setAutoTransform(true);
-    reader.setAllocationLimit(64);
     const QSize natural = reader.size();
     if (!natural.isValid() || natural.isEmpty())
         return {};
-    if (natural.width() > edge || natural.height() > edge)
-        reader.setScaledSize(natural.scaled(edge, edge, Qt::KeepAspectRatio));
+    const QSize target = natural.width() > edge || natural.height() > edge
+        ? natural.scaled(edge, edge, Qt::KeepAspectRatio)
+        : natural;
+    if (!imagemeta::decodeFitsBudget(reader, target, imagemeta::kPreviewDecodeBudgetBytes))
+        return {};
+    if (target != natural)
+        reader.setScaledSize(target);
     return reader.read();
 }
 
@@ -205,12 +210,16 @@ FrameSample sampleFrames(const QByteArray &bytes, int edge)
     reader.setAutoDetectImageFormat(false);
     reader.setDecideFormatFromContent(false);
     reader.setAutoTransform(true);
-    reader.setAllocationLimit(64);
     const QSize natural = reader.size();
     if (!natural.isValid() || natural.isEmpty())
         return sample;
-    if (natural.width() > edge || natural.height() > edge)
-        reader.setScaledSize(natural.scaled(edge, edge, Qt::KeepAspectRatio));
+    const QSize target = natural.width() > edge || natural.height() > edge
+        ? natural.scaled(edge, edge, Qt::KeepAspectRatio)
+        : natural;
+    if (!imagemeta::decodeFitsBudget(reader, target, imagemeta::kPreviewDecodeBudgetBytes))
+        return sample;
+    if (target != natural)
+        reader.setScaledSize(target);
     const int count = reader.imageCount();
     if (count > lightning::animsniff::kMaxSaneFrames)
         return firstOnly();
@@ -1304,13 +1313,18 @@ bool ChatBackdropController::encodePicture(const QByteArray &bytes,
     reader.setAutoDetectImageFormat(false);
     reader.setDecideFormatFromContent(false);
     reader.setAutoTransform(true);
-    reader.setAllocationLimit(256);
     const QSize natural = reader.size();
     if (!natural.isValid() || natural.isEmpty())
         return fail(QStringLiteral("undecodable"));
     const int edge = qMin(int(kMaxEdge), int(kMaxDecodeEdge));
-    if (natural.width() > edge || natural.height() > edge)
-        reader.setScaledSize(natural.scaled(edge, edge, Qt::KeepAspectRatio));
+    const QSize target = natural.width() > edge || natural.height() > edge
+        ? natural.scaled(edge, edge, Qt::KeepAspectRatio)
+        : natural;
+    if (!imagemeta::decodeFitsBudget(reader, target,
+                                     qint64(imagemeta::kProcessAllocationLimitMiB) << 20))
+        return fail(QStringLiteral("undecodable"));
+    if (target != natural)
+        reader.setScaledSize(target);
     QImage image = reader.read();
     if (image.isNull() || image.width() < 1 || image.height() < 1)
         return fail(QStringLiteral("undecodable"));

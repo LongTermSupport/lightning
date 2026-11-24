@@ -19,6 +19,8 @@
 #include "media/MediaBridge.h"
 #include "media/MediaImageProvider.h"
 
+#include "PngFixture.h"
+
 namespace {
 
 class FakeClient final : public MatrixClient
@@ -1168,6 +1170,9 @@ private Q_SLOTS:
                  "markup was accepted as an avatar");
         QVERIFY2(!store.store(uid, QByteArray(AccountAvatarStore::kMaxBytes + 1, '\x89')),
                  "an over-cap payload was accepted");
+        const QByteArray bomb = pngfixture::blackRgb(9000, 9000);
+        QVERIFY(bomb.size() <= AccountAvatarStore::kMaxBytes);
+        QVERIFY2(!store.store(uid, bomb), "a PNG over the decode budget was accepted");
         QVERIFY2(!store.store(QStringLiteral("not-a-user-id"), png),
                  "an unusable account id produced a file");
         QCOMPARE(store.avatarUrlFor(uid), url);

@@ -1,6 +1,7 @@
 #include "app/CustomAppIcon.h"
 
 #include "media/ImageFormatSupport.h"
+#include "media/ImageMetadataSize.h"
 
 #include <QBuffer>
 #include <QImageReader>
@@ -58,10 +59,10 @@ NormalizeResult normalizeIconBytes(const QByteArray &bytes)
     QImageReader reader(&buffer, format.toLatin1());
     reader.setAutoDetectImageFormat(false);
     reader.setAutoTransform(true);
-    reader.setAllocationLimit(128);
     const QSize declared = reader.size();
     if (declared.isValid()
-        && (declared.width() > kMaxInputEdge || declared.height() > kMaxInputEdge)) {
+        && (declared.width() > kMaxInputEdge || declared.height() > kMaxInputEdge
+            || !imagemeta::decodeFitsBudget(reader, declared, kMaxDecodeBytes))) {
         result.category = QStringLiteral("too_large_dimensions");
         return result;
     }

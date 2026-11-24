@@ -53,6 +53,7 @@ struct ParseOutcome {
 
 inline constexpr int kMaxGifDimension = 4096;
 inline constexpr qint64 kMaxGifBytes = 25LL * 1024 * 1024;
+inline constexpr qint64 kMaxDecodeBytes = qint64(64) << 20;
 
 // `requestOffset` is the request's own offset, so nextOffset does not trust
 // echoed input.

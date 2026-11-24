@@ -5,6 +5,8 @@
 #include "media/AnimatedImageSniff.h"
 #include "media/MediaImageProvider.h"
 
+#include "PngFixture.h"
+
 #include <QBuffer>
 #include <QCryptographicHash>
 #include <QElapsedTimer>
@@ -17,11 +19,14 @@
 #include <QScopeGuard>
 #include <QSemaphore>
 #include <QDir>
+#include <QDirIterator>
+#include <QRegularExpression>
 #include <QSignalSpy>
 #include <QtTest/QtTest>
 
 #include <algorithm>
 #include <atomic>
+#include <functional>
 #include <utility>
 
 #ifdef Q_OS_UNIX
@@ -1402,6 +1407,125 @@ private Q_SLOTS:
 
         const QByteArray small = orientation6Jpeg(300, 200);
         QCOMPARE(decode(QStringLiteral("$small"), small, QSize()).size(), QSize(200, 300));
+    }
+
+    void eachDecodePathKeepsItsBudgetWithoutTouchingTheProcessLimit()
+    {
+        const int before = QImageReader::allocationLimit();
+        QImageReader::setAllocationLimit(256);
+        const auto restore = qScopeGuard([before] { QImageReader::setAllocationLimit(before); });
+        QTest::failOnWarning(QRegularExpression(QStringLiteral("allocation limit")));
+
+        FakeClient client;
+        MediaBridge bridge;
+        bridge.setClient(&client);
+        MediaImageProvider provider(&bridge);
+        const QString prefix = QStringLiteral("image://lightning-media/");
+        int serial = 0;
+        const auto view = [&](const QByteArray &bytes) {
+            const QString eventId = QStringLiteral("$v%1").arg(++serial);
+            bridge.mediaSource(eventId, QStringLiteral("full"));
+            client.succeed(client.fetches.last().opId, bytes);
+            const QString url = bridge.cachedSource(QStringLiteral("full:") + eventId);
+            QSize size;
+            return url.startsWith(prefix)
+                ? provider.requestImage(url.mid(prefix.size()), &size, QSize())
+                : QImage();
+        };
+        const auto avatar = [&](const QByteArray &bytes) {
+            const QString mxc = QStringLiteral("mxc://example.org/a%1").arg(++serial);
+            bridge.avatarSource(mxc, 40);
+            client.succeed(client.fetches.last().opId, bytes);
+            return bridge.cachedAvatarImage(mxc);
+        };
+
+        const QByteArray small = pngfixture::blackRgb(64, 48);
+        // 132 MB at 32 bpp: over the 64 MiB preview budget, under the process ceiling.
+        const QByteArray eightK = pngfixture::blackRgb(7680, 4320);
+        // 324 MB: over every budget and the ceiling.
+        const QByteArray bomb = pngfixture::blackRgb(9000, 9000);
+        {
+            QByteArray copy = eightK;
+            QBuffer buffer(&copy);
+            buffer.open(QIODevice::ReadOnly);
+            QCOMPARE(QImageReader(&buffer).size(), QSize(7680, 4320));
+        }
+
+        const QList<std::function<QImage(const QByteArray &)>> paths{view, avatar};
+        for (int order = 0; order < 2; ++order) {
+            for (int i = 0; i < paths.size(); ++i) {
+                const auto &decode = paths.at(order == 0 ? i : paths.size() - 1 - i);
+                QVERIFY(decode(eightK).isNull());
+                QCOMPARE(QImageReader::allocationLimit(), 256);
+                QVERIFY(decode(bomb).isNull());
+                QCOMPARE(QImageReader::allocationLimit(), 256);
+                QVERIFY(!decode(small).isNull());
+                QCOMPARE(QImageReader::allocationLimit(), 256);
+            }
+        }
+    }
+
+    void aPngOverThePreviewBudgetIsTooLargeAndSavesItsOriginalBytes()
+    {
+        QTemporaryDir dir;
+        QVERIFY(dir.isValid());
+        FakeClient client;
+        MediaBridge bridge;
+        bridge.setClient(&client);
+        const auto fetched = [&](const QString &eventId, const QByteArray &bytes) {
+            bridge.mediaSource(eventId, QStringLiteral("full"));
+            client.succeed(client.fetches.last().opId, bytes);
+            return bridge.cachedSource(QStringLiteral("full:") + eventId);
+        };
+        const auto tooLarge = [&](const QString &source) {
+            bool result = false;
+            const bool found = QMetaObject::invokeMethod(
+                &bridge, "cachedImageTooLarge", Q_RETURN_ARG(bool, result),
+                Q_ARG(QString, source));
+            return found ? int(result) : -1;
+        };
+
+        const QByteArray eightK = pngfixture::blackRgb(7680, 4320);
+        QCOMPARE(tooLarge(fetched(QStringLiteral("$8k"), eightK)), 1);
+        QCOMPARE(tooLarge(fetched(QStringLiteral("$small"), pngfixture::blackRgb(64, 48))), 0);
+        // A JPEG this size still decodes scaled, so it is not too large.
+        QCOMPARE(tooLarge(fetched(QStringLiteral("$jpeg"), orientation6Jpeg(4500, 4000))), 0);
+
+        QSignalSpy saved(&bridge, &MediaBridge::saveFinished);
+        const QString path = dir.filePath(QStringLiteral("big.png"));
+        bridge.saveAs(QStringLiteral("$8k"), QUrl::fromLocalFile(path));
+        QVERIFY(saved.count() > 0 || saved.wait(5000));
+        QVERIFY(saved.first().at(0).toBool());
+        QFile file(path);
+        QVERIFY(file.open(QIODevice::ReadOnly));
+        QVERIFY(file.readAll() == eightK);
+    }
+
+    void onlyStartupSetsTheProcessWideImageAllocationLimit()
+    {
+        const QDir src(QFileInfo(QStringLiteral(__FILE__)).absoluteDir().filePath(
+            QStringLiteral("../src")));
+        QVERIFY2(src.exists(), qPrintable(src.absolutePath()));
+        static const QRegularExpression call(QStringLiteral("setAllocationLimit\\s*\\("));
+        QStringList sites;
+        int files = 0;
+        QDirIterator it(src.absolutePath(),
+                        {QStringLiteral("*.cpp"), QStringLiteral("*.h"), QStringLiteral("*.mm")},
+                        QDir::Files, QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            QFile file(it.next());
+            QVERIFY(file.open(QIODevice::ReadOnly));
+            ++files;
+            const QString text = QString::fromUtf8(file.readAll());
+            for (auto m = call.globalMatch(text); m.hasNext(); m.next())
+                sites << src.relativeFilePath(file.fileName());
+        }
+        QVERIFY2(files > 300, qPrintable(QString::number(files)));
+        QCOMPARE(sites, QStringList{QStringLiteral("main.cpp")});
+        QFile main(src.filePath(QStringLiteral("main.cpp")));
+        QVERIFY(main.open(QIODevice::ReadOnly));
+        QVERIFY(QString::fromUtf8(main.readAll()).contains(QStringLiteral(
+            "QImageReader::setAllocationLimit(imagemeta::kProcessAllocationLimitMiB)")));
     }
 
     void theStillTileAndTheAnimatedPickerTileAreSeparateFetches()

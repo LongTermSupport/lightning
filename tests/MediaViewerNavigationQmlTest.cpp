@@ -8,12 +8,15 @@
 #include <QQmlEngine>
 #include <QQuickItem>
 #include <QQuickWindow>
+#include <QScopeGuard>
 #include <QSignalSpy>
 
 #include "app/AppController.h"
 #include "auth/AuthManager.h"
 #include "matrix/MockMatrixClient.h"
 #include "models/TimelineModel.h"
+
+#include "PngFixture.h"
 
 namespace {
 
@@ -236,6 +239,34 @@ private Q_SLOTS:
     }
 
     void cleanup() { QMetaObject::invokeMethod(m_root, "close"); }
+
+    void anImageOverTheDecodeBudgetSaysSoAndKeepsDownload()
+    {
+        auto *mock = m_controller->findChild<MockMatrixClient *>();
+        QVERIFY(mock);
+        mock->setSupportsMediaBridgeForTest(true);
+        const auto restore = qScopeGuard([mock] { mock->setSupportsMediaBridgeForTest(false); });
+        const QString mxc = QStringLiteral("mxc://mock.local/eightk");
+        mock->setAvatarBytesForTest(mxc, pngfixture::blackRgb(7680, 4320),
+                                    QStringLiteral("image/png"));
+        QVariantMap entry = historyEntry(QString());
+        entry.insert(QStringLiteral("mxc"), mxc);
+        QVERIFY(QMetaObject::invokeMethod(
+            m_root, "openAt", Q_ARG(QVariant, QVariant(QVariantList{entry})),
+            Q_ARG(QVariant, QVariant(0))));
+
+        QQuickItem *label = m_window->findChild<QQuickItem *>(QStringLiteral("viewerErrorLabel"));
+        QVERIFY(label);
+        QTRY_VERIFY(label->isVisible());
+        QCOMPARE(label->property("text").toString(),
+                 QStringLiteral("This image is too large to preview. Download it to view it."));
+        QQuickItem *image = m_window->findChild<QQuickItem *>(QStringLiteral("viewerStaticImage"));
+        QVERIFY(image);
+        QCOMPARE(image->property("source").toUrl(), QUrl());
+        QQuickItem *save = m_window->findChild<QQuickItem *>(QStringLiteral("viewerSaveButton"));
+        QVERIFY(save);
+        QTRY_VERIFY(save->isVisible());
+    }
 
     void theStripStartsWhereTheCurrentThumbnailIs()
     {

@@ -330,7 +330,11 @@ RasterByteValidation validateRasterBytes(const QByteArray &bytes)
         return out;
     }
 
-    if (w > kMaxGifDimension || h > kMaxGifDimension || bytes.size() > kMaxGifBytes) {
+    // Starred copies are drawn by a QML Image directly; a 16-bit PNG decodes at 8 bytes a pixel.
+    const int decodedBytesPerPixel =
+        ext == QLatin1String("png") && bytes.size() > 24 && quint8(bytes[24]) == 16 ? 8 : 4;
+    if (w > kMaxGifDimension || h > kMaxGifDimension || bytes.size() > kMaxGifBytes
+        || qint64(w) * h * decodedBytesPerPixel > kMaxDecodeBytes) {
         out.category = QStringLiteral("too_large");
         return out;
     }

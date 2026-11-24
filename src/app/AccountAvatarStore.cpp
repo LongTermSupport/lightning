@@ -1,7 +1,9 @@
 #include "app/AccountAvatarStore.h"
 
+#include "media/ImageMetadataSize.h"
 #include "storage/AppDataPaths.h"
 
+#include <QBuffer>
 #include <QDir>
 #include <QDateTime>
 #include <QFileInfo>
@@ -75,6 +77,14 @@ bool AccountAvatarStore::store(const QString &userId, const QByteArray &bytes)
     if (bytes.isEmpty() || bytes.size() > kMaxBytes)
         return false;
     if (!looksLikeSupportedRaster(bytes))
+        return false;
+    // The file is drawn by a QML Image directly, outside the media provider's budget.
+    QByteArray probe = bytes;
+    QBuffer buffer(&probe);
+    buffer.open(QIODevice::ReadOnly);
+    QImageReader reader(&buffer);
+    if (!imagemeta::decodeFitsBudget(reader, reader.size(),
+                                     imagemeta::kPreviewDecodeBudgetBytes))
         return false;
     const QString path = fileFor(userId);
     if (path.isEmpty())

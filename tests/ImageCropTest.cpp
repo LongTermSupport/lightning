@@ -3,6 +3,8 @@
 #include "media/StagedImageStore.h"
 #include "media/SvgRasterJob.h"
 
+#include "PngFixture.h"
+
 #include <QBuffer>
 #include <QDir>
 #include <QFile>
@@ -10,6 +12,8 @@
 #include <QImageReader>
 #include <QImageWriter>
 #include <QPainter>
+#include <QRegularExpression>
+#include <QScopeGuard>
 #include <QSignalSpy>
 #include <QTemporaryDir>
 #include <QtTest/QtTest>
@@ -285,6 +289,31 @@ private Q_SLOTS:
         const int unknown = imagecrop::maxEdgeForRole(QStringLiteral("Avatar"));
         QVERIFY2(unknown > 0, "a typo in a call site silently uncapped an upload");
         QCOMPARE(unknown, 512);
+    }
+
+    void anEightKScreenshotOpensAndABombIsRefusedBeforeDecoding()
+    {
+        const int before = QImageReader::allocationLimit();
+        QImageReader::setAllocationLimit(256);
+        const auto restore = qScopeGuard([before] { QImageReader::setAllocationLimit(before); });
+        QTest::failOnWarning(QRegularExpression(QStringLiteral("allocation limit")));
+        QTemporaryDir dir;
+        QVERIFY(dir.isValid());
+        const QString eightK = dir.filePath(QStringLiteral("8k.png"));
+        const QString bomb = dir.filePath(QStringLiteral("bomb.png"));
+        QVERIFY(writeFile(eightK, pngfixture::blackRgb(7680, 4320)));
+        QVERIFY(writeFile(bomb, pngfixture::blackRgb(9000, 9000)));
+        StagedImageStore staged;
+        ImageCropper cropper;
+        cropper.setStagedImages(&staged);
+
+        const QVariantMap opened = cropper.load(QUrl::fromLocalFile(eightK));
+        QVERIFY2(opened.value(QStringLiteral("ok")).toBool(),
+                 qPrintable(opened.value(QStringLiteral("error")).toString()));
+        const QVariantMap refused = cropper.load(QUrl::fromLocalFile(bomb));
+        QVERIFY(!refused.value(QStringLiteral("ok")).toBool());
+        QCOMPARE(refused.value(QStringLiteral("error")).toString(), QStringLiteral("too_large"));
+        QCOMPARE(QImageReader::allocationLimit(), 256);
     }
 
     void aCroppedFileIsWrittenAndItsBytesAreTheFormatItIsNamed()
