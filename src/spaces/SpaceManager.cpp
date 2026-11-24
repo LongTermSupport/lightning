@@ -1669,7 +1669,7 @@ void SpaceManager::communityAction(const QString &action, const QVariantMap &pay
     } else if (action == QLatin1String("preview")) {
         invalidateCommunityReview();
         m_communityReviewRequest = request;
-    } else if (action != QLatin1String("load")) {
+    } else if (action != QLatin1String("load") && action != QLatin1String("proposals")) {
         invalidateCommunityReview();
     }
     m_communityAction = action;
@@ -1698,18 +1698,26 @@ void SpaceManager::onCommunityFinished(quint64 opId, const QString &roomId,
         } else if (category == QLatin1String("forbidden")) {
             invalidateCommunityReview();
             m_communityMessage = tr("The server refused this action. Refresh and check your permissions.");
+        } else if (category == QLatin1String("invalid")) {
+            m_communityMessage = tr("This content was not accepted. Check the room IDs, that links use https, and the limits.");
+        } else if (category == QLatin1String("pending")) {
+            m_communityMessage = tr("Another reviewer is publishing this proposal. Refresh in a moment.");
         } else {
             m_communityMessage = tr("The action did not complete. A publish may already have arrived; retrying the same reviewed text will not send a second post.");
         }
-    } else if (action == QLatin1String("load")) {
-        if (m_communityState != result)
+    } else if (action == QLatin1String("load") || action == QLatin1String("proposals")) {
+        QVariantMap next = m_communityState;
+        for (auto it = result.cbegin(); it != result.cend(); ++it)
+            next.insert(it.key(), it.value());
+        if (m_communityState != next)
             invalidateCommunityReview();
-        m_communityState = result;
+        m_communityState = next;
     } else if (action == QLatin1String("preview")) {
         m_communityReview = result;
     } else {
         invalidateCommunityReview();
-        communityAction(QStringLiteral("load"), {});
+        communityAction(action == QLatin1String("guide") ? QStringLiteral("load")
+                                                         : QStringLiteral("proposals"), {});
     }
     Q_EMIT communityChanged();
 }
@@ -1778,7 +1786,7 @@ QString SpaceManager::audiencePreview(const QString &joinRule,
 {
     QString join;
     if (joinRule == QLatin1String("public"))
-        join = tr("Anyone who is not banned can request to join.");
+        join = tr("Anyone who is not banned can join without an invite.");
     else if (joinRule == QLatin1String("invite"))
         join = tr("Only invited people can join.");
     else if (joinRule == QLatin1String("knock"))
@@ -1792,13 +1800,13 @@ QString SpaceManager::audiencePreview(const QString &joinRule,
         join += QLatin1Char(' ') + tr("Other people can ask to join.");
     QString readable;
     if (history == QLatin1String("world_readable"))
-        readable = tr("Anyone can read the server's history, including people outside the room.");
+        readable = tr("Anyone can read the history, including people outside the room.");
     else if (history == QLatin1String("joined"))
         readable = tr("Members can read history from when they joined.");
     else if (history == QLatin1String("invited"))
         readable = tr("Members can read history from when they were invited.");
     else if (history == QLatin1String("shared"))
-        readable = tr("Members can read history shared before they joined.");
+        readable = tr("Members can read all history, including messages sent before they joined.");
     else
         readable = tr("History access is not known.");
     return join + QLatin1Char('\n') + readable + QLatin1Char('\n')

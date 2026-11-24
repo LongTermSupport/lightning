@@ -48,7 +48,7 @@ public:
     bool paginating(const QString &) const override { return false; }
 
     quint64 spaceCommunityAction(const QString &room, const QString &action,
-                                 const QVariantMap &payload)
+                                 const QVariantMap &payload) override
     {
         lastRoom = room;
         lastAction = action;
@@ -142,6 +142,28 @@ private Q_SLOTS:
         QCOMPARE(state(manager), guideState());
         QVERIFY(!manager.property("communityBusy").toBool());
         QVERIFY(!manager.property("communityMessage").toString().isEmpty());
+    }
+
+    void proposalListMergesIntoTheGuideAndWritesReloadIt()
+    {
+        FakeClient client;
+        SpaceManager manager;
+        manager.setClient(&client);
+        QVERIFY(load(manager));
+        QVERIFY(finish(client, true, guideState()));
+        QVERIFY(action(manager, "proposals"));
+        QVERIFY(finish(client, true, {{QStringLiteral("proposals"), QVariantList{
+            QVariantMap{{QStringLiteral("id"), QStringLiteral("@a:example.org")}}}}}));
+        QCOMPARE(state(manager).value("guide"), guideState().value("guide"));
+        QCOMPARE(state(manager).value("proposals").toList().size(), 1);
+        QVERIFY(action(manager, "propose", {{QStringLiteral("body"), QStringLiteral("Hi")}}));
+        QVERIFY(finish(client, true, {}));
+        QCOMPARE(client.lastAction, QStringLiteral("proposals"));
+        QVERIFY(finish(client, true, {}));
+        QVERIFY(action(manager, "guide", {{QStringLiteral("welcome"), QStringLiteral("New")}}));
+        QVERIFY(finish(client, true, {}));
+        QCOMPARE(client.lastAction, QStringLiteral("load"));
+        QCOMPARE(client.messageSends, 0);
     }
 
     void rolePreviewUsesTheActualThresholds()

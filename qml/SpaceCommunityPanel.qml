@@ -9,31 +9,35 @@ ColumnLayout {
     property var manager: null
     property var sections: []
     readonly property string roomId: manager ? manager.activeSpaceId : ""
-    readonly property var state: manager && manager.communityRoomId === roomId
-                                 ? manager.communityState : ({})
-    readonly property var guide: state.guide || ({})
+    readonly property var community: manager && manager.communityRoomId === roomId
+                                     ? manager.communityState : ({})
+    readonly property var guide: community.guide || ({})
+    readonly property bool hasGuide: !!guide.welcome || !!guide.rules
+                                     || (guide.rooms || []).length > 0 || (guide.links || []).length > 0
     readonly property bool busy: manager ? manager.communityBusy : false
-    property var interests: ({})
     property bool ready: false
     readonly property var recommended: {
-        var dependency = state
+        var dependency = community
         return manager ? manager.guideRooms(sections) : []
     }
     signal openRoomRequested(string roomId)
     signal openSpaceRequested(string spaceId)
     signal joinRequested(string roomId, var via, bool isSpace)
     signal knockRequested(string roomId, var via)
-    visible: roomId.startsWith("!")
+    visible: roomId.startsWith("!") && (hasGuide || community.can_edit_guide === true
+                                        || community.can_propose === true || community.can_review === true)
     spacing: AppTheme.spacing8
     LayoutMirroring.enabled: Qt.application.layoutDirection === Qt.RightToLeft
     LayoutMirroring.childrenInherit: true
 
-    function reset() {
-        interests = ({})
+    function clearDrafts() {
         guideEditor.close()
         announcements.close()
         proposalBody.text = ""
         reviewBody.text = ""
+    }
+    function reset() {
+        clearDrafts()
         if (manager && roomId.startsWith("!")) manager.loadCommunity(roomId)
     }
     onRoomIdChanged: if (ready) reset()
@@ -42,13 +46,8 @@ ColumnLayout {
         target: root.manager
         ignoreUnknownSignals: true
         function onCommunityChanged() {
-            if (root.ready && (!root.manager || root.manager.communityRoomId === "")) {
-                root.interests = ({})
-                guideEditor.close()
-                announcements.close()
-                proposalBody.text = ""
-                reviewBody.text = ""
-            }
+            if (root.ready && (!root.manager || root.manager.communityRoomId === ""))
+                root.clearDrafts()
         }
     }
 
@@ -59,23 +58,24 @@ ColumnLayout {
         AppButton {
             objectName: "spaceGuideEdit"
             text: qsTr("Edit guide")
-            visible: root.state.can_edit_guide === true
+            visible: root.community.can_edit_guide === true
             enabled: !root.busy
             onClicked: {
                 welcomeField.text = root.guide.welcome || ""
                 rulesField.text = root.guide.rules || ""
                 roomsField.text = (root.guide.rooms || []).join("\n")
                 linksField.text = (root.guide.links || []).join("\n")
-                interestsField.text = (root.guide.interests || []).join("\n")
                 guideEditor.open()
             }
         }
         AppButton {
             objectName: "spaceAnnouncementsOpen"
             text: qsTr("Announcements")
+            visible: root.community.can_propose === true || root.community.can_review === true
+                     || root.community.can_enable === true
             enabled: !root.busy
             onClicked: {
-                root.manager.loadCommunity(root.roomId)
+                root.manager.communityAction("proposals", {})
                 announcements.open()
             }
         }
@@ -115,13 +115,15 @@ ColumnLayout {
             required property var modelData
             objectName: "spaceGuideRoom"
             Layout.fillWidth: true
+            readonly property bool knock: modelData.joinRule === "knock" || modelData.joinRule === "knock_restricted"
             text: modelData.joined ? qsTr("Open %1").arg(modelData.name || modelData.roomId)
-                  : qsTr("Join %1…").arg(modelData.name || modelData.roomId)
+                  : knock ? qsTr("Ask to join %1").arg(modelData.name || modelData.roomId)
+                  : qsTr("Join %1").arg(modelData.name || modelData.roomId)
             onClicked: {
                 if (modelData.joined) {
                     if (modelData.isSpace) root.openSpaceRequested(modelData.roomId)
                     else root.openRoomRequested(modelData.roomId)
-                } else if (modelData.joinRule === "knock" || modelData.joinRule === "knock_restricted") {
+                } else if (knock) {
                     root.knockRequested(modelData.roomId, modelData.via || [])
                 } else {
                     root.joinRequested(modelData.roomId, modelData.via || [], modelData.isSpace === true)
@@ -138,27 +140,6 @@ ColumnLayout {
             onClicked: Qt.openUrlExternally(modelData)
         }
     }
-    Label {
-        Layout.fillWidth: true
-        visible: (root.guide.interests || []).length > 0
-        text: qsTr("Your interests (optional; kept only until you leave this Space view)")
-        color: AppTheme.textSecondary
-        wrapMode: Text.Wrap
-    }
-    Repeater {
-        model: root.guide.interests || []
-        CheckBox {
-            required property string modelData
-            text: modelData
-            checked: root.interests[modelData] === true
-            onToggled: {
-                var next = Object.assign({}, root.interests)
-                next[modelData] = checked
-                root.interests = next
-            }
-        }
-    }
-
     function lines(value) {
         return value.split("\n").map(s => s.trim()).filter(s => s.length > 0)
     }
@@ -210,20 +191,15 @@ ColumnLayout {
                     id: linksField; Layout.fillWidth: true; implicitHeight: 70
                     textFormat: TextEdit.PlainText; Accessible.name: qsTr("Important links")
                 }
-                Label { text: qsTr("Optional interests (one per line, up to 12)"); color: AppTheme.stormText }
-                TextArea {
-                    id: interestsField; Layout.fillWidth: true; implicitHeight: 70
-                    textFormat: TextEdit.PlainText; Accessible.name: qsTr("Optional interests")
-                }
                 RowLayout {
                     AppButton {
                         text: qsTr("Save guide"); objectName: "spaceGuideSave"
-                        enabled: !root.busy && root.state.can_edit_guide === true
+                        enabled: !root.busy && root.community.can_edit_guide === true
                                  && welcomeField.text.length <= 4000 && rulesField.text.length <= 4000
                         onClicked: {
                             root.manager.communityAction("guide", { welcome: welcomeField.text,
                                 rules: rulesField.text, rooms: root.lines(roomsField.text),
-                                links: root.lines(linksField.text), interests: root.lines(interestsField.text) })
+                                links: root.lines(linksField.text) })
                             guideEditor.close()
                         }
                     }
@@ -263,13 +239,13 @@ ColumnLayout {
                 }
                 AppButton {
                     text: qsTr("Enable member proposals…")
-                    visible: root.state.can_enable === true
+                    visible: root.community.can_enable === true && root.community.proposals_open !== true
                     enabled: !root.busy
                     onClicked: enableProposals.open()
                 }
                 Label {
                     Layout.fillWidth: true
-                    visible: root.state.can_propose !== true
+                    visible: root.community.can_propose !== true
                     text: qsTr("A room administrator must enable proposals for members first.")
                     wrapMode: Text.Wrap; color: AppTheme.stormTextSecondary
                 }
@@ -296,27 +272,27 @@ ColumnLayout {
                 }
                 AppButton {
                     text: qsTr("Submit or replace my proposal")
-                    enabled: !root.busy && root.state.can_propose === true
+                    enabled: !root.busy && root.community.can_propose === true
                              && proposalBody.text.trim().length > 0 && proposalBody.text.length <= 4000
                              && targetRoom.currentIndex >= 0
                     onClicked: root.manager.communityAction("propose", {
                         body: proposalBody.text, target: targetRoom.targets[targetRoom.currentIndex].roomId })
                 }
                 Label {
-                    visible: root.state.truncated === true
+                    visible: root.community.truncated === true
                     Layout.fillWidth: true
                     text: qsTr("Only the first 100 proposals are shown.")
                     wrapMode: Text.Wrap; color: AppTheme.stormTextSecondary
                 }
                 Repeater {
-                    model: root.state.proposals || []
+                    model: root.community.proposals || []
                     AppButton {
                         required property var modelData
                         objectName: "spaceAnnouncementProposal"
                         Layout.fillWidth: true
                         text: modelData.published ? qsTr("Published proposal from %1").arg(modelData.author)
                               : qsTr("Review proposal from %1").arg(modelData.author)
-                        enabled: !root.busy && root.state.can_review === true && !modelData.published
+                        enabled: !root.busy && root.community.can_review === true && !modelData.published
                         onClicked: {
                             announcements.proposalId = modelData.id
                             reviewBody.text = modelData.body
@@ -356,10 +332,9 @@ ColumnLayout {
                         var r = announcements.review
                         if (!r.audience) return ""
                         var a = r.audience
-                        var allowed = (a.join_rules.allow || []).filter(r => r.type === "m.room_membership").map(r => r.room_id)
                         return qsTr("Publish as %1\nProposed by %2\nDestination: %3 (%4)\nCurrent joined members: %5\n%6")
                             .arg(r.publisher).arg(r.author).arg(a.name || a.room_id).arg(a.room_id).arg(a.joined_count)
-                            .arg(root.manager.audiencePreview(a.join_rules.join_rule || "", a.history.history_visibility || "", allowed))
+                            .arg(root.manager.audiencePreview(a.join_rule || "", a.history || "", a.allow || []))
                     }
                 }
                 RowLayout {

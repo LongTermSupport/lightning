@@ -1,267 +1,363 @@
 use std::{collections::BTreeMap, sync::Arc, time::Duration};
 
-use matrix_sdk::{config::RequestConfig, ruma::{api::client::state::get_state_events, RoomId}};
+use matrix_sdk::{
+    config::RequestConfig,
+    deserialized_responses::RawAnySyncOrStrippedState,
+    ruma::{
+        api::client::state::{get_state_event_for_key, get_state_events},
+        events::{
+            room::power_levels::RoomPowerLevelsEventContent, MessageLikeEventType, StateEventType,
+            TimelineEventType,
+        },
+        room::{AllowRule, JoinRule},
+        Int, RoomId, UserId,
+    },
+    Client, Room,
+};
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 
-use crate::{enqueue, rooms::{classify_room_error, joined_room, require_client}, RustClient};
+use crate::{
+    enqueue, optprobe,
+    rooms::{classify_room_error, join_rule_str, joined_room, require_client},
+    RustClient,
+};
 
 const GUIDE: &str = "org.lightning_matrix.room_guide";
 const PROPOSAL: &str = "org.lightning_matrix.announcement_proposal";
 const REVIEW: &str = "org.lightning_matrix.announcement_review";
 const LIMIT: usize = 100;
+const MAX_BODY: usize = 4000;
 
 type Result<T> = std::result::Result<T, String>;
+
+fn err(e: impl ToString) -> String {
+    classify_room_error(&e.to_string()).to_owned()
+}
 
 fn text<'a>(v: &'a Value, key: &str) -> &'a str {
     v.get(key).and_then(Value::as_str).unwrap_or("")
 }
 
 fn bounded_text(v: &Value, key: &str, limit: usize) -> bool {
-    v.get(key).is_some_and(|s| s.as_str().is_some_and(|s| s.chars().count() <= limit))
+    v.get(key).and_then(Value::as_str).is_some_and(|s| s.chars().count() <= limit)
 }
 
 fn valid_guide(v: &Value) -> bool {
-    bounded_text(v, "welcome", 4000) && bounded_text(v, "rules", 4000)
+    bounded_text(v, "welcome", MAX_BODY)
+        && bounded_text(v, "rules", MAX_BODY)
         && v.get("rooms").and_then(Value::as_array).is_some_and(|a| {
             a.len() <= 12 && a.iter().all(|id| id.as_str().is_some_and(|s| RoomId::parse(s).is_ok()))
         })
-        && v.get("interests").and_then(Value::as_array).is_some_and(|a| {
-            a.len() <= 12 && a.iter().all(|s| s.as_str().is_some_and(|s| !s.trim().is_empty() && s.chars().count() <= 80))
-        })
         && v.get("links").and_then(Value::as_array).is_some_and(|a| {
-            a.len() <= 8 && a.iter().all(|v| v.as_str().is_some_and(|s| {
-                s.len() <= 512 && url::Url::parse(s).is_ok_and(|u| {
-                    u.scheme() == "https" && u.host_str().is_some()
-                        && u.username().is_empty() && u.password().is_none()
+            a.len() <= 8
+                && a.iter().all(|v| {
+                    v.as_str().is_some_and(|s| {
+                        s.len() <= 512
+                            && url::Url::parse(s).is_ok_and(|u| {
+                                u.scheme() == "https"
+                                    && u.host_str().is_some()
+                                    && u.username().is_empty()
+                                    && u.password().is_none()
+                            })
+                    })
                 })
-            }))
         })
+}
+
+fn valid_body(v: &Value) -> bool {
+    bounded_text(v, "body", MAX_BODY) && !text(v, "body").trim().is_empty()
 }
 
 fn valid_proposal(v: &Value) -> bool {
-    bounded_text(v, "body", 4000) && !text(v, "body").trim().is_empty()
-        && RoomId::parse(text(v, "target")).is_ok()
+    valid_body(v) && RoomId::parse(text(v, "target")).is_ok()
 }
 
-struct State {
-    events: BTreeMap<(String, String), Value>,
-    own: String,
-    joined_count: usize,
+type StateMap = BTreeMap<(String, String), Value>;
+
+fn index(events: impl IntoIterator<Item = Value>) -> StateMap {
+    events
+        .into_iter()
+        .filter(|e| [PROPOSAL, REVIEW].contains(&text(e, "type")))
+        .map(|e| ((text(&e, "type").to_owned(), text(&e, "state_key").to_owned()), e))
+        .collect()
 }
 
-impl State {
-    fn event(&self, ty: &str, key: &str) -> Value {
-        self.events.get(&(ty.to_owned(), key.to_owned())).cloned().unwrap_or(Value::Null)
-    }
-    fn content(&self, ty: &str, key: &str) -> Value {
-        self.event(ty, key).get("content").cloned().unwrap_or_else(|| json!({}))
-    }
-    fn level(&self) -> i64 {
-        let create = self.event("m.room.create", "");
-        let content = &create["content"];
-        let version = text(content, "room_version").parse::<u64>().unwrap_or(1);
-        if version >= 12 && (text(&create, "sender") == self.own
-            || content["additional_creators"].as_array().is_some_and(|a| a.iter().any(|id| id.as_str() == Some(&self.own)))) {
-            return 1i64 << 53;
+/// A proposal counts only when its state key is its sender, so nobody can file one for another user.
+fn proposal<'a>(state: &'a StateMap, author: &str) -> Option<&'a Value> {
+    state.get(&(PROPOSAL.to_owned(), author.to_owned())).filter(|e| {
+        text(e, "sender") == author
+            && !text(e, "event_id").is_empty()
+            && valid_proposal(&e["content"])
+    })
+}
+
+/// Review markers are keyed by the proposal's event id: an `@` state key must equal its sender.
+fn marker(state: &StateMap, revision: &str) -> Value {
+    state
+        .get(&(REVIEW.to_owned(), revision.to_owned()))
+        .and_then(|e| e.get("content").cloned())
+        .unwrap_or_else(|| json!({}))
+}
+
+fn proposals(state: &StateMap) -> (Vec<Value>, bool) {
+    let mut out = Vec::new();
+    for (ty, key) in state.keys() {
+        if ty != PROPOSAL {
+            continue;
         }
-        let power = self.content("m.room.power_levels", "");
-        if self.event("m.room.power_levels", "").is_null() && text(&create, "sender") == self.own {
-            return 100;
+        let Some(event) = proposal(state, key) else { continue };
+        if out.len() == LIMIT {
+            return (out, true);
         }
-        power["users"][&self.own].as_i64()
-            .unwrap_or_else(|| power["users_default"].as_i64().unwrap_or(0))
+        let revision = text(event, "event_id");
+        let status = text(&marker(state, revision), "status").to_owned();
+        out.push(json!({ "id": key, "author": key, "revision": revision,
+            "body": text(&event["content"], "body"), "target": text(&event["content"], "target"),
+            "published": status == "published", "publishing": status == "publishing" }));
     }
-    fn can_state(&self, ty: &str) -> bool {
-        let p = self.content("m.room.power_levels", "");
-        self.joined() && self.level() >= p["events"][ty].as_i64()
-            .unwrap_or_else(|| p["state_default"].as_i64().unwrap_or(50))
-    }
-    fn joined(&self) -> bool {
-        text(&self.content("m.room.member", &self.own), "membership") == "join"
-    }
-    fn can_send(&self) -> bool {
-        let p = self.content("m.room.power_levels", "");
-        self.joined() && self.level() >= p["events"]["m.room.message"].as_i64()
-            .unwrap_or_else(|| p["events_default"].as_i64().unwrap_or(0))
-    }
-    fn audience(&self, room_id: &str) -> Value {
-        json!({ "room_id": room_id,
-            "name": text(&self.content("m.room.name", ""), "name"),
-            "join_rules": self.content("m.room.join_rules", ""),
-            "history": self.content("m.room.history_visibility", ""),
-            "joined_count": self.joined_count })
-    }
-    fn proposal(&self, key: &str) -> Result<Value> {
-        let event = self.event(PROPOSAL, key);
-        if text(&event, "sender") != key || !valid_proposal(&event["content"])
-            || text(&event, "event_id").is_empty() {
-            return Err("unavailable".into());
+    (out, false)
+}
+
+fn digest(value: &Value) -> String {
+    format!("{:x}", Sha256::digest(serde_json::to_vec(value).unwrap_or_default()))
+}
+
+fn approval_token(revision: &str, body: &str, audience: &Value, reviewer: &str) -> String {
+    digest(&json!([revision, body, audience["room_id"], audience["join_rule"],
+        audience["allow"], audience["history"], reviewer]))
+}
+
+fn transaction(revision: &str, body: &str, target: &str, reviewer: &str) -> String {
+    format!("lightning-announcement-{}", digest(&json!([revision, body, target, reviewer])))
+}
+
+fn config() -> RequestConfig {
+    RequestConfig::new().disable_retry().timeout(Duration::from_secs(20))
+}
+
+async fn space_state(client: &Client, room: &Room) -> Result<StateMap> {
+    let response = client
+        .send(get_state_events::v3::Request::new(room.room_id().to_owned()))
+        .with_request_config(config())
+        .await
+        .map_err(err)?;
+    Ok(index(
+        response
+            .room_state
+            .iter()
+            .filter_map(|raw| serde_json::from_str::<Value>(raw.json().get()).ok()),
+    ))
+}
+
+async fn guide(client: &Client, room: &Room) -> Value {
+    if let Ok(Some(raw)) = room.get_state_event(StateEventType::from(GUIDE), "").await {
+        let json = match &raw {
+            RawAnySyncOrStrippedState::Sync(ev) => ev.json().get().to_owned(),
+            RawAnySyncOrStrippedState::Stripped(ev) => ev.json().get().to_owned(),
+        };
+        if let Ok(v) = serde_json::from_str::<Value>(&json) {
+            return v["content"].clone();
         }
-        Ok(event)
     }
-    fn snapshot(&self) -> Value {
-        let guide = self.content(GUIDE, "");
-        let mut proposals = Vec::new();
-        let mut truncated = false;
-        for (ty, key) in self.events.keys() {
-            if ty != PROPOSAL { continue; }
-            let Ok(event) = self.proposal(key) else { continue; };
-            if proposals.len() == LIMIT { truncated = true; break; }
-            let review = self.content(REVIEW, key);
-            proposals.push(json!({ "id": key, "author": text(&event, "sender"),
-                "revision": text(&event, "event_id"), "body": text(&event["content"], "body"),
-                "target": text(&event["content"], "target"),
-                "published": text(&review, "revision") == text(&event, "event_id")
-                    && text(&review, "status") == "published",
-                "publishing": text(&review, "revision") == text(&event, "event_id")
-                    && text(&review, "status") == "publishing" }));
+    let room_key = room.room_id().to_string();
+    if optprobe::state_known_absent(client, &room_key, GUIDE) {
+        return json!({});
+    }
+    let request = get_state_event_for_key::v3::Request::new(
+        room.room_id().to_owned(),
+        StateEventType::from(GUIDE),
+        String::new(),
+    );
+    optprobe::state_pace(client).await;
+    match client.send(request).with_request_config(config()).await {
+        Ok(response) => {
+            serde_json::from_str(response.event_or_content.get()).unwrap_or_else(|_| json!({}))
         }
-        json!({ "guide": if valid_guide(&guide) { guide } else { json!({}) },
-            "can_edit_guide": self.can_state(GUIDE), "can_review": self.can_state(REVIEW),
-            "can_propose": self.can_state(PROPOSAL), "own_user": self.own,
-            "can_enable": self.can_state("m.room.power_levels"),
-            "proposals": proposals, "truncated": truncated })
+        Err(e) => {
+            if e.as_client_api_error().is_some_and(|e| e.status_code.as_u16() == 404) {
+                optprobe::state_mark_absent(client, &room_key, GUIDE);
+            }
+            json!({})
+        }
     }
 }
 
-async fn fetch(client: &matrix_sdk::Client, room_id: &str) -> Result<State> {
+struct Perms {
+    guide: bool,
+    propose: bool,
+    review: bool,
+    enable: bool,
+    open: bool,
+}
+
+async fn perms(room: &Room, own: &UserId) -> Perms {
+    let Ok(levels) = room.power_levels().await else {
+        return Perms { guide: false, propose: false, review: false, enable: false, open: false };
+    };
+    let can = |ty: &str| levels.user_can_send_state(own, StateEventType::from(ty));
+    Perms {
+        guide: can(GUIDE),
+        propose: can(PROPOSAL),
+        review: can(REVIEW),
+        enable: can("m.room.power_levels") && can(REVIEW),
+        open: levels
+            .events
+            .get(&TimelineEventType::from(PROPOSAL))
+            .is_some_and(|level| *level <= levels.users_default),
+    }
+}
+
+fn audience(room: &Room) -> Value {
+    let allow: Vec<String> = match room.join_rule() {
+        Some(JoinRule::Restricted(r)) | Some(JoinRule::KnockRestricted(r)) => r
+            .allow
+            .iter()
+            .filter_map(|rule| match rule {
+                AllowRule::RoomMembership(m) => Some(m.room_id.to_string()),
+                _ => None,
+            })
+            .collect(),
+        _ => Vec::new(),
+    };
+    json!({ "room_id": room.room_id().to_string(),
+        "name": room.cached_display_name().map(|n| n.to_string()).unwrap_or_default(),
+        "join_rule": join_rule_str(room.join_rule().as_ref()), "allow": allow,
+        "history": room.history_visibility().map(|h| h.as_str().to_owned()).unwrap_or_default(),
+        "joined_count": room.joined_members_count() })
+}
+
+async fn load(client: &Client, room: &Room, own: &UserId) -> Value {
+    let g = guide(client, room).await;
+    let p = perms(room, own).await;
+    json!({ "guide": if valid_guide(&g) { g } else { json!({}) },
+        "can_edit_guide": p.guide, "can_propose": p.propose, "can_review": p.review,
+        "can_enable": p.enable, "proposals_open": p.open, "own_user": own.to_string() })
+}
+
+async fn run(client: &Client, room_id: &str, action: &str, payload: &Value) -> Result<Value> {
     let room = joined_room(client, room_id)?;
-    let own = client.user_id().ok_or("unavailable")?.to_string();
-    let config = RequestConfig::new().disable_retry().timeout(Duration::from_secs(20));
-    let response = client.send(get_state_events::v3::Request::new(room.room_id().to_owned()))
-        .with_request_config(config).await
-        .map_err(|e| classify_room_error(&e.to_string()).to_owned())?;
-    let mut events = BTreeMap::new();
-    let mut joined_count = 0;
-    for raw in response.room_state {
-        let Ok(event) = serde_json::from_str::<Value>(raw.json().get()) else { continue; };
-        let ty = text(&event, "type");
-        let key = text(&event, "state_key");
-        if ty == "m.room.member" && text(&event["content"], "membership") == "join" {
-            joined_count += 1;
-        }
-        if [GUIDE, PROPOSAL, REVIEW, "m.room.power_levels", "m.room.create", "m.room.join_rules",
-            "m.room.history_visibility", "m.room.name"].contains(&ty)
-            || (ty == "m.room.member" && key == own) {
-            events.insert((ty.to_owned(), key.to_owned()), event);
-        }
-    }
-    let state = State { events, own, joined_count };
-    if !state.joined() { return Err("forbidden".into()); }
-    Ok(state)
-}
-
-fn token(proposal: &Value, body: &str, audience: &Value, reviewer: &str) -> String {
-    let bytes = serde_json::to_vec(&json!([proposal, body, audience, reviewer])).unwrap_or_default();
-    format!("{:x}", Sha256::digest(bytes))
-}
-
-fn review_matches(marker: &Value, revision: &str, body: &str, reviewer: &str) -> bool {
-    text(marker, "revision") == revision && text(marker, "body") == body
-        && text(marker, "reviewer") == reviewer
-}
-
-async fn run(client: &matrix_sdk::Client, room_id: &str, action: &str, payload: &Value) -> Result<Value> {
-    let state = fetch(client, room_id).await?;
-    let room = joined_room(client, room_id)?;
+    let own = client.user_id().ok_or("unavailable")?.to_owned();
     match action {
-        "load" => return Ok(state.snapshot()),
+        "load" => Ok(load(client, &room, &own).await),
+        "proposals" => {
+            let state = space_state(client, &room).await?;
+            let mut out = load(client, &room, &own).await;
+            let (list, truncated) = proposals(&state);
+            out["proposals"] = json!(list);
+            out["truncated"] = json!(truncated);
+            Ok(out)
+        }
         "guide" => {
-            if !state.can_state(GUIDE) { return Err("forbidden".into()); }
-            if !valid_guide(payload) { return Err("invalid".into()); }
-            room.send_state_event_raw(GUIDE, "", payload.clone()).await
-                .map_err(|e| classify_room_error(&e.to_string()).to_owned())?;
+            if !perms(&room, &own).await.guide {
+                return Err("forbidden".into());
+            }
+            if !valid_guide(payload) {
+                return Err("invalid".into());
+            }
+            let content = json!({ "welcome": text(payload, "welcome"), "rules": text(payload, "rules"),
+                "rooms": payload["rooms"], "links": payload["links"] });
+            room.send_state_event_raw(GUIDE, "", content).await.map_err(err)?;
+            optprobe::state_forget(client, room_id, GUIDE);
+            Ok(json!({}))
         }
         "enable" => {
-            if !state.can_state("m.room.power_levels") || !state.can_state(REVIEW) {
+            if !perms(&room, &own).await.enable {
                 return Err("forbidden".into());
             }
-            let mut power = state.content("m.room.power_levels", "");
-            if !power.is_object() { return Err("unavailable".into()); }
-            if !power["events"].is_object() { power["events"] = json!({}); }
-            power["events"][PROPOSAL] = json!(0);
-            room.send_state_event_raw("m.room.power_levels", "", power).await
-                .map_err(|e| classify_room_error(&e.to_string()).to_owned())?;
+            let levels = room.power_levels().await.map_err(err)?;
+            let mut content = RoomPowerLevelsEventContent::try_from(levels).map_err(err)?;
+            content.events.insert(TimelineEventType::from(PROPOSAL), Int::from(0u8));
+            room.send_state_event(content).await.map_err(err)?;
+            Ok(json!({}))
         }
         "propose" => {
-            if !state.can_state(PROPOSAL) { return Err("forbidden".into()); }
-            if !valid_proposal(payload) { return Err("invalid".into()); }
-            let target = fetch(client, text(payload, "target")).await?;
-            if !target.joined() { return Err("forbidden".into()); }
-            let existing = state.event(PROPOSAL, &state.own);
-            let marker = state.content(REVIEW, &state.own);
-            if text(&marker, "revision") == text(&existing, "event_id")
-                && text(&marker, "status") == "publishing" {
-                return Err("pending".into());
-            }
-            room.send_state_event_raw(PROPOSAL, &state.own,
-                json!({ "body": text(payload, "body"), "target": text(payload, "target") })).await
-                .map_err(|e| classify_room_error(&e.to_string()).to_owned())?;
-        }
-        "preview" | "publish" => {
-            if !state.can_state(REVIEW) || !bounded_text(payload, "body", 4000)
-                || text(payload, "body").trim().is_empty() {
+            if !perms(&room, &own).await.propose {
                 return Err("forbidden".into());
             }
-            let id = text(payload, "id");
-            let proposal = state.proposal(id)?;
-            let target_id = text(&proposal["content"], "target");
-            let target = fetch(client, target_id).await?;
-            if !target.can_send() { return Err("forbidden".into()); }
-            let audience = target.audience(target_id);
-            let body = text(payload, "body");
-            let approval = token(&proposal, body, &audience, &state.own);
-            if action == "preview" {
-                return Ok(json!({ "approval": approval, "audience": audience,
-                    "body": body, "author": text(&proposal, "sender"), "publisher": state.own,
-                    "revision": text(&proposal, "event_id") }));
+            if !valid_proposal(payload) {
+                return Err("invalid".into());
             }
-            let marker = state.content(REVIEW, id);
-            let revision = text(&proposal, "event_id");
-            let same = review_matches(&marker, revision, body, &state.own);
-            if text(&marker, "revision") == revision && text(&marker, "status") == "published" {
+            joined_room(client, text(payload, "target")).map_err(|_| "forbidden".to_owned())?;
+            room.send_state_event_raw(
+                PROPOSAL,
+                own.as_str(),
+                json!({ "body": text(payload, "body"), "target": text(payload, "target") }),
+            )
+            .await
+            .map_err(err)?;
+            Ok(json!({}))
+        }
+        "preview" | "publish" => {
+            if !perms(&room, &own).await.review || !valid_body(payload) {
+                return Err("forbidden".into());
+            }
+            let state = space_state(client, &room).await?;
+            let author = text(payload, "id");
+            let event = proposal(&state, author).ok_or("stale")?;
+            let revision = text(event, "event_id");
+            let target_id = text(&event["content"], "target");
+            let target = joined_room(client, target_id).map_err(|_| "forbidden".to_owned())?;
+            let can_send = target
+                .power_levels()
+                .await
+                .is_ok_and(|l| l.user_can_send_message(&own, MessageLikeEventType::RoomMessage));
+            if !can_send {
+                return Err("forbidden".into());
+            }
+            let audience = audience(&target);
+            let body = text(payload, "body");
+            let approval = approval_token(revision, body, &audience, own.as_str());
+            if action == "preview" {
+                return Ok(json!({ "approval": approval, "audience": audience, "body": body,
+                    "author": author, "publisher": own.to_string(), "revision": revision }));
+            }
+            let mark = marker(&state, revision);
+            let status = text(&mark, "status");
+            if status == "published" {
                 return Ok(json!({ "published": true }));
             }
-            // Retries keep the reviewed text and transaction even if the member count changed.
-            if !(same && text(&marker, "status") == "publishing")
-                && text(payload, "approval") != approval {
-                return Err("stale".into());
-            }
-            if text(&marker, "revision") == revision && text(&marker, "status") == "publishing" && !same {
+            // A retry of this reviewer's own interrupted publish reuses the same transaction id.
+            let resuming = status == "publishing"
+                && text(&mark, "body") == body
+                && text(&mark, "reviewer") == own.as_str();
+            if status == "publishing" && !resuming {
                 return Err("pending".into());
             }
-            let txn = if same && text(&marker, "status") == "publishing" {
-                text(&marker, "transaction").to_owned()
-            } else {
-                format!("lightning-announcement-{}", token(&proposal, body, &json!(target_id), &state.own))
-            };
-            if txn.is_empty() { return Err("unavailable".into()); }
-            let mut audit = json!({ "status": "publishing", "revision": revision,
-                "body": body, "target": target_id, "reviewer": state.own,
-                "author": text(&proposal, "sender"), "transaction": txn });
-            room.send_state_event_raw(REVIEW, id, audit.clone()).await
-                .map_err(|e| classify_room_error(&e.to_string()).to_owned())?;
-            let destination = joined_room(client, target_id)?;
-            let sent = destination.send_raw("m.room.message", json!({ "msgtype": "m.text", "body": body,
-                "org.lightning_matrix.announcement": { "space": room_id, "proposal": id,
-                    "revision": revision, "author": text(&proposal, "sender"), "reviewer": state.own },
-                "m.mentions": {} }))
-                .with_transaction_id(txn.as_str().into()).await
-                .map_err(|e| classify_room_error(&e.to_string()).to_owned())?;
+            if !resuming && text(payload, "approval") != approval {
+                return Err("stale".into());
+            }
+            let txn = transaction(revision, body, target_id, own.as_str());
+            let mut audit = json!({ "status": "publishing", "revision": revision, "body": body,
+                "target": target_id, "reviewer": own.to_string(), "author": author });
+            room.send_state_event_raw(REVIEW, revision, audit.clone()).await.map_err(err)?;
+            let sent = target
+                .send_raw("m.room.message", json!({ "msgtype": "m.text", "body": body,
+                    "org.lightning_matrix.announcement": { "space": room_id,
+                        "revision": revision, "author": author, "reviewer": own.to_string() },
+                    "m.mentions": {} }))
+                .with_transaction_id(txn.as_str().into())
+                .await
+                .map_err(err)?;
             audit["status"] = json!("published");
             audit["event_id"] = json!(sent.event_id.to_string());
-            room.send_state_event_raw(REVIEW, id, audit).await
-                .map_err(|e| classify_room_error(&e.to_string()).to_owned())?;
-            return Ok(json!({ "published": true }));
+            room.send_state_event_raw(REVIEW, revision, audit).await.map_err(err)?;
+            Ok(json!({ "published": true }))
         }
-        _ => return Err("invalid".into()),
+        _ => Err("invalid".into()),
     }
-    Ok(json!({}))
 }
 
-pub(crate) fn dispatch(bridge: &RustClient, room_id: String, action: String, payload: String, op_id: u64) -> Result<()> {
-    if payload.len() > 48 * 1024 || !["load", "guide", "enable", "propose", "preview", "publish"].contains(&action.as_str()) {
+const ACTIONS: [&str; 7] = ["load", "proposals", "guide", "enable", "propose", "preview", "publish"];
+
+pub(crate) fn dispatch(
+    bridge: &RustClient,
+    room_id: String,
+    action: String,
+    payload: String,
+    op_id: u64,
+) -> Result<()> {
+    if payload.len() > 48 * 1024 || !ACTIONS.contains(&action.as_str()) {
         return Err("invalid".into());
     }
     let payload: Value = serde_json::from_str(&payload).map_err(|_| "invalid".to_owned())?;
@@ -271,14 +367,92 @@ pub(crate) fn dispatch(bridge: &RustClient, room_id: String, action: String, pay
     let timelines = Arc::clone(&bridge.timelines);
     let lifecycle = timelines.lifecycle();
     bridge.spawn_room_action(async move {
-        let result = tokio::time::timeout(Duration::from_secs(100), run(&client, &room_id, &action, &payload)).await
-            .unwrap_or_else(|_| Err("unknown".into()));
-        if !timelines.lifecycle_current(lifecycle) { return; }
+        let result =
+            tokio::time::timeout(Duration::from_secs(100), run(&client, &room_id, &action, &payload))
+                .await
+                .unwrap_or_else(|_| Err("unknown".into()));
+        if !timelines.lifecycle_current(lifecycle) {
+            return;
+        }
         let (ok, result) = match result {
-            Ok(v) => (true, v), Err(category) => (false, json!({ "category": category })),
+            Ok(v) => (true, v),
+            Err(category) => (false, json!({ "category": category })),
         };
         enqueue(&events, json!({ "type": "space_community_result", "op_id": op_id,
             "lifecycle": lifecycle, "room_id": room_id, "action": action, "ok": ok, "result": result }));
     });
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn ev(ty: &str, key: &str, sender: &str, id: &str, content: Value) -> Value {
+        json!({ "type": ty, "state_key": key, "sender": sender, "event_id": id, "content": content,
+            "unsigned": { "age": 1 } })
+    }
+
+    fn proposal_ev(author: &str, id: &str) -> Value {
+        ev(PROPOSAL, author, author, id, json!({ "body": "Hello", "target": "!t:x.org" }))
+    }
+
+    #[test]
+    fn a_proposal_filed_under_another_users_key_is_ignored() {
+        let state = index([
+            proposal_ev("@a:x.org", "$1"),
+            ev(PROPOSAL, "@b:x.org", "@a:x.org", "$2", json!({ "body": "Hi", "target": "!t:x.org" })),
+        ]);
+        let (list, truncated) = proposals(&state);
+        assert_eq!(list.len(), 1);
+        assert_eq!(list[0]["author"], "@a:x.org");
+        assert!(!truncated);
+    }
+
+    #[test]
+    fn a_review_marker_applies_only_to_the_revision_it_names() {
+        let old = index([
+            proposal_ev("@a:x.org", "$new"),
+            ev(REVIEW, "$old", "@mod:x.org", "$r", json!({ "status": "published" })),
+        ]);
+        assert_eq!(proposals(&old).0[0]["published"], false);
+        let current = index([
+            proposal_ev("@a:x.org", "$new"),
+            ev(REVIEW, "$new", "@mod:x.org", "$r", json!({ "status": "published" })),
+        ]);
+        assert_eq!(proposals(&current).0[0]["published"], true);
+    }
+
+    #[test]
+    fn approval_tracks_text_audience_and_revision_but_not_member_count() {
+        let audience = json!({ "room_id": "!t:x.org", "join_rule": "invite", "allow": [],
+            "history": "shared", "joined_count": 3 });
+        let base = approval_token("$1", "Hello", &audience, "@mod:x.org");
+        let mut grown = audience.clone();
+        grown["joined_count"] = json!(4);
+        assert_eq!(base, approval_token("$1", "Hello", &grown, "@mod:x.org"));
+        assert_ne!(base, approval_token("$1", "Hello!", &audience, "@mod:x.org"));
+        assert_ne!(base, approval_token("$2", "Hello", &audience, "@mod:x.org"));
+        let mut public = audience.clone();
+        public["join_rule"] = json!("public");
+        assert_ne!(base, approval_token("$1", "Hello", &public, "@mod:x.org"));
+    }
+
+    #[test]
+    fn a_retried_publish_reuses_its_transaction_id() {
+        let first = transaction("$1", "Hello", "!t:x.org", "@mod:x.org");
+        assert_eq!(first, transaction("$1", "Hello", "!t:x.org", "@mod:x.org"));
+        assert_ne!(first, transaction("$2", "Hello", "!t:x.org", "@mod:x.org"));
+    }
+
+    #[test]
+    fn guide_links_must_be_plain_https() {
+        let ok = json!({ "welcome": "", "rules": "", "rooms": ["!a:x.org"], "links": ["https://x.org/r"] });
+        assert!(valid_guide(&ok));
+        for bad in ["http://x.org", "javascript:alert(1)", "https://u:p@x.org"] {
+            let mut g = ok.clone();
+            g["links"] = json!([bad]);
+            assert!(!valid_guide(&g), "{bad}");
+        }
+    }
 }

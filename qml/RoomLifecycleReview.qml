@@ -68,7 +68,7 @@ ColumnLayout {
         color: AppTheme.stormTextSecondary
         text: root.action === "close" || root.action === "delete"
             ? qsTr("The plan below lists the exact selected rooms and their outcomes. A Space's child rooms are separate rooms; shared rooms may belong to other Spaces.")
-            : qsTr("This action affects only %1. Rooms inside a Space are not left or upgraded with it.").arg(root.roomId)
+            : qsTr("This action affects only %1. Rooms inside a Space are not left or upgraded with it.").arg(root.review.name || root.roomId)
     }
     Label {
         objectName: "roomLifecycleSuccessor"

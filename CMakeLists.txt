@@ -8421,5 +8421,14 @@ if(BUILD_TESTING)
 endif()
 
 if(BUILD_TESTING)
-    add_subdirectory(tests)
+    qt_add_executable(space-community-test
+        tests/SpaceCommunityTest.cpp
+        src/spaces/SpaceManager.h
+        src/spaces/SpaceManager.cpp
+        src/matrix/MatrixClient.h
+        src/matrix/MatrixClient.cpp
+    )
+    target_include_directories(space-community-test PRIVATE src)
+    target_link_libraries(space-community-test PRIVATE Qt6::Core Qt6::Test)
+    add_test(NAME space-community COMMAND space-community-test)
 endif()

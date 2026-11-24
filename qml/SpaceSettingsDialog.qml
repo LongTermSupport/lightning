@@ -2257,6 +2257,11 @@ AppDialog {
         readonly property bool current: root.infoIsOurs && targetId === root.spaceId
             && previousRule === app.roomInfo.joinRule
             && previousHistory === app.roomInfo.historyVisibility
+        // The combo shows the picked rule until the change is applied or cancelled.
+        onClosed: {
+            joinRuleCombo.displayedIndex = -1
+            joinRuleCombo.refreshRule()
+        }
         function openFor(rule) {
             targetId = root.spaceId
             proposedRule = rule
@@ -2272,7 +2277,8 @@ AppDialog {
                 wrapMode: Text.WordWrap
                 text: qsTr("Current audience\n%1\n\nProposed audience\n%2")
                     .arg(app.spaces.audiencePreview(accessPreview.previousRule,
-                        accessPreview.previousHistory, []))
+                        accessPreview.previousHistory,
+                        root.infoIsOurs ? app.roomInfo.restrictedAllowedRooms : []))
                     .arg(app.spaces.audiencePreview(accessPreview.proposedRule,
                         accessPreview.previousHistory, []))
                 color: AppTheme.stormText
