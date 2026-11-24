@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <utility>
 
 namespace matrix::notification_producer {
 
@@ -153,19 +154,38 @@ public:
         return out;
     }
 
+    // One call per history fetch started for the room.
     void awaitEvidence(const QString &roomId, qint64 nowMs)
     {
-        if (!roomId.isEmpty())
-            m_rooms[roomId].evidenceUntilMs = nowMs + kEvidenceMs;
+        if (roomId.isEmpty())
+            return;
+        Room &room = m_rooms[roomId];
+        if (room.evidenceUntilMs < nowMs) {
+            room.evidenceOpen = 0;
+            room.evidenceFound = 0;
+        }
+        ++room.evidenceOpen;
+        room.evidenceUntilMs = nowMs + kEvidenceMs;
     }
 
-    bool takeEvidence(const QString &roomId, qint64 nowMs)
+    bool countEvidence(const QString &roomId, qint64 nowMs)
     {
         auto it = m_rooms.find(roomId);
         if (it == m_rooms.end() || it->evidenceUntilMs < nowMs)
             return false;
-        it->evidenceUntilMs = 0;
+        ++it->evidenceFound;
         return true;
+    }
+
+    // What the room's fetches found so far; the window stays open while another fetch is.
+    int closeEvidence(const QString &roomId, qint64 nowMs)
+    {
+        auto it = m_rooms.find(roomId);
+        if (it == m_rooms.end() || it->evidenceUntilMs < nowMs)
+            return 0;
+        if (--it->evidenceOpen <= 0)
+            it->evidenceUntilMs = 0;
+        return std::exchange(it->evidenceFound, 0);
     }
 
     qint64 nextDueMs() const
@@ -199,6 +219,8 @@ private:
         qint64 riseAtMs = 0;
         qint64 backlogAtMs = 0;
         qint64 evidenceUntilMs = 0;
+        int evidenceOpen = 0;
+        int evidenceFound = 0;
         QList<qint64> credits;
     };
 

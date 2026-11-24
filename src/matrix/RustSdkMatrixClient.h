@@ -1105,6 +1105,7 @@ private:
     void emitDecryptedOnce(const QString &roomId, TimelineEvent event);
     void observeHighlightCounts(const QJsonArray &rooms);
     void flushHighlightGaps();
+    void handleUnreadFetchDone(const QString &roomId);
     void resetNotificationProducerState();
     void handleTimelineReset(const QJsonObject &event);
     void handleTimelineDiff(const QJsonObject &event);
@@ -1223,6 +1224,7 @@ private:
     matrix::notification_producer::BoundedIdMap m_highlightsNotified{1024};
     matrix::notification_producer::HighlightGapTracker m_highlightGaps;
     QTimer m_highlightGapTimer;
+    QHash<QString, int> m_startupGaps;
     bool m_coalesceTimelineInserts = false;
     int m_roomListResyncRequests = 0;
     bool m_backlogPollPending = false;

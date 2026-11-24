@@ -1281,7 +1281,7 @@ const GAP_SETTLE_MS: u64 = 2000;
 // A room is paged only once its limited syncs stop: each page writes to the
 // event-cache store the SDK's sync listener needs, and a listener that falls
 // 32 updates behind clears every room's cache.
-fn gap_settle() -> std::time::Duration {
+pub(crate) fn gap_settle() -> std::time::Duration {
     static SETTLE: std::sync::OnceLock<u64> = std::sync::OnceLock::new();
     std::time::Duration::from_millis(*SETTLE.get_or_init(|| {
         std::env::var("LIGHTNING_GAP_FILL_SETTLE_MS")
