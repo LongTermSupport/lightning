@@ -827,7 +827,6 @@ bool GstCallMediaBackend::startSession(const QString &callId, bool offerer,
         AudioDevicePlan waiting = plan;
         waiting.microphoneBinding.refused = true;
         front = buildMicrophoneFront(waiting);
-        Q_EMIT microphoneUnavailable(plan.microphoneId);
     } else if (!front && !plan.microphoneFront.isEmpty()) {
         qCWarning(lcCallMedia)
             << "the chosen microphone's capture could not be built; using "
@@ -1759,8 +1758,7 @@ void GstCallMediaBackend::audioDevicesChanged()
     const bool micChanged = plan.microphoneFront != current.microphoneFront
         || !sameBinding(plan.microphoneBinding, current.microphoneBinding)
         || plan.microphoneBinding.requireIdentity != current.microphoneBinding.requireIdentity
-        || plan.microphoneBinding.refused != current.microphoneBinding.refused
-        || plan.microphoneId != current.microphoneId;
+        || plan.microphoneBinding.refused != current.microphoneBinding.refused;
     const bool speakerChanged = plan.speakerSink != current.speakerSink
         || !sameBinding(plan.speakerBinding, current.speakerBinding);
     if (!micChanged && !speakerChanged)
@@ -1770,7 +1768,6 @@ void GstCallMediaBackend::audioDevicesChanged()
         if (micChanged) {
             m_plan.microphoneFront = plan.microphoneFront;
             m_plan.microphoneBinding = plan.microphoneBinding;
-            m_plan.microphoneId = plan.microphoneId;
         }
         if (speakerChanged) {
             m_plan.speakerSink = plan.speakerSink;
@@ -1799,7 +1796,6 @@ bool GstCallMediaBackend::swapMicrophoneLocked(const AudioDevicePlan &plan)
     if (!next && plan.microphoneBinding.requireIdentity && !plan.microphoneBinding.refused) {
         AudioDevicePlan waiting = plan;
         waiting.microphoneBinding.refused = true;
-        Q_EMIT microphoneUnavailable(plan.microphoneId);
         return swapMicrophoneLocked(waiting);
     }
     if (!next && !plan.microphoneBinding.requireIdentity) {
@@ -1926,7 +1922,6 @@ void GstCallMediaBackend::noteMicrophoneFrontStarted(quint64 serial,
         }
         if (fallback.microphoneBinding.requireIdentity) {
             fallback.microphoneBinding.refused = true;
-            Q_EMIT microphoneUnavailable(fallback.microphoneId);
         } else {
             fallback.microphoneFront.clear();
             fallback.microphoneBinding = {};

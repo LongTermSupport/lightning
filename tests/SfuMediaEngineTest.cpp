@@ -1404,6 +1404,23 @@ private slots:
         QVERIFY(!SfuMediaEngine::resolveMicrophoneCapture({}).fellBack);
     }
 
+    void aPinnedMicrophoneThatCannotBeBoundStaysSilent()
+    {
+        for (bool missing : {true, false}) {
+            const SfuMediaEngine::MicrophoneCapture pinned =
+                SfuMediaEngine::resolveMicrophoneCapture(
+                    {QStringLiteral("lightning-test-no-such-microphone"),
+                     QStringLiteral("Lightning Test Absent Microphone"), missing,
+                     true});
+            QVERIFY(pinned.binding.refused);
+            QVERIFY(pinned.binding.requireIdentity);
+            QVERIFY2(!pinned.source.contains(QStringLiteral("autoaudiosrc")),
+                     "a pinned microphone fell back to the system default");
+            QVERIFY(pinned.source.startsWith(QStringLiteral("audiotestsrc")));
+            QVERIFY(pinned.source.contains(QStringLiteral("wave=silence")));
+        }
+    }
+
     void anIceRestartIsReadFromTheOffersUfrag()
     {
         const QString offer = QStringLiteral(

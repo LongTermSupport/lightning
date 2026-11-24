@@ -1780,8 +1780,8 @@ static int printCallMediaStatus()
             << " gpu-requested=" << (gpuRequested ? "yes" : "no")
             << " gpu-factories=" << (missing.isEmpty() ? "present" : "incomplete")
             << " runtime=deferred\n"
-            << QObject::tr("Start a screen share and open Stream info to see the active encoder and whether it has produced frames.")
-            << "\n";
+            << "screen share runtime: checked when a share starts; Stream info "
+               "shows the encoder in use and whether it has produced frames\n";
     }
 
     out << lightning::shareaudio::systemExclusionStatusLine(

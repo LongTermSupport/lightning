@@ -10805,11 +10805,13 @@ void SfuMediaEngine::refreshMicrophoneCapture()
     const DeviceChoice choice = microphoneChoice();
     if (choice.requireIdentity) {
         m_waitingForPinnedMic = true;
-        setMicrophoneMuted(m_microphoneMuted);
+        m_micSwapDeferred.reset();
+        if (m_micSwap.front)
+            abandonMicrophoneSwap("the microphone selection changed");
+    } else {
+        m_waitingForPinnedMic = false;
     }
-    m_micSwapDeferred.reset();
-    if (m_micSwap.front)
-        abandonMicrophoneSwap("the microphone selection changed");
+    setMicrophoneMuted(m_microphoneMuted);
     const int channels = m_testDeviceChannels;
     if (m_testSources) {
         MicrophoneCapture capture = testMicrophoneCapture();

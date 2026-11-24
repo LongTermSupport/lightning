@@ -74,7 +74,6 @@ public:
         lightning::calls::DeviceBinding microphoneBinding;
         QString speakerSink;
         lightning::calls::DeviceBinding speakerBinding;
-        QString microphoneId;
     };
     /// Asked at the start of every call and again on audioDevicesChanged().
     /// It may block (GStreamer's device monitor, bounded); it runs on this
@@ -129,7 +128,6 @@ public:
     void attachVideoSink(bool self, QObject *sink) override;
     void close(const QString &callId) override;
 Q_SIGNALS:
-    void microphoneUnavailable(const QString &chosenId);
     void cameraAccessNeeded(const QString &callId);
 
 public:

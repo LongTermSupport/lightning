@@ -1,4 +1,0 @@
-O001 ready for runner. Status is static. Runtime frame evidence appears in Stream info. Next: screen stream identity.
-I14 implemented. The installed v6 ScreenCast XML specifies a uint64. First stream now survives portal -> controller -> capture unchanged, without path fallback. Session.Closed retires the share. Added fake portal and capture plan cases. Next: permission outcomes.
-I15 implemented. Baseline already closes requests/uses nonblocking probes. Added one terminal cancellation, categorized named D-Bus errors at every stage, session/retry isolation and call control status. Next: voice input continuity.
-I16 implemented. Per-take input identity and loss reporting, synthetic 440 Hz/silence/440 Hz through fakesink and Qt buffer-input recorder, waveform/discard assertions. Native buffer probe requires Qt 6.8+, GStreamer and QT_MEDIA_BACKEND=ffmpeg. Next: strict call microphone routing.

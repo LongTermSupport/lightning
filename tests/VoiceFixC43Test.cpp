@@ -100,8 +100,9 @@ private Q_SLOTS:
         QFETCH(bool, lost);
         qInfo() << "voice continuity platform" << QSysInfo::kernelType()
                 << "Qt" << qVersion() << "backend" << qgetenv("QT_MEDIA_BACKEND");
-        if (qgetenv("QT_MEDIA_BACKEND") != "ffmpeg")
-            QSKIP("Select QT_MEDIA_BACKEND=ffmpeg for native buffer-input recording");
+        if (!qEnvironmentVariableIsEmpty("QT_MEDIA_BACKEND")
+            && qgetenv("QT_MEDIA_BACKEND") != "ffmpeg")
+            QSKIP("Buffer-input recording needs the ffmpeg media backend");
         if (!gst_init_check(nullptr, nullptr, nullptr))
             QSKIP("GStreamer unavailable");
         GError *error = nullptr;
