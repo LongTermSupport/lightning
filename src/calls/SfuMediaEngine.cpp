@@ -1325,6 +1325,7 @@ true);
     for (auto it = m_publishWatch.cbegin(); it != m_publishWatch.cend(); ++it)
         releaseKeepAlive(it->state);
     m_publishWatch.clear();
+    m_shareTargets.clear();
     m_shareEncoderCid.clear();
     m_shareEncoderInUse.clear();
     m_shareGlEncode = false;
@@ -5704,6 +5705,7 @@ void SfuMediaEngine::publishVideo(const QString &cid, bool screenShare,
                                   const QRect &captureRect,
                                   std::optional<quint64> serial)
 {
+    bool portalShare = false;
     struct PortalFd {
         int fd;
         ~PortalFd()
@@ -5731,6 +5733,9 @@ void SfuMediaEngine::publishVideo(const QString &cid, bool screenShare,
         }
         source = screenShareSource(nodeId, pipewireFd, windowHandle,
                                    captureRect, serial);
+#ifdef Q_OS_LINUX
+        portalShare = pipewireFd >= 0 && windowHandle == 0 && !captureRect.isValid();
+#endif
     } else {
         source = cameraSource(pipewireFd);
         qCInfo(lcSfuMedia) << "camera source="
@@ -6322,6 +6327,18 @@ void SfuMediaEngine::publishVideo(const QString &cid, bool screenShare,
     }
     m_publisherEverPublished = true;
     renegotiatePublisher();
+    if (portalShare) {
+        const ShareTargetFallback target(serial.has_value());
+        qCInfo(lcSfuMedia) << "screen share path=" << ShareTargetFallback::name(target.path());
+        if (!target.settled()) {
+            m_shareTargets.insert(cid, {target, nodeId});
+            const quint64 generation = m_generation.load();
+            QTimer::singleShot(m_shareSerialFirstFrameMs, this, [this, cid, generation] {
+                if (generation == m_generation.load())
+                    settleShareTarget(cid);
+            });
+        }
+    }
     if (!screenShare) {
         const quint64 generation = m_generation.load();
         QTimer::singleShot(asyncStart ? m_portalCameraFirstFrameTimeoutMs
@@ -6838,6 +6855,7 @@ void SfuMediaEngine::unpublish(const QString &cid)
 {
     if (const QString backup = m_shareBackups.take(cid); !backup.isEmpty())
         unpublish(backup);
+    m_shareTargets.remove(cid);
     GstElement *bin = m_publishedBins.take(cid);
     // Its teardown can outlive this engine; a late self-view sample must not reach it.
     if (bin)
@@ -9215,6 +9233,8 @@ void SfuMediaEngine::handlePublishError(const QString &cid,
         }
         return;
     }
+    if (screenShare && settleShareTarget(cid))
+        return;
     if (screenShare && captureFormatError
         && retryShareCaptureInOtherMemory(cid))
         return;
@@ -9264,6 +9284,78 @@ bool SfuMediaEngine::restartShareCapture(GstElement *bin,
     retry.publish();
     gst_element_sync_state_with_parent(source);
     gst_object_unref(entry);
+    gst_object_unref(source);
+    GST_STATE_UNLOCK(bin);
+    return true;
+}
+
+bool SfuMediaEngine::settleShareTarget(const QString &cid)
+{
+    const auto it = m_shareTargets.find(cid);
+    if (it == m_shareTargets.end())
+        return false;
+    ShareTarget target = it.value();
+    m_shareTargets.erase(it);
+    const auto watch = m_publishWatch.constFind(cid);
+    GstElement *bin = m_publishedBins.value(cid, nullptr);
+    if (!m_active || watch == m_publishWatch.cend() || !watch->state
+        || watch->reported || !bin)
+        return false;
+    const bool seen = watch->state->captured.load() > 0;
+    if (!target.fallback.fallBack(seen)) {
+        qCInfo(lcSfuMedia) << "screen share path="
+                           << ShareTargetFallback::name(target.fallback.path());
+        return false;
+    }
+    if (!watch->retry || !watch->retry->begin()) {
+        qCWarning(lcSfuMedia) << "screen share serial path delivered nothing and "
+                                 "its one restart is spent";
+        return false;
+    }
+    qCWarning(lcSfuMedia) << "screen share serial path delivered nothing; path="
+                          << ShareTargetFallback::name(target.fallback.path());
+    struct NodeRestart {
+        std::shared_ptr<ShareCaptureRetry> retry;
+        int nodeId;
+    };
+    gst_element_call_async(
+        bin,
+        [](GstElement *element, gpointer data) {
+            auto *job = static_cast<NodeRestart *>(data);
+            if (!restartShareCaptureOnNode(element, *job->retry, job->nodeId))
+                qCInfo(lcSfuMedia) << "screen share node-id restart abandoned: "
+                                      "the share was torn down";
+        },
+        new NodeRestart{watch->retry, target.nodeId},
+        [](gpointer data) { delete static_cast<NodeRestart *>(data); });
+    return true;
+}
+
+bool SfuMediaEngine::restartShareCaptureOnNode(GstElement *bin,
+                                               ShareCaptureRetry &retry,
+                                               int nodeId)
+{
+    GST_STATE_LOCK(bin);
+    GstObject *parent = gst_object_get_parent(GST_OBJECT(bin));
+    const bool live = ShareCaptureRetry::mayRestart(
+        GST_STATE_TARGET(bin) == GST_STATE_PLAYING, parent != nullptr);
+    if (parent)
+        gst_object_unref(parent);
+    GstElement *source =
+        live ? gst_bin_get_by_name(GST_BIN(bin), "capsrc") : nullptr;
+    GObjectClass *klass = source ? G_OBJECT_GET_CLASS(source) : nullptr;
+    if (!klass || !g_object_class_find_property(klass, "path")
+        || !g_object_class_find_property(klass, "target-object")) {
+        if (source)
+            gst_object_unref(source);
+        GST_STATE_UNLOCK(bin);
+        return false;
+    }
+    gst_element_set_state(source, GST_STATE_NULL);
+    const QByteArray node = QByteArray::number(nodeId);
+    g_object_set(source, "target-object", nullptr, "path", node.constData(), nullptr);
+    retry.publish();
+    gst_element_sync_state_with_parent(source);
     gst_object_unref(source);
     GST_STATE_UNLOCK(bin);
     return true;

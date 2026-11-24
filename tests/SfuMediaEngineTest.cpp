@@ -2733,6 +2733,43 @@ true,-1);
 #endif
     }
 
+    void aSerialShareWithNoFirstFrameFallsBackToTheNodeOnce()
+    {
+        ShareTargetFallback target(true);
+        QCOMPARE(target.path(), ShareTargetFallback::Path::Serial);
+        QVERIFY(target.fallBack(false));
+        QCOMPARE(QByteArray(ShareTargetFallback::name(target.path())), QByteArray("node-id"));
+        QVERIFY2(!target.fallBack(false), "the node-id fallback ran twice");
+        QCOMPARE(target.path(), ShareTargetFallback::Path::NodeId);
+    }
+
+    void aSerialShareThatDeliversAFrameKeepsTheSerial()
+    {
+        ShareTargetFallback target(true);
+        QVERIFY(!target.fallBack(true));
+        QVERIFY(!target.fallBack(false));
+        QCOMPARE(QByteArray(ShareTargetFallback::name(target.path())), QByteArray("serial"));
+    }
+
+    void aLegacyGrantUsesTheNodeIdDirectly()
+    {
+        ShareTargetFallback target(false);
+        QCOMPARE(target.path(), ShareTargetFallback::Path::NodeId);
+        QVERIFY(target.settled());
+        QVERIFY(!target.fallBack(false));
+#ifdef Q_OS_LINUX
+        QVERIFY(SfuMediaEngine::screenShareSource(42, 7).contains(QStringLiteral("path=42 ")));
+#endif
+    }
+
+    void aStoppedShareCancelsItsPendingFallback()
+    {
+        ShareTargetFallback target(true);
+        target.cancel();
+        QVERIFY2(!target.fallBack(false), "a stopped share still fell back");
+        QCOMPARE(target.path(), ShareTargetFallback::Path::Serial);
+    }
+
     void aScreenShareCaptureUsesThePortalsOwnPipeWireRemote()
     {
         const QString withFd = SfuMediaEngine::screenShareSource(42, 7);

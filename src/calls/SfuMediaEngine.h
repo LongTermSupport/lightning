@@ -24,6 +24,7 @@
 #include "calls/CaptureDeviceSelection.h"
 #include "calls/ShareAudioSources.h"
 #include "calls/ShareCaptureRetry.h"
+#include "calls/ShareTargetFallback.h"
 #include "calls/noise/NoiseSuppressor.h"
 #include "calls/WebrtcRetirer.h"
 
@@ -971,6 +972,15 @@ private:
         std::shared_ptr<ShareCaptureRetry> retry;
     };
     QHash<QString, PublishWatch> m_publishWatch;
+    struct ShareTarget {
+        ShareTargetFallback fallback;
+        int nodeId = -1;
+    };
+    QHash<QString, ShareTarget> m_shareTargets;
+    int m_shareSerialFirstFrameMs = 3000;
+    bool settleShareTarget(const QString &cid);
+    static bool restartShareCaptureOnNode(GstElement *bin, ShareCaptureRetry &retry,
+                                          int nodeId);
     std::unique_ptr<CallFrameCryptor> m_sendCryptor;
     QHash<QString, std::shared_ptr<CallFrameCryptor>> m_recvCryptors;
     mutable QMutex m_recvMutex;

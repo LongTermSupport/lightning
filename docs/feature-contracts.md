@@ -3846,8 +3846,9 @@ factories. Runtime selection is deferred until sharing. Stream info reports
 the encoder and scaling path in use and whether an encoded frame was observed.
 
 A portal screen share targets the granted remote and its 64-bit
-`pipewire-serial` when supplied. A source that cannot take `target-object`
-fails closed. Legacy grants use their node ID. A closed portal session ends
+`pipewire-serial` when supplied. If that delivers no frame within about 3 s,
+the share restarts once on the granted node ID (`screen share path=` logs which
+one won). Legacy grants use their node ID. A closed portal session ends
 the share and requires a fresh selection.
 
 A pending desktop camera or screen request can be cancelled from its call
@@ -3859,5 +3860,5 @@ A chosen microphone follows the system default while it is missing, unless
 until that exact device id returns, and a same-name device is never used.
 
 A voice message uses the default input selected at the start of that take.
-Losing that input interrupts and discards the take. Starting another take
-resolves the current default. Quiet samples alone never indicate a disconnect.
+Losing that input's device id interrupts and discards the take. Starting another
+take resolves the current default. Samples are not checked.
