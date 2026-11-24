@@ -1,5 +1,9 @@
 # Open items and the NOT TESTED inventory
 
+## 2026-11-24 — KNOWN LIMITS: attachment review copies and poster prefetch
+
+Discarding attachments while one is dispatching deletes that attachment's reviewed copy at once, as converted renditions already do; releasing the last on-screen owner of a video poster cancels its decode but not a speculative network prefetch already running.
+
 ## 2026-11-24 — KNOWN LIMITS: reminders, snooze and quiet hours
 
 There is no list of pending reminders (a reminder is seen and cancelled from its message's menu); snooze applies to the foreground account only, not to background live accounts; quiet hours are one daily schedule, with no one-off focus timer.
