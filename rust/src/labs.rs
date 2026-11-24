@@ -488,6 +488,7 @@ const CLASSES: &[(&str, EventClass)] = {
         ("reaction_event", Notify),
         ("event_decrypted", Notify),
         ("event_redacted", Notify),
+        ("rejected_edit_highlight", Notify),
         ("session_tokens_refreshed", Custody),
         ("custom", Foreign),
         ("jitsi", Foreign),
