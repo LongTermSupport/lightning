@@ -8613,6 +8613,8 @@ pub unsafe extern "C" fn mx_rust_search_index_deep(
                     "messages": 0, "indexed_rooms": 0,
                     "category": if error.storage {
                         "local_storage"
+                    } else if error.message == localsearch::DEEP_BUSY {
+                        "busy"
                     } else {
                         rooms::classify_room_error(&error.message)
                     },

@@ -733,6 +733,9 @@ pub(crate) async fn deep_index_room(
     max_pages: u16,
 ) -> Result<(u16, bool, usize), DeepError> {
     let outcome = deep_index_room_gated(room, index, gate, max_pages).await?;
+    if outcome.busy {
+        return Err(DeepError::plain(DEEP_BUSY.to_owned()));
+    }
     if outcome.interrupted {
         return Err(DeepError::plain("indexing cancelled".to_owned()));
     }
@@ -778,6 +781,8 @@ pub(crate) struct DeepOutcome {
     pub written: usize,
     pub undecryptable: usize,
     pub interrupted: bool,
+    /// Another walk of the same room holds its receipt; nothing was fetched.
+    pub busy: bool,
     /// Megolm sessions behind `undecryptable`; `None` once more than
     /// `MAX_TRACKED_UTD_SESSIONS` were seen, i.e. any room key may help.
     pub utd_sessions: Option<std::collections::BTreeSet<String>>,
@@ -930,8 +935,11 @@ pub(crate) async fn deep_index_room_gated<G: PageGate>(
         return Ok(outcome);
     }
     let receipt = if let Some(control) = gate.receipts() {
-        let serial = control.start_scan(room_id)
-            .ok_or_else(|| DeepError::plain("room scan already running".to_owned()))?;
+        let Some(serial) = control.start_scan(room_id) else {
+            outcome.interrupted = true;
+            outcome.busy = true;
+            return Ok(outcome);
+        };
         Some((control, serial))
     } else {
         None
@@ -951,8 +959,13 @@ pub(crate) async fn deep_index_room_gated<G: PageGate>(
             outcome.interrupted = true;
             return Ok(outcome);
         }
-        if !control.finish_scan(room_id, serial, &outcome, state) {
-            return Err(DeepError::storage());
+        match control.finish_scan(room_id, serial, &outcome, state) {
+            crate::indexall::Finish::Committed => {}
+            crate::indexall::Finish::Stale => {
+                outcome.interrupted = true;
+                return Ok(outcome);
+            }
+            crate::indexall::Finish::PersistFailed => return Err(DeepError::storage()),
         }
     }
     result.map(|()| outcome)
@@ -1057,6 +1070,7 @@ fn is_undecryptable(raw: &serde_json::Value) -> bool {
 pub(crate) const SWEEP_ROOM_BATCH: usize = 40;
 
 pub(crate) const DEEP_MAX_PAGES: u16 = 50;
+pub(crate) const DEEP_BUSY: &str = "room scan already running";
 
 static SWEEP_CURSORS: std::sync::Mutex<Option<std::collections::HashMap<String, usize>>> =
     std::sync::Mutex::new(None);

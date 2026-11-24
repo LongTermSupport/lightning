@@ -41,6 +41,14 @@ pub(crate) enum ScanState {
     FetchFailed,
 }
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub(crate) enum Finish {
+    Committed,
+    /// The scan was superseded by Clear index or forgetting the room.
+    Stale,
+    PersistFailed,
+}
+
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct RoomReceipt {
     pub state: ScanState,
@@ -95,7 +103,9 @@ pub(crate) struct Progress {
 fn known_receipts<'de, D: serde::Deserializer<'de>>(
     deserializer: D,
 ) -> Result<BTreeMap<String, RoomReceipt>, D::Error> {
-    let raw = BTreeMap::<String, serde_json::Value>::deserialize(deserializer)?;
+    let serde_json::Value::Object(raw) = serde_json::Value::deserialize(deserializer)? else {
+        return Ok(BTreeMap::new());
+    };
     Ok(raw
         .into_iter()
         .filter_map(|(room, value)| Some((room, serde_json::from_value(value).ok()?)))
@@ -606,10 +616,10 @@ impl Control {
     }
 
     pub(crate) fn finish_scan(&self, room: &str, serial: u64, outcome: &DeepOutcome,
-                              state: ScanState) -> bool {
+                              state: ScanState) -> Finish {
         let mut inner = self.lock();
         if inner.scans.get(room) != Some(&serial) {
-            return false;
+            return Finish::Stale;
         }
         inner.scans.remove(room);
         let progress = self.loaded(&mut inner);
@@ -618,21 +628,22 @@ impl Control {
             undecryptable: outcome.undecryptable, reached_start: outcome.reached_start,
             reducer_version: 1,
         };
-        progress.receipts.insert(room.to_owned(), receipt);
-        if state != ScanState::WaitingForKeys {
-            progress.utd_rooms.remove(room);
-            progress.utd_sessions.remove(room);
+        let mut next = progress.clone();
+        next.receipts.insert(room.to_owned(), receipt.clone());
+        if matches!(state, ScanState::Covered | ScanState::Capped) {
+            next.utd_rooms.remove(room);
+            next.utd_sessions.remove(room);
         }
-        if state == ScanState::Covered && progress.complete.len() < MAX_COMPLETE {
-            progress.complete.insert(room.to_owned());
+        if state == ScanState::Covered && next.complete.len() < MAX_COMPLETE {
+            next.complete.insert(room.to_owned());
         }
-        if !self.persist(progress) {
-            if let Some(r) = progress.receipts.get_mut(room) {
-                r.state = ScanState::StorageFailed;
-            }
-            return false;
+        if !self.persist(&next) {
+            progress.receipts.insert(room.to_owned(),
+                                     RoomReceipt { state: ScanState::StorageFailed, ..receipt });
+            return Finish::PersistFailed;
         }
-        true
+        *progress = next;
+        Finish::Committed
     }
 
     pub(crate) fn manual_gate(self: &Arc<Self>, stop: Arc<AtomicBool>, op: u64) -> ManualGate {
@@ -1165,9 +1176,10 @@ mod tests {
         let control = Control::new(&store.0);
         assert_eq!(control.room_receipt("!old:x").state, ScanState::Unscanned);
         assert_eq!(control.room_receipt("!keys:x").state, ScanState::WaitingForKeys);
+        assert_eq!(control.status(None).complete_rooms, 1);
         let serial = control.start_scan("!old:x").unwrap();
         let outcome = DeepOutcome { pages: 2, oldest_ms: Some(123), ..Default::default() };
-        assert!(control.finish_scan("!old:x", serial, &outcome, ScanState::Capped));
+        assert_eq!(control.finish_scan("!old:x", serial, &outcome, ScanState::Capped), Finish::Committed);
         let record: Progress = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
         assert_eq!(record.version, PROGRESS_VERSION);
         assert!(record.paused);
@@ -1181,7 +1193,7 @@ mod tests {
         assert!(!receipt.reached_start);
         let active = reopened.start_scan("!old:x").unwrap();
         reopened.forget_room("!old:x");
-        assert!(!reopened.finish_scan("!old:x", active, &outcome, ScanState::Covered));
+        assert_eq!(reopened.finish_scan("!old:x", active, &outcome, ScanState::Covered), Finish::Stale);
         assert_eq!(Control::new(&store.0).room_receipt("!old:x").state, ScanState::Unscanned);
     }
 
@@ -1201,6 +1213,14 @@ mod tests {
     }
 
     #[test]
+    fn receipts_in_an_unknown_shape_keep_the_queue() {
+        let store = Store::new("receipt-shape");
+        std::fs::write(store.0.join(PROGRESS_FILE),
+                       br#"{"version":9,"queue":["!todo:x"],"receipts":["!a:x"]}"#).unwrap();
+        assert_eq!(Control::new(&store.0).status(None).current_room, "!todo:x");
+    }
+
+    #[test]
     fn refused_receipt_commit_leaves_the_room_repairable() {
         let store = Store::new("receipt-fault");
         let control = Control::new(&store.0);
@@ -1208,13 +1228,18 @@ mod tests {
         let serial = control.start_scan("!room:x").unwrap();
         std::fs::create_dir(path.with_extension("json.tmp")).unwrap();
         let outcome = DeepOutcome { reached_start: true, ..Default::default() };
-        assert!(!control.finish_scan("!room:x", serial, &outcome, ScanState::Covered));
+        assert_eq!(control.finish_scan("!room:x", serial, &outcome, ScanState::Covered),
+                   Finish::PersistFailed);
+        assert_eq!(control.status(None).complete_rooms, 0);
         assert_eq!(control.room_receipt("!room:x").state, ScanState::StorageFailed);
         assert_eq!(Control::new(&store.0).room_receipt("!room:x").state, ScanState::Interrupted);
         std::fs::remove_dir(path.with_extension("json.tmp")).unwrap();
         let retry = control.start_scan("!room:x").unwrap();
-        assert!(control.finish_scan("!room:x", retry, &outcome, ScanState::Covered));
-        assert_eq!(Control::new(&store.0).room_receipt("!room:x").state, ScanState::Covered);
+        assert_eq!(control.finish_scan("!room:x", retry, &outcome, ScanState::Covered),
+                   Finish::Committed);
+        let reread = Control::new(&store.0);
+        assert_eq!(reread.room_receipt("!room:x").state, ScanState::Covered);
+        assert_eq!(reread.status(None).complete_rooms, 1);
     }
 
     #[test]

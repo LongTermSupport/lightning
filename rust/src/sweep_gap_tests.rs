@@ -662,4 +662,8 @@ async fn bounded_room_scans_distinguish_page_key_and_fetch_gaps() {
     assert_eq!(receipt.undecryptable, 1);
     assert!(receipt.reached_start);
     assert!(!indexed(&index, "$locked"));
+    let _other_walk = control.start_scan(ROOM).unwrap();
+    let busy = deep_index_room_gated(&room, &index, &gate, 2).await.unwrap();
+    assert!(busy.busy && busy.interrupted);
+    assert_eq!(control.room_receipt(ROOM).state, ScanState::Scanning);
 }
