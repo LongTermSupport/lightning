@@ -4918,8 +4918,13 @@ struct HiddenReplies {
 }
 
 const HIDDEN_THREAD_REPLIES_KEPT: usize = 256;
-static HIDDEN_THREAD_REPLIES: Mutex<VecDeque<(String, ThreadSummaryKey, Arc<HiddenReplies>)>> =
-    Mutex::new(VecDeque::new());
+/// A shown reply can reach the store without changing the summary (the thread
+/// panel's pagination), so an answer that found none is re-read after this.
+const UNRESOLVED_THREAD_REPLY_TTL: std::time::Duration = std::time::Duration::from_secs(5);
+type KeptHiddenReplies = (String, ThreadSummaryKey, Arc<HiddenReplies>, Option<std::time::Instant>);
+static HIDDEN_THREAD_REPLIES: Mutex<VecDeque<KeptHiddenReplies>> = Mutex::new(VecDeque::new());
+#[cfg(test)]
+pub(crate) static HIDDEN_THREAD_REPLY_READS: Mutex<Vec<String>> = Mutex::new(Vec::new());
 
 const THREAD_LATEST_FIELDS: [&str; 6] = [
     "thread_latest_preview",
@@ -4972,10 +4977,18 @@ async fn hidden_thread_replies(
     latest_ts: Option<u64>,
 ) -> Option<Arc<HiddenReplies>> {
     use matrix_sdk::ruma::events::relation::RelationType;
-    if let Some(known) = HIDDEN_THREAD_REPLIES.lock().ok()?.iter().find_map(|(id, k, v)| {
-        (id == root.as_str() && *k == key).then(|| Arc::clone(v))
+    let now = std::time::Instant::now();
+    if let Some(known) = HIDDEN_THREAD_REPLIES.lock().ok()?.iter().find_map(|(id, k, v, until)| {
+        (id == root.as_str() && *k == key && until.map_or(true, |until| now < until))
+            .then(|| Arc::clone(v))
     }) {
         return Some(known);
+    }
+    #[cfg(test)]
+    {
+        if let Ok(mut reads) = HIDDEN_THREAD_REPLY_READS.lock() {
+            reads.push(root.to_string());
+        }
     }
     let (cache, _handles) = room.event_cache().await.ok()?;
     let (_, replies) = cache
@@ -5028,13 +5041,17 @@ async fn hidden_thread_replies(
     } else {
         None
     };
+    let until = latest
+        .as_ref()
+        .is_some_and(|fields| fields.is_empty())
+        .then(|| now + UNRESOLVED_THREAD_REPLY_TTL);
     let answer = Arc::new(HiddenReplies { hidden, latest });
     if let Ok(mut kept) = HIDDEN_THREAD_REPLIES.lock() {
-        kept.retain(|(id, _, _)| id != root.as_str());
+        kept.retain(|(id, _, _, _)| id != root.as_str());
         if kept.len() >= HIDDEN_THREAD_REPLIES_KEPT {
             kept.pop_front();
         }
-        kept.push_back((root.to_string(), key, Arc::clone(&answer)));
+        kept.push_back((root.to_string(), key, Arc::clone(&answer), until));
     }
     Some(answer)
 }
