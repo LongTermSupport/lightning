@@ -8103,7 +8103,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+4"/>
-        <location filename="../src/models/TimelineModel.cpp" line="+2870"/>
+        <location filename="../src/models/TimelineModel.cpp" line="+2874"/>
         <source>Voice message</source>
         <translation>Sprachnachricht</translation>
     </message>
@@ -12042,6 +12042,14 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
 </context>
 <context>
+    <name>MediaManager</name>
+    <message>
+        <location filename="../src/media/MediaManager.cpp" line="+67"/>
+        <source>No app could open this location.</source>
+        <translation>Keine App konnte diesen Standort öffnen.</translation>
+    </message>
+</context>
+<context>
     <name>MediaPreviewSettings</name>
     <message>
         <location filename="../qml/MediaPreviewSettings.qml" line="+15"/>
@@ -12581,12 +12589,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Eine Bearbeitung darf nicht leer sein. Lösche die Nachricht stattdessen.</translation>
     </message>
     <message>
-        <location line="+267"/>
+        <location line="+269"/>
         <source>This message is too long to send (%1 KB; the limit is about %2 KB). Shorten it or split it into several messages.</source>
         <translation>Diese Nachricht ist zu lang zum Senden (%1 KB; das Limit liegt bei etwa %2 KB). Kürze sie oder teile sie auf mehrere Nachrichten auf.</translation>
     </message>
     <message>
-        <location line="+831"/>
+        <location line="+861"/>
         <source>Part of this message is hidden as a spoiler, so it cannot be edited here.</source>
         <translation>Ein Teil dieser Nachricht ist als Spoiler verborgen, daher kann sie hier nicht bearbeitet werden.</translation>
     </message>
@@ -12830,19 +12838,19 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="+30"/>
         <location line="+1"/>
-        <location line="+1074"/>
+        <location line="+1085"/>
         <source>Underline</source>
         <translation>Unterstrichen</translation>
     </message>
     <message>
-        <location line="-1059"/>
+        <location line="-1070"/>
         <location line="+1"/>
-        <location line="+1067"/>
+        <location line="+1078"/>
         <source>Numbered list</source>
         <translation>Nummerierte Liste</translation>
     </message>
     <message>
-        <location line="-1056"/>
+        <location line="-1067"/>
         <source>Rich text</source>
         <translation>Rich-Text</translation>
     </message>
@@ -12853,18 +12861,18 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+1032"/>
+        <location line="+1043"/>
         <source>Switch to Markdown composing</source>
         <translation>Zum Schreiben in Markdown wechseln</translation>
     </message>
     <message>
-        <location line="-1031"/>
-        <location line="+1032"/>
+        <location line="-1042"/>
+        <location line="+1043"/>
         <source>Switch to rich-text composing</source>
         <translation>Zum Schreiben in Rich-Text wechseln</translation>
     </message>
     <message>
-        <location line="-990"/>
+        <location line="-1001"/>
         <source>Attach files or create a poll</source>
         <translation>Dateien anhängen oder Umfrage erstellen</translation>
     </message>
@@ -12874,7 +12882,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Anhängen</translation>
     </message>
     <message>
-        <location line="+946"/>
+        <location line="+957"/>
         <source>Collapse message box</source>
         <translation>Meldungsfeld ausblenden</translation>
     </message>
@@ -12884,7 +12892,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Meldungsfeld erweitern</translation>
     </message>
     <message>
-        <location line="-930"/>
+        <location line="-941"/>
         <source>Aa</source>
         <comment>text-formatting button mark</comment>
         <translation>Aa</translation>
@@ -12896,18 +12904,18 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+931"/>
+        <location line="+942"/>
         <source>Hide formatting</source>
         <translation>Formatierung ausblenden</translation>
     </message>
     <message>
-        <location line="-930"/>
-        <location line="+931"/>
+        <location line="-941"/>
+        <location line="+942"/>
         <source>Show formatting</source>
         <translation>Formatierung anzeigen</translation>
     </message>
     <message>
-        <location line="-628"/>
+        <location line="-639"/>
         <source>Select a room to start typing</source>
         <translation>Wähle einen Raum aus, um zu schreiben</translation>
     </message>
@@ -12957,7 +12965,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Alles auswählen</translation>
     </message>
     <message>
-        <location line="+104"/>
+        <location line="+115"/>
         <source>Insert emoji</source>
         <translation>Emoji einfügen</translation>
     </message>
@@ -13715,7 +13723,42 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>In der GIF-Auswahl speichern</translation>
     </message>
     <message>
-        <location line="-2008"/>
+        <location line="+1092"/>
+        <source>Updated %1</source>
+        <translation>Aktualisiert %1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Last known position, updated %1</source>
+        <translation>Letzte bekannte Position, aktualisiert %1</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Open in…</source>
+        <translation>Öffnen in…</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Map app</source>
+        <translation>Karten-App</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>OpenStreetMap</source>
+        <translation>OpenStreetMap</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Copy coordinates</source>
+        <translation>Koordinaten kopieren</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>No position received yet.</source>
+        <translation>Noch keine Position empfangen.</translation>
+    </message>
+    <message>
+        <location line="-3148"/>
         <location line="+719"/>
         <source>Delete</source>
         <translation>Löschen</translation>
@@ -14041,9 +14084,35 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Datei öffnen</translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="+27"/>
+        <source>just now</source>
+        <translation>gerade eben</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>%n min ago</source>
+        <translation>
+            <numerusform>vor %n Min.</numerusform>
+            <numerusform>vor %n Min.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>%n h ago</source>
+        <translation>
+            <numerusform>vor %n Std.</numerusform>
+            <numerusform>vor %n Std.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+41"/>
         <source>Sharing live location</source>
         <translation>Live-Standort wird geteilt</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Live location, not updating</source>
+        <translation>Live-Standort, wird nicht aktualisiert</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -14061,17 +14130,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Standort</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+25"/>
         <source>%1 · within %2 m</source>
         <translation>%1 · im Umkreis von %2 m</translation>
     </message>
     <message>
-        <location line="+14"/>
-        <source>Open in a map</source>
-        <translation>In einer Karte öffnen</translation>
-    </message>
-    <message>
-        <location line="+14"/>
+        <location line="+65"/>
         <source>This location could not be read.</source>
         <translation>Dieser Standort konnte nicht gelesen werden.</translation>
     </message>
@@ -18519,7 +18583,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         </translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+24"/>
         <source>Bridged via %1</source>
         <translation>Überbrückt über %1</translation>
     </message>
@@ -20413,7 +20477,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>RustTimeline</name>
     <message>
-        <location filename="../src/matrix/RustTimelineIngest.cpp" line="+483"/>
+        <location filename="../src/matrix/RustTimelineIngest.cpp" line="+487"/>
         <source>[unable to decrypt yet]</source>
         <translation>[noch nicht entschlüsselbar]</translation>
     </message>
@@ -28441,6 +28505,11 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location line="+2"/>
+        <source>Send the message exactly as typed, without Markdown or emoji conversion</source>
+        <translation>Nachricht genau so senden wie eingegeben, ohne Markdown- oder Emoji-Umwandlung</translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Send the message as a click-to-reveal spoiler</source>
         <translation>Die Nachricht als Spoiler senden, der per Klick aufgedeckt wird</translation>
     </message>
@@ -28496,12 +28565,12 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location line="+95"/>
-        <location line="+132"/>
+        <location line="+141"/>
         <source>Unknown command.</source>
         <translation>Unbekannter Befehl.</translation>
     </message>
     <message>
-        <location line="-130"/>
+        <location line="-139"/>
         <source>/%1 needs arguments: /%1 %2</source>
         <translation>/%1 braucht Argumente: /%1 %2</translation>
     </message>
@@ -28516,7 +28585,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>/%1 ist von hier aus nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+73"/>
         <source>/join needs a room address (#room:server) or room id.</source>
         <translation>/join braucht eine Raumadresse (#raum:server) oder Raum-ID.</translation>
     </message>
@@ -28946,6 +29015,25 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <location line="+1"/>
         <source>Done with errors: %1 succeeded, %2 failed. The failed rooms are marked below.</source>
         <translation>Mit Fehlern fertig: %1 erfolgreich, %2 fehlgeschlagen. Die fehlgeschlagenen Räume sind unten markiert.</translation>
+    </message>
+</context>
+<context>
+    <name>SpacePlacement</name>
+    <message>
+        <location filename="../qml/SpacePlacement.qml" line="+66"/>
+        <source>Open %1</source>
+        <translation>%1 öffnen</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <location line="+19"/>
+        <source>In</source>
+        <translation>In</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Also in</source>
+        <translation>Auch in</translation>
     </message>
 </context>
 <context>
@@ -32950,12 +33038,12 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location line="+1"/>
-        <location line="+797"/>
+        <location line="+803"/>
         <source>Attach files</source>
         <translation>Dateien anhängen</translation>
     </message>
     <message>
-        <location line="-796"/>
+        <location line="-802"/>
         <source>Attach</source>
         <translation>Anhängen</translation>
     </message>
@@ -32970,12 +33058,12 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Umfrage erstellen …</translation>
     </message>
     <message>
-        <location line="+229"/>
+        <location line="+232"/>
         <source>Reply…</source>
         <translation>Antworten …</translation>
     </message>
     <message>
-        <location line="+522"/>
+        <location line="+525"/>
         <source>Collapse message box</source>
         <translation>Meldungsfeld ausblenden</translation>
     </message>
@@ -32985,14 +33073,14 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Meldungsfeld erweitern</translation>
     </message>
     <message>
-        <location line="-726"/>
-        <location line="+186"/>
+        <location line="-732"/>
+        <location line="+189"/>
         <source>Press Enter again to send it as a message.</source>
         <translation>Drücke erneut Enter, um sie als Nachricht zu senden.</translation>
     </message>
     <message>
-        <location line="-146"/>
-        <location line="+164"/>
+        <location line="-149"/>
+        <location line="+167"/>
         <source>Reply in thread</source>
         <translation>Im Thread antworten</translation>
     </message>
@@ -33027,7 +33115,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Alles auswählen</translation>
     </message>
     <message>
-        <location line="+152"/>
+        <location line="+155"/>
         <source>Insert emoji</source>
         <translation>Emoji einfügen</translation>
     </message>
@@ -33227,7 +33315,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>TimelineModel</name>
     <message>
-        <location filename="../src/models/TimelineModel.cpp" line="-1698"/>
+        <location filename="../src/models/TimelineModel.cpp" line="-1702"/>
         <source>%1 changed their display name from “%2” to “%3” and changed their avatar.</source>
         <translation>%1 hat den Anzeigenamen von „%2“ in „%3“ geändert und den Avatar geändert.</translation>
     </message>
@@ -33277,7 +33365,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>%1 hat einen Anruf gestartet.</translation>
     </message>
     <message>
-        <location line="+1350"/>
+        <location line="+1354"/>
         <source>%1 is typing…</source>
         <translation>%1 schreibt …</translation>
     </message>
@@ -33309,7 +33397,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location line="+21"/>
-        <location filename="../qml/TimelinePane.qml" line="+7138"/>
+        <location filename="../qml/TimelinePane.qml" line="+7145"/>
         <source>Remove</source>
         <translation>Entfernen</translation>
     </message>
@@ -33353,7 +33441,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location line="+29"/>
-        <location filename="../qml/TimelinePane.qml" line="-5922"/>
+        <location filename="../qml/TimelinePane.qml" line="-5929"/>
         <location line="+5439"/>
         <source>Space</source>
         <translation>Space</translation>
@@ -33368,7 +33456,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/TimelinePane.qml" line="+20"/>
+        <location filename="../qml/TimelinePane.qml" line="+25"/>
         <source>%n joined room(s)</source>
         <comment>joined rooms inside a Space</comment>
         <translation>
@@ -33378,8 +33466,8 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location filename="../qml/SpaceLobby.qml" line="+141"/>
-        <location filename="../qml/TimelinePane.qml" line="-6274"/>
-        <location line="+6914"/>
+        <location filename="../qml/TimelinePane.qml" line="-6279"/>
+        <location line="+6921"/>
         <source>Room</source>
         <translation>Raum</translation>
     </message>
@@ -33433,7 +33521,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>%1 auswählen</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-6507"/>
+        <location filename="../qml/TimelinePane.qml" line="-6514"/>
         <source>Seen by 1 person</source>
         <translation>Von 1 Person gesehen</translation>
     </message>
@@ -33899,13 +33987,13 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     <message>
         <location line="+81"/>
         <location line="+209"/>
-        <location line="+1253"/>
+        <location line="+1260"/>
         <location line="+77"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message numerus="yes">
-        <location line="-1346"/>
+        <location line="-1353"/>
         <source>%n message(s) selected</source>
         <translation>
             <numerusform>%n Nachricht ausgewählt</numerusform>
@@ -33998,7 +34086,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Das Banner konnte nicht gespeichert werden (%1).</translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+65"/>
         <source>%1 • %2 unread</source>
         <translation>%1 • %2 ungelesen</translation>
     </message>
@@ -34062,13 +34150,21 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <source>Showing the first 60 of %1.</source>
         <translation>Es werden die ersten 60 von %1 angezeigt.</translation>
     </message>
+    <message numerus="yes">
+        <location line="+28"/>
+        <source>Remove %n room(s) from %1?</source>
+        <translation>
+            <numerusform>%n Raum aus %1 entfernen?</numerusform>
+            <numerusform>%n Räume aus %1 entfernen?</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+111"/>
+        <location line="+85"/>
         <source>You are the only administrator. If you leave, nobody will be able to change this Space&apos;s settings or manage its rooms and members. Make someone else an administrator first.</source>
         <translation>Du bist der einzige Administrator. Wenn du gehst, kann niemand mehr die Einstellungen dieses Space ändern oder seine Räume und Mitglieder verwalten. Mache zuerst jemand anderen zum Administrator.</translation>
     </message>
     <message>
-        <location line="-412"/>
+        <location line="-414"/>
         <source>Choose Space avatar</source>
         <translation>Space-Avatar auswählen</translation>
     </message>
@@ -34134,25 +34230,17 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location line="+27"/>
-        <location line="+300"/>
+        <location line="+302"/>
         <source>Leave Space</source>
         <translation>Space verlassen</translation>
     </message>
     <message>
-        <location line="-294"/>
+        <location line="-296"/>
         <source>Leaving does not remove the rooms inside it.</source>
         <translation>Beim Verlassen werden die darin enthaltenen Räume nicht entfernt.</translation>
     </message>
-    <message numerus="yes">
-        <location line="+188"/>
-        <source>Remove %n room(s) from this Space?</source>
-        <translation>
-            <numerusform>%n Raum aus diesem Space entfernen?</numerusform>
-            <numerusform>%n Räume aus diesem Space entfernen?</numerusform>
-        </translation>
-    </message>
     <message>
-        <location line="+8"/>
+        <location line="+198"/>
         <source>The rooms keep existing and you stay in them — they just leave this Space&apos;s list.</source>
         <translation>Die Räume bleiben bestehen, und du bleibst in ihnen – sie verschwinden nur aus der Liste dieses Space.</translation>
     </message>
@@ -34162,7 +34250,8 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>%1 verlassen?</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-60"/>
+        <location line="+61"/>
         <location line="+87"/>
         <source>this Space</source>
         <translation>diesen Space</translation>
@@ -34218,7 +34307,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Dateien zum Anhängen hier ablegen</translation>
     </message>
     <message>
-        <location line="-5477"/>
+        <location line="-5484"/>
         <source>Join space</source>
         <translation>Space beitreten</translation>
     </message>
@@ -34780,7 +34869,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>UrlLauncher</name>
     <message>
-        <location filename="../src/app/UrlLauncher.cpp" line="+67"/>
+        <location filename="../src/app/UrlLauncher.cpp" line="+69"/>
         <source>This link points at Matrix media and can&apos;t be opened in a browser.</source>
         <translation>Dieser Link verweist auf Matrix-Medien und kann nicht im Browser geöffnet werden.</translation>
     </message>
