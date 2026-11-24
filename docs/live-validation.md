@@ -1,5 +1,20 @@
 # Live validation: what Rokas has actually confirmed
 
+## Capability evidence index
+
+The newest dated record per capability, newest build first. A row is only as
+current as its build: a later change to that lane is untested until a new
+record exists. "Agent" marks a scripted or headless run, not Rokas's own.
+
+| Capability | Build / package | Platform | Counterpart | Result | Not covered | Record |
+| --- | --- | --- | --- | --- | --- | --- |
+| MatrixRTC calls, encrypted, 2-3 parties, audio + share | `f11e5950`, source build | Linux, headless engine peers | Element Call, Sable 1.22.11, Lightning; real server | PASS (agent) | real window cross-client, Element Desktop, macOS | 2026-11-01 |
+| Legacy 1:1 voice and video | `f11e5950`; earlier tree, scripted | Linux | Lightning (real server); Element Web 1.12.21 (local) | PASS (agent) | real devices, NAT/TURN, packages, Windows, macOS | 2026-11-01, 2026-10-31 |
+| Every Linux package: install, sign in, send text and images | pipeline 275 artifacts | Debian, Ubuntu, Fedora, openSUSE, snapd, Flatpak | project homeserver | PASS (agent) | real webcam inside packages | 2026-09-30 |
+| MatrixRTC calls from a Windows package | 0.9.8 portable | Windows 11 guest | published Linux AppImage | PASS | any build after 0.9.8 | 2026-09-17 |
+| Windows package against other clients | 0.9.7 portable | Windows 11 guest | Sable 1.21.0, Element Call, 0.9.7 AppImage | PASS | any build after 0.9.7 | 2026-09-16 |
+| Anything on macOS | none | macOS | none | NOT TESTED | everything | none |
+
 ## 2026-11-01 — the 0.10.3 live rounds: real-server calls and a GUI sweep
 
 An agent's runs, not Rokas's confirmation. Evidence is in the scratch trees
