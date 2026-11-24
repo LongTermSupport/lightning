@@ -316,6 +316,10 @@ private Q_SLOTS:
     void anEditFromTheLiveSyncReplacesTheShownCard();
     void aMentioningEditOfAShownCardIsOneSilentReplacement();
     void aMentioningEditWithNoShownCardIsOneCard();
+    void aResumedSyncBurstIsOneCardWithTheLatestMessage();
+    void freshLiveMessagesStillEachRaiseTheirCard();
+    void aLiveMessageFromASkewedClockIsOneCardAtMostASecondLate();
+    void aHeldBurstIsDroppedOnSignOutAndOnRead();
     void aKeyedNoticeIsReplacedAndWithdrawn();
     void theCallCardIsQuietWhenSilentAndStaysDismissed();
     void theDesktopsDoNotDisturbSilencesTheChime();
@@ -901,6 +905,106 @@ void NotificationDbusTest::aMentioningEditWithNoShownCardIsOneCard()
     QTest::qWait(500);
     QCOMPARE(m_fake->count(QStringLiteral("Notify")), 2);
     QCOMPARE(delivered.count(), 2);
+}
+
+namespace {
+TimelineEvent caughtUpText(int n, qint64 ageMs)
+{
+    TimelineEvent event = incomingText();
+    event.eventId = QStringLiteral("$gap%1:example.org").arg(n);
+    event.isEncrypted = true;
+    event.body = QStringLiteral("gap message %1").arg(n);
+    event.timestamp = QDateTime::fromMSecsSinceEpoch(
+        QDateTime::currentMSecsSinceEpoch() - ageMs);
+    return event;
+}
+}
+
+void NotificationDbusTest::aResumedSyncBurstIsOneCardWithTheLatestMessage()
+{
+    for (const bool twoBatches : { false, true }) {
+        m_fake->reset(FakeDaemon::Mode::Answer);
+        NotificationManager manager;
+        manager.setSoundSource(NotificationManager::SourceSystem);
+        NotificationManager::Context ctx = context();
+        ctx.previewMode = NotificationManager::SenderAndMessage;
+        for (int n = 1; n <= 20; ++n) {
+            if (twoBatches && n == 11)
+                QTest::qWait(200);
+            manager.processEvent(caughtUpText(n, 120000 - n * 1000), ctx);
+        }
+        QTRY_COMPARE(manager.notifyRepliesProcessedForTest(), 1);
+        QTest::qWait(1500);
+        const QList<QVariantList> all =
+            m_fake->allArguments(QStringLiteral("Notify"));
+        QCOMPARE(all.size(), 1);
+        QVERIFY2(all.first().value(4).toString().contains(
+                     QStringLiteral("gap message 20")),
+                 qPrintable(all.first().value(4).toString()));
+        QCOMPARE(manager.notifyRepliesProcessedForTest(), 1);
+        QCOMPARE(lastNotifyHints(m_fake).value(QStringLiteral("sound-name"))
+                     .toString(),
+                 QStringLiteral("message-new-instant"));
+    }
+}
+
+void NotificationDbusTest::aLiveMessageFromASkewedClockIsOneCardAtMostASecondLate()
+{
+    m_fake->reset(FakeDaemon::Mode::Answer);
+    NotificationManager manager;
+    NotificationManager::Context ctx = context();
+    ctx.previewMode = NotificationManager::SenderAndMessage;
+    QElapsedTimer clock;
+    clock.start();
+    manager.processEvent(caughtUpText(1, 60000), ctx);
+    QTRY_COMPARE(manager.notifyRepliesProcessedForTest(), 1);
+    QVERIFY2(clock.elapsed() < 2500, qPrintable(QString::number(clock.elapsed())));
+    QTest::qWait(1500);
+    QCOMPARE(m_fake->count(QStringLiteral("Notify")), 1);
+    QVERIFY(m_fake->lastArguments(QStringLiteral("Notify"))
+                .value(4).toString().contains(QStringLiteral("gap message 1")));
+}
+
+void NotificationDbusTest::aHeldBurstIsDroppedOnSignOutAndOnRead()
+{
+    for (const bool signOut : { true, false }) {
+        m_fake->reset(FakeDaemon::Mode::Answer);
+        NotificationManager manager;
+        NotificationManager::Context ctx = context();
+        ctx.previewMode = NotificationManager::SenderAndMessage;
+        TimelineEvent warmup = incomingText();
+        warmup.roomId = QStringLiteral("!warmup:example.org");
+        manager.processEvent(warmup, ctx);
+        QTRY_COMPARE(manager.notifyRepliesProcessedForTest(), 1);
+        for (int n = 1; n <= 5; ++n)
+            manager.processEvent(caughtUpText(n, 60000), ctx);
+        if (signOut)
+            manager.clearPending();
+        else
+            manager.closeRoomNotifications(kRoom);
+        QTest::qWait(1500);
+        for (const QVariantList &call :
+             m_fake->allArguments(QStringLiteral("Notify")))
+            QVERIFY2(!call.value(4).toString().contains(QStringLiteral("gap")),
+                     qPrintable(call.value(4).toString()));
+        QCOMPARE(manager.groupTableSizeForTest(), signOut ? 0 : 1);
+    }
+}
+
+void NotificationDbusTest::freshLiveMessagesStillEachRaiseTheirCard()
+{
+    m_fake->reset(FakeDaemon::Mode::Answer);
+    NotificationManager manager;
+    NotificationManager::Context ctx = context();
+    ctx.previewMode = NotificationManager::SenderAndMessage;
+    for (int n = 1; n <= 3; ++n) {
+        manager.processEvent(caughtUpText(n, 0), ctx);
+        QTRY_COMPARE(manager.notifyRepliesProcessedForTest(), n);
+        QCOMPARE(m_fake->count(QStringLiteral("Notify")), n);
+        QVERIFY(m_fake->lastArguments(QStringLiteral("Notify"))
+                    .value(4).toString().contains(
+                        QStringLiteral("gap message %1").arg(n)));
+    }
 }
 
 void NotificationDbusTest::aKeyedNoticeIsReplacedAndWithdrawn()
