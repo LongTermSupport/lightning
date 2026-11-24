@@ -7764,8 +7764,30 @@ fn unread_tail(
 
 const UNREAD_FETCH_PAGES: [u32; 3] = [30, 85, 85];
 
-fn sent_before(event: &matrix_sdk::deserialized_responses::TimelineEvent, floor_ms: u64) -> bool {
-    event.raw().get_field::<u64>("origin_server_ts").ok().flatten().is_some_and(|ts| ts < floor_ms)
+/// Whether the event reached the server before `since_ms` on our clock.
+/// `unsigned.age` needs no clock agreement, so it decides when present.
+fn sent_before(
+    event: &matrix_sdk::deserialized_responses::TimelineEvent,
+    since_ms: u64,
+    now_ms: u64,
+) -> bool {
+    if since_ms == 0 {
+        return false;
+    }
+    let raw = event.raw();
+    let age = raw
+        .get_field::<serde_json::Value>("unsigned")
+        .ok()
+        .flatten()
+        .and_then(|unsigned| unsigned.get("age")?.as_u64());
+    match age {
+        Some(age) => {
+            age > now_ms.saturating_sub(since_ms).saturating_add(syncnotify::AGE_ALLOWANCE_MS)
+        }
+        None => raw.get_field::<u64>("origin_server_ts").ok().flatten().is_some_and(|ts| {
+            ts.saturating_add(syncnotify::TIMESTAMP_ALLOWANCE_MS) < since_ms
+        }),
+    }
 }
 
 /// The room's unread tail, oldest first: back to our read receipt or our own
@@ -7776,7 +7798,7 @@ async fn unread_gap_events(
 ) -> Vec<matrix_sdk::deserialized_responses::TimelineEvent> {
     use matrix_sdk::room::MessagesOptions;
     let receipt = room.read_receipts().latest_active.map(|r| r.event_id);
-    let floor_ms = since_ms.saturating_sub(syncnotify::TIMESTAMP_ALLOWANCE_MS);
+    let now_ms = push_verdict::now_ms();
     let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(20);
     let mut newest_first = Vec::new();
     let mut from = None;
@@ -7789,7 +7811,7 @@ async fn unread_gap_events(
         else {
             break;
         };
-        let reached = messages.chunk.last().is_none_or(|oldest| sent_before(oldest, floor_ms))
+        let reached = messages.chunk.last().is_none_or(|oldest| sent_before(oldest, since_ms, now_ms))
             || messages.chunk.iter().any(|event| is_unread_stop(event, receipt.as_deref(), room.own_user_id()));
         newest_first.extend(messages.chunk);
         from = messages.end;
@@ -7798,7 +7820,7 @@ async fn unread_gap_events(
         }
     }
     let mut tail = unread_tail(newest_first, receipt.as_deref(), room.own_user_id());
-    tail.retain(|event| !sent_before(event, floor_ms));
+    tail.retain(|event| !sent_before(event, since_ms, now_ms));
     tail
 }
 
@@ -16594,6 +16616,31 @@ mod tests {
         assert_eq!(ids(super::unread_tail(newest_first(), None, own)), ["$3", "$4"]);
         let receipt = matrix_sdk::ruma::event_id!("$3");
         assert_eq!(ids(super::unread_tail(newest_first(), Some(receipt), own)), ["$4"]);
+    }
+
+    #[test]
+    fn an_events_age_decides_whether_it_predates_the_gap() {
+        use matrix_sdk::deserialized_responses::TimelineEvent;
+        use matrix_sdk::ruma::serde::Raw;
+        let ev = |ts: u64, age: Option<u64>| {
+            let mut json = serde_json::json!({
+                "type": "m.room.message", "event_id": "$e", "sender": "@b:x",
+                "origin_server_ts": ts, "content": {"msgtype": "m.text", "body": "x"},
+            });
+            if let Some(age) = age {
+                json["unsigned"] = serde_json::json!({ "age": age });
+            }
+            TimelineEvent::from_plaintext(Raw::from_json_string(json.to_string()).unwrap())
+        };
+        let (since, now) = (1_000_000, 1_060_000);
+        let allowance = crate::syncnotify::AGE_ALLOWANCE_MS;
+        assert!(super::sent_before(&ev(5, Some(60_001 + allowance)), since, now));
+        assert!(!super::sent_before(&ev(5, Some(60_000 + allowance)), since, now));
+        let late = since - crate::syncnotify::TIMESTAMP_ALLOWANCE_MS;
+        assert!(super::sent_before(&ev(late - 1, None), since, now));
+        assert!(!super::sent_before(&ev(late, None), since, now));
+        assert!(!super::sent_before(&ev(5, Some(u64::MAX / 4)), 0, now));
+        assert!(!super::sent_before(&ev(5, None), 0, now));
     }
 
     #[test]
