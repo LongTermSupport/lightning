@@ -8280,6 +8280,121 @@ kFilteredPages + 6);
         controller.composer()->cancelReplyOrEdit();
     }
 
+    void hoverOwnsTheBandTheRowGesturesOwn_data()
+    {
+        theBoundaryPixelBetweenTwoRowsBelongsToTheLowerRow_data();
+    }
+    void hoverOwnsTheBandTheRowGesturesOwn()
+    {
+        QFETCH(int, layout);
+        QFETCH(bool, group);
+        AppController controller(AppController::MockBackend);
+        QVERIFY(!loginAndRoomIdAt(controller,0).isEmpty());
+        SettingsManager *settings = controller.settings();
+        const int layoutBefore = settings->messageLayout();
+        const int scopeBefore = settings->bubbleScope();
+        const auto restore = qScopeGuard([&] {
+            settings->setMessageLayout(layoutBefore);
+            settings->setBubbleScope(scopeBefore);
+        });
+        settings->setMessageLayout(layout);
+        settings->setBubbleScope(2);
+
+        const QString roomId = QStringLiteral("!general:mock.local");
+        auto events = textFixture(roomId, 6, QStringLiteral("hband"),
+                                  QStringLiteral("hover band"));
+        if (group) {
+            for (int i = 1; i < events.size(); i += 2) {
+                events[i].sender = QStringLiteral("@bob:mock.local");
+                events[i].senderDisplayName = QStringLiteral("Bob");
+            }
+        }
+        QQmlApplicationEngine engine;
+        QQuickWindow window;
+        QQuickItem *timeline = nullptr;
+        QVERIFY(paneWithEvents(controller, engine, window, roomId, events, 0,
+                               600, &timeline) != nullptr);
+
+        QQuickItem *lower = nullptr;
+        QQuickItem *upper = nullptr;
+        QTRY_VERIFY((lower = itemAtViewRow(timeline, 1)) != nullptr
+                    && (upper = itemAtViewRow(timeline, 2)) != nullptr);
+        const QString lowerId = events.at(4).eventId;
+        QTRY_VERIFY(lower->property("actionKey").toString() == events.at(4).itemId
+                    || lower->property("actionKey").toString() == lowerId);
+        QCOMPARE(lower->property("showsIdentity").toBool(), group);
+        const QString lowerKey = lower->property("actionKey").toString();
+        const QString upperKey = upper->property("actionKey").toString();
+        QVERIFY(!upperKey.isEmpty() && upperKey != lowerKey);
+        auto *lowerHover = lower->findChild<QObject *>(
+            QStringLiteral("messageRowHover"));
+        QVERIFY(lowerHover);
+        QTRY_VERIFY(!timeline->property("rowHoverSuspended").toBool());
+
+        // Scene y of the lower row's top edge; its top gap runs below it.
+        const auto rowTop = [&](qreal *top, int *x) {
+            QPointF a, b;
+            if (!testsupport::settledScenePoint(&window, lower, &a, QPointF(0.4, 0))
+                || !testsupport::settledScenePoint(&window, lower, &b, QPointF(0.4, 1)))
+                return false;
+            *top = qMin(a.y(), b.y());
+            *x = qRound(a.x());
+            return true;
+        };
+        qreal top = 0;
+        int x = 0;
+        QVERIFY(rowTop(&top, &x));
+        const int gap = qCeil(lower->property("messageTopSpacing").toReal());
+        const int first = qFloor(top) - 3;
+        const int last = qCeil(top) + gap + 2;
+        for (int y = first; y <= last; ++y) {
+            QTest::mouseMove(&window, QPoint(x, y));
+            QCoreApplication::processEvents();
+            const bool inLower = y >= top;
+            const QString want = inLower ? lowerKey : upperKey;
+            const QString got = timeline->property("hoveredActionsKey").toString();
+            QVERIFY2(got == want && (!inLower || lowerHover->property("hovered").toBool()),
+                     qPrintable(QStringLiteral(
+                         "y=%1 (row top %2, gap %3): hovered key '%4', want '%5' "
+                         "(lower '%6' hovered=%7)")
+                         .arg(y).arg(top).arg(gap).arg(got, want, lowerKey)
+                         .arg(lowerHover->property("hovered").toBool())));
+        }
+
+        // The hovered row is the row the gestures land on, at the boundary
+        // pixel and at the last pixel of the top gap.
+        for (const int offset : {0, qMax(0, gap - 1)}) {
+            QVERIFY(rowTop(&top, &x));
+            const QPoint probe(x, qCeil(top) + offset);
+            QTest::mouseMove(&window, QPoint(x, qFloor(top) - 3));
+            QTest::mouseMove(&window, probe);
+            QTRY_COMPARE_WITH_TIMEOUT(
+                timeline->property("hoveredActionsKey").toString(), lowerKey, 1000);
+            QTest::mouseClick(&window, Qt::RightButton, Qt::NoModifier, probe);
+            QTRY_COMPARE_WITH_TIMEOUT(lower->property("menuEventId").toString(),
+                                      lowerId, 1000);
+            QCOMPARE(upper->property("menuEventId").toString(), QString());
+            auto *menu = lower->findChild<QObject *>(QStringLiteral("messageContextMenu"));
+            QVERIFY(menu);
+            QTRY_VERIFY(menu->property("opened").toBool());
+            QTest::keyClick(&window, Qt::Key_Escape);
+            QTRY_VERIFY(!menu->property("visible").toBool());
+            lower->setProperty("menuEventId", QString());
+
+            QVERIFY(rowTop(&top, &x));
+            const QPoint again(x, qCeil(top) + offset);
+            // The menu took the bar; it comes back when the pointer re-enters.
+            QTest::mouseMove(&window, QPoint(x, qFloor(top) - 3));
+            QTest::mouseMove(&window, again);
+            QTRY_COMPARE_WITH_TIMEOUT(
+                timeline->property("hoveredActionsKey").toString(), lowerKey, 1000);
+            QTest::mouseDClick(&window, Qt::LeftButton, Qt::NoModifier, again);
+            QTRY_COMPARE_WITH_TIMEOUT(controller.composer()->replyingToEventId(),
+                                      lowerId, 1000);
+            controller.composer()->cancelReplyOrEdit();
+        }
+    }
+
     void removedMessagesLeaveOnlyAThreadRootInEveryLayout_data()
     {
         QTest::addColumn<int>("layout");

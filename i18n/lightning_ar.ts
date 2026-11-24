@@ -13313,7 +13313,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>رسائل جديدة</translation>
     </message>
     <message>
-        <location line="+279"/>
+        <location line="+280"/>
         <location line="+158"/>
         <source>Avatar for %1</source>
         <translation>صورة %1 الرمزية</translation>
@@ -13395,8 +13395,8 @@ Signing out and signing in again is the only fix.</source>
         <translation>في انتظار المفاتيح…</translation>
     </message>
     <message>
-        <location line="-1061"/>
-        <location line="+1070"/>
+        <location line="-1062"/>
+        <location line="+1071"/>
         <source>Retry decryption</source>
         <translation>إعادة محاولة فك التعمية</translation>
     </message>
@@ -13406,12 +13406,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>إعدادات الأمان</translation>
     </message>
     <message>
-        <location line="-1990"/>
+        <location line="-1991"/>
         <source>Link</source>
         <translation>رابط</translation>
     </message>
     <message>
-        <location line="+1361"/>
+        <location line="+1362"/>
         <source>Open this thread</source>
         <translation>فتح هذا الخيط</translation>
     </message>
@@ -13818,7 +13818,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>تحرير</translation>
     </message>
     <message>
-        <location line="-3707"/>
+        <location line="-3708"/>
         <source>%1 B</source>
         <translation>%1 ب</translation>
     </message>
@@ -13852,22 +13852,22 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="-570"/>
         <location line="+568"/>
-        <location line="+3691"/>
+        <location line="+3692"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5182"/>
+        <location line="-5183"/>
         <location line="+53"/>
         <location line="+514"/>
-        <location line="+4240"/>
+        <location line="+4241"/>
         <source>Image</source>
         <translation>صورة</translation>
     </message>
     <message>
-        <location line="-4805"/>
+        <location line="-4806"/>
         <source>Attachment</source>
         <translation>مرفق</translation>
     </message>
@@ -13906,7 +13906,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>فتح الخيط</translation>
     </message>
     <message>
-        <location line="+466"/>
+        <location line="+467"/>
         <source>Back to the room</source>
         <translation>العودة إلى الغرفة</translation>
     </message>
@@ -14200,10 +14200,10 @@ Signing out and signing in again is the only fix.</source>
         <translation>فشل تحميل الملصق — انقر لإعادة المحاولة</translation>
     </message>
     <message>
-        <location line="-5599"/>
+        <location line="-5600"/>
         <location line="+57"/>
         <location line="+517"/>
-        <location line="+4238"/>
+        <location line="+4239"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -14216,9 +14216,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>فيديو</translation>
     </message>
     <message>
-        <location line="-5980"/>
+        <location line="-5981"/>
         <location line="+570"/>
-        <location line="+4341"/>
+        <location line="+4342"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -15155,13 +15155,13 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1973"/>
-        <location line="+1007"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+2021"/>
+        <location line="+1016"/>
         <source>Open</source>
         <translation>فتح</translation>
     </message>
     <message>
-        <location line="-1005"/>
+        <location line="-1014"/>
         <source>Mark as read</source>
         <translation>تعليم كمقروء</translation>
     </message>
@@ -15171,7 +15171,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>رد</translation>
     </message>
     <message>
-        <location line="+325"/>
+        <location line="+334"/>
         <source>Reply…</source>
         <translation>رد…</translation>
     </message>
@@ -15688,12 +15688,12 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2863"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2917"/>
         <source>(spoiler)</source>
         <translation>(حرق)</translation>
     </message>
     <message>
-        <location line="+275"/>
+        <location line="+278"/>
         <source>Matrix room</source>
         <translation>غرفة Matrix</translation>
     </message>
@@ -15753,9 +15753,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>إشعار Matrix جديد</translation>
     </message>
     <message numerus="yes">
-        <location line="+233"/>
+        <location line="+272"/>
         <location line="+218"/>
-        <location line="+1740"/>
+        <location line="+1752"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>لا رسائل جديدة (%n)</numerusform>
@@ -15767,7 +15767,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1954"/>
+        <location line="-1966"/>
         <location line="+212"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15780,7 +15780,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1745"/>
+        <location line="+1757"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>في %n غرف</numerusform>
@@ -20520,7 +20520,7 @@ Signing out and signing in again is the only fix.</source>
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4737"/>
+        <location line="+4763"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -20529,15 +20529,15 @@ Signing out and signing in again is the only fix.</source>
         <translation>لم تسجّل الدخول.</translation>
     </message>
     <message>
-        <location line="-5093"/>
+        <location line="-5119"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4900"/>
+        <location line="+4926"/>
         <source>Unknown room: %1</source>
         <translation>غرفة غير معروفة: %1</translation>
     </message>
     <message>
-        <location line="-5095"/>
+        <location line="-5121"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
@@ -20545,13 +20545,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+777"/>
-        <location line="+2714"/>
+        <location line="+2726"/>
         <location line="+64"/>
         <source>The sticker could not be sent.</source>
         <translation>لا يمكن إرسال الملصق.</translation>
     </message>
     <message>
-        <location line="-1453"/>
+        <location line="-1465"/>
         <source>Lightning cannot send that yet.</source>
         <translation>لا يستطيع Lightning إرسال ذلك بعد.</translation>
     </message>
@@ -20601,7 +20601,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>فشل إجراء الدعوة. أعد المحاولة.</translation>
     </message>
     <message>
-        <location line="+305"/>
+        <location line="+317"/>
         <location line="+41"/>
         <source>The reaction could not be applied.</source>
         <translation>تعذّر تطبيق التفاعل.</translation>
@@ -20643,7 +20643,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>تعذّر إكمال إجراء الاستطلاع.</translation>
     </message>
     <message>
-        <location line="-6633"/>
+        <location line="-6645"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>بيانات هذا الحساب ما زالت قيد الاستخدام من جلسة في الخلفية. انتظر قليلًا ثم حاول مرة أخرى.</translation>
     </message>
@@ -20673,7 +20673,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>أدخل كلمة المرور.</translation>
     </message>
     <message>
-        <location line="+5762"/>
+        <location line="+5774"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>تعذّر إرسال الرسالة. يمكنك إعادة المحاولة من إجراء «إعادة المحاولة» الخاص بالرسالة.</translation>
     </message>
@@ -20704,7 +20704,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location filename="../src/accounts/BackgroundSessionHost.cpp" line="+487"/>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+300"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+314"/>
         <location line="+36"/>
         <source>[unable to decrypt yet]</source>
         <translation>[تعذّر فك التعمية بعد]</translation>

@@ -489,6 +489,8 @@ const CLASSES: &[(&str, EventClass)] = {
         ("event_decrypted", Notify),
         ("event_redacted", Notify),
         ("rejected_edit_highlight", Notify),
+        ("room_gap", Notify),
+        ("unread_fetch_done", Notify),
         ("session_tokens_refreshed", Custody),
         ("custom", Foreign),
         ("jitsi", Foreign),

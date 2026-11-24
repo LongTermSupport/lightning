@@ -7741,60 +7741,296 @@ pub unsafe extern "C" fn mx_rust_fetch_unread_events(
     })
 }
 
+fn is_unread_stop(
+    event: &matrix_sdk::deserialized_responses::TimelineEvent,
+    stop_at: Option<&EventId>,
+    own: &UserId,
+) -> bool {
+    event.event_id().as_deref() == stop_at
+        || event.raw().get_field::<OwnedUserId>("sender").ok().flatten().as_deref() == Some(own)
+}
+
 /// Messages after `stop_at` (or after our own newest message), oldest first.
 fn unread_tail(
     newest_first: Vec<matrix_sdk::deserialized_responses::TimelineEvent>,
     stop_at: Option<&EventId>,
     own: &UserId,
 ) -> Vec<matrix_sdk::deserialized_responses::TimelineEvent> {
-    let mut out: Vec<_> = newest_first
-        .into_iter()
-        .take_while(|event| {
-            event.event_id().as_deref() != stop_at
-                && event.raw().get_field::<OwnedUserId>("sender").ok().flatten().as_deref()
-                    != Some(own)
-        })
-        .collect();
+    let mut out: Vec<_> =
+        newest_first.into_iter().take_while(|event| !is_unread_stop(event, stop_at, own)).collect();
     out.reverse();
     out
+}
+
+const UNREAD_FETCH_PAGES: [u32; 3] = [30, 85, 85];
+
+/// Whether the event reached the server before `since_ms` on our clock.
+/// `unsigned.age` needs no clock agreement, so it decides when present.
+fn sent_before(
+    event: &matrix_sdk::deserialized_responses::TimelineEvent,
+    since_ms: u64,
+    now_ms: u64,
+) -> bool {
+    if since_ms == 0 {
+        return false;
+    }
+    let raw = event.raw();
+    let age = raw
+        .get_field::<serde_json::Value>("unsigned")
+        .ok()
+        .flatten()
+        .and_then(|unsigned| unsigned.get("age")?.as_u64());
+    match age {
+        Some(age) => {
+            age > now_ms.saturating_sub(since_ms).saturating_add(syncnotify::AGE_ALLOWANCE_MS)
+        }
+        None => raw.get_field::<u64>("origin_server_ts").ok().flatten().is_some_and(|ts| {
+            ts.saturating_add(syncnotify::TIMESTAMP_ALLOWANCE_MS) < since_ms
+        }),
+    }
+}
+
+/// The room's unread tail, oldest first: back to our read receipt or our own
+/// message, and no older than `since_ms` (0: no such bound).
+async fn unread_gap_events(
+    room: &Room,
+    since_ms: u64,
+) -> Vec<matrix_sdk::deserialized_responses::TimelineEvent> {
+    use matrix_sdk::room::MessagesOptions;
+    let receipt = room.read_receipts().latest_active.map(|r| r.event_id);
+    let now_ms = push_verdict::now_ms();
+    let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(20);
+    let mut newest_first = Vec::new();
+    let mut from = None;
+    for limit in UNREAD_FETCH_PAGES {
+        let mut options = MessagesOptions::backward();
+        options.from = from.take();
+        options.limit = limit.into();
+        options.filter = previewbackfill::conversation_filter();
+        let Ok(Ok(messages)) = tokio::time::timeout_at(deadline, room.messages(options)).await
+        else {
+            break;
+        };
+        let reached = messages.chunk.last().is_none_or(|oldest| sent_before(oldest, since_ms, now_ms))
+            || messages.chunk.iter().any(|event| is_unread_stop(event, receipt.as_deref(), room.own_user_id()));
+        newest_first.extend(messages.chunk);
+        from = messages.end;
+        if reached || from.is_none() {
+            break;
+        }
+    }
+    let mut tail = unread_tail(newest_first, receipt.as_deref(), room.own_user_id());
+    tail.retain(|event| !sent_before(event, since_ms, now_ms));
+    tail
+}
+
+async fn enqueue_unread_gap_events(
+    room: &Room,
+    since_ms: u64,
+    events: &Arc<Mutex<VecDeque<String>>>,
+    current: impl Fn() -> bool + Send,
+) {
+    let verdicts = push_verdict::SyncVerdicts::default();
+    for held in unread_gap_events(room, since_ms).await {
+        let Some(mut event) = held_event_json(room, &held, true, &verdicts).await else {
+            continue;
+        };
+        event["fetched"] = true.into();
+        if !current() {
+            return;
+        }
+        enqueue(events, json!({
+            "type": "timeline_event",
+            "room_id": room.room_id().to_string(),
+            "event": event,
+        }));
+    }
+    if current() {
+        enqueue(events, json!({ "type": "unread_fetch_done", "room_id": room.room_id().to_string() }));
+    }
 }
 
 // The room list syncs one event per room, so messages that arrived together
 // with a newer one never reach the sync handlers; fetch them so Activity sees them.
 fn fetch_unread_events(bridge: &RustClient, room_id: OwnedRoomId) -> Result<(), String> {
-    use matrix_sdk::room::MessagesOptions;
     let client = rooms::require_client(bridge)?;
     let room = client.get_room(&room_id).ok_or_else(|| "room_not_found".to_owned())?;
     let events = Arc::clone(&bridge.events);
     let timelines = Arc::clone(&bridge.timelines);
     let lifecycle = timelines.lifecycle();
     bridge.spawn_room_action(async move {
-        let mut options = MessagesOptions::backward();
-        options.limit = 30u32.into();
-        options.filter = previewbackfill::conversation_filter();
-        let Ok(Ok(messages)) =
-            tokio::time::timeout(std::time::Duration::from_secs(20), room.messages(options)).await
-        else {
-            return;
-        };
-        let receipt = room.read_receipts().latest_active.map(|r| r.event_id);
-        let verdicts = push_verdict::SyncVerdicts::default();
-        for held in unread_tail(messages.chunk, receipt.as_deref(), room.own_user_id()) {
-            let Some(mut event) = held_event_json(&room, &held, true, &verdicts).await else {
-                continue;
-            };
-            event["fetched"] = true.into();
-            if !timelines.lifecycle_current(lifecycle) {
-                return;
-            }
-            enqueue(&events, json!({
-                "type": "timeline_event",
-                "room_id": room.room_id().to_string(),
-                "event": event,
-            }));
-        }
+        enqueue_unread_gap_events(&room, 0, &events, move || timelines.lifecycle_current(lifecycle))
+            .await;
     });
     Ok(())
+}
+
+fn gap_may_hide_unread(room: &Room, timeline: matrix_sdk::sync::Timeline) -> bool {
+    if !timeline.limited || room_known_plain(room) {
+        return false;
+    }
+    let receipt = room.read_receipts().latest_active.map(|r| r.event_id);
+    let mut newest_first = timeline.events;
+    newest_first.reverse();
+    !unread_tail(newest_first, receipt.as_deref(), room.own_user_id()).is_empty()
+}
+
+fn may_hold_unread(room: &Room) -> bool {
+    let counts = room.read_receipts();
+    !room_known_plain(room)
+        && (counts.num_unread > 0
+            || counts.num_notifications > 0
+            || room.unread_notification_counts().notification_count > 0)
+}
+
+/// A muted room can never card, so it is not worth a request.
+async fn rooms_to_sweep(client: &Client) -> Vec<Room> {
+    let settings = client.notification_settings().await;
+    let mut rooms = Vec::new();
+    for room in client.joined_rooms().into_iter().filter(may_hold_unread) {
+        if settings.get_user_defined_room_notification_mode(room.room_id()).await
+            != Some(RoomNotificationMode::Mute)
+        {
+            rooms.push(room);
+        }
+    }
+    rooms
+}
+
+const LAST_ROOM_UPDATE_KEY: &[u8] = b"lightning.last_room_update_ms";
+const ROOM_UPDATE_MARK_MS: u64 = 60_000;
+
+/// When room updates were last arriving, as marks at least a minute apart. A
+/// catch-up spans several responses, so `since` is the mark before the newest.
+struct UpdateMarks {
+    since: u64,
+    newest: u64,
+}
+
+impl UpdateMarks {
+    fn starting(persisted: Option<u64>, now_ms: u64) -> Self {
+        let mark = persisted.unwrap_or(now_ms);
+        Self { since: mark, newest: mark }
+    }
+
+    /// True when the newest mark moved and wants persisting.
+    fn note(&mut self, now_ms: u64) -> bool {
+        if now_ms.saturating_sub(self.newest) < ROOM_UPDATE_MARK_MS {
+            return false;
+        }
+        self.since = self.newest;
+        self.newest = now_ms;
+        true
+    }
+}
+
+const GAP_FETCH_MAX_WAIT: std::time::Duration = std::time::Duration::from_secs(30);
+const GAP_FETCH_PENDING_MAX: usize = 256;
+
+struct PendingGap {
+    room: Room,
+    since_ms: u64,
+    first: tokio::time::Instant,
+    due: tokio::time::Instant,
+}
+
+/// A limited sync delivers only the newest events of what the room gained, and
+/// an encrypted mention inside the gap raises no count anywhere. Fetches each
+/// such room's unread tail once its limited syncs settle, one room at a time.
+fn spawn_unread_gap_watch(
+    client: &Client,
+    events: &Arc<Mutex<VecDeque<String>>>,
+) -> tokio::task::JoinHandle<()> {
+    spawn_unread_gap_watch_on(client, events, client.subscribe_to_all_room_updates())
+}
+
+fn spawn_unread_gap_watch_on(
+    client: &Client,
+    events: &Arc<Mutex<VecDeque<String>>>,
+    mut updates: tokio::sync::broadcast::Receiver<matrix_sdk::sync::RoomUpdates>,
+) -> tokio::task::JoinHandle<()> {
+    use tokio::sync::broadcast::error::RecvError;
+    use tokio::time::Instant;
+    let client = client.clone();
+    let events = Arc::clone(events);
+    let trace = Arc::clone(&events);
+    let (settled, mut queued) = tokio::sync::mpsc::channel::<PendingGap>(GAP_FETCH_PENDING_MAX);
+    let worker = tokio::spawn(async move {
+        while let Some(gap) = queued.recv().await {
+            enqueue(&events, json!({ "type": "room_gap", "room_id": gap.room.room_id().to_string() }));
+            enqueue_unread_gap_events(&gap.room, gap.since_ms, &events, || true).await;
+        }
+    });
+    tokio::spawn(async move {
+        let _worker = AbortOnDrop(worker.abort_handle());
+        let persisted = client
+            .state_store()
+            .get_custom_value(LAST_ROOM_UPDATE_KEY)
+            .await
+            .ok()
+            .flatten()
+            .and_then(|bytes| String::from_utf8(bytes).ok())
+            .and_then(|text| text.parse().ok());
+        let mut marks = UpdateMarks::starting(persisted, push_verdict::now_ms());
+        let mut pending: HashMap<OwnedRoomId, PendingGap> = HashMap::new();
+        loop {
+            let next = pending.values().map(|gap| gap.due).min();
+            let rooms: Vec<Room> = tokio::select! {
+                rooms = updates.recv() => match rooms {
+                    Ok(rooms) => rooms
+                        .joined
+                        .into_iter()
+                        .filter_map(|(room_id, update)| {
+                            let room = client.get_room(&room_id)?;
+                            gap_may_hide_unread(&room, update.timeline).then_some(room)
+                        })
+                        .collect(),
+                    // The dropped updates may have carried a gap: every room that could hide one is fetched.
+                    Err(RecvError::Lagged(dropped)) => {
+                        enqueue(&trace, json!({
+                            "type": "rust_trace",
+                            "line": format!("room updates lagged, dropped {dropped}: sweeping unread rooms"),
+                        }));
+                        rooms_to_sweep(&client).await
+                    }
+                    Err(RecvError::Closed) => return,
+                },
+                _ = tokio::time::sleep_until(next.unwrap_or_else(Instant::now)), if next.is_some() => {
+                    let now = Instant::now();
+                    let due: Vec<OwnedRoomId> = pending
+                        .iter()
+                        .filter(|(_, gap)| gap.due <= now)
+                        .map(|(room_id, _)| room_id.clone())
+                        .collect();
+                    for gap in due.iter().filter_map(|room_id| pending.remove(room_id)) {
+                        let _ = settled.try_send(gap);
+                    }
+                    continue;
+                }
+            };
+            if marks.note(push_verdict::now_ms()) {
+                let _ = client
+                    .state_store()
+                    .set_custom_value_no_read(LAST_ROOM_UPDATE_KEY, marks.newest.to_string().into_bytes())
+                    .await;
+            }
+            let now = Instant::now();
+            for room in rooms {
+                let room_id = room.room_id().to_owned();
+                if pending.len() >= GAP_FETCH_PENDING_MAX && !pending.contains_key(&room_id) {
+                    continue;
+                }
+                let gap = pending.entry(room_id).or_insert(PendingGap {
+                    room,
+                    since_ms: marks.since,
+                    first: now,
+                    due: now,
+                });
+                // Each page writes to the event-cache store the SDK's sync listener needs.
+                gap.due = (now + localsearch::gap_settle()).min(gap.first + GAP_FETCH_MAX_WAIT);
+            }
+        }
+    })
 }
 
 #[no_mangle]
@@ -12151,6 +12387,9 @@ async fn run_authoritative_sync(
             .abort_handle(),
         )
     });
+    let _unread_gap_watch = background
+        .is_none()
+        .then(|| AbortOnDrop(spawn_unread_gap_watch(&client, &events).abort_handle()));
     let _key_watch = background.is_none().then(|| {
         AbortOnDrop(tokio::spawn(watch_room_keys_for_index_all(
             client.clone(), Arc::clone(&index_all))).abort_handle())
@@ -16419,6 +16658,42 @@ mod tests {
         assert_eq!(ids(super::unread_tail(newest_first(), None, own)), ["$3", "$4"]);
         let receipt = matrix_sdk::ruma::event_id!("$3");
         assert_eq!(ids(super::unread_tail(newest_first(), Some(receipt), own)), ["$4"]);
+    }
+
+    #[test]
+    fn an_events_age_decides_whether_it_predates_the_gap() {
+        use matrix_sdk::deserialized_responses::TimelineEvent;
+        use matrix_sdk::ruma::serde::Raw;
+        let ev = |ts: u64, age: Option<u64>| {
+            let mut json = serde_json::json!({
+                "type": "m.room.message", "event_id": "$e", "sender": "@b:x",
+                "origin_server_ts": ts, "content": {"msgtype": "m.text", "body": "x"},
+            });
+            if let Some(age) = age {
+                json["unsigned"] = serde_json::json!({ "age": age });
+            }
+            TimelineEvent::from_plaintext(Raw::from_json_string(json.to_string()).unwrap())
+        };
+        let (since, now) = (1_000_000, 1_060_000);
+        let allowance = crate::syncnotify::AGE_ALLOWANCE_MS;
+        assert!(super::sent_before(&ev(5, Some(60_001 + allowance)), since, now));
+        assert!(!super::sent_before(&ev(5, Some(60_000 + allowance)), since, now));
+        let late = since - crate::syncnotify::TIMESTAMP_ALLOWANCE_MS;
+        assert!(super::sent_before(&ev(late - 1, None), since, now));
+        assert!(!super::sent_before(&ev(late, None), since, now));
+        assert!(!super::sent_before(&ev(5, Some(u64::MAX / 4)), 0, now));
+        assert!(!super::sent_before(&ev(5, None), 0, now));
+    }
+
+    #[test]
+    fn a_catch_up_keeps_the_update_mark_from_before_it() {
+        let mut marks = super::UpdateMarks::starting(Some(1_000), 500_000);
+        assert!(marks.note(500_000));
+        assert!(!marks.note(500_500));
+        assert_eq!(marks.since, 1_000);
+        assert!(marks.note(560_000));
+        assert_eq!((marks.since, marks.newest), (500_000, 560_000));
+        assert_eq!(super::UpdateMarks::starting(None, 9_000).since, 9_000);
     }
 
     #[test]

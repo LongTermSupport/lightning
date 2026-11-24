@@ -13068,7 +13068,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>新消息</translation>
     </message>
     <message>
-        <location line="+279"/>
+        <location line="+280"/>
         <location line="+158"/>
         <source>Avatar for %1</source>
         <translation>%1 的头像</translation>
@@ -13145,8 +13145,8 @@ Signing out and signing in again is the only fix.</source>
         <translation>正在等待密钥…</translation>
     </message>
     <message>
-        <location line="-1061"/>
-        <location line="+1070"/>
+        <location line="-1062"/>
+        <location line="+1071"/>
         <source>Retry decryption</source>
         <translation>重试解密</translation>
     </message>
@@ -13156,12 +13156,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>安全设置</translation>
     </message>
     <message>
-        <location line="-1990"/>
+        <location line="-1991"/>
         <source>Link</source>
         <translation>链接</translation>
     </message>
     <message>
-        <location line="+1361"/>
+        <location line="+1362"/>
         <source>Open this thread</source>
         <translation>打开此话题</translation>
     </message>
@@ -13563,7 +13563,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>编辑</translation>
     </message>
     <message>
-        <location line="-3707"/>
+        <location line="-3708"/>
         <source>%1 B</source>
         <translation>%1 B</translation>
     </message>
@@ -13597,22 +13597,22 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="-570"/>
         <location line="+568"/>
-        <location line="+3691"/>
+        <location line="+3692"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5182"/>
+        <location line="-5183"/>
         <location line="+53"/>
         <location line="+514"/>
-        <location line="+4240"/>
+        <location line="+4241"/>
         <source>Image</source>
         <translation>图片</translation>
     </message>
     <message>
-        <location line="-4805"/>
+        <location line="-4806"/>
         <source>Attachment</source>
         <translation>附件</translation>
     </message>
@@ -13641,7 +13641,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>打开话题</translation>
     </message>
     <message>
-        <location line="+466"/>
+        <location line="+467"/>
         <source>Back to the room</source>
         <translation>返回房间</translation>
     </message>
@@ -13930,10 +13930,10 @@ Signing out and signing in again is the only fix.</source>
         <translation>贴纸加载失败 — 点击重试</translation>
     </message>
     <message>
-        <location line="-5599"/>
+        <location line="-5600"/>
         <location line="+57"/>
         <location line="+517"/>
-        <location line="+4238"/>
+        <location line="+4239"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -13946,9 +13946,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>视频</translation>
     </message>
     <message>
-        <location line="-5980"/>
+        <location line="-5981"/>
         <location line="+570"/>
-        <location line="+4341"/>
+        <location line="+4342"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -14870,13 +14870,13 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+1973"/>
-        <location line="+1007"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+2021"/>
+        <location line="+1016"/>
         <source>Open</source>
         <translation>打开</translation>
     </message>
     <message>
-        <location line="-1005"/>
+        <location line="-1014"/>
         <source>Mark as read</source>
         <translation>标记为已读</translation>
     </message>
@@ -14886,7 +14886,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>回复</translation>
     </message>
     <message>
-        <location line="+325"/>
+        <location line="+334"/>
         <source>Reply…</source>
         <translation>回复…</translation>
     </message>
@@ -15403,12 +15403,12 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2863"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2917"/>
         <source>(spoiler)</source>
         <translation>（剧透）</translation>
     </message>
     <message>
-        <location line="+275"/>
+        <location line="+278"/>
         <source>Matrix room</source>
         <translation>Matrix 房间</translation>
     </message>
@@ -15468,16 +15468,16 @@ Signing out and signing in again is the only fix.</source>
         <translation>新的 Matrix 通知</translation>
     </message>
     <message numerus="yes">
-        <location line="+233"/>
+        <location line="+272"/>
         <location line="+218"/>
-        <location line="+1740"/>
+        <location line="+1752"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n 条新消息</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1954"/>
+        <location line="-1966"/>
         <location line="+212"/>
         <source>%n new Matrix notifications</source>
         <translation>
@@ -15485,7 +15485,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+1745"/>
+        <location line="+1757"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>在 %n 个房间中</numerusform>
@@ -20095,7 +20095,7 @@ Signing out and signing in again is the only fix.</source>
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4737"/>
+        <location line="+4763"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -20104,15 +20104,15 @@ Signing out and signing in again is the only fix.</source>
         <translation>未登录。</translation>
     </message>
     <message>
-        <location line="-5093"/>
+        <location line="-5119"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4900"/>
+        <location line="+4926"/>
         <source>Unknown room: %1</source>
         <translation>未知房间：%1</translation>
     </message>
     <message>
-        <location line="-5095"/>
+        <location line="-5121"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
@@ -20120,13 +20120,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+777"/>
-        <location line="+2714"/>
+        <location line="+2726"/>
         <location line="+64"/>
         <source>The sticker could not be sent.</source>
         <translation>无法发送贴纸。</translation>
     </message>
     <message>
-        <location line="-1453"/>
+        <location line="-1465"/>
         <source>Lightning cannot send that yet.</source>
         <translation>Lightning 目前无法发送该内容。</translation>
     </message>
@@ -20176,7 +20176,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>邀请操作失败。请重试。</translation>
     </message>
     <message>
-        <location line="+305"/>
+        <location line="+317"/>
         <location line="+41"/>
         <source>The reaction could not be applied.</source>
         <translation>无法应用该表情回应。</translation>
@@ -20218,7 +20218,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>无法完成投票操作。</translation>
     </message>
     <message>
-        <location line="-6633"/>
+        <location line="-6645"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>此账号的数据仍被后台会话使用。请稍候再试。</translation>
     </message>
@@ -20248,7 +20248,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>请输入你的密码。</translation>
     </message>
     <message>
-        <location line="+5762"/>
+        <location line="+5774"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>消息发送失败。你可以通过该消息的“重试”操作再次发送。</translation>
     </message>
@@ -20279,7 +20279,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location filename="../src/accounts/BackgroundSessionHost.cpp" line="+487"/>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+300"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+314"/>
         <location line="+36"/>
         <source>[unable to decrypt yet]</source>
         <translation>[暂时无法解密]</translation>

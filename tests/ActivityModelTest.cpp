@@ -810,6 +810,26 @@ private Q_SLOTS:
         QCOMPARE(h.model.count(), 2);
     }
 
+    void aMentionFetchedAsBacklogStillGetsItsRow()
+    {
+        Harness h;
+        TimelineEvent quiet = text(QStringLiteral("$g1"), QStringLiteral("@bob:mock.local"),
+                                   QStringLiteral("gap line"), 1000);
+        quiet.backlog = true;
+        quiet.isEncrypted = true;
+        quiet.pushVerdict = TimelineEvent::PushVerdict::Notify;
+        QVERIFY(!h.model.ingest(quiet, QStringLiteral("Lounge")));
+
+        TimelineEvent mention = quiet;
+        mention.eventId = QStringLiteral("$g2");
+        mention.mentionsMe = true;
+        mention.pushHighlight = true;
+        QVERIFY(h.model.ingest(mention, QStringLiteral("Lounge")));
+        QCOMPARE(h.model.count(), 1);
+        QCOMPARE(h.model.unseenCount(), 1);
+        QCOMPARE(h.row(0).value(QStringLiteral("kind")).toString(), QStringLiteral("mention"));
+    }
+
     void ownMessagesEchoesStateRowsAndRedactionsAreNeverActivity()
     {
         Harness h;
