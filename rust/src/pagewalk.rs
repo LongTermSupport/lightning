@@ -1216,18 +1216,20 @@ mod sdk_tests {
     // The room list brings the newest event with one gap; opening the room
     // brings the last twenty with a second gap that covers the first.
     fn fresh_login_syncs() -> String {
-        let (events, prev_batch) = if FRESH_LOGIN_SYNCS.fetch_add(1, Ordering::SeqCst) == 0 {
-            (vec![own_text(30)], "a")
-        } else {
-            ((11..=30).map(own_text).collect(), "b")
-        };
+        // matrix-sdk ignores a response that repeats the stored sync token.
+        let (events, prev_batch, next_batch) =
+            if FRESH_LOGIN_SYNCS.fetch_add(1, Ordering::SeqCst) == 0 {
+                (vec![own_text(30)], "a", "s1")
+            } else {
+                ((11..=30).map(own_text).collect(), "b", "s2")
+            };
         let room = json!({
             "state": { "events": [create_event()] },
             "timeline": { "events": events, "limited": true, "prev_batch": prev_batch },
         });
         let mut join = serde_json::Map::new();
         join.insert(JOINED.to_owned(), room);
-        json!({ "next_batch": "s1", "rooms": { "join": join } }).to_string()
+        json!({ "next_batch": next_batch, "rooms": { "join": join } }).to_string()
     }
 
     fn back_to_the_creation(newest_own: u64) -> Vec<Value> {
