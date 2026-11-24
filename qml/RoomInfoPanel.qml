@@ -622,6 +622,12 @@ Rectangle {
                         font.pixelSize: AppTheme.textBody
                     }
 
+                    SpacePlacement {
+                        Layout.fillWidth: true
+                        targetId: app.roomInfo.roomId
+                        onOpenSpaceRequested: (id) => app.openSpaceHome(id)
+                    }
+
                     RowLayout {
                         objectName: "roomInfoBridgeRow"
                         visible: (root.roomData.bridgeLabel || "").length > 0

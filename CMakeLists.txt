@@ -1202,6 +1202,7 @@ set(APP_QML_FILES
     qml/MainScreen.qml
     qml/HomePane.qml
     qml/SpaceLobby.qml
+    qml/SpacePlacement.qml
     qml/SpacesRail.qml
     qml/FolderTile.qml
     qml/RoomsPanel.qml
