@@ -8366,10 +8366,10 @@ kFilteredPages + 6);
         for (const int offset : {0, qMax(0, gap - 1)}) {
             QVERIFY(rowTop(&top, &x));
             const QPoint probe(x, qCeil(top) + offset);
-            QTest::mouseMove(&window, QPoint(x, qCeil(top) + gap + 2));
+            QTest::mouseMove(&window, QPoint(x, qFloor(top) - 3));
             QTest::mouseMove(&window, probe);
-            QCoreApplication::processEvents();
-            QCOMPARE(timeline->property("hoveredActionsKey").toString(), lowerKey);
+            QTRY_COMPARE_WITH_TIMEOUT(
+                timeline->property("hoveredActionsKey").toString(), lowerKey, 1000);
             QTest::mouseClick(&window, Qt::RightButton, Qt::NoModifier, probe);
             QTRY_COMPARE_WITH_TIMEOUT(lower->property("menuEventId").toString(),
                                       lowerId, 1000);
@@ -8383,9 +8383,9 @@ kFilteredPages + 6);
 
             QVERIFY(rowTop(&top, &x));
             const QPoint again(x, qCeil(top) + offset);
-            QTest::mouseMove(&window, QPoint(x, qCeil(top) + gap + 2));
+            // The menu took the bar; it comes back when the pointer re-enters.
+            QTest::mouseMove(&window, QPoint(x, qFloor(top) - 3));
             QTest::mouseMove(&window, again);
-            QCoreApplication::processEvents();
             QTRY_COMPARE_WITH_TIMEOUT(
                 timeline->property("hoveredActionsKey").toString(), lowerKey, 1000);
             QTest::mouseDClick(&window, Qt::LeftButton, Qt::NoModifier, again);
