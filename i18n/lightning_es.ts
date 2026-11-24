@@ -16511,7 +16511,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/settings/SettingsSyncController.cpp" line="+34"/>
+        <location filename="../src/settings/SettingsSyncController.cpp" line="+35"/>
         <source>out of range</source>
         <translation>fuera de rango</translation>
     </message>
@@ -18554,7 +18554,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
 <context>
     <name>RoomExportController</name>
     <message>
-        <location filename="../src/models/RoomExportController.cpp" line="+177"/>
+        <location filename="../src/models/RoomExportController.cpp" line="+178"/>
         <source>An export is already running.</source>
         <translation>Ya hay una exportación en curso.</translation>
     </message>
@@ -22106,7 +22106,22 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Aceptar</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+18"/>
+        <source>Removing your settings from your homeserver…</source>
+        <translation>Quitando tus ajustes de tu servidor doméstico…</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Removed from your homeserver. A device that turns sync back on will upload its settings again.</source>
+        <translation>Quitados de tu servidor doméstico. Un dispositivo que vuelva a activar la sincronización subirá de nuevo sus ajustes.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Could not confirm that your settings were removed from your homeserver. Try again.</source>
+        <translation>No se pudo confirmar que tus ajustes se quitaran de tu servidor doméstico. Inténtalo de nuevo.</translation>
+    </message>
+    <message>
+        <location line="+13"/>
         <source>Turn off and remove from my homeserver</source>
         <translation>Desactivar y eliminar de mi servidor doméstico</translation>
     </message>
@@ -27566,7 +27581,7 @@ Nota: importar claves no verifica esta sesión.</translation>
 <context>
     <name>SettingsSyncController</name>
     <message>
-        <location filename="../src/settings/SettingsSyncController.cpp" line="+543"/>
+        <location filename="../src/settings/SettingsSyncController.cpp" line="+603"/>
         <location line="+48"/>
         <source>Settings are not available.</source>
         <translation>Los ajustes no están disponibles.</translation>
@@ -33646,7 +33661,7 @@ Nota: importar claves no verifica esta sesión.</translation>
 <context>
     <name>ThreadSummaryCard</name>
     <message>
-        <location filename="../qml/ThreadSummaryCard.qml" line="+40"/>
+        <location filename="../qml/ThreadSummaryCard.qml" line="+42"/>
         <source>Image</source>
         <translation>Imagen</translation>
     </message>

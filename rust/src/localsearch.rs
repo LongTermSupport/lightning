@@ -703,19 +703,14 @@ fn indexable_from(raw: &serde_json::Value) -> Option<Indexable> {
     if body.trim().is_empty() {
         return None;
     }
-    let filename = if is_attachment_msgtype(&msgtype) {
-        match body_source.get("filename").and_then(|v| v.as_str()) {
-            Some(name) => {
-                let cleaned = clean_filename(name);
-                Some(if cleaned == clean_filename(&body) { String::new() } else { cleaned })
-            }
-            None if is_replacement => None,
-            None => Some(String::new()),
+    // A replacement's `m.new_content` is the whole message, so an edit to text
+    // drops the old file name too.
+    let filename = match body_source.get("filename").and_then(|v| v.as_str()) {
+        Some(name) if is_attachment_msgtype(&msgtype) => {
+            let cleaned = clean_filename(name);
+            Some(if cleaned == clean_filename(&body) { String::new() } else { cleaned })
         }
-    } else if is_replacement {
-        None
-    } else {
-        Some(String::new())
+        _ => Some(String::new()),
     };
     let edit_id = if is_replacement { Some(own_id) } else { None };
     Some(Indexable { event_id: target_id, sender, body, msgtype, ts, filename, edit_id })

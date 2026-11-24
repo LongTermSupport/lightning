@@ -27,6 +27,8 @@ class SettingsSyncController : public QObject
     Q_PROPERTY(int pendingCount READ pendingCount NOTIFY changed)
     Q_PROPERTY(int choiceDiffering READ choiceDiffering NOTIFY changed)
     Q_PROPERTY(QStringList conflicts READ conflicts NOTIFY changed)
+    // "" until "Turn off and remove" is used, then "pending", "confirmed" or "failed".
+    Q_PROPERTY(QString removal READ removal NOTIFY changed)
 
 public:
     explicit SettingsSyncController(QObject *parent = nullptr);
@@ -44,6 +46,7 @@ public:
     int pendingCount() const { return int(m_state.pending.size()); }
     int choiceDiffering() const { return int(m_choiceDiffering); }
     QStringList conflicts() const { return m_conflicts; }
+    QString removal() const;
 
     Q_INVOKABLE void setSyncEnabled(bool on);
     Q_INVOKABLE void chooseAdoptServer();
@@ -79,18 +82,24 @@ private Q_SLOTS:
 private:
     enum class Force { None, Adopt, Upload };
     enum class AfterSwitch { None, Enable, Clear };
+    enum class Removal { None, Pending, Confirmed, Failed };
 
     void connectSettings();
     void requestRead(Force force = Force::None);
     void applyMerge(const settingsport::MergeResult &r, const settingsport::ParsedBlob &server);
     void sendSwitch(bool on, AfterSwitch after);
     void failWith(const QString &category);
+    void tryRemove();
+    void setRemoval(Removal removal);
     void resetForAccount();
     void loadState();
     void persistState();
     QString stateKey() const;
     QVariantMap localView() const;
-    bool active() const { return m_enabled && m_hasBaseline && !m_choiceNeeded; }
+    bool active() const
+    {
+        return m_enabled && m_hasBaseline && !m_choiceNeeded && m_removal != Removal::Pending;
+    }
 
     QPointer<SettingsManager> m_settings;
     QPointer<ShortcutRegistry> m_shortcuts;
@@ -123,6 +132,8 @@ private:
     Force m_force = Force::None;
     AfterSwitch m_afterSwitch = AfterSwitch::None;
     bool m_switchTarget = false;
+    Removal m_removal = Removal::None;
+    int m_removalAttempts = 0;
     bool m_rereadWanted = false;
     settingsport::State m_afterWrite;
     bool m_afterWriteBaseline = false;
