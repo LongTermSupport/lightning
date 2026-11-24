@@ -20260,7 +20260,7 @@ Signing out and signing in again is the only fix.</source>
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4716"/>
+        <location line="+4737"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -20269,15 +20269,15 @@ Signing out and signing in again is the only fix.</source>
         <translation>Вход не выполнен.</translation>
     </message>
     <message>
-        <location line="-5072"/>
+        <location line="-5093"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4879"/>
+        <location line="+4900"/>
         <source>Unknown room: %1</source>
         <translation>Неизвестная комната: %1</translation>
     </message>
     <message>
-        <location line="-5074"/>
+        <location line="-5095"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
@@ -20285,13 +20285,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+777"/>
-        <location line="+2709"/>
+        <location line="+2714"/>
         <location line="+64"/>
         <source>The sticker could not be sent.</source>
         <translation>Стикер не удалось отправить.</translation>
     </message>
     <message>
-        <location line="-1448"/>
+        <location line="-1453"/>
         <source>Lightning cannot send that yet.</source>
         <translation>Lightning пока не может это отправить.</translation>
     </message>
@@ -20341,7 +20341,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Не удалось выполнить приглашение. Повторите попытку.</translation>
     </message>
     <message>
-        <location line="+300"/>
+        <location line="+305"/>
         <location line="+41"/>
         <source>The reaction could not be applied.</source>
         <translation>Реакцию не удалось применить.</translation>
@@ -20383,7 +20383,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Не удалось выполнить действие с опросом.</translation>
     </message>
     <message>
-        <location line="-6628"/>
+        <location line="-6633"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>Данные этой учётной записи всё ещё используются фоновым сеансом. Подождите немного и повторите попытку.</translation>
     </message>
@@ -20413,7 +20413,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Введите пароль.</translation>
     </message>
     <message>
-        <location line="+5757"/>
+        <location line="+5762"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>Не удалось отправить сообщение. Можно повторить через действие «Повторить» у сообщения.</translation>
     </message>
@@ -20444,13 +20444,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location filename="../src/accounts/BackgroundSessionHost.cpp" line="+487"/>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+283"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+300"/>
         <location line="+36"/>
         <source>[unable to decrypt yet]</source>
         <translation>[пока не удаётся расшифровать]</translation>
     </message>
     <message>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+573"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+572"/>
         <source>Rust SDK send failed.</source>
         <translation>Не удалась отправка через Rust SDK.</translation>
     </message>

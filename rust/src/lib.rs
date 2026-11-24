@@ -11814,6 +11814,15 @@ fn install_event_handlers(
                 )
                 .await
                 {
+                    if push_actions.iter().any(|a| a.is_highlight()) {
+                        enqueue(
+                            &events,
+                            json!({
+                                "type": "rejected_edit_highlight",
+                                "room_id": room.room_id().to_string(),
+                            }),
+                        );
+                    }
                     return;
                 }
                 let Some(mut event) = room_message_event_json(

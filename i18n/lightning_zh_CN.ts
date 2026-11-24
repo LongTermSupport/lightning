@@ -20090,7 +20090,7 @@ Signing out and signing in again is the only fix.</source>
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4716"/>
+        <location line="+4737"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -20099,15 +20099,15 @@ Signing out and signing in again is the only fix.</source>
         <translation>未登录。</translation>
     </message>
     <message>
-        <location line="-5072"/>
+        <location line="-5093"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4879"/>
+        <location line="+4900"/>
         <source>Unknown room: %1</source>
         <translation>未知房间：%1</translation>
     </message>
     <message>
-        <location line="-5074"/>
+        <location line="-5095"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
@@ -20115,13 +20115,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+777"/>
-        <location line="+2709"/>
+        <location line="+2714"/>
         <location line="+64"/>
         <source>The sticker could not be sent.</source>
         <translation>无法发送贴纸。</translation>
     </message>
     <message>
-        <location line="-1448"/>
+        <location line="-1453"/>
         <source>Lightning cannot send that yet.</source>
         <translation>Lightning 目前无法发送该内容。</translation>
     </message>
@@ -20171,7 +20171,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>邀请操作失败。请重试。</translation>
     </message>
     <message>
-        <location line="+300"/>
+        <location line="+305"/>
         <location line="+41"/>
         <source>The reaction could not be applied.</source>
         <translation>无法应用该表情回应。</translation>
@@ -20213,7 +20213,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>无法完成投票操作。</translation>
     </message>
     <message>
-        <location line="-6628"/>
+        <location line="-6633"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>此账号的数据仍被后台会话使用。请稍候再试。</translation>
     </message>
@@ -20243,7 +20243,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>请输入你的密码。</translation>
     </message>
     <message>
-        <location line="+5757"/>
+        <location line="+5762"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>消息发送失败。你可以通过该消息的“重试”操作再次发送。</translation>
     </message>
@@ -20274,13 +20274,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location filename="../src/accounts/BackgroundSessionHost.cpp" line="+487"/>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+283"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+300"/>
         <location line="+36"/>
         <source>[unable to decrypt yet]</source>
         <translation>[暂时无法解密]</translation>
     </message>
     <message>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+573"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+572"/>
         <source>Rust SDK send failed.</source>
         <translation>Rust SDK 发送失败。</translation>
     </message>

@@ -20175,7 +20175,7 @@ Signing out and signing in again is the only fix.</source>
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4716"/>
+        <location line="+4737"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -20184,15 +20184,15 @@ Signing out and signing in again is the only fix.</source>
         <translation>সাইন ইন করা নেই।</translation>
     </message>
     <message>
-        <location line="-5072"/>
+        <location line="-5093"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4879"/>
+        <location line="+4900"/>
         <source>Unknown room: %1</source>
         <translation>অজানা রুম: %1</translation>
     </message>
     <message>
-        <location line="-5074"/>
+        <location line="-5095"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
@@ -20200,13 +20200,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+777"/>
-        <location line="+2709"/>
+        <location line="+2714"/>
         <location line="+64"/>
         <source>The sticker could not be sent.</source>
         <translation>স্টিকার পাঠানো যায়নি।</translation>
     </message>
     <message>
-        <location line="-1448"/>
+        <location line="-1453"/>
         <source>Lightning cannot send that yet.</source>
         <translation>Lightning এখনও তা পাঠাতে পারে না।</translation>
     </message>
@@ -20256,7 +20256,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>আমন্ত্রণ ক্রিয়া ব্যর্থ হয়েছে। আবার চেষ্টা করুন।</translation>
     </message>
     <message>
-        <location line="+300"/>
+        <location line="+305"/>
         <location line="+41"/>
         <source>The reaction could not be applied.</source>
         <translation>প্রতিক্রিয়াটি প্রয়োগ করা যায়নি।</translation>
@@ -20298,7 +20298,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>ভোটের কাজ সম্পন্ন করা যায়নি।</translation>
     </message>
     <message>
-        <location line="-6628"/>
+        <location line="-6633"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>এই অ্যাকাউন্টের ডেটা এখনও একটি ব্যাকগ্রাউন্ড সেশনে ব্যবহৃত হচ্ছে। একটু অপেক্ষা করে আবার চেষ্টা করুন।</translation>
     </message>
@@ -20328,7 +20328,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>আপনার পাসওয়ার্ড দিন।</translation>
     </message>
     <message>
-        <location line="+5757"/>
+        <location line="+5762"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>বার্তাটি পাঠানো যায়নি। বার্তার “আবার চেষ্টা করুন” ক্রিয়া থেকে আবার চেষ্টা করতে পারেন।</translation>
     </message>
@@ -20359,13 +20359,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location filename="../src/accounts/BackgroundSessionHost.cpp" line="+487"/>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+283"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+300"/>
         <location line="+36"/>
         <source>[unable to decrypt yet]</source>
         <translation>[এখনও ডিক্রিপ্ট করা যাচ্ছে না]</translation>
     </message>
     <message>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+573"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+572"/>
         <source>Rust SDK send failed.</source>
         <translation>Rust SDK পাঠানো ব্যর্থ হয়েছে।</translation>
     </message>

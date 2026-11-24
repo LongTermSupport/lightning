@@ -511,8 +511,9 @@ QString NotificationManager::routableThreadRootId(const QString &roomId,
 void NotificationManager::processEvent(const TimelineEvent &event,
                                        const Context &context)
 {
-    if (event.isEdit)
-        refreshFromEdit(event, context);
+    // An edit that refreshed its card is that card's one Notify.
+    if (event.isEdit && refreshFromEdit(event, context))
+        return;
     const Decision decision = decide(event, context);
     if (event.undecryptable && !event.eventId.isEmpty()
         && passesContextGates(event, context)) {
@@ -581,8 +582,7 @@ void NotificationManager::processDecrypted(const TimelineEvent &event,
 {
     if (event.eventId.isEmpty() || event.undecryptable)
         return;
-    if (event.isEdit)
-        refreshFromEdit(event, context);
+    const bool refreshed = event.isEdit && refreshFromEdit(event, context);
     const auto live =
         m_liveUtds.find(utdKey(context.accountUserId, event.eventId));
     if (live == m_liveUtds.end() || live->state == UtdState::Decided)
@@ -593,7 +593,7 @@ void NotificationManager::processDecrypted(const TimelineEvent &event,
         qCInfo(lcNotify) << "a message decrypted too late to notify";
         return;
     }
-    const Decision decision = decide(event, context);
+    const Decision decision = refreshed ? Decision{} : decide(event, context);
     if (seen.state == UtdState::Held) {
         m_heldUtds.removeIf([&event, &context](const HeldUtd &held) {
             return held.event->eventId == event.eventId
