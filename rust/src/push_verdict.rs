@@ -351,11 +351,14 @@ pub(crate) fn now_ms() -> u64 {
         .unwrap_or(0)
 }
 
-/// Whether an event reached the server before `opened`.
+/// Whether an event reached the server before `opened`. Elapsed time is
+/// monotonic, so a wall-clock step cannot move `opened`; the timestamp
+/// fallback compares against `opened` rebased on the current wall clock.
 pub(crate) fn arrived_before(facts: &ItemFacts, opened: crate::syncnotify::Now, now: crate::syncnotify::Now) -> bool {
+    let elapsed = now.mono_ms.saturating_sub(opened.mono_ms);
     match facts.age_ms {
-        Some(age) => now.wall_ms.saturating_sub(age) < opened.wall_ms,
-        None => facts.timestamp_ms < opened.wall_ms,
+        Some(age) => age > elapsed,
+        None => facts.timestamp_ms < now.wall_ms.saturating_sub(elapsed),
     }
 }
 
