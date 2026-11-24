@@ -833,7 +833,24 @@ private slots:
         return event;
     }
 
-    void anEncryptedRoomsMissedMentionCardsOnceOnFetchedEvidence()
+    static QJsonObject roomEvent(const char *type)
+    {
+        QJsonObject event;
+        event.insert(QStringLiteral("type"), QLatin1String(type));
+        event.insert(QStringLiteral("room_id"), kRoom);
+        return event;
+    }
+
+    static void fetch(RustSdkMatrixClient &client, const QString &eventId, bool highlight,
+                      bool notify = false)
+    {
+        QJsonObject event = fetched(decryptedMention(eventId), highlight);
+        if (notify)
+            event.insert(QStringLiteral("push_notify"), true);
+        client.handleRustEventForTest(envelope(QStringLiteral("timeline_event"), event));
+    }
+
+    void anEncryptedRoomsMissedMentionsCardOnceWhenTheFetchEnds()
     {
 #ifndef ENABLE_RUST_SDK_BACKEND
         QSKIP("needs the Rust backend");
@@ -848,19 +865,102 @@ private slots:
         QTest::qWait(HighlightGapWaitMs);
         QVERIFY(sink.highlightGaps.isEmpty());
 
-        client.handleRustEventForTest(envelope(QStringLiteral("timeline_event"),
-                                               fetched(decryptedMention(QStringLiteral("$x")), true)));
+        fetch(client, QStringLiteral("$x"), true);
+        fetch(client, QStringLiteral("$y"), true);
+        QVERIFY(sink.highlightGaps.isEmpty());
+        client.handleRustEventForTest(roomEvent("unread_fetch_done"));
         QCOMPARE(sink.highlightGaps.size(), 1);
         QCOMPARE(sink.highlightGaps.first().first, kRoom);
-        QCOMPARE(sink.highlightGaps.first().second, 1);
-
-        client.handleRustEventForTest(envelope(QStringLiteral("timeline_event"),
-                                               fetched(decryptedMention(QStringLiteral("$y")), true)));
-        QCOMPARE(sink.highlightGaps.size(), 1);
+        QCOMPARE(sink.highlightGaps.first().second, 2);
 #endif
     }
 
-    void aFetchedHighlightAlreadyNotifiedLiveIsNoEvidence()
+    void aLimitedSyncGapCardsOnceWithEveryAdmittedMention()
+    {
+#ifndef ENABLE_RUST_SDK_BACKEND
+        QSKIP("needs the Rust backend");
+#else
+        Sink sink;
+        SettingsManager settings;
+        RustSdkMatrixClient client(&settings);
+        watch(client, sink);
+        startLive(client, true);
+
+        client.handleRustEventForTest(roomEvent("room_gap"));
+        for (int i = 0; i < 40; ++i)
+            fetch(client, QStringLiteral("$g%1").arg(i), i == 3 || i == 35, true);
+        QVERIFY(sink.highlightGaps.isEmpty());
+        client.handleRustEventForTest(roomEvent("unread_fetch_done"));
+        QCOMPARE(sink.highlightGaps.size(), 1);
+        QCOMPARE(sink.highlightGaps.first().first, kRoom);
+        QCOMPARE(sink.highlightGaps.first().second, 2);
+
+        QCOMPARE(sink.observed.size(), 40);
+        QVERIFY(sink.appended.isEmpty());
+        for (const TimelineEvent &e : std::as_const(sink.observed)) {
+            QVERIFY(e.backlog);
+            QCOMPARE(e.pushHighlight,
+                     e.eventId == QStringLiteral("$g3") || e.eventId == QStringLiteral("$g35"));
+        }
+
+        client.handleRustEventForTest(roomEvent("unread_fetch_done"));
+        QCOMPARE(sink.highlightGaps.size(), 1);
+        QCOMPARE(client.roomInfo(kRoom).highlightCount, 0);
+#endif
+    }
+
+    void aGapThatHidNoMentionCardsNothing()
+    {
+#ifndef ENABLE_RUST_SDK_BACKEND
+        QSKIP("needs the Rust backend");
+#else
+        Sink sink;
+        SettingsManager settings;
+        RustSdkMatrixClient client(&settings);
+        watch(client, sink);
+        startLive(client, true);
+
+        client.handleRustEventForTest(roomEvent("room_gap"));
+        for (int i = 0; i < 36; ++i)
+            fetch(client, QStringLiteral("$g%1").arg(i), false);
+        client.handleRustEventForTest(envelope(QStringLiteral("timeline_event"),
+                                               fetched(undecryptable(QStringLiteral("$utd")), true)));
+        client.handleRustEventForTest(roomEvent("unread_fetch_done"));
+        QVERIFY(sink.highlightGaps.isEmpty());
+        QCOMPARE(sink.observed.size(), 37);
+#endif
+    }
+
+    void aGapInADirectRoomWhereEveryMessageNotifiesCardsNothing()
+    {
+#ifndef ENABLE_RUST_SDK_BACKEND
+        QSKIP("needs the Rust backend");
+#else
+        Sink sink;
+        SettingsManager settings;
+        RustSdkMatrixClient client(&settings);
+        watch(client, sink);
+        QJsonObject room = roomJson(kRoom, 0, true);
+        room.insert(QStringLiteral("is_direct"), true);
+        QJsonObject snapshot;
+        snapshot.insert(QStringLiteral("type"), QStringLiteral("room_snapshot"));
+        snapshot.insert(QStringLiteral("rooms"), QJsonArray{ room });
+        client.handleRustEventForTest(snapshot);
+        client.handleRustEventForTest(roomEvent("initial_sync_done"));
+        QVERIFY(client.roomInfo(kRoom).isDirect);
+
+        client.handleRustEventForTest(roomEvent("room_gap"));
+        for (int i = 0; i < 36; ++i)
+            fetch(client, QStringLiteral("$g%1").arg(i), false, true);
+        client.handleRustEventForTest(roomEvent("unread_fetch_done"));
+        QVERIFY(sink.highlightGaps.isEmpty());
+        QCOMPARE(sink.observed.size(), 36);
+        for (const TimelineEvent &e : std::as_const(sink.observed))
+            QVERIFY(e.backlog);
+#endif
+    }
+
+    void aMentionAlreadyNotifiedLiveIsNotCountedInTheGap()
     {
 #ifndef ENABLE_RUST_SDK_BACKEND
         QSKIP("needs the Rust backend");
@@ -875,20 +975,56 @@ private slots:
         live.insert(QStringLiteral("push_notify"), true);
         live.insert(QStringLiteral("push_highlight"), true);
         client.handleRustEventForTest(envelope(QStringLiteral("timeline_event"), live));
-        listRoom(client, 2, true);
-        QTest::qWait(HighlightGapWaitMs);
-        QVERIFY(sink.highlightGaps.isEmpty());
 
-        client.handleRustEventForTest(envelope(QStringLiteral("timeline_event"),
-                                               fetched(decryptedMention(QStringLiteral("$m")), true)));
-        QVERIFY(sink.highlightGaps.isEmpty());
-        client.handleRustEventForTest(envelope(QStringLiteral("timeline_event"),
-                                               fetched(decryptedMention(QStringLiteral("$x")), true)));
+        client.handleRustEventForTest(roomEvent("room_gap"));
+        fetch(client, QStringLiteral("$m"), true);
+        fetch(client, QStringLiteral("$x"), true);
+        client.handleRustEventForTest(roomEvent("unread_fetch_done"));
         QCOMPARE(sink.highlightGaps.size(), 1);
+        QCOMPARE(sink.highlightGaps.first().second, 1);
+
+        client.handleRustEventForTest(roomEvent("room_gap"));
+        fetch(client, QStringLiteral("$x"), true);
+        client.handleRustEventForTest(roomEvent("unread_fetch_done"));
+        QCOMPARE(sink.highlightGaps.size(), 1);
+
+        client.handleRustEventForTest(roomEvent("room_gap"));
+        fetch(client, QStringLiteral("$x"), true);
+        fetch(client, QStringLiteral("$z"), true);
+        client.handleRustEventForTest(roomEvent("unread_fetch_done"));
+        QCOMPARE(sink.highlightGaps.size(), 2);
+        QCOMPARE(sink.highlightGaps.last().second, 1);
 #endif
     }
 
-    void anEncryptedRiseWithNoAdmittedFetchedHighlightCardsNothing()
+    void aGapFoundAtStartupCardsOnceTheInitialSyncIsDone()
+    {
+#ifndef ENABLE_RUST_SDK_BACKEND
+        QSKIP("needs the Rust backend");
+#else
+        Sink sink;
+        SettingsManager settings;
+        RustSdkMatrixClient client(&settings);
+        watch(client, sink);
+        listRoom(client, 0, true);
+        QVERIFY(!client.initialSyncDone());
+
+        client.handleRustEventForTest(roomEvent("room_gap"));
+        fetch(client, QStringLiteral("$a"), true);
+        fetch(client, QStringLiteral("$b"), false, true);
+        fetch(client, QStringLiteral("$c"), true);
+        client.handleRustEventForTest(roomEvent("unread_fetch_done"));
+        QVERIFY(sink.highlightGaps.isEmpty());
+
+        client.handleRustEventForTest(roomEvent("initial_sync_done"));
+        QVERIFY(client.initialSyncDone());
+        QCOMPARE(sink.highlightGaps.size(), 1);
+        QCOMPARE(sink.highlightGaps.first().first, kRoom);
+        QCOMPARE(sink.highlightGaps.first().second, 2);
+#endif
+    }
+
+    void aFetchedMentionWithNoGapOrRiseBehindItCardsNothing()
     {
 #ifndef ENABLE_RUST_SDK_BACKEND
         QSKIP("needs the Rust backend");
@@ -899,14 +1035,9 @@ private slots:
         watch(client, sink);
         startLive(client, true);
 
-        listRoom(client, 1, true);
-        QTest::qWait(HighlightGapWaitMs);
-        client.handleRustEventForTest(envelope(QStringLiteral("timeline_event"),
-                                               fetched(decryptedMention(QStringLiteral("$plain")), false)));
-        client.handleRustEventForTest(envelope(QStringLiteral("timeline_event"),
-                                               fetched(undecryptable(QStringLiteral("$utd")), true)));
+        fetch(client, QStringLiteral("$x"), true);
+        client.handleRustEventForTest(roomEvent("unread_fetch_done"));
         QVERIFY(sink.highlightGaps.isEmpty());
-        QCOMPARE(client.roomInfo(kRoom).highlightCount, 1);
 #endif
     }
 
@@ -923,8 +1054,8 @@ private slots:
 
         listRoom(client, 1, true);
         QTest::qWait(HighlightGapWaitMs + 31000);
-        client.handleRustEventForTest(envelope(QStringLiteral("timeline_event"),
-                                               fetched(decryptedMention(QStringLiteral("$late")), true)));
+        fetch(client, QStringLiteral("$late"), true);
+        client.handleRustEventForTest(roomEvent("unread_fetch_done"));
         QVERIFY(sink.highlightGaps.isEmpty());
         QCOMPARE(client.roomInfo(kRoom).highlightCount, 1);
 #endif
