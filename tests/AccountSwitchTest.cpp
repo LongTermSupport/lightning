@@ -648,9 +648,6 @@ private Q_SLOTS:
         QTRY_VERIFY(!app.accountSwitching());
         QTRY_COMPARE(app.auth()->currentUserId(), kBob);
 
-        // The mock does not remove the account record on logout (the Rust
-        // backend does); drop it so the fallback set is realistic.
-        app.settings()->clearSessionForAccount(kBob);
         app.auth()->logout();
 
         QTRY_VERIFY(!app.accountSwitching());
@@ -831,18 +828,14 @@ private Q_SLOTS:
         const QByteArray gif = QByteArray("GIF89a\x10\x00\x10\x00", 10);
         app.gif()->starredStore()->starBytes(QStringLiteral("mk"), gif);
         QCOMPARE(app.gif()->starredStore()->count(), 1);
-        const QString starredDir = matrix::app_data::starredGifsDir(kAlice);
+        const QString starredDir = matrix::app_data::starredGifsDir(matrix::app_data::accountRoot(kAlice));
         QVERIFY(QDir(starredDir).exists());
 
         app.auth()->logout();
 
-        // The mock never clears the account record on logout, so with one saved
-        // account the fallback signs the same account back in. What matters is
-        // that the directory was deleted: reopening the store does not create
-        // it (creation waits for the first star), so the deletion stays
-        // observable.
         QTRY_VERIFY(!app.accountSwitching());
         QVERIFY(!QDir(starredDir).exists());
+        QVERIFY(!app.settings()->hasSavedAccount(kAlice));
         QCOMPARE(app.gif()->starredStore()->count(), 0);
     }
 
@@ -879,9 +872,6 @@ private Q_SLOTS:
         QVERIFY(!app.accountAvatars()->avatarUrlFor(kAlice).isEmpty());
         QVERIFY(QDir().mkpath(bobRoot));
 
-        // The mock keeps the record on logout (the Rust backend removes it);
-        // drop it so the fallback set is realistic.
-        app.settings()->clearSessionForAccount(kAlice);
         app.auth()->logout();
         QTRY_VERIFY(!app.accountSwitching());
         QTRY_COMPARE(app.auth()->currentUserId(), kBob);
@@ -946,7 +936,7 @@ private Q_SLOTS:
 
         const QByteArray gif = QByteArray("GIF89a\x10\x00\x10\x00", 10);
         app.gif()->starredStore()->starBytes(QStringLiteral("mk"), gif);
-        const QString aliceStarredDir = matrix::app_data::starredGifsDir(kAlice);
+        const QString aliceStarredDir = matrix::app_data::starredGifsDir(matrix::app_data::accountRoot(kAlice));
         QVERIFY(QDir(aliceStarredDir).exists());
 
         app.removeAccount(kAlice);
@@ -971,7 +961,7 @@ private Q_SLOTS:
         QTRY_VERIFY(!app.accountSwitching());
         QTRY_COMPARE(app.auth()->currentUserId(), kBob);
 
-        const QString aliceStarredDir = matrix::app_data::starredGifsDir(kAlice);
+        const QString aliceStarredDir = matrix::app_data::starredGifsDir(matrix::app_data::accountRoot(kAlice));
         QVERIFY(QDir().mkpath(aliceStarredDir));
         QFile aliceGif(aliceStarredDir + QStringLiteral("/") + QString(64, QLatin1Char('a'))
                        + QStringLiteral(".gif"));
@@ -982,7 +972,7 @@ private Q_SLOTS:
         const QByteArray gif = QByteArray("GIF89a\x10\x00\x10\x00", 10);
         app.gif()->starredStore()->starBytes(QStringLiteral("mk"), gif);
         QCOMPARE(app.gif()->starredStore()->count(), 1);
-        const QString bobStarredDir = matrix::app_data::starredGifsDir(kBob);
+        const QString bobStarredDir = matrix::app_data::starredGifsDir(matrix::app_data::accountRoot(kBob));
         QVERIFY(QDir(bobStarredDir).exists());
 
         app.removeAccount(kAlice);
@@ -995,8 +985,8 @@ private Q_SLOTS:
 
     void switchingAccountsPreservesTheOutgoingStarredGifStore()
     {
-        const QString aliceDirToClean = matrix::app_data::starredGifsDir(kAlice);
-        const QString bobDirToClean = matrix::app_data::starredGifsDir(kBob);
+        const QString aliceDirToClean = matrix::app_data::starredGifsDir(matrix::app_data::accountRoot(kAlice));
+        const QString bobDirToClean = matrix::app_data::starredGifsDir(matrix::app_data::accountRoot(kBob));
         QVERIFY(!aliceDirToClean.isEmpty());
         QVERIFY(!bobDirToClean.isEmpty());
         QDir(aliceDirToClean).removeRecursively();
@@ -1017,7 +1007,7 @@ private Q_SLOTS:
 
         const QByteArray gif = QByteArray("GIF89a\x10\x00\x10\x00", 10);
         app.gif()->starredStore()->starBytes(QStringLiteral("mk"), gif);
-        const QString aliceStarredDir = matrix::app_data::starredGifsDir(kAlice);
+        const QString aliceStarredDir = matrix::app_data::starredGifsDir(matrix::app_data::accountRoot(kAlice));
         const QString aliceGifFile = QDir(aliceStarredDir)
                 .entryList({ QStringLiteral("*.gif") }, QDir::Files)
                 .value(0);
@@ -1034,7 +1024,7 @@ private Q_SLOTS:
         // onLoginSucceeded, which the mock delivers after accountSwitching
         // flips false.
         QTRY_COMPARE(app.gif()->starredStore()->currentDirectory(),
-                     matrix::app_data::starredGifsDir(kBob));
+                     matrix::app_data::starredGifsDir(matrix::app_data::accountRoot(kBob)));
         QCOMPARE(app.gif()->starredStore()->count(), 0);
         QVERIFY(QDir(aliceStarredDir).exists());
         QVERIFY(QFile::exists(aliceStarredDir + QStringLiteral("/")

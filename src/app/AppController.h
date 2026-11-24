@@ -1102,6 +1102,11 @@ private:
 
     bool resolveRemovalIdentity(const QString &userId,
                                 matrix::app_data::AccountIdentity *identity) const;
+    QString accountRootFor(const QString &userId) const;
+    QString legacyAccountRoot(const QString &userId,
+                              const QString &recordedRoot) const;
+    void adoptLegacyAccountFiles(const QString &userId, const QString &root);
+    void removeSignedOutAccountFiles(const QString &userId);
     bool removeAccountLocalState(const matrix::app_data::AccountIdentity &identity,
                                  bool *refused = nullptr);
     bool removeAccountLocalStateFiles(
@@ -1204,6 +1209,8 @@ private:
     bool m_revokedDetach = false;
     QString m_switchFallbackUserId;
     QString m_lastSessionUserId;
+    // Its recorded root: a Rust sign-out drops the record before loggedOut.
+    QString m_sessionAccountRoot;
     void signOutAccountResidue(const QString &userId);
     // Removing the active account needs a server logout first, so the
     // removal finishes in onLoggedOut. The identity is resolved before the

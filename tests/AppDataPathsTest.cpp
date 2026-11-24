@@ -35,6 +35,8 @@ private Q_SLOTS:
     void retriesShareOneBudgetAcrossEveryDirectory();
     void anAccountRootGoesOnlyWhenEmpty();
     void scrollPositionsLiveUnderTheRecordedRoot();
+    void accountFilesLiveUnderTheRecordedRoot();
+    void aLegacyEntryMovesOnceAndNeverOverwrites();
     void personalBackgroundsGoSoTheRecordedRootCanGo();
     void aFailedAttemptLeavesNoEmptyAccountDirectory();
 
@@ -564,6 +566,59 @@ void AppDataPathsTest::scrollPositionsLiveUnderTheRecordedRoot()
     QVERIFY(matrix::app_data::scrollPositionsFile(QString()).isEmpty());
 }
 
+void AppDataPathsTest::accountFilesLiveUnderTheRecordedRoot()
+{
+    matrix::app_data::AccountIdentity erin;
+    QVERIFY(matrix::app_data::resolveAccountIdentity(
+        QStringLiteral("https://matrix.example"), QStringLiteral("erin"), &erin));
+    QVERIFY(matrix::app_data::bindStoreSlug(&erin, QStringLiteral("Erin_typed")));
+    QVERIFY(erin.accountRoot != matrix::app_data::accountRoot(erin.userId));
+    QCOMPARE(matrix::app_data::bridgeLabelsFile(erin.accountRoot),
+             erin.accountRoot + QStringLiteral("/bridge-labels.json"));
+    QCOMPARE(matrix::app_data::starredGifsDir(erin.accountRoot),
+             erin.accountRoot + QStringLiteral("/starred-gifs"));
+    QVERIFY(matrix::app_data::bridgeLabelsFile(QString()).isEmpty());
+    QVERIFY(matrix::app_data::starredGifsDir(QString()).isEmpty());
+}
+
+void AppDataPathsTest::aLegacyEntryMovesOnceAndNeverOverwrites()
+{
+    using matrix::app_data::LegacyMove;
+    using matrix::app_data::adoptLegacyEntry;
+    QTemporaryDir tmp;
+    QVERIFY(tmp.isValid());
+    const QString legacy = tmp.path() + QStringLiteral("/derived/bridge-labels.json");
+    const QString recorded = tmp.path() + QStringLiteral("/recorded/bridge-labels.json");
+    const auto write = [](const QString &path, const QByteArray &bytes) {
+        QDir().mkpath(QFileInfo(path).absolutePath());
+        QFile f(path);
+        return f.open(QIODevice::WriteOnly) && f.write(bytes) == bytes.size();
+    };
+    const auto read = [](const QString &path) {
+        QFile f(path);
+        return f.open(QIODevice::ReadOnly) ? f.readAll() : QByteArray();
+    };
+
+    QCOMPARE(adoptLegacyEntry(legacy, recorded), LegacyMove::Absent);
+    QVERIFY(write(legacy, "first"));
+    QCOMPARE(adoptLegacyEntry(legacy, recorded), LegacyMove::Moved);
+    QVERIFY(!QFile::exists(legacy));
+    QCOMPARE(read(recorded), QByteArray("first"));
+    QCOMPARE(adoptLegacyEntry(legacy, recorded), LegacyMove::Absent);
+
+    QVERIFY(write(legacy, "second"));
+    QCOMPARE(adoptLegacyEntry(legacy, recorded), LegacyMove::Kept);
+    QCOMPARE(read(recorded), QByteArray("first"));
+    QCOMPARE(read(legacy), QByteArray("second"));
+
+    const QString legacyDir = tmp.path() + QStringLiteral("/derived/starred-gifs");
+    const QString recordedDir = tmp.path() + QStringLiteral("/recorded/starred-gifs");
+    QVERIFY(write(legacyDir + QStringLiteral("/index.ini"), "gifs"));
+    QCOMPARE(adoptLegacyEntry(legacyDir, recordedDir), LegacyMove::Moved);
+    QVERIFY(!QFileInfo::exists(legacyDir));
+    QCOMPARE(read(recordedDir + QStringLiteral("/index.ini")), QByteArray("gifs"));
+}
+
 void AppDataPathsTest::personalBackgroundsGoSoTheRecordedRootCanGo()
 {
     using matrix::app_data::EmptyDirRemoval;
@@ -590,7 +645,7 @@ void AppDataPathsTest::personalBackgroundsGoSoTheRecordedRootCanGo()
     QCOMPARE(removeAccountRootIfEmpty(erin.accountRoot), EmptyDirRemoval::NotEmpty);
     QCOMPARE(removeAccountRootIfEmpty(canonicalRoot), EmptyDirRemoval::NotEmpty);
 
-    const auto removed = removePersonalBackgrounds(erin);
+    const auto removed = removePersonalBackgrounds(erin, true);
     QCOMPARE(removed.deleted, 2);
     QCOMPARE(removed.failed, 0);
     QVERIFY(!QFileInfo::exists(recordedPicture));
@@ -598,7 +653,7 @@ void AppDataPathsTest::personalBackgroundsGoSoTheRecordedRootCanGo()
     QCOMPARE(removeAccountRootIfEmpty(erin.accountRoot), EmptyDirRemoval::Deleted);
     QCOMPARE(removeAccountRootIfEmpty(canonicalRoot), EmptyDirRemoval::Deleted);
 
-    const auto again = removePersonalBackgrounds(erin);
+    const auto again = removePersonalBackgrounds(erin, true);
     QCOMPARE(again.deleted, 0);
     QCOMPARE(again.missing, 2);
     QVERIFY(!again.removedAnything());
@@ -609,7 +664,7 @@ void AppDataPathsTest::personalBackgroundsGoSoTheRecordedRootCanGo()
     const qsizetype finish = text.indexOf(QStringLiteral("void RustSdkMatrixClient::finishSignOut("));
     QVERIFY(finish > 0);
     const qsizetype remove = text.indexOf(
-        QStringLiteral("removePersonalBackgrounds(identity)"), finish);
+        QStringLiteral("removePersonalBackgrounds("), finish);
     const qsizetype rootCheck = text.indexOf(
         QStringLiteral("removeAccountRootIfEmpty(identity.accountRoot)"), finish);
     QVERIFY2(remove > finish, "finishSignOut no longer removes personal backgrounds");

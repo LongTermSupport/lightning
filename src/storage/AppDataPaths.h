@@ -61,16 +61,36 @@ QString accountRoot(const QString &userId);
 
 QString rustSdkStorePath(const QString &userId);
 
-QString starredGifsDir(const QString &userId);
+// includeCanonical: false when the canonical root is another account's store.
+RemovalSummary removePersonalBackgrounds(const AccountIdentity &identity,
+                                         bool includeCanonical);
 
+// These live under the account's recorded root, like its store.
 QString personalBackgroundsDir(const QString &accountRootDir);
 
-RemovalSummary removePersonalBackgrounds(const AccountIdentity &identity);
+QString starredGifsDir(const QString &accountRootDir);
 
-QString bridgeLabelsFile(const QString &userId);
+QString bridgeLabelsFile(const QString &accountRootDir);
 
-// Under the account's recorded root, like its store.
 QString scrollPositionsFile(const QString &accountRootDir);
+
+enum class LegacyMove { Moved, Absent, Kept, Failed };
+
+// Moves an entry from the root derived from the user id to the recorded root
+// by one rename, so an interrupted move leaves it whole in one place. Kept:
+// the recorded entry already exists, or the old one is a symlink; both stay.
+LegacyMove adoptLegacyEntry(const QString &legacyPath, const QString &recordedPath);
+
+inline const char *legacyMoveName(LegacyMove outcome)
+{
+    switch (outcome) {
+    case LegacyMove::Moved: return "moved";
+    case LegacyMove::Absent: return "absent";
+    case LegacyMove::Kept: return "kept_both";
+    case LegacyMove::Failed: return "failed";
+    }
+    return "failed";
+}
 
 QString customAppIconFile();
 
