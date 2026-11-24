@@ -45,6 +45,7 @@ QtObject {
     // pane edge, so the rightmost buttons of side-by-side headers line up.
     readonly property int headerActionSize: 34
     readonly property int headerActionGutter: spacing20
+    readonly property int headerActionSpacing: spacing6
     readonly property int roomRowPaddingV: compactDensity ? spacing4 : spacing6
     readonly property int channelRowMinHeight: compactDensity ? 28 : 32
     readonly property int composerInsetH: compactDensity ? spacing12 : spacing20
