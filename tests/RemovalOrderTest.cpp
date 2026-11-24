@@ -11,9 +11,11 @@
 #include "gif/GifStarredStore.h"
 #include "notifications/NotificationManager.h"
 
+#include <QCryptographicHash>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QSettings>
 #include <QSignalSpy>
 #include <QTemporaryDir>
 #include <QtTest>
@@ -385,6 +387,82 @@ private Q_SLOTS:
         QFile file(bobsFile);
         QVERIFY(file.open(QIODevice::ReadOnly));
         QCOMPARE(file.readAll(), QByteArray("bob"));
+    }
+
+    void signOutLeavesAnotherAccountsBackgroundsAlone()
+    {
+        ScriptedLabsBridge bridge;
+        BridgeScope bridgeScope(&bridge);
+        LabsEnvScope env(true);
+        AppController app(AppController::MockBackend, false, inMemoryKeyring());
+        signInAliceAt(app, QStringLiteral("Alice_bg"));
+        app.settings()->setStoreSlugFor(kBob, matrix::app_data::safeUserSlug(kAlice));
+        QCOMPARE(identityOf(app, kBob).accountRoot, matrix::app_data::accountRoot(kAlice));
+        const QString bobsPicture =
+            matrix::app_data::personalBackgroundsDir(identityOf(app, kBob).accountRoot)
+            + QStringLiteral("/b.png");
+        const QString alicesPicture =
+            matrix::app_data::personalBackgroundsDir(identityOf(app, kAlice).accountRoot)
+            + QStringLiteral("/a.png");
+        QVERIFY(touch(bobsPicture));
+        QVERIFY(touch(alicesPicture));
+
+        app.auth()->logout();
+        QTRY_VERIFY(!app.accountSwitching());
+
+        QTRY_VERIFY2(!QFileInfo::exists(alicesPicture), "sign-out left the backgrounds");
+        QVERIFY2(QFileInfo::exists(bobsPicture), "sign-out deleted another account's backgrounds");
+    }
+
+    void removalSparesACanonicalRootThatIsAnotherAccountsStore()
+    {
+        ScriptedLabsBridge bridge;
+        BridgeScope bridgeScope(&bridge);
+        LabsEnvScope env(true);
+        AppController app(AppController::MockBackend, false, inMemoryKeyring());
+        saveAccountsAndSignInAlice(app);
+        app.settings()->setStoreSlugFor(kCarol, QStringLiteral("Carol_removed"));
+        app.settings()->setStoreSlugFor(kBob, matrix::app_data::safeUserSlug(kCarol));
+        const auto bob = identityOf(app, kBob);
+        QCOMPARE(bob.accountRoot, matrix::app_data::accountRoot(kCarol));
+        plantStoreFile(bob);
+        QVERIFY(QFileInfo::exists(markerOf(bob)));
+
+        app.removeAccount(kCarol);
+
+        QTRY_VERIFY(!app.settings()->hasSavedAccount(kCarol));
+        QVERIFY2(QFileInfo::exists(markerOf(bob)),
+                 "removing an account deleted another account's store");
+    }
+
+    void removingAnInactiveAccountForgetsItsStickerState()
+    {
+        ScriptedLabsBridge bridge;
+        BridgeScope bridgeScope(&bridge);
+        LabsEnvScope env(true);
+        AppController app(AppController::MockBackend, false, inMemoryKeyring());
+        saveAccountsAndSignInAlice(app);
+        const QString ini = QFileInfo(QSettings().fileName()).absolutePath()
+                            + QStringLiteral("/image-packs-local.ini");
+        const auto key = [](const QString &uid) {
+            return QString::fromLatin1(
+                       QCryptographicHash::hash(uid.toUtf8(), QCryptographicHash::Sha256)
+                           .toHex().left(16))
+                   + QStringLiteral("/recents");
+        };
+        {
+            QSettings state(ini, QSettings::IniFormat);
+            state.setValue(key(kCarol), QVariantList{QStringLiteral("mxc://three.example/s")});
+            state.setValue(key(kBob), QVariantList{QStringLiteral("mxc://two.example/s")});
+            state.sync();
+        }
+
+        app.removeAccount(kCarol);
+
+        QTRY_VERIFY(!app.settings()->hasSavedAccount(kCarol));
+        QSettings state(ini, QSettings::IniFormat);
+        QVERIFY2(!state.contains(key(kCarol)), "the removed account's sticker state stayed");
+        QVERIFY(state.contains(key(kBob)));
     }
 
     void aNonLiveAccountWhoseSignInIsStillBeingWrittenTakesTheLiveRemoval()
