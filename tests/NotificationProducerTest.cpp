@@ -820,6 +820,7 @@ private slots:
     {
         event.insert(QStringLiteral("fetched"), true);
         event.insert(QStringLiteral("backlog"), true);
+        event.insert(QStringLiteral("push_notify"), highlight);
         event.insert(QStringLiteral("push_highlight"), highlight);
         return event;
     }
