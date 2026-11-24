@@ -1707,7 +1707,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+606"/>
+        <location filename="../qml/AppTheme.qml" line="+609"/>
         <source>Storm</source>
         <translation>Storm</translation>
     </message>
@@ -16917,7 +16917,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+56"/>
         <source>Account menu for %1</source>
         <translation>Kontomenü für %1</translation>
     </message>
@@ -18380,7 +18380,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Deinen Avatar für diesen Raum auswählen</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+46"/>
         <source>Room information</source>
         <translation>Rauminformationen</translation>
     </message>
@@ -18400,17 +18400,17 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>%1 Mitglieder</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+11"/>
         <source>Room permissions</source>
         <translation>Raumberechtigungen</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="-22"/>
         <source>Close room information</source>
         <translation>Rauminformationen schließen</translation>
     </message>
     <message>
-        <location line="+84"/>
+        <location line="+112"/>
         <source>Notifications</source>
         <translation>Benachrichtigungen</translation>
     </message>
@@ -19647,7 +19647,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>RoomsPanel</name>
     <message>
-        <location filename="../qml/RoomsPanel.qml" line="+207"/>
+        <location filename="../qml/RoomsPanel.qml" line="+208"/>
         <location line="+3"/>
         <location line="+5"/>
         <source>Lightning</source>
@@ -21065,12 +21065,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Gib mindestens %1 Zeichen ein.</translation>
     </message>
     <message>
-        <location line="+179"/>
+        <location line="+174"/>
         <source>Nothing is indexed yet.</source>
         <translation>Es ist noch nichts indiziert.</translation>
     </message>
     <message>
-        <location line="-176"/>
+        <location line="-171"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>Keine passenden Nachrichten. Versuche ein weniger gebräuchliches Wort oder durchsuche den lokalen Index.</translation>
     </message>
@@ -21080,7 +21080,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Keine passenden Nachrichten</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+19"/>
         <location line="+11"/>
         <source>Search filters</source>
         <translation>Suchfilter</translation>
@@ -21091,7 +21091,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Nachrichten durchsuchen</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="-6"/>
         <source>Cancel filters</source>
         <translation>Filter abbrechen</translation>
     </message>
@@ -21101,7 +21101,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Suche schließen</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+41"/>
         <source>Search room history…</source>
         <translation>Raumverlauf durchsuchen …</translation>
     </message>
@@ -32633,12 +32633,13 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>ThreadPanel</name>
     <message>
-        <location filename="../qml/ThreadPanel.qml" line="+426"/>
+        <location filename="../qml/ThreadPanel.qml" line="+433"/>
+        <location line="+48"/>
         <source>Mark this thread read</source>
         <translation>Diesen Thread als gelesen markieren</translation>
     </message>
     <message>
-        <location line="+1328"/>
+        <location line="+1304"/>
         <source>Jump to the newest reply</source>
         <translation>Zur neuesten Antwort springen</translation>
     </message>
@@ -32651,7 +32652,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         </translation>
     </message>
     <message>
-        <location line="-1723"/>
+        <location line="-1754"/>
         <source>This room has been replaced.</source>
         <translation>Dieser Raum wurde ersetzt.</translation>
     </message>
@@ -32666,18 +32667,18 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Gestern</translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+183"/>
         <location line="+1"/>
         <source>Back to the room</source>
         <translation>Zurück zum Raum</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+11"/>
         <source>Back to threads</source>
         <translation>Zurück zu den Threads</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Thread</source>
         <translation>Thread</translation>
     </message>
@@ -32687,7 +32688,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Threads</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source>Unfollow</source>
         <translation>Nicht mehr folgen</translation>
     </message>
@@ -32707,7 +32708,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Diesem Thread folgen</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+24"/>
         <source>Show the thread in the side panel</source>
         <translation>Thread in der Seitenleiste anzeigen</translation>
     </message>
@@ -32717,13 +32718,12 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Thread in der Hauptansicht anzeigen</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+1"/>
+        <location line="-99"/>
         <source>Close thread</source>
         <translation>Thread schließen</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+162"/>
         <source>Loading threads…</source>
         <translation>Threads werden geladen …</translation>
     </message>
@@ -32782,7 +32782,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Im Raum öffnen</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-707"/>
         <source>Message deleted</source>
         <translation>Nachricht gelöscht</translation>
     </message>
@@ -32792,7 +32792,12 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Diese Nachricht kann nicht entschlüsselt werden</translation>
     </message>
     <message>
-        <location line="+687"/>
+        <location line="+347"/>
+        <source>More actions</source>
+        <translation>Weitere Aktionen</translation>
+    </message>
+    <message>
+        <location line="+371"/>
         <location line="+1"/>
         <source>Collapse thread root</source>
         <translation>Thread-Ursprung einklappen</translation>

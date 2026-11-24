@@ -1707,7 +1707,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+606"/>
+        <location filename="../qml/AppTheme.qml" line="+609"/>
         <source>Storm</source>
         <translation>Storm</translation>
     </message>
@@ -16917,7 +16917,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>সেটিংস</translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+56"/>
         <source>Account menu for %1</source>
         <translation>%1-এর অ্যাকাউন্ট মেনু</translation>
     </message>
@@ -18314,7 +18314,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>রুমের অবতার বেছে নিন</translation>
     </message>
     <message>
-        <location line="+62"/>
+        <location line="+58"/>
         <source>Room information</source>
         <translation>রুমের তথ্য</translation>
     </message>
@@ -18334,12 +18334,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1সদস্য</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="-11"/>
         <source>Close room information</source>
         <translation>রুমের তথ্য বন্ধ করুন</translation>
     </message>
     <message>
-        <location line="-309"/>
+        <location line="-267"/>
         <source>Overview</source>
         <translation>সংক্ষিপ্ত বিবরণ</translation>
     </message>
@@ -18359,7 +18359,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>মিডিয়া</translation>
     </message>
     <message>
-        <location line="+389"/>
+        <location line="+375"/>
         <source>Notifications</source>
         <translation>বিজ্ঞপ্তি</translation>
     </message>
@@ -18422,12 +18422,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>এনক্রিপ্টেড নয়</translation>
     </message>
     <message>
-        <location line="-546"/>
+        <location line="-532"/>
         <source>Widgets</source>
         <translation>উইজেট</translation>
     </message>
     <message>
-        <location line="+2121"/>
+        <location line="+2107"/>
         <source>Open</source>
         <translation>খুলুন</translation>
     </message>
@@ -18437,7 +18437,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>রুম এক্সপোর্ট করুন…</translation>
     </message>
     <message>
-        <location line="-549"/>
+        <location line="-535"/>
         <source>Anyone can read this room&apos;s history without joining, even though not everyone can join it.</source>
         <translation>এই রুমে সবাই যোগ দিতে না পারলেও, যে কেউ যোগ না দিয়েই এর ইতিহাস পড়তে পারেন।</translation>
     </message>
@@ -18478,12 +18478,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>এই রুমের জন্য আপনার অবতার বেছে নিন</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+62"/>
         <source>Room permissions</source>
         <translation>রুমের অনুমতি</translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+166"/>
         <source>This room has no override — your account&apos;s notification settings apply.</source>
         <translation>এই রুমের কোনো আলাদা সেটিং নেই — আপনার অ্যাকাউন্টের বিজ্ঞপ্তি সেটিং প্রযোজ্য।</translation>
     </message>
@@ -19647,7 +19647,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RoomsPanel</name>
     <message>
-        <location filename="../qml/RoomsPanel.qml" line="+207"/>
+        <location filename="../qml/RoomsPanel.qml" line="+208"/>
         <location line="+3"/>
         <location line="+5"/>
         <source>Lightning</source>
@@ -21050,7 +21050,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>স্টিকার</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+52"/>
         <location line="+11"/>
         <source>Search filters</source>
         <translation>অনুসন্ধান ফিল্টার</translation>
@@ -21061,7 +21061,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>বার্তা খুঁজুন</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="-6"/>
         <source>Cancel filters</source>
         <translation>ফিল্টার বাতিল করুন</translation>
     </message>
@@ -21071,7 +21071,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>অনুসন্ধান বন্ধ করুন</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+41"/>
         <source>Search room history…</source>
         <translation>রুমের ইতিহাসে খুঁজুন…</translation>
     </message>
@@ -21091,7 +21091,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1-এর বার্তা খুলুন</translation>
     </message>
     <message>
-        <location line="-243"/>
+        <location line="-238"/>
         <source>Search could not be completed.</source>
         <translation>অনুসন্ধান সম্পূর্ণ করা যায়নি।</translation>
     </message>
@@ -21106,12 +21106,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>অন্তত %1টি অক্ষর টাইপ করুন।</translation>
     </message>
     <message>
-        <location line="+179"/>
+        <location line="+174"/>
         <source>Nothing is indexed yet.</source>
         <translation>এখনও কিছু ইনডেক্স করা হয়নি।</translation>
     </message>
     <message>
-        <location line="-176"/>
+        <location line="-171"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>মেলে এমন কোনো বার্তা নেই। কম প্রচলিত শব্দ চেষ্টা করুন, অথবা স্থানীয় ইনডেক্সে খুঁজুন।</translation>
     </message>
@@ -21121,7 +21121,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>মিলে যাওয়া কোনো বার্তা নেই</translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+102"/>
         <source>Indexed</source>
         <translation>ইনডেক্স করা</translation>
     </message>
@@ -32633,12 +32633,13 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ThreadPanel</name>
     <message>
-        <location filename="../qml/ThreadPanel.qml" line="+426"/>
+        <location filename="../qml/ThreadPanel.qml" line="+433"/>
+        <location line="+48"/>
         <source>Mark this thread read</source>
         <translation>এই থ্রেড পড়া হয়েছে চিহ্নিত করুন</translation>
     </message>
     <message>
-        <location line="+1328"/>
+        <location line="+1304"/>
         <source>Jump to the newest reply</source>
         <translation>সবচেয়ে নতুন উত্তরে যান</translation>
     </message>
@@ -32651,7 +32652,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message>
-        <location line="-1723"/>
+        <location line="-1754"/>
         <source>This room has been replaced.</source>
         <translation>এই রুমটি প্রতিস্থাপন করা হয়েছে।</translation>
     </message>
@@ -32666,18 +32667,18 @@ Note: importing keys does not verify this session.</source>
         <translation>গতকাল</translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+183"/>
         <location line="+1"/>
         <source>Back to the room</source>
         <translation>রুমে ফিরে যান</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+11"/>
         <source>Back to threads</source>
         <translation>থ্রেডে ফিরুন</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Thread</source>
         <translation>থ্রেড</translation>
     </message>
@@ -32687,7 +32688,7 @@ Note: importing keys does not verify this session.</source>
         <translation>থ্রেড</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source>Unfollow</source>
         <translation>অনুসরণ বন্ধ করুন</translation>
     </message>
@@ -32707,7 +32708,7 @@ Note: importing keys does not verify this session.</source>
         <translation>এই থ্রেড অনুসরণ করুন</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+24"/>
         <source>Show the thread in the side panel</source>
         <translation>থ্রেডটি পাশের প্যানেলে দেখান</translation>
     </message>
@@ -32717,13 +32718,12 @@ Note: importing keys does not verify this session.</source>
         <translation>থ্রেডটি মূল ভিউতে দেখান</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+1"/>
+        <location line="-99"/>
         <source>Close thread</source>
         <translation>থ্রেড বন্ধ করুন</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+162"/>
         <source>Loading threads…</source>
         <translation>থ্রেড লোড হচ্ছে…</translation>
     </message>
@@ -32782,7 +32782,7 @@ Note: importing keys does not verify this session.</source>
         <translation>রুমে খুলুন</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-707"/>
         <source>Message deleted</source>
         <translation>বার্তা মুছে ফেলা হয়েছে</translation>
     </message>
@@ -32792,7 +32792,12 @@ Note: importing keys does not verify this session.</source>
         <translation>এই বার্তাটি ডিক্রিপ্ট করা যাচ্ছে না</translation>
     </message>
     <message>
-        <location line="+687"/>
+        <location line="+347"/>
+        <source>More actions</source>
+        <translation>আরও কাজ</translation>
+    </message>
+    <message>
+        <location line="+371"/>
         <location line="+1"/>
         <source>Collapse thread root</source>
         <translation>থ্রেডের মূল বার্তা সংকুচিত করুন</translation>
