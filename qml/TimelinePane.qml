@@ -3193,7 +3193,8 @@ Rectangle {
                         stopEntrySelection()
                         var row = viewRowForStableId(root.keyboardSelectedEventId)
                         if (row >= 0 && navigableEventAt(row) !== ""
-                                && root.composerFocusable) {
+                                && root.composerFocusable
+                                && !messageComposer.postBlocked) {
                             beginReplyForEvent(root.keyboardSelectedEventId)
                             root.focusComposerForTyping()
                         }

@@ -1603,6 +1603,7 @@ Item {
                             clip: true
 
                             Image {
+                                objectName: "composerAttachmentChipImage"
                                 anchors.fill: parent
                                 // Everything but an animating GIF file.
                                 // AnimatedImage cannot animate an image://
@@ -1612,6 +1613,7 @@ Item {
                                          && !chipLayout.gifAnimates
                                 source: visible ? chipLayout.previewSource : ""
                                 sourceSize.width: 128
+                                autoTransform: true
                                 fillMode: Image.PreserveAspectCrop
                                 asynchronous: true
                             }

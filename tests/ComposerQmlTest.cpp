@@ -76,6 +76,24 @@ QByteArray tinyPng()
     return bytes;
 }
 
+// A 600x300 JPEG whose EXIF orientation 6 makes it upright 300x600.
+QByteArray rotatedJpeg()
+{
+    QImage image(600, 300, QImage::Format_RGB32);
+    image.fill(Qt::red);
+    QByteArray plain;
+    QBuffer buffer(&plain);
+    buffer.open(QIODevice::WriteOnly);
+    image.save(&buffer, "JPEG");
+    const QByteArray tiff = QByteArray::fromHex(
+        "4d4d002a00000008" "0001" "011200030000000100060000" "00000000");
+    const QByteArray payload = QByteArray("Exif\0\0", 6) + tiff;
+    QByteArray app1 = QByteArray::fromHex("ffe1");
+    app1.append(char((payload.size() + 2) >> 8));
+    app1.append(char((payload.size() + 2) & 0xff));
+    return plain.left(2) + app1 + payload + plain.mid(2);
+}
+
 QString writeFile(const QTemporaryDir &dir, const QString &name,
                   const QByteArray &content)
 {
@@ -1980,6 +1998,44 @@ private slots:
         QMetaObject::invokeMethod(queue, "clearAll");
         QTest::qWait(80);
         m_controller->setCurrentRoomId(previousRoom);
+    }
+
+    void aRotatedPhotoChipThumbnailIsUpright()
+    {
+        const QString previousRoom = m_controller->currentRoomId();
+        m_controller->setCurrentRoomId(QStringLiteral("!general:mock.local"));
+        QTest::qWait(30);
+        auto *composer =
+            m_controller->property("composer").value<QObject *>();
+        QVERIFY(composer);
+        auto *queue = composer->property("attachments").value<QObject *>();
+        QVERIFY(queue);
+        const auto cleanup = qScopeGuard([&] {
+            QMetaObject::invokeMethod(queue, "clearAll");
+            QTest::qWait(80);
+            m_controller->setCurrentRoomId(previousRoom);
+        });
+
+        QTemporaryDir dir;
+        QVERIFY(dir.isValid());
+        const QString jpeg = writeFile(dir, QStringLiteral("rot6.jpg"),
+                                       rotatedJpeg());
+        QVERIFY(!jpeg.isEmpty());
+        QMetaObject::invokeMethod(composer, "addAttachment",
+                                  Q_ARG(QUrl, QUrl::fromLocalFile(jpeg)));
+
+        QList<QQuickItem *> thumbs;
+        QTRY_VERIFY((thumbs.clear(),
+                     collectItems(m_window->contentItem(),
+                                  QStringLiteral("composerAttachmentChipImage"),
+                                  thumbs),
+                     thumbs.size() == 1
+                         && thumbs[0]->property("status").toInt() == 1));
+        const qreal w = thumbs[0]->implicitWidth();
+        const qreal h = thumbs[0]->implicitHeight();
+        QVERIFY2(h > w, qPrintable(QStringLiteral(
+            "the chip decoded the rotated photo as %1x%2, not upright")
+                .arg(w).arg(h)));
     }
 
     void returnOnAFocusedToolbarButtonPressesItAndSendsNothing()

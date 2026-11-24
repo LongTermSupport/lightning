@@ -236,6 +236,72 @@ async fn an_edit_refreshes_thread_reply_and_main_summary() {
     wait_field(&main, "$root", "thread_latest_preview", "thread edited").await;
 }
 
+async fn thread_card(
+    main: &Timeline,
+    room: &matrix_sdk::Room,
+    count: u64,
+    latest_ts: u64,
+) -> serde_json::Value {
+    let deadline = Instant::now() + Duration::from_secs(5);
+    loop {
+        let value = row(main, "$hroot").await;
+        if value["thread_reply_count"] == count && value["thread_latest_timestamp_ms"] == latest_ts {
+            let mut rows = [value];
+            annotate_room_gone_rows(room, &mut rows).await;
+            let [annotated] = rows;
+            return annotated;
+        }
+        assert!(Instant::now() < deadline, "summary never reached {count}: {value}");
+        tokio::time::sleep(Duration::from_millis(20)).await;
+    }
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn the_thread_card_leaves_out_a_hidden_thread_event() {
+    let server = MatrixMockServer::new().await;
+    let client = server
+        .client_builder()
+        .on_builder(|b| {
+            b.with_threading_support(matrix_sdk::ThreadingSupport::Enabled {
+                with_subscriptions: false,
+            })
+        })
+        .build()
+        .await;
+    client.event_cache().subscribe().unwrap();
+    let in_thread = |mut event: serde_json::Value| {
+        event["content"]["m.relates_to"] = json!({"rel_type":"m.thread", "event_id":"$hroot",
+            "is_falling_back":true, "m.in_reply_to":{"event_id":"$hroot"}});
+        event
+    };
+    sync(
+        &client,
+        vec![
+            message("$hroot", "root", 1000),
+            in_thread(message("$hreply1", "reply one", 2000)),
+            in_thread(message("$hreply2", "reply two", 3000)),
+        ],
+        "1",
+    )
+    .await;
+    let main = build(&client).await;
+    let room = client.get_room(room_id!("!edits:localhost")).unwrap();
+    let shown = thread_card(&main, &room, 2, 3000).await;
+    assert_eq!(shown["thread_reply_count"], 2, "{shown}");
+    assert_eq!(shown["thread_latest_preview"], "reply two", "{shown}");
+
+    let mut hidden = in_thread(json!({"type":"org.lightning.test.hidden", "event_id":"$hhidden",
+        "sender":SENDER, "origin_server_ts":4000, "content":{"body":"hidden"}}));
+    hidden["content"]["m.relates_to"]["m.in_reply_to"] = json!({"event_id":"$hreply2"});
+    sync(&client, vec![hidden], "2").await;
+    let after = thread_card(&main, &room, 3, 4000).await;
+    assert_eq!(after["thread_reply_count"], 2, "hidden event counted: {after}");
+    assert_eq!(after["thread_latest_preview"], "reply two", "{after}");
+    assert_eq!(after["thread_latest_kind"], "text", "{after}");
+    assert_eq!(after["thread_latest_sender"], SENDER, "{after}");
+    assert_eq!(after["thread_latest_timestamp_ms"], 3000, "{after}");
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 #[ignore = "requires localhs and LIGHTNING_EDITS_LOCALHS_ACCOUNTS"]
 async fn localhs_remote_edit_over_http() {

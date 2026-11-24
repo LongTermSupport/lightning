@@ -1045,6 +1045,15 @@ NOT TESTED**. Automated tests named in commits do not establish live behavior.
     thread -- the panel's key, so a draft follows its thread between
     placements). Leaving edit mode (cancel or a sent edit) restores the
     pre-edit draft. Live homeserver/Element interop of inline mode: NOT TESTED.
+  * The thread card counts what the thread panel shows: replies the panel
+    hides (hidden event types) are subtracted from the SDK summary's count,
+    and a hidden latest reply is replaced by the newest shown one
+    (`skip_hidden_thread_replies`, from the event cache only). Accepted
+    limits: a hidden reply the cache never saw is still counted; a UTD reply
+    that decrypts to a hidden type stays counted until the summary next
+    changes; `thread_unread` is the SDK's; a swapped-in latest reply shows its
+    original text, not its latest edit; the thread list (`ThreadTally`) is
+    unchanged.
 - **Layout preset (2026-10-25), Settings > Appearance > Layout preset:
   Lightning / Nheko compact.** `layoutPreset` (account-scoped, synced) is a
   PROFILE for the presentation keys `messageLayout`, `messageSpacing` and

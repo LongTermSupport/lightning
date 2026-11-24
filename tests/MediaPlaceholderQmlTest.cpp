@@ -25,6 +25,7 @@
 #include "app/ShortcutRegistry.h"
 #include "auth/AuthManager.h"
 #include "models/MessageComposer.h"
+#include "threads/ThreadController.h"
 #include "matrix/MockMatrixClient.h"
 #include "media/MediaBridge.h"
 #include "media/MediaPlaybackController.h"
@@ -1538,6 +1539,164 @@ QtObject {
         QTest::mouseDClick(d.window.get(), Qt::LeftButton, {}, probe);
         QTest::qWait(50);
         QCOMPARE(controller.composer()->replyingToEventId(), QString());
+    }
+
+    void aReadOnlyRoomOffersNoReplyOrThreadInEveryLayout_data()
+    {
+        QTest::addColumn<int>("layout");
+        QTest::addColumn<QString>("route");
+        const char *layouts[] = { "modern", "bubbles", "compact" };
+        for (int layout = 0; layout < 3; ++layout) {
+            for (const char *route : { "hover", "menu", "keys", "entry", "doubleclick" }) {
+                QTest::newRow(qPrintable(QStringLiteral("%1-%2")
+                                             .arg(QLatin1String(layouts[layout]),
+                                                  QLatin1String(route))))
+                    << layout << QString::fromLatin1(route);
+            }
+        }
+    }
+
+    void aReadOnlyRoomOffersNoReplyOrThreadInEveryLayout()
+    {
+        QFETCH(int, layout);
+        QFETCH(QString, route);
+        AppController controller(AppController::MockBackend);
+        QVERIFY(loginToGeneral(controller));
+        QVERIFY(controller.thread()->property("supported").toBool());
+        const QString id = repliableMockEvent(controller);
+        QVERIFY2(!id.isEmpty(), "the mock room has no repliable event");
+        const int previousLayout = controller.settings()->messageLayout();
+        auto *mock = controller.findChild<MockMatrixClient *>();
+        QVERIFY(mock != nullptr);
+        const QString room = QStringLiteral("!general:mock.local");
+        const auto restore = qScopeGuard([&] {
+            controller.settings()->setMessageLayout(previousLayout);
+            mock->setOwnPermissionsForTest(room, {});
+        });
+        controller.settings()->setMessageLayout(layout);
+        QVariantMap fixture = baseFixture(controller);
+        fixture.insert(QStringLiteral("eventId"), id);
+        fixture.insert(QStringLiteral("body"), QStringLiteral("hi there"));
+
+        const auto reset = [&] {
+            controller.composer()->clearReplyTarget();
+            controller.thread()->close();
+            QTRY_VERIFY(!controller.thread()->property("active").toBool());
+        };
+        const auto replied = [&](bool expected) {
+            if (expected) {
+                QTRY_COMPARE_WITH_TIMEOUT(controller.composer()->replyingToEventId(),
+                                          id, kSignalTimeoutMs);
+            } else {
+                QTest::qWait(200);
+                QCOMPARE(controller.composer()->replyingToEventId(), QString());
+            }
+        };
+        const auto threaded = [&](bool expected) {
+            if (expected) {
+                QTRY_VERIFY_WITH_TIMEOUT(controller.thread()->property("active").toBool(),
+                                         kSignalTimeoutMs);
+            } else {
+                QTest::qWait(200);
+                QVERIFY(!controller.thread()->property("active").toBool());
+            }
+        };
+        const auto check = [&](bool canPost) {
+            Delegate d;
+            const QVariantMap initial = route == QLatin1String("doubleclick")
+                ? QVariantMap{{QStringLiteral("isDirectRoom"), true}} : QVariantMap{};
+            QVERIFY(createDelegate(controller, fixture, d, initial));
+
+            if (route == QLatin1String("hover")) {
+                auto *loader = d.root->findChild<QQuickItem *>(
+                    QStringLiteral("messageActionBarLoader"));
+                QVERIFY(loader);
+                QVERIFY(QQmlProperty::write(loader, QStringLiteral("active"), true));
+                QVERIFY(QQmlProperty::write(loader, QStringLiteral("visible"), true));
+                QTest::qWait(50);
+                auto *reply = d.root->findChild<QQuickItem *>(
+                    QStringLiteral("messageReplyButton"));
+                auto *thread = d.root->findChild<QQuickItem *>(
+                    QStringLiteral("messageThreadReplyButton"));
+                QVERIFY(reply && thread);
+                QCOMPARE(reply->isVisible(), canPost);
+                QCOMPARE(thread->isVisible(), canPost);
+            } else if (route == QLatin1String("menu") || route == QLatin1String("keys")) {
+                for (const auto key : { Qt::Key_R, Qt::Key_T }) {
+                    QMetaObject::invokeMethod(d.root, "openContextMenu",
+                                              Q_ARG(QVariant, 10), Q_ARG(QVariant, 10),
+                                              Q_ARG(QVariant, false));
+                    auto *menu = d.root->findChild<QObject *>(
+                        QStringLiteral("messageContextMenu"));
+                    QVERIFY(menu);
+                    QTRY_VERIFY(menu->property("opened").toBool());
+                    if (route == QLatin1String("menu")) {
+                        auto *item = menu->findChild<QObject *>(QLatin1String(
+                            key == Qt::Key_R ? "replyMenuItem" : "replyInThreadMenuItem"));
+                        QVERIFY(item);
+                        QCOMPARE(item->property("visible").toBool(), canPost);
+                        QMetaObject::invokeMethod(menu, "close");
+                    } else {
+                        QTest::keyClick(d.window.get(), key);
+                        if (key == Qt::Key_R)
+                            replied(canPost);
+                        else
+                            threaded(canPost);
+                        if (QTest::currentTestFailed())
+                            return;
+                        QMetaObject::invokeMethod(menu, "close");
+                    }
+                    QTRY_VERIFY(!menu->property("opened").toBool());
+                    reset();
+                }
+            } else if (route == QLatin1String("entry")) {
+                QMetaObject::invokeMethod(d.root, "beginReply", Q_ARG(QVariant, id));
+                replied(canPost);
+                if (QTest::currentTestFailed())
+                    return;
+                reset();
+                QMetaObject::invokeMethod(d.root, "replyInThread", Q_ARG(QVariant, id));
+                threaded(canPost);
+                if (QTest::currentTestFailed())
+                    return;
+                reset();
+            } else {
+                // The geometry doubleClickBesideTheBubbleStartsAReplyInEveryLayout uses.
+                auto *row = d.root->findChild<QQuickItem *>(
+                    QStringLiteral("messagePresentationRow"));
+                auto *body = d.root->findChild<QQuickItem *>(QStringLiteral("messageBody"));
+                QVERIFY(row && body && body->isVisible());
+                const QPointF bodyInRow = body->mapToItem(row, QPointF(0, body->height() / 2));
+                const qreal x = bodyInRow.x() + body->width() + 40;
+                QVERIFY(x < row->width() - 200);
+                const QPoint probe = row->mapToScene(QPointF(x, bodyInRow.y())).toPoint();
+                QTest::mouseDClick(d.window.get(), Qt::LeftButton, {}, probe);
+                replied(canPost);
+                if (QTest::currentTestFailed())
+                    return;
+                reset();
+            }
+        };
+
+        check(true);
+        if (QTest::currentTestFailed())
+            return;
+        QVariantMap muted;
+        muted.insert(QStringLiteral("ownMembership"), QStringLiteral("joined"));
+        muted.insert(QStringLiteral("canSendMessages"), false);
+        mock->setOwnPermissionsForTest(room, muted);
+        QTRY_VERIFY_WITH_TIMEOUT(
+            controller.openRoomPermissions()->roomId() == room
+                && !controller.openRoomPermissions()->canSendMessages(),
+            kSignalTimeoutMs);
+        QTest::qWait(400);
+        check(false);
+        if (QTest::currentTestFailed())
+            return;
+        mock->setOwnPermissionsForTest(room, {});
+        QTRY_VERIFY_WITH_TIMEOUT(controller.openRoomPermissions()->canSendMessages(),
+                                 kSignalTimeoutMs);
+        check(true);
     }
 
     void doubleClickOnAHuggingBubblesEdgePixelStartsAReply()

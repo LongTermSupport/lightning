@@ -4875,6 +4875,7 @@ pub(crate) async fn annotate_room_gone_rows(room: &matrix_sdk::Room, rows: &mut 
 }
 
 async fn annotate_room_gone_slots(room: &matrix_sdk::Room, mut slots: Vec<&mut serde_json::Value>) {
+    skip_hidden_thread_replies(room, &mut slots).await;
     for slot in slots.iter_mut() {
         if slot.get("reply_to_media_key").is_none() {
             continue;
@@ -4904,6 +4905,162 @@ async fn annotate_room_gone_slots(room: &matrix_sdk::Room, mut slots: Vec<&mut s
         if gone {
             slot.insert("send_error".to_owned(), "room_gone".into());
         }
+    }
+}
+
+type ThreadSummaryKey = (u64, u64, String);
+
+struct HiddenReplies {
+    hidden: u64,
+    /// Replaces the summary's latest reply when that reply is hidden; empty
+    /// when no shown reply is cached.
+    latest: Option<serde_json::Map<String, serde_json::Value>>,
+}
+
+const HIDDEN_THREAD_REPLIES_KEPT: usize = 256;
+static HIDDEN_THREAD_REPLIES: Mutex<VecDeque<(String, ThreadSummaryKey, Arc<HiddenReplies>)>> =
+    Mutex::new(VecDeque::new());
+
+const THREAD_LATEST_FIELDS: [&str; 6] = [
+    "thread_latest_preview",
+    "thread_latest_kind",
+    "thread_latest_sender",
+    "thread_latest_timestamp_ms",
+    "thread_latest_sender_display_name",
+    "thread_latest_sender_avatar_url",
+];
+
+/// The SDK's thread summary counts every `m.thread` relation, but the thread
+/// panel never shows a hidden event, so the card leaves out the cached ones.
+async fn skip_hidden_thread_replies(room: &matrix_sdk::Room, slots: &mut [&mut serde_json::Value]) {
+    for slot in slots.iter_mut() {
+        let Some(count) = slot.get("thread_reply_count").and_then(|c| c.as_u64()) else {
+            continue;
+        };
+        let Some(root) = slot
+            .get("event_id")
+            .and_then(|id| id.as_str())
+            .and_then(|id| EventId::parse(id).ok())
+        else {
+            continue;
+        };
+        let latest_ts = slot.get("thread_latest_timestamp_ms").and_then(|t| t.as_u64());
+        let latest_kind = slot
+            .get("thread_latest_kind")
+            .and_then(|k| k.as_str())
+            .unwrap_or_default()
+            .to_owned();
+        let key = (count, latest_ts.unwrap_or(0), latest_kind);
+        let Some(skip) = hidden_thread_replies(room, &root, key, latest_ts).await else {
+            continue;
+        };
+        let Some(slot) = slot.as_object_mut() else { continue };
+        slot.insert("thread_reply_count".to_owned(), count.saturating_sub(skip.hidden).into());
+        if let Some(latest) = &skip.latest {
+            for field in THREAD_LATEST_FIELDS {
+                slot.remove(field);
+            }
+            slot.extend(latest.clone());
+        }
+    }
+}
+
+async fn hidden_thread_replies(
+    room: &matrix_sdk::Room,
+    root: &EventId,
+    key: ThreadSummaryKey,
+    latest_ts: Option<u64>,
+) -> Option<Arc<HiddenReplies>> {
+    use matrix_sdk::ruma::events::relation::RelationType;
+    if let Some(known) = HIDDEN_THREAD_REPLIES.lock().ok()?.iter().find_map(|(id, k, v)| {
+        (id == root.as_str() && *k == key).then(|| Arc::clone(v))
+    }) {
+        return Some(known);
+    }
+    let (cache, _handles) = room.event_cache().await.ok()?;
+    let (_, replies) = cache
+        .find_event_with_relations(root, Some(vec![RelationType::Thread]))
+        .await
+        .ok()??;
+    let rules = room.clone_info().room_version_rules_or_default();
+    let mut hidden = 0u64;
+    let mut latest_hidden = false;
+    let mut newest_shown: Option<AnySyncTimelineEvent> = None;
+    for reply in &replies {
+        let Ok(event) = reply.raw().deserialize() else { continue };
+        let ts = u64::from(event.origin_server_ts().get());
+        if shown_by_filter(&event, &rules, false) {
+            if newest_shown
+                .as_ref()
+                .map_or(true, |known| ts >= u64::from(known.origin_server_ts().get()))
+            {
+                newest_shown = Some(event);
+            }
+        } else {
+            hidden += 1;
+            latest_hidden |= latest_ts == Some(ts);
+        }
+    }
+    let latest = if latest_hidden {
+        let mut fields = serde_json::Map::new();
+        if let Some(event) = newest_shown {
+            let (kind, preview) = raw_reply_kind_and_preview(&event);
+            fields.insert("thread_latest_kind".to_owned(), kind.into());
+            fields.insert("thread_latest_preview".to_owned(), preview.into());
+            fields.insert("thread_latest_sender".to_owned(), event.sender().to_string().into());
+            fields.insert(
+                "thread_latest_timestamp_ms".to_owned(),
+                u64::from(event.origin_server_ts().get()).into(),
+            );
+            if let Ok(Some(member)) = room.get_member_no_sync(event.sender()).await {
+                if let Some(name) = member.display_name() {
+                    fields.insert("thread_latest_sender_display_name".to_owned(), name.into());
+                }
+                if let Some(avatar) = member.avatar_url() {
+                    fields.insert(
+                        "thread_latest_sender_avatar_url".to_owned(),
+                        avatar.to_string().into(),
+                    );
+                }
+            }
+        }
+        Some(fields)
+    } else {
+        None
+    };
+    let answer = Arc::new(HiddenReplies { hidden, latest });
+    if let Ok(mut kept) = HIDDEN_THREAD_REPLIES.lock() {
+        kept.retain(|(id, _, _)| id != root.as_str());
+        if kept.len() >= HIDDEN_THREAD_REPLIES_KEPT {
+            kept.pop_front();
+        }
+        kept.push_back((root.to_string(), key, Arc::clone(&answer)));
+    }
+    Some(answer)
+}
+
+fn raw_reply_kind_and_preview(event: &AnySyncTimelineEvent) -> (&'static str, String) {
+    use matrix_sdk::ruma::events::{AnySyncMessageLikeEvent as M, SyncMessageLikeEvent};
+    let AnySyncTimelineEvent::MessageLike(message) = event else {
+        return ("unsupported", String::new());
+    };
+    if message.original_content().is_none() {
+        return ("redacted", String::new());
+    }
+    match message {
+        M::RoomMessage(SyncMessageLikeEvent::Original(m)) => {
+            let text = message_preview_text(&m.content.msgtype);
+            let preview = if text.chars().count() > 80 {
+                text.chars().take(80).chain(['\u{2026}']).collect()
+            } else {
+                text
+            };
+            (message_summary(&m.content.msgtype).kind, preview)
+        }
+        M::RoomEncrypted(_) => ("encrypted", String::new()),
+        M::Sticker(_) => ("sticker", String::new()),
+        M::PollStart(_) | M::UnstablePollStart(_) => ("poll", String::new()),
+        _ => ("unsupported", String::new()),
     }
 }
 

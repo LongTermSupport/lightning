@@ -1481,7 +1481,8 @@ Rectangle {
                             contentY + height * 0.5)
                         break
                     case "timeline.reply":
-                        if (navigableEventAt(rowForEvent(selectedEventId)) === "")
+                        if (navigableEventAt(rowForEvent(selectedEventId)) === ""
+                                || panel.threadPostBlocked)
                             return true
                         app.thread.beginReply(selectedEventId)
                         panel.focusComposer()
