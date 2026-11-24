@@ -663,6 +663,7 @@ Popup {
                 spacing: AppTheme.spacing8
                 Label {
                     objectName: "viewerErrorLabel"
+                    textFormat: Text.PlainText
                     text: viewer.tooLarge && !viewer.bridgeFailed
                           ? qsTr("This image is too large to preview. Download it to view it.")
                           : qsTr("The image could not be loaded.")
