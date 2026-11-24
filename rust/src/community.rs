@@ -340,7 +340,7 @@ async fn run(client: &Client, room_id: &str, action: &str, payload: &Value) -> R
                 .await
                 .map_err(err)?;
             audit["status"] = json!("published");
-            audit["event_id"] = json!(sent.event_id.to_string());
+            audit["event_id"] = json!(sent.response.event_id.to_string());
             room.send_state_event_raw(REVIEW, revision, audit).await.map_err(err)?;
             Ok(json!({ "published": true }))
         }
