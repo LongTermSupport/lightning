@@ -469,12 +469,12 @@ QString SavedMessagesController::capacityNotice() const
 {
     if (!m_loaded)
         return {};
-    const int slots = kMaxRefs - count();
+    const int freeSlots = kMaxRefs - count();
     const auto bytes = kMaxBytes - QJsonDocument(QJsonObject::fromVariantMap(referenceContent()))
                                        .toJson(QJsonDocument::Compact).size();
-    if (slots > 10 && bytes > kMaxBytes / 10)
+    if (freeSlots > 10 && bytes > kMaxBytes / 10)
         return {};
-    return tr("Saved message capacity remaining: %n slot(s), %1 bytes.", "", slots)
+    return tr("Saved message capacity remaining: %n slot(s), %1 bytes.", "", freeSlots)
         .arg(qMax<qsizetype>(0, bytes));
 }
 
