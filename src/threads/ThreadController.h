@@ -299,6 +299,7 @@ private:
     void setNavigationHighlight(const QString &eventId);
     bool navigationStale() const;
     bool threadUnreadHint(const QString &rootEventId) const;
+    void refreshListUnread(const TimelineEvent &root);
     void refreshRoomThreadUnread();
     QString m_currentRoomId;
     int m_roomThreadUnread = 0;
