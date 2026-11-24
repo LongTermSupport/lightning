@@ -314,6 +314,8 @@ private Q_SLOTS:
     void aRoomsNextMessageReplacesItsCard();
     void aDecryptedMessageReplacesItsEncryptedCard();
     void anEditFromTheLiveSyncReplacesTheShownCard();
+    void aMentioningEditOfAShownCardIsOneSilentReplacement();
+    void aMentioningEditWithNoShownCardIsOneCard();
     void aKeyedNoticeIsReplacedAndWithdrawn();
     void theCallCardIsQuietWhenSilentAndStaysDismissed();
     void theDesktopsDoNotDisturbSilencesTheChime();
@@ -808,6 +810,97 @@ void NotificationDbusTest::anEditFromTheLiveSyncReplacesTheShownCard()
         QVERIFY(!call.value(4).toString().contains(QStringLiteral("mouth")));
         QVERIFY(!call.value(4).toString().contains(QStringLiteral("older edit")));
     }
+}
+
+namespace {
+TimelineEvent mentioningEditOf(const QString &targetId, const QString &id)
+{
+    TimelineEvent edit = incomingText();
+    edit.eventId = id;
+    edit.isEncrypted = true;
+    edit.body = QStringLiteral("* edited @alice");
+    edit.isEdit = true;
+    edit.replacesEventId = targetId;
+    edit.editNewBody = QStringLiteral("edited @alice");
+    edit.editNewBodyAvailable = true;
+    edit.mentionsMe = true;
+    edit.pushVerdict = TimelineEvent::PushVerdict::Notify;
+    edit.pushHighlight = true;
+    edit.timestamp = QDateTime::fromMSecsSinceEpoch(2000);
+    return edit;
+}
+}
+
+void NotificationDbusTest::aMentioningEditOfAShownCardIsOneSilentReplacement()
+{
+    for (const bool lateDecrypt : { false, true }) {
+        m_fake->reset(FakeDaemon::Mode::Answer);
+        NotificationManager manager;
+        manager.setUndecryptableHoldMsForTest(0);
+        NotificationManager::Context ctx = context();
+        ctx.previewMode = NotificationManager::SenderAndMessage;
+        TimelineEvent original = incomingText();
+        original.isEncrypted = true;
+        original.body = QStringLiteral("original text");
+        manager.processEvent(original, ctx);
+        QTRY_COMPARE(manager.notifyRepliesProcessedForTest(), 1);
+
+        QSignalSpy delivered(&manager, &NotificationManager::messageDelivered);
+        const TimelineEvent edit =
+            mentioningEditOf(original.eventId, QStringLiteral("$edit:example.org"));
+        if (lateDecrypt) {
+            TimelineEvent utd = edit;
+            utd.undecryptable = true;
+            utd.isEdit = false;
+            utd.mentionsMe = false;
+            utd.pushVerdict = TimelineEvent::PushVerdict::Quiet;
+            utd.pushHighlight = false;
+            utd.editNewBodyAvailable = false;
+            manager.processEvent(utd, ctx);
+            QTest::qWait(200);
+            QCOMPARE(m_fake->count(QStringLiteral("Notify")), 1);
+            manager.processDecrypted(edit, ctx);
+        } else {
+            manager.processEvent(edit, ctx);
+        }
+        QTRY_COMPARE(manager.notifyRepliesProcessedForTest(), 2);
+        QTest::qWait(500);
+        QCOMPARE(m_fake->count(QStringLiteral("Notify")), 2);
+        const QVariantList args = m_fake->lastArguments(QStringLiteral("Notify"));
+        QVERIFY2(args.value(1).toUInt() != 0, "the edit raised a second card");
+        QVERIFY2(args.value(4).toString().contains(QStringLiteral("edited @alice")),
+                 qPrintable(args.value(4).toString()));
+        QCOMPARE(hintsOf(args).value(QStringLiteral("suppress-sound")).toBool(),
+                 true);
+        QCOMPARE(delivered.count(), 0);
+    }
+}
+
+void NotificationDbusTest::aMentioningEditWithNoShownCardIsOneCard()
+{
+    m_fake->reset(FakeDaemon::Mode::Answer);
+    NotificationManager manager;
+    NotificationManager::Context ctx = context();
+    ctx.previewMode = NotificationManager::SenderAndMessage;
+    QSignalSpy delivered(&manager, &NotificationManager::messageDelivered);
+    manager.processEvent(mentioningEditOf(QStringLiteral("$unseen:example.org"),
+                                          QStringLiteral("$edit:example.org")),
+                         ctx);
+    QTRY_COMPARE(manager.notifyRepliesProcessedForTest(), 1);
+    QTest::qWait(500);
+    QCOMPARE(m_fake->count(QStringLiteral("Notify")), 1);
+    QCOMPARE(m_fake->lastArguments(QStringLiteral("Notify")).value(1).toUInt(), 0u);
+    QCOMPARE(delivered.count(), 1);
+
+    TimelineEvent mention = incomingText();
+    mention.eventId = QStringLiteral("$plain:example.org");
+    mention.roomId = QStringLiteral("!other:example.org");
+    mention.mentionsMe = true;
+    manager.processEvent(mention, ctx);
+    QTRY_COMPARE(manager.notifyRepliesProcessedForTest(), 2);
+    QTest::qWait(500);
+    QCOMPARE(m_fake->count(QStringLiteral("Notify")), 2);
+    QCOMPARE(delivered.count(), 2);
 }
 
 void NotificationDbusTest::aKeyedNoticeIsReplacedAndWithdrawn()
