@@ -1211,55 +1211,142 @@ mod sdk_tests {
         joined_text(&format!("$o{n}"), 5_000_000 + n)
     }
 
-    static FRESH_LOGIN_SYNCS: AtomicUsize = AtomicUsize::new(0);
+    fn mixed_text(n: u64) -> Value {
+        if n % 2 == 1 {
+            return own_text(n);
+        }
+        joined_room_event("m.room.message", &format!("$m{n}"), 6_000_000 + n, "@host:remote.org",
+                          json!({ "content": { "msgtype": "m.text", "body": "theirs" } }))
+    }
+
+    // matrix-sdk ignores a response that repeats the stored sync token.
+    fn timeline_sync(n: usize, events: Vec<Value>, limited: bool, prev_batch: Option<&str>) -> String {
+        let mut room = json!({
+            "state": { "events": [create_event()] },
+            "timeline": { "events": events, "limited": limited },
+        });
+        if let Some(prev_batch) = prev_batch {
+            room["timeline"]["prev_batch"] = json!(prev_batch);
+        }
+        let mut join = serde_json::Map::new();
+        join.insert(JOINED.to_owned(), room);
+        json!({ "next_batch": format!("s{n}"), "rooms": { "join": join } }).to_string()
+    }
 
     // The room list brings the newest event with one gap; opening the room
     // brings the last twenty with a second gap that covers the first.
-    fn fresh_login_syncs() -> String {
-        // matrix-sdk ignores a response that repeats the stored sync token.
-        let (events, prev_batch, next_batch) =
-            if FRESH_LOGIN_SYNCS.fetch_add(1, Ordering::SeqCst) == 0 {
-                (vec![own_text(30)], "a", "s1")
-            } else {
-                ((11..=30).map(own_text).collect(), "b", "s2")
-            };
-        let room = json!({
-            "state": { "events": [create_event()] },
-            "timeline": { "events": events, "limited": true, "prev_batch": prev_batch },
-        });
-        let mut join = serde_json::Map::new();
-        join.insert(JOINED.to_owned(), room);
-        json!({ "next_batch": next_batch, "rooms": { "join": join } }).to_string()
+    fn fresh_login_sync(syncs: &AtomicUsize, text: fn(u64) -> Value) -> String {
+        match syncs.fetch_add(1, Ordering::SeqCst) {
+            0 => timeline_sync(0, vec![text(30)], true, Some("a")),
+            n => timeline_sync(n, (11..=30).map(text).collect(), true, Some("b")),
+        }
     }
 
-    fn back_to_the_creation(newest_own: u64) -> Vec<Value> {
-        let mut page: Vec<Value> = (1..=newest_own).rev().map(own_text).collect();
+    fn back_to_the_creation(newest: u64, text: fn(u64) -> Value) -> Vec<Value> {
+        let mut page: Vec<Value> = (1..=newest).rev().map(text).collect();
         page.extend((1..=9).rev().map(their_text));
         page.push(create_event());
         page
     }
 
-    fn history_behind_both_gaps(from: &str) -> String {
+    fn history_behind_both_gaps(from: &str, text: fn(u64) -> Value) -> String {
         match from {
-            "b" => messages_page(from, back_to_the_creation(10), None),
-            "a" => messages_page(from, (10..=29).rev().map(own_text).collect(), Some("a2")),
-            "a2" => messages_page(from, back_to_the_creation(9), None),
+            "b" => messages_page(from, back_to_the_creation(10, text), None),
+            "a" => messages_page(from, (10..=29).rev().map(text).collect(), Some("a2")),
+            "a2" => messages_page(from, back_to_the_creation(9, text), None),
+            _ => messages_page(from, Vec::new(), None),
+        }
+    }
+
+    fn in_order_from_the_creation() -> Vec<String> {
+        let mut expected = vec!["$create".to_owned()];
+        expected.extend((1..=9).map(|n| format!("$o{n}")));
+        expected.extend((1..=30).map(|n| format!("$m{n}")));
+        expected
+    }
+
+    static OWN_LOGIN_SYNCS: AtomicUsize = AtomicUsize::new(0);
+
+    fn own_login_sync() -> String {
+        fresh_login_sync(&OWN_LOGIN_SYNCS, own_text)
+    }
+
+    fn own_history(from: &str) -> String {
+        history_behind_both_gaps(from, own_text)
+    }
+
+    #[test]
+    fn a_page_of_our_own_known_events_behind_an_older_gap_keeps_the_room_in_order() {
+        let server =
+            Server { sync: own_login_sync, messages: own_history, syncs: 2, ..OLDER_ON_SERVER };
+        let walk = walk_joined_room("two-gaps", server, true, 4);
+        assert!(walk.hit_start, "{:?}", walk.asked);
+        assert_eq!(walk.cached, in_order_from_the_creation(), "asked {:?}", walk.asked);
+    }
+
+    static MIXED_LOGIN_SYNCS: AtomicUsize = AtomicUsize::new(0);
+
+    fn mixed_login_sync() -> String {
+        fresh_login_sync(&MIXED_LOGIN_SYNCS, mixed_text)
+    }
+
+    fn mixed_history(from: &str) -> String {
+        history_behind_both_gaps(from, mixed_text)
+    }
+
+    #[test]
+    fn a_known_page_from_several_senders_behind_an_older_gap_is_dropped_at_once() {
+        let server =
+            Server { sync: mixed_login_sync, messages: mixed_history, syncs: 2, ..OLDER_ON_SERVER };
+        let walk = walk_joined_room("two-gaps-mixed", server, true, 4);
+        assert!(walk.hit_start, "{:?}", walk.asked);
+        assert_eq!(walk.asked, strings(&["b", "a"]));
+        assert_eq!(walk.cached, in_order_from_the_creation());
+    }
+
+    static SENT_BURST_SYNCS: AtomicUsize = AtomicUsize::new(0);
+
+    // Twenty-five sends land at the live end as the send queue inserts them
+    // (not limited, no token); the next sync is limited to the last three.
+    fn sent_burst_sync() -> String {
+        match SENT_BURST_SYNCS.fetch_add(1, Ordering::SeqCst) {
+            0 => timeline_sync(0, vec![their_text(9)], true, Some("g")),
+            1 => timeline_sync(1, (1..=25).map(own_text).collect(), false, None),
+            n => timeline_sync(n, (23..=25).map(own_text).collect(), true, Some("p")),
+        }
+    }
+
+    fn missed_text(n: u64) -> Value {
+        joined_text(&format!("$y{n}"), 5_500_000 + n)
+    }
+
+    // The server holds three messages we never received, between the last
+    // synced event and the burst.
+    fn history_before_the_burst(from: &str) -> String {
+        match from {
+            "p" => messages_page(from, (3..=22).rev().map(own_text).collect(), Some("p2")),
+            "p2" => {
+                let mut page = vec![own_text(2), own_text(1)];
+                page.extend((1..=3).rev().map(missed_text));
+                page.extend([their_text(9), create_event()]);
+                messages_page(from, page, None)
+            }
+            "g" => messages_page(from, vec![create_event()], None),
             _ => messages_page(from, Vec::new(), None),
         }
     }
 
     #[test]
-    fn a_page_of_our_own_known_events_behind_an_older_gap_keeps_the_room_in_order() {
+    fn a_page_of_our_own_sends_before_a_gap_still_leads_to_what_we_missed() {
         let server = Server {
-            sync: fresh_login_syncs,
-            messages: history_behind_both_gaps,
-            syncs: 2,
+            sync: sent_burst_sync,
+            messages: history_before_the_burst,
+            syncs: 3,
             ..OLDER_ON_SERVER
         };
-        let walk = walk_joined_room("two-gaps", server, true, 4);
-        let mut expected = vec!["$create".to_owned()];
-        expected.extend((1..=9).map(|n| format!("$o{n}")));
-        expected.extend((1..=30).map(|n| format!("$m{n}")));
+        let walk = walk_joined_room("sent-burst", server, true, 6);
+        let mut expected = strings(&["$create", "$o9", "$y1", "$y2", "$y3"]);
+        expected.extend((1..=25).map(|n| format!("$m{n}")));
         assert!(walk.hit_start, "{:?}", walk.asked);
         assert_eq!(walk.cached, expected, "asked {:?}", walk.asked);
     }
