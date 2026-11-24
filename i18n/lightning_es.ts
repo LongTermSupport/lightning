@@ -1707,7 +1707,7 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+609"/>
+        <location filename="../qml/AppTheme.qml" line="+610"/>
         <source>Storm</source>
         <translation>Tormenta</translation>
     </message>
@@ -20987,7 +20987,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
 <context>
     <name>SearchMemberSection</name>
     <message>
-        <location filename="../qml/SearchMemberSection.qml" line="+38"/>
+        <location filename="../qml/SearchMemberSection.qml" line="+40"/>
         <source>%1 selected</source>
         <translation>%1 seleccionados</translation>
     </message>
@@ -21056,12 +21056,12 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
     </message>
     <message>
         <location line="+52"/>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>Search filters</source>
         <translation>Filtros de búsqueda</translation>
     </message>
     <message>
-        <location line="-10"/>
+        <location line="-11"/>
         <source>Search messages</source>
         <translation>Buscar mensajes</translation>
     </message>
@@ -21076,7 +21076,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Cerrar la búsqueda</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+42"/>
         <source>Search room history…</source>
         <translation>Buscar en el historial de la sala…</translation>
     </message>
@@ -21096,7 +21096,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Abrir el mensaje de %1</translation>
     </message>
     <message>
-        <location line="-238"/>
+        <location line="-239"/>
         <source>Search could not be completed.</source>
         <translation>No se pudo completar la búsqueda.</translation>
     </message>
@@ -21111,12 +21111,12 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Escribe al menos %1 caracteres.</translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+175"/>
         <source>Nothing is indexed yet.</source>
         <translation>Todavía no hay nada indexado.</translation>
     </message>
     <message>
-        <location line="-171"/>
+        <location line="-172"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>No hay mensajes que coincidan. Prueba con una palabra menos común o busca en el índice local.</translation>
     </message>
@@ -21126,7 +21126,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>No hay mensajes que coincidan</translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+103"/>
         <source>Indexed</source>
         <translation>Indexado</translation>
     </message>
@@ -21272,12 +21272,12 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Sin fijar</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+31"/>
         <source>Clear filters</source>
         <translation>Borrar filtros</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+9"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>

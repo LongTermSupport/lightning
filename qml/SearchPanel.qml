@@ -225,6 +225,7 @@ Rectangle {
                 color: AppTheme.textPrimary
                 font.pixelSize: AppTheme.textTitle
                 font.weight: AppTheme.weightBold
+                elide: Label.ElideRight
                 Layout.fillWidth: true
             }
             IconButton {
@@ -611,7 +612,7 @@ Rectangle {
                     Layout.rightMargin: AppTheme.spacing12
                     spacing: AppTheme.spacing6
                     Label { text: qsTr("Date"); color: AppTheme.textPrimary; font.weight: AppTheme.weightBold }
-                    Label { text: qsTr("Use local dates in YYYY-MM-DD format"); color: AppTheme.textMuted; font.pixelSize: AppTheme.textMeta }
+                    Label { text: qsTr("Use local dates in YYYY-MM-DD format"); color: AppTheme.textMuted; font.pixelSize: AppTheme.textMeta; wrapMode: Text.Wrap; Layout.fillWidth: true }
                     AppTextField {
                         Layout.fillWidth: true
                         placeholderText: qsTr("On or after, YYYY-MM-DD")
@@ -644,7 +645,7 @@ Rectangle {
                     Layout.rightMargin: AppTheme.spacing12
                     spacing: AppTheme.spacing6
                     Label { text: qsTr("Has"); color: AppTheme.textPrimary; font.weight: AppTheme.weightBold }
-                    Label { text: qsTr("Contains any selected content type"); color: AppTheme.textMuted; font.pixelSize: AppTheme.textMeta }
+                    Label { text: qsTr("Contains any selected content type"); color: AppTheme.textMuted; font.pixelSize: AppTheme.textMeta; wrapMode: Text.Wrap; Layout.fillWidth: true }
                     Label {
                         objectName: "searchUnsupportedFiltersHint"
                         visible: root.filterUnsupported("sticker")
@@ -678,7 +679,7 @@ Rectangle {
                     Layout.bottomMargin: AppTheme.spacing12
                     spacing: AppTheme.spacing6
                     Label { text: qsTr("Pinned"); color: AppTheme.textPrimary; font.weight: AppTheme.weightBold }
-                    Label { text: qsTr("Whether the message is pinned"); color: AppTheme.textMuted; font.pixelSize: AppTheme.textMeta }
+                    Label { text: qsTr("Whether the message is pinned"); color: AppTheme.textMuted; font.pixelSize: AppTheme.textMeta; wrapMode: Text.Wrap; Layout.fillWidth: true }
                     AppComboBox {
                         Layout.fillWidth: true
                         model: [qsTr("Any"), qsTr("Pinned"), qsTr("Not pinned")]
@@ -699,25 +700,37 @@ Rectangle {
             implicitHeight: 1
             color: AppTheme.border
         }
-        RowLayout {
+        GridLayout {
             visible: root.filterEditing
             Layout.fillWidth: true
             Layout.margins: AppTheme.spacing12
-            spacing: AppTheme.spacing8
+            columnSpacing: AppTheme.spacing8
+            rowSpacing: AppTheme.spacing8
+            // Against the panel, not this grid: two columns would widen the grid
+            // (and every row above it) to fit themselves.
+            columns: clearFiltersButton.implicitWidth + columnSpacing
+                     + confirmFilters.implicitWidth
+                     <= root.width - 2 * AppTheme.spacing12 ? 2 : 1
             AppButton {
+                id: clearFiltersButton
                 text: qsTr("Clear filters")
                 onClicked: root.clearDraft()
             }
-            Item { Layout.fillWidth: true }
-            AppButton {
-                text: qsTr("Cancel")
-                onClicked: root.filterEditing = false
-            }
-            AppButton {
-                text: qsTr("Apply filters")
-                kind: "primary"
-                enabled: root.historyAvailable
-                onClicked: root.applyFilters()
+            RowLayout {
+                id: confirmFilters
+                Layout.fillWidth: true
+                spacing: AppTheme.spacing8
+                Item { Layout.fillWidth: true }
+                AppButton {
+                    text: qsTr("Cancel")
+                    onClicked: root.filterEditing = false
+                }
+                AppButton {
+                    text: qsTr("Apply filters")
+                    kind: "primary"
+                    enabled: root.historyAvailable
+                    onClicked: root.applyFilters()
+                }
             }
         }
     }

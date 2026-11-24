@@ -1707,7 +1707,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+609"/>
+        <location filename="../qml/AppTheme.qml" line="+610"/>
         <source>Storm</source>
         <translation>स्टॉर्म</translation>
     </message>
@@ -20987,7 +20987,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>SearchMemberSection</name>
     <message>
-        <location filename="../qml/SearchMemberSection.qml" line="+38"/>
+        <location filename="../qml/SearchMemberSection.qml" line="+40"/>
         <source>%1 selected</source>
         <translation>%1 चुने गए</translation>
     </message>
@@ -21056,12 +21056,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+52"/>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>Search filters</source>
         <translation>खोज फ़िल्टर</translation>
     </message>
     <message>
-        <location line="-10"/>
+        <location line="-11"/>
         <source>Search messages</source>
         <translation>संदेश खोजें</translation>
     </message>
@@ -21076,7 +21076,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>खोज बंद करें</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+42"/>
         <source>Search room history…</source>
         <translation>रूम का इतिहास खोजें…</translation>
     </message>
@@ -21096,7 +21096,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1 का संदेश खोलें</translation>
     </message>
     <message>
-        <location line="-238"/>
+        <location line="-239"/>
         <source>Search could not be completed.</source>
         <translation>खोज पूरी नहीं हो सकी।</translation>
     </message>
@@ -21111,12 +21111,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>कम से कम %1 अक्षर टाइप करें।</translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+175"/>
         <source>Nothing is indexed yet.</source>
         <translation>अभी कुछ भी इंडेक्स नहीं हुआ है।</translation>
     </message>
     <message>
-        <location line="-171"/>
+        <location line="-172"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>कोई मेल खाता संदेश नहीं। कोई कम प्रचलित शब्द आज़माएँ, या स्थानीय इंडेक्स में खोजें।</translation>
     </message>
@@ -21126,7 +21126,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>कोई मेल खाता संदेश नहीं</translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+103"/>
         <source>Indexed</source>
         <translation>इंडेक्स किया हुआ</translation>
     </message>
@@ -21272,12 +21272,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>पिन नहीं किया गया</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+31"/>
         <source>Clear filters</source>
         <translation>फ़िल्टर साफ़ करें</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+9"/>
         <source>Cancel</source>
         <translation>रद्द करें</translation>
     </message>

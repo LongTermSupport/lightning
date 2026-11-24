@@ -352,12 +352,12 @@ Rectangle {
             // Every visible part at its own width, the room name at none.
             readonly property real inlineWidth: leadingInset
                 + AppTheme.headerActionGutter + AppTheme.headerActionSize
-                + (backToRoomButton.visible ? backToRoomButton.implicitWidth + AppTheme.spacing8 : 0)
-                + (backToListButton.visible ? backToListButton.implicitWidth + AppTheme.spacing8 : 0)
+                + (backToRoomButton.visible ? backToRoomButton.implicitWidth + AppTheme.headerActionSpacing : 0)
+                + (backToListButton.visible ? backToListButton.implicitWidth + AppTheme.headerActionSpacing : 0)
                 + threadGlyph.implicitWidth + threadTitle.implicitWidth
-                + 3 * AppTheme.spacing8
-                + (app.thread.followSupported ? followButton.implicitWidth + AppTheme.spacing8 : 0)
-                + 2 * (AppTheme.headerActionSize + AppTheme.spacing8)
+                + 3 * AppTheme.headerActionSpacing
+                + (app.thread.followSupported ? followButton.implicitWidth + AppTheme.headerActionSpacing : 0)
+                + 2 * (AppTheme.headerActionSize + AppTheme.headerActionSpacing)
             readonly property bool foldActions: app.thread.active
                                                 && width < inlineWidth
             IconButton {

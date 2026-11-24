@@ -1123,14 +1123,14 @@ Rectangle {
                 readonly property int actionSlots: {
                     if (width <= 0)
                         return 99
-                    var step = AppTheme.headerActionSize + AppTheme.spacing6
+                    var step = AppTheme.headerActionSize + AppTheme.headerActionSpacing
                     var budget = width
                                  - (roomHeaderAvatar.visible
                                     ? roomHeaderAvatar.size + spacing : 0)
                                  - 2 * spacing
                                  - identityFloor
                     return Math.max(
-                        0, Math.floor((budget + AppTheme.spacing6) / step))
+                        0, Math.floor((budget + AppTheme.headerActionSpacing) / step))
                 }
 
                 readonly property string dmPeerId:
@@ -1316,7 +1316,7 @@ Rectangle {
                 RowLayout {
                     id: roomHeaderActions
                     objectName: "roomHeaderActions"
-                    spacing: AppTheme.spacing6
+                    spacing: AppTheme.headerActionSpacing
                     Layout.fillWidth: false
 
                     readonly property var foldOrder: [

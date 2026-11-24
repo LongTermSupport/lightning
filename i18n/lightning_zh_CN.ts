@@ -1696,7 +1696,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+609"/>
+        <location filename="../qml/AppTheme.qml" line="+610"/>
         <source>Storm</source>
         <translation>风暴</translation>
     </message>
@@ -20897,7 +20897,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>SearchMemberSection</name>
     <message>
-        <location filename="../qml/SearchMemberSection.qml" line="+38"/>
+        <location filename="../qml/SearchMemberSection.qml" line="+40"/>
         <source>%1 selected</source>
         <translation>已选择 %1 位</translation>
     </message>
@@ -20966,12 +20966,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+52"/>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>Search filters</source>
         <translation>搜索筛选条件</translation>
     </message>
     <message>
-        <location line="-10"/>
+        <location line="-11"/>
         <source>Search messages</source>
         <translation>搜索消息</translation>
     </message>
@@ -20986,7 +20986,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>关闭搜索</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+42"/>
         <source>Search room history…</source>
         <translation>搜索房间历史记录…</translation>
     </message>
@@ -21006,7 +21006,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>打开来自 %1 的消息</translation>
     </message>
     <message>
-        <location line="-238"/>
+        <location line="-239"/>
         <source>Search could not be completed.</source>
         <translation>搜索未能完成。</translation>
     </message>
@@ -21021,12 +21021,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>请至少输入 %1 个字符。</translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+175"/>
         <source>Nothing is indexed yet.</source>
         <translation>尚未建立索引。</translation>
     </message>
     <message>
-        <location line="-171"/>
+        <location line="-172"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>没有匹配的消息。请尝试不太常见的词，或搜索本地索引。</translation>
     </message>
@@ -21036,7 +21036,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>没有匹配的消息</translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+103"/>
         <source>Indexed</source>
         <translation>本地索引</translation>
     </message>
@@ -21182,12 +21182,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>未置顶</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+31"/>
         <source>Clear filters</source>
         <translation>清除筛选</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+9"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
