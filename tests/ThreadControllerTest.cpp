@@ -2352,6 +2352,51 @@ private Q_SLOTS:
         QCOMPARE(shown, expected);
     }
 
+    void readingAThreadClearsItsUnreadDotInTheOpenList()
+    {
+        MockMatrixClient client;
+        QVERIFY(login(client));
+        ThreadController controller;
+        controller.setClient(&client);
+        controller.openList(kGeneral);
+        QTRY_COMPARE_WITH_TIMEOUT(controller.listLoading(), false,
+                                  kSignalTimeoutMs);
+
+        const auto events = client.timeline(kGeneral);
+        QVERIFY(events.size() >= 2);
+        QVariantList threads;
+        for (int i = 0; i < 2; ++i) {
+            TimelineEvent root = events.at(i);
+            root.isThreadRoot = true;
+            root.threadUnread = true;
+            client.changeEventAtForTest(kGeneral, i, root);
+            QVariantMap entry;
+            entry.insert(QStringLiteral("rootEventId"), root.eventId);
+            entry.insert(QStringLiteral("rootTimestamp"), root.timestamp);
+            threads.append(entry);
+        }
+        Q_EMIT client.threadListUpdated(kGeneral, threads, true, false);
+        const auto unreadOf = [&controller](const QString &id) {
+            for (const QVariant &entry : controller.threadList()) {
+                const QVariantMap map = entry.toMap();
+                if (map.value(QStringLiteral("rootEventId")).toString() == id)
+                    return map.value(QStringLiteral("unread")).toBool();
+            }
+            return false;
+        };
+        const QString readRoot = events.at(0).eventId;
+        const QString unreadRoot = events.at(1).eventId;
+        QVERIFY(unreadOf(readRoot));
+        QVERIFY(unreadOf(unreadRoot));
+
+        TimelineEvent read = client.timeline(kGeneral).at(0);
+        read.threadUnread = false;
+        client.changeEventAtForTest(kGeneral, 0, read);
+        QVERIFY(!unreadOf(readRoot));
+        QVERIFY(unreadOf(unreadRoot));
+        QCOMPARE(controller.threadList().size(), 2);
+    }
+
     void anUnchangedThreadListDoesNotResetTheView()
     {
         MockMatrixClient client;

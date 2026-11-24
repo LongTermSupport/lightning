@@ -246,6 +246,8 @@ void ThreadController::setClient(MatrixClient *client)
         // model has not loaded the root row.
         connect(m_client, &MatrixClient::eventChangedAt, this,
                 [this](const QString &roomId, int, const TimelineEvent &event) {
+                    if (m_listOpen && roomId == m_listRoomId)
+                        refreshListUnread(event);
                     if (roomId != m_roomId || event.eventId != m_rootEventId)
                         return;
                     notifyReplyCountIfChanged();
@@ -1416,6 +1418,22 @@ bool ThreadController::threadUnreadHint(const QString &rootEventId) const
             return event.threadUnread;
     }
     return false;
+}
+
+// In place, not re-sorted: a row the reader is looking at must not move.
+void ThreadController::refreshListUnread(const TimelineEvent &root)
+{
+    for (auto &entry : m_threadList) {
+        QVariantMap map = entry.toMap();
+        if (map.value(QStringLiteral("rootEventId")).toString() != root.eventId)
+            continue;
+        if (map.value(QStringLiteral("unread")).toBool() == root.threadUnread)
+            return;
+        map.insert(QStringLiteral("unread"), root.threadUnread);
+        entry = map;
+        Q_EMIT listStateChanged();
+        return;
+    }
 }
 
 void ThreadController::openList(const QString &roomId)
