@@ -113,6 +113,18 @@ class SettingsManager : public QObject
                    NOTIFY notificationSoundVolumeChanged)
     Q_PROPERTY(bool ringForCalls READ ringForCalls WRITE setRingForCalls
                    NOTIFY ringForCallsChanged)
+    Q_PROPERTY(bool quietHoursEnabled READ quietHoursEnabled
+                   WRITE setQuietHoursEnabled NOTIFY quietHoursChanged)
+    Q_PROPERTY(int quietHoursStart READ quietHoursStart
+                   WRITE setQuietHoursStart NOTIFY quietHoursChanged)
+    Q_PROPERTY(int quietHoursEnd READ quietHoursEnd
+                   WRITE setQuietHoursEnd NOTIFY quietHoursChanged)
+    Q_PROPERTY(bool quietHoursAllowMentions READ quietHoursAllowMentions
+                   WRITE setQuietHoursAllowMentions NOTIFY quietHoursChanged)
+    Q_PROPERTY(bool quietHoursAllowDirect READ quietHoursAllowDirect
+                   WRITE setQuietHoursAllowDirect NOTIFY quietHoursChanged)
+    Q_PROPERTY(QStringList quietHoursRooms READ quietHoursRooms
+                   NOTIFY quietHoursChanged)
     Q_PROPERTY(bool callSoundsEnabled READ callSoundsEnabled
                    WRITE setCallSoundsEnabled NOTIFY callSoundSettingsChanged)
     Q_PROPERTY(bool callSoundsPresence READ callSoundsPresence
@@ -523,6 +535,20 @@ public:
     void setNotificationSoundSource(int source);
     int notificationSoundVolume() const;
     void setNotificationSoundVolume(int percent);
+    static constexpr int kDefaultQuietHoursStart = 22 * 60;
+    static constexpr int kDefaultQuietHoursEnd = 8 * 60;
+    bool quietHoursEnabled() const;
+    void setQuietHoursEnabled(bool on);
+    int quietHoursStart() const;
+    void setQuietHoursStart(int minute);
+    int quietHoursEnd() const;
+    void setQuietHoursEnd(int minute);
+    bool quietHoursAllowMentions() const;
+    void setQuietHoursAllowMentions(bool on);
+    bool quietHoursAllowDirect() const;
+    void setQuietHoursAllowDirect(bool on);
+    QStringList quietHoursRooms() const;
+    Q_INVOKABLE void setQuietHoursRoomAllowed(const QString &roomId, bool on);
     bool ringForCalls() const;
     static constexpr int kDefaultCallSoundVolume = 70;
     static constexpr int kDefaultRingerVolume = 80;
@@ -1074,6 +1100,7 @@ Q_SIGNALS:
     void notificationSoundChanged();
     void notificationSoundSourceChanged();
     void notificationSoundVolumeChanged();
+    void quietHoursChanged();
     void ringForCallsChanged();
     void callSoundSettingsChanged();
     void callDevicePreferenceChanged();
