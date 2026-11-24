@@ -19,7 +19,6 @@
 namespace {
 // Hard decode bound: no attachment may decode above this edge length.
 constexpr int kMaxDecodeEdge = 4096;
-constexpr int kMaxDecodeAllocationMiB = 64;
 
 QImage roundedMasked(const QImage &src, bool circle, qreal radiusRatio)
 {
@@ -177,7 +176,6 @@ QImage MediaImageProvider::requestImage(const QString &id, QSize *size,
         reader.setFormat(QByteArray(sniffed->qtFormat));
     }
     reader.setAutoTransform(true);
-    reader.setAllocationLimit(kMaxDecodeAllocationMiB);
 
     const QSize natural = reader.size();
     if (!natural.isValid())
@@ -188,7 +186,9 @@ QImage MediaImageProvider::requestImage(const QString &id, QSize *size,
         && (target.width() > kMaxDecodeEdge || target.height() > kMaxDecodeEdge))
         target.scale(kMaxDecodeEdge, kMaxDecodeEdge, Qt::KeepAspectRatio);
     target = imagemeta::decodeSizeWithinBudget(
-        reader, target, qint64(kMaxDecodeAllocationMiB) << 20);
+        reader, target, imagemeta::kPreviewDecodeBudgetBytes);
+    if (!imagemeta::decodeFitsBudget(reader, target, imagemeta::kPreviewDecodeBudgetBytes))
+        return {};
     if (target.isValid() && natural.isValid() && target != natural)
         reader.setScaledSize(target);
 

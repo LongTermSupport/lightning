@@ -14,6 +14,7 @@ namespace appicon {
 
 inline constexpr qsizetype kMaxInputBytes = 32LL * 1024 * 1024;
 inline constexpr int kMaxInputEdge = 8192;
+inline constexpr qint64 kMaxDecodeBytes = qint64(128) << 20;
 inline constexpr int kMinInputEdge = 16;
 inline constexpr int kNormalizedEdge = 512;
 

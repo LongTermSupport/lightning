@@ -57,6 +57,8 @@ QImage StagedImageProvider::requestImage(const QString &id, QSize *size,
         && qMax(natural.width(), natural.height()) > kMaxDecodeEdge)
         target = natural.scaled(kMaxDecodeEdge, kMaxDecodeEdge, Qt::KeepAspectRatio);
     target = imagemeta::decodeSizeWithinBudget(reader, target, kDecodeBudgetBytes);
+    if (!imagemeta::decodeFitsBudget(reader, target, kDecodeBudgetBytes))
+        return {};
     if (target.isValid() && target != natural)
         reader.setScaledSize(target);
 

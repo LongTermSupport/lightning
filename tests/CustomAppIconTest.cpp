@@ -3,8 +3,13 @@
 #include "media/ImageFormatSupport.h"
 #include "storage/AppDataPaths.h"
 
+#include "PngFixture.h"
+
 #include <QBuffer>
 #include <QImage>
+#include <QImageReader>
+#include <QRegularExpression>
+#include <QScopeGuard>
 #include <QTemporaryDir>
 #include <QtTest>
 
@@ -143,6 +148,23 @@ private Q_SLOTS:
                      encoded(solid(9000, 20, Qt::red), "PNG"))
                      .category,
                  QStringLiteral("too_large_dimensions"));
+    }
+
+    void theIconKeepsItsOwnDecodeBudget()
+    {
+        const int before = QImageReader::allocationLimit();
+        QImageReader::setAllocationLimit(256);
+        const auto restore = qScopeGuard([before] { QImageReader::setAllocationLimit(before); });
+        QTest::failOnWarning(QRegularExpression(QStringLiteral("allocation limit")));
+
+        // 100 MB at 32 bpp fits the icon's 128 MiB; 144 MB does not, though both edges are allowed.
+        QVERIFY(appicon::normalizeIconBytes(pngfixture::blackRgb(5000, 5000)).ok);
+        QCOMPARE(QImageReader::allocationLimit(), 256);
+        const appicon::NormalizeResult over =
+            appicon::normalizeIconBytes(pngfixture::blackRgb(6000, 6000));
+        QVERIFY(!over.ok);
+        QCOMPARE(over.category, QStringLiteral("too_large_dimensions"));
+        QCOMPARE(QImageReader::allocationLimit(), 256);
     }
 
     void rejectsOversizedBytes()

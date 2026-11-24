@@ -83,6 +83,9 @@ Popup {
     property string bridgeSource: ""
     property string animatedSource: ""
     property bool bridgeFailed: false
+    // Over the decode budget: never handed to the Image, so Download is what remains.
+    readonly property bool tooLarge:
+        bridgeSource !== "" && app.mediaBridge.cachedImageTooLarge(bridgeSource)
     readonly property string currentMime:
         current !== null ? (current.mime || "").toLowerCase() : ""
     readonly property bool maybeAnimated:
@@ -527,7 +530,7 @@ Popup {
                         mipmap: true
                         asynchronous: true
                         cache: false
-                        source: visible
+                        source: visible && !viewer.tooLarge
                                 ? (viewer.usesBridge ? viewer.bridgeSource
                                                      : (viewer.current !== null
                                                         ? viewer.current.httpUrl : ""))
@@ -651,16 +654,22 @@ Popup {
                 }
             }
             ColumnLayout {
+                objectName: "viewerErrorState"
                 anchors.centerIn: parent
                 visible: viewer.bridgeFailed
+                         || (viewer.tooLarge && !animatedImage.visible)
                          || staticImage.status === Image.Error
                          || animatedImage.status === Image.Error
                 spacing: AppTheme.spacing8
                 Label {
-                    text: qsTr("The image could not be loaded.")
+                    objectName: "viewerErrorLabel"
+                    text: viewer.tooLarge && !viewer.bridgeFailed
+                          ? qsTr("This image is too large to preview. Download it to view it.")
+                          : qsTr("The image could not be loaded.")
                     color: AppTheme.scrimInk
                 }
                 AppButton {
+                    visible: !viewer.tooLarge || viewer.bridgeFailed
                     Layout.alignment: Qt.AlignHCenter
                     kind: "primary"
                     text: qsTr("Retry")
