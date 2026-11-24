@@ -552,8 +552,8 @@ private Q_SLOTS:
         QCOMPARE(parents(c), (QStringList{ s1, s2 }));
         QCOMPARE(parents(s1), (QStringList{ r, c }));
         QCOMPARE(parents(r), QStringList{});
-        QCOMPARE(QSet<QString>(parents(x).cbegin(), parents(x).cend()),
-                 (QSet<QString>{ r, s1 }));
+        const QStringList ofX = parents(x);
+        QCOMPARE(QSet<QString>(ofX.cbegin(), ofX.cend()), (QSet<QString>{ r, s1 }));
         QCOMPARE(parents(y), QStringList{ s2 });
         QCOMPARE(mgr.ancestorSpaceIds(c), (QStringList{ s1, r }));
     }
