@@ -8244,26 +8244,40 @@ kFilteredPages + 6);
         QCOMPARE(lower->property("showsIdentity").toBool(), group);
         QVERIFY(!controller.timeline()->messagePermalink(lowerId).isEmpty());
 
-        QPointF a, b, c;
-        QVERIFY(testsupport::settledScenePoint(&window, lower, &a, QPointF(0.4, 0)));
-        QVERIFY(testsupport::settledScenePoint(&window, lower, &b, QPointF(0.4, 1)));
-        QVERIFY(testsupport::settledScenePoint(&window, upper, &c, QPointF(0.4, 0)));
-        const qreal top = qMin(a.y(), b.y());
-        const QPointF d = upper->mapToScene(QPointF(upper->width() * 0.4,
-                                                    upper->height()));
-        QVERIFY2(qAbs(qMax(c.y(), d.y()) - top) < 0.01,
-                 "the two rows do not tile: there is a band between them");
-        const QPoint probe(qRound(a.x()), qCeil(top));
-
-        QTest::mouseDClick(&window, Qt::LeftButton, Qt::NoModifier, probe);
-        QTRY_COMPARE_WITH_TIMEOUT(controller.composer()->replyingToEventId(),
-                                  lowerId, 1000);
-        controller.composer()->cancelReplyOrEdit();
-
+        const auto boundary = [&](QPoint *probe) {
+            QPointF a, b, c;
+            if (!testsupport::settledScenePoint(&window, lower, &a, QPointF(0.4, 0))
+                || !testsupport::settledScenePoint(&window, lower, &b, QPointF(0.4, 1))
+                || !testsupport::settledScenePoint(&window, upper, &c, QPointF(0.4, 0)))
+                return false;
+            const qreal top = qMin(a.y(), b.y());
+            const QPointF d = upper->mapToScene(QPointF(upper->width() * 0.4,
+                                                        upper->height()));
+            if (qAbs(qMax(c.y(), d.y()) - top) >= 0.01) {
+                QTest::qFail("the two rows do not tile: there is a band between them",
+                             __FILE__, __LINE__);
+                return false;
+            }
+            *probe = QPoint(qRound(a.x()), qCeil(top));
+            return true;
+        };
+        QPoint probe;
+        QVERIFY(boundary(&probe));
         QTest::mouseClick(&window, Qt::RightButton, Qt::NoModifier, probe);
         QTRY_COMPARE_WITH_TIMEOUT(lower->property("menuEventId").toString(),
                                   lowerId, 1000);
         QCOMPARE(upper->property("menuEventId").toString(), QString());
+        auto *menu = lower->findChild<QObject *>(QStringLiteral("messageContextMenu"));
+        QVERIFY(menu);
+        QTRY_VERIFY(menu->property("opened").toBool());
+        QTest::keyClick(&window, Qt::Key_Escape);
+        QTRY_VERIFY(!menu->property("visible").toBool());
+
+        QVERIFY(boundary(&probe));
+        QTest::mouseDClick(&window, Qt::LeftButton, Qt::NoModifier, probe);
+        QTRY_COMPARE_WITH_TIMEOUT(controller.composer()->replyingToEventId(),
+                                  lowerId, 1000);
+        controller.composer()->cancelReplyOrEdit();
     }
 
     void removedMessagesLeaveOnlyAThreadRootInEveryLayout_data()
