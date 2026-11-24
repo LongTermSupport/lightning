@@ -1048,7 +1048,9 @@ NOT TESTED**. Automated tests named in commits do not establish live behavior.
   * The thread card counts what the thread panel shows: replies the panel
     hides (hidden event types) are subtracted from the SDK summary's count,
     and a hidden latest reply is replaced by the newest shown one
-    (`skip_hidden_thread_replies`, from the event cache only). Accepted
+    (`skip_hidden_thread_replies`, from the event cache only). When no shown
+    reply is cached the card shows the count alone, never a senderless
+    preview, and re-reads the cache at most every 5 s. Accepted
     limits: a hidden reply the cache never saw is still counted; a UTD reply
     that decrypts to a hidden type stays counted until the summary next
     changes; `thread_unread` is the SDK's; a swapped-in latest reply shows its
@@ -1639,6 +1641,31 @@ most failure branches are **NOT TESTED**. The full inventory is at the end of
   "Mark as read" in the row menu follows the RAW unread state
   (`RoomListModel` `rawUnread`), not the dot, so a quiet room that matrix-sdk
   still counts can be marked read, as mark-all-read does.
+- **Reminders and snooze.** `RemindersController` keeps message reminders
+  and conversation snoozes in `reminders.json` under the account's RECORDED
+  root (`AppController::accountRootFor`, `kAccountFiles`): room id, event id,
+  thread root and a time, never text or names. It is closed and deleted on
+  sign-out and goes with the account root on removal. A reminder reads its
+  message from the SDK when it fires, honours the room's preview mode, opens
+  that exact event (or thread), says only that the message was removed when
+  it was redacted, and is removed from the file before its card is shown, so
+  it fires once; several due at once (or due while the app was closed) are
+  one summary card. A snooze is local to this device: it writes no push rule
+  and sends no receipt, holds the room's message cards until it ends, then
+  shows one summary.
+- **Quiet hours.** One device-wide daily window (`quietHoursStart/End`,
+  wall-clock minutes, so DST and zone changes follow the clock) with three
+  exceptions: mentions, direct messages and rooms chosen from the room menu.
+  `NotificationManager::setHoldCheck` holds a message card instead of
+  showing it; Activity and unread counts still update, calls are never asked,
+  and the end of the window (or turning it off) shows one summary card. A
+  sign-out drops what that account had held.
+- **Rule simulator.** Settings › Notifications asks matrix-sdk's own ruleset
+  (`mx_rust_push_rules_simulate`: `Ruleset::get_match` and `get_actions` on a
+  synthetic message from another user in the open room) which rule wins; it
+  never writes a rule. The troubleshooter adds what this device would do on
+  top (switch off, local mute, snooze, quiet hours, a freedesktop service
+  reporting itself inhibited).
 - **Receipts past events no row shows (2026-11-05).** matrix-sdk counts
   `m.room.message`, encrypted, sticker and poll start/end events after the
   newest receipt; the automatic receipt lands on the newest visible row.
@@ -2367,6 +2394,10 @@ order, marked "in thread". 100,000 rows is a hard cap for every range. The
 file says what range it carries, how many messages, how many could not be
 decrypted, and whether it reaches the start of the room's readable history,
 because the person who reads it later may not be the person who made it.
+A JSON export marks each edited row `edited`; a walked range also names the
+replacement shown (`replacement_event_id`, with `projection_version` 1 = the
+rules in `rust/src/replacement.rs`). Superseded content and media are never
+exported.
 
 **HTML is one self-contained page that can make no request and run no code**
 (`src/models/RoomExportHtml.*`). The first element of `<head>` is a CSP
@@ -3440,6 +3471,9 @@ homeserver URL, window geometry or dismissal flag, and the tests assert it.
   and when both hold different explicit choices nothing moves until the user
   picks "Use my account's settings" or "Upload this device's settings".
   "Turn off and remove" switches it off for every device and empties the blob.
+  It reads "removed" only after a read-back finds the blob empty and the switch
+  off; until then it stays pending, across a restart too, retries a bounded
+  number of times and then says it could not confirm the removal.
 - **Never synced (export only):** window state and widths, zoom, smooth
   scrolling, volumes and microphone gain, share size/fps, picture-in-picture,
   video prefetch, tray/start behaviour, AND every setting that widens what

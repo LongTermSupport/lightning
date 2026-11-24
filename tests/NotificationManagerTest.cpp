@@ -494,6 +494,90 @@ private Q_SLOTS:
         QVERIFY(NotificationManager::decide(history, context).notify);
     }
 
+    void aHeldMessageRaisesNoCardAndIsSummedUpOnce()
+    {
+        NotificationManager manager;
+        const QString room = QStringLiteral("!room:example.org");
+        manager.setHoldCheck([](const QString &, bool, bool mention,
+                                const QString &account) {
+            return mention ? QString() : QStringLiteral("quiet:") + account;
+        });
+        manager.processEvent(incomingText(), baseContext());
+        QVERIFY(!manager.roomAwaitsUnreadForTest(room));
+        QCOMPARE(manager.heldCount(QStringLiteral("quiet:")), 1);
+
+        TimelineEvent mention = withVerdict(
+            incomingText(QStringLiteral("hi @alice")),
+            TimelineEvent::PushVerdict::Notify, true);
+        mention.eventId = QStringLiteral("$mention:example.org");
+        manager.processEvent(mention, baseContext());
+        QVERIFY(manager.roomAwaitsUnreadForTest(room));
+        QCOMPARE(manager.heldCount(QStringLiteral("quiet:")), 1);
+
+        const int before = manager.genericNoticeCountForTest();
+        manager.releaseHeld(QStringLiteral("quiet"));
+        QCOMPARE(manager.genericNoticeCountForTest(), before + 1);
+        QCOMPARE(manager.heldCount(QStringLiteral("quiet:")), 0);
+        manager.releaseHeld(QStringLiteral("quiet"));
+        QCOMPARE(manager.genericNoticeCountForTest(), before + 1);
+    }
+
+    void aSnoozeReleaseSumsUpOnlyThatRoom()
+    {
+        NotificationManager manager;
+        manager.setHoldCheck([](const QString &roomId, bool, bool,
+                                const QString &) {
+            return roomId == QLatin1String("!room:example.org")
+                ? QStringLiteral("snooze:") + roomId : QString();
+        });
+        manager.processEvent(incomingText(), baseContext());
+        TimelineEvent other = incomingText();
+        other.eventId = QStringLiteral("$other:example.org");
+        other.roomId = QStringLiteral("!other:example.org");
+        manager.processEvent(other, baseContext());
+        QVERIFY(manager.roomAwaitsUnreadForTest(other.roomId));
+        const QString key = QStringLiteral("snooze:!room:example.org");
+        QCOMPARE(manager.heldCount(key), 1);
+        const int before = manager.genericNoticeCountForTest();
+        manager.releaseHeld(QStringLiteral("snooze:!other:example.org"));
+        QCOMPARE(manager.genericNoticeCountForTest(), before);
+        manager.releaseHeld(key);
+        QCOMPARE(manager.genericNoticeCountForTest(), before + 1);
+    }
+
+    void signingOutDropsWhatWasHeld()
+    {
+        NotificationManager manager;
+        manager.setHoldCheck([](const QString &, bool, bool, const QString &a) {
+            return QStringLiteral("quiet:") + a;
+        });
+        manager.processEvent(incomingText(), baseContext());
+        QCOMPARE(manager.heldCount(QStringLiteral("quiet:")), 1);
+        manager.clearPending();
+        QCOMPARE(manager.heldCount(QStringLiteral("quiet:")), 0);
+        const int before = manager.genericNoticeCountForTest();
+        manager.releaseHeld(QStringLiteral("quiet"));
+        QCOMPARE(manager.genericNoticeCountForTest(), before);
+    }
+
+    void aHoldNeverStopsACallRinging()
+    {
+        NotificationManager manager;
+        int asked = 0;
+        manager.setHoldCheck([&asked](const QString &, bool, bool,
+                                      const QString &a) {
+            ++asked;
+            return QStringLiteral("quiet:") + a;
+        });
+        manager.showIncomingCall(QStringLiteral("!r:x"), QStringLiteral("call-q"),
+                                 QStringLiteral("Incoming call"),
+                                 QStringLiteral("body"), true, 60);
+        QCOMPARE(manager.activeCallIdForTest(), QStringLiteral("call-q"));
+        QVERIFY(manager.callRingActiveForTest());
+        QCOMPARE(asked, 0);
+        manager.stopIncomingCall(QString());
+    }
+
     void aReadThatPredatesTheCardDoesNotWithdrawIt()
     {
         NotificationManager manager;

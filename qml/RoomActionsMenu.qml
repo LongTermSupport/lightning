@@ -197,6 +197,55 @@ AppMenu {
             wrapMode: Text.WordWrap
         }
     }
+    // Read when the menu opens: a function call in a binding would not track it.
+    property real snoozedUntil: 0
+    property bool quietAllowed: false
+    Connections {
+        target: root
+        function onAboutToShow() {
+            root.snoozedUntil = app.reminders
+                    ? app.reminders.snoozedUntil(root.roomId) : 0
+            root.quietAllowed =
+                    (app.settings.quietHoursRooms || []).indexOf(root.roomId) >= 0
+        }
+    }
+    AppMenuItem {
+        objectName: "roomSnoozeHourItem"
+        visible: !!app.reminders && !root.isInvite && root.snoozedUntil <= 0
+        enabled: visible
+        iconName: "notifications_off"
+        text: qsTr("Snooze for 1 hour")
+        onTriggered: app.reminders.snooze(root.roomId, app.reminders.presetTime("1h"))
+    }
+    AppMenuItem {
+        objectName: "roomSnoozeTomorrowItem"
+        visible: !!app.reminders && !root.isInvite && root.snoozedUntil <= 0
+        enabled: visible
+        iconName: "schedule"
+        text: qsTr("Snooze until tomorrow")
+        onTriggered: app.reminders.snooze(root.roomId,
+                                          app.reminders.presetTime("tomorrow"))
+    }
+    AppMenuItem {
+        objectName: "roomUnsnoozeItem"
+        visible: !!app.reminders && !root.isInvite && root.snoozedUntil > 0
+        enabled: visible
+        iconName: "notifications"
+        text: qsTr("Unsnooze (snoozed until %1)")
+              .arg(Qt.formatDateTime(new Date(root.snoozedUntil),
+                                     app.settings.clockTimeFormat))
+        onTriggered: app.reminders.unsnooze(root.roomId)
+    }
+    AppMenuItem {
+        objectName: "roomQuietHoursItem"
+        visible: app.settings.quietHoursEnabled && !root.isInvite
+        enabled: visible
+        iconName: "notifications"
+        text: root.quietAllowed ? qsTr("Keep quiet during quiet hours")
+                                : qsTr("Notify during quiet hours")
+        onTriggered: app.settings.setQuietHoursRoomAllowed(root.roomId,
+                                                           !root.quietAllowed)
+    }
     AppMenuSeparator { visible: !root.isInvite }
     AppMenuItem {
         objectName: "roomChatBackgroundItem"

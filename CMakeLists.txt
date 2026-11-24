@@ -555,6 +555,8 @@ set(APP_SOURCES
     src/app/SwitchTrace.cpp
     src/notifications/NotificationContextBuilder.h
     src/notifications/NotificationContextBuilder.cpp
+    src/notifications/QuietHours.h
+    src/notifications/QuietHours.cpp
     src/accounts/FileIdentity.h
     src/accounts/FileIdentity.cpp
     src/accounts/StoreOwnershipRegistry.h
@@ -633,6 +635,8 @@ set(APP_SOURCES
     src/app/PushRulesController.cpp
     src/app/NotificationTroubleshooter.h
     src/app/NotificationTroubleshooter.cpp
+    src/app/RemindersController.h
+    src/app/RemindersController.cpp
     src/app/ForwardController.h
     src/app/ForwardController.cpp
     src/app/BulkRedactionController.h
@@ -3882,6 +3886,26 @@ if(BUILD_TESTING)
     target_include_directories(saved-messages-test PRIVATE src)
     target_link_libraries(saved-messages-test PRIVATE Qt6::Core Qt6::Test)
     add_test(NAME saved-messages COMMAND saved-messages-test)
+
+    qt_add_executable(reminders-controller-test
+        tests/RemindersControllerTest.cpp
+        src/app/RemindersController.h
+        src/app/RemindersController.cpp
+        src/matrix/MatrixClient.h
+        src/matrix/MatrixClient.cpp
+    )
+    target_include_directories(reminders-controller-test PRIVATE src)
+    target_link_libraries(reminders-controller-test PRIVATE Qt6::Core Qt6::Test)
+    add_test(NAME reminders-controller COMMAND reminders-controller-test)
+
+    qt_add_executable(quiet-hours-test
+        tests/QuietHoursTest.cpp
+        src/notifications/QuietHours.h
+        src/notifications/QuietHours.cpp
+    )
+    target_include_directories(quiet-hours-test PRIVATE src)
+    target_link_libraries(quiet-hours-test PRIVATE Qt6::Core Qt6::Test)
+    add_test(NAME quiet-hours COMMAND quiet-hours-test)
 
     # Image metadata removal on send (JPEG / PNG / WebP / HEIC), byte level.
     qt_add_executable(image-metadata-test

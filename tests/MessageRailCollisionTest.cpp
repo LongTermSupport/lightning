@@ -923,6 +923,48 @@ private Q_SLOTS:
                                 .arg(cardRight).arg(pileLeft)));
     }
 
+    void aThreadCardWithNoLatestSenderShowsOnlyItsCount_data()
+    {
+        QTest::addColumn<QString>("senderId");
+        QTest::newRow("no-sender") << QString();
+        QTest::newRow("sender") << QStringLiteral("@c:mock.local");
+    }
+    void aThreadCardWithNoLatestSenderShowsOnlyItsCount()
+    {
+        QFETCH(QString, senderId);
+        AppController app(AppController::MockBackend);
+        QVERIFY(app.settings());
+        app.settings()->setMessageLayout(0);
+        QVariantMap f = baseFixture();
+        f.insert(QStringLiteral("isThreadRoot"), true);
+        f.insert(QStringLiteral("threadReplyCount"), 3);
+        if (!senderId.isEmpty()) {
+            f.insert(QStringLiteral("threadLatestSender"), senderId);
+            f.insert(QStringLiteral("threadLatestSenderDisplayName"), QStringLiteral("Cy"));
+            f.insert(QStringLiteral("threadLatestPreview"), QStringLiteral("latest words"));
+        }
+        Delegate d;
+        QVERIFY(build(app, f, d, 700));
+        auto *card = findVisual(d.root, QStringLiteral("threadSummaryCard"));
+        QVERIFY2(card && card->width() > 0, "no thread summary card in the row");
+        QStringList shown;
+        for (auto *item : card->findChildren<QQuickItem *>()) {
+            bool isText = false;
+            for (auto *m = item->metaObject(); m && !isText; m = m->superClass())
+                isText = qstrcmp(m->className(), "QQuickText") == 0;
+            if (isText && item->isVisible())
+                shown << item->property("text").toString();
+        }
+        const QString all = shown.join(QLatin1Char('|'));
+        QVERIFY2(all.contains(QLatin1String("3")), qPrintable(all));
+        if (senderId.isEmpty()) {
+            QVERIFY2(!all.contains(QLatin1String("New reply")), qPrintable(all));
+            QVERIFY2(!all.contains(QLatin1Char(':')), qPrintable(all));
+        } else {
+            QVERIFY2(all.contains(QLatin1String("Cy: latest words")), qPrintable(all));
+        }
+    }
+
     void theReceiptPileClearsTheBodyInRightToLeft()
     {
         AppController app(AppController::MockBackend);

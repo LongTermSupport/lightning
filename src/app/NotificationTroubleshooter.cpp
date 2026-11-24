@@ -1,6 +1,9 @@
 #include "app/NotificationTroubleshooter.h"
 
+#include "matrix/MatrixClient.h"
+
 #include <QSystemTrayIcon>
+#include <QStringList>
 #include <QVariantMap>
 
 #ifdef HAVE_QT_DBUS
@@ -125,9 +128,18 @@ QVariantList NotificationTroubleshooter::evaluate(const Inputs &in)
                       "Disturb or has muted Lightning. If the test below does "
                       "not appear, check your desktop's notification settings.");
     }
-    out.append(check(QStringLiteral("system"),
-                     tr("System permission and Do Not Disturb"), Unknown,
-                     osDetail));
+    if (in.desktopInhibited) {
+        out.append(check(QStringLiteral("system"),
+                         tr("Your desktop is in Do Not Disturb"), Warn,
+                         tr("Your notification service says it is not "
+                            "showing notifications right now. Lightning "
+                            "still sends them, and your desktop keeps them "
+                            "in its history.")));
+    } else {
+        out.append(check(QStringLiteral("system"),
+                         tr("System permission and Do Not Disturb"), Unknown,
+                         osDetail));
+    }
 
     out.append(in.appEnabled
         ? check(QStringLiteral("app"), tr("Desktop notifications are on"), Pass,
@@ -199,7 +211,140 @@ QVariantList NotificationTroubleshooter::evaluate(const Inputs &in)
                                 "known.")));
         }
     }
+    if (in.roomSnoozed) {
+        out.append(check(QStringLiteral("snooze"),
+                         tr("This conversation is snoozed"), Warn,
+                         tr("Its notifications are held until the snooze "
+                            "ends, then summed up in one notification. "
+                            "Unsnooze it from the room's menu.")));
+    }
+    if (in.quietNow) {
+        QStringList still;
+        if (in.quietAllowsMentions)
+            still << tr("Mentions still notify.");
+        if (in.quietAllowsDirect)
+            still << tr("Direct messages still notify.");
+        if (in.quietAllowsRoom)
+            still << tr("This room still notifies.");
+        still << tr("Calls still ring.");
+        out.append(check(QStringLiteral("quiet"), tr("Quiet hours are on"),
+                         Warn,
+                         tr("Notifications are held until quiet hours end, "
+                            "then summed up in one notification. They still "
+                            "reach Activity and the unread counts.")
+                             + QLatin1Char(' ')
+                             + still.join(QLatin1Char(' '))));
+    }
     return out;
+}
+
+QString NotificationTroubleshooter::localOutcome(const Inputs &in, bool mention)
+{
+    if (!in.appEnabled)
+        return tr("Lightning would not show it: desktop notifications are "
+                  "off on this device.");
+    if (in.roomMode == 2)
+        return tr("Lightning would not show it: this room is muted.");
+    if (in.roomSnoozed)
+        return tr("Lightning would hold it until this conversation's snooze "
+                  "ends.");
+    if (in.quietNow && !(mention && in.quietAllowsMentions)
+        && !(in.roomIsDirect && in.quietAllowsDirect) && !in.quietAllowsRoom)
+        return tr("Lightning would hold it until quiet hours end.");
+    if (in.desktopInhibited)
+        return tr("Lightning would send it, but your desktop is in Do Not "
+                  "Disturb and will not show it now.");
+    return {};
+}
+
+QString NotificationTroubleshooter::ruleName(const QString &ruleId,
+                                             const QString &kind)
+{
+    if (kind == QLatin1String("room"))
+        return tr("This room's own setting");
+    if (kind == QLatin1String("content"))
+        return ruleId.startsWith(QLatin1Char('.'))
+            ? tr("Your user name")
+            : tr("Keyword “%1”").arg(ruleId);
+    if (ruleId == QLatin1String(".m.rule.master"))
+        return tr("Mute all notifications");
+    if (ruleId == QLatin1String(".m.rule.is_user_mention")
+        || ruleId == QLatin1String(".m.rule.contains_display_name"))
+        return tr("Mentions of you");
+    if (ruleId == QLatin1String(".m.rule.is_room_mention")
+        || ruleId == QLatin1String(".m.rule.roomnotif"))
+        return tr("Mentions of the whole room");
+    if (ruleId == QLatin1String(".m.rule.room_one_to_one")
+        || ruleId == QLatin1String(".m.rule.encrypted_room_one_to_one"))
+        return tr("Direct messages");
+    if (ruleId == QLatin1String(".m.rule.message")
+        || ruleId == QLatin1String(".m.rule.encrypted"))
+        return tr("Messages in group rooms");
+    return ruleId;
+}
+
+void NotificationTroubleshooter::setClient(MatrixClient *client)
+{
+    if (m_client == client)
+        return;
+    if (m_client)
+        disconnect(m_client, nullptr, this, nullptr);
+    m_client = client;
+    m_simulationOp = 0;
+    if (!m_client)
+        return;
+    connect(m_client, &MatrixClient::pushRuleSimulated, this,
+            [this](quint64 op, bool ok, const QVariantMap &result) {
+        if (op == 0 || op != m_simulationOp)
+            return;
+        m_simulationOp = 0;
+        if (!ok) {
+            setSimulation({ { QStringLiteral("state"), QStringLiteral("failed") } });
+            return;
+        }
+        const bool notify = result.value(QStringLiteral("notify")).toBool();
+        const bool highlight = result.value(QStringLiteral("highlight")).toBool();
+        const QString ruleId = result.value(QStringLiteral("rule_id")).toString();
+        Inputs in;
+        if (m_provider)
+            in = m_provider(m_simulationRoom);
+        setSimulation({
+            { QStringLiteral("state"), QStringLiteral("done") },
+            { QStringLiteral("matched"), result.value(QStringLiteral("matched")) },
+            { QStringLiteral("ruleId"), ruleId },
+            { QStringLiteral("ruleName"),
+              ruleName(ruleId, result.value(QStringLiteral("kind")).toString()) },
+            { QStringLiteral("notify"), notify },
+            { QStringLiteral("highlight"), highlight },
+            { QStringLiteral("sound"), result.value(QStringLiteral("sound")).toBool() },
+            { QStringLiteral("local"), notify ? localOutcome(in, highlight) : QString() },
+        });
+    });
+}
+
+void NotificationTroubleshooter::setSimulation(const QVariantMap &simulation)
+{
+    m_simulation = simulation;
+    Q_EMIT simulationChanged();
+}
+
+void NotificationTroubleshooter::simulate(const QString &roomId,
+                                          const QString &body, bool mentionMe)
+{
+    m_simulationOp = 0;
+    if (roomId.isEmpty()) {
+        setSimulation({ { QStringLiteral("state"), QStringLiteral("noRoom") } });
+        return;
+    }
+    const quint64 op = m_client
+        ? m_client->simulatePushRule(roomId, body.left(500), mentionMe) : 0;
+    if (op == 0) {
+        setSimulation({ { QStringLiteral("state"), QStringLiteral("unsupported") } });
+        return;
+    }
+    m_simulationOp = op;
+    m_simulationRoom = roomId;
+    setSimulation({ { QStringLiteral("state"), QStringLiteral("pending") } });
 }
 
 void NotificationTroubleshooter::run(const QString &roomId)
@@ -214,6 +359,9 @@ void NotificationTroubleshooter::run(const QString &roomId)
 
 void NotificationTroubleshooter::reset()
 {
+    m_simulationOp = 0;
+    if (!m_simulation.isEmpty())
+        setSimulation({});
     if (m_checks.isEmpty() && !m_hasRun)
         return;
     m_checks.clear();
