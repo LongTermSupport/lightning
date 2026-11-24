@@ -5851,13 +5851,13 @@ void AppController::copyImageBytesToClipboard(const QString &mediaKey,
     decodeBuffer.open(QIODevice::ReadOnly);
     QImageReader reader(&decodeBuffer);
     reader.setAutoTransform(true);
-    // Only the decoded flavour is downscaled; the sniffed type below carries the original bytes.
-    const QSize target =
-        imagemeta::decodeSizeWithinBudget(reader, QSize(), qint64(64) << 20);
-    if (target.isValid() && target != reader.size())
-        reader.setScaledSize(target);
-    const QImage image = reader.read();
-    if (image.isNull()) {
+    // Qt's Wayland clipboard serves every image/* flavour from the decoded image when there is
+    // one, so a photo too large to decode in full goes out as its original bytes alone.
+    const bool decodeInFull =
+        imagemeta::decodeSizeWithinBudget(reader, QSize(), qint64(64) << 20)
+        == reader.size();
+    const QImage image = decodeInFull ? reader.read() : QImage();
+    if (decodeInFull && image.isNull()) {
         Q_EMIT copyImageFinished(false, tr("Couldn't decode the image."));
         return;
     }
@@ -5868,7 +5868,8 @@ void AppController::copyImageBytesToClipboard(const QString &mediaKey,
         return;
     }
     auto *mime = new QMimeData;
-    mime->setImageData(image);
+    if (!image.isNull())
+        mime->setImageData(image);
     mime->setData(identified, bytes);
     guiApp->clipboard()->setMimeData(mime);
     Q_EMIT copyImageFinished(true, QString());

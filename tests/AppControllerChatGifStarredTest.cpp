@@ -391,9 +391,7 @@ private Q_SLOTS:
         const QMimeData *mime = QGuiApplication::clipboard()->mimeData();
         QVERIFY(mime);
         QCOMPARE(mime->data(QStringLiteral("image/jpeg")), jpeg);
-        const QImage image = qvariant_cast<QImage>(mime->imageData());
-        QVERIFY(!image.isNull() && image.width() == image.height()
-                && image.width() <= 4096);
+        QVERIFY(!mime->hasImage());
     }
 
     void starAndCopyRacingOnOneKeyBothComplete()
