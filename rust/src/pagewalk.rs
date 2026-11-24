@@ -493,7 +493,7 @@ mod sdk_tests {
     use super::{walk_backwards, StartCheck, WalkBudget};
     use crate::timeline::TimelineRegistry;
     use std::collections::VecDeque;
-    use std::sync::atomic::{AtomicBool, Ordering};
+    use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
     use std::io::{Read, Write};
     use std::net::{TcpListener, TcpStream};
     use std::sync::{mpsc, Arc, Mutex};
@@ -981,6 +981,7 @@ mod sdk_tests {
         messages: fn(&str) -> String,
         context: fn() -> (&'static str, String),
         still_wanted: fn() -> bool,
+        syncs: usize,
     }
 
     const OLDER_ON_SERVER: Server = Server {
@@ -988,6 +989,7 @@ mod sdk_tests {
         messages: backfilled_messages,
         context: context_before_join,
         still_wanted: always_wanted,
+        syncs: 1,
     };
 
     // SQLite as in production: matrix-sdk 0.18's memory store keeps event
@@ -1033,7 +1035,9 @@ mod sdk_tests {
                 .await
                 .expect("restore");
             client.event_cache().subscribe().expect("event cache");
-            client.sync_once(SyncSettings::default()).await.expect("sync");
+            for _ in 0..server.syncs {
+                client.sync_once(SyncSettings::default()).await.expect("sync");
+            }
             let room_id = OwnedRoomId::try_from(JOINED).expect("room id");
             let room = client.get_room(&room_id).expect("the synced room");
             let timeline = Arc::new(
@@ -1196,5 +1200,65 @@ mod sdk_tests {
         assert_eq!(walk.check, StartCheck::NotAsked);
         assert!(!walk.asked.iter().any(|asked| asked == "context"), "{:?}", walk.asked);
         assert!(walk.claim_free_after);
+    }
+
+    fn own_text(n: u64) -> Value {
+        joined_room_event("m.room.message", &format!("$m{n}"), 6_000_000 + n, ME,
+                          json!({ "content": { "msgtype": "m.text", "body": "mine" } }))
+    }
+
+    fn their_text(n: u64) -> Value {
+        joined_text(&format!("$o{n}"), 5_000_000 + n)
+    }
+
+    static FRESH_LOGIN_SYNCS: AtomicUsize = AtomicUsize::new(0);
+
+    // The room list brings the newest event with one gap; opening the room
+    // brings the last twenty with a second gap that covers the first.
+    fn fresh_login_syncs() -> String {
+        let (events, prev_batch) = if FRESH_LOGIN_SYNCS.fetch_add(1, Ordering::SeqCst) == 0 {
+            (vec![own_text(30)], "a")
+        } else {
+            ((11..=30).map(own_text).collect(), "b")
+        };
+        let room = json!({
+            "state": { "events": [create_event()] },
+            "timeline": { "events": events, "limited": true, "prev_batch": prev_batch },
+        });
+        let mut join = serde_json::Map::new();
+        join.insert(JOINED.to_owned(), room);
+        json!({ "next_batch": "s1", "rooms": { "join": join } }).to_string()
+    }
+
+    fn back_to_the_creation(newest_own: u64) -> Vec<Value> {
+        let mut page: Vec<Value> = (1..=newest_own).rev().map(own_text).collect();
+        page.extend((1..=9).rev().map(their_text));
+        page.push(create_event());
+        page
+    }
+
+    fn history_behind_both_gaps(from: &str) -> String {
+        match from {
+            "b" => messages_page(from, back_to_the_creation(10), None),
+            "a" => messages_page(from, (10..=29).rev().map(own_text).collect(), Some("a2")),
+            "a2" => messages_page(from, back_to_the_creation(9), None),
+            _ => messages_page(from, Vec::new(), None),
+        }
+    }
+
+    #[test]
+    fn a_page_of_our_own_known_events_behind_an_older_gap_keeps_the_room_in_order() {
+        let server = Server {
+            sync: fresh_login_syncs,
+            messages: history_behind_both_gaps,
+            syncs: 2,
+            ..OLDER_ON_SERVER
+        };
+        let walk = walk_joined_room("two-gaps", server, true, 4);
+        let mut expected = vec!["$create".to_owned()];
+        expected.extend((1..=9).map(|n| format!("$o{n}")));
+        expected.extend((1..=30).map(|n| format!("$m{n}")));
+        assert!(walk.hit_start, "{:?}", walk.asked);
+        assert_eq!(walk.cached, expected, "asked {:?}", walk.asked);
     }
 }
