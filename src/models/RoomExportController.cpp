@@ -96,6 +96,7 @@ TimelineEvent RoomExportController::eventFromWalkRow(const QVariantMap &row,
     e.threadRootId = row.value(QStringLiteral("threadRoot")).toString();
     e.replyToEventId = row.value(QStringLiteral("replyTo")).toString();
     e.edited = row.value(QStringLiteral("edited")).toBool();
+    e.replacementEventId = row.value(QStringLiteral("replacedBy")).toString();
     e.status = TimelineEvent::Sent;
 
     const QString kind = row.value(QStringLiteral("kind")).toString();
