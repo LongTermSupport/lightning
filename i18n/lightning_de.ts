@@ -20205,7 +20205,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4716"/>
+        <location line="+4737"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -20214,15 +20214,15 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Nicht angemeldet.</translation>
     </message>
     <message>
-        <location line="-5072"/>
+        <location line="-5093"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4879"/>
+        <location line="+4900"/>
         <source>Unknown room: %1</source>
         <translation>Unbekannter Raum: %1</translation>
     </message>
     <message>
-        <location line="-5074"/>
+        <location line="-5095"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
@@ -20230,13 +20230,13 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+777"/>
-        <location line="+2709"/>
+        <location line="+2714"/>
         <location line="+64"/>
         <source>The sticker could not be sent.</source>
         <translation>Der Sticker konnte nicht gesendet werden.</translation>
     </message>
     <message>
-        <location line="-1448"/>
+        <location line="-1453"/>
         <source>Lightning cannot send that yet.</source>
         <translation>Lightning kann das noch nicht senden.</translation>
     </message>
@@ -20286,7 +20286,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Die Einladungsaktion ist fehlgeschlagen. Versuche es erneut.</translation>
     </message>
     <message>
-        <location line="+300"/>
+        <location line="+305"/>
         <location line="+41"/>
         <source>The reaction could not be applied.</source>
         <translation>Die Reaktion konnte nicht angewendet werden.</translation>
@@ -20359,13 +20359,13 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location filename="../src/accounts/BackgroundSessionHost.cpp" line="+487"/>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+283"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+300"/>
         <location line="+36"/>
         <source>[unable to decrypt yet]</source>
         <translation>[noch nicht entschlüsselbar]</translation>
     </message>
     <message>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+573"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+572"/>
         <source>Rust SDK send failed.</source>
         <translation>Das Senden des Rust-SDK ist fehlgeschlagen.</translation>
     </message>

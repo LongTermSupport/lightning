@@ -20175,7 +20175,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4716"/>
+        <location line="+4737"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -20184,15 +20184,15 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>No has iniciado sesión.</translation>
     </message>
     <message>
-        <location line="-5072"/>
+        <location line="-5093"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4879"/>
+        <location line="+4900"/>
         <source>Unknown room: %1</source>
         <translation>Sala desconocida: %1</translation>
     </message>
     <message>
-        <location line="-5074"/>
+        <location line="-5095"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
@@ -20200,13 +20200,13 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
     </message>
     <message>
         <location line="+777"/>
-        <location line="+2709"/>
+        <location line="+2714"/>
         <location line="+64"/>
         <source>The sticker could not be sent.</source>
         <translation>No se pudo enviar la pegatina.</translation>
     </message>
     <message>
-        <location line="-1448"/>
+        <location line="-1453"/>
         <source>Lightning cannot send that yet.</source>
         <translation>Lightning todavía no puede enviar eso.</translation>
     </message>
@@ -20256,7 +20256,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>La invitación falló. Inténtalo de nuevo.</translation>
     </message>
     <message>
-        <location line="+300"/>
+        <location line="+305"/>
         <location line="+41"/>
         <source>The reaction could not be applied.</source>
         <translation>No se pudo aplicar la reacción.</translation>
@@ -20298,7 +20298,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>No se pudo completar la acción de la encuesta.</translation>
     </message>
     <message>
-        <location line="-6628"/>
+        <location line="-6633"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>Los datos de esta cuenta siguen en uso por una sesión en segundo plano. Espera un momento e inténtalo de nuevo.</translation>
     </message>
@@ -20328,7 +20328,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Introduce tu contraseña.</translation>
     </message>
     <message>
-        <location line="+5757"/>
+        <location line="+5762"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>No se pudo enviar el mensaje. Puedes volver a intentarlo con la acción Reintentar del mensaje.</translation>
     </message>
@@ -20359,13 +20359,13 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
     </message>
     <message>
         <location filename="../src/accounts/BackgroundSessionHost.cpp" line="+487"/>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+283"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+300"/>
         <location line="+36"/>
         <source>[unable to decrypt yet]</source>
         <translation>[todavía no se puede descifrar]</translation>
     </message>
     <message>
-        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+573"/>
+        <location filename="../src/matrix/RustSdkMatrixClient.cpp" line="+572"/>
         <source>Rust SDK send failed.</source>
         <translation>Falló el envío del SDK de Rust.</translation>
     </message>
