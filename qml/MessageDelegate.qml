@@ -4255,6 +4255,43 @@ Item {
                                                           root.menuEventId)
             }
             AppMenuItem {
+                id: needsReplyMenuItem
+                objectName: "needsReplyMenuItem"
+                iconName: "flag"
+                readonly property string mark:
+                    app.followUps && app.followUps.revision >= 0
+                    ? app.followUps.stateOf(remindMenuItem.targetRoom, root.menuEventId) : ""
+                function markAs(state) {
+                    const details = root.timelineModel.messageDetails(root.menuEventId)
+                    const threadRootId = root.inThreadPanel
+                          ? app.thread.rootEventId : (details.threadRootId || "")
+                    app.followUps.setState(remindMenuItem.targetRoom, root.menuEventId,
+                                           threadRootId, state)
+                }
+                text: qsTr("Needs reply")
+                visible: !!app.followUps && remindMenuItem.remindable && mark !== "reply"
+                enabled: visible
+                onTriggered: markAs("reply")
+            }
+            AppMenuItem {
+                objectName: "waitingMenuItem"
+                iconName: "schedule"
+                text: qsTr("Waiting for reply")
+                visible: !!app.followUps && remindMenuItem.remindable
+                         && needsReplyMenuItem.mark !== "waiting"
+                enabled: visible
+                onTriggered: needsReplyMenuItem.markAs("waiting")
+            }
+            AppMenuItem {
+                objectName: "markDoneMenuItem"
+                iconName: "check"
+                text: qsTr("Mark done")
+                visible: !!app.followUps && needsReplyMenuItem.mark !== ""
+                enabled: visible
+                onTriggered: app.followUps.markDone(remindMenuItem.targetRoom,
+                                                    root.menuEventId)
+            }
+            AppMenuItem {
                 id: copyTextMenuItem
                 objectName: "copyTextMenuItem"
                 iconName: "content_copy"
