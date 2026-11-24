@@ -645,7 +645,7 @@ void AppDataPathsTest::personalBackgroundsGoSoTheRecordedRootCanGo()
     QCOMPARE(removeAccountRootIfEmpty(erin.accountRoot), EmptyDirRemoval::NotEmpty);
     QCOMPARE(removeAccountRootIfEmpty(canonicalRoot), EmptyDirRemoval::NotEmpty);
 
-    const auto removed = removePersonalBackgrounds(erin);
+    const auto removed = removePersonalBackgrounds(erin, true);
     QCOMPARE(removed.deleted, 2);
     QCOMPARE(removed.failed, 0);
     QVERIFY(!QFileInfo::exists(recordedPicture));
@@ -653,7 +653,7 @@ void AppDataPathsTest::personalBackgroundsGoSoTheRecordedRootCanGo()
     QCOMPARE(removeAccountRootIfEmpty(erin.accountRoot), EmptyDirRemoval::Deleted);
     QCOMPARE(removeAccountRootIfEmpty(canonicalRoot), EmptyDirRemoval::Deleted);
 
-    const auto again = removePersonalBackgrounds(erin);
+    const auto again = removePersonalBackgrounds(erin, true);
     QCOMPARE(again.deleted, 0);
     QCOMPARE(again.missing, 2);
     QVERIFY(!again.removedAnything());
@@ -664,7 +664,7 @@ void AppDataPathsTest::personalBackgroundsGoSoTheRecordedRootCanGo()
     const qsizetype finish = text.indexOf(QStringLiteral("void RustSdkMatrixClient::finishSignOut("));
     QVERIFY(finish > 0);
     const qsizetype remove = text.indexOf(
-        QStringLiteral("removePersonalBackgrounds(identity)"), finish);
+        QStringLiteral("removePersonalBackgrounds("), finish);
     const qsizetype rootCheck = text.indexOf(
         QStringLiteral("removeAccountRootIfEmpty(identity.accountRoot)"), finish);
     QVERIFY2(remove > finish, "finishSignOut no longer removes personal backgrounds");

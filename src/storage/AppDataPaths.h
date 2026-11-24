@@ -61,11 +61,13 @@ QString accountRoot(const QString &userId);
 
 QString rustSdkStorePath(const QString &userId);
 
+// includeCanonical: false when the canonical root is another account's store.
+RemovalSummary removePersonalBackgrounds(const AccountIdentity &identity,
+                                         bool includeCanonical);
+
+// These live under the account's recorded root, like its store.
 QString personalBackgroundsDir(const QString &accountRootDir);
 
-RemovalSummary removePersonalBackgrounds(const AccountIdentity &identity);
-
-// These three live under the account's recorded root, like its store.
 QString starredGifsDir(const QString &accountRootDir);
 
 QString bridgeLabelsFile(const QString &accountRootDir);

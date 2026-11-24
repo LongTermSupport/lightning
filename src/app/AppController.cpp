@@ -6950,13 +6950,6 @@ void AppController::onLoggedOut()
         m_stickers->forgetAccount(m_lastSessionUserId);
     if (!m_lastSessionUserId.isEmpty()) {
         removeSignedOutAccountFiles(m_lastSessionUserId);
-        const QString backgroundsDir = matrix::app_data::personalBackgroundsDir(
-            matrix::app_data::accountRoot(m_lastSessionUserId));
-        if (matrix::app_data::removeAppDataDir(backgroundsDir)
-            == matrix::app_data::DirRemoval::Failed) {
-            qCWarning(lcApp) << "personal backgrounds sign-out cleanup FAILED slug="
-                             << matrix::app_data::safeUserSlug(m_lastSessionUserId);
-        }
         signOutAccountResidue(m_lastSessionUserId);
     }
     QString removalRefusedUserId;
@@ -7649,14 +7642,9 @@ QString AppController::legacyAccountRoot(const QString &userId,
                                          const QString &recordedRoot) const
 {
     const QString derived = matrix::app_data::accountRoot(userId);
-    if (derived.isEmpty() || recordedRoot.isEmpty() || derived == recordedRoot)
+    if (derived.isEmpty() || recordedRoot.isEmpty() || derived == recordedRoot
+        || m_settings->isRecordedRootOfAnotherAccount(userId, derived))
         return {};
-    for (const QString &other : m_settings->savedAccountUserIds()) {
-        matrix::app_data::AccountIdentity identity;
-        if (other != userId && m_settings->resolveSavedIdentity(other, &identity)
-            && identity.accountRoot == derived)
-            return {};
-    }
     return derived;
 }
 
@@ -7666,6 +7654,7 @@ constexpr AccountFileFn kAccountFiles[] = {
     &matrix::app_data::bridgeLabelsFile,
     &matrix::app_data::starredGifsDir,
     &matrix::app_data::scrollPositionsFile,
+    &matrix::app_data::personalBackgroundsDir,
 };
 }
 
@@ -7780,6 +7769,8 @@ bool AppController::removeAccountLocalStateFiles(
     const auto removed = matrix::app_data::removeAccountRustState(identity);
     if (m_accountAvatars)
         m_accountAvatars->forget(identity.userId);
+    if (m_stickers)
+        m_stickers->forgetAccount(identity.userId);
 
     const QString starredDir =
         matrix::app_data::starredGifsDir(identity.accountRoot);
@@ -7814,7 +7805,8 @@ bool AppController::removeAccountLocalStateFiles(
     // cache.sqlite. Both must go.
     QStringList roots{identity.accountRoot};
     const QString canonical = matrix::app_data::accountRoot(identity.userId);
-    if (!canonical.isEmpty() && !roots.contains(canonical))
+    if (!canonical.isEmpty() && !roots.contains(canonical)
+        && !m_settings->isRecordedRootOfAnotherAccount(identity.userId, canonical))
         roots.append(canonical);
     int rootsDeleted = 0;
     int rootsFailed = 0;

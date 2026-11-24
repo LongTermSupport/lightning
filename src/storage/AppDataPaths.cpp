@@ -380,14 +380,17 @@ QString personalBackgroundsDir(const QString &accountRootDir)
     return accountRootDir + QLatin1String("/backgrounds");
 }
 
-RemovalSummary removePersonalBackgrounds(const AccountIdentity &identity)
+RemovalSummary removePersonalBackgrounds(const AccountIdentity &identity,
+                                         bool includeCanonical)
 {
     RemovalSummary summary;
     QStringList dirs;
     const QString recorded = personalBackgroundsDir(identity.accountRoot);
     if (!recorded.isEmpty())
         dirs.append(recorded);
-    const QString canonical = personalBackgroundsDir(accountRoot(identity.userId));
+    const QString canonical = includeCanonical
+        ? personalBackgroundsDir(accountRoot(identity.userId))
+        : QString();
     if (!canonical.isEmpty() && !dirs.contains(canonical))
         dirs.append(canonical);
     for (const QString &dir : std::as_const(dirs)) {
