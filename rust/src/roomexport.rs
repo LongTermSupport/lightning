@@ -125,6 +125,8 @@ pub(crate) struct ExportRow {
     pub thread_root: String,
     pub reply_to: String,
     pub edited: bool,
+    /// The replacement whose content the row shows; empty when unedited.
+    pub replaced_by: String,
     pub filename: String,
     pub mimetype: String,
     pub size: u64,
@@ -154,6 +156,7 @@ impl ExportRow {
             "thread_root": self.thread_root,
             "reply_to": self.reply_to,
             "edited": self.edited,
+            "replaced_by": self.replaced_by,
             "filename": self.filename,
             "mimetype": self.mimetype,
             "size": self.size,
@@ -390,7 +393,7 @@ impl WalkState {
 
         // Only the original sender's edit replaces content (the spec's rule): an
         // edit by anyone else is ignored, never applied.
-        let mut edited = false;
+        let mut replaced_by = String::new();
         let mut projected = None;
         if let Some(list) = self.edits.remove(&event_id) {
             self.pending_edits = self.pending_edits.saturating_sub(list.len());
@@ -400,10 +403,11 @@ impl WalkState {
                     && crate::replacement::encryption_permits(e.encrypted, encrypted)
             }) {
                 projected = Some(crate::replacement::project(content, &edit.new_content));
-                edited = true;
+                replaced_by = edit.event_id;
             }
         }
         let content = projected.as_ref().unwrap_or(content);
+        let edited = projected.is_some();
 
         let kind = kind_for(type_str, content);
         let thread_root = if rel_type == "m.thread" {
@@ -439,6 +443,7 @@ impl WalkState {
             thread_root,
             reply_to,
             edited,
+            replaced_by,
             ..base
         };
         if row.is_attachment() {
@@ -582,6 +587,11 @@ mod tests {
                 let body = content["body"].as_str().unwrap();
                 assert_eq!(row.body, body, "{}", case.name);
                 assert_eq!(row.edited, case.original.as_ref().unwrap()["content"] != *content, "{}", case.name);
+                assert_eq!(
+                    row.to_json("", "")["replaced_by"],
+                    json!(case.selected_edit().unwrap_or("")),
+                    "{}", case.name
+                );
                 assert_eq!(row.is_attachment(), content.get("url").is_some(), "{}", case.name);
                 if row.is_attachment() {
                     assert_eq!(row.filename, content["filename"].as_str().unwrap_or(body), "{}", case.name);

@@ -252,11 +252,37 @@ ColumnLayout {
                 }
             }
 
+            Label {
+                objectName: "settingsSyncRemovalStatus"
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
+                textFormat: Text.PlainText
+                font.pixelSize: AppTheme.textMeta
+                color: backup.sync && backup.sync.removal === "failed"
+                       ? AppTheme.stormDanger : AppTheme.stormTextMuted
+                visible: text.length > 0
+                text: {
+                    if (!backup.sync) return ""
+                    switch (backup.sync.removal) {
+                    case "pending":
+                        return qsTr("Removing your settings from your homeserver…")
+                    case "confirmed":
+                        return qsTr("Removed from your homeserver. A device that turns "
+                                    + "sync back on will upload its settings again.")
+                    case "failed":
+                        return qsTr("Could not confirm that your settings were removed "
+                                    + "from your homeserver. Try again.")
+                    }
+                    return ""
+                }
+            }
+
             AppButton {
                 storm: true
                 kind: "danger"
                 objectName: "settingsSyncRemoveButton"
-                visible: !!backup.sync && backup.sync.enabled
+                visible: !!backup.sync
+                         && (backup.sync.enabled || backup.sync.removal === "failed")
                 text: qsTr("Turn off and remove from my homeserver")
                 onClicked: removeConfirm.open()
             }
