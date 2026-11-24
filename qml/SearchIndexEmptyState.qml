@@ -60,7 +60,7 @@ ColumnLayout {
             if (s.sweeping || s.indexing)
                 return qsTr("Indexing new messages…") + "\n"
                     + qsTr("Results may be incomplete.")
-            if (!root.offerIndexing || s.roomId)
+            if (!root.offerIndexing)
                 return ""
             // Reading clockRevision re-evaluates the relative time every minute.
             if (s.indexAllFinishedMs > 0 && root.clockRevision >= 0)

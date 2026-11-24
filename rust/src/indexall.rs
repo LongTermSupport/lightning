@@ -56,7 +56,7 @@ pub(crate) struct RoomReceipt {
 pub(crate) struct Progress {
     #[serde(default)]
     pub version: u32,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "known_receipts")]
     pub receipts: BTreeMap<String, RoomReceipt>,
     #[serde(default)]
     pub queue: Vec<String>,
@@ -89,6 +89,17 @@ pub(crate) struct Progress {
     /// (an older record, or too many sessions) wakes on any key for it.
     #[serde(default)]
     pub utd_sessions: BTreeMap<String, BTreeSet<String>>,
+}
+
+// A receipt a newer build wrote in another shape is dropped alone, never the whole record.
+fn known_receipts<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<BTreeMap<String, RoomReceipt>, D::Error> {
+    let raw = BTreeMap::<String, serde_json::Value>::deserialize(deserializer)?;
+    Ok(raw
+        .into_iter()
+        .filter_map(|(room, value)| Some((room, serde_json::from_value(value).ok()?)))
+        .collect())
 }
 
 fn now_ms() -> u64 {
@@ -611,6 +622,9 @@ impl Control {
         if state != ScanState::WaitingForKeys {
             progress.utd_rooms.remove(room);
             progress.utd_sessions.remove(room);
+        }
+        if state == ScanState::Covered && progress.complete.len() < MAX_COMPLETE {
+            progress.complete.insert(room.to_owned());
         }
         if !self.persist(progress) {
             if let Some(r) = progress.receipts.get_mut(room) {
@@ -1158,6 +1172,7 @@ mod tests {
         assert_eq!(record.version, PROGRESS_VERSION);
         assert!(record.paused);
         assert_eq!(record.queue, vec!["!todo:x"]);
+        assert!(record.utd_rooms.contains("!keys:x"));
         let reopened = Control::new(&store.0);
         let receipt = reopened.room_receipt("!old:x");
         assert_eq!(receipt.pages, 2);
@@ -1168,6 +1183,21 @@ mod tests {
         reopened.forget_room("!old:x");
         assert!(!reopened.finish_scan("!old:x", active, &outcome, ScanState::Covered));
         assert_eq!(Control::new(&store.0).room_receipt("!old:x").state, ScanState::Unscanned);
+    }
+
+    #[test]
+    fn a_receipt_from_a_newer_build_is_dropped_without_losing_the_record() {
+        let store = Store::new("receipt-newer");
+        let path = store.0.join(PROGRESS_FILE);
+        std::fs::write(&path, br#"{"version":4,"queue":["!todo:x"],"complete":["!done:x"],
+            "receipts":{"!new:x":{"state":"some_future_state","scanned_ms":5},
+                        "!ok:x":{"state":"covered","scanned_ms":7,"pages":3,"oldest_ms":null,
+                                 "undecryptable":0,"reached_start":true,"reducer_version":1}}}"#).unwrap();
+        let control = Control::new(&store.0);
+        assert_eq!(control.room_receipt("!new:x").state, ScanState::Unscanned);
+        assert_eq!(control.room_receipt("!ok:x").state, ScanState::Covered);
+        assert_eq!(control.room_receipt("!ok:x").pages, 3);
+        assert_eq!(control.status(None).current_room, "!todo:x");
     }
 
     #[test]

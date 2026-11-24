@@ -227,6 +227,7 @@ ColumnLayout {
             objectName: "spaceLobbyPartialText"
             Layout.fillWidth: true
             text: root.coverage === "loading" ? qsTr("Loading rooms…")
+                  : root.coverage === "failed" ? qsTr("The rooms of this Space could not be loaded.")
                   : root.coverage === "limit"
                     ? qsTr("Only the first %n room(s) of a Space are listed. More rooms may be available.", "", root.loadedCount)
                     : qsTr("The Space listing is incomplete. Showing %n previously loaded room(s) for this Space.", "", root.loadedCount)

@@ -1798,11 +1798,14 @@ char *mx_rust_search_index_sweep(void *client, unsigned long long op_id);
 /* Page ONE room backwards and index what arrives — "index this room's
    history". Bounded. Answers on `search_index_deepened {op_id, ok, room_id,
    pages, reached_start, written, messages, indexed_rooms, category}`. */
-char *mx_rust_room_search_coverage(void *client, const char *room_id, unsigned long long op_id);
-char *mx_rust_cancel_room_search_index(void *client, unsigned long long op_id);
 char *mx_rust_search_index_deep(void *client,
                                 const char *room_id,
                                 unsigned long long op_id);
+/* A room's search-index row count and last scan receipt. Answers on
+   `room_search_coverage {op_id, room_id, receipt, messages}`. */
+char *mx_rust_room_search_coverage(void *client, const char *room_id, unsigned long long op_id);
+/* Stop the "index this room" walk `op_id` at its next page. */
+char *mx_rust_cancel_room_search_index(void *client, unsigned long long op_id);
 /* Forget one event (the redaction path — a redacted message must not stay
    findable by its own text), one room, or everything. Synchronous, no event. */
 char *mx_rust_search_index_forget_event(void *client, const char *event_id);
@@ -2236,10 +2239,11 @@ char *mx_rust_search_messages(void *client,
                               unsigned long long op_id);
 /* List a Space's children, joined and unjoined, via the SDK's
  * /hierarchy-backed SpaceRoomList. Bounded; reports truncated. */
-char *mx_rust_cancel_space_children(void *client, unsigned long long op_id);
 char *mx_rust_space_children(void *client,
                              const char *space_id,
                              unsigned long long op_id);
+/* Abandon space-children request `op_id`; no answer follows. */
+char *mx_rust_cancel_space_children(void *client, unsigned long long op_id);
 char *mx_rust_add_room_to_space(void *client,
                                 const char *space_id,
                                 const char *room_id,

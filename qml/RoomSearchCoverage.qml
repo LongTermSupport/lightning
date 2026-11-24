@@ -49,7 +49,7 @@ RowLayout {
             if (s.state === "too_short")
                 lines.push(qsTr("Type at least %1 characters.").arg(s.minLocalChars))
             if (s.indexing && !root.here)
-                lines.push(qsTr("Indexing another room (%1).").arg(s.indexingRoomId))
+                lines.push(qsTr("Indexing another room."))
             if (r.messages >= 0)
                 lines.push(qsTr("%n indexed message(s) in this room.", "", r.messages))
             if (root.here || r.state === "scanning")
