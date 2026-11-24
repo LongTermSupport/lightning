@@ -16168,7 +16168,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/settings/SettingsSyncController.cpp" line="+34"/>
+        <location filename="../src/settings/SettingsSyncController.cpp" line="+35"/>
         <source>out of range</source>
         <translation>außerhalb des Bereichs</translation>
     </message>
@@ -18118,7 +18118,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>RoomExportController</name>
     <message>
-        <location filename="../src/models/RoomExportController.cpp" line="+177"/>
+        <location filename="../src/models/RoomExportController.cpp" line="+178"/>
         <source>An export is already running.</source>
         <translation>Ein Export läuft bereits.</translation>
     </message>
@@ -21670,7 +21670,22 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>OK</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+18"/>
+        <source>Removing your settings from your homeserver…</source>
+        <translation>Deine Einstellungen werden von deinem Homeserver entfernt…</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Removed from your homeserver. A device that turns sync back on will upload its settings again.</source>
+        <translation>Von deinem Homeserver entfernt. Ein Gerät, das die Synchronisierung wieder einschaltet, lädt seine Einstellungen erneut hoch.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Could not confirm that your settings were removed from your homeserver. Try again.</source>
+        <translation>Es konnte nicht bestätigt werden, dass deine Einstellungen von deinem Homeserver entfernt wurden. Versuche es erneut.</translation>
+    </message>
+    <message>
+        <location line="+13"/>
         <source>Turn off and remove from my homeserver</source>
         <translation>Ausschalten und von meinem Homeserver entfernen</translation>
     </message>
@@ -27130,7 +27145,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>SettingsSyncController</name>
     <message>
-        <location filename="../src/settings/SettingsSyncController.cpp" line="+543"/>
+        <location filename="../src/settings/SettingsSyncController.cpp" line="+603"/>
         <location line="+48"/>
         <source>Settings are not available.</source>
         <translation>Einstellungen sind nicht verfügbar.</translation>
@@ -32679,7 +32694,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>ThreadController</name>
     <message>
-        <location filename="../src/threads/ThreadController.cpp" line="+768"/>
+        <location filename="../src/threads/ThreadController.cpp" line="+770"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>Anhänge werden von diesem Backend nicht unterstützt.</translation>
@@ -33210,7 +33225,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>ThreadSummaryCard</name>
     <message>
-        <location filename="../qml/ThreadSummaryCard.qml" line="+40"/>
+        <location filename="../qml/ThreadSummaryCard.qml" line="+42"/>
         <source>Image</source>
         <translation>Bild</translation>
     </message>
