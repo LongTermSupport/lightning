@@ -170,6 +170,73 @@ private:
         return best;
     }
 
+    // The visible IconButton in the same header band nearest `trailing` on its
+    // inner side, or null.
+    QQuickItem *innerHeaderNeighbour(QQuickItem *panel, QQuickItem *trailing,
+                                     bool rtl) const
+    {
+        const QRectF t = trailing->mapRectToScene(
+            QRectF(0, 0, trailing->width(), trailing->height()));
+        QQuickItem *best = nullptr;
+        qreal bestGap = 0;
+        QList<QQuickItem *> stack{ panel };
+        while (!stack.isEmpty()) {
+            QQuickItem *it = stack.takeLast();
+            if (!it->isVisible() || it->opacity() <= 0.01)
+                continue;
+            if (it != trailing
+                && QByteArray(it->metaObject()->className()).startsWith("IconButton")
+                && it->width() > 0) {
+                const QRectF r = it->mapRectToScene(
+                    QRectF(0, 0, it->width(), it->height()));
+                const qreal gap = rtl ? r.left() - t.right() : t.left() - r.right();
+                if (qAbs(r.center().y() - t.center().y()) < 1.0 && gap >= 0
+                    && (!best || gap < bestGap)) {
+                    best = it;
+                    bestGap = gap;
+                }
+            }
+            stack.append(it->childItems());
+        }
+        return best;
+    }
+
+    // Every visible item under `it` that leaves `panel` (vertically only where
+    // a scroller shows it), every cut unelided text, and every control.
+    static void filterPanelFaults(QQuickItem *it, QQuickItem *panel, qreal top,
+                                  qreal bottom, QStringList &out,
+                                  QList<QQuickItem *> &controls)
+    {
+        if (!it->isVisible() || it->opacity() <= 0.01)
+            return;
+        const QByteArray cls = it->metaObject()->className();
+        const QRectF r = panel->mapRectFromItem(
+            it, QRectF(0, 0, it->width(), it->height()));
+        if (it->width() > 0 && it->height() > 0
+            && qMin(r.bottom(), bottom) > qMax(r.top(), top)) {
+            if (r.left() < -0.5 || r.right() > panel->width() + 0.5
+                || r.top() < -0.5 || r.bottom() > panel->height() + 0.5)
+                out << QStringLiteral("%1 %2 at [%3..%4] x [%5..%6]")
+                           .arg(QString::fromLatin1(cls), it->objectName())
+                           .arg(qRound(r.left())).arg(qRound(r.right()))
+                           .arg(qRound(r.top())).arg(qRound(r.bottom()));
+            if (it->inherits("QQuickText") && it->width() + 0.5 < it->implicitWidth()
+                && it->property("elide").toInt() == 0
+                && it->property("wrapMode").toInt() == 0)
+                out << QStringLiteral("text '%1' cut at %2 of %3")
+                           .arg(it->property("text").toString())
+                           .arg(it->width()).arg(it->implicitWidth());
+            if (isControl(cls))
+                controls << it;
+        }
+        if (it->inherits("QQuickFlickable")) {
+            top = qMax(top, r.top());
+            bottom = qMin(bottom, r.bottom());
+        }
+        for (QQuickItem *c : it->childItems())
+            filterPanelFaults(c, panel, top, bottom, out, controls);
+    }
+
 private Q_SLOTS:
     void initTestCase()
     {
@@ -848,6 +915,7 @@ private Q_SLOTS:
 
         struct Seen { QString name; qreal gutter, w, h, cy, radius; };
         QList<Seen> seen;
+        QList<QPair<QString, qreal>> gaps;
         QStringList missing;
         QQuickItem *band = item("roomHeaderBand");
         QVERIFY(band);
@@ -865,6 +933,11 @@ private Q_SLOTS:
             if (edge != band && name != QLatin1String("roomList")
                 && button->property("iconName").toString() != QLatin1String("close"))
                 missing << name + QStringLiteral(" (last action is not its close)");
+            if (QQuickItem *inner = innerHeaderNeighbour(edge, button, rtl)) {
+                const QRectF n = inner->mapRectToScene(
+                    QRectF(0, 0, inner->width(), inner->height()));
+                gaps.append({ name, rtl ? n.left() - b.right() : b.left() - n.right() });
+            }
             seen.append({ name, rtl ? b.left() - e.left() : e.right() - b.right(),
                           b.width(), b.height(), b.center().y() - e.top(),
                           button->property("radius").toReal() });
@@ -902,6 +975,11 @@ private Q_SLOTS:
         QTest::qWait(300);
         measure(QStringLiteral("search"), item("roomSearchPanel"),
                 trailingHeaderButton(item("roomSearchPanel"), rtl));
+        QVERIFY(QMetaObject::invokeMethod(item("roomSearchPanel"), "beginFilters"));
+        QTest::qWait(300);
+        measure(QStringLiteral("searchFilters"), item("roomSearchPanel"),
+                trailingHeaderButton(item("roomSearchPanel"), rtl));
+        item("roomSearchPanel")->setProperty("filterEditing", false);
         QVERIFY(QMetaObject::invokeMethod(pane, "toggleSearchPanel"));
         QTest::qWait(150);
 
@@ -923,7 +1001,7 @@ private Q_SLOTS:
         measure(QStringLiteral("settings"), item("settingsHeaderBar"),
                 item("settingsCloseButton"));
         m_controller->showMain();
-        expected += 7;
+        expected += 8;
 
         m_controller->settings()->setSpacesRailVisible(true);
         setMirrored(false);
@@ -952,6 +1030,28 @@ private Q_SLOTS:
                                 .arg(ref.radius)
                             + faults.join(QStringLiteral("; "))));
         QCOMPARE(seen.size(), expected);
+
+        // Room, search and the four Room information sections each have an
+        // action beside their last one.
+        QStringList gapNames;
+        for (const auto &g : gaps)
+            gapNames << g.first;
+        QVERIFY2(!gaps.isEmpty() && gaps.first().first == QLatin1String("room"),
+                 qPrintable(gapNames.join(QStringLiteral(", "))));
+        QStringList spacing;
+        for (const auto &g : gaps)
+            if (qAbs(g.second - gaps.first().second) > 0.5)
+                spacing << QStringLiteral("%1: %2").arg(g.first).arg(g.second);
+        QVERIFY2(spacing.isEmpty(),
+                 qPrintable(QStringLiteral("room header actions %1 px apart; "
+                                           "differs: ").arg(gaps.first().second)
+                            + spacing.join(QStringLiteral("; "))));
+        for (const char *n : { "search", "roomInfo/overview", "roomInfo/people",
+                               "roomInfo/media", "roomInfo/widgets" })
+            QVERIFY2(gapNames.contains(QLatin1String(n)),
+                     qPrintable(QStringLiteral("%1 has no inner action; measured: %2")
+                                    .arg(QLatin1String(n),
+                                         gapNames.join(QStringLiteral(", ")))));
     }
 
     void theRightmostHeaderTooltipsStayInsideTheWindow_data()
@@ -1113,6 +1213,88 @@ private Q_SLOTS:
         QCOMPARE(qRound(panelWidth), 260);
         QVERIFY2(parts.size() >= 5, "the header shows less than it should");
         QCOMPARE(reachable, 3);
+        QVERIFY2(faults.isEmpty(), qPrintable(faults.join(QStringLiteral("; "))));
+    }
+
+    void theSearchFiltersFitTheNarrowestPanel_data()
+    {
+        QTest::addColumn<int>("width");
+        QTest::addColumn<bool>("rtl");
+        for (int w : { 260, 320 })
+            for (bool rtl : { false, true })
+                QTest::newRow(qPrintable(QStringLiteral("%1 %2").arg(w).arg(
+                    QLatin1String(rtl ? "rtl" : "ltr"))))
+                    << w << rtl;
+    }
+
+    void theSearchFiltersFitTheNarrowestPanel()
+    {
+        QFETCH(int, width);
+        QFETCH(bool, rtl);
+        m_controller->showMain();
+        m_controller->setCurrentRoomId(QStringLiteral("!general:mock.local"));
+        m_window->resize(1280, 720);
+        const int widthBefore = m_controller->settings()->sidePanelWidth();
+        m_controller->settings()->setSidePanelWidth(width);
+        setMirrored(rtl);
+        QTest::qWait(200);
+        QQuickItem *pane = item("timelinePane");
+        QVERIFY(pane);
+        QVERIFY(QMetaObject::invokeMethod(pane, "toggleSearchPanel"));
+        QTest::qWait(300);
+        QQuickItem *panel = item("roomSearchPanel");
+        QVERIFY(panel && panel->isVisible());
+        QVERIFY(QMetaObject::invokeMethod(panel, "beginFilters"));
+
+        QStringList faults;
+        int controlCount = 0;
+        const qreal panelWidth = panel->width();
+        for (const char *section : { "", "from" }) {
+            panel->setProperty("memberSection", QString::fromLatin1(section));
+            QTest::qWait(300);
+            QList<QQuickItem *> controls;
+            QStringList found;
+            filterPanelFaults(panel, panel, -1e9, 1e9, found, controls);
+            controlCount = qMax(controlCount, int(controls.size()));
+            const auto box = [panel](QQuickItem *it) {
+                return panel->mapRectFromItem(
+                    it, QRectF(0, 0, it->width(), it->height()));
+            };
+            const auto within = [](QQuickItem *a, QQuickItem *b) {
+                for (QQuickItem *p = b; p; p = p->parentItem())
+                    if (p == a)
+                        return true;
+                return false;
+            };
+            for (int i = 0; i < controls.size(); ++i)
+                for (int j = i + 1; j < controls.size(); ++j) {
+                    QQuickItem *a = controls.at(i);
+                    QQuickItem *b = controls.at(j);
+                    if (within(a, b) || within(b, a))
+                        continue;
+                    const QRectF o = box(a).intersected(box(b));
+                    if (o.width() > 0.5 && o.height() > 0.5)
+                        found << QStringLiteral("%1 overlaps %2")
+                                     .arg(QString::fromLatin1(a->metaObject()->className()),
+                                          QString::fromLatin1(b->metaObject()->className()));
+                }
+            for (const QString &f : found)
+                faults << QStringLiteral("[%1] %2").arg(
+                    QLatin1String(*section ? section : "collapsed"), f);
+        }
+
+        panel->setProperty("memberSection", QString());
+        panel->setProperty("filterEditing", false);
+        QVERIFY(QMetaObject::invokeMethod(pane, "toggleSearchPanel"));
+        m_controller->settings()->setSidePanelWidth(widthBefore);
+        setMirrored(false);
+        QTest::qWait(150);
+        QCOMPARE(qRound(panelWidth), width);
+        // Header ×, two member buttons, two date fields, six types, pinned,
+        // three footer buttons.
+        QVERIFY2(controlCount >= 15,
+                 qPrintable(QStringLiteral("only %1 controls measured")
+                                .arg(controlCount)));
         QVERIFY2(faults.isEmpty(), qPrintable(faults.join(QStringLiteral("; "))));
     }
 };
