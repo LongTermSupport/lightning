@@ -66,6 +66,15 @@ public:
     QStringList editBodies;
 };
 
+int undoAt(MessageComposer *composer, int cursor)
+{
+    int out = -2;
+    if (!QMetaObject::invokeMethod(composer, "undoShortcodeAutoConvert",
+                                   Q_RETURN_ARG(int, out), Q_ARG(int, cursor)))
+        return -2;
+    return out;
+}
+
 }
 
 class EmojiShortcodeCompletionTest : public QObject
@@ -505,6 +514,58 @@ private Q_SLOTS:
         m_composer->setText(text);
         m_composer->send();
         QCOMPARE(m_client->sentBodies, QStringList{ sent });
+    }
+
+    void plainSendsExactlyWhatWasTyped()
+    {
+        m_composer->setText(QStringLiteral("/plain :thumbsup: *x* <b> :blob_wave:"));
+        QCOMPARE(m_composer->maybeAutoConvertShortcodeBeforeCursor(18), -1);
+        m_composer->send();
+        QCOMPARE(m_client->sentBodies,
+                 QStringList{ QStringLiteral(":thumbsup: *x* <b> :blob_wave:") });
+        const QVariantMap spec = m_client->sentSpecs.last();
+        QCOMPARE(spec.value(QStringLiteral("format")).toString(), QStringLiteral("plain"));
+        QVERIFY(!spec.contains(QStringLiteral("emoticons")));
+        QVERIFY(!spec.contains(QStringLiteral("literal")));
+        QVERIFY(m_recordedUses.isEmpty());
+    }
+
+    void undoingAnAutoConversionPutsTheShortcodeBackForGood()
+    {
+        m_composer->setText(QStringLiteral("hi :thumbsup: "));
+        const int pos = m_composer->maybeAutoConvertShortcodeBeforeCursor(14);
+        QVERIFY(pos > 0);
+        QCOMPARE(undoAt(m_composer, pos), 14);
+        QCOMPARE(m_composer->text(), QStringLiteral("hi :thumbsup: "));
+        QCOMPARE(m_composer->maybeAutoConvertShortcodeBeforeCursor(14), -1);
+        QVERIFY(!m_composer->shortcodeAutoConvertEdit(QStringLiteral(":+1: "), 5).isEmpty());
+        QVERIFY(m_composer->shortcodeAutoConvertEdit(QStringLiteral(":THUMBSUP: "), 11)
+                    .isEmpty());
+        m_composer->send();
+        QCOMPARE(m_client->sentBodies, QStringList{ QStringLiteral("hi :thumbsup:") });
+    }
+
+    void anUndoAfterTheCaretMovedChangesNothing()
+    {
+        m_composer->setText(QStringLiteral("hi :thumbsup: "));
+        const int pos = m_composer->maybeAutoConvertShortcodeBeforeCursor(14);
+        QVERIFY(pos > 0);
+        const QString converted = m_composer->text();
+        QCOMPARE(undoAt(m_composer, pos - 1), -1);
+        QCOMPARE(m_composer->text(), converted);
+        QCOMPARE(undoAt(m_composer, pos), -1);
+    }
+
+    void aThreadUndoKeepsTheCodeLiteralAtSend()
+    {
+        QVERIFY(QMetaObject::invokeMethod(m_composer, "keepShortcodeLiteral",
+                                          Q_ARG(QString, QStringLiteral("thumbsup"))));
+        QVERIFY(m_composer->shortcodeAutoConvertEdit(
+            QStringLiteral(":thumbsup: "), 11).isEmpty());
+        QString body = QStringLiteral("ok :thumbsup:");
+        QVariantMap spec;
+        m_composer->applyOutgoingEmoji(body, spec);
+        QCOMPARE(body, QStringLiteral("ok :thumbsup:"));
     }
 
     void codeIsNeverConvertedWhileTyping()

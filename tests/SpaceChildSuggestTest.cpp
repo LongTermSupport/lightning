@@ -516,6 +516,47 @@ private Q_SLOTS:
         QCOMPARE(client.removals.size(), 3);
         QCOMPARE(done.count(), 1);
     }
+
+    void everyJoinedParentIsListedPrimaryFirstAndCyclesStayFinite()
+    {
+        const QString r = QStringLiteral("!r:example.org");
+        const QString s1 = QStringLiteral("!s1:example.org");
+        const QString s2 = QStringLiteral("!s2:example.org");
+        const QString c = QStringLiteral("!c:example.org");
+        const QString u = QStringLiteral("!u:example.org");
+        const QString x = QStringLiteral("!x:example.org");
+        const QString y = QStringLiteral("!y:example.org");
+        FakeClient client;
+        client.fakeRooms = {
+            lobbyRoom(r, QStringLiteral("R"), {}, true, { s1, s2, x }),
+            lobbyRoom(s1, QStringLiteral("S1"), {}, true, { c, x }),
+            lobbyRoom(s2, QStringLiteral("S2"), {}, true, { c }),
+            // c lists its own parent: a cycle.
+            lobbyRoom(c, QStringLiteral("C"), {}, true, { s1 }),
+            lobbyRoom(u, QStringLiteral("U"), {}, true, { x }),
+            lobbyRoom(x, QStringLiteral("X"), {}),
+            lobbyRoom(y, QStringLiteral("Y"), {}),
+        };
+        client.fakeRooms[4].membership = RoomInfo::Invited;
+        client.fakeRooms[6].parentSpaceIds = { s2 };
+        SpaceManager mgr;
+        mgr.setClient(&client);
+
+        const auto parents = [&mgr](const QString &id) {
+            QStringList out;
+            const bool ok = QMetaObject::invokeMethod(
+                &mgr, "directParentSpaceIds", Q_RETURN_ARG(QStringList, out),
+                Q_ARG(QString, id));
+            return ok ? out : QStringList{ QStringLiteral("<missing>") };
+        };
+        QCOMPARE(parents(c), (QStringList{ s1, s2 }));
+        QCOMPARE(parents(s1), (QStringList{ r, c }));
+        QCOMPARE(parents(r), QStringList{});
+        const QStringList ofX = parents(x);
+        QCOMPARE(QSet<QString>(ofX.cbegin(), ofX.cend()), (QSet<QString>{ r, s1 }));
+        QCOMPARE(parents(y), QStringList{ s2 });
+        QCOMPARE(mgr.ancestorSpaceIds(c), (QStringList{ s1, r }));
+    }
 };
 
 QTEST_GUILESS_MAIN(SpaceChildSuggestTest)

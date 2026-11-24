@@ -132,6 +132,23 @@ private Q_SLOTS:
         QVERIFY(lightning::urls::refusalNotice(
             QUrl(QStringLiteral("file:///_matrix/media/x"))).isEmpty());
     }
+    void aMapHandoffIsBuiltFromTheNumbersOnly()
+    {
+        using lightning::urls::mapUrl;
+        QCOMPARE(mapUrl(51.5008, -0.1247, QStringLiteral("geo")),
+                 QUrl(QStringLiteral("geo:51.500800,-0.124700")));
+        QCOMPARE(mapUrl(0, 0, QStringLiteral("osm")),
+                 QUrl(QStringLiteral("https://www.openstreetmap.org/"
+                                     "?mlat=0.000000&mlon=0.000000#map=16/0.000000/0.000000")));
+        QVERIFY(mapUrl(91, 0, QStringLiteral("geo")).isEmpty());
+        QVERIFY(mapUrl(0, -180.5, QStringLiteral("osm")).isEmpty());
+        QVERIFY(mapUrl(qQNaN(), 0, QStringLiteral("geo")).isEmpty());
+        QVERIFY(mapUrl(1, 2, QStringLiteral("evil")).isEmpty());
+        QVERIFY(!lightning::urls::isOpenableExternally(
+            QUrl(QStringLiteral("geo:1,2"))));
+        QVERIFY(!lightning::urls::openMapPoint(1, 2, QStringLiteral("evil")));
+    }
+
     void onlyWebAndMailSchemesAreOpenable()
     {
         QFETCH(QString, url);

@@ -25,6 +25,9 @@ const QList<Command> &registry()
           tr("Send an action message"), true, {} },
         { QStringLiteral("shrug"), QStringLiteral("[message]"),
           tr("Append ¯\\_(ツ)_/¯ to a message"), false, {} },
+        { QStringLiteral("plain"), QStringLiteral("<message>"),
+          tr("Send the message exactly as typed, without Markdown or emoji conversion"),
+          true, {} },
         { QStringLiteral("spoiler"), QStringLiteral("<message>"),
           tr("Send the message as a click-to-reveal spoiler"), true, {} },
         { QStringLiteral("join"), QStringLiteral("<room address or id>"),
@@ -175,6 +178,15 @@ Outcome execute(const Parse &parsed, const QStringList &mentionIds,
             actions.send(parsed.args + QLatin1Char(' ') + escaped, mentionIds,
                          QVariantMap());
         }
+        return done();
+    }
+    if (name == QLatin1String("plain")) {
+        if (!actions.send)
+            return refuse(unavailable);
+        // "literal" is consumed by the composer: no shortcode or emoticon pass.
+        actions.send(mention::recoverFromBody(parsed.args).text, mentionIds,
+                     { { QStringLiteral("format"), QStringLiteral("plain") },
+                       { QStringLiteral("literal"), true } });
         return done();
     }
     if (name == QLatin1String("spoiler")) {

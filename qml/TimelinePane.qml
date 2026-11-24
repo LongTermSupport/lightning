@@ -6661,6 +6661,11 @@ Rectangle {
                                 elide: Label.ElideRight
                                 Layout.fillWidth: true
                             }
+                            SpacePlacement {
+                                Layout.fillWidth: true
+                                targetId: spaceHome.spaceId
+                                onOpenSpaceRequested: (id) => app.openSpaceHome(id)
+                            }
                             TopicText {
                                 objectName: "spaceHomeTopic"
                                 visible: (spaceHome.info.topic || "").length > 0
@@ -7106,8 +7111,10 @@ Rectangle {
                 contentItem: ColumnLayout {
                     spacing: AppTheme.spacing12
                     Label {
-                        text: qsTr("Remove %n room(s) from this Space?", "",
+                        text: qsTr("Remove %n room(s) from %1?", "",
                                    removeChildConfirm.roomIds.length)
+                              .arg(spaceHome.info.name || qsTr("this Space"))
+                        textFormat: Text.PlainText
                         color: AppTheme.stormText
                         font.family: AppTheme.menuFont
                         font.pixelSize: AppTheme.scaled(AppTheme.textTitle)

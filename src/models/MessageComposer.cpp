@@ -942,7 +942,8 @@ void MessageComposer::sendInternal(bool allowCommands)
     }
     const mention::Expansion expansion = mention::expand(m_text, m_mentionRefs);
     QString body = expansion.body.trimmed();
-    if (m_emojiAutoConvert)
+    if (m_emojiAutoConvert
+        && !(allowCommands && m_editingEventId.isEmpty() && isPlainCommand(body)))
         body = convertUnicodeShortcodesForSend(body);
     const QStringList mentionIds = expansion.userIds;
 
@@ -1109,7 +1110,8 @@ QString MessageComposer::convertUnicodeShortcodesForSend(const QString &text) co
         const QString code = m.captured(1);
         QString emoji;
         const bool shadowedByCustomPack = customShortcodeExists(code);
-        if (!shadowedByCustomPack && !insideCode(text, start, false))
+        if (!shadowedByCustomPack && !insideCode(text, start, false)
+            && !m_literalShortcodes.contains(code.toCaseFolded()))
             emoji = m_unicodeShortcodeResolver(code);
         if (!emoji.isEmpty()) {
             out += emoji;
@@ -1606,7 +1608,7 @@ QVariantMap MessageComposer::shortcodeAutoConvertEdit(const QString &text,
     if (token.first < 0 || insideCode(text, token.first, true))
         return {};
     const QString code = text.mid(token.first + 1, token.second - 2);
-    if (customShortcodeExists(code))
+    if (customShortcodeExists(code) || m_literalShortcodes.contains(code.toCaseFolded()))
         return {};
     const QString emoji = m_unicodeShortcodeResolver(code);
     if (emoji.isEmpty())
@@ -1633,6 +1635,8 @@ void MessageComposer::applyOutgoingEmojiWith(QString &body,
                                              QVariantMap &bodySpec,
                                              const QVariantMap &selected) const
 {
+    if (bodySpec.remove(QStringLiteral("literal")) > 0)
+        return;
     if (m_emojiAutoConvert && !bodySpec.contains(QStringLiteral("format")))
         body = convertUnicodeShortcodesForSend(body);
     QVariantMap emoticons = resolveShortcodes(body, m_emoticonResolver);
@@ -1869,13 +1873,13 @@ int MessageComposer::maybeAutoConvertShortcodeBeforeCursor(int cursorPos)
         return -1;
     if (cursorPos < 1 || cursorPos > m_text.size())
         return -1;
-    if (m_text.at(cursorPos - 1) != QLatin1Char(' '))
+    if (m_text.at(cursorPos - 1) != QLatin1Char(' ') || isPlainCommand(m_text))
         return -1;
     const auto token = completeShortcodeEndingAt(m_text, cursorPos - 1);
     if (token.first < 0 || insideCode(m_text, token.first, true))
         return -1;
     const QString code = m_text.mid(token.first + 1, token.second - 2);
-    if (customShortcodeExists(code))
+    if (customShortcodeExists(code) || m_literalShortcodes.contains(code.toCaseFolded()))
         return -1;
     const QString emoji = m_unicodeShortcodeResolver(code);
     if (emoji.isEmpty())
@@ -1885,7 +1889,35 @@ int MessageComposer::maybeAutoConvertShortcodeBeforeCursor(int cursorPos)
     setText(next);
     if (m_unicodeEmojiUseRecorder)
         m_unicodeEmojiUseRecorder(emoji);
-    return token.first + emoji.length() + 1;
+    m_lastAutoConvert = { token.first, QLatin1Char(':') + code + QLatin1Char(':'), emoji,
+                          token.first + int(emoji.length()) + 1 };
+    return m_lastAutoConvert.cursor;
+}
+
+int MessageComposer::undoShortcodeAutoConvert(int cursorPos)
+{
+    const AutoConvert last = std::exchange(m_lastAutoConvert, AutoConvert{});
+    if (last.original.isEmpty() || cursorPos != last.cursor
+        || m_text.mid(last.start, last.emoji.length()) != last.emoji)
+        return -1;
+    keepShortcodeLiteral(last.original.mid(1, last.original.length() - 2));
+    QString next = m_text;
+    next.replace(last.start, last.emoji.length(), last.original);
+    setText(next);
+    return last.start + int(last.original.length()) + 1;
+}
+
+void MessageComposer::keepShortcodeLiteral(const QString &code)
+{
+    if (!code.isEmpty())
+        m_literalShortcodes.insert(code.toCaseFolded());
+}
+
+bool MessageComposer::isPlainCommand(const QString &text)
+{
+    const SlashCommands::Parse parsed = SlashCommands::parse(text);
+    return parsed.kind == SlashCommands::Parse::Known
+        && parsed.name == QLatin1String("plain");
 }
 
 int MessageComposer::acceptCommandCompletion(const QString &name)

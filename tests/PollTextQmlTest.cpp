@@ -531,6 +531,129 @@ private Q_SLOTS:
         QVERIFY2(found, "no accuracy label was drawn");
     }
 
+    static QVariantMap liveLocationFixture(qint64 fixAgeMs, qint64 untilFromNowMs,
+                                           bool withPoint = true)
+    {
+        const qint64 now = QDateTime::currentMSecsSinceEpoch();
+        QVariantMap f = pollFixture();
+        f.insert(QStringLiteral("isPoll"), false);
+        f.insert(QStringLiteral("isLocation"), true);
+        f.insert(QStringLiteral("body"), QStringLiteral("Live location"));
+        f.insert(QStringLiteral("locationDescription"),
+                 QStringLiteral("<img src=\"http://loc-desc.invalid/x.png\">"));
+        f.insert(QStringLiteral("locationHasPoint"), withPoint);
+        f.insert(QStringLiteral("locationLat"), 51.5008);
+        f.insert(QStringLiteral("locationLon"), -0.1247);
+        f.insert(QStringLiteral("locationUncertaintyM"), 0.0);
+        f.insert(QStringLiteral("locationLive"), true);
+        f.insert(QStringLiteral("locationLiveActive"), true);
+        f.insert(QStringLiteral("locationTs"), withPoint ? now - fixAgeMs : 0);
+        f.insert(QStringLiteral("locationLiveUntil"), now + untilFromNowMs);
+        return f;
+    }
+
+    static QString textOf(QQuickItem *root, const char *name)
+    {
+        QQuickItem *item = findVisual(root, QString::fromLatin1(name));
+        if (!item)
+            return QStringLiteral("<no %1>").arg(QString::fromLatin1(name));
+        return item->isVisible() ? item->property("text").toString()
+                                 : QStringLiteral("<hidden>");
+    }
+
+    void aLiveLocationSaysHowOldItsPointIs_data()
+    {
+        QTest::addColumn<qint64>("fixAgeMs");
+        QTest::addColumn<qint64>("untilFromNowMs");
+        QTest::addColumn<QString>("state");
+        QTest::addColumn<QString>("age");
+        const qint64 hour = 3600 * 1000;
+        QTest::newRow("recent") << qint64(2 * 60 * 1000) << hour
+                                << QStringLiteral("Sharing live location") << QStringLiteral("Updated 2 min ago");
+        QTest::newRow("clock skew") << qint64(-90 * 1000) << hour
+                                    << QStringLiteral("Sharing live location") << QStringLiteral("Updated just now");
+        QTest::newRow("old fix") << qint64(20 * 60 * 1000) << hour
+                                 << QStringLiteral("Live location, not updating")
+                                 << QStringLiteral("Last known position, updated 20 min ago");
+        QTest::newRow("expired since the row was built")
+            << qint64(30 * 1000) << qint64(-1000) << QStringLiteral("Live location (ended)")
+            << QStringLiteral("Last known position, updated just now");
+    }
+
+    void aLiveLocationSaysHowOldItsPointIs()
+    {
+        QFETCH(qint64, fixAgeMs);
+        QFETCH(qint64, untilFromNowMs);
+        QFETCH(QString, state);
+        QFETCH(QString, age);
+        AppController app(AppController::MockBackend);
+        QQmlApplicationEngine engine;
+        engine.rootContext()->setContextProperty("app", &app);
+        engine.rootContext()->setContextProperty(
+            "model", liveLocationFixture(fixAgeMs, untilFromNowMs));
+        QQuickWindow window;
+        QQuickItem *root = loadDelegate(engine, window);
+        QVERIFY2(root, "MessageDelegate did not load");
+        QCOMPARE(textOf(root, "locationStateLabel"), state);
+        QCOMPARE(textOf(root, "locationAgeLabel"), age);
+    }
+
+    void aLiveShareWithNoPointYetSaysSo()
+    {
+        AppController app(AppController::MockBackend);
+        QQmlApplicationEngine engine;
+        engine.rootContext()->setContextProperty("app", &app);
+        engine.rootContext()->setContextProperty(
+            "model", liveLocationFixture(0, 3600 * 1000, false));
+        QQuickWindow window;
+        QQuickItem *root = loadDelegate(engine, window);
+        QVERIFY2(root, "MessageDelegate did not load");
+        QStringList texts;
+        collectLabelTexts(root, texts);
+        QVERIFY2(texts.contains(QStringLiteral("No position received yet.")),
+                 qPrintable(texts.join(QLatin1Char('|'))));
+        QQuickItem *open = findVisual(root, QStringLiteral("locationOpenMapButton"));
+        QVERIFY(open && !open->isVisible());
+    }
+
+    // Guard: the card has never fetched anything; it must stay that way.
+    void showingALocationAsksNoMapProvider()
+    {
+        AppController app(AppController::MockBackend);
+        RequestLog log;
+        RecordingNamFactory factory(&log);
+        QQmlApplicationEngine engine;
+        engine.setNetworkAccessManagerFactory(&factory);
+        engine.rootContext()->setContextProperty("app", &app);
+        engine.rootContext()->setContextProperty(
+            "model", liveLocationFixture(60 * 1000, 3600 * 1000));
+        QQuickWindow window;
+        QQuickItem *root = loadDelegate(engine, window);
+        QVERIFY2(root, "MessageDelegate did not load");
+        QVERIFY(findVisual(root, QStringLiteral("locationCard")));
+        settle(500);
+        QMutexLocker lock(&log.mutex);
+        QVERIFY2(log.urls.isEmpty(), qPrintable(log.urls.join(QLatin1Char(' '))));
+    }
+
+    void theMapHandoffOffersAChoiceAndCopy()
+    {
+        AppController app(AppController::MockBackend);
+        QQmlApplicationEngine engine;
+        engine.rootContext()->setContextProperty("app", &app);
+        engine.rootContext()->setContextProperty(
+            "model", liveLocationFixture(60 * 1000, 3600 * 1000));
+        QQuickWindow window;
+        QQuickItem *root = loadDelegate(engine, window);
+        QVERIFY2(root, "MessageDelegate did not load");
+        QObject *menu = root->findChild<QObject *>(QStringLiteral("locationOpenMenu"));
+        QVERIFY2(menu, "no Open in… menu");
+        QCOMPARE(menu->property("count").toInt(), 3);
+        for (const char *name : { "locationOpenMapApp", "locationOpenOsm",
+                                  "locationCopyCoordinates" })
+            QVERIFY2(root->findChild<QObject *>(QString::fromLatin1(name)), name);
+    }
+
     void returnConfirmsTheFocusedDestructiveButton()
     {
         AppController app(AppController::MockBackend);

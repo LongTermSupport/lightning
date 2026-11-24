@@ -182,6 +182,10 @@ struct TimelineEvent {
     QString locationAsset;
     bool locationLive = false;
     bool locationLiveActive = false;
+    // Live share only, ms since epoch; 0 = unknown. The active flag is computed
+    // when the row is built, so the view re-checks it against liveUntil.
+    qint64 locationTs = 0;
+    qint64 locationLiveUntil = 0;
 
     // Encryption flags, populated by the Rust backend; HTTP and Mock leave the
     // defaults. Metadata only; never derive plaintext from them:

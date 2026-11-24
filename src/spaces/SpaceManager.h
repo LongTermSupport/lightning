@@ -105,6 +105,9 @@ public:
     Q_INVOKABLE QStringList childSpaceIds(const QString &spaceId) const;
     Q_INVOKABLE QString parentSpaceIdOf(const QString &spaceId) const;
     Q_INVOKABLE QStringList ancestorSpaceIds(const QString &spaceId) const;
+    // Every joined Space that lists the room or Space directly, by either edge;
+    // a Space's primary parent first, then in Space order.
+    Q_INVOKABLE QStringList directParentSpaceIds(const QString &id) const;
     Q_INVOKABLE QStringList moderationScopeRoomIds(
         const QString &spaceId) const;
     Q_INVOKABLE bool roomInAnySpace(const QString &roomId) const;

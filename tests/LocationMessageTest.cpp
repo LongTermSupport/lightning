@@ -82,6 +82,22 @@ private Q_SLOTS:
         QVERIFY(!b.locationLiveActive);
     }
 
+    void aLiveShareCarriesItsFixTimeAndItsEnd()
+    {
+        QJsonObject live = locationItem(QStringLiteral("On my way"), 51.5, -0.12);
+        live.insert(QStringLiteral("locationLive"), true);
+        live.insert(QStringLiteral("locationTs"), 1764000000123.0);
+        live.insert(QStringLiteral("locationLiveUntil"), 1764003600000.0);
+        const TimelineEvent e = matrix::rust_timeline::eventFromItemJson(live, kRoom);
+        QCOMPARE(e.locationTs, qint64(1764000000123));
+        QCOMPARE(e.locationLiveUntil, qint64(1764003600000));
+
+        const TimelineEvent bare = matrix::rust_timeline::eventFromItemJson(
+            locationItem(QStringLiteral("Here"), 1.0, 2.0), kRoom);
+        QCOMPARE(bare.locationTs, qint64(0));
+        QCOMPARE(bare.locationLiveUntil, qint64(0));
+    }
+
     void theOptionalFieldsCrossWhenPresentAndAreEmptyWhenNot()
     {
         QJsonObject full = locationItem(QStringLiteral("Here"), 1.0, 2.0);

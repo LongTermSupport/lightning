@@ -6850,7 +6850,38 @@ Item {
     Component {
         id: locationComponent
         Rectangle {
+            id: locationCard
             objectName: "locationCard"
+            readonly property bool live: model.locationLive === true
+            readonly property real fixTs: model.locationTs || 0
+            readonly property real liveUntil: model.locationLiveUntil || 0
+            property real nowMs: Date.now()
+            // locationLiveActive was computed when the row was built.
+            readonly property bool liveNow: live && model.locationLiveActive === true
+                                            && (liveUntil <= 0 || nowMs < liveUntil)
+            readonly property real ageMs: fixTs > 0 ? Math.max(0, nowMs - fixTs) : -1
+            readonly property bool fresh: liveNow && ageMs >= 0 && ageMs < 300000
+            readonly property string ageText: {
+                if (ageMs < 0)
+                    return ""
+                var min = Math.floor(ageMs / 60000)
+                if (min < 1)
+                    return qsTr("just now")
+                if (min < 60)
+                    return qsTr("%n min ago", "", min)
+                if (min < 1440)
+                    return qsTr("%n h ago", "", Math.floor(min / 60))
+                return Qt.formatDateTime(new Date(fixTs), Locale.ShortFormat)
+            }
+            readonly property string coordinates:
+                Number(model.locationLat || 0).toFixed(5) + ", "
+                + Number(model.locationLon || 0).toFixed(5)
+            Timer {
+                interval: 30000
+                repeat: true
+                running: locationCard.live && locationCard.visible
+                onTriggered: locationCard.nowMs = Date.now()
+            }
             implicitWidth: Math.min(320, locationCol.implicitWidth
                                          + AppTheme.spacing12 * 2)
             implicitHeight: locationCol.implicitHeight + AppTheme.spacing12 * 2
@@ -6877,10 +6908,13 @@ Item {
                         Layout.fillWidth: true
                         Layout.minimumWidth: 0
                         textFormat: Text.PlainText
-                        text: model.locationLive === true
-                              ? (model.locationLiveActive === true
+                        objectName: "locationStateLabel"
+                        text: locationCard.live
+                              ? (locationCard.fresh
                                  ? qsTr("Sharing live location")
-                                 : qsTr("Live location (ended)"))
+                                 : locationCard.liveNow
+                                   ? qsTr("Live location, not updating")
+                                   : qsTr("Live location (ended)"))
                               : (model.locationAsset === "m.pin"
                                  ? qsTr("A place") : qsTr("Location"))
                         color: AppTheme.textMuted
@@ -6905,8 +6939,7 @@ Item {
                     visible: model.locationHasPoint === true
                     textFormat: Text.PlainText
                     text: {
-                        var pos = model.locationLat.toFixed(5) + ", "
-                                + model.locationLon.toFixed(5)
+                        var pos = locationCard.coordinates
                         return model.locationUncertaintyM > 0
                             ? qsTr("%1 · within %2 m").arg(pos)
                                   .arg(Math.round(model.locationUncertaintyM)
@@ -6917,18 +6950,53 @@ Item {
                     font.pixelSize: AppTheme.textMeta
                 }
 
+                Label {
+                    objectName: "locationAgeLabel"
+                    Layout.fillWidth: true
+                    visible: locationCard.live && locationCard.ageText !== ""
+                    wrapMode: Text.WordWrap
+                    textFormat: Text.PlainText
+                    text: locationCard.fresh
+                          ? qsTr("Updated %1").arg(locationCard.ageText)
+                          : qsTr("Last known position, updated %1")
+                                .arg(locationCard.ageText)
+                    color: AppTheme.textMuted
+                    font.pixelSize: AppTheme.textMeta
+                }
+
+                // Nothing is fetched to show a location; a map gets it only on a click here.
                 AppButton {
+                    id: locationOpenButton
                     objectName: "locationOpenMapButton"
                     Layout.fillWidth: true
                     visible: model.locationHasPoint === true
                     size: "sm"
-                    text: qsTr("Open in a map")
-                    onClicked: {
-                        var lat = model.locationLat
-                        var lon = model.locationLon
-                        app.media.openWebUrl(
-                            "https://www.openstreetmap.org/?mlat=" + lat
-                            + "&mlon=" + lon + "#map=16/" + lat + "/" + lon)
+                    text: qsTr("Open in…")
+                    onClicked: locationMenu.popup(locationOpenButton, 0,
+                                                  locationOpenButton.height)
+                }
+                AppMenu {
+                    id: locationMenu
+                    objectName: "locationOpenMenu"
+                    AppMenuItem {
+                        objectName: "locationOpenMapApp"
+                        iconName: "explore"
+                        text: qsTr("Map app")
+                        onTriggered: app.media.openMapLocation(
+                            model.locationLat, model.locationLon, "geo")
+                    }
+                    AppMenuItem {
+                        objectName: "locationOpenOsm"
+                        iconName: "link"
+                        text: qsTr("OpenStreetMap")
+                        onTriggered: app.media.openMapLocation(
+                            model.locationLat, model.locationLon, "osm")
+                    }
+                    AppMenuItem {
+                        objectName: "locationCopyCoordinates"
+                        iconName: "content_copy"
+                        text: qsTr("Copy coordinates")
+                        onTriggered: root.copyToClipboard(locationCard.coordinates)
                     }
                 }
 
@@ -6936,7 +7004,9 @@ Item {
                     Layout.fillWidth: true
                     wrapMode: Text.WordWrap
                     visible: model.locationHasPoint !== true
-                    text: qsTr("This location could not be read.")
+                    text: locationCard.live
+                          ? qsTr("No position received yet.")
+                          : qsTr("This location could not be read.")
                     color: AppTheme.textMuted
                     font.pixelSize: AppTheme.textMeta
                 }

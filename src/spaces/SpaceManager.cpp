@@ -903,6 +903,33 @@ QStringList SpaceManager::ancestorSpaceIds(const QString &spaceId) const
     return out;
 }
 
+QStringList SpaceManager::directParentSpaceIds(const QString &id) const
+{
+    if (id.isEmpty())
+        return {};
+    QStringList ownParents;
+    if (m_client) {
+        for (const RoomInfo &room : m_client->rooms()) {
+            if (room.id == id) {
+                ownParents = room.parentSpaceIds;
+                break;
+            }
+        }
+    }
+    QStringList out;
+    const QString primary = parentSpaceIdOf(id);
+    if (!primary.isEmpty())
+        out.append(primary);
+    for (const SpaceEntry &entry : m_spaces) {
+        const QString &spaceId = entry.info.id;
+        if (spaceId == id || out.contains(spaceId))
+            continue;
+        if (entry.info.childRoomIds.contains(id) || ownParents.contains(spaceId))
+            out.append(spaceId);
+    }
+    return out;
+}
+
 QStringList SpaceManager::childSpaceIds(const QString &spaceId) const
 {
     for (const SpaceEntry &entry : m_spaces) {

@@ -93,6 +93,7 @@ constexpr const char *kComponents[] = {
     "CollapsedEmbedRow",
     "LinkMediaCard",
     "SpaceLobby",
+    "SpacePlacement",
     "SpaceMemberActionDialog",
     "RoomCloseDialog",
     "ChangePasswordSection",

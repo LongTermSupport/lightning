@@ -18,6 +18,8 @@ public:
     Q_INVOKABLE void sendPickedFile(const QString &roomId, const QUrl &fileUrl);
     Q_INVOKABLE void openExternal(const QUrl &url);
     Q_INVOKABLE void openWebUrl(const QUrl &url);
+    // Only on the user's click: the provider learns the point and their address.
+    Q_INVOKABLE void openMapLocation(double lat, double lon, const QString &provider);
 
 Q_SIGNALS:
     void uploadProgress(const QString &localPath, qint64 sent, qint64 total);

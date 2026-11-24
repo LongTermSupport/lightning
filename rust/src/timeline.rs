@@ -5896,6 +5896,12 @@ fn event_item_to_json(
                     );
                     out["locationLive"] = true.into();
                     out["locationLiveActive"] = state.is_live().into();
+                    if let Some(fix) = latest {
+                        out["locationTs"] = u64::from(fix.ts().get()).into();
+                    }
+                    let timeout_ms = u64::try_from(state.timeout().as_millis()).unwrap_or(u64::MAX);
+                    out["locationLiveUntil"] =
+                        u64::from(state.ts().get()).saturating_add(timeout_ms).into();
                 }
             }
         }

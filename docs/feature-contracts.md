@@ -2761,6 +2761,12 @@ Shortcode completion (`:blob` → the installed packs' matches) is
 — CURSOR-driven rather than a NOTIFY property, because a shortcode can be
 anywhere in the text while a slash command is always at position 0.
 
+Automatic `:alias:` conversion is never the only way to send text as typed:
+Backspace or Undo right after a conversion puts the shortcode back, and that
+code then stays literal, live and at send, for the session
+(`undoShortcodeAutoConvert`, `keepShortcodeLiteral`). `/plain <message>`
+sends the text exactly as typed: no Markdown, no shortcode or custom-emoji pass.
+
 **Pack management (v0.9.0):** remove an image, rename its shortcode, rename
 the pack, empty the pack — `StickerPackEditor.qml`, reached from the picker.
 One `PackEdit` enum and one shared writer serve BOTH the account pack
@@ -3138,11 +3144,15 @@ Two rules on the receive side:
   still render.
 * **No embedded map, and no widening of the URL allowlist.** A map widget
   means tiles, and tiles mean every reader's IP address reaching a tile
-  server the moment a message renders. The card builds an
-  `https://www.openstreetmap.org/...` link from the PARSED NUMBERS;
-  `UrlLauncher`'s allowlist (http/https/mailto) is untouched, because
-  widening it to `geo:` would hand an attacker-controlled string to
-  `xdg-open`.
+  server the moment a message renders. "Open in…" offers the system map app
+  (`geo:`) or openStreetMap.org, and only on that click
+  (`urls::openMapPoint`). Both URLs are built from the PARSED NUMBERS;
+  `UrlLauncher`'s allowlist (http/https/mailto) is untouched, because a
+  `geo:` string from a message would hand attacker text to `xdg-open`.
+* **A live share says how old its point is.** The row carries the latest
+  fix's time (`locationTs`) and the share's end (`locationLiveUntil`); the
+  card re-checks the end on a clock, says "not updating" once the fix is over
+  five minutes old, and labels anything else as the last known position.
 
 ruma parses no geo URIs (`LocationContent::new` takes a `String`), so
 `rust/src/location.rs` owns the parser.
