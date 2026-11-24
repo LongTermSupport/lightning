@@ -28,9 +28,11 @@ ColumnLayout {
         font.weight: AppTheme.weightBold
     }
     Label {
+        Layout.fillWidth: true
         text: root.description
         color: AppTheme.textMuted
         font.pixelSize: AppTheme.textMeta
+        wrapMode: Text.Wrap
     }
     AppButton {
         Layout.fillWidth: true

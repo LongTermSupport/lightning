@@ -6,7 +6,7 @@ import MatrixClient
 RowLayout {
     id: root
     objectName: "railHiddenActions"
-    spacing: AppTheme.spacing4
+    spacing: AppTheme.headerActionSpacing
 
     visible: app.loggedIn && app.settings
              && !app.settings.spacesRailVisible
