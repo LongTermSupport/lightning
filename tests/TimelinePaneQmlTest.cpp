@@ -25,6 +25,7 @@
 #include <QTimeZone>
 #include <QPointer>
 #include <QScopeGuard>
+#include <QtMath>
 #include <QTemporaryDir>
 
 #include <QBuffer>
@@ -47,6 +48,7 @@
 #include "models/TimelineScrollController.h"
 #include "threads/ThreadController.h"
 #include "matrix/MockMatrixClient.h"
+#include "support/SettledClick.h"
 #include "spaces/SpaceManager.h"
 
 namespace {
@@ -8190,6 +8192,78 @@ kFilteredPages + 6);
                 rows.insert(key, item);
         }
         return rows;
+    }
+
+    void theBoundaryPixelBetweenTwoRowsBelongsToTheLowerRow_data()
+    {
+        QTest::addColumn<int>("layout");
+        QTest::addColumn<bool>("group");
+        for (int layout = 0; layout <= SettingsManager::kMaxMessageLayout; ++layout) {
+            QTest::addRow("layout %d continuation", layout) << layout << false;
+            QTest::addRow("layout %d new sender", layout) << layout << true;
+        }
+    }
+    void theBoundaryPixelBetweenTwoRowsBelongsToTheLowerRow()
+    {
+        QFETCH(int, layout);
+        QFETCH(bool, group);
+        AppController controller(AppController::MockBackend);
+        QVERIFY(!loginAndRoomIdAt(controller,0).isEmpty());
+        SettingsManager *settings = controller.settings();
+        const int layoutBefore = settings->messageLayout();
+        const int scopeBefore = settings->bubbleScope();
+        const auto restore = qScopeGuard([&] {
+            settings->setMessageLayout(layoutBefore);
+            settings->setBubbleScope(scopeBefore);
+        });
+        settings->setMessageLayout(layout);
+        settings->setBubbleScope(2);
+
+        const QString roomId = QStringLiteral("!general:mock.local");
+        auto events = textFixture(roomId, 6, QStringLiteral("edge"),
+                                  QStringLiteral("boundary"));
+        if (group) {
+            for (int i = 1; i < events.size(); i += 2) {
+                events[i].sender = QStringLiteral("@bob:mock.local");
+                events[i].senderDisplayName = QStringLiteral("Bob");
+            }
+        }
+        QQmlApplicationEngine engine;
+        QQuickWindow window;
+        QQuickItem *timeline = nullptr;
+        QVERIFY(paneWithEvents(controller, engine, window, roomId, events, 0,
+                               600, &timeline) != nullptr);
+
+        QQuickItem *lower = nullptr;
+        QQuickItem *upper = nullptr;
+        QTRY_VERIFY((lower = itemAtViewRow(timeline, 1)) != nullptr
+                    && (upper = itemAtViewRow(timeline, 2)) != nullptr);
+        const QString lowerId = events.at(4).eventId;
+        QTRY_VERIFY(lower->property("actionKey").toString() == events.at(4).itemId
+                    || lower->property("actionKey").toString() == lowerId);
+        QCOMPARE(lower->property("showsIdentity").toBool(), group);
+        QVERIFY(!controller.timeline()->messagePermalink(lowerId).isEmpty());
+
+        QPointF a, b, c;
+        QVERIFY(testsupport::settledScenePoint(&window, lower, &a, QPointF(0.4, 0)));
+        QVERIFY(testsupport::settledScenePoint(&window, lower, &b, QPointF(0.4, 1)));
+        QVERIFY(testsupport::settledScenePoint(&window, upper, &c, QPointF(0.4, 0)));
+        const qreal top = qMin(a.y(), b.y());
+        const QPointF d = upper->mapToScene(QPointF(upper->width() * 0.4,
+                                                    upper->height()));
+        QVERIFY2(qAbs(qMax(c.y(), d.y()) - top) < 0.01,
+                 "the two rows do not tile: there is a band between them");
+        const QPoint probe(qRound(a.x()), qCeil(top));
+
+        QTest::mouseDClick(&window, Qt::LeftButton, Qt::NoModifier, probe);
+        QTRY_COMPARE_WITH_TIMEOUT(controller.composer()->replyingToEventId(),
+                                  lowerId, 1000);
+        controller.composer()->cancelReplyOrEdit();
+
+        QTest::mouseClick(&window, Qt::RightButton, Qt::NoModifier, probe);
+        QTRY_COMPARE_WITH_TIMEOUT(lower->property("menuEventId").toString(),
+                                  lowerId, 1000);
+        QCOMPARE(upper->property("menuEventId").toString(), QString());
     }
 
     void removedMessagesLeaveOnlyAThreadRootInEveryLayout_data()
