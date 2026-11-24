@@ -76,6 +76,12 @@ Item {
             ? app.openRoomPermissions.canRedactOthers === true
             : (!!app.roomInfo && app.roomInfo.roomId === app.currentRoomId
                && app.roomInfo.canRedactOthers === true)
+    function postForbiddenFor(eventId) {
+        var perms = app.openRoomPermissions
+        return !!perms && perms.canSendMessages === false
+            && perms.roomId === root.timelineModel.realRoomIdForEvent(eventId || "")
+    }
+    readonly property bool postForbidden: root.postForbiddenFor(model.eventId)
     readonly property bool rowSelectable:
         root.bulkSelectionMode
         ? root.timelineModel.canRedactEvent(root.eventIdForActions(),
@@ -878,6 +884,8 @@ Item {
     readonly property bool inThreadPanel:
         root.timelineView && root.timelineView.threadContext === true
     function beginReply(eventId) {
+        if (root.postForbiddenFor(eventId))
+            return
         var details = root.timelineModel.messageDetails(eventId)
         if (!details.eventId) return
         if (root.inThreadPanel) {
@@ -894,7 +902,7 @@ Item {
     readonly property color rowHoverTint:
         Qt.alpha(AppTheme.textPrimary, AppTheme.dark ? 0.06 : 0.055)
     function replyInThread(eventId) {
-        if (!eventId)
+        if (!eventId || root.postForbiddenFor(eventId))
             return
         var details = root.timelineModel.messageDetails(eventId)
         var rootId = (details.threadRootId || "").length > 0
@@ -2955,6 +2963,8 @@ Item {
                     }
                     IconButton {
                         id: threadReplyButton
+                        objectName: "messageReplyButton"
+                        visible: !root.postForbidden
                         implicitWidth: 28; implicitHeight: 28
                         radius: AppTheme.radiusControl
                         iconName: "reply"
@@ -2979,7 +2989,7 @@ Item {
                         id: threadStartButton
                         objectName: "messageThreadReplyButton"
                         visible: !root.inThreadPanel && !!app.thread
-                                 && app.thread.supported
+                                 && app.thread.supported && !root.postForbidden
                         implicitWidth: 28; implicitHeight: 28
                         radius: AppTheme.radiusControl
                         iconName: "forum"
@@ -4115,6 +4125,8 @@ Item {
             }
             AppMenuItem {
                 id: replyMenuItem
+                objectName: "replyMenuItem"
+                visible: !root.postForbidden
                 iconName: "reply"
                 text: qsTr("Reply")
                 accel: moreMenu.menuKeys.reply
@@ -4126,6 +4138,8 @@ Item {
             }
             AppMenuItem {
                 id: replyInThreadMenuItem
+                objectName: "replyInThreadMenuItem"
+                visible: !root.postForbidden
                 iconName: "forum"
                 text: qsTr("Reply in thread")
                 accel: moreMenu.menuKeys.replyInThread
