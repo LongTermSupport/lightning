@@ -830,7 +830,7 @@ Item {
     }
     function pointerAnchor() {
         var pos = rowHover.point.position
-        var p = bubbleRow.mapToItem(Overlay.overlay, pos.x, pos.y)
+        var p = root.mapToItem(Overlay.overlay, pos.x, pos.y)
         return { x: p.x, y: p.y, width: 1, height: 1 }
     }
     function openMessageLink(link) {
@@ -1527,6 +1527,23 @@ Item {
 
     // On the delegate root, not bubbleRow: the top gap and the layout's
     // spacing would otherwise be a line between rows that no handler owns.
+    // Hover owns the same band, so the bar's row is the row a click hits.
+    HoverHandler {
+        id: rowHover
+        objectName: "messageRowHover"
+        enabled: !root.rowHoverSuspended && layout.visible
+        onHoveredChanged: {
+            if (!root.timelineView || root.actionKey === "")
+                return
+            if (hovered) {
+                if (root.transientOwnerBlocks)
+                    return
+                root.timelineView.hoveredActionsKey = root.actionKey
+            } else if (!barHover.hovered && !barReachHover.hovered) {
+                root.releaseHoveredActions()
+            }
+        }
+    }
     TapHandler {
         objectName: "rowEmptySideTap"
         enabled: root.rowActionsEnabled && layout.visible
@@ -1587,22 +1604,6 @@ Item {
                                ? AppTheme.spacingXS
                                  + root.ownBubbleReceiptBandHeight : 0)
 
-            HoverHandler {
-                id: rowHover
-                objectName: "messageRowHover"
-                enabled: !root.rowHoverSuspended
-                onHoveredChanged: {
-                    if (!root.timelineView || root.actionKey === "")
-                        return
-                    if (hovered) {
-                        if (root.transientOwnerBlocks)
-                            return
-                        root.timelineView.hoveredActionsKey = root.actionKey
-                    } else if (!barHover.hovered && !barReachHover.hovered) {
-                        root.releaseHoveredActions()
-                    }
-                }
-            }
             Item {
                 id: avatarSlot
                 objectName: "senderAvatarSlot"
