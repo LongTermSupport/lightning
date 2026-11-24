@@ -102,9 +102,16 @@ ColumnLayout {
         color: AppTheme.textPrimary
     }
     Label {
+        visible: !!root.guide.rules
+        text: qsTr("Rules")
+        textFormat: Text.PlainText
+        font.bold: true
+        color: AppTheme.textSecondary
+    }
+    Label {
         Layout.fillWidth: true
         visible: text.length > 0
-        text: root.guide.rules ? qsTr("Rules\n%1").arg(root.guide.rules) : ""
+        text: root.guide.rules || ""
         textFormat: Text.PlainText
         wrapMode: Text.Wrap
         color: AppTheme.textSecondary

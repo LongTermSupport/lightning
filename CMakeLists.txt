@@ -4948,7 +4948,8 @@ if(BUILD_TESTING)
             button-key-activation-qml:ButtonKeyActivationQmlTest
             control-label-ink-qml:ControlLabelInkQmlTest
             space-text-edit-row-qml:SpaceTextEditRowQmlTest
-            tooltip-plain-text-qml:ToolTipPlainTextQmlTest)
+            tooltip-plain-text-qml:ToolTipPlainTextQmlTest
+            space-community-panel-qml:SpaceCommunityPanelQmlTest)
         string(REPLACE ":" ";" _p "${_t}")
         list(GET _p 0 _name)
         list(GET _p 1 _src)
