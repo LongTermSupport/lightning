@@ -7875,6 +7875,14 @@ fn gap_may_hide_unread(room: &Room, timeline: matrix_sdk::sync::Timeline) -> boo
     !unread_tail(newest_first, receipt.as_deref(), room.own_user_id()).is_empty()
 }
 
+fn may_hold_unread(room: &Room) -> bool {
+    let counts = room.read_receipts();
+    !room_known_plain(room)
+        && (counts.num_unread > 0
+            || counts.num_notifications > 0
+            || room.unread_notification_counts().notification_count > 0)
+}
+
 const LAST_ROOM_UPDATE_KEY: &[u8] = b"lightning.last_room_update_ms";
 const ROOM_UPDATE_MARK_MS: u64 = 60_000;
 
@@ -7931,6 +7939,7 @@ fn spawn_unread_gap_watch_on(
     use tokio::time::Instant;
     let client = client.clone();
     let events = Arc::clone(events);
+    let trace = Arc::clone(&events);
     let (settled, mut queued) = tokio::sync::mpsc::channel::<PendingGap>(GAP_FETCH_PENDING_MAX);
     let worker = tokio::spawn(async move {
         while let Some(gap) = queued.recv().await {
@@ -7952,10 +7961,24 @@ fn spawn_unread_gap_watch_on(
         let mut pending: HashMap<OwnedRoomId, PendingGap> = HashMap::new();
         loop {
             let next = pending.values().map(|gap| gap.due).min();
-            let rooms = tokio::select! {
+            let rooms: Vec<Room> = tokio::select! {
                 rooms = updates.recv() => match rooms {
-                    Ok(rooms) => rooms,
-                    Err(RecvError::Lagged(_)) => continue,
+                    Ok(rooms) => rooms
+                        .joined
+                        .into_iter()
+                        .filter_map(|(room_id, update)| {
+                            let room = client.get_room(&room_id)?;
+                            gap_may_hide_unread(&room, update.timeline).then_some(room)
+                        })
+                        .collect(),
+                    // The dropped updates may have carried a gap: every room that could hide one is fetched.
+                    Err(RecvError::Lagged(dropped)) => {
+                        enqueue(&trace, json!({
+                            "type": "rust_trace",
+                            "line": format!("room updates lagged, dropped {dropped}: sweeping unread rooms"),
+                        }));
+                        client.joined_rooms().into_iter().filter(may_hold_unread).collect()
+                    }
                     Err(RecvError::Closed) => return,
                 },
                 _ = tokio::time::sleep_until(next.unwrap_or_else(Instant::now)), if next.is_some() => {
@@ -7978,11 +8001,9 @@ fn spawn_unread_gap_watch_on(
                     .await;
             }
             let now = Instant::now();
-            for (room_id, update) in rooms.joined {
-                let Some(room) = client.get_room(&room_id) else { continue };
-                if !gap_may_hide_unread(&room, update.timeline)
-                    || (pending.len() >= GAP_FETCH_PENDING_MAX && !pending.contains_key(&room_id))
-                {
+            for room in rooms {
+                let room_id = room.room_id().to_owned();
+                if pending.len() >= GAP_FETCH_PENDING_MAX && !pending.contains_key(&room_id) {
                     continue;
                 }
                 let gap = pending.entry(room_id).or_insert(PendingGap {
