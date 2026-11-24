@@ -1295,8 +1295,8 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     </message>
     <message>
         <location line="+2"/>
-        <source>The image is too large — 8192×8192 at most.</source>
-        <translation>Das Bild ist zu groß – höchstens 8192×8192.</translation>
+        <source>The image is too large — %1×%1 at most.</source>
+        <translation>Das Bild ist zu groß – höchstens %1×%1.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -9885,7 +9885,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>ImageViewerOverlay</name>
     <message>
-        <location filename="../qml/ImageViewerOverlay.qml" line="+367"/>
+        <location filename="../qml/ImageViewerOverlay.qml" line="+370"/>
         <source>Copy image</source>
         <translation>Bild kopieren</translation>
     </message>
@@ -9896,23 +9896,28 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location line="+659"/>
+        <location line="+666"/>
         <location line="+1"/>
         <source>Open in browser</source>
         <translation>Im Browser öffnen</translation>
     </message>
     <message>
-        <location line="-652"/>
+        <location line="-659"/>
         <source>Close</source>
         <translation>Schließen</translation>
     </message>
     <message>
-        <location line="+271"/>
+        <location line="+276"/>
+        <source>This image is too large to preview. Download it to view it.</source>
+        <translation>Dieses Bild ist zu groß für eine Vorschau. Lade es herunter, um es anzusehen.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>The image could not be loaded.</source>
         <translation>Das Bild konnte nicht geladen werden.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Retry</source>
         <translation>Wiederholen</translation>
     </message>
@@ -11694,18 +11699,18 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1378"/>
-        <location line="+689"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1396"/>
+        <location line="+691"/>
         <source>The file could not be downloaded.</source>
         <translation>Die Datei konnte nicht heruntergeladen werden.</translation>
     </message>
     <message>
-        <location line="-534"/>
+        <location line="-536"/>
         <source>The download timed out.</source>
         <translation>Beim Download ist eine Zeitüberschreitung aufgetreten.</translation>
     </message>
     <message>
-        <location line="+532"/>
+        <location line="+534"/>
         <source>The media server is unreachable. Try again in a few minutes.</source>
         <translation>Der Medienserver ist nicht erreichbar. Versuche es in ein paar Minuten erneut.</translation>
     </message>
@@ -13116,14 +13121,14 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="-575"/>
         <location line="+57"/>
         <location line="+515"/>
-        <location line="+4230"/>
+        <location line="+4232"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location line="-5957"/>
+        <location line="-5959"/>
         <source>Voice message</source>
         <translation>Sprachnachricht</translation>
     </message>
@@ -13136,24 +13141,24 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="-568"/>
         <location line="+566"/>
-        <location line="+3683"/>
+        <location line="+3685"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5172"/>
+        <location line="-5174"/>
         <location line="+53"/>
         <location line="+512"/>
-        <location line="+4232"/>
+        <location line="+4234"/>
         <source>Image</source>
         <translation>Bild</translation>
     </message>
     <message>
-        <location line="-4796"/>
+        <location line="-4798"/>
         <location line="+568"/>
-        <location line="+4333"/>
+        <location line="+4335"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -13161,7 +13166,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Datei</translation>
     </message>
     <message>
-        <location line="-6199"/>
+        <location line="-6201"/>
         <source>Attachment</source>
         <translation>Anhang</translation>
     </message>
@@ -13218,7 +13223,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+1068"/>
+        <location line="+1070"/>
         <source>Retry decryption</source>
         <translation>Entschlüsselung erneut versuchen</translation>
     </message>
@@ -35870,7 +35875,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2460"/>
+        <location filename="../src/main.cpp" line="+2462"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>Nativer Qt/QML-Matrix-Client. Backend: --backend={mock,http,rust}. Standard: rust (http in Versionen ohne das Rust-SDK).</translation>
     </message>

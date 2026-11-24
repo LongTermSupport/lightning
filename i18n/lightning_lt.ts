@@ -1306,7 +1306,12 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Nepavyko importuoti kambario rakto.</translation>
     </message>
     <message>
-        <location line="+2283"/>
+        <location line="+1613"/>
+        <source>The image is too large — %1×%1 at most.</source>
+        <translation>Paveikslėlis per didelis – daugiausia %1×%1.</translation>
+    </message>
+    <message>
+        <location line="+670"/>
         <source>Enter a size limit from 1 to 2000 MB.</source>
         <translation>Įveskite dydžio ribą nuo 1 iki 2000 MB.</translation>
     </message>
@@ -1447,12 +1452,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Vaizdas per didelis – daugiausia 32 MiB.</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>The image is too large — 8192×8192 at most.</source>
-        <translation>Vaizdas per didelis – daugiausia 8192 × 8192.</translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>The image is too small — 16×16 at least.</source>
         <translation>Vaizdas per mažas – bent 16×16.</translation>
     </message>
@@ -9925,7 +9925,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>ImageViewerOverlay</name>
     <message>
-        <location filename="../qml/ImageViewerOverlay.qml" line="+367"/>
+        <location filename="../qml/ImageViewerOverlay.qml" line="+370"/>
         <source>Copy image</source>
         <translation>Kopijuoti vaizdą</translation>
     </message>
@@ -9936,23 +9936,28 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location line="+659"/>
+        <location line="+666"/>
         <location line="+1"/>
         <source>Open in browser</source>
         <translation>Atidaryti naršyklėje</translation>
     </message>
     <message>
-        <location line="-652"/>
+        <location line="-659"/>
         <source>Close</source>
         <translation>Uždaryti</translation>
     </message>
     <message>
-        <location line="+271"/>
+        <location line="+276"/>
+        <source>This image is too large to preview. Download it to view it.</source>
+        <translation>Šis paveikslėlis per didelis peržiūrai. Atsisiųskite, kad jį pamatytumėte.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>The image could not be loaded.</source>
         <translation>Nepavyko įkelti vaizdo.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Retry</source>
         <translation>Bandykite dar kartą</translation>
     </message>
@@ -11739,18 +11744,18 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1378"/>
-        <location line="+689"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1396"/>
+        <location line="+691"/>
         <source>The file could not be downloaded.</source>
         <translation>Failo atsisiųsti nepavyko.</translation>
     </message>
     <message>
-        <location line="-534"/>
+        <location line="-536"/>
         <source>The download timed out.</source>
         <translation>Baigėsi atsisiuntimo laikas.</translation>
     </message>
     <message>
-        <location line="+532"/>
+        <location line="+534"/>
         <source>The media server is unreachable. Try again in a few minutes.</source>
         <translation>Medijos serveris nepasiekiamas. Bandykite dar kartą po kelių minučių.</translation>
     </message>
@@ -13161,7 +13166,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Naujos žinutės</translation>
     </message>
     <message>
-        <location line="+277"/>
+        <location line="+279"/>
         <location line="+158"/>
         <source>Avatar for %1</source>
         <translation>%1 pseudoportretas</translation>
@@ -13240,8 +13245,8 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Laukiama raktų…</translation>
     </message>
     <message>
-        <location line="-1059"/>
-        <location line="+1068"/>
+        <location line="-1061"/>
+        <location line="+1070"/>
         <source>Retry decryption</source>
         <translation>Bandykite iššifruoti dar kartą</translation>
     </message>
@@ -13251,12 +13256,12 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Apsaugos nustatymai</translation>
     </message>
     <message>
-        <location line="-1986"/>
+        <location line="-1988"/>
         <source>Link</source>
         <translation>Nuoroda</translation>
     </message>
     <message>
-        <location line="+2051"/>
+        <location line="+2053"/>
         <source>Show preview</source>
         <translation>Rodyti peržiūrą</translation>
     </message>
@@ -13505,7 +13510,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Redaguoti</translation>
     </message>
     <message>
-        <location line="-3697"/>
+        <location line="-3699"/>
         <source>%1 B</source>
         <translation>%1 B</translation>
     </message>
@@ -13539,22 +13544,22 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     <message>
         <location line="-568"/>
         <location line="+566"/>
-        <location line="+3683"/>
+        <location line="+3685"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5172"/>
+        <location line="-5174"/>
         <location line="+53"/>
         <location line="+512"/>
-        <location line="+4232"/>
+        <location line="+4234"/>
         <source>Image</source>
         <translation>Paveikslėlis</translation>
     </message>
     <message>
-        <location line="-4795"/>
+        <location line="-4797"/>
         <source>Attachment</source>
         <translation>Priedas</translation>
     </message>
@@ -13587,7 +13592,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Atidaryti giją</translation>
     </message>
     <message>
-        <location line="+464"/>
+        <location line="+466"/>
         <source>Back to the room</source>
         <translation>Grįžti į kambarį</translation>
     </message>
@@ -14018,10 +14023,10 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Bandyti dar kartą</translation>
     </message>
     <message>
-        <location line="-6286"/>
+        <location line="-6288"/>
         <location line="+57"/>
         <location line="+515"/>
-        <location line="+4230"/>
+        <location line="+4232"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -14034,9 +14039,9 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>vaizdo įrašą</translation>
     </message>
     <message>
-        <location line="-5970"/>
+        <location line="-5972"/>
         <location line="+568"/>
-        <location line="+4333"/>
+        <location line="+4335"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -36042,7 +36047,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2460"/>
+        <location filename="../src/main.cpp" line="+2462"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>Vietinė Qt/QML Matrix programa. Posistemė: --backend={mock,http,rust}. Numatytoji: rust (versijose be Rust SDK – http).</translation>
     </message>

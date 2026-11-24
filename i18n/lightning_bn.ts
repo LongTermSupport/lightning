@@ -1295,7 +1295,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>রুম-কী আমদানি ব্যর্থ হয়েছে।</translation>
     </message>
     <message>
-        <location line="+2283"/>
+        <location line="+1613"/>
+        <source>The image is too large — %1×%1 at most.</source>
+        <translation>ছবিটি খুব বড় — সর্বোচ্চ %1×%1।</translation>
+    </message>
+    <message>
+        <location line="+670"/>
         <source>Enter a size limit from 1 to 2000 MB.</source>
         <translation>১ থেকে ২০০০ MB-এর মধ্যে আকারের সীমা দিন।</translation>
     </message>
@@ -1436,12 +1441,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>ছবিটি খুব বড় — সর্বোচ্চ ৩২ MiB।</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>The image is too large — 8192×8192 at most.</source>
-        <translation>ছবিটি খুব বড় — সর্বোচ্চ ৮১৯২×৮১৯২।</translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>The image is too small — 16×16 at least.</source>
         <translation>ছবিটি খুব ছোট — সর্বনিম্ন ১৬×১৬।</translation>
     </message>
@@ -9885,7 +9885,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>ImageViewerOverlay</name>
     <message>
-        <location filename="../qml/ImageViewerOverlay.qml" line="+367"/>
+        <location filename="../qml/ImageViewerOverlay.qml" line="+370"/>
         <source>Copy image</source>
         <translation>ছবি অনুলিপি করুন</translation>
     </message>
@@ -9896,23 +9896,28 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+7"/>
-        <location line="+659"/>
+        <location line="+666"/>
         <location line="+1"/>
         <source>Open in browser</source>
         <translation>ব্রাউজারে খুলুন</translation>
     </message>
     <message>
-        <location line="-652"/>
+        <location line="-659"/>
         <source>Close</source>
         <translation>বন্ধ করুন</translation>
     </message>
     <message>
-        <location line="+271"/>
+        <location line="+276"/>
+        <source>This image is too large to preview. Download it to view it.</source>
+        <translation>এই ছবিটি প্রিভিউয়ের জন্য খুব বড়। দেখতে এটি ডাউনলোড করুন।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>The image could not be loaded.</source>
         <translation>ছবিটি লোড করা যায়নি।</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Retry</source>
         <translation>আবার চেষ্টা করুন</translation>
     </message>
@@ -11694,18 +11699,18 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1378"/>
-        <location line="+689"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1396"/>
+        <location line="+691"/>
         <source>The file could not be downloaded.</source>
         <translation>ফাইলটি ডাউনলোড করা যায়নি।</translation>
     </message>
     <message>
-        <location line="-534"/>
+        <location line="-536"/>
         <source>The download timed out.</source>
         <translation>ডাউনলোডের সময় শেষ হয়ে গেছে।</translation>
     </message>
     <message>
-        <location line="+532"/>
+        <location line="+534"/>
         <source>The media server is unreachable. Try again in a few minutes.</source>
         <translation>মিডিয়া সার্ভারে পৌঁছানো যাচ্ছে না। কয়েক মিনিট পর আবার চেষ্টা করুন।</translation>
     </message>
@@ -13112,7 +13117,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>নতুন বার্তা</translation>
     </message>
     <message>
-        <location line="+277"/>
+        <location line="+279"/>
         <location line="+158"/>
         <source>Avatar for %1</source>
         <translation>%1-এর অবতার</translation>
@@ -13190,8 +13195,8 @@ Signing out and signing in again is the only fix.</source>
         <translation>কীর অপেক্ষায়…</translation>
     </message>
     <message>
-        <location line="-1059"/>
-        <location line="+1068"/>
+        <location line="-1061"/>
+        <location line="+1070"/>
         <source>Retry decryption</source>
         <translation>ডিক্রিপশন আবার চেষ্টা করুন</translation>
     </message>
@@ -13201,12 +13206,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>নিরাপত্তা সেটিংস</translation>
     </message>
     <message>
-        <location line="-1986"/>
+        <location line="-1988"/>
         <source>Link</source>
         <translation>লিঙ্ক</translation>
     </message>
     <message>
-        <location line="+1357"/>
+        <location line="+1359"/>
         <source>Open this thread</source>
         <translation>এই থ্রেডটি খুলুন</translation>
     </message>
@@ -13609,7 +13614,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>সম্পাদনা</translation>
     </message>
     <message>
-        <location line="-3697"/>
+        <location line="-3699"/>
         <source>%1 B</source>
         <translation>%1 B</translation>
     </message>
@@ -13643,22 +13648,22 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="-568"/>
         <location line="+566"/>
-        <location line="+3683"/>
+        <location line="+3685"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5172"/>
+        <location line="-5174"/>
         <location line="+53"/>
         <location line="+512"/>
-        <location line="+4232"/>
+        <location line="+4234"/>
         <source>Image</source>
         <translation>ছবি</translation>
     </message>
     <message>
-        <location line="-4795"/>
+        <location line="-4797"/>
         <source>Attachment</source>
         <translation>সংযুক্তি</translation>
     </message>
@@ -13689,7 +13694,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>থ্রেড খুলুন</translation>
     </message>
     <message>
-        <location line="+464"/>
+        <location line="+466"/>
         <source>Back to the room</source>
         <translation>রুমে ফিরে যান</translation>
     </message>
@@ -13979,10 +13984,10 @@ Signing out and signing in again is the only fix.</source>
         <translation>স্টিকার লোড হয়নি — আবার চেষ্টা করতে ক্লিক করুন</translation>
     </message>
     <message>
-        <location line="-5589"/>
+        <location line="-5591"/>
         <location line="+57"/>
         <location line="+515"/>
-        <location line="+4230"/>
+        <location line="+4232"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -13995,9 +14000,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>ভিডিও</translation>
     </message>
     <message>
-        <location line="-5970"/>
+        <location line="-5972"/>
         <location line="+568"/>
-        <location line="+4333"/>
+        <location line="+4335"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -35870,7 +35875,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2460"/>
+        <location filename="../src/main.cpp" line="+2462"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>নেটিভ Qt/QML Matrix ক্লায়েন্ট। ব্যাকএন্ড: --backend={mock,http,rust}। ডিফল্ট: rust (Rust SDK ছাড়া বিল্ডে http)।</translation>
     </message>

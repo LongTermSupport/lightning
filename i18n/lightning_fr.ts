@@ -1295,7 +1295,12 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>L&apos;import des clés de salon a échoué.</translation>
     </message>
     <message>
-        <location line="+2283"/>
+        <location line="+1613"/>
+        <source>The image is too large — %1×%1 at most.</source>
+        <translation>L’image est trop grande — %1×%1 au maximum.</translation>
+    </message>
+    <message>
+        <location line="+670"/>
         <source>Enter a size limit from 1 to 2000 MB.</source>
         <translation>Saisissez une limite de taille entre 1 et 2000 Mo.</translation>
     </message>
@@ -1436,12 +1441,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>L&apos;image est trop volumineuse — 32 Mio au maximum.</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>The image is too large — 8192×8192 at most.</source>
-        <translation>L&apos;image est trop grande — 8192×8192 au maximum.</translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>The image is too small — 16×16 at least.</source>
         <translation>L&apos;image est trop petite — 16×16 au minimum.</translation>
     </message>
@@ -9885,7 +9885,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
 <context>
     <name>ImageViewerOverlay</name>
     <message>
-        <location filename="../qml/ImageViewerOverlay.qml" line="+367"/>
+        <location filename="../qml/ImageViewerOverlay.qml" line="+370"/>
         <source>Copy image</source>
         <translation>Copier l&apos;image</translation>
     </message>
@@ -9896,23 +9896,28 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     </message>
     <message>
         <location line="+7"/>
-        <location line="+659"/>
+        <location line="+666"/>
         <location line="+1"/>
         <source>Open in browser</source>
         <translation>Ouvrir dans le navigateur</translation>
     </message>
     <message>
-        <location line="-652"/>
+        <location line="-659"/>
         <source>Close</source>
         <translation>Fermer</translation>
     </message>
     <message>
-        <location line="+271"/>
+        <location line="+276"/>
+        <source>This image is too large to preview. Download it to view it.</source>
+        <translation>Cette image est trop grande pour un aperçu. Téléchargez-la pour la voir.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>The image could not be loaded.</source>
         <translation>L&apos;image n&apos;a pas pu être chargée.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Retry</source>
         <translation>Réessayer</translation>
     </message>
@@ -11694,18 +11699,18 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1378"/>
-        <location line="+689"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1396"/>
+        <location line="+691"/>
         <source>The file could not be downloaded.</source>
         <translation>Le fichier n&apos;a pas pu être téléchargé.</translation>
     </message>
     <message>
-        <location line="-534"/>
+        <location line="-536"/>
         <source>The download timed out.</source>
         <translation>Le téléchargement a expiré.</translation>
     </message>
     <message>
-        <location line="+532"/>
+        <location line="+534"/>
         <source>The media server is unreachable. Try again in a few minutes.</source>
         <translation>Le serveur média est injoignable. Réessayez dans quelques minutes.</translation>
     </message>
@@ -13112,7 +13117,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Nouveaux messages</translation>
     </message>
     <message>
-        <location line="+277"/>
+        <location line="+279"/>
         <location line="+158"/>
         <source>Avatar for %1</source>
         <translation>Avatar de %1</translation>
@@ -13190,8 +13195,8 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>En attente des clés…</translation>
     </message>
     <message>
-        <location line="-1059"/>
-        <location line="+1068"/>
+        <location line="-1061"/>
+        <location line="+1070"/>
         <source>Retry decryption</source>
         <translation>Réessayer le déchiffrement</translation>
     </message>
@@ -13201,12 +13206,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Paramètres de sécurité</translation>
     </message>
     <message>
-        <location line="-1986"/>
+        <location line="-1988"/>
         <source>Link</source>
         <translation>Lien</translation>
     </message>
     <message>
-        <location line="+1357"/>
+        <location line="+1359"/>
         <source>Open this thread</source>
         <translation>Ouvrir ce fil</translation>
     </message>
@@ -13609,7 +13614,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Modifier</translation>
     </message>
     <message>
-        <location line="-3697"/>
+        <location line="-3699"/>
         <source>%1 B</source>
         <translation>%1 o</translation>
     </message>
@@ -13643,22 +13648,22 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     <message>
         <location line="-568"/>
         <location line="+566"/>
-        <location line="+3683"/>
+        <location line="+3685"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5172"/>
+        <location line="-5174"/>
         <location line="+53"/>
         <location line="+512"/>
-        <location line="+4232"/>
+        <location line="+4234"/>
         <source>Image</source>
         <translation>Image</translation>
     </message>
     <message>
-        <location line="-4795"/>
+        <location line="-4797"/>
         <source>Attachment</source>
         <translation>Pièce jointe</translation>
     </message>
@@ -13689,7 +13694,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Ouvrir le fil</translation>
     </message>
     <message>
-        <location line="+464"/>
+        <location line="+466"/>
         <source>Back to the room</source>
         <translation>Retour au salon</translation>
     </message>
@@ -13979,10 +13984,10 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Échec du chargement de l&apos;autocollant — cliquez pour réessayer</translation>
     </message>
     <message>
-        <location line="-5589"/>
+        <location line="-5591"/>
         <location line="+57"/>
         <location line="+515"/>
-        <location line="+4230"/>
+        <location line="+4232"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -13995,9 +14000,9 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>vidéo</translation>
     </message>
     <message>
-        <location line="-5970"/>
+        <location line="-5972"/>
         <location line="+568"/>
-        <location line="+4333"/>
+        <location line="+4335"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -35870,7 +35875,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2460"/>
+        <location filename="../src/main.cpp" line="+2462"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>Client Matrix natif Qt/QML. Backend : --backend={mock,http,rust}. Par défaut : rust (http dans les versions sans le Rust SDK).</translation>
     </message>

@@ -1295,7 +1295,12 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
         <translation>Falló la importación de claves de sala.</translation>
     </message>
     <message>
-        <location line="+2283"/>
+        <location line="+1613"/>
+        <source>The image is too large — %1×%1 at most.</source>
+        <translation>La imagen es demasiado grande: %1×%1 como máximo.</translation>
+    </message>
+    <message>
+        <location line="+670"/>
         <source>Enter a size limit from 1 to 2000 MB.</source>
         <translation>Introduce un límite de tamaño de 1 a 2000 MB.</translation>
     </message>
@@ -1436,12 +1441,7 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
         <translation>La imagen es demasiado grande: 32 MiB como máximo.</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>The image is too large — 8192×8192 at most.</source>
-        <translation>La imagen es demasiado grande: 8192×8192 como máximo.</translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>The image is too small — 16×16 at least.</source>
         <translation>La imagen es demasiado pequeña: 16×16 como mínimo.</translation>
     </message>
@@ -9885,7 +9885,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
 <context>
     <name>ImageViewerOverlay</name>
     <message>
-        <location filename="../qml/ImageViewerOverlay.qml" line="+367"/>
+        <location filename="../qml/ImageViewerOverlay.qml" line="+370"/>
         <source>Copy image</source>
         <translation>Copiar imagen</translation>
     </message>
@@ -9896,23 +9896,28 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location line="+659"/>
+        <location line="+666"/>
         <location line="+1"/>
         <source>Open in browser</source>
         <translation>Abrir en el navegador</translation>
     </message>
     <message>
-        <location line="-652"/>
+        <location line="-659"/>
         <source>Close</source>
         <translation>Cerrar</translation>
     </message>
     <message>
-        <location line="+271"/>
+        <location line="+276"/>
+        <source>This image is too large to preview. Download it to view it.</source>
+        <translation>Esta imagen es demasiado grande para previsualizarla. Descárgala para verla.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>The image could not be loaded.</source>
         <translation>No se ha podido cargar la imagen.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Retry</source>
         <translation>Reintentar</translation>
     </message>
@@ -11694,18 +11699,18 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1378"/>
-        <location line="+689"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1396"/>
+        <location line="+691"/>
         <source>The file could not be downloaded.</source>
         <translation>No se ha podido descargar el archivo.</translation>
     </message>
     <message>
-        <location line="-534"/>
+        <location line="-536"/>
         <source>The download timed out.</source>
         <translation>Se ha agotado el tiempo de espera de la descarga.</translation>
     </message>
     <message>
-        <location line="+532"/>
+        <location line="+534"/>
         <source>The media server is unreachable. Try again in a few minutes.</source>
         <translation>El servidor multimedia no responde. Inténtalo de nuevo en unos minutos.</translation>
     </message>
@@ -13112,7 +13117,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Mensajes nuevos</translation>
     </message>
     <message>
-        <location line="+277"/>
+        <location line="+279"/>
         <location line="+158"/>
         <source>Avatar for %1</source>
         <translation>Avatar de %1</translation>
@@ -13190,8 +13195,8 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Esperando las claves…</translation>
     </message>
     <message>
-        <location line="-1059"/>
-        <location line="+1068"/>
+        <location line="-1061"/>
+        <location line="+1070"/>
         <source>Retry decryption</source>
         <translation>Reintentar el descifrado</translation>
     </message>
@@ -13201,12 +13206,12 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Ajustes de seguridad</translation>
     </message>
     <message>
-        <location line="-1986"/>
+        <location line="-1988"/>
         <source>Link</source>
         <translation>Enlace</translation>
     </message>
     <message>
-        <location line="+1357"/>
+        <location line="+1359"/>
         <source>Open this thread</source>
         <translation>Abrir este hilo</translation>
     </message>
@@ -13609,7 +13614,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Editar</translation>
     </message>
     <message>
-        <location line="-3697"/>
+        <location line="-3699"/>
         <source>%1 B</source>
         <translation>%1 B</translation>
     </message>
@@ -13643,22 +13648,22 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
     <message>
         <location line="-568"/>
         <location line="+566"/>
-        <location line="+3683"/>
+        <location line="+3685"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5172"/>
+        <location line="-5174"/>
         <location line="+53"/>
         <location line="+512"/>
-        <location line="+4232"/>
+        <location line="+4234"/>
         <source>Image</source>
         <translation>Imagen</translation>
     </message>
     <message>
-        <location line="-4795"/>
+        <location line="-4797"/>
         <source>Attachment</source>
         <translation>Adjunto</translation>
     </message>
@@ -13689,7 +13694,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>Abrir hilo</translation>
     </message>
     <message>
-        <location line="+464"/>
+        <location line="+466"/>
         <source>Back to the room</source>
         <translation>Volver a la sala</translation>
     </message>
@@ -13979,10 +13984,10 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>No se pudo cargar la pegatina — haz clic para reintentar</translation>
     </message>
     <message>
-        <location line="-5589"/>
+        <location line="-5591"/>
         <location line="+57"/>
         <location line="+515"/>
-        <location line="+4230"/>
+        <location line="+4232"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -13995,9 +14000,9 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>vídeo</translation>
     </message>
     <message>
-        <location line="-5970"/>
+        <location line="-5972"/>
         <location line="+568"/>
-        <location line="+4333"/>
+        <location line="+4335"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -35870,7 +35875,7 @@ Nota: importar claves no verifica esta sesión.</translation>
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2460"/>
+        <location filename="../src/main.cpp" line="+2462"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>Cliente Matrix nativo Qt/QML. Backend: --backend={mock,http,rust}. Predeterminado: rust (http en compilaciones sin el Rust SDK).</translation>
     </message>
