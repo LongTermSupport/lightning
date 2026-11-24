@@ -9970,7 +9970,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>IncomingCallPrompt</name>
     <message>
-        <location filename="../qml/IncomingCallPrompt.qml" line="+77"/>
+        <location filename="../qml/IncomingCallPrompt.qml" line="+76"/>
         <source>This build can&apos;t join Matrix calls.</source>
         <translation>This build can&apos;t join Matrix calls.</translation>
     </message>
@@ -12483,7 +12483,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MessageComposer</name>
     <message>
-        <location filename="../src/models/MessageComposer.cpp" line="+258"/>
+        <location filename="../src/models/MessageComposer.cpp" line="+260"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>此后端不支持附件。</translation>
@@ -12527,7 +12527,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>上传失败。请重试或移除。</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+91"/>
         <source>An edit cannot be empty. Delete the message instead.</source>
         <translation>编辑内容不能为空。请改为删除这条消息。</translation>
     </message>
@@ -27312,7 +27312,7 @@ Note: importing keys does not verify this session.</source>
         <translation>通话声音已停止：此电脑的声音输出已断开。当有可用输出时将恢复；如果没有恢复，请离开并重新加入通话。</translation>
     </message>
     <message>
-        <location line="+2175"/>
+        <location line="+2177"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>屏幕共享声音已关闭：此软件包缺少所需的音频捕获插件。</translation>
     </message>
@@ -27397,7 +27397,7 @@ Note: importing keys does not verify this session.</source>
         <translation>参与者</translation>
     </message>
     <message>
-        <location line="-4610"/>
+        <location line="-4612"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>该房间已加密，并且在此版本中尚不支持加密呼叫。</translation>
     </message>
@@ -31116,7 +31116,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ThemeEditorDialog</name>
     <message>
-        <location filename="../qml/ThemeEditorDialog.qml" line="+458"/>
+        <location filename="../qml/ThemeEditorDialog.qml" line="+457"/>
         <source>Theme imported.</source>
         <translation>主题已导入。</translation>
     </message>

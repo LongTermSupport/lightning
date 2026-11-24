@@ -10010,7 +10010,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>IncomingCallPrompt</name>
     <message>
-        <location filename="../qml/IncomingCallPrompt.qml" line="+77"/>
+        <location filename="../qml/IncomingCallPrompt.qml" line="+76"/>
         <source>This build can&apos;t join Matrix calls.</source>
         <translation>Esta compilação não pode ingressar em chamadas Matrix.</translation>
     </message>
@@ -12532,7 +12532,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>MessageComposer</name>
     <message>
-        <location filename="../src/models/MessageComposer.cpp" line="+258"/>
+        <location filename="../src/models/MessageComposer.cpp" line="+260"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>Os anexos não são suportados neste backend.</translation>
@@ -12576,7 +12576,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>O envio falhou. Tente novamente ou remova.</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+91"/>
         <source>An edit cannot be empty. Delete the message instead.</source>
         <translation>Uma edição não pode estar vazia. Em vez disso, elimine a mensagem.</translation>
     </message>
@@ -27420,7 +27420,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>O áudio da chamada parou: a saída de som deste computador desligou-se. Retoma quando uma saída estiver novamente disponível; se não retomar, saia da chamada e volte a entrar.</translation>
     </message>
     <message>
-        <location line="+2175"/>
+        <location line="+2177"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>O som da partilha de ecrã está desativado: este pacote não inclui os plugins de captura de áudio necessários.</translation>
     </message>
@@ -27505,7 +27505,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Participante</translation>
     </message>
     <message>
-        <location line="-4610"/>
+        <location line="-4612"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>Esta sala está criptografada e as chamadas criptografadas ainda não estão disponíveis nesta versão.</translation>
     </message>
@@ -31250,7 +31250,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
 <context>
     <name>ThemeEditorDialog</name>
     <message>
-        <location filename="../qml/ThemeEditorDialog.qml" line="+458"/>
+        <location filename="../qml/ThemeEditorDialog.qml" line="+457"/>
         <source>Theme imported.</source>
         <translation>Tema importado.</translation>
     </message>

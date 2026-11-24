@@ -10010,7 +10010,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>IncomingCallPrompt</name>
     <message>
-        <location filename="../qml/IncomingCallPrompt.qml" line="+77"/>
+        <location filename="../qml/IncomingCallPrompt.qml" line="+76"/>
         <source>This build can&apos;t join Matrix calls.</source>
         <translation>এই বিল্ডটি Matrix কলে যোগ দিতে পারে না।</translation>
     </message>
@@ -12532,7 +12532,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MessageComposer</name>
     <message>
-        <location filename="../src/models/MessageComposer.cpp" line="+258"/>
+        <location filename="../src/models/MessageComposer.cpp" line="+260"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>এই ব্যাকএন্ডে সংযুক্তি সমর্থিত নয়।</translation>
@@ -12576,7 +12576,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>আপলোড ব্যর্থ। আবার চেষ্টা করুন বা সরান।</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+91"/>
         <source>An edit cannot be empty. Delete the message instead.</source>
         <translation>সম্পাদনা খালি হতে পারে না। পরিবর্তে বার্তাটি মুছে ফেলুন।</translation>
     </message>
@@ -27420,7 +27420,7 @@ Note: importing keys does not verify this session.</source>
         <translation>কলের অডিও থেমে গেছে: এই কম্পিউটারের শব্দ আউটপুট বিচ্ছিন্ন হয়েছে। আউটপুট আবার পাওয়া গেলে এটি চালু হবে; না হলে কল ছেড়ে আবার যোগ দিন।</translation>
     </message>
     <message>
-        <location line="+2175"/>
+        <location line="+2177"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>স্ক্রিন শেয়ারের শব্দ বন্ধ আছে: এই প্যাকেজে প্রয়োজনীয় অডিও ক্যাপচার প্লাগইন নেই।</translation>
     </message>
@@ -27505,7 +27505,7 @@ Note: importing keys does not verify this session.</source>
         <translation>অংশগ্রহণকারী</translation>
     </message>
     <message>
-        <location line="-4610"/>
+        <location line="-4612"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>এই রুমটি এনক্রিপ্ট করা হয়েছে, এবং এনক্রিপ্ট করা কল এখনও এই বিল্ডে উপলব্ধ নেই৷</translation>
     </message>
@@ -31250,7 +31250,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ThemeEditorDialog</name>
     <message>
-        <location filename="../qml/ThemeEditorDialog.qml" line="+458"/>
+        <location filename="../qml/ThemeEditorDialog.qml" line="+457"/>
         <source>Theme imported.</source>
         <translation>থিম আমদানি হয়েছে।</translation>
     </message>

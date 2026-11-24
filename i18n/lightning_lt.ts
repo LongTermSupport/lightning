@@ -10050,7 +10050,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>IncomingCallPrompt</name>
     <message>
-        <location filename="../qml/IncomingCallPrompt.qml" line="+77"/>
+        <location filename="../qml/IncomingCallPrompt.qml" line="+76"/>
         <source>This build can&apos;t join Matrix calls.</source>
         <translation>Ši versija negali prisijungti prie Matrix skambučių.</translation>
     </message>
@@ -12581,7 +12581,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>MessageComposer</name>
     <message>
-        <location filename="../src/models/MessageComposer.cpp" line="+258"/>
+        <location filename="../src/models/MessageComposer.cpp" line="+260"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>Ši posistemė nepalaiko priedų.</translation>
@@ -12625,7 +12625,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Įkelti nepavyko. Bandykite dar kartą arba pašalinkite.</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+91"/>
         <source>An edit cannot be empty. Delete the message instead.</source>
         <translation>Taisymas negali būti tuščias. Verčiau ištrinkite žinutę.</translation>
     </message>
@@ -27528,7 +27528,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Skambučio garsas sustojo: šio kompiuterio garso išvestis atsijungė. Jis tęsis, kai išvestis vėl bus prieinama; jei ne, išeikite iš skambučio ir prisijunkite iš naujo.</translation>
     </message>
     <message>
-        <location line="+2175"/>
+        <location line="+2177"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>Bendrinant ekraną garsas išjungtas: šiame pakete nėra reikiamų garso fiksavimo papildinių.</translation>
     </message>
@@ -27613,7 +27613,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Dalyvis</translation>
     </message>
     <message>
-        <location line="-4610"/>
+        <location line="-4612"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>Šis kambarys yra užšifruotas, o šifruoti skambučiai šioje versijoje dar nepasiekiami.</translation>
     </message>
@@ -31384,7 +31384,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
 <context>
     <name>ThemeEditorDialog</name>
     <message>
-        <location filename="../qml/ThemeEditorDialog.qml" line="+458"/>
+        <location filename="../qml/ThemeEditorDialog.qml" line="+457"/>
         <source>Theme imported.</source>
         <translation>Tema importuota.</translation>
     </message>

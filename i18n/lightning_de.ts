@@ -10010,7 +10010,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>IncomingCallPrompt</name>
     <message>
-        <location filename="../qml/IncomingCallPrompt.qml" line="+77"/>
+        <location filename="../qml/IncomingCallPrompt.qml" line="+76"/>
         <source>This build can&apos;t join Matrix calls.</source>
         <translation>Diese Version kann Matrix-Anrufen nicht beitreten.</translation>
     </message>
@@ -12532,7 +12532,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>MessageComposer</name>
     <message>
-        <location filename="../src/models/MessageComposer.cpp" line="+258"/>
+        <location filename="../src/models/MessageComposer.cpp" line="+260"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>Anhänge werden von diesem Backend nicht unterstützt.</translation>
@@ -12576,7 +12576,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Upload fehlgeschlagen. Erneut versuchen oder entfernen.</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+91"/>
         <source>An edit cannot be empty. Delete the message instead.</source>
         <translation>Eine Bearbeitung darf nicht leer sein. Lösche die Nachricht stattdessen.</translation>
     </message>
@@ -27435,7 +27435,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Anruf-Audio gestoppt: Die Tonausgabe dieses Computers wurde getrennt. Es läuft weiter, sobald wieder eine Ausgabe verfügbar ist; falls nicht, verlasse den Anruf und tritt erneut bei.</translation>
     </message>
     <message>
-        <location line="+2175"/>
+        <location line="+2177"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>Der Ton der Bildschirmfreigabe ist aus: Diesem Paket fehlen die nötigen Audioaufnahme-Plugins.</translation>
     </message>
@@ -31250,7 +31250,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>ThemeEditorDialog</name>
     <message numerus="yes">
-        <location filename="../qml/ThemeEditorDialog.qml" line="+256"/>
+        <location filename="../qml/ThemeEditorDialog.qml" line="+255"/>
         <source>Linked %n element(s)</source>
         <comment>custom theme colour group</comment>
         <translation>

@@ -10170,7 +10170,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>IncomingCallPrompt</name>
     <message>
-        <location filename="../qml/IncomingCallPrompt.qml" line="+77"/>
+        <location filename="../qml/IncomingCallPrompt.qml" line="+76"/>
         <source>This build can&apos;t join Matrix calls.</source>
         <translation>لا يمكن لهذا الإصدار الانضمام إلى مكالمات Matrix.</translation>
     </message>
@@ -12728,7 +12728,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MessageComposer</name>
     <message>
-        <location filename="../src/models/MessageComposer.cpp" line="+258"/>
+        <location filename="../src/models/MessageComposer.cpp" line="+260"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>المرفقات غير مدعومة على هذه الخلفية.</translation>
@@ -12772,7 +12772,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>فشل الرفع. أعد المحاولة أو أزله.</translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+91"/>
         <source>An edit cannot be empty. Delete the message instead.</source>
         <translation>لا يمكن أن يكون التعديل فارغًا. احذف الرسالة بدلًا من ذلك.</translation>
     </message>
@@ -27852,7 +27852,7 @@ Note: importing keys does not verify this session.</source>
         <translation>توقف صوت المكالمة: انقطع جهاز إخراج الصوت في هذا الحاسوب. يُستأنف عندما يتوفر جهاز إخراج مجددًا؛ وإن لم يحدث ذلك، فغادر المكالمة وانضم إليها من جديد.</translation>
     </message>
     <message>
-        <location line="+2175"/>
+        <location line="+2177"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>صوت مشاركة الشاشة معطّل: تفتقر هذه الحزمة إلى إضافات التقاط الصوت المطلوبة.</translation>
     </message>
@@ -27937,7 +27937,7 @@ Note: importing keys does not verify this session.</source>
         <translation>مشارك</translation>
     </message>
     <message>
-        <location line="-4610"/>
+        <location line="-4612"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>هذه الغرفة مشفرة، والمكالمات المشفرة غير متاحة بعد في هذا الإصدار.</translation>
     </message>
@@ -31786,7 +31786,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ThemeEditorDialog</name>
     <message>
-        <location filename="../qml/ThemeEditorDialog.qml" line="+458"/>
+        <location filename="../qml/ThemeEditorDialog.qml" line="+457"/>
         <source>Theme imported.</source>
         <translation>استُوردت السمة.</translation>
     </message>
