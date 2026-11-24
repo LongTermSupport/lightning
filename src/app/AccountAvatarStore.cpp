@@ -83,9 +83,8 @@ bool AccountAvatarStore::store(const QString &userId, const QByteArray &bytes)
     QBuffer buffer(&probe);
     buffer.open(QIODevice::ReadOnly);
     QImageReader reader(&buffer);
-    if (!reader.size().isValid()
-        || !imagemeta::decodeFitsBudget(reader, reader.size(),
-                                        imagemeta::kPreviewDecodeBudgetBytes))
+    if (!imagemeta::decodeFitsBudget(reader, reader.size(),
+                                     imagemeta::kPreviewDecodeBudgetBytes))
         return false;
     const QString path = fileFor(userId);
     if (path.isEmpty())
