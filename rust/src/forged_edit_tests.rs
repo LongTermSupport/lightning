@@ -391,3 +391,46 @@ async fn a_forged_mention_edit_inside_the_gap_is_not_fetched_as_evidence() {
     }
     assert_eq!(fetched[1]["event"]["mentions_me"], true);
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn dropped_room_updates_sweep_the_rooms_that_hold_unread_events() {
+    let server = MatrixMockServer::new().await;
+    let client = plain_room(&server).await;
+    let mut response = v5::Response::new("1".to_owned());
+    let mut unread = v5::response::Room::default();
+    unread.timeline = vec![Raw::from_json_string(message(ALICE, "$a", "unseen", 1000).to_string()).unwrap()];
+    unread.unread_notifications.notification_count = Some(3u32.into());
+    response.rooms.insert(room().to_owned(), unread);
+    let mut read = v5::response::Room::default();
+    read.timeline = vec![Raw::from_json_string(message(ME, "$b", "my own", 2000).to_string()).unwrap()];
+    response.rooms.insert(room_id!("!read:localhost").to_owned(), read);
+    client
+        .process_sliding_sync_test_helper(&response, &RequestedRequiredStates::default())
+        .await
+        .unwrap();
+
+    let (updates, receiver) = tokio::sync::broadcast::channel(1);
+    for _ in 0..3 {
+        updates.send(matrix_sdk::sync::RoomUpdates::default()).unwrap();
+    }
+    let events: Queue = Arc::new(Mutex::new(VecDeque::new()));
+    let watch = spawn_unread_gap_watch_on(&client, &events, receiver);
+    let rows = || -> Vec<serde_json::Value> {
+        events.lock().unwrap().iter().map(|raw| serde_json::from_str(raw).unwrap()).collect()
+    };
+    let deadline = Instant::now() + Duration::from_secs(40);
+    while !rows().iter().any(|row| row["type"] == "unread_fetch_done") {
+        assert!(Instant::now() < deadline, "the lag was never swept: {:?}", rows());
+        tokio::time::sleep(Duration::from_millis(20)).await;
+    }
+    tokio::time::sleep(Duration::from_millis(500)).await;
+    let rows = rows();
+    let gaps: Vec<&str> = rows.iter().filter(|row| row["type"] == "room_gap")
+        .map(|row| row["room_id"].as_str().unwrap()).collect();
+    assert_eq!(gaps, [ROOM]);
+    let traces: Vec<&str> = rows.iter().filter(|row| row["type"] == "rust_trace")
+        .map(|row| row["line"].as_str().unwrap()).collect();
+    assert_eq!(traces, ["room updates lagged, dropped 2: sweeping unread rooms"]);
+    watch.abort();
+    drop(updates);
+}
