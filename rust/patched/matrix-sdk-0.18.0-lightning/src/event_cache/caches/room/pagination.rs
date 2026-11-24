@@ -374,6 +374,26 @@ impl PaginatedCache for Arc<RoomEventCacheInner> {
             .await?
         };
 
+        // Lightning: a page whose events are all stored after this gap was already
+        // walked from a newer gap, so it is a duplicate even when every event is our
+        // own; moving it here would misorder it. Events stored before the gap (the
+        // send queue's) keep the rule above, which leads to what we missed.
+        let all_duplicates = all_duplicates
+            || prev_gap_id.is_some_and(|gap_id| {
+                let after_gap = state
+                    .room_linked_chunk()
+                    .chunks()
+                    .map(|chunk| chunk.identifier())
+                    .skip_while(|id| *id != gap_id)
+                    .collect::<Vec<_>>();
+
+                !events.is_empty()
+                    && in_memory_duplicated_event_ids.len() == events.len()
+                    && in_memory_duplicated_event_ids
+                        .iter()
+                        .all(|(_, position)| after_gap.contains(&position.chunk_identifier()))
+            });
+
         // If not all the events have been back-paginated, we need to remove the
         // previous ones, otherwise we can end up with misordered events.
         //

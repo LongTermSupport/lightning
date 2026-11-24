@@ -20,7 +20,7 @@ id = "CVE-2025-53549"
 component = "cargo:matrix-sdk"
 version = "0.18.0"
 decision = "not_affected"
-reason = "Fixed in 0.13.0. rust/patched/matrix-sdk-0.18.0-lightning is the crates.io 0.18.0 source plus upstream commit 83e14bf13 (rust/patched/README.md); a path crate has no registry checksum, so the gate cannot match its version itself."
+reason = "Fixed in 0.13.0. rust/patched/matrix-sdk-0.18.0-lightning is the crates.io 0.18.0 source plus upstream commit 83e14bf13 and the local \"known page after its gap\" pagination change (rust/patched/README.md); a path crate has no registry checksum, so the gate cannot match its version itself."
 expiry = 2026-12-22
 
 [[triage]]
@@ -28,5 +28,5 @@ id = "GHSA-fc4h-xcf3-qj5f"
 component = "cargo:matrix-sdk"
 version = "0.18.0"
 decision = "not_affected"
-reason = "Fixed in 0.6.2. rust/patched/matrix-sdk-0.18.0-lightning is the crates.io 0.18.0 source plus upstream commit 83e14bf13 (rust/patched/README.md); a path crate has no registry checksum, so the gate cannot match its version itself."
+reason = "Fixed in 0.6.2. rust/patched/matrix-sdk-0.18.0-lightning is the crates.io 0.18.0 source plus upstream commit 83e14bf13 and the local \"known page after its gap\" pagination change (rust/patched/README.md); a path crate has no registry checksum, so the gate cannot match its version itself."
 expiry = 2026-12-22
