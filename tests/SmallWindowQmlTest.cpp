@@ -215,7 +215,8 @@ private:
         if (it->width() > 0 && it->height() > 0
             && qMin(r.bottom(), bottom) > qMax(r.top(), top)) {
             if (r.left() < -0.5 || r.right() > panel->width() + 0.5
-                || r.top() < -0.5 || r.bottom() > panel->height() + 0.5)
+                || qMax(r.top(), top) < -0.5
+                || qMin(r.bottom(), bottom) > panel->height() + 0.5)
                 out << QStringLiteral("%1 %2 at [%3..%4] x [%5..%6]")
                            .arg(QString::fromLatin1(cls), it->objectName())
                            .arg(qRound(r.left())).arg(qRound(r.right()))
