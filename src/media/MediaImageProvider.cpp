@@ -3,6 +3,7 @@
 #include "app/GuiStallTracer.h"
 
 #include "media/ImageFormatSupport.h"
+#include "media/ImageMetadataSize.h"
 #include "media/MediaBridge.h"
 
 #include <QBuffer>
@@ -186,6 +187,8 @@ QImage MediaImageProvider::requestImage(const QString &id, QSize *size,
     if (target.isValid()
         && (target.width() > kMaxDecodeEdge || target.height() > kMaxDecodeEdge))
         target.scale(kMaxDecodeEdge, kMaxDecodeEdge, Qt::KeepAspectRatio);
+    target = imagemeta::decodeSizeWithinBudget(
+        reader, target, qint64(kMaxDecodeAllocationMiB) << 20);
     if (target.isValid() && natural.isValid() && target != natural)
         reader.setScaledSize(target);
 

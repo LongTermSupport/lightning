@@ -36,6 +36,7 @@
 #include "matrix/MockMatrixClient.h"
 #endif
 #include "matrix/RoomUnreadRule.h"
+#include "media/ImageMetadataSize.h"
 #include "media/MediaManager.h"
 #include "media/MprisServer.h"
 #include "models/MessageComposer.h"
@@ -5850,6 +5851,11 @@ void AppController::copyImageBytesToClipboard(const QString &mediaKey,
     decodeBuffer.open(QIODevice::ReadOnly);
     QImageReader reader(&decodeBuffer);
     reader.setAutoTransform(true);
+    // Only the decoded flavour is downscaled; the sniffed type below carries the original bytes.
+    const QSize target =
+        imagemeta::decodeSizeWithinBudget(reader, QSize(), qint64(64) << 20);
+    if (target.isValid() && target != reader.size())
+        reader.setScaledSize(target);
     const QImage image = reader.read();
     if (image.isNull()) {
         Q_EMIT copyImageFinished(false, tr("Couldn't decode the image."));
