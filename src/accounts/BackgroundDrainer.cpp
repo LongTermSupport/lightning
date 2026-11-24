@@ -58,7 +58,7 @@ int BackgroundDrainer::tick()
     };
     // The pass walks a SNAPSHOT: a host's own signals can retire it (and
     // remove it from m_hosts) mid-pass, which would shift every index after
-    // it (review L13). Where the next tick starts is found again by host.
+    // it. Where the next tick starts is found again by host.
     const QList<QPointer<BackgroundSessionHost>> pass = m_hosts;
     const int count = int(pass.size());
     if (m_next >= count)

@@ -3354,10 +3354,12 @@ void SfuCallController::onMediaKeyReceived(const QString &roomId,
 #ifdef HAVE_LIGHTNING_WEBRTC
     if (!m_engine)
         return;
-    // Keys live only in the engine's cryptor (never stored, logged or in
-    // QML), under the sending device's name, which is always known here. The
-    // LiveKit sid is bound to it later (noteParticipantIdentities), since key,
-    // participant list and membership arrive in any order.
+    // Raw keys stay in memory only: in m_inboundRingKeys, which replays them
+    // into each new subscriber engine and is pruned and cleared at teardown,
+    // and in the engines' cryptors. Never persisted, logged or given to QML.
+    // Keyed by the sending device, always known here; the LiveKit sid is
+    // bound later (noteParticipantIdentities), since key, participant list
+    // and membership arrive in any order.
     const QString ringName = mediaKeyRingName(sender, claimedDeviceId);
     if (!m_inboundRingKeys.contains(ringName)
         && m_inboundRingKeys.size() >= kMaxParticipants)

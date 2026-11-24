@@ -12,7 +12,7 @@ or run time.
 |---|---|
 | Project | DeepFilterNet — "Noise supression using deep filtering", Hendrik Schröter |
 | URL | https://github.com/Rikorose/DeepFilterNet |
-| Vendored commit | `d375b2d8309e0935d165700c91da9de862a99c31` (branch `main`, committed 2024-10-17; the newest commit upstream has) |
+| Vendored commit | `d375b2d8309e0935d165700c91da9de862a99c31` (branch `main`, committed 2024-10-17; the newest upstream commit when obtained) |
 | Nearest release | tag `v0.5.6` → `978576aa8400552a4ce9730838c635aa30db5e61` (2023-08-31). The vendored commit is 89 commits after it. |
 | Obtained | 2026-10-06, as the GitHub source archive of that commit (`codeload.github.com/Rikorose/DeepFilterNet/tar.gz/d375b2d8…`, sha256 `49471f3633a24c097d82f3b0d2dbd83a0c1bac3e2f6f6c9a675ef0020ebe5c51`) |
 | Crate | `deep_filter` 0.5.7-pre (library name `df`), directory `libDF/` |

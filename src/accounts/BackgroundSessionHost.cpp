@@ -44,7 +44,7 @@ QString localpartOf(const QString &userId)
 // The queue types the host acts on (contract §3.5, plus the verification
 // flow's end). Anything else is counted and dropped WITHOUT being parsed: a
 // queue copy of a sticky Session type is read from the sticky slot instead
-// (review L9). A body can quote one of these words, which costs one parse and
+// A body can quote one of these words, which costs one parse and
 // nothing else: the type field decides below.
 bool mayBeHandled(const QString &raw)
 {
@@ -395,7 +395,7 @@ void BackgroundSessionHost::applySessionState(const QByteArray &json)
             return;
     }
     if (has("logged_out") && changed(QStringLiteral("logged_out"), payload("logged_out"))) {
-        // No result word is not a success (review L12): the pool maps only
+        // No result word is not a success: the pool maps only
         // "ok" and "already_invalid" to a server sign-out that happened.
         Q_EMIT loggedOut(payload("logged_out").value(QStringLiteral("result")).toString());
     }

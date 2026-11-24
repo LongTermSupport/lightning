@@ -1,6 +1,8 @@
 
 #include <QtTest/QtTest>
 
+#include <QDir>
+#include <QDirIterator>
 #include <QFile>
 #include <QRegularExpression>
 #include <QString>
@@ -68,6 +70,27 @@ private slots:
         QVERIFY2(!lockVersion.isEmpty(),
                  "could not find matrix-client-rust in rust/Cargo.lock");
         QCOMPARE(lockVersion, projectVersion);
+    }
+
+    void noSourceHardCodesAUserAgentVersion()
+    {
+        const QRegularExpression literal(
+            QStringLiteral("\"Lightning/[0-9]+\\.[0-9]+"));
+        QDirIterator it(QStringLiteral(REPO_ROOT "/src"),
+                        {QStringLiteral("*.cpp"), QStringLiteral("*.h")},
+                        QDir::Files, QDirIterator::Subdirectories);
+        int scanned = 0;
+        QStringList hits;
+        while (it.hasNext()) {
+            const QString path = it.next();
+            QFile f(path);
+            QVERIFY2(f.open(QIODevice::ReadOnly), qPrintable(path));
+            ++scanned;
+            if (literal.match(QString::fromUtf8(f.readAll())).hasMatch())
+                hits.append(path);
+        }
+        QVERIFY2(scanned > 300, qPrintable(QString::number(scanned)));
+        QVERIFY2(hits.isEmpty(), qPrintable(hits.join(QStringLiteral(", "))));
     }
 
     void theReadmeDoesNotAdvertiseAnOlderRelease()

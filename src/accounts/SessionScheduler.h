@@ -12,8 +12,8 @@
 //    QElapsedTimer's QueryPerformanceCounter may count sleep). Between two
 //    ticks, the first gap minus the second is the time spent suspended; over
 //    10 s is a resume. Lateness alone cannot see a suspend, and a GUI stall
-//    moves both clocks alike, so it is never read as one (review M3, round
-//    2). NOT measured on a real suspend on any platform. Where the wall clock
+//    moves both clocks alike, so it is never read as one. NOT
+//    measured on a real suspend on any platform. Where the wall clock
 //    is the fallback, a clock set forward by over 10 s also reads as a
 //    resume (every host merely catches up).
 //  * Gate: nothing starts before the foreground's initial sync (or 15 s) and

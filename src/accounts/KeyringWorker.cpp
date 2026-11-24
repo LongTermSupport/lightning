@@ -34,7 +34,7 @@ constexpr auto kSecretOAuthClientId = "oauthClientId";
 
 // Drops this reference to a secret. Not a scrub: QString is implicitly
 // shared, so fill() would detach and overwrite only a private copy while
-// every other holder keeps the original bytes (review L14).
+// every other holder keeps the original bytes.
 void forget(QString &value)
 {
     value.clear();

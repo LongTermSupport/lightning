@@ -9,9 +9,8 @@ Rectangle {
     property string dismissedCallId: ""
 
     // Read at the press, so it names this card's call. The ringer stops here
-    // too (live 2026-10-07: it rang on for 87.8 s with the card gone and no
-    // control left to stop it); dismissRing refuses any call but the ringing
-    // one.
+    // too, or it rings on with the card gone and no control left to stop it;
+    // dismissRing refuses any call but the ringing one.
     function dismiss() {
         var id = app.calls.activeCallId
         root.dismissedCallId = id

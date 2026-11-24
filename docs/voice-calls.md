@@ -11,7 +11,7 @@
 > **The two lanes have diverged sharply since, and this matters when reading
 > any status line below.** The MatrixRTC/SFU lane is the one that carries real
 > media against Element today; the legacy 1:1 `m.call.*` lane described here
-> has a real engine and has never been live-validated against another client.
+> has a real engine with scripted interop evidence only (below).
 > Anything in this document about capture elements, publish caps, videoscale
 > or screen sharing belongs to the SFU engine, and `docs/matrixrtc.md` is
 > authoritative for it.
@@ -23,10 +23,11 @@ ROUNDS, and each round's own status line was true when it was written:
 * **Media (round 3):** a real GStreamer `webrtcbin` engine, 1:1. Audio only
   until 2026-10-31, when VP8 video landed (`docs/feature-contracts.md`).
   Builds without the plugins keep the honest signalling-only refusal.
-* **Live validation of the legacy lane: NOT TESTED**, still. No answered 1:1
-  call has ever been placed across a network, and the incoming-call prompt's
-  Accept is a currently OPEN defect (CLAUDE.md §16). The loopback suite proves
-  the engine and the handshake, not the network and not another client.
+* **Live validation of the legacy lane:** scripted PASS on 2026-10-31,
+  voice and video both ways against Element Web 1.12.21 and Lightning, on a
+  local homeserver with fake devices (`docs/live-validation.md`). NOT TESTED:
+  real devices, two machines, NAT or TURN, any package, Windows, macOS. The
+  incoming-call Accept defect was fixed in 0.8.3 (`docs/open-items.md`).
 * **Packaging:** Windows and macOS packages BUNDLE GStreamer as of
   2026-08-26, and the Linux formats declare or stage the plugins. The
   "packaged builds stay signalling-only" note in round 3 below is superseded;

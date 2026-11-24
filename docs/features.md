@@ -42,8 +42,9 @@ decryption. Sign in with a password or the homeserver's browser flow
 (MSC4108), arriving verified. Optionally refuse unverified devices (MSC4153),
 off by default. Per-room display name and avatar. Several accounts on
 different homeservers at once, each with an isolated store and its last known
-avatar kept on disk so it shows before it syncs; only the active
-one syncs.
+avatar kept on disk so it shows before it syncs. By default only the active
+one syncs; the Labs live-accounts option keeps pinned accounts syncing, with a
+unified inbox (`docs/feature-contracts.md`).
 
 **Media and the composer.** Images, video and audio with inline playback,
 posters and waveforms; encrypted attachments throughout; voice messages
@@ -120,7 +121,7 @@ identifier. See [Application updates](updates.md).
 ## Status and known limits
 
 Lightning is listed in the Matrix.org [client
-directory](https://matrix.org/ecosystem/clients/) as an **Alpha** client under
+directory](https://matrix.org/ecosystem/clients/lightning/) as a **Beta** client under
 GPL-3.0-or-later. That is a directory listing, not an endorsement or
 certification.
 

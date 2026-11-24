@@ -1,4 +1,4 @@
-//! Stickers and image packs: MSC2545 (`im.ponies.*`) and `m.sticker` send.
+//! Stickers and image packs: MSC2545 (legacy `im.ponies.*` and stable names) and `m.sticker` send.
 //!
 //! The three MSC2545 events, with shapes transcribed from ruma-events
 //! 0.34's `image_pack` module:
@@ -9,6 +9,10 @@
 //!   * `im.ponies.emote_rooms`: global account data, `{ "rooms": { room_id:
 //!     { state_key: {} } } }`, selecting room packs usable everywhere (a
 //!     room's own packs are always usable inside it).
+//!
+//! The stable names `m.room.image_pack` (room state) and `m.image_pack.rooms`
+//! (account data) are handled beside the room and rooms-list events above;
+//! `Namespace` says which one an entry came from.
 //!
 //! Hand-written serde_json rather than ruma's typed structs: those need the
 //! `unstable-msc2545` feature and ruma-events as a direct dependency. Switch

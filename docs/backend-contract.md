@@ -48,6 +48,24 @@ All are fire-and-forget. On success:
 - `redactEvent`: emit `eventRedacted` after the server acks.
 - `toggleReaction`: emit `reactionsChanged`.
 
+### Acknowledged operations
+
+`sendRoomTextAcked`, `sendThreadTextAcked`, `sendRoomContent` and
+`createPoll` return an op id:
+
+- `0` is a synchronous refusal; nothing is pending and no signal follows.
+- Otherwise exactly one `roomSendFinished(opId, …)` answers it. `ok` means
+  the room's send queue holds it (text, poll: local echo, SDK retry) or the
+  server accepted it (`sendRoomContent`), never that a recipient has it. An unconfirmed failure may have been sent:
+  `pending` for every op (other text and poll failures were aborted unsent),
+  plus `network`, `rate_limited` and `unknown` for `sendRoomContent`. Never
+  resend one except under the same `transactionId`.
+- `sendsAbandoned` ends every op of that backend handle unanswered; callers
+  settle them as failed or unconfirmed.
+- Callers ignore ids they do not own and a second answer for a settled id. An
+  op belongs to the client that issued it, not to the room on screen: a room
+  switch keeps waiting for it; a client swap or sign-out settles it as failed.
+
 ## Thread replies (v0.4.1 / v0.4.4)
 
 `MatrixClient::sendThreadReply` is a *non-pure* virtual:

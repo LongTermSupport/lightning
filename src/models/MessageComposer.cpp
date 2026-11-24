@@ -178,7 +178,8 @@ void MessageComposer::setClient(MatrixClient *client)
     m_imagePrep.releaseAll();
     m_client = client;
     m_slashJoinOp = 0;
-    m_pendingPollOp = 0;
+    if (std::exchange(m_pendingPollOp, 0) != 0)
+        Q_EMIT pollCreateFinished(false);
     ++m_dropGeneration;
     m_attachments->setClient(client);
     if (m_client) {
@@ -216,7 +217,8 @@ void MessageComposer::setClient(MatrixClient *client)
                 });
         connect(m_client, &MatrixClient::loggedOut, this, [this] {
             ++m_dropGeneration;
-            m_pendingPollOp = 0;
+            if (std::exchange(m_pendingPollOp, 0) != 0)
+                Q_EMIT pollCreateFinished(false);
             m_imagePrep.releaseAll();
             discardAllAttachments();
             // Unresolved voice recordings must not outlive the session on disk.
@@ -893,7 +895,8 @@ void MessageComposer::setRoomId(const QString &r)
     m_draftDebounce.stop();
     m_roomId = r;
     m_slashJoinOp = 0;
-    m_pendingPollOp = 0;
+    // A pending poll keeps its op: it is queued in the room it was made in and
+    // the dialog waits for that answer.
     m_text.clear();
     m_mentionRefs.clear();
     restoreDraft();

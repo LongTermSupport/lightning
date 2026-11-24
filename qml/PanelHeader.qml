@@ -22,13 +22,13 @@ Rectangle {
         anchors.fill: parent
         anchors.leftMargin: root.leadingInset
         anchors.rightMargin: AppTheme.headerActionGutter
-        spacing: AppTheme.spacing8
+        spacing: AppTheme.headerActionSpacing
 
         RowLayout {
             id: contentRow
             Layout.fillWidth: true
             Layout.fillHeight: true
-            spacing: AppTheme.spacing8
+            spacing: AppTheme.headerActionSpacing
         }
         IconButton {
             id: closeButton
