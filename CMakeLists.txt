@@ -1435,6 +1435,10 @@ endif()
 
 # Strip the "qml/" prefix so QML files sit at the module root and can be
 # resolved via QQmlApplicationEngine::loadFromModule("MatrixClient", "Main").
+list(APPEND APP_QML_FILES
+    qml/SpaceCommunityPanel.qml
+    qml/RoomLifecycleReview.qml)
+
 foreach(_qml_file IN LISTS APP_QML_FILES)
     get_filename_component(_qml_name ${_qml_file} NAME)
     set_source_files_properties(${_qml_file}
@@ -8414,4 +8418,8 @@ if(BUILD_TESTING)
                 ENVIRONMENT "LIGHTNING_DISABLE_MPRIS=1")
         endif()
     endforeach()
+endif()
+
+if(BUILD_TESTING)
+    add_subdirectory(tests)
 endif()

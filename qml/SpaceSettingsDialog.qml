@@ -914,8 +914,9 @@ AppDialog {
                                     }
                                     currentIndex: displayedIndex
                                     onActivated: (index) => {
-                                        app.roomInfo.setJoinRule(
-                                            joinRuleCombo.ruleValues[index])
+                                        var rule = joinRuleCombo.ruleValues[index]
+                                        refreshRule()
+                                        accessPreview.openFor(rule)
                                     }
                                 }
                                 Label {
@@ -2155,6 +2156,42 @@ AppDialog {
                 Layout.fillWidth: true
                 textFormat: Text.PlainText
                 wrapMode: Text.WordWrap
+                text: qsTr("Capabilities in this room or Space only. Moderation can target only members below the new level. Servers enforce permissions and may have newer state.")
+                color: AppTheme.stormTextSecondary
+            }
+            ScrollView {
+                Layout.fillWidth: true
+                Layout.preferredHeight: Math.min(160, capabilityColumn.implicitHeight)
+                clip: true
+                ColumnLayout {
+                    id: capabilityColumn
+                    width: parent.width
+                    Repeater {
+                        model: {
+                            var tick = root.rosterTick
+                            return root.infoIsOurs && app.spaces
+                                ? app.spaces.roleCapabilityPreview(app.roomInfo.powerLevels,
+                                    app.roomInfo.powerLevelFor(roleConfirm.userId), roleConfirm.level) : []
+                        }
+                        Label {
+                            required property var modelData
+                            objectName: "spaceRoleCapabilityDelta"
+                            Layout.fillWidth: true
+                            textFormat: Text.PlainText
+                            wrapMode: Text.WordWrap
+                            text: qsTr("%1: %2 → %3 (level %4)").arg(modelData.label)
+                                .arg(modelData.before ? qsTr("Allowed") : qsTr("Not allowed"))
+                                .arg(modelData.after ? qsTr("Allowed") : qsTr("Not allowed"))
+                                .arg(modelData.threshold)
+                            color: modelData.changed ? AppTheme.stormText : AppTheme.stormTextSecondary
+                        }
+                    }
+                }
+            }
+            Label {
+                Layout.fillWidth: true
+                textFormat: Text.PlainText
+                wrapMode: Text.WordWrap
                 text: (root.roomMode
                        ? qsTr("Set %1 to %2 in this room?")
                        : qsTr("Set %1 to %2 in this space? Roles in the space's rooms are set in each room."))
@@ -2203,6 +2240,64 @@ AppDialog {
 
     SpaceMemberActionDialog {
         id: memberAction
+    }
+
+    AppDialog {
+        id: accessPreview
+        objectName: "spaceAudiencePreview"
+        parent: Overlay.overlay
+        anchors.centerIn: parent
+        width: Math.min(480, parent ? parent.width - 40 : 480)
+        title: qsTr("Review access change")
+        standardButtons: Dialog.NoButton
+        property string targetId: ""
+        property string proposedRule: ""
+        property string previousRule: ""
+        property string previousHistory: ""
+        readonly property bool current: root.infoIsOurs && targetId === root.spaceId
+            && previousRule === app.roomInfo.joinRule
+            && previousHistory === app.roomInfo.historyVisibility
+        function openFor(rule) {
+            targetId = root.spaceId
+            proposedRule = rule
+            previousRule = root.infoIsOurs ? app.roomInfo.joinRule : ""
+            previousHistory = root.infoIsOurs ? app.roomInfo.historyVisibility : ""
+            open()
+        }
+        ColumnLayout {
+            width: parent ? parent.width : 0
+            Label {
+                Layout.fillWidth: true
+                textFormat: Text.PlainText
+                wrapMode: Text.WordWrap
+                text: qsTr("Current audience\n%1\n\nProposed audience\n%2")
+                    .arg(app.spaces.audiencePreview(accessPreview.previousRule,
+                        accessPreview.previousHistory, []))
+                    .arg(app.spaces.audiencePreview(accessPreview.proposedRule,
+                        accessPreview.previousHistory, []))
+                color: AppTheme.stormText
+            }
+            Label {
+                Layout.fillWidth: true
+                visible: !accessPreview.current
+                text: qsTr("Room state changed. Cancel and review again.")
+                wrapMode: Text.WordWrap
+                color: AppTheme.stormDanger
+            }
+            RowLayout {
+                AppButton {
+                    text: qsTr("Apply access change")
+                    enabled: accessPreview.current && app.roomInfo.canChangeJoinRule
+                             && !app.roomInfo.editPending
+                    onClicked: {
+                        app.roomInfo.setJoinRule(accessPreview.proposedRule)
+                        accessPreview.close()
+                        joinRuleCombo.refreshRule()
+                    }
+                }
+                AppButton { text: qsTr("Cancel"); onClicked: accessPreview.close() }
+            }
+        }
     }
 
     signal inviteRequested(string spaceId)

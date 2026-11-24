@@ -13605,6 +13605,15 @@ bool RustSdkMatrixClient::handleRoomCommandEvent(const QString &type,
         return true;
     }
 
+    if (type == QLatin1String("space_community_result")) {
+        Q_EMIT spaceCommunityFinished(opId(),
+            event.value(QStringLiteral("room_id")).toString(),
+            event.value(QStringLiteral("action")).toString(),
+            event.value(QStringLiteral("ok")).toBool(),
+            event.value(QStringLiteral("result")).toObject().toVariantMap());
+        return true;
+    }
+
     if (type == QLatin1String("room_power_matrix_result")) {
         Q_EMIT roomPowerMatrixFinished(
             opId(),
@@ -14131,4 +14140,19 @@ bool RustSdkMatrixClient::handleRoomCommandEvent(const QString &type,
     }
 
     return false;
+}
+
+quint64 RustSdkMatrixClient::spaceCommunityAction(
+    const QString &roomId, const QString &action, const QVariantMap &payload)
+{
+    if (!m_rustHandle || roomId.isEmpty())
+        return 0;
+    const quint64 opId = nextOpId();
+    const QByteArray room = roomId.toUtf8();
+    const QByteArray verb = action.toUtf8();
+    const QByteArray data = QJsonDocument(QJsonObject::fromVariantMap(payload))
+                                .toJson(QJsonDocument::Compact);
+    const QString result = takeRustString(mx_rust_space_community(
+        m_rustHandle, room.constData(), verb.constData(), data.constData(), opId));
+    return result.isEmpty() ? opId : 0;
 }

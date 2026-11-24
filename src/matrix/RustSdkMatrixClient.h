@@ -30,6 +30,8 @@ class RustSdkMatrixClient final : public MatrixClient
 {
     Q_OBJECT
 public:
+    quint64 spaceCommunityAction(const QString &roomId, const QString &action,
+                                 const QVariantMap &payload) override;
     static constexpr int kStoreCloseBudgetMs = 15000;
 
     /// Block until every handle retired by releaseRustHandle() has closed, or

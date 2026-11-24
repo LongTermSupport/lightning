@@ -16,10 +16,18 @@ SpaceManager::SpaceManager(QObject *parent)
     m_rebuildCoalesce.setSingleShot(true);
     m_rebuildCoalesce.setInterval(0);
     connect(&m_rebuildCoalesce, &QTimer::timeout, this, &SpaceManager::rebuild);
+    m_communityTimer.setSingleShot(true);
+    m_communityTimer.setInterval(110000);
+    connect(&m_communityTimer, &QTimer::timeout, this, [this] {
+        m_communityOp = 0;
+        m_communityMessage = tr("The result is not known. Refresh before trying again; publishing the same reviewed text reuses its transaction.");
+        Q_EMIT communityChanged();
+    });
 }
 
 void SpaceManager::abandonPendingChildOps()
 {
+    clearCommunity();
     // An answer for the previous account can no longer arrive (the Rust side
     // drops stale results), so an editor waiting on one would show "Saving"
     // for ever: tell it the save did not complete.
@@ -40,6 +48,8 @@ void SpaceManager::setClient(MatrixClient *client)
     m_client = client;
     m_pendingJoinedSpaceId.clear();
     if (m_client) {
+        connect(m_client, &MatrixClient::spaceCommunityFinished,
+                this, &SpaceManager::onCommunityFinished);
         connect(m_client, &MatrixClient::roomsChanged,
                 this, &SpaceManager::rebuild);
         connect(m_client, &MatrixClient::roomUpdated, this,
@@ -1609,4 +1619,209 @@ bool SpaceManager::lobbySectionCollapsed(const QString &spaceId,
                                          const QString &sectionId) const
 {
     return m_lobbyCollapsed.value(spaceId).contains(sectionId);
+}
+
+void SpaceManager::clearCommunity()
+{
+    m_communityTimer.stop();
+    m_communityOp = 0;
+    m_communityRoom.clear();
+    m_communityUser.clear();
+    m_communityState.clear();
+    m_communityReview.clear();
+    m_communityReviewRequest.clear();
+    m_communityMessage.clear();
+    Q_EMIT communityChanged();
+}
+
+void SpaceManager::loadCommunity(const QString &roomId)
+{
+    if (!m_client || !isRealSpaceId(roomId))
+        return;
+    if (m_communityRoom != roomId || m_communityUser != m_client->currentUserId()) {
+        clearCommunity();
+        m_communityRoom = roomId;
+        m_communityUser = m_client->currentUserId();
+    }
+    if (!communityBusy())
+        communityAction(QStringLiteral("load"), {});
+}
+
+void SpaceManager::invalidateCommunityReview()
+{
+    m_communityReview.clear();
+    m_communityReviewRequest.clear();
+    Q_EMIT communityChanged();
+}
+
+void SpaceManager::communityAction(const QString &action, const QVariantMap &payload)
+{
+    if (!m_client || communityBusy() || m_communityRoom.isEmpty()
+        || m_communityUser != m_client->currentUserId())
+        return;
+    QVariantMap request = payload;
+    if (action == QLatin1String("publish")) {
+        if (m_communityReview.isEmpty())
+            return;
+        request = m_communityReviewRequest;
+        request.insert(QStringLiteral("approval"),
+                       m_communityReview.value(QStringLiteral("approval")));
+    } else if (action == QLatin1String("preview")) {
+        invalidateCommunityReview();
+        m_communityReviewRequest = request;
+    } else if (action != QLatin1String("load")) {
+        invalidateCommunityReview();
+    }
+    m_communityAction = action;
+    m_communityMessage.clear();
+    m_communityOp = m_client->spaceCommunityAction(m_communityRoom, action, request);
+    if (m_communityOp)
+        m_communityTimer.start();
+    else
+        m_communityMessage = tr("This action is unavailable. Refresh and check your permissions.");
+    Q_EMIT communityChanged();
+}
+
+void SpaceManager::onCommunityFinished(quint64 opId, const QString &roomId,
+    const QString &action, bool ok, const QVariantMap &result)
+{
+    if (!m_client || !opId || opId != m_communityOp || roomId != m_communityRoom
+        || action != m_communityAction || m_client->currentUserId() != m_communityUser)
+        return;
+    m_communityOp = 0;
+    m_communityTimer.stop();
+    if (!ok) {
+        const QString category = result.value(QStringLiteral("category")).toString();
+        if (category == QLatin1String("stale")) {
+            invalidateCommunityReview();
+            m_communityMessage = tr("The proposal or audience changed. Refresh and review it again.");
+        } else if (category == QLatin1String("forbidden")) {
+            invalidateCommunityReview();
+            m_communityMessage = tr("The server refused this action. Refresh and check your permissions.");
+        } else {
+            m_communityMessage = tr("The action did not complete. A publish may already have arrived; retrying the same reviewed text will not send a second post.");
+        }
+    } else if (action == QLatin1String("load")) {
+        if (m_communityState != result)
+            invalidateCommunityReview();
+        m_communityState = result;
+    } else if (action == QLatin1String("preview")) {
+        m_communityReview = result;
+    } else {
+        invalidateCommunityReview();
+        communityAction(QStringLiteral("load"), {});
+    }
+    Q_EMIT communityChanged();
+}
+
+QVariantList SpaceManager::guideRooms(const QVariantList &sections) const
+{
+    QHash<QString, QVariantMap> visible;
+    for (const QVariant &section : sections) {
+        const QVariantMap sec = section.toMap();
+        for (const QVariant &value : sec.value(QStringLiteral("rows")).toList()) {
+            const QVariantMap row = value.toMap();
+            visible.insert(row.value(QStringLiteral("roomId")).toString(), row);
+        }
+    }
+    QVariantList result;
+    const QVariantList ids = m_communityState.value(QStringLiteral("guide")).toMap()
+                                 .value(QStringLiteral("rooms")).toList();
+    QSet<QString> added;
+    for (const QVariant &id : ids) {
+        const QString roomId = id.toString();
+        if (visible.contains(roomId) && !added.contains(roomId)) {
+            result.append(visible.value(roomId));
+            added.insert(roomId);
+        }
+    }
+    return result;
+}
+
+QVariantList SpaceManager::roleCapabilityPreview(const QVariantMap &levels,
+    qlonglong before, qlonglong after) const
+{
+    const QList<QPair<QString, QString>> keys{
+        {QStringLiteral("events_default"), tr("Send other message events")},
+        {QStringLiteral("invite"), tr("Invite people")},
+        {QStringLiteral("kick"), tr("Remove members below their level")},
+        {QStringLiteral("ban"), tr("Ban members below their level")},
+        {QStringLiteral("redact"), tr("Remove other people's messages")},
+        {QStringLiteral("notifications.room"), tr("Notify the whole room")},
+        {QStringLiteral("state_default"), tr("Change other room state")},
+        {QStringLiteral("m.space.child"), tr("Manage rooms in this Space")},
+        {QStringLiteral("m.room.name"), tr("Change the name")},
+        {QStringLiteral("m.room.topic"), tr("Change the topic")},
+        {QStringLiteral("m.room.avatar"), tr("Change the avatar")},
+        {QStringLiteral("m.room.join_rules"), tr("Change who can join")},
+        {QStringLiteral("m.room.history_visibility"), tr("Change who can read history")},
+        {QStringLiteral("m.room.power_levels"), tr("Change roles below their level")},
+        {QStringLiteral("m.room.tombstone"), tr("Upgrade the room")}
+    };
+    QVariantList rows;
+    for (const auto &[key, label] : keys) {
+        if (!levels.contains(key))
+            continue;
+        const qlonglong threshold = levels.value(key).toLongLong();
+        const bool was = before >= threshold;
+        const bool now = after >= threshold;
+        rows.append(QVariantMap{{QStringLiteral("key"), key},
+            {QStringLiteral("label"), label}, {QStringLiteral("before"), was},
+            {QStringLiteral("after"), now}, {QStringLiteral("changed"), was != now},
+            {QStringLiteral("threshold"), threshold}});
+    }
+    return rows;
+}
+
+QString SpaceManager::audiencePreview(const QString &joinRule,
+    const QString &history, const QStringList &allowedRooms) const
+{
+    QString join;
+    if (joinRule == QLatin1String("public"))
+        join = tr("Anyone who is not banned can request to join.");
+    else if (joinRule == QLatin1String("invite"))
+        join = tr("Only invited people can join.");
+    else if (joinRule == QLatin1String("knock"))
+        join = tr("People can ask to join; a member with invite permission must admit them.");
+    else if (joinRule == QLatin1String("restricted") || joinRule == QLatin1String("knock_restricted"))
+        join = tr("Invited people and eligible members of these rooms can join: %1. The server checks membership and authorization.")
+                   .arg(allowedRooms.isEmpty() ? tr("not known") : allowedRooms.join(QStringLiteral(", ")));
+    else
+        join = tr("Who can join is not known.");
+    if (joinRule == QLatin1String("knock_restricted"))
+        join += QLatin1Char(' ') + tr("Other people can ask to join.");
+    QString readable;
+    if (history == QLatin1String("world_readable"))
+        readable = tr("Anyone can read the server's history, including people outside the room.");
+    else if (history == QLatin1String("joined"))
+        readable = tr("Members can read history from when they joined.");
+    else if (history == QLatin1String("invited"))
+        readable = tr("Members can read history from when they were invited.");
+    else if (history == QLatin1String("shared"))
+        readable = tr("Members can read history shared before they joined.");
+    else
+        readable = tr("History access is not known.");
+    return join + QLatin1Char('\n') + readable + QLatin1Char('\n')
+        + tr("This applies only to this room or Space. Child rooms keep their own rules. Servers enforce access and may have newer state.");
+}
+
+QVariantMap SpaceManager::lifecycleReview(const QString &roomId) const
+{
+    if (!m_client)
+        return {};
+    for (const RoomInfo &room : m_client->rooms()) {
+        if (room.id != roomId || room.membership != RoomInfo::Joined)
+            continue;
+        return {{QStringLiteral("roomId"), room.id}, {QStringLiteral("name"), room.name},
+            {QStringLiteral("lastActivity"), room.lastActivity},
+            {QStringLiteral("activityKnown"), room.lastActivity.isValid()},
+            {QStringLiteral("joinedMembers"), room.joinedMemberCount},
+            {QStringLiteral("successor"), room.successorRoomId},
+            {QStringLiteral("predecessor"), room.predecessorRoomId},
+            {QStringLiteral("parents"), directParentSpaceIds(roomId)},
+            {QStringLiteral("archived"), room.isArchived},
+            {QStringLiteral("isSpace"), room.isSpace},
+            {QStringLiteral("scope"), room.isSpace ? moderationScopeRoomIds(roomId) : QStringList{roomId}}};
+    }
+    return {};
 }
