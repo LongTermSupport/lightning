@@ -401,6 +401,20 @@ async fn dropped_room_updates_sweep_the_rooms_that_hold_unread_events() {
     unread.timeline = vec![Raw::from_json_string(message(ALICE, "$a", "unseen", 1000).to_string()).unwrap()];
     unread.unread_notifications.notification_count = Some(3u32.into());
     response.rooms.insert(room().to_owned(), unread);
+    let mut muted = v5::response::Room::default();
+    muted.timeline = vec![Raw::from_json_string(message(ALICE, "$m", "unseen", 1500).to_string()).unwrap()];
+    muted.unread_notifications.notification_count = Some(3u32.into());
+    response.rooms.insert(room_id!("!muted:localhost").to_owned(), muted);
+    response.extensions.account_data.global.push(
+        Raw::from_json_string(
+            json!({"type": "m.push_rules", "content": {"global": {"override": [{
+                "rule_id": "!muted:localhost", "default": false, "enabled": true, "actions": [],
+                "conditions": [{"kind": "event_match", "key": "room_id", "pattern": "!muted:localhost"}],
+            }]}}})
+            .to_string(),
+        )
+        .unwrap(),
+    );
     let mut read = v5::response::Room::default();
     read.timeline = vec![Raw::from_json_string(message(ME, "$b", "my own", 2000).to_string()).unwrap()];
     response.rooms.insert(room_id!("!read:localhost").to_owned(), read);
@@ -408,6 +422,9 @@ async fn dropped_room_updates_sweep_the_rooms_that_hold_unread_events() {
         .process_sliding_sync_test_helper(&response, &RequestedRequiredStates::default())
         .await
         .unwrap();
+
+    let muted = client.get_room(room_id!("!muted:localhost")).unwrap();
+    assert!(may_hold_unread(&muted), "the muted room must be skipped for its mute, not for being read");
 
     let (updates, receiver) = tokio::sync::broadcast::channel(1);
     for _ in 0..3 {

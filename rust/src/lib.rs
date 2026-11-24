@@ -7883,6 +7883,20 @@ fn may_hold_unread(room: &Room) -> bool {
             || room.unread_notification_counts().notification_count > 0)
 }
 
+/// A muted room can never card, so it is not worth a request.
+async fn rooms_to_sweep(client: &Client) -> Vec<Room> {
+    let settings = client.notification_settings().await;
+    let mut rooms = Vec::new();
+    for room in client.joined_rooms().into_iter().filter(may_hold_unread) {
+        if settings.get_user_defined_room_notification_mode(room.room_id()).await
+            != Some(RoomNotificationMode::Mute)
+        {
+            rooms.push(room);
+        }
+    }
+    rooms
+}
+
 const LAST_ROOM_UPDATE_KEY: &[u8] = b"lightning.last_room_update_ms";
 const ROOM_UPDATE_MARK_MS: u64 = 60_000;
 
@@ -7977,7 +7991,7 @@ fn spawn_unread_gap_watch_on(
                             "type": "rust_trace",
                             "line": format!("room updates lagged, dropped {dropped}: sweeping unread rooms"),
                         }));
-                        client.joined_rooms().into_iter().filter(may_hold_unread).collect()
+                        rooms_to_sweep(&client).await
                     }
                     Err(RecvError::Closed) => return,
                 },
