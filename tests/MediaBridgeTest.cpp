@@ -20,6 +20,7 @@
 #include <QSignalSpy>
 #include <QtTest/QtTest>
 
+#include <algorithm>
 #include <atomic>
 #include <utility>
 
@@ -131,14 +132,15 @@ public:
 
 const QString kMxc = QStringLiteral("mxc://example.org/avatar1");
 
-// A 64x32 stored JPEG, red 16x16 top-left on blue, carrying EXIF orientation 6.
-QByteArray orientation6Jpeg()
+// A stored JPEG (64x32 by default), red h/2 square top-left on blue, carrying EXIF orientation 6.
+QByteArray orientation6Jpeg(int w = 64, int h = 32)
 {
-    QImage image(64, 32, QImage::Format_RGB32);
+    QImage image(w, h, QImage::Format_RGB32);
     image.fill(Qt::blue);
-    for (int y = 0; y < 16; ++y)
-        for (int x = 0; x < 16; ++x)
-            image.setPixel(x, y, qRgb(255, 0, 0));
+    for (int y = 0; y < h / 2; ++y) {
+        auto *line = reinterpret_cast<QRgb *>(image.scanLine(y));
+        std::fill(line, line + h / 2, qRgb(255, 0, 0));
+    }
     QByteArray jpeg;
     QBuffer buffer(&jpeg);
     buffer.open(QIODevice::WriteOnly);
@@ -1359,6 +1361,47 @@ private Q_SLOTS:
         const QString source = bridge.mxcImageSource(kMxc, 160);
         QVERIFY(source.startsWith(QStringLiteral("image://lightning-media/")));
         QCOMPARE(bridge.cachedImageSize(source), QSize(32, 64));
+    }
+
+    void aPhotoOverTheDecodeLimitDecodesScaledAndUpright()
+    {
+        FakeClient client;
+        MediaBridge bridge;
+        bridge.setClient(&client);
+        MediaImageProvider provider(&bridge);
+        const QString prefix = QStringLiteral("image://lightning-media/");
+        const auto decode = [&](const QString &eventId, const QByteArray &bytes,
+                                const QSize &requested) {
+            bridge.mediaSource(eventId, QStringLiteral("full"));
+            client.succeed(client.fetches.last().opId, bytes);
+            const QString url = bridge.cachedSource(QStringLiteral("full:") + eventId);
+            QSize size;
+            const QImage image = url.startsWith(prefix)
+                ? provider.requestImage(url.mid(prefix.size()), &size, requested)
+                : QImage();
+            return size == image.size() ? image : QImage();
+        };
+
+        // 4500x4000 at 32 bpp is 72 MB, over the 64 MiB decode limit.
+        const QByteArray big = orientation6Jpeg(4500, 4000);
+        const QImage viewer = decode(QStringLiteral("$big"), big, QSize());
+        QVERIFY(!viewer.isNull());
+        QVERIFY2(viewer.height() > viewer.width() && viewer.height() <= 4096
+                     && viewer.height() >= 3500
+                     && qint64(viewer.width()) * viewer.height() * 4 <= (qint64(64) << 20),
+                 qPrintable(QStringLiteral("%1x%2").arg(viewer.width()).arg(viewer.height())));
+        QVERIFY(qAbs(double(viewer.width()) / viewer.height() - 4000.0 / 4500.0) < 0.01);
+        const QRgb upright = viewer.pixel(viewer.width() * 9 / 10, viewer.height() / 10);
+        QVERIFY(qRed(upright) > 200 && qBlue(upright) < 60);
+        const QRgb rest = viewer.pixel(viewer.width() / 10, viewer.height() / 10);
+        QVERIFY(qBlue(rest) > 200 && qRed(rest) < 60);
+
+        const QImage row = decode(QStringLiteral("$row"), big, QSize(800, 0));
+        QVERIFY(!row.isNull());
+        QVERIFY(row.height() > row.width() && qMax(row.width(), row.height()) <= 800);
+
+        const QByteArray small = orientation6Jpeg(300, 200);
+        QCOMPARE(decode(QStringLiteral("$small"), small, QSize()).size(), QSize(200, 300));
     }
 
     void theStillTileAndTheAnimatedPickerTileAreSeparateFetches()

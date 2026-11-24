@@ -1,5 +1,6 @@
 #include "media/StagedImageProvider.h"
 
+#include "media/ImageMetadataSize.h"
 #include "media/StagedImageStore.h"
 
 #include <QBuffer>
@@ -7,6 +8,7 @@
 
 namespace {
 constexpr int kMaxDecodeEdge = 4096;
+constexpr qint64 kDecodeBudgetBytes = qint64(64) << 20;
 }
 
 StagedImageProvider::StagedImageProvider(StagedImageStore *store)
@@ -51,13 +53,12 @@ QImage StagedImageProvider::requestImage(const QString &id, QSize *size,
             || target.height() >= natural.height())
             target = QSize();
     }
-    if (target.isValid() && !target.isEmpty())
+    if ((!target.isValid() || target.isEmpty()) && natural.isValid()
+        && qMax(natural.width(), natural.height()) > kMaxDecodeEdge)
+        target = natural.scaled(kMaxDecodeEdge, kMaxDecodeEdge, Qt::KeepAspectRatio);
+    target = imagemeta::decodeSizeWithinBudget(reader, target, kDecodeBudgetBytes);
+    if (target.isValid() && target != natural)
         reader.setScaledSize(target);
-    else if (natural.isValid()
-             && qMax(natural.width(), natural.height()) > kMaxDecodeEdge) {
-        reader.setScaledSize(natural.scaled(kMaxDecodeEdge, kMaxDecodeEdge,
-                                            Qt::KeepAspectRatio));
-    }
 
     const QImage image = reader.read();
     if (image.isNull())

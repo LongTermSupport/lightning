@@ -877,9 +877,12 @@ EditResult renderEdit(const EditJob &job)
         || qint64(sourceSize.width()) * sourceSize.height()
                > 32LL * 1024 * 1024)
         return fail(AttachmentQueueModel::tr("This image is too large to edit."));
+    QSize target = sourceSize;
     if (qMax(sourceSize.width(), sourceSize.height()) > maxEdge)
-        reader.setScaledSize(sourceSize.scaled(maxEdge, maxEdge,
-                                              Qt::KeepAspectRatio));
+        target = sourceSize.scaled(maxEdge, maxEdge, Qt::KeepAspectRatio);
+    target = imagemeta::decodeSizeWithinBudget(reader, target, qint64(64) << 20);
+    if (target != sourceSize)
+        reader.setScaledSize(target);
     QImage source = reader.read();
     if (source.isNull() || source.width() > maxEdge
         || source.height() > maxEdge || qint64(source.width()) * source.height()

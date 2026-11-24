@@ -881,6 +881,7 @@ Popup {
                         }
                     }
                     fillMode: Image.PreserveAspectCrop
+                    sourceSize.width: 144
                     asynchronous: true
                     smooth: true
                     mipmap: true
