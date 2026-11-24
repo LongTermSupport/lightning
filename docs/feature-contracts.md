@@ -3845,6 +3845,10 @@ A pending desktop camera or screen request can be cancelled from its call
 control. A retry starts a fresh request. Only an explicit access-denied error
 directs the user to privacy settings.
 
+A chosen microphone follows the system default while it is missing, unless
+"Use only this microphone for this session" is set: then the call sends nothing
+until that exact device id returns, and a same-name device is never used.
+
 A voice message uses the default input selected at the start of that take.
 Losing that input interrupts and discards the take. Starting another take
 resolves the current default. Quiet samples alone never indicate a disconnect.
