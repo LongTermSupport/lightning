@@ -3551,11 +3551,16 @@ async fn open_thread_task(
     annotate_room_gone_rows(&room, &mut snapshot).await;
     // An empty thread is filled by back-pagination, which arrives as appends:
     // the root and old replies are history, and live replies notify through sync.
+    // The floor is on the server's clock when the room holds any event.
+    let history_floor = match newest_held_timestamp(&room).await {
+        Some(newest) => newest.saturating_add(1),
+        None => opened_ms.saturating_sub(crate::syncnotify::TIMESTAMP_ALLOWANCE_MS),
+    };
     let mut backlog = crate::push_verdict::BacklogMarker::new(
         opened_ms,
         items.iter().filter_map(|item| crate::push_verdict::item_facts(item)),
     )
-    .history_before(opened_ms.saturating_sub(crate::syncnotify::TIMESTAMP_ALLOWANCE_MS));
+    .history_before(history_floor);
     backlog.remember(root_event_id.clone());
     let mut tail = LiveTail::new(items.clone());
     let mut stable_polls = crate::stablepoll::Watch::default();
@@ -3674,6 +3679,12 @@ async fn open_thread_task(
             }
         }
     }
+}
+
+async fn newest_held_timestamp(room: &matrix_sdk::Room) -> Option<u64> {
+    let (cache, _drop_handles) = room.event_cache().await.ok()?;
+    let events = cache.events().await.ok()?;
+    events.iter().filter_map(|event| event.timestamp()).map(|ts| u64::from(ts.get())).max()
 }
 
 /// Paginates an open thread backwards once, unless its start is known or a
