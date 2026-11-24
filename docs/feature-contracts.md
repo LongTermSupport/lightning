@@ -1048,7 +1048,9 @@ NOT TESTED**. Automated tests named in commits do not establish live behavior.
   * The thread card counts what the thread panel shows: replies the panel
     hides (hidden event types) are subtracted from the SDK summary's count,
     and a hidden latest reply is replaced by the newest shown one
-    (`skip_hidden_thread_replies`, from the event cache only). Accepted
+    (`skip_hidden_thread_replies`, from the event cache only). When no shown
+    reply is cached the card shows the count alone, never a senderless
+    preview, and re-reads the cache at most every 5 s. Accepted
     limits: a hidden reply the cache never saw is still counted; a UTD reply
     that decrypts to a hidden type stays counted until the summary next
     changes; `thread_unread` is the SDK's; a swapped-in latest reply shows its
@@ -2367,6 +2369,10 @@ order, marked "in thread". 100,000 rows is a hard cap for every range. The
 file says what range it carries, how many messages, how many could not be
 decrypted, and whether it reaches the start of the room's readable history,
 because the person who reads it later may not be the person who made it.
+A JSON export marks each edited row `edited`; a walked range also names the
+replacement shown (`replacement_event_id`, with `projection_version` 1 = the
+rules in `rust/src/replacement.rs`). Superseded content and media are never
+exported.
 
 **HTML is one self-contained page that can make no request and run no code**
 (`src/models/RoomExportHtml.*`). The first element of `<head>` is a CSP
@@ -3397,6 +3403,9 @@ homeserver URL, window geometry or dismissal flag, and the tests assert it.
   and when both hold different explicit choices nothing moves until the user
   picks "Use my account's settings" or "Upload this device's settings".
   "Turn off and remove" switches it off for every device and empties the blob.
+  It reads "removed" only after a read-back finds the blob empty and the switch
+  off; until then it stays pending, across a restart too, retries a bounded
+  number of times and then says it could not confirm the removal.
 - **Never synced (export only):** window state and widths, zoom, smooth
   scrolling, volumes and microphone gain, share size/fps, picture-in-picture,
   video prefetch, tray/start behaviour, AND every setting that widens what

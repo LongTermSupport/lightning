@@ -246,6 +246,10 @@ QString renderJson(const QList<TimelineEvent> &events, const Options &options)
     root.insert(QStringLiteral("includes_message_text"),
                 !options.encrypted || options.allowEncryptedPlaintext);
     root.insert(QStringLiteral("scope"), options.scope);
+    // A walked export applies the spec's replacement rules (rust/src/replacement.rs);
+    // a loaded-timeline export shows what the SDK timeline selected.
+    if (options.scope != QLatin1String("loaded-timeline"))
+        root.insert(QStringLiteral("projection_version"), 1);
     if (!options.rangeDescription.isEmpty()) {
         root.insert(QStringLiteral("range"), options.rangeDescription);
         root.insert(QStringLiteral("reaches_start_of_room"),
@@ -278,6 +282,10 @@ QString renderJson(const QList<TimelineEvent> &events, const Options &options)
         row.insert(QStringLiteral("body"), bodyFor(event, options));
         if (event.redacted)
             row.insert(QStringLiteral("redacted"), true);
+        if (event.edited)
+            row.insert(QStringLiteral("edited"), true);
+        if (!event.replacementEventId.isEmpty())
+            row.insert(QStringLiteral("replacement_event_id"), event.replacementEventId);
         if (event.undecryptable)
             row.insert(QStringLiteral("undecryptable"), true);
         if (!event.threadRootId.isEmpty())

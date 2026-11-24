@@ -16168,7 +16168,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/settings/SettingsSyncController.cpp" line="+34"/>
+        <location filename="../src/settings/SettingsSyncController.cpp" line="+35"/>
         <source>out of range</source>
         <translation>सीमा से बाहर</translation>
     </message>
@@ -18118,7 +18118,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RoomExportController</name>
     <message>
-        <location filename="../src/models/RoomExportController.cpp" line="+177"/>
+        <location filename="../src/models/RoomExportController.cpp" line="+178"/>
         <source>An export is already running.</source>
         <translation>एक निर्यात पहले से चल रहा है।</translation>
     </message>
@@ -21670,7 +21670,22 @@ Signing out and signing in again is the only fix.</source>
         <translation>ठीक है</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+18"/>
+        <source>Removing your settings from your homeserver…</source>
+        <translation>आपकी सेटिंग्स आपके होमसर्वर से हटाई जा रही हैं…</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Removed from your homeserver. A device that turns sync back on will upload its settings again.</source>
+        <translation>आपके होमसर्वर से हटा दी गईं। जो डिवाइस सिंक फिर से चालू करेगा, वह अपनी सेटिंग्स दोबारा अपलोड करेगा।</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Could not confirm that your settings were removed from your homeserver. Try again.</source>
+        <translation>पुष्टि नहीं हो सकी कि आपकी सेटिंग्स आपके होमसर्वर से हटा दी गईं। फिर से कोशिश करें।</translation>
+    </message>
+    <message>
+        <location line="+13"/>
         <source>Turn off and remove from my homeserver</source>
         <translation>बंद करें और मेरे होमसर्वर से हटाएँ</translation>
     </message>
@@ -27130,7 +27145,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SettingsSyncController</name>
     <message>
-        <location filename="../src/settings/SettingsSyncController.cpp" line="+543"/>
+        <location filename="../src/settings/SettingsSyncController.cpp" line="+603"/>
         <location line="+48"/>
         <source>Settings are not available.</source>
         <translation>सेटिंग्स उपलब्ध नहीं हैं।</translation>
@@ -32679,7 +32694,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ThreadController</name>
     <message>
-        <location filename="../src/threads/ThreadController.cpp" line="+768"/>
+        <location filename="../src/threads/ThreadController.cpp" line="+770"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>इस बैकएंड पर अटैचमेंट समर्थित नहीं हैं।</translation>
@@ -33210,7 +33225,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ThreadSummaryCard</name>
     <message>
-        <location filename="../qml/ThreadSummaryCard.qml" line="+40"/>
+        <location filename="../qml/ThreadSummaryCard.qml" line="+42"/>
         <source>Image</source>
         <translation>छवि</translation>
     </message>
