@@ -360,7 +360,7 @@ impl PaginatedCache for Arc<RoomEventCacheInner> {
             all_events: mut events,
             in_memory_duplicated_event_ids,
             in_store_duplicated_event_ids,
-            non_empty_all_duplicates: all_duplicates,
+            non_empty_all_duplicates: _,
         } = {
             let room_linked_chunk = state.room_linked_chunk();
 
@@ -373,6 +373,12 @@ impl PaginatedCache for Arc<RoomEventCacheInner> {
             )
             .await?
         };
+
+        // Lightning: unlike a sync, a page is all duplicates whoever sent it; a
+        // page of our own known events would otherwise be moved to this gap.
+        let all_duplicates = !events.is_empty()
+            && in_memory_duplicated_event_ids.len() + in_store_duplicated_event_ids.len()
+                == events.len();
 
         // If not all the events have been back-paginated, we need to remove the
         // previous ones, otherwise we can end up with misordered events.
