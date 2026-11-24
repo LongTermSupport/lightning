@@ -1,5 +1,9 @@
 # Open items and the NOT TESTED inventory
 
+## 2026-11-24 — KNOWN LIMIT: a thread card whose latest reply is hidden heals only on a repaint
+
+With no shown reply cached, the card shows its count alone; a shown reply fetched later (the thread panel) appears once something repaints the root row, at most 5 s after it reached the cache.
+
 ## 2026-11-24 — KNOWN LIMIT: no undo for an automatic conversion in the main composer's rich mode
 
 Backspace or Undo reverts a shortcode/emoticon conversion in the plain and thread composers; the main composer's rich (formatted) mode does not, so use /plain there.
