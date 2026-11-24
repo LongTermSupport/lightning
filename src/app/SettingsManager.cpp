@@ -2339,12 +2339,7 @@ void SettingsManager::setActivityUnseenOnly(bool on)
 
 bool SettingsManager::labsConcurrentAccounts() const
 {
-    // On unless switched off: only a stored false turns it off.
-    const QVariant v = m_store->value(QLatin1String(kLabsConcurrentAccounts));
-    if (v.metaType().id() == QMetaType::Bool)
-        return v.toBool();
-    return !(v.metaType().id() == QMetaType::QString
-             && v.toString() == QLatin1String("false"));
+    return storedTrue(m_store->value(QLatin1String(kLabsConcurrentAccounts)));
 }
 
 void SettingsManager::setLabsConcurrentAccounts(bool on)

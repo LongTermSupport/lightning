@@ -8,6 +8,8 @@
 #include <QTemporaryDir>
 #include <QtTest/QtTest>
 
+#include <algorithm>
+
 namespace {
 const QString kRoom = QStringLiteral("!room:example.org");
 const QString kOther = QStringLiteral("!other:example.org");
@@ -56,8 +58,13 @@ private Q_SLOTS:
         again.openFor(path);
         QCOMPARE(again.openCount(), 2);
         QCOMPARE(again.stateOf(kRoom, QStringLiteral("$b")), QStringLiteral("waiting"));
-        QCOMPARE(again.items().first().toMap().value(QStringLiteral("threadRootId")).toString(),
-                 QStringLiteral("$root"));
+        const QVariantList reloaded = again.items();
+        QCOMPARE(reloaded.size(), 2);
+        QVERIFY(std::any_of(reloaded.cbegin(), reloaded.cend(), [](const QVariant &v) {
+            const QVariantMap m = v.toMap();
+            return m.value(QStringLiteral("eventId")).toString() == QStringLiteral("$b")
+                && m.value(QStringLiteral("threadRootId")).toString() == QStringLiteral("$root");
+        }));
     }
 
     void doneRemovesTheMarkAndTheLastOneTheFile()

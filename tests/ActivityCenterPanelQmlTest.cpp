@@ -894,7 +894,8 @@ private Q_SLOTS:
         QObject *undecryptable = card->findChild<QObject *>(
             QStringLiteral("catchUpUndecryptable"));
         QVERIFY(undecryptable && undecryptable->property("visible").toBool());
-        QObject *gap = card->findChild<QObject *>(QStringLiteral("catchUpGap"));
+        auto *w = qobject_cast<QQuickWindow *>(f.window);
+        QQuickItem *gap = findVisualItem(w->contentItem(), QStringLiteral("catchUpGap"));
         QVERIFY(gap);
         QVERIFY(gap->property("text").toString().contains(QStringLiteral("Older activity")));
         QObject *more = card->findChild<QObject *>(QStringLiteral("catchUpMore"));
