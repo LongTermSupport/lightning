@@ -8,6 +8,11 @@ A rejected edit never notifies, but the room's @ badge reads the server's `highl
 
 An encrypted mention found by the post-gap fetch gets its summary card and Activity row, but the room's @ badge stays the SDK's count, which covers only events the sync delivered.
 
+- A mention carded live within about 10 s before the last persisted update mark, and still unread, can be counted once more in the summary after a restart.
+- The first run after the upgrade has no update mark, so mentions missed while the older version was closed get no summary card.
+- Background (pinned) accounts do not watch for gaps, so their missed encrypted mentions still get no card.
+- The fetch stops at 200 events or three requests; a mention deeper in the gap gets no card and no Activity row.
+
 ## 2026-11-21 — OPEN from the 0.10.7 package and real-server tests
 
 - Resend requests are sent with no loss: a received share logs `rtx` climbing with `rtxOk=0` and duplicates arriving (Linux and Windows receivers), ~30/s. Likely the pinned 40 ms retry firing on late-but-not-lost packets. Upstream NACK load and a misleading "Resend requests" count; not a media fault.
