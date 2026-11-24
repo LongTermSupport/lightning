@@ -477,6 +477,18 @@ bool SettingsManager::resolveSavedIdentity(
     return true;
 }
 
+bool SettingsManager::isRecordedRootOfAnotherAccount(const QString &userId,
+                                                     const QString &root) const
+{
+    for (const QString &other : savedAccountUserIds()) {
+        matrix::app_data::AccountIdentity identity;
+        if (other != userId && resolveSavedIdentity(other, &identity)
+            && identity.accountRoot == root)
+            return true;
+    }
+    return false;
+}
+
 void SettingsManager::migratePrefetchFromAnimation()
 {
     if (m_store->value(kPrefetchDecoupledMarker).toBool())

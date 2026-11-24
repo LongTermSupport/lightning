@@ -309,20 +309,18 @@ QString rustSdkStorePath(const QString &userId)
     return account + QLatin1Char('/') + kRustStoreName;
 }
 
-QString starredGifsDir(const QString &userId)
+QString starredGifsDir(const QString &accountRootDir)
 {
-    const QString account = accountRoot(userId);
-    if (account.isEmpty())
+    if (accountRootDir.trimmed().isEmpty())
         return {};
-    return account + QLatin1String("/starred-gifs");
+    return accountRootDir + QLatin1String("/starred-gifs");
 }
 
-QString bridgeLabelsFile(const QString &userId)
+QString bridgeLabelsFile(const QString &accountRootDir)
 {
-    const QString account = accountRoot(userId);
-    if (account.isEmpty())
+    if (accountRootDir.trimmed().isEmpty())
         return {};
-    return account + QLatin1String("/bridge-labels.json");
+    return accountRootDir + QLatin1String("/bridge-labels.json");
 }
 
 QString scrollPositionsFile(const QString &accountRootDir)
@@ -330,6 +328,26 @@ QString scrollPositionsFile(const QString &accountRootDir)
     if (accountRootDir.trimmed().isEmpty())
         return {};
     return accountRootDir + QLatin1String("/scroll-positions.json");
+}
+
+LegacyMove adoptLegacyEntry(const QString &legacyPath,
+                            const QString &recordedPath)
+{
+    if (legacyPath.isEmpty() || recordedPath.isEmpty()
+        || legacyPath == recordedPath)
+        return LegacyMove::Absent;
+    const QFileInfo legacy(legacyPath);
+    if (legacy.isSymLink())
+        return LegacyMove::Kept;
+    if (!legacy.exists())
+        return LegacyMove::Absent;
+    const QFileInfo recorded(recordedPath);
+    if (recorded.exists() || recorded.isSymLink())
+        return LegacyMove::Kept;
+    if (!QDir().mkpath(recorded.absolutePath()))
+        return LegacyMove::Failed;
+    return QDir().rename(legacyPath, recordedPath) ? LegacyMove::Moved
+                                                   : LegacyMove::Failed;
 }
 
 QString customAppIconFile()
@@ -362,14 +380,17 @@ QString personalBackgroundsDir(const QString &accountRootDir)
     return accountRootDir + QLatin1String("/backgrounds");
 }
 
-RemovalSummary removePersonalBackgrounds(const AccountIdentity &identity)
+RemovalSummary removePersonalBackgrounds(const AccountIdentity &identity,
+                                         bool includeCanonical)
 {
     RemovalSummary summary;
     QStringList dirs;
     const QString recorded = personalBackgroundsDir(identity.accountRoot);
     if (!recorded.isEmpty())
         dirs.append(recorded);
-    const QString canonical = personalBackgroundsDir(accountRoot(identity.userId));
+    const QString canonical = includeCanonical
+        ? personalBackgroundsDir(accountRoot(identity.userId))
+        : QString();
     if (!canonical.isEmpty() && !dirs.contains(canonical))
         dirs.append(canonical);
     for (const QString &dir : std::as_const(dirs)) {

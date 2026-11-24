@@ -923,8 +923,11 @@ QString ChatBackdropController::storageDir() const
     const QString userId = m_settings->userId();
     if (userId.isEmpty())
         return {};
-    const QString root = matrix::app_data::accountRoot(userId);
-    return root.isEmpty() ? QString() : root + QStringLiteral("/backgrounds");
+    matrix::app_data::AccountIdentity identity;
+    return matrix::app_data::personalBackgroundsDir(
+        m_settings->resolveSavedIdentity(userId, &identity)
+            ? identity.accountRoot
+            : matrix::app_data::accountRoot(userId));
 }
 
 QVariantMap ChatBackdropController::personalStore() const
