@@ -706,10 +706,11 @@ Rectangle {
             Layout.margins: AppTheme.spacing12
             columnSpacing: AppTheme.spacing8
             rowSpacing: AppTheme.spacing8
-            // A narrow panel stacks the confirm pair under Clear rather than
-            // widening every row above it to the footer's minimum.
+            // Against the panel, not this grid: two columns would widen the grid
+            // (and every row above it) to fit themselves.
             columns: clearFiltersButton.implicitWidth + columnSpacing
-                     + confirmFilters.implicitWidth <= width ? 2 : 1
+                     + confirmFilters.implicitWidth
+                     <= root.width - 2 * AppTheme.spacing12 ? 2 : 1
             AppButton {
                 id: clearFiltersButton
                 text: qsTr("Clear filters")
