@@ -8430,5 +8430,7 @@ if(BUILD_TESTING)
     )
     target_include_directories(space-community-test PRIVATE src)
     target_link_libraries(space-community-test PRIVATE Qt6::Core Qt6::Test)
+    target_compile_definitions(space-community-test PRIVATE
+        QML_DIR="${CMAKE_CURRENT_SOURCE_DIR}/qml")
     add_test(NAME space-community COMMAND space-community-test)
 endif()

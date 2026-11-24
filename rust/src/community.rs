@@ -6,7 +6,8 @@ use matrix_sdk::{
     ruma::{
         api::client::state::{get_state_event_for_key, get_state_events},
         events::{
-            room::power_levels::RoomPowerLevelsEventContent, MessageLikeEventType, StateEventType,
+            room::power_levels::{RoomPowerLevels, RoomPowerLevelsEventContent},
+            MessageLikeEventType, StateEventType,
             TimelineEventType,
         },
         room::{AllowRule, JoinRule},
@@ -51,18 +52,45 @@ fn valid_guide(v: &Value) -> bool {
         })
         && v.get("links").and_then(Value::as_array).is_some_and(|a| {
             a.len() <= 8
-                && a.iter().all(|v| {
-                    v.as_str().is_some_and(|s| {
-                        s.len() <= 512
-                            && url::Url::parse(s).is_ok_and(|u| {
-                                u.scheme() == "https"
-                                    && u.host_str().is_some()
-                                    && u.username().is_empty()
-                                    && u.password().is_none()
-                            })
-                    })
-                })
+                && a.iter().all(|v| v.as_str().is_some_and(https_link))
         })
+}
+
+fn https_link(s: &str) -> bool {
+    s.len() <= 512
+        && url::Url::parse(s).is_ok_and(|u| {
+            u.scheme() == "https" && u.host_str().is_some() && u.username().is_empty() && u.password().is_none()
+        })
+}
+
+fn clamp(v: &Value, key: &str) -> String {
+    text(v, key).chars().take(MAX_BODY).collect()
+}
+
+/// The guide is written by other members: keep only what passes the write rules, cut to the limits.
+fn read_guide(v: &Value) -> Value {
+    let strings = |key: &str, keep: &dyn Fn(&str) -> bool, max: usize| -> Vec<String> {
+        v.get(key)
+            .and_then(Value::as_array)
+            .map(|a| a.iter().filter_map(Value::as_str).filter(|s| keep(s)).take(max).map(str::to_owned).collect())
+            .unwrap_or_default()
+    };
+    json!({ "welcome": clamp(v, "welcome"), "rules": clamp(v, "rules"),
+        "rooms": strings("rooms", &|s| RoomId::parse(s).is_ok(), 12),
+        "links": strings("links", &https_link, 8) })
+}
+
+fn author_may_propose(levels: &RoomPowerLevels, author: &str) -> bool {
+    UserId::parse(author).is_ok_and(|u| levels.user_can_send_state(&u, StateEventType::from(PROPOSAL)))
+}
+
+/// The proposal a reviewer may act on: present, well formed, and its author may still propose.
+fn publishable<'a>(state: &'a StateMap, author: &str, levels: &RoomPowerLevels) -> Result<&'a Value> {
+    let event = proposal(state, author).ok_or("stale")?;
+    if !author_may_propose(levels, author) {
+        return Err("stale".into());
+    }
+    Ok(event)
 }
 
 fn valid_body(v: &Value) -> bool {
@@ -100,7 +128,7 @@ fn marker(state: &StateMap, revision: &str) -> Value {
         .unwrap_or_else(|| json!({}))
 }
 
-fn proposals(state: &StateMap) -> (Vec<Value>, bool) {
+fn proposals(state: &StateMap, authorized: &dyn Fn(&str) -> bool) -> (Vec<Value>, bool) {
     let mut out = Vec::new();
     for (ty, key) in state.keys() {
         if ty != PROPOSAL {
@@ -114,7 +142,8 @@ fn proposals(state: &StateMap) -> (Vec<Value>, bool) {
         let status = text(&marker(state, revision), "status").to_owned();
         out.push(json!({ "id": key, "author": key, "revision": revision,
             "body": text(&event["content"], "body"), "target": text(&event["content"], "target"),
-            "published": status == "published", "publishing": status == "publishing" }));
+            "published": status == "published", "publishing": status == "publishing",
+            "authorized": authorized(key) }));
     }
     (out, false)
 }
@@ -230,7 +259,7 @@ fn audience(room: &Room) -> Value {
 async fn load(client: &Client, room: &Room, own: &UserId) -> Value {
     let g = guide(client, room).await;
     let p = perms(room, own).await;
-    json!({ "guide": if valid_guide(&g) { g } else { json!({}) },
+    json!({ "guide": read_guide(&g),
         "can_edit_guide": p.guide, "can_propose": p.propose, "can_review": p.review,
         "can_enable": p.enable, "proposals_open": p.open, "own_user": own.to_string() })
 }
@@ -243,7 +272,9 @@ async fn run(client: &Client, room_id: &str, action: &str, payload: &Value) -> R
         "proposals" => {
             let state = space_state(client, &room).await?;
             let mut out = load(client, &room, &own).await;
-            let (list, truncated) = proposals(&state);
+            let levels = room.power_levels().await.ok();
+            let (list, truncated) =
+                proposals(&state, &|a| levels.as_ref().is_some_and(|l| author_may_propose(l, a)));
             out["proposals"] = json!(list);
             out["truncated"] = json!(truncated);
             Ok(out)
@@ -294,7 +325,8 @@ async fn run(client: &Client, room_id: &str, action: &str, payload: &Value) -> R
             }
             let state = space_state(client, &room).await?;
             let author = text(payload, "id");
-            let event = proposal(&state, author).ok_or("stale")?;
+            let levels = room.power_levels().await.map_err(err)?;
+            let event = publishable(&state, author, &levels)?;
             let revision = text(event, "event_id");
             let target_id = text(&event["content"], "target");
             let target = joined_room(client, target_id).map_err(|_| "forbidden".to_owned())?;
@@ -403,7 +435,7 @@ mod tests {
             proposal_ev("@a:x.org", "$1"),
             ev(PROPOSAL, "@b:x.org", "@a:x.org", "$2", json!({ "body": "Hi", "target": "!t:x.org" })),
         ]);
-        let (list, truncated) = proposals(&state);
+        let (list, truncated) = proposals(&state, &|_| true);
         assert_eq!(list.len(), 1);
         assert_eq!(list[0]["author"], "@a:x.org");
         assert!(!truncated);
@@ -415,12 +447,12 @@ mod tests {
             proposal_ev("@a:x.org", "$new"),
             ev(REVIEW, "$old", "@mod:x.org", "$r", json!({ "status": "published" })),
         ]);
-        assert_eq!(proposals(&old).0[0]["published"], false);
+        assert_eq!(proposals(&old, &|_| true).0[0]["published"], false);
         let current = index([
             proposal_ev("@a:x.org", "$new"),
             ev(REVIEW, "$new", "@mod:x.org", "$r", json!({ "status": "published" })),
         ]);
-        assert_eq!(proposals(&current).0[0]["published"], true);
+        assert_eq!(proposals(&current, &|_| true).0[0]["published"], true);
     }
 
     #[test]
@@ -443,6 +475,60 @@ mod tests {
         let first = transaction("$1", "Hello", "!t:x.org", "@mod:x.org");
         assert_eq!(first, transaction("$1", "Hello", "!t:x.org", "@mod:x.org"));
         assert_ne!(first, transaction("$2", "Hello", "!t:x.org", "@mod:x.org"));
+    }
+
+    fn levels(content: Value) -> RoomPowerLevels {
+        use matrix_sdk::ruma::{room_version_rules::AuthorizationRules, OwnedUserId};
+        let content: RoomPowerLevelsEventContent = serde_json::from_value(content).unwrap();
+        RoomPowerLevels::new(content.into(), &AuthorizationRules::V1, Vec::<OwnedUserId>::new())
+    }
+
+    #[test]
+    fn a_proposal_whose_author_lost_the_power_to_propose_is_never_publishable() {
+        let state = index([proposal_ev("@a:x.org", "$1")]);
+        let open = levels(json!({ "events": { "org.lightning_matrix.announcement_proposal": 0 }, "users": {} }));
+        assert!(publishable(&state, "@a:x.org", &open).is_ok());
+        let lowered = levels(json!({ "events": { "org.lightning_matrix.announcement_proposal": 0 }, "users": { "@a:x.org": -10 } }));
+        assert_eq!(publishable(&state, "@a:x.org", &lowered).unwrap_err(), "stale");
+        let closed = levels(json!({ "events": { "org.lightning_matrix.announcement_proposal": 50 }, "users": {} }));
+        assert!(publishable(&state, "@a:x.org", &closed).is_err());
+        let list = proposals(&state, &|a| author_may_propose(&lowered, a)).0;
+        assert_eq!(list[0]["authorized"], false);
+    }
+
+    #[test]
+    fn hostile_guide_state_is_clamped_on_read() {
+        let rooms: Vec<Value> = (0..20).map(|i| json!(format!("!r{i}:x.org"))).chain([json!("nope"), json!(3)]).collect();
+        let mut links: Vec<Value> = (0..20).map(|i| json!(format!("https://x.org/{i}"))).collect();
+        links.splice(0..0, [json!("http://x.org"), json!("javascript:alert(1)"), json!(7),
+            json!("https://u:p@x.org"), json!("file:///etc/passwd")]);
+        let read = read_guide(&json!({ "welcome": "w".repeat(9000), "rules": ["not", "text"],
+            "rooms": rooms, "links": links }));
+        assert_eq!(read["welcome"].as_str().unwrap().chars().count(), MAX_BODY);
+        assert_eq!(read["rules"], "");
+        assert_eq!(read["rooms"].as_array().unwrap().len(), 12);
+        let links = read["links"].as_array().unwrap();
+        assert_eq!(links.len(), 8);
+        assert!(links.iter().all(|l| l.as_str().unwrap().starts_with("https://x.org/")));
+        assert_eq!(read_guide(&json!("garbage")), json!({ "welcome": "", "rules": "", "rooms": [], "links": [] }));
+    }
+
+    #[test]
+    fn hostile_proposal_state_is_ignored_or_capped() {
+        let mut events: Vec<Value> =
+            (0..150).map(|i| proposal_ev(&format!("@u{i:03}:x.org"), &format!("${i}"))).collect();
+        events.push(ev(PROPOSAL, "@long:x.org", "@long:x.org", "$l",
+            json!({ "body": "x".repeat(MAX_BODY + 1), "target": "!t:x.org" })));
+        events.push(ev(PROPOSAL, "@typed:x.org", "@typed:x.org", "$t", json!({ "body": 5, "target": "!t:x.org" })));
+        events.push(ev(PROPOSAL, "@bad:x.org", "@bad:x.org", "$b", json!({ "body": "Hi", "target": "nope" })));
+        let state = index(events);
+        let (list, truncated) = proposals(&state, &|_| true);
+        assert_eq!(list.len(), LIMIT);
+        assert!(truncated);
+        assert!(list.iter().all(|p| p["author"].as_str().unwrap().starts_with("@u")));
+        for author in ["@long:x.org", "@typed:x.org", "@bad:x.org"] {
+            assert!(proposal(&state, author).is_none(), "{author}");
+        }
     }
 
     #[test]

@@ -1,4 +1,6 @@
 #include <QtTest>
+#include <QFile>
+#include <QRegularExpression>
 #include "matrix/MatrixClient.h"
 #include "spaces/SpaceManager.h"
 
@@ -164,6 +166,29 @@ private Q_SLOTS:
         QVERIFY(finish(client, true, {}));
         QCOMPARE(client.lastAction, QStringLiteral("load"));
         QCOMPARE(client.messageSends, 0);
+    }
+
+    void guideAndProposalTextRendersAsPlainText()
+    {
+        int labels = 0;
+        for (const char *name : {"SpaceCommunityPanel.qml", "RoomLifecycleReview.qml"}) {
+            QFile file(QStringLiteral(QML_DIR "/") + QLatin1String(name));
+            QVERIFY2(file.open(QIODevice::ReadOnly), name);
+            const QString source = QString::fromUtf8(file.readAll());
+            QVERIFY2(!source.contains(QStringLiteral("openUrlExternally")), name);
+            static const QRegularExpression block(QStringLiteral(R"(\bLabel \{([^{}]*(\{[^{}]*\}[^{}]*)*)\})"));
+            for (auto it = block.globalMatch(source); it.hasNext();) {
+                const QString body = it.next().captured(1);
+                ++labels;
+                QVERIFY2(body.contains(QStringLiteral("textFormat: Text.PlainText")), qPrintable(body));
+            }
+            // AppButton's label is not plain text, so no room, link or author text may reach one.
+            static const QRegularExpression buttonText(
+                QStringLiteral(R"(AppButton \{[^}]*?\btext:[^\n]*(\.arg\([^\n]*modelData|:\s*[\w.]*modelData[\w.]*\s*$))"),
+                QRegularExpression::MultilineOption);
+            QVERIFY2(!buttonText.match(source).hasMatch(), name);
+        }
+        QVERIFY2(labels >= 20, qPrintable(QString::number(labels)));
     }
 
     void rolePreviewUsesTheActualThresholds()

@@ -53,7 +53,7 @@ ColumnLayout {
 
     RowLayout {
         Layout.fillWidth: true
-        Label { text: qsTr("Start here"); color: AppTheme.textPrimary; font.bold: true }
+        Label { textFormat: Text.PlainText; text: qsTr("Start here"); color: AppTheme.textPrimary; font.bold: true }
         Item { Layout.fillWidth: true }
         AppButton {
             objectName: "spaceGuideEdit"
@@ -111,15 +111,27 @@ ColumnLayout {
     }
     Repeater {
         model: root.recommended
-        AppButton {
+        RowLayout {
+            id: guideRoom
             required property var modelData
-            objectName: "spaceGuideRoom"
             Layout.fillWidth: true
             readonly property bool knock: modelData.joinRule === "knock" || modelData.joinRule === "knock_restricted"
-            text: modelData.joined ? qsTr("Open %1").arg(modelData.name || modelData.roomId)
-                  : knock ? qsTr("Ask to join %1").arg(modelData.name || modelData.roomId)
-                  : qsTr("Join %1").arg(modelData.name || modelData.roomId)
-            onClicked: {
+            Label {
+                objectName: "spaceGuideRoomName"
+                Layout.fillWidth: true
+                text: guideRoom.modelData.name || guideRoom.modelData.roomId
+                textFormat: Text.PlainText
+                elide: Text.ElideRight
+                color: AppTheme.textPrimary
+            }
+            AppButton {
+                objectName: "spaceGuideRoom"
+                text: guideRoom.modelData.joined ? qsTr("Open")
+                      : guideRoom.knock ? qsTr("Ask to join") : qsTr("Join")
+                Accessible.name: text + " " + (guideRoom.modelData.name || guideRoom.modelData.roomId)
+                onClicked: guideRoom.activate()
+            }
+            function activate() {
                 if (modelData.joined) {
                     if (modelData.isSpace) root.openSpaceRequested(modelData.roomId)
                     else root.openRoomRequested(modelData.roomId)
@@ -133,11 +145,26 @@ ColumnLayout {
     }
     Repeater {
         model: root.guide.links || []
-        AppButton {
+        RowLayout {
+            id: guideLink
             required property string modelData
             Layout.fillWidth: true
-            text: modelData
-            onClicked: Qt.openUrlExternally(modelData)
+            Label {
+                objectName: "spaceGuideLinkText"
+                Layout.fillWidth: true
+                text: guideLink.modelData
+                textFormat: Text.PlainText
+                elide: Text.ElideMiddle
+                color: AppTheme.textSecondary
+            }
+            AppButton {
+                objectName: "spaceGuideLink"
+                text: qsTr("Open link")
+                Accessible.name: text + " " + guideLink.modelData
+                // Guide links are other members' state: only https, and through the app's refusal checks.
+                enabled: guideLink.modelData.indexOf("https://") === 0
+                onClicked: app.media.openWebUrl(guideLink.modelData)
+            }
         }
     }
     function lines(value) {
@@ -164,14 +191,14 @@ ColumnLayout {
                     textFormat: Text.PlainText; wrapMode: Text.Wrap
                     color: AppTheme.stormTextSecondary
                 }
-                Label { text: qsTr("Welcome (up to 4000 characters)"); color: AppTheme.stormText }
+                Label { textFormat: Text.PlainText; text: qsTr("Welcome (up to 4000 characters)"); color: AppTheme.stormText }
                 TextArea {
                     id: welcomeField; objectName: "spaceGuideWelcome"
                     Layout.fillWidth: true; implicitHeight: 90
                     textFormat: TextEdit.PlainText; wrapMode: TextEdit.Wrap
                     Accessible.name: qsTr("Welcome")
                 }
-                Label { text: qsTr("Rules (up to 4000 characters)"); color: AppTheme.stormText }
+                Label { textFormat: Text.PlainText; text: qsTr("Rules (up to 4000 characters)"); color: AppTheme.stormText }
                 TextArea {
                     id: rulesField; Layout.fillWidth: true; implicitHeight: 90
                     textFormat: TextEdit.PlainText; wrapMode: TextEdit.Wrap
@@ -186,7 +213,7 @@ ColumnLayout {
                     id: roomsField; Layout.fillWidth: true; implicitHeight: 70
                     textFormat: TextEdit.PlainText; Accessible.name: qsTr("Recommended rooms")
                 }
-                Label { text: qsTr("HTTPS links (one per line, up to 8)"); color: AppTheme.stormText }
+                Label { textFormat: Text.PlainText; text: qsTr("HTTPS links (one per line, up to 8)"); color: AppTheme.stormText }
                 TextArea {
                     id: linksField; Layout.fillWidth: true; implicitHeight: 70
                     textFormat: TextEdit.PlainText; Accessible.name: qsTr("Important links")
@@ -244,12 +271,13 @@ ColumnLayout {
                     onClicked: enableProposals.open()
                 }
                 Label {
+                    textFormat: Text.PlainText
                     Layout.fillWidth: true
                     visible: root.community.can_propose !== true
                     text: qsTr("A room administrator must enable proposals for members first.")
                     wrapMode: Text.Wrap; color: AppTheme.stormTextSecondary
                 }
-                Label { text: qsTr("Destination room"); color: AppTheme.stormText }
+                Label { textFormat: Text.PlainText; text: qsTr("Destination room"); color: AppTheme.stormText }
                 AppComboBox {
                     id: targetRoom
                     objectName: "spaceAnnouncementTarget"
@@ -279,6 +307,7 @@ ColumnLayout {
                         body: proposalBody.text, target: targetRoom.targets[targetRoom.currentIndex].roomId })
                 }
                 Label {
+                    textFormat: Text.PlainText
                     visible: root.community.truncated === true
                     Layout.fillWidth: true
                     text: qsTr("Only the first 100 proposals are shown.")
@@ -286,17 +315,30 @@ ColumnLayout {
                 }
                 Repeater {
                     model: root.community.proposals || []
-                    AppButton {
+                    RowLayout {
+                        id: proposalRow
                         required property var modelData
-                        objectName: "spaceAnnouncementProposal"
                         Layout.fillWidth: true
-                        text: modelData.published ? qsTr("Published proposal from %1").arg(modelData.author)
-                              : qsTr("Review proposal from %1").arg(modelData.author)
-                        enabled: !root.busy && root.community.can_review === true && !modelData.published
-                        onClicked: {
-                            announcements.proposalId = modelData.id
-                            reviewBody.text = modelData.body
-                            root.manager.invalidateCommunityReview()
+                        Label {
+                            objectName: "spaceAnnouncementProposalAuthor"
+                            Layout.fillWidth: true
+                            text: proposalRow.modelData.published ? qsTr("Published proposal from %1").arg(proposalRow.modelData.author)
+                                  : proposalRow.modelData.authorized === false ? qsTr("Proposal from %1 (author can no longer propose)").arg(proposalRow.modelData.author)
+                                  : qsTr("Proposal from %1").arg(proposalRow.modelData.author)
+                            textFormat: Text.PlainText
+                            wrapMode: Text.Wrap
+                            color: AppTheme.stormText
+                        }
+                        AppButton {
+                            objectName: "spaceAnnouncementProposal"
+                            text: qsTr("Review")
+                            enabled: !root.busy && root.community.can_review === true
+                                     && !proposalRow.modelData.published && proposalRow.modelData.authorized === true
+                            onClicked: {
+                                announcements.proposalId = proposalRow.modelData.id
+                                reviewBody.text = proposalRow.modelData.body
+                                root.manager.invalidateCommunityReview()
+                            }
                         }
                     }
                 }

@@ -3271,12 +3271,18 @@ server name before deleting a server. Lightning offers the two honest pieces.
   whoever the power levels let send that state type (`state_default` unless
   set). The lobby shows it above the room list; a recommended room appears
   only if the reader's lobby already lists it, and joining or knocking is
-  always the reader's click. Unknown or invalid content is ignored.
+  always the reader's click. On read the content is treated as hostile: text
+  is cut to 4000 characters, invalid rooms and non-https links are dropped
+  and the lists cut to 12 and 8; everything renders as plain text and a link
+  opens only through `MediaManager::openWebUrl`.
 - **Announcement review.** Proposal: state
   `org.lightning_matrix.announcement_proposal`, state key = the author's
   user id (so the server forbids filing one for someone else),
   `{body, target}`. Members can propose only once an administrator sets that
-  type's level to 0 ("Enable member proposals", a power-level change).
+  type's level to 0 ("Enable member proposals", a power-level change written
+  without compare-and-swap, like the existing power-level editors). At most
+  100 proposals are listed. A proposal whose author can no longer send that
+  type is shown as such and is never publishable.
   Review marker: state `org.lightning_matrix.announcement_review`, state key =
   the proposal's event id (an `@` key must equal its sender), holding
   `{status: publishing|published, revision, body, target, reviewer, author,
