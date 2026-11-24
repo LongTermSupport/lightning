@@ -624,6 +624,7 @@ private:
         QString roomId;
         QString roomName;
         bool oneRoom = true;
+        bool hideRoom = false;
         QString accountUserId;
     };
     QHash<QString, Held> m_held;

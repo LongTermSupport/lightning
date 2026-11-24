@@ -930,6 +930,7 @@ void NotificationManager::deliverDecision(const TimelineEvent &event,
                 ++held.mentions;
             held.roomId = roomId;
             held.roomName = context.roomName;
+            held.hideRoom = held.hideRoom || context.previewMode == Private;
             held.accountUserId = accountKey;
             return;
         }
@@ -1076,7 +1077,7 @@ void NotificationManager::showHeldSummary(const QString &key, const Held &held)
     const bool snooze = key.startsWith(QLatin1String("snooze:"));
     QString title;
     if (snooze) {
-        title = held.roomName.isEmpty()
+        title = held.roomName.isEmpty() || held.hideRoom
             ? QCoreApplication::translate("Notifications", "Snooze ended")
             : held.roomName;
     } else {

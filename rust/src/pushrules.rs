@@ -976,7 +976,7 @@ mod tests {
         let cases = [
             (&plain, "hello", false, ".m.rule.message", "underride", true, false),
             (&plain, "hello", true, ".m.rule.is_user_mention", "override", true, true),
-            (&keyword, "lunch now?", false, "lunch", "content", true, false),
+            (&keyword, "lunch now?", false, "lunch", "content", true, true),
             (&quiet_room, "hello", false, room.as_str(), "room", false, false),
             (&quiet_room, "hello", true, ".m.rule.is_user_mention", "override", true, true),
         ];

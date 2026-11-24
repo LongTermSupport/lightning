@@ -303,7 +303,9 @@ void RemindersController::processDue()
                 names.append(name);
         }
         const bool hidden = m_previewFor
-            && m_previewFor(due.constFirst().roomId) == Private;
+            && std::any_of(due.cbegin(), due.cend(), [this](const Reminder &r) {
+                   return m_previewFor(r.roomId) >= Private;
+               });
         QString body = tr("%n reminder(s) are due.", nullptr, int(due.size()));
         if (!hidden && names.size() <= kSummaryRooms)
             body += QLatin1Char(' ') + tr("In %1.").arg(names.join(QStringLiteral(", ")));
@@ -377,7 +379,7 @@ void RemindersController::post(const Reminder &reminder, bool found,
                       reminder.roomId, QString(), QString());
         return;
     }
-    if (preview == Private) {
+    if (preview >= Private) {
         Q_EMIT notify(QStringLiteral("Lightning"), tr("Reminder"),
                       reminder.roomId, reminder.eventId, reminder.rootId);
         return;
