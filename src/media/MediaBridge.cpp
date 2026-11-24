@@ -258,7 +258,7 @@ QString MediaBridge::cachedSource(const QString &cacheKey) const
         + QString::number(m_revision.value(cacheKey, 1));
 }
 
-QSize MediaBridge::cachedImageSize(const QString &source) const
+QByteArray MediaBridge::cachedBytesForSource(const QString &source) const
 {
     static const QString prefix = QStringLiteral("image://lightning-media/");
     if (!source.startsWith(prefix))
@@ -267,19 +267,35 @@ QSize MediaBridge::cachedImageSize(const QString &source) const
     const qsizetype query = encoded.indexOf(QLatin1Char('?'));
     if (query >= 0)
         encoded.truncate(query);
-    const QString cacheKey = QUrl::fromPercentEncoding(encoded.toUtf8());
-    QByteArray bytes;
-    {
-        QMutexLocker lock(&m_cacheMutex);
-        const auto it = m_cache.constFind(cacheKey);
-        if (it == m_cache.constEnd())
-            return {};
-        bytes = it.value();
-    }
+    return cachedBytes(QUrl::fromPercentEncoding(encoded.toUtf8()));
+}
+
+QSize MediaBridge::cachedImageSize(const QString &source) const
+{
+    QByteArray bytes = cachedBytesForSource(source);
+    if (bytes.isEmpty())
+        return {};
     QBuffer buffer(&bytes);
     buffer.open(QIODevice::ReadOnly);
     QImageReader reader(&buffer);
     return imagemeta::displayedSize(reader);
+}
+
+bool MediaBridge::cachedImageTooLarge(const QString &source) const
+{
+    QByteArray bytes = cachedBytesForSource(source);
+    const lightning::imagefmt::RasterFormat *sniffed =
+        lightning::imagefmt::sniffRaster(bytes);
+    if (!sniffed)
+        return false;
+    QBuffer buffer(&bytes);
+    buffer.open(QIODevice::ReadOnly);
+    QImageReader reader(&buffer, QByteArray(sniffed->qtFormat));
+    reader.setAutoDetectImageFormat(false);
+    const QSize target = imagemeta::decodeSizeWithinBudget(
+        reader, QSize(), imagemeta::kPreviewDecodeBudgetBytes);
+    return reader.size().isValid()
+        && !imagemeta::decodeFitsBudget(reader, target, imagemeta::kPreviewDecodeBudgetBytes);
 }
 
 QImage MediaBridge::cachedArtwork(const QString &cacheKey) const
@@ -1279,7 +1295,6 @@ QImage MediaBridge::cachedAvatarImage(const QString &mxcUri) const
         reader.setFormat(QByteArray(sniffed->qtFormat));
     }
     reader.setAutoTransform(true);
-    reader.setAllocationLimit(64);
     const QSize natural = reader.size();
     if (!natural.isValid())
         return {};
@@ -1287,7 +1302,10 @@ QImage MediaBridge::cachedAvatarImage(const QString &mxcUri) const
     if (qMax(natural.width(), natural.height()) > kAvatarCanonicalEdge)
         target = natural.scaled(kAvatarCanonicalEdge, kAvatarCanonicalEdge,
                                 Qt::KeepAspectRatio);
-    target = imagemeta::decodeSizeWithinBudget(reader, target, qint64(64) << 20);
+    target = imagemeta::decodeSizeWithinBudget(reader, target,
+                                               imagemeta::kPreviewDecodeBudgetBytes);
+    if (!imagemeta::decodeFitsBudget(reader, target, imagemeta::kPreviewDecodeBudgetBytes))
+        return {};
     if (target != natural)
         reader.setScaledSize(target);
     return reader.read();
@@ -1911,7 +1929,9 @@ QString MediaBridge::writeAnimatedFile(const QString &cacheKey,
 {
     constexpr qsizetype maxAnimatedBytes = kMaxAnimatedBytes;
     const QString extension = animatedExtensionFor(bytes);
+    const QSize canvas = lightning::animsniff::canvasSize(bytes);
     if (extension.isEmpty() || bytes.size() > maxAnimatedBytes
+        || qint64(canvas.width()) * canvas.height() * 4 > imagemeta::kPreviewDecodeBudgetBytes
         || !m_animatedDir || !m_animatedDir->isValid())
         return {};
     const QString name = QString::fromLatin1(

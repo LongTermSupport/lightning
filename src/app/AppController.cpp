@@ -4729,7 +4729,7 @@ QString AppController::setCustomAppIconFromFile(const QUrl &fileUrl)
         if (normalized.category == QLatin1String("too_large_bytes"))
             return tr("The image is too large — 32 MiB at most.");
         if (normalized.category == QLatin1String("too_large_dimensions"))
-            return tr("The image is too large — 8192×8192 at most.");
+            return tr("The image is too large — %1×%1 at most.").arg(appicon::kMaxSquareEdge);
         if (normalized.category == QLatin1String("too_small"))
             return tr("The image is too small — 16×16 at least.");
         return tr("Choose a PNG, JPEG, WebP, BMP or GIF image.");

@@ -3,8 +3,14 @@
 #include "media/ImageFormatSupport.h"
 #include "storage/AppDataPaths.h"
 
+#include "PngFixture.h"
+
 #include <QBuffer>
+#include <cmath>
 #include <QImage>
+#include <QImageReader>
+#include <QRegularExpression>
+#include <QScopeGuard>
 #include <QTemporaryDir>
 #include <QtTest>
 
@@ -143,6 +149,28 @@ private Q_SLOTS:
                      encoded(solid(9000, 20, Qt::red), "PNG"))
                      .category,
                  QStringLiteral("too_large_dimensions"));
+    }
+
+    void theIconKeepsItsOwnDecodeBudget()
+    {
+        const int before = QImageReader::allocationLimit();
+        QImageReader::setAllocationLimit(256);
+        const auto restore = qScopeGuard([before] { QImageReader::setAllocationLimit(before); });
+        QTest::failOnWarning(QRegularExpression(QStringLiteral("allocation limit")));
+
+        // The edge the "too large" message states is the largest square the budget admits.
+        const int derived = qMin(appicon::kMaxInputEdge,
+                                 int(std::sqrt(double(appicon::kMaxDecodeBytes) / 4)));
+        QCOMPARE(appicon::kMaxSquareEdge, derived);
+        QVERIFY(appicon::kMaxSquareEdge < appicon::kMaxInputEdge);
+        const int edge = appicon::kMaxSquareEdge;
+        QVERIFY(appicon::normalizeIconBytes(pngfixture::blackRgb(edge, edge)).ok);
+        QCOMPARE(QImageReader::allocationLimit(), 256);
+        const appicon::NormalizeResult over =
+            appicon::normalizeIconBytes(pngfixture::blackRgb(edge + 1, edge + 1));
+        QVERIFY(!over.ok);
+        QCOMPARE(over.category, QStringLiteral("too_large_dimensions"));
+        QCOMPARE(QImageReader::allocationLimit(), 256);
     }
 
     void rejectsOversizedBytes()

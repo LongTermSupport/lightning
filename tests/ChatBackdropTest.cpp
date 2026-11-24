@@ -10,6 +10,8 @@
 #include "media/AnimatedImageSniff.h"
 #include "media/SvgRasterJob.h"
 
+#include "PngFixture.h"
+
 #include <QBuffer>
 #include <QFile>
 #include <QImage>
@@ -823,6 +825,32 @@ private Q_SLOTS:
         QCOMPARE(r.value(QStringLiteral("width")).toInt(), ChatBackdropController::kMaxEdge);
         QCOMPARE(r.value(QStringLiteral("height")).toInt(),
                  qRound(1000.0 * ChatBackdropController::kMaxEdge / 3000.0));
+    }
+
+    void theBackdropKeepsItsLargerBudgetAndEveryPathRefusesABomb()
+    {
+        const int before = QImageReader::allocationLimit();
+        QImageReader::setAllocationLimit(256);
+        const auto restore = qScopeGuard([before] { QImageReader::setAllocationLimit(before); });
+        QTest::failOnWarning(QRegularExpression(QStringLiteral("allocation limit")));
+        ChatBackdropController backdrops;
+        // 100 MB at 32 bpp: over the 64 MiB measuring budget, inside the picture's.
+        const QByteArray large = pngfixture::blackRgb(5000, 5000);
+        const QByteArray bomb = pngfixture::blackRgb(9000, 9000);
+
+        const QVariantMap prepared = backdrops.prepareBytesForTesting(large);
+        QVERIFY2(prepared.value(QStringLiteral("ok")).toBool(),
+                 qPrintable(prepared.value(QStringLiteral("error")).toString()));
+        QCOMPARE(prepared.value(QStringLiteral("width")).toInt(), ChatBackdropController::kMaxEdge);
+        QCOMPARE(QImageReader::allocationLimit(), 256);
+        QVERIFY(!backdrops.measureBytesForTesting(large).measured);
+        QCOMPARE(QImageReader::allocationLimit(), 256);
+        QVERIFY(backdrops.measureBytesForTesting(pngfixture::blackRgb(500, 500)).measured);
+        QVERIFY(!backdrops.measureBytesForTesting(bomb).measured);
+        const QVariantMap refused = backdrops.prepareBytesForTesting(bomb);
+        QVERIFY(!refused.value(QStringLiteral("ok")).toBool());
+        QCOMPARE(refused.value(QStringLiteral("error")).toString(), QStringLiteral("undecodable"));
+        QCOMPARE(QImageReader::allocationLimit(), 256);
     }
 
     void anAnimatedGifIsKeptWithItsMetadataStripped()

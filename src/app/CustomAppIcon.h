@@ -14,6 +14,14 @@ namespace appicon {
 
 inline constexpr qsizetype kMaxInputBytes = 32LL * 1024 * 1024;
 inline constexpr int kMaxInputEdge = 8192;
+inline constexpr qint64 kMaxDecodeBytes = qint64(128) << 20;
+// The largest square both limits admit at the 32 bpp the decode check assumes; what the user is told.
+inline constexpr int kMaxSquareEdge = [] {
+    int edge = kMaxInputEdge;
+    while (qint64(edge) * edge * 4 > kMaxDecodeBytes)
+        --edge;
+    return edge;
+}();
 inline constexpr int kMinInputEdge = 16;
 inline constexpr int kNormalizedEdge = 512;
 

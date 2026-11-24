@@ -59,6 +59,8 @@ public:
     Q_INVOKABLE QString mxcImageSource(const QString &mxcUri, int edge);
     Q_INVOKABLE QString cachedSource(const QString &cacheKey) const;
     QSize cachedImageSize(const QString &source) const;
+    // True when a preview source's bytes are over the decode budget, so the viewer can say so.
+    Q_INVOKABLE bool cachedImageTooLarge(const QString &source) const;
     Q_INVOKABLE QString animatedSource(const QString &mediaKey,
                                        bool speculative = false);
     Q_INVOKABLE QString mxcAnimatedSource(const QString &mxcUri);
@@ -208,6 +210,7 @@ private Q_SLOTS:
     void onClientReady();
 
 private:
+    QByteArray cachedBytesForSource(const QString &source) const;
     void abortFetch(const QString &cacheKey);
     struct Pending {
         QString cacheKey;

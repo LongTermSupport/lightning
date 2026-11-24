@@ -2,6 +2,8 @@
 #include "gif/GifResponseParser.h"
 #include "gif/GifStarredStore.h"
 
+#include "PngFixture.h"
+
 #include <QCryptographicHash>
 #include <QDir>
 #include <QFile>
@@ -128,6 +130,7 @@ private Q_SLOTS:
     void savesWebpBytesUnderTheWebpSuffix();
     void neverGuessesAnExtensionFromAnythingButTheBytes();
     void rejectsSvgBytes();
+    void refusesAPngOverTheDecodeBudget();
     void orphanSweepRemovesStrayFilesOfEveryFormat();
     void unstarRemovesTheCorrectFormatFile();
     void accountScopeIsolationHoldsAcrossFormats();
@@ -208,6 +211,23 @@ void GifStarredStoreTest::rejectsHtmlBytes()
     QCOMPARE(finished.at(0).at(2).toString(), QStringLiteral("unsupported_format"));
     QCOMPARE(store.count(), 0);
     QVERIFY(QDir(dir.path()).entryList({QStringLiteral("*.gif")}).isEmpty());
+}
+
+void GifStarredStoreTest::refusesAPngOverTheDecodeBudget()
+{
+    QTemporaryDir dir;
+    GifStarredStore store;
+    QSignalSpy finished(&store, &GifStarredStore::starFinished);
+    store.openFor(dir.path());
+
+    // Both 4096x4096: 8-bit decodes to 64 MiB, 16-bit to 128 MiB.
+    store.starBytes(QStringLiteral("mk8"), pngfixture::blackRgb(4096, 4096));
+    store.starBytes(QStringLiteral("mk16"), pngfixture::blackRgb(4096, 4096, 16));
+    QCOMPARE(finished.count(), 2);
+    QVERIFY(finished.at(0).at(1).toBool());
+    QVERIFY(!finished.at(1).at(1).toBool());
+    QCOMPARE(finished.at(1).at(2).toString(), QStringLiteral("too_large"));
+    QCOMPARE(store.count(), 1);
 }
 
 void GifStarredStoreTest::rejectsSvgBytes()
