@@ -2804,6 +2804,17 @@ Item {
                                 root.openEditMenuAtCaret(input)
                                 return
                             }
+                            if ((event.key === Qt.Key_Backspace
+                                 && event.modifiers === Qt.NoModifier)
+                                    || event.matches(StandardKey.Undo)) {
+                                var undone = app.composer.undoShortcodeAutoConvert(
+                                    input.cursorPosition)
+                                if (undone >= 0) {
+                                    input.cursorPosition = undone
+                                    event.accepted = true
+                                    return
+                                }
+                            }
                             if (plainAutocorrect.handleKey(event))
                                 return
                             var timelineAction =

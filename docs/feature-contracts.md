@@ -2736,6 +2736,12 @@ Shortcode completion (`:blob` → the installed packs' matches) is
 — CURSOR-driven rather than a NOTIFY property, because a shortcode can be
 anywhere in the text while a slash command is always at position 0.
 
+Automatic `:alias:` conversion is never the only way to send text as typed:
+Backspace or Undo right after a conversion puts the shortcode back, and that
+code then stays literal, live and at send, for the session
+(`undoShortcodeAutoConvert`, `keepShortcodeLiteral`). `/plain <message>`
+sends the text exactly as typed: no Markdown, no shortcode or custom-emoji pass.
+
 **Pack management (v0.9.0):** remove an image, rename its shortcode, rename
 the pack, empty the pack — `StickerPackEditor.qml`, reached from the picker.
 One `PackEdit` enum and one shared writer serve BOTH the account pack

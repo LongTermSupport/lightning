@@ -2386,6 +2386,9 @@ Rectangle {
                                         return
                                     if (threadRichInput.preeditText !== "")
                                         return
+                                    if (panel.undoThreadEmojiAutoConvert(
+                                            threadRichInput, event))
+                                        return
                                     if (threadRichAutocorrect.handleKey(event))
                                         return
                                     var richTimelineAction =
@@ -2667,6 +2670,9 @@ Rectangle {
                                 if (panel.vimKey(event, threadComposerInput))
                                     return
                                 if (threadComposerInput.preeditText !== "")
+                                    return
+                                if (panel.undoThreadEmojiAutoConvert(
+                                        threadComposerInput, event))
                                     return
                                 if (threadPlainAutocorrect.handleKey(event))
                                     return
@@ -3159,11 +3165,34 @@ Rectangle {
             editor.getText(0, editor.length), editor.cursorPosition, entry))
         threadEmojiPopup.close()
     }
+    property var threadEmojiUndo: null
     function checkThreadEmojiAutoConvert(editor) {
         if (panel.threadEmojiAutoConverting || panel.richSyncing)
             return
-        panel.applyThreadEmojiEdit(editor, app.composer.shortcodeAutoConvertEdit(
-            editor.getText(0, editor.length), editor.cursorPosition))
+        var text = editor.getText(0, editor.length)
+        var edit = app.composer.shortcodeAutoConvertEdit(text, editor.cursorPosition)
+        if (panel.applyThreadEmojiEdit(editor, edit))
+            panel.threadEmojiUndo = {
+                start: edit.start, emoji: edit.replacement, cursor: edit.cursor,
+                original: text.substr(edit.start, edit.length)
+            }
+    }
+    // Backspace or Undo right after an auto-conversion puts the shortcode back for good.
+    function undoThreadEmojiAutoConvert(editor, event) {
+        var u = panel.threadEmojiUndo
+        panel.threadEmojiUndo = null
+        if (!u || !((event.key === Qt.Key_Backspace && event.modifiers === Qt.NoModifier)
+                    || event.matches(StandardKey.Undo))
+                || editor.cursorPosition !== u.cursor
+                || editor.getText(u.start, u.start + u.emoji.length) !== u.emoji)
+            return false
+        app.composer.keepShortcodeLiteral(u.original.slice(1, -1))
+        panel.applyThreadEmojiEdit(editor, {
+            start: u.start, length: u.emoji.length, replacement: u.original,
+            cursor: u.start + u.original.length + 1
+        })
+        event.accepted = true
+        return true
     }
     function updateThreadEmojiState() {
         var editor = panel.activeThreadEditor()

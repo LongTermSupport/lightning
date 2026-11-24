@@ -12,6 +12,7 @@
 #include <QPair>
 #include <QObject>
 #include <QHash>
+#include <QSet>
 #include <QString>
 #include <QTimer>
 #include <QUrl>
@@ -190,6 +191,11 @@ public:
         std::function<QString(const QString &code)> resolve);
 
     Q_INVOKABLE int maybeAutoConvertShortcodeBeforeCursor(int cursorPos);
+    // Puts back the shortcode the last auto-conversion replaced, if the caret is
+    // still right after it; the new caret, or -1. That code then stays literal.
+    Q_INVOKABLE int undoShortcodeAutoConvert(int cursorPos);
+    // For this session the code is neither auto-converted nor converted at send.
+    Q_INVOKABLE void keepShortcodeLiteral(const QString &code);
     void setEmojiAutoConvertEnabled(bool enabled);
     bool emojiAutoConvertEnabled() const { return m_emojiAutoConvert; }
     Q_INVOKABLE void clear();
@@ -335,6 +341,10 @@ private:
     std::function<void(const QString &)> m_unicodeEmojiUseRecorder;
     std::function<QString(const QString &)> m_unicodeShortcodeResolver;
     bool m_emojiAutoConvert = true;
+    struct AutoConvert { int start = -1; QString original; QString emoji; int cursor = -1; };
+    AutoConvert m_lastAutoConvert;
+    QSet<QString> m_literalShortcodes;
+    static bool isPlainCommand(const QString &text);
     AttachmentQueueModel *m_attachments = nullptr;
     // Trays of the rooms (and inline threads) not on screen, keyed by draftKey().
     // Memory only: they can hold encrypted-room pictures.
