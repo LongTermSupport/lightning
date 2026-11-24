@@ -1707,7 +1707,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+609"/>
+        <location filename="../qml/AppTheme.qml" line="+610"/>
         <source>Storm</source>
         <translation>Storm</translation>
     </message>
@@ -20987,7 +20987,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>SearchMemberSection</name>
     <message>
-        <location filename="../qml/SearchMemberSection.qml" line="+38"/>
+        <location filename="../qml/SearchMemberSection.qml" line="+40"/>
         <source>%1 selected</source>
         <translation>%1 নির্বাচিত</translation>
     </message>
@@ -21056,12 +21056,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+52"/>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>Search filters</source>
         <translation>অনুসন্ধান ফিল্টার</translation>
     </message>
     <message>
-        <location line="-10"/>
+        <location line="-11"/>
         <source>Search messages</source>
         <translation>বার্তা খুঁজুন</translation>
     </message>
@@ -21076,7 +21076,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>অনুসন্ধান বন্ধ করুন</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+42"/>
         <source>Search room history…</source>
         <translation>রুমের ইতিহাসে খুঁজুন…</translation>
     </message>
@@ -21096,7 +21096,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1-এর বার্তা খুলুন</translation>
     </message>
     <message>
-        <location line="-238"/>
+        <location line="-239"/>
         <source>Search could not be completed.</source>
         <translation>অনুসন্ধান সম্পূর্ণ করা যায়নি।</translation>
     </message>
@@ -21111,12 +21111,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>অন্তত %1টি অক্ষর টাইপ করুন।</translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+175"/>
         <source>Nothing is indexed yet.</source>
         <translation>এখনও কিছু ইনডেক্স করা হয়নি।</translation>
     </message>
     <message>
-        <location line="-171"/>
+        <location line="-172"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>মেলে এমন কোনো বার্তা নেই। কম প্রচলিত শব্দ চেষ্টা করুন, অথবা স্থানীয় ইনডেক্সে খুঁজুন।</translation>
     </message>
@@ -21126,7 +21126,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>মিলে যাওয়া কোনো বার্তা নেই</translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+103"/>
         <source>Indexed</source>
         <translation>ইনডেক্স করা</translation>
     </message>
@@ -21272,12 +21272,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>পিন করা নয়</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+31"/>
         <source>Clear filters</source>
         <translation>ফিল্টার মুছুন</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+9"/>
         <source>Cancel</source>
         <translation>বাতিল</translation>
     </message>

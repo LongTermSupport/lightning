@@ -1707,7 +1707,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+609"/>
+        <location filename="../qml/AppTheme.qml" line="+610"/>
         <source>Storm</source>
         <translation>Storm</translation>
     </message>
@@ -20987,7 +20987,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
 <context>
     <name>SearchMemberSection</name>
     <message>
-        <location filename="../qml/SearchMemberSection.qml" line="+38"/>
+        <location filename="../qml/SearchMemberSection.qml" line="+40"/>
         <source>%1 selected</source>
         <translation>%1 sélectionné</translation>
     </message>
@@ -21056,12 +21056,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     </message>
     <message>
         <location line="+52"/>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>Search filters</source>
         <translation>Filtres de recherche</translation>
     </message>
     <message>
-        <location line="-10"/>
+        <location line="-11"/>
         <source>Search messages</source>
         <translation>Rechercher des messages</translation>
     </message>
@@ -21076,7 +21076,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Fermer la recherche</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+42"/>
         <source>Search room history…</source>
         <translation>Rechercher dans l&apos;historique du salon…</translation>
     </message>
@@ -21096,7 +21096,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Ouvrir le message de %1</translation>
     </message>
     <message>
-        <location line="-238"/>
+        <location line="-239"/>
         <source>Search could not be completed.</source>
         <translation>La recherche n&apos;a pas pu aboutir.</translation>
     </message>
@@ -21111,12 +21111,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Saisissez au moins %1 caractères.</translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+175"/>
         <source>Nothing is indexed yet.</source>
         <translation>Rien n&apos;est encore indexé.</translation>
     </message>
     <message>
-        <location line="-171"/>
+        <location line="-172"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>Aucun message correspondant. Essayez un mot moins courant, ou recherchez dans l&apos;index local.</translation>
     </message>
@@ -21126,7 +21126,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Aucun message correspondant</translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+103"/>
         <source>Indexed</source>
         <translation>Indexé</translation>
     </message>
@@ -21272,12 +21272,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Non épinglé</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+31"/>
         <source>Clear filters</source>
         <translation>Effacer les filtres</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+9"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>

@@ -1696,7 +1696,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+609"/>
+        <location filename="../qml/AppTheme.qml" line="+610"/>
         <source>Storm</source>
         <translation>Storm</translation>
     </message>
@@ -20897,7 +20897,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
 <context>
     <name>SearchMemberSection</name>
     <message>
-        <location filename="../qml/SearchMemberSection.qml" line="+38"/>
+        <location filename="../qml/SearchMemberSection.qml" line="+40"/>
         <source>%1 selected</source>
         <translation>%1 dipilih</translation>
     </message>
@@ -20966,12 +20966,12 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     </message>
     <message>
         <location line="+52"/>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>Search filters</source>
         <translation>Filter pencarian</translation>
     </message>
     <message>
-        <location line="-10"/>
+        <location line="-11"/>
         <source>Search messages</source>
         <translation>Cari pesan</translation>
     </message>
@@ -20986,7 +20986,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Tutup pencarian</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+42"/>
         <source>Search room history…</source>
         <translation>Cari riwayat ruang…</translation>
     </message>
@@ -21006,7 +21006,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Buka pesan dari %1</translation>
     </message>
     <message>
-        <location line="-238"/>
+        <location line="-239"/>
         <source>Search could not be completed.</source>
         <translation>Pencarian tidak dapat diselesaikan.</translation>
     </message>
@@ -21021,12 +21021,12 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Ketik minimal %1 karakter.</translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+175"/>
         <source>Nothing is indexed yet.</source>
         <translation>Belum ada yang diindeks.</translation>
     </message>
     <message>
-        <location line="-171"/>
+        <location line="-172"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>Tidak ada pesan yang cocok. Coba kata yang lebih jarang, atau cari di indeks lokal.</translation>
     </message>
@@ -21036,7 +21036,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Tidak ada pesan yang cocok</translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+103"/>
         <source>Indexed</source>
         <translation>Terindeks</translation>
     </message>
@@ -21182,12 +21182,12 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Tidak tersemat</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+31"/>
         <source>Clear filters</source>
         <translation>Bersihkan filter</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+9"/>
         <source>Cancel</source>
         <translation>Batal</translation>
     </message>

@@ -1718,7 +1718,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+609"/>
+        <location filename="../qml/AppTheme.qml" line="+610"/>
         <source>Storm</source>
         <translation>Storm</translation>
     </message>
@@ -21077,7 +21077,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>SearchMemberSection</name>
     <message>
-        <location filename="../qml/SearchMemberSection.qml" line="+38"/>
+        <location filename="../qml/SearchMemberSection.qml" line="+40"/>
         <source>%1 selected</source>
         <translation>Выбрано: %1</translation>
     </message>
@@ -21146,12 +21146,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+52"/>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>Search filters</source>
         <translation>Фильтры поиска</translation>
     </message>
     <message>
-        <location line="-10"/>
+        <location line="-11"/>
         <source>Search messages</source>
         <translation>Поиск сообщений</translation>
     </message>
@@ -21166,7 +21166,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Закрыть поиск</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+42"/>
         <source>Search room history…</source>
         <translation>Поиск по истории комнаты…</translation>
     </message>
@@ -21186,7 +21186,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Открыть сообщение от %1</translation>
     </message>
     <message>
-        <location line="-238"/>
+        <location line="-239"/>
         <source>Search could not be completed.</source>
         <translation>Не удалось выполнить поиск.</translation>
     </message>
@@ -21201,12 +21201,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>Введите не менее %1 символов.</translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+175"/>
         <source>Nothing is indexed yet.</source>
         <translation>Индекс ещё не создан.</translation>
     </message>
     <message>
-        <location line="-171"/>
+        <location line="-172"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>Подходящих сообщений нет. Попробуйте менее частое слово или поищите в локальном индексе.</translation>
     </message>
@@ -21216,7 +21216,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Подходящих сообщений нет</translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+103"/>
         <source>Indexed</source>
         <translation>Индекс</translation>
     </message>
@@ -21362,12 +21362,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>Не закреплено</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+31"/>
         <source>Clear filters</source>
         <translation>Очистить фильтры</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+9"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>

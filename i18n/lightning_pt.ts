@@ -1707,7 +1707,7 @@ Não toca nas suas chaves de encriptação, na sua sessão nem em qualquer mensa
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+609"/>
+        <location filename="../qml/AppTheme.qml" line="+610"/>
         <source>Storm</source>
         <translation>Storm</translation>
     </message>
@@ -20987,7 +20987,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>SearchMemberSection</name>
     <message>
-        <location filename="../qml/SearchMemberSection.qml" line="+38"/>
+        <location filename="../qml/SearchMemberSection.qml" line="+40"/>
         <source>%1 selected</source>
         <translation>%1 selecionado</translation>
     </message>
@@ -21056,12 +21056,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     </message>
     <message>
         <location line="+52"/>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>Search filters</source>
         <translation>Filtros de procura</translation>
     </message>
     <message>
-        <location line="-10"/>
+        <location line="-11"/>
         <source>Search messages</source>
         <translation>Procurar mensagens</translation>
     </message>
@@ -21076,7 +21076,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Fechar a procura</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+42"/>
         <source>Search room history…</source>
         <translation>Procurar no histórico da sala…</translation>
     </message>
@@ -21096,7 +21096,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Abrir a mensagem de %1</translation>
     </message>
     <message>
-        <location line="-238"/>
+        <location line="-239"/>
         <source>Search could not be completed.</source>
         <translation>Não foi possível concluir a procura.</translation>
     </message>
@@ -21111,12 +21111,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Escreva pelo menos %1 caracteres.</translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+175"/>
         <source>Nothing is indexed yet.</source>
         <translation>Ainda não há nada indexado.</translation>
     </message>
     <message>
-        <location line="-171"/>
+        <location line="-172"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>Nenhuma mensagem corresponde. Experimente uma palavra menos comum, ou pesquise no índice local.</translation>
     </message>
@@ -21126,7 +21126,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Nenhuma mensagem corresponde</translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+103"/>
         <source>Indexed</source>
         <translation>Indexado</translation>
     </message>
@@ -21272,12 +21272,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Não fixada</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+31"/>
         <source>Clear filters</source>
         <translation>Limpar os filtros</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+9"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>

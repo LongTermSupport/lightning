@@ -1751,7 +1751,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+609"/>
+        <location filename="../qml/AppTheme.qml" line="+610"/>
         <source>Storm</source>
         <translation>Storm</translation>
     </message>
@@ -21347,7 +21347,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>SearchMemberSection</name>
     <message>
-        <location filename="../qml/SearchMemberSection.qml" line="+38"/>
+        <location filename="../qml/SearchMemberSection.qml" line="+40"/>
         <source>%1 selected</source>
         <translation>%1 محدد</translation>
     </message>
@@ -21416,12 +21416,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+52"/>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>Search filters</source>
         <translation>مرشّحات البحث</translation>
     </message>
     <message>
-        <location line="-10"/>
+        <location line="-11"/>
         <source>Search messages</source>
         <translation>البحث في الرسائل</translation>
     </message>
@@ -21436,7 +21436,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>إغلاق البحث</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+42"/>
         <source>Search room history…</source>
         <translation>ابحث في سجل الغرفة…</translation>
     </message>
@@ -21456,7 +21456,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>فتح رسالة من %1</translation>
     </message>
     <message>
-        <location line="-238"/>
+        <location line="-239"/>
         <source>Search could not be completed.</source>
         <translation>تعذّر إتمام البحث.</translation>
     </message>
@@ -21471,12 +21471,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>اكتب %1 من الأحرف على الأقل.</translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+175"/>
         <source>Nothing is indexed yet.</source>
         <translation>لم يُفهرس شيء بعد.</translation>
     </message>
     <message>
-        <location line="-171"/>
+        <location line="-172"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>لا رسائل مطابقة. جرّب كلمة أقل شيوعًا، أو ابحث في الفهرس المحلي.</translation>
     </message>
@@ -21486,7 +21486,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>لا توجد رسائل مطابقة</translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+103"/>
         <source>Indexed</source>
         <translation>مفهرس</translation>
     </message>
@@ -21632,12 +21632,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>غير مثبّتة</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+31"/>
         <source>Clear filters</source>
         <translation>مسح المرشّحات</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+9"/>
         <source>Cancel</source>
         <translation>إلغاء</translation>
     </message>
