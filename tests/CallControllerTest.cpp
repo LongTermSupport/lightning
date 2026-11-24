@@ -9295,7 +9295,7 @@ false);
         QCOMPARE(call.state(), SfuCallController::State::Reconnecting);
         QSignalSpy failed(&call, &SfuCallController::callFailed);
 
-        Q_EMIT portal.ready(7, -1);
+        Q_EMIT portal.ready(7, -1, std::nullopt);
         QCOMPARE(failed.count(), 1);
         QCOMPARE(failed.first().first().toString(),
                  QStringLiteral("You can share your screen once the call has "
