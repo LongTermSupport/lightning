@@ -1,0 +1,1586 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 3f741984..24656e74 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -8415,3 +8415,8 @@ if(BUILD_TESTING)
+         endif()
+     endforeach()
+ endif()
++
++if(TARGET voice-fix-c43-test AND HAVE_LIGHTNING_WEBRTC AND Qt6_VERSION VERSION_GREATER_EQUAL 6.8)
++    target_link_libraries(voice-fix-c43-test PRIVATE PkgConfig::GSTWEBRTC)
++    target_compile_definitions(voice-fix-c43-test PRIVATE LIGHTNING_VOICE_BUFFER_PROBE)
++endif()
+diff --git a/docs/feature-contracts.md b/docs/feature-contracts.md
+index cdbf0ddd..f8b4373c 100644
+--- a/docs/feature-contracts.md
++++ b/docs/feature-contracts.md
+@@ -3829,3 +3829,22 @@ wall-clock number from one machine is never a threshold.
+   idle 1 wakeup/s with tracing off (3 runs). `LIGHTNING_GUI_STALL_TRACE=<ms>`
+   is the harness; it adds about 60 wakeups/s itself, so measure idle power
+   with it unset.
++
++### Screen share diagnostics
++
++`--call-media-status` lists requested settings and installed encoder/GL
++factories. Runtime selection is deferred until sharing. Stream info reports
++the encoder and scaling path in use and whether an encoded frame was observed.
++
++A portal screen share targets the granted remote and its 64-bit
++`pipewire-serial` when supplied. A source that cannot take `target-object`
++fails closed. Legacy grants use their node ID. A closed portal session ends
++the share and requires a fresh selection.
++
++A pending desktop camera or screen request can be cancelled from its call
++control. A retry starts a fresh request. Only an explicit access-denied error
++directs the user to privacy settings.
++
++A voice message uses the default input selected at the start of that take.
++Losing that input interrupts and discards the take. Starting another take
++resolves the current default. Quiet samples alone never indicate a disconnect.
+diff --git a/qml/CallHeaderBar.qml b/qml/CallHeaderBar.qml
+index a4fdbced..e7bd3a13 100644
+--- a/qml/CallHeaderBar.qml
++++ b/qml/CallHeaderBar.qml
+@@ -267,8 +267,12 @@ Rectangle {
+                     role: app.groupCall.cameraOn ? "active" : "neutral"
+                     diameter: root.controlDiameter
+                     glyphSize: root.controlGlyph
+-                    tooltip: app.groupCall.cameraOn ? qsTr("Turn off camera")
+-                                                    : qsTr("Turn on camera")
++                    tooltip: app.groupCall.cameraPermissionPending
++                             ? qsTr("Waiting for desktop camera permission. Click to cancel.")
++                             : app.groupCall.cameraOn ? qsTr("Turn off camera")
++                             : app.groupCall.cameraPermissionCancelled
++                               ? qsTr("Camera request cancelled. Click to try again.")
++                               : qsTr("Turn on camera")
+                     onClicked: app.groupCall.toggleCamera()
+                 }
+                 CallDeviceChevron {
+@@ -299,7 +303,9 @@ Rectangle {
+                     tooltip: app.groupCall.screenSharing
+                              ? qsTr("Stop sharing your screen")
+                              : app.groupCall.screenShareStarting
+-                               ? qsTr("Cancel screen sharing")
++                               ? qsTr("Waiting for desktop screen sharing permission. Click to cancel.")
++                               : app.groupCall.sharePermissionCancelled
++                                 ? qsTr("Screen sharing request cancelled. Click to try again.")
+                                : qsTr("Share your screen")
+                     // requestScreenShare() cancels a share that is still starting.
+                     onClicked: {
+diff --git a/qml/StreamInfoOverlay.qml b/qml/StreamInfoOverlay.qml
+index 023461f5..d315412d 100644
+--- a/qml/StreamInfoOverlay.qml
++++ b/qml/StreamInfoOverlay.qml
+@@ -78,6 +78,8 @@ Rectangle {
+                         if (s.outgoing) {
+                             lines.push(qsTr("Encoder: %1 · Scaling: %2 · Capture: %3")
+                                 .arg(s.encoder).arg(s.scaling).arg(s.source))
++                            if (s.screen)
++                                lines.push(s.encodedFrameObserved ? qsTr("Encoded frames observed") : qsTr("Waiting for an encoded frame"))
+                             lines.push(qsTr("RTP packets sent: %1 · Lost on the way to the server: %2")
+                                 .arg(root.count(s.packetsSent)).arg(root.count(s.lost)))
+                             lines.push(qsTr("Keyframes encoded: %1 · Keyframe requests: %2 · Resend requests: %3")
+diff --git a/src/calls/CameraPortal.cpp b/src/calls/CameraPortal.cpp
+index 5ba9741c..d3284c21 100644
+--- a/src/calls/CameraPortal.cpp
++++ b/src/calls/CameraPortal.cpp
+@@ -57,13 +57,13 @@ public:
+         : QObject(owner), m_path(requestPath)
+     {
+         QDBusConnection::sessionBus().connect(
+-            QString(), m_path, kRequest, QStringLiteral("Response"), this,
++            QString::fromLatin1(kService), m_path, kRequest, QStringLiteral("Response"), this,
+             SLOT(onResponse(uint, QVariantMap)));
+     }
+     ~CameraPortalStep() override
+     {
+         QDBusConnection::sessionBus().disconnect(
+-            QString(), m_path, kRequest, QStringLiteral("Response"), this,
++            QString::fromLatin1(kService), m_path, kRequest, QStringLiteral("Response"), this,
+             SLOT(onResponse(uint, QVariantMap)));
+     }
+ 
+@@ -94,14 +94,14 @@ CameraPortal::CameraPortal(QObject *parent)
+             return;
+         qCWarning(lcCameraPortal) << "camera portal request timed out; "
+                                      "releasing";
+-        cancel();
++        retire();
+         Q_EMIT failed(QStringLiteral("timeout"));
+     });
+ }
+ 
+ CameraPortal::~CameraPortal()
+ {
+-    cancel();
++    retire();
+ }
+ 
+ portal::Capability CameraPortal::capability()
+@@ -135,23 +135,34 @@ void CameraPortal::refreshCapability()
+ QString CameraPortal::failureCategory(const QString &errorName,
+                                      bool openingRemote)
+ {
+-    if (errorName == QLatin1String("org.freedesktop.portal.Error.NotAllowed")
+-        || errorName == QLatin1String("org.freedesktop.portal.Error.Cancelled")
+-        || errorName == QLatin1String("org.freedesktop.DBus.Error.AccessDenied"))
+-        return QStringLiteral("not_allowed");
+-    if (errorName == QLatin1String("org.freedesktop.DBus.Error.ServiceUnknown")
+-        || errorName == QLatin1String("org.freedesktop.DBus.Error.UnknownMethod")
+-        || errorName
+-            == QLatin1String("org.freedesktop.DBus.Error.UnknownInterface")
+-        || errorName == QLatin1String("org.freedesktop.DBus.Error.UnknownObject")
+-        || errorName
+-            == QLatin1String("org.freedesktop.DBus.Error.NameHasNoOwner"))
+-        return QStringLiteral("no_portal");
++    const QString category = portal::permissionError(errorName);
++    if (!category.isEmpty())
++        return category;
+     return openingRemote ? QStringLiteral("no_pipewire_remote")
+                          : QStringLiteral("portal_failed");
+ }
+ 
+ void CameraPortal::cancel()
++{
++    const bool pending = m_busy;
++    retire();
++    if (pending) {
++        m_cancelled = true;
++        Q_EMIT cancelled();
++    }
++}
++
++void CameraPortal::finishError(const QString &category)
++{
++    if (category == QLatin1String("cancelled")) {
++        cancel();
++        return;
++    }
++    retire();
++    Q_EMIT failed(category);
++}
++
++void CameraPortal::retire()
+ {
+     ++m_generation;
+     m_busy = false;
+@@ -162,11 +173,6 @@ void CameraPortal::cancel()
+     m_requestPath.clear();
+ }
+ 
+-void CameraPortal::reset()
+-{
+-    m_busy = false;
+-}
+-
+ #if !defined(HAVE_QT_DBUS) || defined(Q_OS_WIN) || defined(Q_OS_MACOS)
+ void CameraPortal::requestAccess()
+ {
+@@ -184,6 +190,7 @@ void CameraPortal::requestAccess()
+         return;
+     }
+ 
++    m_cancelled = false;
+     m_busy = true;
+     m_requestTimeout.start();
+     const quint64 generation = ++m_generation;
+@@ -197,8 +204,8 @@ void CameraPortal::requestAccess()
+             return;
+         m_requestPath.clear();
+         if (response != 0) {
+-            cancel();
+-            Q_EMIT cancelled();
++            finishError(response == 1 ? QStringLiteral("cancelled")
++                                      : QStringLiteral("portal_failed"));
+             return;
+         }
+         openRemote();
+@@ -229,6 +236,8 @@ void CameraPortal::requestAccess()
+                     portal::dropSubscription(subscription);
+                     return;
+                 }
++                if (m_requestPath != subscription.path)
++                    return;
+                 if (reply.isError()) {
+                     // Error text can name the desktop and paths; the error
+                     // NAME decides between a refusal and no portal at all.
+@@ -239,15 +248,12 @@ void CameraPortal::requestAccess()
+                         << reply.error().name() << "category=" << category;
+                     portal::dropSubscription(subscription);
+                     m_requestPath.clear();
+-                    reset();
+-                    m_requestTimeout.stop();
+-                    Q_EMIT failed(category);
++                    finishError(category);
+                     return;
+                 }
+                 portal::reconcileRequestPath(this, subscription,
+                                              reply.value().path(), onAnswer);
+-                if (!m_requestPath.isEmpty())
+-                    m_requestPath = subscription.path;
++                m_requestPath = subscription.path;
+             });
+ }
+ 
+@@ -271,11 +277,9 @@ void CameraPortal::openRemote()
+                         << "camera OpenPipeWireRemote failed error="
+                         << (reply.isError() ? reply.error().name()
+                                             : QStringLiteral("no_fd"));
+-                    cancel();
+-                    Q_EMIT failed(
++                    finishError(
+                         reply.isError()
+-                            ? failureCategory(reply.error().name(),
+-true)
++                            ? failureCategory(reply.error().name(), true)
+                             : QStringLiteral("no_pipewire_remote"));
+                     return;
+                 }
+@@ -283,7 +287,7 @@ true)
+                 // hand over a dup; the receiver owns it.
+                 const int fd = ::dup(reply.value().fileDescriptor());
+                 if (fd < 0) {
+-                    cancel();
++                    retire();
+                     Q_EMIT failed(QStringLiteral("no_pipewire_remote"));
+                     return;
+                 }
+diff --git a/src/calls/CameraPortal.h b/src/calls/CameraPortal.h
+index 9d2209c2..9b5bbfc9 100644
+--- a/src/calls/CameraPortal.h
++++ b/src/calls/CameraPortal.h
+@@ -52,6 +52,7 @@ public:
+ 
+     static QString failureCategory(const QString &errorName,
+                                    bool openingRemote);
++    bool wasCancelled() const { return m_cancelled; }
+     bool busy() const { return m_busy; }
+     void setRequestTimeoutMsForTest(int ms) { m_requestTimeout.setInterval(ms); }
+ 
+@@ -62,12 +63,14 @@ Q_SIGNALS:
+     void capabilityChanged();
+ 
+ private:
+-    void reset();
++    void retire();
++    void finishError(const QString &category);
+ #if defined(HAVE_QT_DBUS) && !defined(Q_OS_WIN) && !defined(Q_OS_MACOS)
+     void openRemote();
+ #endif
+ 
+     bool m_busy = false;
++    bool m_cancelled = false;
+     // The portal Request still awaiting its Response; closed on cancel.
+     QString m_requestPath;
+     QTimer m_requestTimeout;
+diff --git a/src/calls/PortalRequest.h b/src/calls/PortalRequest.h
+index f160a43a..e9f6876f 100644
+--- a/src/calls/PortalRequest.h
++++ b/src/calls/PortalRequest.h
+@@ -21,6 +21,24 @@
+ 
+ namespace portal {
+ 
++inline QString permissionError(const QString &errorName)
++{
++    if (errorName == QLatin1String("org.freedesktop.portal.Error.Cancelled"))
++        return QStringLiteral("cancelled");
++    if (errorName == QLatin1String("org.freedesktop.portal.Error.NotAllowed")
++        || errorName == QLatin1String("org.freedesktop.DBus.Error.AccessDenied"))
++        return QStringLiteral("not_allowed");
++    if (errorName == QLatin1String("org.freedesktop.DBus.Error.ServiceUnknown")
++        || errorName == QLatin1String("org.freedesktop.DBus.Error.UnknownMethod")
++        || errorName
++            == QLatin1String("org.freedesktop.DBus.Error.UnknownInterface")
++        || errorName == QLatin1String("org.freedesktop.DBus.Error.UnknownObject")
++        || errorName
++            == QLatin1String("org.freedesktop.DBus.Error.NameHasNoOwner"))
++        return QStringLiteral("no_portal");
++    return {};
++}
++
+ inline QString predictedRequestPath(QString uniqueName, const QString &token)
+ {
+     if (uniqueName.isEmpty() || token.isEmpty())
+@@ -48,7 +66,7 @@ Subscription<Step> subscribeBeforeCall(Owner *owner, const QString &uniqueName,
+     if (sub.path.isEmpty())
+         return sub;
+     sub.step = new Step(owner, sub.path);
+-    QObject::connect(sub.step.data(), &Step::answered, owner, onAnswer);
++    QObject::connect(sub.step.data(), &Step::answered, owner, onAnswer, Qt::SingleShotConnection);
+     return sub;
+ }
+ 
+@@ -65,7 +83,7 @@ void reconcileRequestPath(Owner *owner, Subscription<Step> &sub,
+     if (actualPath.isEmpty())
+         return;
+     sub.step = new Step(owner, actualPath);
+-    QObject::connect(sub.step.data(), &Step::answered, owner, onAnswer);
++    QObject::connect(sub.step.data(), &Step::answered, owner, onAnswer, Qt::SingleShotConnection);
+ }
+ 
+ template <typename Step>
+diff --git a/src/calls/ScreenCastPortal.cpp b/src/calls/ScreenCastPortal.cpp
+index 3779e8b5..193a7333 100644
+--- a/src/calls/ScreenCastPortal.cpp
++++ b/src/calls/ScreenCastPortal.cpp
+@@ -36,6 +36,9 @@ constexpr auto kRequest = "org.freedesktop.portal.Request";
+ 
+ QString errorCategory(const QDBusError &error, const QString &fallback)
+ {
++    const QString category = portal::permissionError(error.name());
++    if (!category.isEmpty())
++        return category;
+     const QString message = error.message();
+     if (message.contains(QLatin1String("X11"), Qt::CaseSensitive)
+         && (message.contains(QLatin1String("not available"),
+@@ -81,14 +84,14 @@ public:
+         : QObject(owner)
+     {
+         QDBusConnection::sessionBus().connect(
+-            QString(), requestPath, kRequest, QStringLiteral("Response"),
++            QString::fromLatin1(kService), requestPath, kRequest, QStringLiteral("Response"),
+             this, SLOT(onResponse(uint, QVariantMap)));
+         m_path = requestPath;
+     }
+     ~PortalStep() override
+     {
+         QDBusConnection::sessionBus().disconnect(
+-            QString(), m_path, kRequest, QStringLiteral("Response"), this,
++            QString::fromLatin1(kService), m_path, kRequest, QStringLiteral("Response"), this,
+             SLOT(onResponse(uint, QVariantMap)));
+     }
+ 
+@@ -118,7 +121,7 @@ ScreenCastPortal::ScreenCastPortal(QObject *parent)
+         if (!m_busy)
+             return;
+         qCWarning(lcPortal) << "screen share request timed out; releasing";
+-        cancel();
++        retire();
+         Q_EMIT failed(QStringLiteral("timeout"));
+     });
+     m_answerWatchdog.setSingleShot(true);
+@@ -128,7 +131,7 @@ ScreenCastPortal::ScreenCastPortal(QObject *parent)
+         qCWarning(lcPortal)
+             << "screen share portal gave no answer within the caller's bound; "
+                "abandoning it";
+-        cancel();
++        retire();
+         Q_EMIT failed(QStringLiteral("no_answer"));
+     });
+ }
+@@ -143,7 +146,7 @@ void ScreenCastPortal::armAnswerWatchdog(int ms)
+ 
+ ScreenCastPortal::~ScreenCastPortal()
+ {
+-    cancel();
++    retire();
+ }
+ 
+ portal::Capability ScreenCastPortal::capability()
+@@ -165,12 +168,36 @@ void ScreenCastPortal::refreshCapability()
+ }
+ 
+ void ScreenCastPortal::cancel()
++{
++    const bool pending = m_busy;
++    retire();
++    if (pending) {
++        m_cancelled = true;
++        Q_EMIT cancelled();
++    }
++}
++
++void ScreenCastPortal::finishError(const QString &category)
++{
++    if (category == QLatin1String("cancelled")) {
++        cancel();
++        return;
++    }
++    retire();
++    Q_EMIT failed(category);
++}
++
++void ScreenCastPortal::retire()
+ {
+     ++m_generation;
+     m_busy = false;
+     m_requestTimeout.stop();
+     m_answerWatchdog.stop();
+ #ifdef HAVE_QT_DBUS
++    if (!m_sessionHandle.isEmpty())
++        QDBusConnection::sessionBus().disconnect(kService, m_sessionHandle,
++            QStringLiteral("org.freedesktop.portal.Session"), QStringLiteral("Closed"),
++            this, SLOT(onSessionClosed(QVariantMap,QDBusMessage)));
+     closePortalObject(m_requestPath, kRequest);
+     closePortalObject(m_sessionHandle, "org.freedesktop.portal.Session");
+ #endif
+@@ -178,13 +205,23 @@ void ScreenCastPortal::cancel()
+     m_sessionHandle.clear();
+ }
+ 
+-void ScreenCastPortal::reset()
++#ifdef HAVE_QT_DBUS
++void ScreenCastPortal::onSessionClosed(const QVariantMap &, const QDBusMessage &message)
+ {
+-    m_busy = false;
+-    m_answerWatchdog.stop();
++    if (message.path() != m_sessionHandle)
++        return;
++    const bool requesting = m_busy;
++    QDBusConnection::sessionBus().disconnect(kService, m_sessionHandle,
++        QStringLiteral("org.freedesktop.portal.Session"), QStringLiteral("Closed"),
++        this, SLOT(onSessionClosed(QVariantMap,QDBusMessage)));
+     m_sessionHandle.clear();
+-    m_requestPath.clear();
++    retire();
++    if (requesting)
++        Q_EMIT failed(QStringLiteral("session_closed"));
++    else
++        Q_EMIT sessionClosed();
+ }
++#endif
+ 
+ #if defined(Q_OS_WIN) || defined(Q_OS_MACOS)
+ void ScreenCastPortal::requestShare(int types, int preparationBoundMs,
+@@ -207,7 +244,7 @@ void ScreenCastPortal::requestShare(int types, int preparationBoundMs,
+     if (!screen)
+         screen = QGuiApplication::primaryScreen();
+     const int index = screen ? int(screens.indexOf(screen)) : 0;
+-    Q_EMIT ready(static_cast<unsigned>(index < 0 ? 0 : index), -1);
++    Q_EMIT ready(static_cast<unsigned>(index < 0 ? 0 : index), -1, std::nullopt);
+ }
+ #elif !defined(HAVE_QT_DBUS)
+ void ScreenCastPortal::requestShare(int types, int preparationBoundMs,
+@@ -231,6 +268,7 @@ void ScreenCastPortal::requestShare(int types, int preparationBoundMs,
+         return;
+     }
+ 
++    m_cancelled = false;
+     m_busy = true;
+     m_requestTimeout.start();
+     m_pickerBoundMs = pickerBoundMs;
+@@ -260,19 +298,26 @@ void ScreenCastPortal::requestShare(int types, int preparationBoundMs,
+             return;
+         }
+         m_requestPath.clear();
++        if (response == 1) {
++            cancel();
++            return;
++        }
+         if (response != 0) {
+             qCWarning(lcPortal) << "screen share session refused response="
+                                 << response;
+-            reset();
++            retire();
+             Q_EMIT failed(QStringLiteral("session_refused"));
+             return;
+         }
+         m_sessionHandle = session;
+         if (m_sessionHandle.isEmpty()) {
+-            reset();
++            retire();
+             Q_EMIT failed(QStringLiteral("no_session"));
+             return;
+         }
++        QDBusConnection::sessionBus().connect(kService, session,
++            QStringLiteral("org.freedesktop.portal.Session"), QStringLiteral("Closed"),
++            this, SLOT(onSessionClosed(QVariantMap,QDBusMessage)));
+         negotiateSources(types);
+     };
+     auto subscription = portal::subscribeBeforeCall<PortalStep>(
+@@ -303,17 +348,17 @@ void ScreenCastPortal::requestShare(int types, int preparationBoundMs,
+                                            &QObject::deleteLater);
+                     return;
+                 }
++                if (m_requestPath != subscription.path)
++                    return;
+                 if (reply.isError()) {
+                     portal::dropSubscription(subscription);
+-                    reset();
+-                    Q_EMIT failed(errorCategory(reply.error(),
+-                                                QStringLiteral("no_portal")));
++                    finishError(errorCategory(reply.error(),
++                                                QStringLiteral("session_failed")));
+                     return;
+                 }
+                 portal::reconcileRequestPath(this, subscription,
+                                              reply.value().path(), onAnswer);
+-                if (!m_requestPath.isEmpty())
+-                    m_requestPath = subscription.path;
++                m_requestPath = subscription.path;
+             });
+ }
+ 
+@@ -361,7 +406,7 @@ void ScreenCastPortal::negotiateSources(int types)
+                         << "screen share portal offers none of the requested "
+                            "source types requested=" << types << "available="
+                         << sourceTypes.toUInt();
+-                    cancel();
++                    retire();
+                     Q_EMIT failed(QStringLiteral("no_source_type"));
+                     return;
+                 }
+@@ -393,13 +438,12 @@ void ScreenCastPortal::selectSources(int types, uint cursorMode)
+         m_requestPath.clear();
+         if (response == 1) {
+             cancel();
+-            Q_EMIT cancelled();
+             return;
+         }
+         if (response != 0) {
+             qCWarning(lcPortal) << "screen share source selection refused "
+                                    "response=" << response;
+-            cancel();
++            retire();
+             Q_EMIT failed(QStringLiteral("session_refused"));
+             return;
+         }
+@@ -423,18 +467,18 @@ void ScreenCastPortal::selectSources(int types, uint cursorMode)
+                     portal::dropSubscription(subscription);
+                     return;
+                 }
++                if (m_requestPath != subscription.path)
++                    return;
+                 if (reply.isError()) {
+                     portal::dropSubscription(subscription);
+                     m_requestPath.clear();
+-                    cancel();
+-                    Q_EMIT failed(errorCategory(
++                    finishError(errorCategory(
+                         reply.error(), QStringLiteral("select_failed")));
+                     return;
+                 }
+                 portal::reconcileRequestPath(this, subscription,
+                                              reply.value().path(), onAnswer);
+-                if (!m_requestPath.isEmpty())
+-                    m_requestPath = subscription.path;
++                m_requestPath = subscription.path;
+             });
+ }
+ 
+@@ -460,8 +504,8 @@ void ScreenCastPortal::startSession()
+             return;
+         m_requestPath.clear();
+         if (response != 0) {
+-            cancel();
+-            Q_EMIT cancelled();
++            finishError(response == 1 ? QStringLiteral("cancelled")
++                                      : QStringLiteral("start_failed"));
+             return;
+         }
+         handleStreams(results);
+@@ -484,18 +528,18 @@ void ScreenCastPortal::startSession()
+                     portal::dropSubscription(subscription);
+                     return;
+                 }
++                if (m_requestPath != subscription.path)
++                    return;
+                 if (reply.isError()) {
+                     portal::dropSubscription(subscription);
+                     m_requestPath.clear();
+-                    cancel();
+-                    Q_EMIT failed(errorCategory(
++                    finishError(errorCategory(
+                         reply.error(), QStringLiteral("start_failed")));
+                     return;
+                 }
+                 portal::reconcileRequestPath(this, subscription,
+                                              reply.value().path(), onAnswer);
+-                if (!m_requestPath.isEmpty())
+-                    m_requestPath = subscription.path;
++                m_requestPath = subscription.path;
+             });
+ }
+ 
+@@ -504,11 +548,13 @@ void ScreenCastPortal::handleStreams(const QVariantMap &results)
+     const QVariant streams = results.value(QStringLiteral("streams"));
+     const QDBusArgument argument = streams.value<QDBusArgument>();
+     if (argument.currentType() != QDBusArgument::ArrayType) {
+-        cancel();
++        retire();
+         Q_EMIT failed(QStringLiteral("no_stream"));
+         return;
+     }
+     uint nodeId = 0;
++    std::optional<quint64> serial;
++    bool invalidSerial = false;
+     bool found = false;
+     argument.beginArray();
+     while (!argument.atEnd()) {
+@@ -520,21 +566,28 @@ void ScreenCastPortal::handleStreams(const QVariantMap &results)
+         argument.endStructure();
+         if (!found) {
+             nodeId = id;
++            const auto it = properties.constFind(QStringLiteral("pipewire-serial"));
++            if (it != properties.cend()) {
++                if (it->metaType().id() == QMetaType::ULongLong)
++                    serial = it->toULongLong();
++                else
++                    invalidSerial = true;
++            }
+             found = true;
+         }
+     }
+     argument.endArray();
+ 
+-    if (!found) {
+-        cancel();
++    if (!found || invalidSerial) {
++        retire();
+         Q_EMIT failed(QStringLiteral("no_stream"));
+         return;
+     }
+     qCInfo(lcPortal) << "screen share source selected";
+-    openRemote(nodeId);
++    openRemote(nodeId, serial);
+ }
+ 
+-void ScreenCastPortal::openRemote(unsigned nodeId)
++void ScreenCastPortal::openRemote(unsigned nodeId, std::optional<quint64> serial)
+ {
+     // OpenPipeWireRemote grants actual access: the node id alone names a node
+     // in a remote we were never given, and the pipeline then runs without
+@@ -548,7 +601,7 @@ void ScreenCastPortal::openRemote(unsigned nodeId)
+     auto *watcher = new QDBusPendingCallWatcher(
+         QDBusConnection::sessionBus().asyncCall(open), this);
+     connect(watcher, &QDBusPendingCallWatcher::finished, this,
+-            [this, generation, nodeId](QDBusPendingCallWatcher *w) {
++            [this, generation, nodeId, serial](QDBusPendingCallWatcher *w) {
+                 w->deleteLater();
+                 QDBusPendingReply<QDBusUnixFileDescriptor> reply = *w;
+                 if (generation != m_generation)
+@@ -558,22 +611,22 @@ void ScreenCastPortal::openRemote(unsigned nodeId)
+                         << "OpenPipeWireRemote failed error="
+                         << (reply.isError() ? reply.error().name()
+                                             : QStringLiteral("no_fd"));
+-                    cancel();
+-                    Q_EMIT failed(QStringLiteral("no_pipewire_remote"));
++                    finishError(reply.isError() ? errorCategory(reply.error(), QStringLiteral("no_pipewire_remote"))
++                                                : QStringLiteral("no_pipewire_remote"));
+                     return;
+                 }
+                 // QDBusUnixFileDescriptor closes its fd with the last copy, so
+                 // hand over a dup; the receiver owns it.
+                 const int fd = ::dup(reply.value().fileDescriptor());
+                 if (fd < 0) {
+-                    cancel();
++                    retire();
+                     Q_EMIT failed(QStringLiteral("no_pipewire_remote"));
+                     return;
+                 }
+                 m_busy = false;
+                 m_requestTimeout.stop();
+                 m_answerWatchdog.stop();
+-                Q_EMIT ready(nodeId, fd);
++                Q_EMIT ready(nodeId, fd, serial);
+             });
+ }
+ #endif
+diff --git a/src/calls/ScreenCastPortal.h b/src/calls/ScreenCastPortal.h
+index b3ad7614..fa18e31c 100644
+--- a/src/calls/ScreenCastPortal.h
++++ b/src/calls/ScreenCastPortal.h
+@@ -2,6 +2,10 @@
+ 
+ #include "calls/PortalCapability.h"
+ 
++#include <optional>
++#ifdef HAVE_QT_DBUS
++#include <QDBusMessage>
++#endif
+ #include <QObject>
+ #include <QTimer>
+ #include <QVariantMap>
+@@ -29,6 +33,7 @@ public:
+     void requestShare(int types = Monitor | Window, int preparationBoundMs = 0,
+                       int pickerBoundMs = 0);
+     void cancel();
++    bool wasCancelled() const { return m_cancelled; }
+     bool busy() const { return m_busy; }
+ 
+ Q_SIGNALS:
+@@ -36,23 +41,31 @@ Q_SIGNALS:
+     /// are needed: the node lives in the remote the portal opened for us, and
+     /// `pipewiresrc path=<node>` alone produces no frames. `pipewireFd` is a
+     /// duplicated descriptor owned by the receiver.
+-    void ready(unsigned pipewireNodeId, int pipewireFd);
++    void ready(unsigned pipewireNodeId, int pipewireFd, std::optional<quint64> serial);
++    void sessionClosed();
+     void cancelled();
+     void failed(const QString &category);
+     void capabilityChanged();
+ 
++#ifdef HAVE_QT_DBUS
++private Q_SLOTS:
++    void onSessionClosed(const QVariantMap &, const QDBusMessage &message);
++#endif
++
+ private:
+-    void reset();
++    void retire();
++    void finishError(const QString &category);
+     void armAnswerWatchdog(int ms);
+ #ifdef HAVE_QT_DBUS
+     void negotiateSources(int types);
+     void selectSources(int types, uint cursorMode);
+     void startSession();
+     void handleStreams(const QVariantMap &results);
+-    void openRemote(unsigned nodeId);
++    void openRemote(unsigned nodeId, std::optional<quint64> serial);
+ #endif
+ 
+     bool m_busy = false;
++    bool m_cancelled = false;
+     QTimer m_requestTimeout;
+     QTimer m_answerWatchdog;
+     int m_pickerBoundMs = 0;
+diff --git a/src/calls/SfuCallController.cpp b/src/calls/SfuCallController.cpp
+index 013f6582..921a78cc 100644
+--- a/src/calls/SfuCallController.cpp
++++ b/src/calls/SfuCallController.cpp
+@@ -587,14 +587,14 @@ void SfuCallController::setScreenCastPortal(ScreenCastPortal *portal)
+     if (!m_portal)
+         return;
+     connect(m_portal, &ScreenCastPortal::ready, this,
+-            [this](unsigned nodeId, int pipewireFd) {
++            [this](unsigned nodeId, int pipewireFd, std::optional<quint64> serial) {
+                 qCInfo(lcSfuCall) << "screen share portal ready node="
+                                   << nodeId << "remote_fd="
+                                   << (pipewireFd >= 0);
+                 const bool reconnecting = m_state == State::Reconnecting;
+                 if (!active() || reconnecting
+-                    || !startScreenShare(static_cast<int>(nodeId),
+-                                         pipewireFd)) {
++                    || !startScreenShareWithTarget(static_cast<int>(nodeId), pipewireFd,
++                                                   0, {}, serial)) {
+                     qCWarning(lcSfuCall)
+                         << "screen share refused after portal grant active="
+                         << active() << "reconnecting=" << reconnecting;
+@@ -606,6 +606,10 @@ void SfuCallController::setScreenCastPortal(ScreenCastPortal *portal)
+                         Q_EMIT callFailed(shareWhileReconnectingMessage());
+                 }
+             });
++    connect(m_portal, &ScreenCastPortal::sessionClosed, this, [this] {
++        if (m_screenSharing)
++            onEnginePublishFailed(m_screenCid, QStringLiteral("screen_share_session_closed"));
++    });
+     connect(m_portal, &ScreenCastPortal::cancelled, this, [this] {
+         qCInfo(lcSfuCall) << "screen share declined in the portal";
+         Q_EMIT mediaStateChanged();
+@@ -633,6 +637,10 @@ void SfuCallController::setScreenCastPortal(ScreenCastPortal *portal)
+                     return;
+                 }
+ #endif
++                if (category == QLatin1String("not_allowed")) {
++                    Q_EMIT callFailed(tr("Screen sharing permission was denied. Check your desktop’s privacy settings, then try sharing again."));
++                    return;
++                }
+                 Q_EMIT callFailed(category == QLatin1String("no_portal")
+                                       ? tr("Screen sharing isn't available on "
+                                            "this desktop.")
+@@ -640,6 +648,16 @@ void SfuCallController::setScreenCastPortal(ScreenCastPortal *portal)
+             });
+ }
+ 
++bool SfuCallController::cameraPermissionCancelled() const
++{
++    return m_cameraPortal && m_cameraPortal->wasCancelled();
++}
++
++bool SfuCallController::sharePermissionCancelled() const
++{
++    return m_portal && m_portal->wasCancelled();
++}
++
+ void SfuCallController::setCameraPortal(CameraPortal *portal)
+ {
+     if (m_cameraPortal == portal)
+@@ -1563,6 +1581,8 @@ QString SfuCallController::userFacingError(const QString &category) const
+         || category == QLatin1String("unknown"))
+         return tr("This call's service isn't set up correctly, so Lightning "
+                   "couldn't connect to it.");
++    if (category == QLatin1String("screen_share_session_closed"))
++        return tr("Your desktop ended screen sharing. Choose a source to share again.");
+     if (category == QLatin1String("screen_share_source_closed"))
+         return tr("The window you were sharing was closed.");
+     if (category == QLatin1String("screen_share_source_lost"))
+@@ -1587,7 +1607,7 @@ QString SfuCallController::userFacingError(const QString &category) const
+         return tr("The camera sent no picture. If it's a virtual camera, "
+                   "make sure something is feeding it.");
+     if (category == QLatin1String("camera_not_allowed"))
+-        return tr("Camera access is turned off in your system settings.");
++        return tr("Camera permission was denied. Check your desktop’s camera privacy settings, then turn the camera on again.");
+     if (category.startsWith(QLatin1String("camera_portal_"))) {
+         const QString notice =
+             cameraPortalNotice(category, sandboxenv::isFlatpak());
+@@ -4809,6 +4829,14 @@ void SfuCallController::toggleCamera() { setCameraOn(!m_cameraOn); }
+ bool SfuCallController::startScreenShare(int pipewireNodeId, int pipewireFd,
+                                          quint64 windowHandle,
+                                          const QRect &captureRect)
++{
++    return startScreenShareWithTarget(pipewireNodeId, pipewireFd, windowHandle, captureRect,
++                                      std::nullopt);
++}
++
++bool SfuCallController::startScreenShareWithTarget(int pipewireNodeId, int pipewireFd,
++                                                   quint64 windowHandle, const QRect &captureRect,
++                                                   std::optional<quint64> serial)
+ {
+ #ifdef HAVE_LIGHTNING_WEBRTC
+     if (!active() || m_engine.isNull() || !m_client)
+@@ -4857,7 +4885,7 @@ bool SfuCallController::startScreenShare(int pipewireNodeId, int pipewireFd,
+                     backupCid, shareW, shareH, m_roomEncrypted);
+         });
+     m_engine->publishVideo(cid,true, pipewireNodeId,
+-                           pipewireFd, windowHandle, captureRect);
++                           pipewireFd, windowHandle, captureRect, serial);
+     disconnect(declaration);
+ 
+     publishShareAudioTrack();
+@@ -4867,7 +4895,7 @@ bool SfuCallController::startScreenShare(int pipewireNodeId, int pipewireFd,
+     Q_EMIT mediaStateChanged();
+     return true;
+ #else
+-    Q_UNUSED(pipewireNodeId); Q_UNUSED(pipewireFd);
++    Q_UNUSED(pipewireNodeId); Q_UNUSED(pipewireFd); Q_UNUSED(serial);
+     Q_UNUSED(windowHandle); Q_UNUSED(captureRect);
+     return false;
+ #endif
+diff --git a/src/calls/SfuCallController.h b/src/calls/SfuCallController.h
+index 38e3427e..46c99ddb 100644
+--- a/src/calls/SfuCallController.h
++++ b/src/calls/SfuCallController.h
+@@ -1,6 +1,7 @@
+ #pragma once
+ 
+ #include <functional>
++#include <optional>
+ 
+ #include <QElapsedTimer>
+ #include <QHash>
+@@ -51,6 +52,9 @@ class SfuCallController : public QObject
+     Q_PROPERTY(bool microphoneMuted READ microphoneMuted
+                    NOTIFY mediaStateChanged)
+     Q_PROPERTY(bool deafened READ deafened NOTIFY mediaStateChanged)
++    Q_PROPERTY(bool cameraPermissionPending READ cameraPermissionPending NOTIFY mediaStateChanged)
++    Q_PROPERTY(bool cameraPermissionCancelled READ cameraPermissionCancelled NOTIFY mediaStateChanged)
++    Q_PROPERTY(bool sharePermissionCancelled READ sharePermissionCancelled NOTIFY mediaStateChanged)
+     Q_PROPERTY(bool cameraOn READ cameraOn NOTIFY mediaStateChanged)
+     Q_PROPERTY(bool screenSharing READ screenSharing NOTIFY mediaStateChanged)
+     Q_PROPERTY(bool screenShareStarting READ screenShareStarting
+@@ -157,6 +161,9 @@ public:
+     QString lastError() const { return m_lastError; }
+     bool microphoneMuted() const { return m_micMuted; }
+     bool deafened() const { return m_deafened; }
++    bool cameraPermissionPending() const { return m_cameraAwaitingPortal; }
++    bool cameraPermissionCancelled() const;
++    bool sharePermissionCancelled() const;
+     bool cameraOn() const { return m_cameraOn; }
+     bool screenSharing() const { return m_screenSharing; }
+     bool screenShareStarting() const;
+@@ -617,6 +624,8 @@ private Q_SLOTS:
+     void onHomeserverReachable();
+ 
+ private:
++    bool startScreenShareWithTarget(int nodeId, int pipewireFd, quint64 windowHandle,
++                                    const QRect &captureRect, std::optional<quint64> serial);
+     bool populateLinuxDisplaySources();
+     static QVariantList
+     windowShareRows(const QList<lightning::wincap::WindowInfo> &windows);
+diff --git a/src/calls/SfuMediaEngine.cpp b/src/calls/SfuMediaEngine.cpp
+index b48c018a..7b530f88 100644
+--- a/src/calls/SfuMediaEngine.cpp
++++ b/src/calls/SfuMediaEngine.cpp
+@@ -5564,7 +5564,8 @@ bool SfuMediaEngine::elementAvailable(const char *name)
+ 
+ QString SfuMediaEngine::screenShareSource(int nodeId, int pipewireFd,
+                                          quint64 windowHandle,
+-                                         const QRect &captureRect)
++                                         const QRect &captureRect,
++                                         std::optional<quint64> serial)
+ {
+     // pipewiresrc needs the portal's `fd`: without it `path` resolves against
+     // our own default remote and never produces a buffer.
+@@ -5576,6 +5577,7 @@ QString SfuMediaEngine::screenShareSource(int nodeId, int pipewireFd,
+     // Windows and macOS have no portal; there `nodeId` is a monitor index.
+ #if defined(Q_OS_WIN)
+     Q_UNUSED(pipewireFd);
++    Q_UNUSED(serial);
+     Q_UNUSED(captureRect);
+     if (windowHandle != 0) {
+         return QStringLiteral("%1 hwnd=%2")
+@@ -5586,6 +5588,7 @@ QString SfuMediaEngine::screenShareSource(int nodeId, int pipewireFd,
+         .arg(nodeId < 0 ? 0 : nodeId);
+ #elif defined(Q_OS_MACOS)
+     Q_UNUSED(pipewireFd);
++    Q_UNUSED(serial);
+     Q_UNUSED(captureRect);
+     return QStringLiteral("avfvideosrc capture-screen=true "
+                           "capture-screen-cursor=true device-index=%1")
+@@ -5611,6 +5614,9 @@ QString SfuMediaEngine::screenShareSource(int nodeId, int pipewireFd,
+         // 1.4 and compositors offer at most ~4 buffers, which PipeWire 1.6
+         // rejects with "error alloc buffers: Invalid argument". 1 intersects
+         // any range, whatever plugin version is bundled.
++        if (serial)
++            return QStringLiteral("pipewiresrc fd=%1 target-object=%2 min-buffers=1 do-timestamp=true")
++                .arg(pipewireFd).arg(*serial);
+         return QStringLiteral(
+                    "pipewiresrc fd=%1 path=%2 min-buffers=1 do-timestamp=true")
+             .arg(pipewireFd).arg(nodeId);
+@@ -5672,7 +5678,8 @@ QString SfuMediaEngine::cameraSource(int pipewireFd)
+ void SfuMediaEngine::publishVideo(const QString &cid, bool screenShare,
+                                   int nodeId, int pipewireFd,
+                                   quint64 windowHandle,
+-                                  const QRect &captureRect)
++                                  const QRect &captureRect,
++                                  std::optional<quint64> serial)
+ {
+     struct PortalFd {
+         int fd;
+@@ -5700,7 +5707,7 @@ void SfuMediaEngine::publishVideo(const QString &cid, bool screenShare,
+             return;
+         }
+         source = screenShareSource(nodeId, pipewireFd, windowHandle,
+-                                   captureRect);
++                                   captureRect, serial);
+     } else {
+         source = cameraSource(pipewireFd);
+         qCInfo(lcSfuMedia) << "camera source="
+@@ -5896,6 +5903,12 @@ void SfuMediaEngine::publishVideo(const QString &cid, bool screenShare,
+         g_error_free(error);
+         if (bin)
+             gst_object_unref(bin);
++        if (serial) {
++            QMetaObject::invokeMethod(this, [this, cid] {
++                Q_EMIT publishFailed(cid, QStringLiteral("screen_share_failed"));
++            }, Qt::QueuedConnection);
++            return;
++        }
+         Q_EMIT failed(screenShare ? QStringLiteral("screen_share_failed")
+                                   : QStringLiteral("camera_failed"));
+         return;
+diff --git a/src/calls/SfuMediaEngine.h b/src/calls/SfuMediaEngine.h
+index 582f0bbd..e9c27f38 100644
+--- a/src/calls/SfuMediaEngine.h
++++ b/src/calls/SfuMediaEngine.h
+@@ -278,7 +278,8 @@ public:
+     static QStringList ownAudioClientNames();
+     void publishVideo(const QString &cid, bool screenShare, int nodeId,
+                       int pipewireFd = -1, quint64 windowHandle = 0,
+-                      const QRect &captureRect = {});
++                      const QRect &captureRect = {},
++                      std::optional<quint64> serial = std::nullopt);
+     static int runQueueSelfTest(QString *report);
+ 
+     struct BlockedRunPolicy {
+@@ -357,7 +358,8 @@ public:
+     static QString localScreenStreamId();
+     static QString screenShareSource(int nodeId, int pipewireFd,
+                                      quint64 windowHandle = 0,
+-                                     const QRect &captureRect = {});
++                                     const QRect &captureRect = {},
++                                     std::optional<quint64> serial = std::nullopt);
+     /// The element the Linux no-portal fallback captures with, named once so
+     /// the probe, the description and the tests agree.
+     ///
+diff --git a/src/calls/StreamInfoStats.h b/src/calls/StreamInfoStats.h
+index cc55733e..8e3c9b6b 100644
+--- a/src/calls/StreamInfoStats.h
++++ b/src/calls/StreamInfoStats.h
+@@ -55,6 +55,8 @@ struct StreamInfoStats {
+             {QStringLiteral("decrypted"), QVariant::fromValue(decrypted.load())},
+             {QStringLiteral("dropped"), QVariant::fromValue(dropped.load())}
+         };
++        if (outgoing && screen)
++            row.insert(QStringLiteral("encodedFrameObserved"), f > 0);
+         if (tooSoon)
+             return row;
+         lastMs = now;
+diff --git a/src/main.cpp b/src/main.cpp
+index 313a11ff..9496f069 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -1766,29 +1766,21 @@ static int printCallMediaStatus()
+ #endif
+ 
+     {
+-        // Not running the GL chain here: it aborts under Wine and segfaults in
+-        // a GPU-less snap; a share still probes it when it starts.
+-        const bool gpu = SfuMediaEngine::shareGpuScalingRequested()
+-            && SfuMediaEngine::missingGpuShareElement().isEmpty();
+-        const bool hardwareAsked = SfuMediaEngine::shareHardwareEncodeRequested();
+-        const auto hardware = hardwareAsked
+-            ? SfuMediaEngine::firstWorkingShareEncoder(
+-                  SfuMediaEngine::shareEncoderCandidates(), gpu)
+-            : std::nullopt;
+-        out << "screen share encoder: "
+-            << (hardware ? QLatin1String(hardware->candidate.factory)
+-                         : QLatin1String("vp8enc"))
+-            << " "
+-            << (hardware && gpu && hardware->zeroCopy ? "gpu-zero-copy"
+-                : gpu                                 ? "gpu-readback"
+-                                                      : "cpu")
+-            << (hardware ? " (LIGHTNING_SHARE_ENCODER=hardware)"
+-                : hardwareAsked
+-                    ? " (LIGHTNING_SHARE_ENCODER=hardware, but no hardware "
+-                      "encoder works here)"
+-                    : " (default; LIGHTNING_SHARE_ENCODER=hardware tries "
+-                      "hardware H.264)")
+-            << (gpu ? "; GPU scaling is confirmed when a share starts" : "")
++        const bool gpuRequested = SfuMediaEngine::shareGpuScalingRequested();
++        const QString missing = SfuMediaEngine::missingGpuShareElement();
++        const bool hardware = SfuMediaEngine::shareHardwareEncodeRequested();
++        QStringList installed;
++        for (const auto &candidate : SfuMediaEngine::shareEncoderCandidates()) {
++            if (SfuMediaEngine::elementAvailable(candidate.factory))
++                installed << QString::fromLatin1(candidate.factory);
++        }
++        out << "screen share encoder: requested=" << (hardware ? "hardware" : "vp8enc")
++            << " hardware-factories="
++            << (installed.isEmpty() ? QStringLiteral("none") : installed.join(QLatin1Char(',')))
++            << " gpu-requested=" << (gpuRequested ? "yes" : "no")
++            << " gpu-factories=" << (missing.isEmpty() ? "present" : "incomplete")
++            << " runtime=deferred\n"
++            << QObject::tr("Start a screen share and open Stream info to see the active encoder and whether it has produced frames.")
+             << "\n";
+     }
+ 
+diff --git a/src/media/VoiceRecorder.cpp b/src/media/VoiceRecorder.cpp
+index 5f992288..a51127df 100644
+--- a/src/media/VoiceRecorder.cpp
++++ b/src/media/VoiceRecorder.cpp
+@@ -89,7 +89,7 @@ bool VoiceRecorder::available()
+     return resolveProfile() != nullptr;
+ }
+ 
+-bool VoiceRecorder::ensureCaptureChain()
++bool VoiceRecorder::ensureRecorder()
+ {
+     if (!m_dir) {
+         m_dir = std::make_unique<QTemporaryDir>(
+@@ -104,16 +104,10 @@ bool VoiceRecorder::ensureCaptureChain()
+     }
+     if (!m_session) {
+         m_session = std::make_unique<QMediaCaptureSession>();
+-        m_audioInput = std::make_unique<QAudioInput>();
+         m_recorder = std::make_unique<QMediaRecorder>();
+-        m_session->setAudioInput(m_audioInput.get());
+         m_session->setRecorder(m_recorder.get());
+         connect(m_recorder.get(), &QMediaRecorder::durationChanged,
+                 this, &VoiceRecorder::durationChanged);
+-        // A microphone unplugged mid-recording produces silence for the rest
+-        // of the clip and nothing reports it (the recorder raises no error).
+-        // Watch the device list for the one this recording started on.
+-        watchInputDevices();
+         connect(m_recorder.get(), &QMediaRecorder::recorderStateChanged,
+                 this, [this](QMediaRecorder::RecorderState state) {
+                     if (state != QMediaRecorder::StoppedState)
+@@ -126,6 +120,10 @@ bool VoiceRecorder::ensureCaptureChain()
+                         Q_EMIT stateChanged();
+                         return;
+                     }
++                    if (m_endedByDisconnect) {
++                        finishWithWaveform({});
++                        return;
++                    }
+                     const QString actual =
+                         m_recorder->actualLocation().toLocalFile();
+                     if (!actual.isEmpty())
+@@ -179,24 +177,19 @@ QMediaDevices *VoiceRecorder::watchInputDevicesForTest()
+     return m_devices.get();
+ }
+ 
+-bool VoiceRecorder::inputStillPresent(const QByteArray &id, bool wasDefault,
+-                                      const QList<InputInfo> &inputs)
++void VoiceRecorder::inputDevicesChanged(const QList<InputInfo> &inputs)
+ {
+-    for (const InputInfo &input : inputs) {
+-        if (input.id == id)
+-            return true;
+-        if (wasDefault && input.isDefault)
+-            return true;
++    if (!recording() || m_recordingDeviceId.isEmpty())
++        return;
++    for (const auto &input : inputs) {
++        if (input.id == m_recordingDeviceId)
++            return;
+     }
+-    return false;
++    inputLost();
+ }
+ 
+-void VoiceRecorder::inputDevicesChanged(const QList<InputInfo> &inputs)
++void VoiceRecorder::inputLost()
+ {
+-    if (m_state != State::Recording || m_recordingDeviceId.isEmpty())
+-        return;
+-    if (inputStillPresent(m_recordingDeviceId, m_recordingWasDefault, inputs))
+-        return;
+     qCWarning(lcVoice, "the capture device disappeared during recording");
+     m_endedByDisconnect = true;
+     stop();
+@@ -263,14 +256,26 @@ bool VoiceRecorder::startNow()
+     if (m_startNowForTest)
+         return m_startNowForTest();
+     const EncoderProfile *profile = resolveProfile();
+-    if (QMediaDevices::defaultAudioInput().isNull() || !profile) {
++    const QAudioDevice device = QMediaDevices::defaultAudioInput();
++    if (device.isNull() || !profile) {
+         Q_EMIT failed(tr("No microphone or audio encoder is available."));
+         return false;
+     }
+-    if (!ensureCaptureChain()) {
++    if (!ensureRecorder()) {
+         Q_EMIT failed(tr("Recording storage could not be prepared."));
+         return false;
+     }
++    if (!m_audioInput) {
++        m_audioInput = std::make_unique<QAudioInput>(device);
++        m_session->setAudioInput(m_audioInput.get());
++        connect(m_audioInput.get(), &QAudioInput::deviceChanged, this, [this] {
++            if (recording() && m_audioInput->device().id() != m_recordingDeviceId)
++                inputLost();
++        });
++        watchInputDevices();
++    } else {
++        m_audioInput->setDevice(device);
++    }
+     discardActiveFile();
+ 
+     QMediaFormat format(profile->container);
+@@ -288,10 +293,10 @@ bool VoiceRecorder::startNow()
+     m_recorder->setOutputLocation(QUrl::fromLocalFile(m_activeFile));
+     m_cancelRequested = false;
+     m_finalDurationMs = 0;
+-    return beginRecording();
++    return beginRecording(device.id());
+ }
+ 
+-bool VoiceRecorder::beginRecording()
++bool VoiceRecorder::beginRecording(const QByteArray &deviceId)
+ {
+     ++m_recordStarts;
+     m_recorder->record();
+@@ -302,9 +307,7 @@ bool VoiceRecorder::beginRecording()
+     m_state = State::Recording;
+     m_paused = false;
+     m_endedByDisconnect = false;
+-    m_recordingDeviceId = m_audioInput ? m_audioInput->device().id()
+-                                       : QByteArray();
+-    m_recordingWasDefault = m_audioInput && m_audioInput->device().isDefault();
++    m_recordingDeviceId = deviceId;
+     m_maxDurationGuard.setInterval(static_cast<int>(kMaxDurationMs));
+     m_maxDurationGuard.start();
+     Q_EMIT stateChanged();
+diff --git a/src/media/VoiceRecorder.h b/src/media/VoiceRecorder.h
+index 284410bc..2d222d42 100644
+--- a/src/media/VoiceRecorder.h
++++ b/src/media/VoiceRecorder.h
+@@ -63,8 +63,6 @@ public:
+         QByteArray id;
+         bool isDefault = false;
+     };
+-    static bool inputStillPresent(const QByteArray &id, bool wasDefault,
+-                                  const QList<InputInfo> &inputs);
+     void inputDevicesChanged(const QList<InputInfo> &inputs);
+     QMediaDevices *watchInputDevicesForTest();
+     void setRecordingForTest(const QByteArray &deviceId,
+@@ -86,12 +84,14 @@ Q_SIGNALS:
+     void failed(const QString &message);
+ 
+ private:
++    friend class VoiceFixC43Test;
+     void watchInputDevices();
++    void inputLost();
+     enum class State { Idle, Recording, Processing };
+ 
+-    bool ensureCaptureChain();
++    bool ensureRecorder();
+     bool startNow();
+-    bool beginRecording();
++    bool beginRecording(const QByteArray &deviceId);
+     void dropPendingStart();
+     void beginWaveformExtraction();
+     void finishLater(quint64 tag, const QList<int> &waveform);
+@@ -109,7 +109,6 @@ private:
+     std::unique_ptr<QAudioInput> m_audioInput;
+     std::unique_ptr<QMediaDevices> m_devices;
+     QByteArray m_recordingDeviceId;
+-    bool m_recordingWasDefault = false;
+     bool m_endedByDisconnect = false;
+     std::unique_ptr<QMediaRecorder> m_recorder;
+     std::unique_ptr<QAudioDecoder> m_decoder;
+diff --git a/tests/CameraPortalTest.cpp b/tests/CameraPortalTest.cpp
+index bb222b1d..ade72f1c 100644
+--- a/tests/CameraPortalTest.cpp
++++ b/tests/CameraPortalTest.cpp
+@@ -87,6 +87,14 @@ public:
+         m_bus.send(response);
+     }
+ 
++    void closeSession(const QString &path)
++    {
++        QDBusMessage closed = QDBusMessage::createTargetedSignal(
++            caller, path, QString::fromLatin1(kSession), QStringLiteral("Closed"));
++        closed << QVariantMap();
++        m_bus.send(closed);
++    }
++
+     void releaseHeldProperties(const QVariantMap &properties)
+     {
+         for (const QDBusMessage &held : std::as_const(heldProperties))
+@@ -137,9 +145,11 @@ public:
+             }
+             return false;
+         }
+-        if (message.interface() == QLatin1String(kScreenCast))
++        if (message.interface() == QLatin1String(kScreenCast)
++            && message.member() != QLatin1String("OpenPipeWireRemote"))
+             return handleScreenCast(message);
+-        if (message.interface() != QLatin1String(kCamera))
++        if (message.interface() != QLatin1String(kCamera)
++            && message.interface() != QLatin1String(kScreenCast))
+             return false;
+ 
+         if (message.member() == QLatin1String("AccessCamera")) {
+@@ -282,6 +292,9 @@ private Q_SLOTS:
+     void aCameraRequestThatTimesOutIsClosed();
+     void aScreenShareOnlyAsksForWhatThePortalAdvertises_data();
+     void aScreenShareOnlyAsksForWhatThePortalAdvertises();
++    void aPortalStreamKeepsItsIdentityUntilItsSessionCloses_data();
++    void aPortalStreamKeepsItsIdentityUntilItsSessionCloses();
++    void aCancelledScreenRequestCannotChangeItsRetry();
+     void theCursorModeIsReadAgainForEveryShare();
+     void aSessionCreatedAfterCancellingIsClosed();
+     void cancellingAnOpenPickerClosesItsRequestAndSession();
+@@ -412,11 +425,12 @@ void CameraPortalTest::aRefusalIsNeverMistakenForAMissingPortal()
+         return CameraPortal::failureCategory(QString::fromLatin1(name), true);
+     };
+     for (const char *refusal : { "org.freedesktop.portal.Error.NotAllowed",
+-                                 "org.freedesktop.portal.Error.Cancelled",
+                                  "org.freedesktop.DBus.Error.AccessDenied" }) {
+         QCOMPARE(access(refusal), QStringLiteral("not_allowed"));
+         QCOMPARE(open(refusal), QStringLiteral("not_allowed"));
+     }
++    QCOMPARE(access("org.freedesktop.portal.Error.Cancelled"), QStringLiteral("cancelled"));
++    QCOMPARE(open("org.freedesktop.portal.Error.Cancelled"), QStringLiteral("cancelled"));
+     for (const char *absent :
+          { "org.freedesktop.DBus.Error.ServiceUnknown",
+            "org.freedesktop.DBus.Error.UnknownMethod",
+@@ -512,6 +526,8 @@ void CameraPortalTest::cancellingAPendingCameraRequestClosesItOnce()
+     const int opensBefore = m_fake->openCalls;
+     auto *portal = new CameraPortal;
+     QSignalSpy ready(portal, &CameraPortal::ready);
++    QSignalSpy cancelled(portal, &CameraPortal::cancelled);
++    QSignalSpy failed(portal, &CameraPortal::failed);
+ 
+     portal->requestAccess();
+     QTRY_COMPARE(m_fake->accessCalls, accessBefore + 1);
+@@ -540,6 +556,8 @@ void CameraPortalTest::cancellingAPendingCameraRequestClosesItOnce()
+     }
+     QCOMPARE(m_fake->openCalls, opensBefore);
+     QCOMPARE(ready.count(), 0);
++    QCOMPARE(cancelled.count(), byDestruction ? 0 : 1);
++    QCOMPARE(failed.count(), 0);
+     delete portal;
+     m_fake->answer = FakeCameraPortal::Answer::InstantGrant;
+ }
+@@ -617,6 +635,75 @@ void CameraPortalTest::aScreenShareOnlyAsksForWhatThePortalAdvertises()
+     QCOMPARE(failed.count(), 0);
+ }
+ 
++void CameraPortalTest::aPortalStreamKeepsItsIdentityUntilItsSessionCloses_data()
++{
++    QTest::addColumn<QVariant>("serial");
++    QTest::newRow("legacy") << QVariant();
++    QTest::newRow("hotplug") << QVariant::fromValue(0xffffeeee12345678ULL);
++    QTest::newRow("resume") << QVariant::fromValue(0xffffeeee12345679ULL);
++}
++
++void CameraPortalTest::aPortalStreamKeepsItsIdentityUntilItsSessionCloses()
++{
++    QFETCH(QVariant, serial);
++    using Stream = QPair<uint, QVariantMap>;
++    qDBusRegisterMetaType<Stream>();
++    qDBusRegisterMetaType<QList<Stream>>();
++    m_fake->cast = FakeCameraPortal::Cast::HoldStartResponse;
++    m_fake->castProperties = {{QStringLiteral("version"), serial.isValid() ? 6u : 5u}};
++    const int starts = m_fake->startCalls;
++    ScreenCastPortal portal;
++    QSignalSpy ready(&portal, &ScreenCastPortal::ready);
++    QSignalSpy closed(&portal, &ScreenCastPortal::sessionClosed);
++    portal.requestShare();
++    QTRY_COMPARE(m_fake->startCalls, starts + 1);
++    QVariantMap properties;
++    if (serial.isValid())
++        properties.insert(QStringLiteral("pipewire-serial"), serial);
++    const QList<Stream> streams{{42u, properties}};
++    m_fake->respond(m_fake->lastRequestPath, 0,
++                    {{QStringLiteral("streams"), QVariant::fromValue(streams)}});
++    QTRY_COMPARE(ready.size(), 1);
++    const auto grant = ready.front();
++    ::close(grant.at(1).toInt());
++    QCOMPARE(grant.at(0).toUInt(), 42u);
++    const auto selected = grant.at(2).value<std::optional<quint64>>();
++    QCOMPARE(selected.has_value(), serial.isValid());
++    if (serial.isValid())
++        QCOMPARE(selected.value(), serial.toULongLong());
++    m_fake->closeSession(m_fake->lastSessionPath);
++    QTRY_COMPARE(closed.size(), 1);
++    QVERIFY(!portal.busy());
++    QCOMPARE(ready.size(), 1);
++    QCOMPARE(m_fake->startCalls, starts + 1);
++}
++
++void CameraPortalTest::aCancelledScreenRequestCannotChangeItsRetry()
++{
++    m_fake->cast = FakeCameraPortal::Cast::HoldStartResponse;
++    const int starts = m_fake->startCalls;
++    ScreenCastPortal portal;
++    QSignalSpy cancelled(&portal, &ScreenCastPortal::cancelled);
++    QSignalSpy failed(&portal, &ScreenCastPortal::failed);
++    QSignalSpy ready(&portal, &ScreenCastPortal::ready);
++    portal.requestShare();
++    QTRY_COMPARE(m_fake->startCalls, starts + 1);
++    const QString old = m_fake->lastRequestPath;
++    portal.cancel();
++    QCOMPARE(cancelled.count(), 1);
++    QVERIFY(portal.wasCancelled());
++    portal.requestShare();
++    QTRY_COMPARE(m_fake->startCalls, starts + 2);
++    QVERIFY(!portal.wasCancelled());
++    m_fake->respond(old, 0);
++    m_fake->respond(m_fake->lastRequestPath, 2);
++    QTRY_COMPARE(failed.count(), 1);
++    QCOMPARE(failed.first().first().toString(), QStringLiteral("start_failed"));
++    QCOMPARE(cancelled.count(), 1);
++    QCOMPARE(ready.count(), 0);
++    QVERIFY(!portal.busy());
++}
++
+ void CameraPortalTest::theCursorModeIsReadAgainForEveryShare()
+ {
+     m_fake->cast = FakeCameraPortal::Cast::HoldSelectResponse;
+diff --git a/tests/DiagnosticOutputTest.cpp b/tests/DiagnosticOutputTest.cpp
+index 0ac5a07a..3d0d1ec7 100644
+--- a/tests/DiagnosticOutputTest.cpp
++++ b/tests/DiagnosticOutputTest.cpp
+@@ -150,7 +150,7 @@ private Q_SLOTS:
+                      "got:\n%1").arg(log)));
+     }
+ 
+-    void callMediaStatusNamesTheShareEncoder()
++    void callMediaStatusSeparatesInstalledFactoriesFromRuntimeEvidence()
+     {
+         const Run r = run({ QStringLiteral("--call-media-status") });
+         QVERIFY(r.started);
+@@ -158,7 +158,7 @@ private Q_SLOTS:
+             || r.out.contains(QStringLiteral("gstreamer: FAILED")))
+             QSKIP("no call media engine in this build");
+         QVERIFY2(QRegularExpression(QStringLiteral(
+-                     "(?m)^screen share encoder: \\S+ (cpu|gpu-readback|gpu-zero-copy) "))
++                     "(?m)^screen share encoder: requested=(hardware|vp8enc) hardware-factories=\\S+ gpu-requested=(yes|no) gpu-factories=(present|incomplete) runtime=deferred$"))
+                      .match(r.out).hasMatch(),
+                  qUtf8Printable(r.out));
+     }
+diff --git a/tests/SfuMediaEngineTest.cpp b/tests/SfuMediaEngineTest.cpp
+index 1d0baecc..62e78a82 100644
+--- a/tests/SfuMediaEngineTest.cpp
++++ b/tests/SfuMediaEngineTest.cpp
+@@ -2702,6 +2702,20 @@ true,-1);
+                                "refusal conditions");
+     }
+ 
++    void aReusedPortalNodeCannotReplaceTheSelectedSerial()
++    {
++#ifdef Q_OS_LINUX
++        for (quint64 serial : {0xffffeeee12345678ULL, 0xffffeeee12345679ULL}) {
++            const QString source = SfuMediaEngine::screenShareSource(42, 7, 0, {}, serial);
++            QVERIFY(source.contains(QStringLiteral("fd=7 ")));
++            QVERIFY(source.contains(QStringLiteral("target-object=%1 ").arg(serial)));
++            QVERIFY(!source.contains(QStringLiteral("path=")));
++        }
++#else
++        QSKIP("PipeWire portal capture is Linux-only");
++#endif
++    }
++
+     void aScreenShareCaptureUsesThePortalsOwnPipeWireRemote()
+     {
+         const QString withFd = SfuMediaEngine::screenShareSource(42, 7);
+diff --git a/tests/StreamInfoStatsTest.cpp b/tests/StreamInfoStatsTest.cpp
+index 56108f82..04ea9073 100644
+--- a/tests/StreamInfoStatsTest.cpp
++++ b/tests/StreamInfoStatsTest.cpp
+@@ -44,9 +44,13 @@ private slots:
+         stats.width = 1920;
+         stats.height = 1080;
+         stats.bytes = 4000;
++        QVERIFY(stats.sample(0).contains("encodedFrameObserved"));
++        QVERIFY(!stats.sample(0).value("encodedFrameObserved").toBool());
++        stats.lastMs = -1;
+         stats.frames = 1;
+         auto row = stats.sample(100);
+         QCOMPARE(row.value("kbps").toDouble(), -1.0);
++        QVERIFY(row.value("encodedFrameObserved").toBool());
+         QCOMPARE(row.value("width").toInt(), 1920);
+         QCOMPARE(row.value("height").toInt(), 1080);
+         QCOMPARE(row.value("encoder").toString(), QStringLiteral("vp8enc"));
+@@ -66,7 +70,7 @@ private slots:
+         row = stats.sample(1101);
+         QCOMPARE(row.value("keyframes").toULongLong(), 4ULL);
+         QCOMPARE(row.value("keyframeRequests").toULongLong(), 3ULL);
+-        QCOMPARE(row.size(), 15);
++        QCOMPARE(row.size(), 16);
+         stats.lastMs = -1;
+         QCOMPARE(stats.sample(5000).value("fps").toDouble(), -1.0);
+     }
+diff --git a/tests/VoiceFixC43Test.cpp b/tests/VoiceFixC43Test.cpp
+index 27f7db1d..565d9c0c 100644
+--- a/tests/VoiceFixC43Test.cpp
++++ b/tests/VoiceFixC43Test.cpp
+@@ -1,6 +1,15 @@
+ 
+ #include "media/VoiceRecorder.h"
+ 
++#ifdef LIGHTNING_VOICE_BUFFER_PROBE
++#include <QAudioBufferInput>
++#include <QMediaCaptureSession>
++#include <QMediaFormat>
++#include <QMediaRecorder>
++#include <QSysInfo>
++#include <gst/gst.h>
++#endif
++
+ #include <QFile>
+ #include <QMediaDevices>
+ #include <QTemporaryDir>
+@@ -65,16 +74,117 @@ private Q_SLOTS:
+         QVERIFY(anon.recording());
+     }
+ 
+-    void aRecordingOnTheDefaultFollowsItUnderANewId()
++    void aReplacementDefaultInterruptsTheCurrentTake()
++    {
++        VoiceRecorder rec;
++        rec.setRecordingForTest("old-default");
++        QSignalSpy failed(&rec, &VoiceRecorder::failed);
++        QSignalSpy ready(&rec, &VoiceRecorder::ready);
++        rec.inputDevicesChanged({{"usb", false}, {"new-default", true}});
++        QVERIFY(rec.endedByDisconnect());
++        rec.finishForTest();
++        QCOMPARE(failed.size(), 1);
++        QVERIFY(ready.isEmpty());
++    }
++
++    void syntheticSamplesAcrossInputChanges_data()
+     {
+-        using Info = VoiceRecorder::InputInfo;
+-        QVERIFY(VoiceRecorder::inputStillPresent(
+-            "old-default", true, {Info{"usb", false}, Info{"new-default", true}}));
+-        QVERIFY(!VoiceRecorder::inputStillPresent(
+-            "usb", false, {Info{"new-default", true}}));
+-        QVERIFY(!VoiceRecorder::inputStillPresent("old-default", true, {}));
+-        QVERIFY(!VoiceRecorder::inputStillPresent(
+-            "old-default", true, {Info{"usb", false}}));
++        QTest::addColumn<bool>("lost");
++        QTest::newRow("default-changes-original-remains") << false;
++        QTest::newRow("original-input-removed") << true;
++    }
++
++    void syntheticSamplesAcrossInputChanges()
++    {
++#ifdef LIGHTNING_VOICE_BUFFER_PROBE
++        QFETCH(bool, lost);
++        qInfo() << "voice continuity platform" << QSysInfo::kernelType()
++                << "Qt" << qVersion() << "backend" << qgetenv("QT_MEDIA_BACKEND");
++        if (qgetenv("QT_MEDIA_BACKEND") != "ffmpeg")
++            QSKIP("Select QT_MEDIA_BACKEND=ffmpeg for native buffer-input recording");
++        if (!gst_init_check(nullptr, nullptr, nullptr))
++            QSKIP("GStreamer unavailable");
++        GError *error = nullptr;
++        GstElement *pipeline = gst_parse_launch(
++            "audiotestsrc wave=sine freq=440 samplesperbuffer=1600 num-buffers=1 "
++            "! audio/x-raw,format=S16LE,rate=16000,channels=1 ! fakesink name=probe", &error);
++        if (error || !pipeline) {
++            g_clear_error(&error);
++            if (pipeline)
++                gst_object_unref(pipeline);
++            QSKIP("Synthetic tone source unavailable");
++        }
++        GstBus *bus = gst_element_get_bus(pipeline);
++        gst_element_set_state(pipeline, GST_STATE_PLAYING);
++        GstMessage *end = gst_bus_timed_pop_filtered(bus, 3 * GST_SECOND,
++            GstMessageType(GST_MESSAGE_EOS | GST_MESSAGE_ERROR));
++        GstElement *sink = gst_bin_get_by_name(GST_BIN(pipeline), "probe");
++        GstSample *sample = nullptr;
++        g_object_get(sink, "last-sample", &sample, nullptr);
++        QByteArray pcm(3200, '\0');
++        const bool tone = end && GST_MESSAGE_TYPE(end) == GST_MESSAGE_EOS && sample
++            && gst_buffer_extract(gst_sample_get_buffer(sample), 0, pcm.data(), pcm.size()) == 3200;
++        if (end)
++            gst_message_unref(end);
++        if (sample)
++            gst_sample_unref(sample);
++        gst_element_set_state(pipeline, GST_STATE_NULL);
++        gst_object_unref(sink);
++        gst_object_unref(bus);
++        gst_object_unref(pipeline);
++        QVERIFY(tone);
++
++        QMediaFormat codec(QMediaFormat::Ogg);
++        codec.setAudioCodec(QMediaFormat::AudioCodec::Opus);
++        if (!codec.isSupported(QMediaFormat::Encode))
++            QSKIP("Ogg/Opus recording unavailable on this backend");
++        QAudioFormat format;
++        format.setSampleRate(16000);
++        format.setChannelCount(1);
++        format.setSampleFormat(QAudioFormat::Int16);
++        QAudioBufferInput input(format);
++        QTemporaryDir dir;
++        QVERIFY(dir.isValid());
++        const QString file = dir.filePath(QStringLiteral("probe.ogg"));
++        VoiceRecorder rec;
++        QVERIFY(rec.ensureRecorder());
++        rec.m_session->setAudioBufferInput(&input);
++        rec.m_recorder->setMediaFormat(codec);
++        rec.m_recorder->setOutputLocation(QUrl::fromLocalFile(file));
++        rec.m_activeFile = file;
++        QSignalSpy ready(&rec, &VoiceRecorder::ready);
++        QSignalSpy failed(&rec, &VoiceRecorder::failed);
++        QVERIFY(rec.beginRecording("synthetic-a"));
++        const auto send = [&](const QByteArray &data, int index) {
++            const QAudioBuffer buffer(data, format, qint64(index) * 100000);
++            return QTest::qWaitFor([&] { return input.sendAudioBuffer(buffer); }, 2000);
++        };
++        for (int i = 0; i < 10; ++i)
++            QVERIFY(send(pcm, i));
++        if (lost) {
++            rec.inputDevicesChanged({{"synthetic-b", true}});
++            QTRY_COMPARE(failed.size(), 1);
++            QVERIFY(rec.endedByDisconnect());
++            QVERIFY(ready.isEmpty());
++            QVERIFY(!QFile::exists(file));
++        } else {
++            rec.inputDevicesChanged({{"synthetic-b", true}, {"synthetic-a", false}});
++            QVERIFY(rec.recording());
++            const QByteArray silence(pcm.size(), '\0');
++            for (int i = 10; i < 30; ++i)
++                QVERIFY(send(i < 20 ? silence : pcm, i));
++            rec.stop();
++            QTRY_COMPARE_WITH_TIMEOUT(ready.size(), 1, 15000);
++            QVERIFY(failed.isEmpty());
++            const QList<int> peaks = ready.front().at(3).value<QList<int>>();
++            QVERIFY(peaks.size() >= 28);
++            QVERIFY(peaks.at(5) > 50);
++            QVERIFY(peaks.at(15) < 10);
++            QVERIFY(peaks.at(25) > 50);
++        }
++#else
++        QSKIP("Requires Qt 6.8 buffer input and the synthetic GStreamer source");
++#endif
+     }
+ 
+     void theDeviceWatchIsConnected()

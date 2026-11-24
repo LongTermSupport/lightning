@@ -3829,3 +3829,22 @@ wall-clock number from one machine is never a threshold.
   idle 1 wakeup/s with tracing off (3 runs). `LIGHTNING_GUI_STALL_TRACE=<ms>`
   is the harness; it adds about 60 wakeups/s itself, so measure idle power
   with it unset.
+
+### Screen share diagnostics
+
+`--call-media-status` lists requested settings and installed encoder/GL
+factories. Runtime selection is deferred until sharing. Stream info reports
+the encoder and scaling path in use and whether an encoded frame was observed.
+
+A portal screen share targets the granted remote and its 64-bit
+`pipewire-serial` when supplied. A source that cannot take `target-object`
+fails closed. Legacy grants use their node ID. A closed portal session ends
+the share and requires a fresh selection.
+
+A pending desktop camera or screen request can be cancelled from its call
+control. A retry starts a fresh request. Only an explicit access-denied error
+directs the user to privacy settings.
+
+A voice message uses the default input selected at the start of that take.
+Losing that input interrupts and discards the take. Starting another take
+resolves the current default. Quiet samples alone never indicate a disconnect.

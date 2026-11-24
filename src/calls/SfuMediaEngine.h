@@ -62,13 +62,7 @@ public:
     static QString cameraLimitsCaps(bool portal, int maxHeight = kCameraHeight);
     static QString cameraEncoderStage(int maxHeight);
 
-    struct DeviceChoice {
-        QString id;
-        QString description;
-        /// Camera only: a camera was chosen and is not usable now. Opens no
-        /// camera rather than the default (CaptureDeviceSelection.h).
-        bool preferredMissing = false;
-    };
+    using DeviceChoice = lightning::calls::DeviceChoice;
     void setPreferredDevices(const DeviceChoice &camera,
                              const DeviceChoice &microphone,
                              const DeviceChoice &speaker);
@@ -278,7 +272,8 @@ public:
     static QStringList ownAudioClientNames();
     void publishVideo(const QString &cid, bool screenShare, int nodeId,
                       int pipewireFd = -1, quint64 windowHandle = 0,
-                      const QRect &captureRect = {});
+                      const QRect &captureRect = {},
+                      std::optional<quint64> serial = std::nullopt);
     static int runQueueSelfTest(QString *report);
 
     struct BlockedRunPolicy {
@@ -357,7 +352,8 @@ public:
     static QString localScreenStreamId();
     static QString screenShareSource(int nodeId, int pipewireFd,
                                      quint64 windowHandle = 0,
-                                     const QRect &captureRect = {});
+                                     const QRect &captureRect = {},
+                                     std::optional<quint64> serial = std::nullopt);
     /// The element the Linux no-portal fallback captures with, named once so
     /// the probe, the description and the tests agree.
     ///
@@ -914,6 +910,7 @@ private:
     std::atomic<quint64> m_generation{0};
     std::atomic<bool> m_outputMuted{false};
     bool m_microphoneMuted = false;
+    bool m_waitingForPinnedMic = false;
     bool m_shareAudioMuted = false;
     qint64 m_micSilentSinceMs = -1;
     qint64 m_micQuietSinceMs = -1;
@@ -1105,6 +1102,7 @@ private:
         unsigned long blockProbe = 0;
         quint64 serial = 0;
         bool currentFailed = false;
+        bool inputRefused = false;
     };
     PendingMicSwap m_micSwap;
     std::shared_ptr<std::atomic<bool>> m_micStartPending;

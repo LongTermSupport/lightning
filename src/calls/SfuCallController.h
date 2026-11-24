@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <optional>
 
 #include <QElapsedTimer>
 #include <QHash>
@@ -51,6 +52,9 @@ class SfuCallController : public QObject
     Q_PROPERTY(bool microphoneMuted READ microphoneMuted
                    NOTIFY mediaStateChanged)
     Q_PROPERTY(bool deafened READ deafened NOTIFY mediaStateChanged)
+    Q_PROPERTY(bool cameraPermissionPending READ cameraPermissionPending NOTIFY mediaStateChanged)
+    Q_PROPERTY(bool cameraPermissionCancelled READ cameraPermissionCancelled NOTIFY mediaStateChanged)
+    Q_PROPERTY(bool sharePermissionCancelled READ sharePermissionCancelled NOTIFY mediaStateChanged)
     Q_PROPERTY(bool cameraOn READ cameraOn NOTIFY mediaStateChanged)
     Q_PROPERTY(bool screenSharing READ screenSharing NOTIFY mediaStateChanged)
     Q_PROPERTY(bool screenShareStarting READ screenShareStarting
@@ -157,6 +161,9 @@ public:
     QString lastError() const { return m_lastError; }
     bool microphoneMuted() const { return m_micMuted; }
     bool deafened() const { return m_deafened; }
+    bool cameraPermissionPending() const { return m_cameraAwaitingPortal; }
+    bool cameraPermissionCancelled() const;
+    bool sharePermissionCancelled() const;
     bool cameraOn() const { return m_cameraOn; }
     bool screenSharing() const { return m_screenSharing; }
     bool screenShareStarting() const;
@@ -617,6 +624,8 @@ private Q_SLOTS:
     void onHomeserverReachable();
 
 private:
+    bool startScreenShareWithTarget(int nodeId, int pipewireFd, quint64 windowHandle,
+                                    const QRect &captureRect, std::optional<quint64> serial);
     bool populateLinuxDisplaySources();
     static QVariantList
     windowShareRows(const QList<lightning::wincap::WindowInfo> &windows);

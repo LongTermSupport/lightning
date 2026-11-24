@@ -587,14 +587,14 @@ void SfuCallController::setScreenCastPortal(ScreenCastPortal *portal)
     if (!m_portal)
         return;
     connect(m_portal, &ScreenCastPortal::ready, this,
-            [this](unsigned nodeId, int pipewireFd) {
+            [this](unsigned nodeId, int pipewireFd, std::optional<quint64> serial) {
                 qCInfo(lcSfuCall) << "screen share portal ready node="
                                   << nodeId << "remote_fd="
                                   << (pipewireFd >= 0);
                 const bool reconnecting = m_state == State::Reconnecting;
                 if (!active() || reconnecting
-                    || !startScreenShare(static_cast<int>(nodeId),
-                                         pipewireFd)) {
+                    || !startScreenShareWithTarget(static_cast<int>(nodeId), pipewireFd,
+                                                   0, {}, serial)) {
                     qCWarning(lcSfuCall)
                         << "screen share refused after portal grant active="
                         << active() << "reconnecting=" << reconnecting;
@@ -606,6 +606,10 @@ void SfuCallController::setScreenCastPortal(ScreenCastPortal *portal)
                         Q_EMIT callFailed(shareWhileReconnectingMessage());
                 }
             });
+    connect(m_portal, &ScreenCastPortal::sessionClosed, this, [this] {
+        if (m_screenSharing)
+            onEnginePublishFailed(m_screenCid, QStringLiteral("screen_share_session_closed"));
+    });
     connect(m_portal, &ScreenCastPortal::cancelled, this, [this] {
         qCInfo(lcSfuCall) << "screen share declined in the portal";
         Q_EMIT mediaStateChanged();
@@ -633,11 +637,25 @@ void SfuCallController::setScreenCastPortal(ScreenCastPortal *portal)
                     return;
                 }
 #endif
+                if (category == QLatin1String("not_allowed")) {
+                    Q_EMIT callFailed(tr("Screen sharing permission was denied. Check your desktop’s privacy settings, then try sharing again."));
+                    return;
+                }
                 Q_EMIT callFailed(category == QLatin1String("no_portal")
                                       ? tr("Screen sharing isn't available on "
                                            "this desktop.")
                                       : tr("Screen sharing couldn't start."));
             });
+}
+
+bool SfuCallController::cameraPermissionCancelled() const
+{
+    return m_cameraPortal && m_cameraPortal->wasCancelled();
+}
+
+bool SfuCallController::sharePermissionCancelled() const
+{
+    return m_portal && m_portal->wasCancelled();
 }
 
 void SfuCallController::setCameraPortal(CameraPortal *portal)
@@ -1563,6 +1581,8 @@ QString SfuCallController::userFacingError(const QString &category) const
         || category == QLatin1String("unknown"))
         return tr("This call's service isn't set up correctly, so Lightning "
                   "couldn't connect to it.");
+    if (category == QLatin1String("screen_share_session_closed"))
+        return tr("Your desktop ended screen sharing. Choose a source to share again.");
     if (category == QLatin1String("screen_share_source_closed"))
         return tr("The window you were sharing was closed.");
     if (category == QLatin1String("screen_share_source_lost"))
@@ -1587,7 +1607,7 @@ QString SfuCallController::userFacingError(const QString &category) const
         return tr("The camera sent no picture. If it's a virtual camera, "
                   "make sure something is feeding it.");
     if (category == QLatin1String("camera_not_allowed"))
-        return tr("Camera access is turned off in your system settings.");
+        return tr("Camera permission was denied. Check your desktop’s camera privacy settings, then turn the camera on again.");
     if (category.startsWith(QLatin1String("camera_portal_"))) {
         const QString notice =
             cameraPortalNotice(category, sandboxenv::isFlatpak());
@@ -4810,6 +4830,14 @@ bool SfuCallController::startScreenShare(int pipewireNodeId, int pipewireFd,
                                          quint64 windowHandle,
                                          const QRect &captureRect)
 {
+    return startScreenShareWithTarget(pipewireNodeId, pipewireFd, windowHandle, captureRect,
+                                      std::nullopt);
+}
+
+bool SfuCallController::startScreenShareWithTarget(int pipewireNodeId, int pipewireFd,
+                                                   quint64 windowHandle, const QRect &captureRect,
+                                                   std::optional<quint64> serial)
+{
 #ifdef HAVE_LIGHTNING_WEBRTC
     if (!active() || m_engine.isNull() || !m_client)
         return false;
@@ -4857,7 +4885,7 @@ bool SfuCallController::startScreenShare(int pipewireNodeId, int pipewireFd,
                     backupCid, shareW, shareH, m_roomEncrypted);
         });
     m_engine->publishVideo(cid,true, pipewireNodeId,
-                           pipewireFd, windowHandle, captureRect);
+                           pipewireFd, windowHandle, captureRect, serial);
     disconnect(declaration);
 
     publishShareAudioTrack();
@@ -4867,7 +4895,7 @@ bool SfuCallController::startScreenShare(int pipewireNodeId, int pipewireFd,
     Q_EMIT mediaStateChanged();
     return true;
 #else
-    Q_UNUSED(pipewireNodeId); Q_UNUSED(pipewireFd);
+    Q_UNUSED(pipewireNodeId); Q_UNUSED(pipewireFd); Q_UNUSED(serial);
     Q_UNUSED(windowHandle); Q_UNUSED(captureRect);
     return false;
 #endif

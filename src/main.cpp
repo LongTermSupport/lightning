@@ -1766,29 +1766,21 @@ static int printCallMediaStatus()
 #endif
 
     {
-        // Not running the GL chain here: it aborts under Wine and segfaults in
-        // a GPU-less snap; a share still probes it when it starts.
-        const bool gpu = SfuMediaEngine::shareGpuScalingRequested()
-            && SfuMediaEngine::missingGpuShareElement().isEmpty();
-        const bool hardwareAsked = SfuMediaEngine::shareHardwareEncodeRequested();
-        const auto hardware = hardwareAsked
-            ? SfuMediaEngine::firstWorkingShareEncoder(
-                  SfuMediaEngine::shareEncoderCandidates(), gpu)
-            : std::nullopt;
-        out << "screen share encoder: "
-            << (hardware ? QLatin1String(hardware->candidate.factory)
-                         : QLatin1String("vp8enc"))
-            << " "
-            << (hardware && gpu && hardware->zeroCopy ? "gpu-zero-copy"
-                : gpu                                 ? "gpu-readback"
-                                                      : "cpu")
-            << (hardware ? " (LIGHTNING_SHARE_ENCODER=hardware)"
-                : hardwareAsked
-                    ? " (LIGHTNING_SHARE_ENCODER=hardware, but no hardware "
-                      "encoder works here)"
-                    : " (default; LIGHTNING_SHARE_ENCODER=hardware tries "
-                      "hardware H.264)")
-            << (gpu ? "; GPU scaling is confirmed when a share starts" : "")
+        const bool gpuRequested = SfuMediaEngine::shareGpuScalingRequested();
+        const QString missing = SfuMediaEngine::missingGpuShareElement();
+        const bool hardware = SfuMediaEngine::shareHardwareEncodeRequested();
+        QStringList installed;
+        for (const auto &candidate : SfuMediaEngine::shareEncoderCandidates()) {
+            if (SfuMediaEngine::elementAvailable(candidate.factory))
+                installed << QString::fromLatin1(candidate.factory);
+        }
+        out << "screen share encoder: requested=" << (hardware ? "hardware" : "vp8enc")
+            << " hardware-factories="
+            << (installed.isEmpty() ? QStringLiteral("none") : installed.join(QLatin1Char(',')))
+            << " gpu-requested=" << (gpuRequested ? "yes" : "no")
+            << " gpu-factories=" << (missing.isEmpty() ? "present" : "incomplete")
+            << " runtime=deferred\n"
+            << QObject::tr("Start a screen share and open Stream info to see the active encoder and whether it has produced frames.")
             << "\n";
     }
 

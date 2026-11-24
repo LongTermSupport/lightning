@@ -2702,6 +2702,20 @@ true,-1);
                                "refusal conditions");
     }
 
+    void aReusedPortalNodeCannotReplaceTheSelectedSerial()
+    {
+#ifdef Q_OS_LINUX
+        for (quint64 serial : {0xffffeeee12345678ULL, 0xffffeeee12345679ULL}) {
+            const QString source = SfuMediaEngine::screenShareSource(42, 7, 0, {}, serial);
+            QVERIFY(source.contains(QStringLiteral("fd=7 ")));
+            QVERIFY(source.contains(QStringLiteral("target-object=%1 ").arg(serial)));
+            QVERIFY(!source.contains(QStringLiteral("path=")));
+        }
+#else
+        QSKIP("PipeWire portal capture is Linux-only");
+#endif
+    }
+
     void aScreenShareCaptureUsesThePortalsOwnPipeWireRemote()
     {
         const QString withFd = SfuMediaEngine::screenShareSource(42, 7);

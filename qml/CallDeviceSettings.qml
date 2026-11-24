@@ -57,7 +57,8 @@ ColumnLayout {
             Layout.fillWidth: true
             restoreAfterModelReset: false
             enabled: picker.entries.length > 0
-            displayText: picker.missing ? qsTr("Chosen camera not connected")
+            displayText: picker.missing ? (picker.kind === "camera" ? qsTr("Chosen camera not connected")
+                                                                  : qsTr("Chosen microphone not connected"))
                                         : currentText
             model: {
                 var names = [qsTr("System default")];
@@ -106,6 +107,7 @@ ColumnLayout {
     DevicePicker {
         label: qsTr("Microphone")
         kind: "microphone"
+        missing: app.callDevices.microphonePinned && app.callDevices.preferredMicrophoneMissing
         entries: {
             var _ = root.refreshTick;
             return root.activated ? app.callDevices.microphones : [];
@@ -117,6 +119,14 @@ ColumnLayout {
         emptyText: qsTr("No microphone was found. You can still join a call " + "and listen.")
     }
 
+    SettingsCheckBox {
+        visible: root.activated && (app.callDevices.activeMicrophoneId !== ""
+                                    || app.callDevices.preferredMicrophoneMissing)
+        text: qsTr("Use only this microphone for this session")
+        checked: app.callDevices.microphonePinned
+        onToggled: app.callDevices.microphonePinned = checked
+    }
+
     Loader {
         active: root.activated && app.callDevices.preferredMicrophoneMissing
         visible: active
@@ -125,7 +135,9 @@ ColumnLayout {
             wrapMode: Text.WordWrap
             color: AppTheme.warning
             font.pixelSize: AppTheme.textMeta
-            text: qsTr("Your chosen microphone isn't connected. Calls use the " + "system default until it's back.")
+            text: app.callDevices.microphonePinned
+                  ? qsTr("Waiting for your chosen microphone. Choose another input to speak.")
+                  : qsTr("Your chosen microphone isn't connected. Calls use the " + "system default until it's back.")
         }
     }
 
@@ -140,7 +152,9 @@ ColumnLayout {
             wrapMode: Text.WordWrap
             color: AppTheme.warning
             font.pixelSize: AppTheme.textMeta
-            text: qsTr("Your chosen microphone couldn't be opened, so the " + "system default was used. Choose it again or reconnect it.")
+            text: app.callDevices.microphonePinned
+                  ? qsTr("Your chosen microphone could not be opened. Choose another input to speak.")
+                  : qsTr("Your chosen microphone couldn't be opened, so the " + "system default was used. Choose it again or reconnect it.")
         }
     }
 

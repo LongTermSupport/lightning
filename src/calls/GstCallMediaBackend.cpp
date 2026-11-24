@@ -823,7 +823,12 @@ bool GstCallMediaBackend::startSession(const QString &callId, bool offerer,
         gst_object_unref(clock);
     }
     GstElement *front = buildMicrophoneFront(plan);
-    if (!front && !plan.microphoneFront.isEmpty()) {
+    if (!front && plan.microphoneBinding.requireIdentity) {
+        AudioDevicePlan waiting = plan;
+        waiting.microphoneBinding.refused = true;
+        front = buildMicrophoneFront(waiting);
+        Q_EMIT microphoneUnavailable(plan.microphoneId);
+    } else if (!front && !plan.microphoneFront.isEmpty()) {
         qCWarning(lcCallMedia)
             << "the chosen microphone's capture could not be built; using "
                "the system default";
@@ -1687,7 +1692,11 @@ QString GstCallMediaBackend::receiveSinkDescription(
 GstElement *GstCallMediaBackend::buildMicrophoneFront(
     const AudioDevicePlan &plan) const
 {
-    QString front = plan.microphoneFront;
+    const bool pinned = plan.microphoneBinding.requireIdentity;
+    const bool waiting = pinned && (plan.microphoneBinding.isEmpty() || plan.microphoneBinding.refused);
+    QString front = waiting ? QStringLiteral("audiotestsrc is-live=true wave=silence name=micsrc "
+                                             "! audioconvert ! audioresample")
+                            : plan.microphoneFront;
     if (front.isEmpty()) {
         front = m_testTone
             ? (m_testFront.isEmpty()
@@ -1726,7 +1735,10 @@ GstElement *GstCallMediaBackend::buildMicrophoneFront(
     const QByteArray name =
         QByteArray("micfront") + QByteArray::number(serial.fetch_add(1));
     gst_element_set_name(bin, name.constData());
-    applyBinding(bin, "micsrc", plan.microphoneBinding);
+    if (!waiting && !applyBinding(bin, "micsrc", plan.microphoneBinding) && pinned) {
+        gst_object_unref(bin);
+        return nullptr;
+    }
     return bin;
 }
 
@@ -1745,7 +1757,10 @@ void GstCallMediaBackend::audioDevicesChanged()
         return a.property == b.property && a.value == b.value;
     };
     const bool micChanged = plan.microphoneFront != current.microphoneFront
-        || !sameBinding(plan.microphoneBinding, current.microphoneBinding);
+        || !sameBinding(plan.microphoneBinding, current.microphoneBinding)
+        || plan.microphoneBinding.requireIdentity != current.microphoneBinding.requireIdentity
+        || plan.microphoneBinding.refused != current.microphoneBinding.refused
+        || plan.microphoneId != current.microphoneId;
     const bool speakerChanged = plan.speakerSink != current.speakerSink
         || !sameBinding(plan.speakerBinding, current.speakerBinding);
     if (!micChanged && !speakerChanged)
@@ -1755,6 +1770,7 @@ void GstCallMediaBackend::audioDevicesChanged()
         if (micChanged) {
             m_plan.microphoneFront = plan.microphoneFront;
             m_plan.microphoneBinding = plan.microphoneBinding;
+            m_plan.microphoneId = plan.microphoneId;
         }
         if (speakerChanged) {
             m_plan.speakerSink = plan.speakerSink;
@@ -1780,7 +1796,13 @@ bool GstCallMediaBackend::swapMicrophoneLocked(const AudioDevicePlan &plan)
     if (!pipeline || !valve)
         return false;
     GstElement *next = buildMicrophoneFront(plan);
-    if (!next) {
+    if (!next && plan.microphoneBinding.requireIdentity && !plan.microphoneBinding.refused) {
+        AudioDevicePlan waiting = plan;
+        waiting.microphoneBinding.refused = true;
+        Q_EMIT microphoneUnavailable(plan.microphoneId);
+        return swapMicrophoneLocked(waiting);
+    }
+    if (!next && !plan.microphoneBinding.requireIdentity) {
         qCWarning(lcCallMedia) << "microphone switch: the new capture could "
                                   "not be built; keeping the current one";
         return false;
@@ -1806,9 +1828,9 @@ bool GstCallMediaBackend::swapMicrophoneLocked(const AudioDevicePlan &plan)
         m_session.micFront = front;
         return true;
     };
-    const bool chosen = !plan.microphoneFront.isEmpty();
-    bool ok = install(next);
-    if (!ok && chosen) {
+    const bool chosen = !plan.microphoneFront.isEmpty() && !plan.microphoneBinding.refused;
+    bool ok = next && install(next);
+    if (!ok && chosen && !plan.microphoneBinding.requireIdentity) {
         qCWarning(lcCallMedia) << "microphone switch: the chosen device would "
                                   "not link; using the system default";
         if (GstElement *fallback = buildMicrophoneFront(AudioDevicePlan{}))
@@ -1897,15 +1919,18 @@ void GstCallMediaBackend::noteMicrophoneFrontStarted(quint64 serial,
     if (ok)
         return;
     if (chosenDevice) {
-        qCWarning(lcCallMedia) << "the chosen microphone would not start; "
-                                  "using the system default";
         AudioDevicePlan fallback;
         {
             QMutexLocker lock(&m_planMutex);
             fallback = m_plan;
         }
-        fallback.microphoneFront.clear();
-        fallback.microphoneBinding = {};
+        if (fallback.microphoneBinding.requireIdentity) {
+            fallback.microphoneBinding.refused = true;
+            Q_EMIT microphoneUnavailable(fallback.microphoneId);
+        } else {
+            fallback.microphoneFront.clear();
+            fallback.microphoneBinding = {};
+        }
         swapMicrophoneLocked(fallback);
         return;
     }
