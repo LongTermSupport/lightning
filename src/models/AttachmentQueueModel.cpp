@@ -1,6 +1,7 @@
 #include "models/AttachmentQueueModel.h"
 
 #include "app/GuiStallTracer.h"
+#include "app/LogExport.h"
 #include "media/StagedImageStore.h"
 #include "media/AnimatedImageSniff.h"
 #include "media/ImageMetadataSize.h"
@@ -27,6 +28,8 @@
 #include <QPointer>
 #include <QRegularExpression>
 #include <QSize>
+#include <QSet>
+#include "media/ImageMetadata.h"
 #include <QSysInfo>
 #include <QTemporaryDir>
 #include <QThreadPool>
@@ -51,6 +54,7 @@ AttachmentQueueModel::AttachmentQueueModel(QObject *parent)
 
 AttachmentQueueModel::~AttachmentQueueModel()
 {
+    cancelFolderReview();
     const auto &release = lightning::svgraster::hooks().releaseScratchDir;
     if (m_convertedDir && release)
         release(m_convertedDir->path());
@@ -58,6 +62,7 @@ AttachmentQueueModel::~AttachmentQueueModel()
 
 void AttachmentQueueModel::setClient(MatrixClient *client)
 {
+    cancelFolderReview();
     m_client = client;
 }
 
@@ -523,6 +528,11 @@ AttachmentQueueModel::SendImage AttachmentQueueModel::prepareImageForSend(
     path = entry.localPath;
     data = entry.data;
     sub.clear();
+    if (!entry.reviewedMode.isEmpty() && entry.reviewedMode == mode) {
+        data = entry.reviewedData;
+        path = entry.reviewedPath;
+        return SendImage::Ready;
+    }
     if (entry.isVideo || entry.isSvg
         || !ImageSendPrep::needsStrip(mode, entry.mime)) {
         dropStrip(entry);
@@ -1112,6 +1122,11 @@ bool AttachmentQueueModel::commitImageEdit(int row)
         || entry.state == QLatin1String("dispatching") || entry.editRequest != 0
         || entry.posterPending)
         return false;
+    entry.inspection = 0;
+    entry.reviewedMode.clear();
+    entry.reviewedData.clear();
+    entry.reviewedFolder.reset();
+    entry.reviewedPath.clear();
     dropStrip(entry);
     if (entry.converted)
         removeOwnedRendition(entry.localPath);
@@ -1167,6 +1182,7 @@ void AttachmentQueueModel::removeAt(int row)
 
 void AttachmentQueueModel::clearAll()
 {
+    cancelFolderReview();
     if (m_entries.isEmpty())
         return;
     for (const Entry &entry : m_entries)
@@ -1179,6 +1195,7 @@ void AttachmentQueueModel::clearAll()
 
 QList<AttachmentQueueModel::Entry> AttachmentQueueModel::takeAll()
 {
+    cancelFolderReview();
     if (m_entries.isEmpty())
         return {};
     beginResetModel();
@@ -1320,4 +1337,161 @@ QHash<int, QByteArray> AttachmentQueueModel::roleNames() const
         { SpoilerRole,   "spoiler" },
         { SpoilerAllowedRole, "spoilerAllowed" },
     };
+}
+
+void AttachmentQueueModel::cancelFolderReview()
+{
+    if (m_folderCancel)
+        m_folderCancel->store(true);
+    m_buildingArchive = false;
+    m_folderCancel.reset();
+    m_folderReview = {};
+}
+
+void AttachmentQueueModel::reviewFolder(const QUrl &folder)
+{
+    cancelFolderReview();
+    auto flag = std::make_shared<std::atomic_bool>(false);
+    m_folderCancel = flag;
+    QPointer<AttachmentQueueModel> self(this);
+    QThreadPool::globalInstance()->start([self, flag, path = folder.toLocalFile()] {
+        auto review = folderarchive::scan(path, *flag);
+        QMetaObject::invokeMethod(QCoreApplication::instance(), [self, flag, review = std::move(review)]() mutable {
+            if (!self || flag->load())
+                return;
+            QVariantList files;
+            for (const auto &file : std::as_const(review.files))
+                files.append(QVariantMap{{QStringLiteral("name"), file.name},
+                                         {QStringLiteral("bytes"), file.bytes.size()}});
+            self->m_folderReview = std::move(review);
+            Q_EMIT self->folderReviewed(files, self->m_folderReview.omissions, self->m_folderReview.error);
+        }, Qt::QueuedConnection);
+    });
+}
+
+void AttachmentQueueModel::createFolderArchive(const QStringList &selected)
+{
+    if (!m_folderCancel || m_buildingArchive || !m_folderReview.error.isEmpty() || selected.isEmpty())
+        return;
+    const auto flag = m_folderCancel;
+    const QSet<QString> wanted(selected.begin(), selected.end());
+    QList<lightning::logexport::ZipEntry> entries;
+    for (const auto &file : std::as_const(m_folderReview.files)) {
+        if (wanted.contains(file.name))
+            entries.append({file.name, file.bytes});
+    }
+    if (entries.size() != wanted.size())
+        return;
+    const QString name = matrix::presentable_name::withoutFormatCharacters(m_folderReview.fileName);
+    m_buildingArchive = true;
+    QPointer<AttachmentQueueModel> self(this);
+    QThreadPool::globalInstance()->start([self, flag, entries, name] {
+        if (flag->load())
+            return;
+        QByteArray zip = lightning::logexport::writeZip(entries, {});
+        QMetaObject::invokeMethod(QCoreApplication::instance(), [self, flag, zip, name] {
+            if (!self || flag->load())
+                return;
+            self->m_buildingArchive = false;
+            if (self->exceedsUploadLimit(zip.size())) {
+                Q_EMIT self->archiveCreated(self->uploadLimitMessage());
+                return;
+            }
+            self->cancelFolderReview();
+            Entry entry;
+            entry.fileName = name;
+            entry.mime = QStringLiteral("application/zip");
+            entry.data = zip;
+            entry.sizeBytes = zip.size();
+            const int row = self->rowCount();
+            self->beginInsertRows({}, row, row);
+            self->m_entries.append(entry);
+            self->endInsertRows();
+            Q_EMIT self->countChanged();
+            Q_EMIT self->archiveCreated(QString());
+        }, Qt::QueuedConnection);
+    });
+}
+
+quint64 AttachmentQueueModel::inspectPhoto(int row, const QString &mode)
+{
+    if (row < 0 || row >= rowCount())
+        return 0;
+    Entry &entry = m_entries[row];
+    if (!entry.isImage || entry.isSvg || entry.posterPending || entry.sendRequested
+        || entry.state == QLatin1String("dispatching"))
+        return 0;
+    const quint64 request = m_nextPosterTag++;
+    entry.inspection = request;
+    const QString root = entry.localPath.isEmpty() ? QString() : convertedDirectory();
+    QPointer<AttachmentQueueModel> self(this);
+    QThreadPool::globalInstance()->start([self, request, mode, root, path = entry.localPath,
+                                          source = entry.data] {
+        constexpr qint64 limit = 16 * 1024 * 1024;
+        QVariantMap summary;
+        QByteArray bytes = source;
+        QByteArray prepared;
+        QString copyPath;
+        std::shared_ptr<QTemporaryDir> folder;
+        if (!path.isEmpty()) {
+            QFile file(path);
+            if (file.open(QIODevice::ReadOnly) && file.size() <= limit) {
+                bytes = file.read(limit + 1);
+                if (file.error() != QFileDevice::NoError)
+                    bytes.clear();
+            }
+        }
+        if (bytes.isEmpty() || bytes.size() > limit) {
+            summary.insert(QStringLiteral("error"), tr("Inspection requires a readable photo of 16 MiB or less."));
+        } else {
+            const auto result = imagemeta::strip(bytes, imagemeta::modeFromString(mode));
+            if (result.status == imagemeta::Status::Failed) {
+                summary.insert(QStringLiteral("error"), tr("This photo cannot be sent with the selected metadata policy."));
+            } else {
+                prepared = result.bytes;
+                const auto before = imagemeta::inspectExif(bytes);
+                const auto after = imagemeta::inspectExif(prepared);
+                const auto state = [&](bool previous, bool remaining) {
+                    if (!before.known || !after.known)
+                        return tr("Unknown");
+                    if (remaining)
+                        return tr("Retained");
+                    return previous ? tr("Removed") : tr("Unknown");
+                };
+                summary.insert(QStringLiteral("location"), state(before.location, after.location));
+                summary.insert(QStringLiteral("timestamp"), state(before.timestamp, after.timestamp));
+                summary.insert(QStringLiteral("device"), state(before.device, after.device));
+                summary.insert(QStringLiteral("orientation"), state(before.orientation, after.orientation));
+                if (!path.isEmpty()) {
+                    if (!root.isEmpty())
+                        folder = std::make_shared<QTemporaryDir>(root + QStringLiteral("/review-XXXXXX"));
+                    if (folder && folder->isValid())
+                        copyPath = folder->filePath(QFileInfo(path).fileName());
+                    QFile copy(copyPath);
+                    if (copyPath.isEmpty() || !copy.open(QIODevice::WriteOnly)
+                        || copy.write(prepared) != prepared.size() || !copy.flush())
+                        summary.insert(QStringLiteral("error"), tr("The reviewed copy could not be prepared."));
+                }
+            }
+        }
+        QMetaObject::invokeMethod(QCoreApplication::instance(), [self, request, mode, summary, folder,
+                                  copyPath, data = path.isEmpty() ? prepared : QByteArray()] {
+            if (!self)
+                return;
+            for (auto &entry : self->m_entries) {
+                if (entry.inspection != request || entry.sendRequested
+                    || entry.state == QLatin1String("dispatching"))
+                    continue;
+                if (!summary.contains(QStringLiteral("error"))) {
+                    entry.reviewedMode = mode;
+                    entry.reviewedData = data;
+                    entry.reviewedFolder = folder;
+                    entry.reviewedPath = copyPath;
+                }
+                Q_EMIT self->photoInspected(request, summary);
+                return;
+            }
+        }, Qt::QueuedConnection);
+    });
+    return request;
 }

@@ -2,6 +2,7 @@
 #include "app/GuiStallTracer.h"
 #include "matrix/MatrixClient.h"
 #include "media/MediaBridge.h"
+#include "media/PlayableFileWriter.h"
 #include "media/AnimatedImageSniff.h"
 #include "media/MediaImageProvider.h"
 
@@ -1804,6 +1805,90 @@ private Q_SLOTS:
         QTest::qWait(50);
         QCOMPARE(ready.count(), 1);
         QVERIFY(!bridge.playableSource(QStringLiteral("$dual")).isEmpty());
+    }
+
+    void lastPosterOwnerRetiresDemandWithoutCancellingPlay()
+    {
+        FakeClient client;
+        MediaBridge bridge;
+        bridge.setClient(&client);
+        const QString key = QStringLiteral("$shared");
+        QObject first;
+        auto second = std::make_unique<QObject>();
+        bridge.ownedVideoPoster(&first, key, 12000);
+        bridge.ownedVideoPoster(second.get(), key, 12000);
+        bridge.playableSource(key);
+        QCOMPARE(client.fetches.size(), 1);
+        bridge.releaseVideoPoster(&first);
+        QCOMPARE(bridge.healthSnapshot().value(QStringLiteral("wantedPosters")).toInt(), 1);
+        second.reset();
+        QCOMPARE(bridge.healthSnapshot().value(QStringLiteral("wantedPosters")).toInt(), 0);
+        QByteArray mp4(12000, 'p');
+        mp4.replace(4, 4, "ftyp");
+        QSignalSpy ready(&bridge, &MediaBridge::playableMediaReady);
+        client.succeed(client.fetches.first().opId, mp4, QStringLiteral("video/mp4"));
+        QVERIFY(waitForPlayableCount(ready, 1));
+        QVERIFY(!bridge.playableSource(key).isEmpty());
+    }
+
+    void cancelledWritesReleasePayloadsBeforeTheWorkerDrains()
+    {
+        QTemporaryDir dir;
+        QVERIFY(dir.isValid());
+        PlayableFileWriter writer;
+        QSignalSpy finished(&writer, &PlayableFileWriter::writeFinished);
+        QList<qint64> playLatency;
+        QList<qint64> cancelLatency;
+        qint64 peak = 0;
+        qint64 retainedAfterCancel = 0;
+        constexpr int unit = 256 * 1024;
+        const QString path = dir.filePath(QStringLiteral("play"));
+        for (int run = 0; run < 20; ++run) {
+            QSemaphore gate;
+            bool released = false;
+            const auto unblock = qScopeGuard([&] {
+                if (!released) gate.release();
+                QMetaObject::invokeMethod(writer.workerForTest(), [] {}, Qt::BlockingQueuedConnection);
+            });
+            QMetaObject::invokeMethod(writer.workerForTest(), [&] { gate.acquire(); }, Qt::QueuedConnection);
+            QList<QByteArray> probes;
+            QElapsedTimer cancellation;
+            for (int i = 0; i < 12; ++i) {
+                probes.append(QByteArray(unit, char(i)));
+                const QString key = QString::number(i);
+                QVERIFY(writer.write(key, path, probes.last(), 1));
+                qint64 held = 0;
+                for (const auto &probe : std::as_const(probes))
+                    held += probe.isDetached() ? 0 : probe.size();
+                peak = qMax(peak, held);
+                if (i == 11)
+                    cancellation.start();
+                writer.cancel(key);
+            }
+            qint64 held = 0;
+            for (const auto &probe : std::as_const(probes))
+                held += probe.isDetached() ? 0 : probe.size();
+            retainedAfterCancel = qMax(retainedAfterCancel, held);
+            const qint64 immediate = cancellation.nsecsElapsed();
+            QElapsedTimer play;
+            play.start();
+            QVERIFY(writer.write(QStringLiteral("play"), path, QByteArray(unit, 'p'), 1));
+            gate.release();
+            released = true;
+            if (held)
+                QMetaObject::invokeMethod(writer.workerForTest(), [] {}, Qt::BlockingQueuedConnection);
+            cancelLatency.append(held ? cancellation.nsecsElapsed() : immediate);
+            QVERIFY(finished.count() > run || finished.wait(5000));
+            QVERIFY(finished.last().last().toBool());
+            playLatency.append(play.nsecsElapsed());
+        }
+        std::sort(playLatency.begin(), playLatency.end());
+        std::sort(cancelLatency.begin(), cancelLatency.end());
+        qInfo() << "writer samples=20 play ns p50/p95" << playLatency[9] << playLatency[18]
+                << "peak queued payload bytes" << peak
+                << "cancel release ns p50/p95 (drain upper bound)" << cancelLatency[9] << cancelLatency[18];
+        QCOMPARE(retainedAfterCancel, 0);
+        QCOMPARE(peak, qint64(unit));
     }
 
     void playableWritesStayInsideTheirPendingBudget()

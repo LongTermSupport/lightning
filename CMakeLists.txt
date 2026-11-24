@@ -1172,6 +1172,7 @@ set(APP_QML_FILES
     # Themed replacements for the unstyled Qt Basic controls.
     qml/AppDialog.qml
     qml/ImageCropDialog.qml
+    qml/AttachmentReviewDialogs.qml
     qml/AttachmentImageEditDialog.qml
     qml/AppProgressBar.qml
     qml/AppBusyIndicator.qml
@@ -8415,3 +8416,20 @@ if(BUILD_TESTING)
         endif()
     endforeach()
 endif()
+
+if(TARGET attachment-queue-test)
+    add_library(lightning-attachment-zip-test-support STATIC
+        src/app/LogExport.cpp src/app/AsyncLogSink.cpp
+        src/app/SessionDiagnostics.cpp src/crypto/E2eeDiagnostics.cpp)
+    target_include_directories(lightning-attachment-zip-test-support PRIVATE src)
+    target_link_libraries(lightning-attachment-zip-test-support PRIVATE Qt6::Core Qt6::Gui)
+endif()
+foreach(_target lightning-matrix lightning-app-testlib attachment-queue-test
+        attachment-order-test draft-store-test thread-controller-test context-controller-test)
+    if(TARGET ${_target})
+        target_sources(${_target} PRIVATE src/media/FolderArchive.cpp)
+        if(TARGET lightning-attachment-zip-test-support AND _target MATCHES "-test$")
+            target_link_libraries(${_target} PRIVATE lightning-attachment-zip-test-support)
+        endif()
+    endif()
+endforeach()

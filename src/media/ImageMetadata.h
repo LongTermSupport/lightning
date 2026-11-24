@@ -50,6 +50,15 @@ struct Result {
 
 Result strip(const QByteArray &input, Mode mode);
 
+struct ExifFields {
+    bool known = false;
+    bool location = false;
+    bool timestamp = false;
+    bool device = false;
+    bool orientation = false;
+};
+
+ExifFields inspectExif(const QByteArray &input);
 bool containsLocation(const QByteArray &input);
 int exifOrientation(const QByteArray &input);
 
