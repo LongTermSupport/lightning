@@ -1,4 +1,5 @@
-// GENERATED from the schema spec; edit src/settings/SettingsPortable.cpp's rationale, not this by hand.
+// The portable-settings allowlist, maintained by hand: one settingsport::Field per
+// exportable key (name, kind, lo, hi, flags, group, maxLen, allowed, default).
     { QStringLiteral("theme"), Kind::Int, 0, 12, 3, QStringLiteral("Appearance"), 0, {  }, QVariant(int(0)) },
     { QStringLiteral("layoutPreset"), Kind::Int, 0, 1, 3, QStringLiteral("Appearance"), 0, {  }, QVariant(int(0)) },
     { QStringLiteral("messageLayout"), Kind::Int, 0, 3, 3, QStringLiteral("Appearance"), 0, {  }, QVariant(int(0)) },

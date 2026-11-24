@@ -355,7 +355,7 @@ async fn read_switch_server(client: &Client) -> Result<bool, String> {
     Ok(read_server(client, SETTINGS_TYPE).await?.map(|raw| switch_on(&raw)).unwrap_or(true))
 }
 
-/// A read's entries FIRST, its switch AFTER (review N1). "Remove server
+/// A read's entries FIRST, its switch AFTER. "Remove server
 /// copies" turns the switch off BEFORE it clears anything, so a "cleared" a
 /// read sees is always followed by an "off" the same read sees too, and C++
 /// (which applies the switch before the entries) makes the marks dormant
@@ -656,7 +656,7 @@ fn only_if_empty(requested: &Value) -> bool {
 /// write needs it on, `switch_now` (the server's switch, read immediately
 /// before) must say so, or nothing is sent and the write stops with
 /// `sync_disabled`. Another device may have turned sync off during an upload
-/// of up to two minutes (review R2).
+/// of up to two minutes.
 pub(crate) async fn put_if_switch_on<S, P>(
     needs_switch: bool,
     switch_now: S,

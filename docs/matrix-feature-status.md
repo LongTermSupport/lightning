@@ -1,8 +1,8 @@
 # Matrix feature status (v0.5.10 table — see note)
 
 > **Staleness note (2026-08-15):** this table dates from v0.5.10 and has
-> not tracked the releases since. CLAUDE.md §7 is the current feature
-> inventory; treat rows below as historical. Corrected here because they
+> not tracked the releases since. `docs/feature-contracts.md` is the current
+> feature inventory; treat rows below as historical. Corrected here because they
 > were actively wrong: authenticated media (the Rust backend's SDK media
 > path negotiates `/_matrix/client/v1/media/*` itself since the media
 > bridge landed; audited v0.7.x), multi-account switching (landed 0.6.x),

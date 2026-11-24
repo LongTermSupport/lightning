@@ -46,7 +46,7 @@ QString slugOf(const QString &uid)
 
 // Drops this reference to a secret. Not a scrub: QString and QByteArray are
 // implicitly shared, so fill() would detach and overwrite only a private copy
-// while the caller's original keeps the bytes (review L14).
+// while the caller's original keeps the bytes.
 void forget(QString &value)
 {
     value.clear();
@@ -492,7 +492,8 @@ void SessionPool::createHost(const QString &uid, const QByteArray &mediaKeyIn,
                              bool admitEncrypted, const QString &accessIn,
                              const QString &refreshIn, const QString &clientIdIn)
 {
-    // SENSITIVE: the tokens and the key are scrubbed before this returns.
+    // SENSITIVE: never logged; these references are released (forget(), not
+    // a scrub) before this returns.
     QByteArray mediaKey = mediaKeyIn;
     QString access = accessIn;
     QString refresh = refreshIn;
@@ -1318,8 +1319,8 @@ void SessionPool::retireForRemoval(const QString &uid, std::function<void(Remova
     m_removing.insert(uid);
     // For the rest of the process no token of this account is written to the
     // keyring from here: AppController deletes its secrets after we answer
-    // (§6, B044; review M2). A handback already queued answers Cancelled, so
-    // an earlier retirement waiting on it still finishes (review M1).
+    // (§6). A handback already queued answers Cancelled, so
+    // an earlier retirement waiting on it still finishes.
     m_keyring->forbidWritesFor(uid);
     HostSignInRetirements::process().takeUnsaved(uid);
     if (m_reading.contains(uid))

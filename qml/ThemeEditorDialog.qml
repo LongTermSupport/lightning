@@ -18,8 +18,7 @@ Popup {
     // the role filter, then the editor itself. All of it goes through the one
     // Escape Shortcut below, never the close policy: CloseOnEscape needs the
     // popup to HAVE active focus, which it loses once a transient field is
-    // destroyed or the empty canvas is clicked, so a clean editor ignored
-    // Escape (live 2026-10-07, three tries). Escape in the hex field still
+    // destroyed or the empty canvas is clicked. Escape in the hex field still
     // closes only the picker.
     closePolicy: Popup.NoAutoClose
 

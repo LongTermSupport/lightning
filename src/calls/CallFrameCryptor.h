@@ -32,9 +32,9 @@ public:
     /// `keyringSize: 256`), so livekit-client's default of 16 would reject
     /// Element senders after sixteen rotations.
     ///
-    /// The ring is sparse (a hash by index), and a re-sent index replaces, so
-    /// it never exceeds 256 entries. Our own sender wraps at 16, which any
-    /// ring of at least 16 accepts.
+    /// The ring is sparse (a hash by index) and a re-sent index replaces.
+    /// Addressable indices are not retained keys: at most kMaxKeysPerRing are
+    /// kept, the oldest non-current evicted first. Our own sender wraps at 16.
     static constexpr int kKeyRingSize = 256;
     static constexpr int kMaxKeysPerRing = 32;
 

@@ -104,7 +104,7 @@ public key compiled into Lightning
    key ID; the key ID must already be in Lightning's compiled-in trust table.
    A manifest cannot introduce a key, and an unknown key ID is a hard failure.
 2. **The signature algorithm is Ed25519, verified through OpenSSL 3's EVP API.**
-   Lightning implements no cryptography of its own.
+   Lightning implements no cryptographic primitive of its own.
 3. **The artifact is streamed to a private temporary file** and its SHA-256 is
    computed as it arrives, then compared against the value in the signed
    manifest. The manifest's declared size is enforced as a hard ceiling during

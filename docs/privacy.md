@@ -30,7 +30,8 @@ invoked, or to the update hosts in section 5a.
   from the update check, each one is either user-triggered or part of a feature
   the user is using (a call, a sign-in, a link preview).
 - Message content in encrypted rooms is end-to-end encrypted by the official
-  Rust Matrix SDK. Lightning implements no cryptography of its own.
+  Rust Matrix SDK. Lightning implements no cryptographic primitives of its
+  own; MatrixRTC call media frames are encrypted with OpenSSL (HKDF, AES-GCM).
 
 ### Every outbound destination
 

@@ -10,7 +10,7 @@
 // jobs for the same handle run in the order they were submitted, each after
 // the previous one RETURNED. mx_rust_destroy_and_report frees the client, and
 // stop_sync / logout / oauth_logout hold a reference to it while they wait:
-// a destroy that overtook one of them would be a use-after-free (review H1).
+// a destroy that overtook one of them would be a use-after-free.
 //
 // Also here, because the pool is what retires them: the process-wide count of
 // uids whose HOST retirement has not handed its final tokens back yet.

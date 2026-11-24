@@ -48,7 +48,8 @@ rooms and MatrixRTC group calls.
   view, not a fork of another client.
 - **The official SDK does the Matrix part.** Sync, timelines, threads, media
   and end-to-end encryption come from `matrix-rust-sdk`. Lightning implements
-  no cryptography of its own.
+  no cryptographic primitives of its own; call media frames are encrypted with
+  OpenSSL (HKDF, AES-GCM) in the MatrixRTC frame format.
 - **Search that covers encrypted rooms.** A local index on your computer, since
   a server cannot search ciphertext. The catch: message content is stored
   unencrypted on disk (see [Security and privacy](#security-and-privacy)).

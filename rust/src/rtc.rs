@@ -487,7 +487,6 @@ fn slot_id_for_call_id(application: &str, call_id: &str) -> String {
     format!("{application}#{id}")
 }
 
-#[allow(dead_code)] // sticky lane only; see EV_MEMBER_STICKY.
 pub(crate) fn rtc_identity_hash(user_id: &str, member_id: &str) -> String {
     let canonical = serde_json::to_string(&[user_id, member_id])
         .unwrap_or_default();
