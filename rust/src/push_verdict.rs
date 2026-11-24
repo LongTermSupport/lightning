@@ -351,8 +351,16 @@ pub(crate) fn now_ms() -> u64 {
         .unwrap_or(0)
 }
 
+/// Whether an event reached the server before `opened`.
+pub(crate) fn arrived_before(facts: &ItemFacts, opened: crate::syncnotify::Now, now: crate::syncnotify::Now) -> bool {
+    match facts.age_ms {
+        Some(age) => now.wall_ms.saturating_sub(age) < opened.wall_ms,
+        None => facts.timestamp_ms < opened.wall_ms,
+    }
+}
+
 pub(crate) struct BacklogMarker {
-    opened_ms: u64,
+    opened: crate::syncnotify::Now,
     forwarded: HashSet<String>,
     reset_in_batch: bool,
     history_before_ms: Option<u64>,
@@ -361,9 +369,12 @@ pub(crate) struct BacklogMarker {
 const MAX_FORWARDED: usize = 20_000;
 
 impl BacklogMarker {
-    pub(crate) fn new(opened_ms: u64, snapshot: impl IntoIterator<Item = ItemFacts>) -> Self {
+    pub(crate) fn new(
+        opened: crate::syncnotify::Now,
+        snapshot: impl IntoIterator<Item = ItemFacts>,
+    ) -> Self {
         let mut marker = Self {
-            opened_ms,
+            opened,
             forwarded: HashSet::new(),
             reset_in_batch: false,
             history_before_ms: None,
@@ -388,7 +399,7 @@ impl BacklogMarker {
         &mut self,
         diff: &VectorDiff<T>,
         payload: &mut serde_json::Value,
-        now_ms: u64,
+        now: crate::syncnotify::Now,
         facts: impl Fn(&T) -> Option<ItemFacts>,
     ) {
         if matches!(diff, VectorDiff::Clear | VectorDiff::Reset { .. }) {
@@ -397,7 +408,7 @@ impl BacklogMarker {
         for (item, slot) in live_append_slots(diff, payload) {
             let Some(facts) = facts(item) else { continue };
             let backlog = self.forwarded.contains(&facts.event_id)
-                || (self.reset_in_batch && self.arrived_before_open(&facts, now_ms))
+                || (self.reset_in_batch && arrived_before(&facts, self.opened, now))
                 || self.history_before_ms.is_some_and(|floor| facts.timestamp_ms < floor);
             if let (true, Some(object)) = (backlog, slot.as_object_mut()) {
                 object.insert("backlog".to_owned(), true.into());
@@ -415,13 +426,6 @@ impl BacklogMarker {
             if let Some(facts) = facts(value) {
                 self.remember(facts.event_id);
             }
-        }
-    }
-
-    fn arrived_before_open(&self, facts: &ItemFacts, now_ms: u64) -> bool {
-        match facts.age_ms {
-            Some(age) => now_ms.saturating_sub(age) < self.opened_ms,
-            None => facts.timestamp_ms < self.opened_ms,
         }
     }
 
@@ -465,6 +469,8 @@ mod tests {
 
     use matrix_sdk_ui::eyeball_im::{Vector, VectorDiff};
     use serde_json::json;
+
+    use crate::syncnotify::Now;
 
     use super::{
         event_slots, fallback_room_ctx, live_append_slots, BacklogMarker, ItemFacts,
@@ -1074,8 +1080,8 @@ mod tests {
         })
     }
 
-    const OPENED: u64 = 100_000;
-    const NOW: u64 = 110_000;
+    const OPENED: Now = Now { wall_ms: 100_000, mono_ms: 100_000 };
+    const NOW: Now = Now { wall_ms: 110_000, mono_ms: 110_000 };
 
     fn marker(snapshot: &[Item]) -> BacklogMarker {
         BacklogMarker::new(OPENED, snapshot.iter().filter_map(facts))
@@ -1166,6 +1172,57 @@ mod tests {
         marker.begin_batch();
         let next = append(&mut marker, &[("$later", 50_000, None)]);
         assert!(!is_backlog(&next["items"][0]));
+    }
+
+    const MIN: u64 = 60_000;
+    const HOUR: u64 = 60 * MIN;
+
+    fn after_a_reset(opened: Now, now: Now, items: &[Item]) -> serde_json::Value {
+        let mut marker = BacklogMarker::new(opened, std::iter::empty());
+        marker.begin_batch();
+        marker.mark(&VectorDiff::<Item>::Clear, &mut json!({ "op": "clear" }), now, facts);
+        let mut payload = json!({ "op": "append", "items": vec![json!({}); items.len()] });
+        let diff = VectorDiff::Append { values: items.iter().copied().collect::<Vector<_>>() };
+        marker.mark(&diff, &mut payload, now, facts);
+        payload
+    }
+
+    #[test]
+    fn a_backward_wall_clock_step_after_the_open_does_not_hide_a_live_event() {
+        let opened = Now { wall_ms: 1_000 * HOUR, mono_ms: 5 * MIN };
+        let now = Now { wall_ms: opened.wall_ms + MIN - HOUR, mono_ms: opened.mono_ms + MIN };
+        let payload = after_a_reset(opened, now, &[
+            ("$aged", now.wall_ms - 100, Some(100)),
+            ("$stamped", now.wall_ms - 100, None),
+        ]);
+        assert!(!is_backlog(&payload["items"][0]));
+        assert!(!is_backlog(&payload["items"][1]));
+    }
+
+    #[test]
+    fn a_forward_wall_clock_step_after_the_open_does_not_replay_history() {
+        let opened = Now { wall_ms: 1_000 * HOUR, mono_ms: 5 * MIN };
+        let now = Now { wall_ms: opened.wall_ms + MIN + HOUR, mono_ms: opened.mono_ms + MIN };
+        let payload = after_a_reset(opened, now, &[
+            ("$aged", opened.wall_ms - 10 * MIN, Some(11 * MIN)),
+            ("$stamped", opened.wall_ms - 10 * MIN, None),
+            ("$live", now.wall_ms - 2_000, Some(2_000)),
+        ]);
+        assert!(is_backlog(&payload["items"][0]));
+        assert!(is_backlog(&payload["items"][1]));
+        assert!(!is_backlog(&payload["items"][2]));
+    }
+
+    #[test]
+    fn what_reached_the_server_during_a_suspend_is_history_after_a_reset() {
+        let opened = Now { wall_ms: 1_000 * HOUR, mono_ms: 5 * MIN };
+        let wake = Now { wall_ms: opened.wall_ms + 8 * HOUR, mono_ms: opened.mono_ms + MIN };
+        let payload = after_a_reset(opened, wake, &[
+            ("$asleep", wake.wall_ms - 5 * HOUR, Some(5 * HOUR)),
+            ("$awake", wake.wall_ms - 2_000, Some(2_000)),
+        ]);
+        assert!(is_backlog(&payload["items"][0]));
+        assert!(!is_backlog(&payload["items"][1]));
     }
 
     #[test]
