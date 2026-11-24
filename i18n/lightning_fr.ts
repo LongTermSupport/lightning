@@ -1707,7 +1707,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+606"/>
+        <location filename="../qml/AppTheme.qml" line="+609"/>
         <source>Storm</source>
         <translation>Storm</translation>
     </message>
@@ -16917,7 +16917,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Paramètres</translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+56"/>
         <source>Account menu for %1</source>
         <translation>Menu du compte de %1</translation>
     </message>
@@ -18314,7 +18314,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Choisir l&apos;avatar du salon</translation>
     </message>
     <message>
-        <location line="+62"/>
+        <location line="+58"/>
         <source>Room information</source>
         <translation>Informations du salon</translation>
     </message>
@@ -18334,12 +18334,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>%1 membres</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="-11"/>
         <source>Close room information</source>
         <translation>Fermer les informations du salon</translation>
     </message>
     <message>
-        <location line="-309"/>
+        <location line="-267"/>
         <source>Overview</source>
         <translation>Aperçu</translation>
     </message>
@@ -18359,7 +18359,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Médias</translation>
     </message>
     <message>
-        <location line="+389"/>
+        <location line="+375"/>
         <source>Notifications</source>
         <translation>Notifications</translation>
     </message>
@@ -18422,12 +18422,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Non chiffré</translation>
     </message>
     <message>
-        <location line="-546"/>
+        <location line="-532"/>
         <source>Widgets</source>
         <translation>Widgets</translation>
     </message>
     <message>
-        <location line="+2121"/>
+        <location line="+2107"/>
         <source>Open</source>
         <translation>Ouvrir</translation>
     </message>
@@ -18437,7 +18437,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Exporter le salon…</translation>
     </message>
     <message>
-        <location line="-549"/>
+        <location line="-535"/>
         <source>Anyone can read this room&apos;s history without joining, even though not everyone can join it.</source>
         <translation>Tout le monde peut lire l’historique de ce salon sans le rejoindre, même si tout le monde ne peut pas le rejoindre.</translation>
     </message>
@@ -18478,12 +18478,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Choisissez votre avatar pour ce salon</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+62"/>
         <source>Room permissions</source>
         <translation>Autorisations du salon</translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+166"/>
         <source>This room has no override — your account&apos;s notification settings apply.</source>
         <translation>Ce salon n&apos;a pas de réglage propre : les paramètres de notification de votre compte s&apos;appliquent.</translation>
     </message>
@@ -19647,7 +19647,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
 <context>
     <name>RoomsPanel</name>
     <message>
-        <location filename="../qml/RoomsPanel.qml" line="+207"/>
+        <location filename="../qml/RoomsPanel.qml" line="+208"/>
         <location line="+3"/>
         <location line="+5"/>
         <source>Lightning</source>
@@ -21050,7 +21050,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Autocollant</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+52"/>
         <location line="+11"/>
         <source>Search filters</source>
         <translation>Filtres de recherche</translation>
@@ -21061,7 +21061,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Rechercher des messages</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="-6"/>
         <source>Cancel filters</source>
         <translation>Annuler les filtres</translation>
     </message>
@@ -21071,7 +21071,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Fermer la recherche</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+41"/>
         <source>Search room history…</source>
         <translation>Rechercher dans l&apos;historique du salon…</translation>
     </message>
@@ -21091,7 +21091,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Ouvrir le message de %1</translation>
     </message>
     <message>
-        <location line="-243"/>
+        <location line="-238"/>
         <source>Search could not be completed.</source>
         <translation>La recherche n&apos;a pas pu aboutir.</translation>
     </message>
@@ -21106,12 +21106,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Saisissez au moins %1 caractères.</translation>
     </message>
     <message>
-        <location line="+179"/>
+        <location line="+174"/>
         <source>Nothing is indexed yet.</source>
         <translation>Rien n&apos;est encore indexé.</translation>
     </message>
     <message>
-        <location line="-176"/>
+        <location line="-171"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>Aucun message correspondant. Essayez un mot moins courant, ou recherchez dans l&apos;index local.</translation>
     </message>
@@ -21121,7 +21121,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Aucun message correspondant</translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+102"/>
         <source>Indexed</source>
         <translation>Indexé</translation>
     </message>
@@ -32633,12 +32633,13 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
 <context>
     <name>ThreadPanel</name>
     <message>
-        <location filename="../qml/ThreadPanel.qml" line="+426"/>
+        <location filename="../qml/ThreadPanel.qml" line="+433"/>
+        <location line="+48"/>
         <source>Mark this thread read</source>
         <translation>Marquer ce fil comme lu</translation>
     </message>
     <message>
-        <location line="+1328"/>
+        <location line="+1304"/>
         <source>Jump to the newest reply</source>
         <translation>Aller à la réponse la plus récente</translation>
     </message>
@@ -32651,7 +32652,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         </translation>
     </message>
     <message>
-        <location line="-1723"/>
+        <location line="-1754"/>
         <source>This room has been replaced.</source>
         <translation>Ce salon a été remplacé.</translation>
     </message>
@@ -32666,18 +32667,18 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Hier</translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+183"/>
         <location line="+1"/>
         <source>Back to the room</source>
         <translation>Retour au salon</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+11"/>
         <source>Back to threads</source>
         <translation>Retour aux fils</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Thread</source>
         <translation>Fil</translation>
     </message>
@@ -32687,7 +32688,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Fils</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source>Unfollow</source>
         <translation>Ne plus suivre</translation>
     </message>
@@ -32707,7 +32708,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Suivre ce fil</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+24"/>
         <source>Show the thread in the side panel</source>
         <translation>Afficher le fil dans le panneau latéral</translation>
     </message>
@@ -32717,13 +32718,12 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Afficher le fil dans la vue principale</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+1"/>
+        <location line="-99"/>
         <source>Close thread</source>
         <translation>Fermer le fil</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+162"/>
         <source>Loading threads…</source>
         <translation>Chargement des fils…</translation>
     </message>
@@ -32782,7 +32782,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Ouvrir dans le salon</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-707"/>
         <source>Message deleted</source>
         <translation>Message supprimé</translation>
     </message>
@@ -32792,7 +32792,12 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Impossible de déchiffrer ce message</translation>
     </message>
     <message>
-        <location line="+687"/>
+        <location line="+347"/>
+        <source>More actions</source>
+        <translation>Plus d’actions</translation>
+    </message>
+    <message>
+        <location line="+371"/>
         <location line="+1"/>
         <source>Collapse thread root</source>
         <translation>Réduire la racine du fil</translation>

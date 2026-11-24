@@ -1696,7 +1696,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+606"/>
+        <location filename="../qml/AppTheme.qml" line="+609"/>
         <source>Storm</source>
         <translation>风暴</translation>
     </message>
@@ -16853,7 +16853,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+56"/>
         <source>Account menu for %1</source>
         <translation>%1 的账号菜单</translation>
     </message>
@@ -18240,7 +18240,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>选择房间头像</translation>
     </message>
     <message>
-        <location line="+62"/>
+        <location line="+58"/>
         <source>Room information</source>
         <translation>房间信息</translation>
     </message>
@@ -18260,12 +18260,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1 成员</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="-11"/>
         <source>Close room information</source>
         <translation>关闭房间信息</translation>
     </message>
     <message>
-        <location line="-309"/>
+        <location line="-267"/>
         <source>Overview</source>
         <translation>概览</translation>
     </message>
@@ -18285,7 +18285,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>媒体</translation>
     </message>
     <message>
-        <location line="+389"/>
+        <location line="+375"/>
         <source>Notifications</source>
         <translation>通知</translation>
     </message>
@@ -18348,12 +18348,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>未加密</translation>
     </message>
     <message>
-        <location line="-546"/>
+        <location line="-532"/>
         <source>Widgets</source>
         <translation>小组件</translation>
     </message>
     <message>
-        <location line="+2121"/>
+        <location line="+2107"/>
         <source>Open</source>
         <translation>打开</translation>
     </message>
@@ -18363,7 +18363,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>导出房间…</translation>
     </message>
     <message>
-        <location line="-549"/>
+        <location line="-535"/>
         <source>Anyone can read this room&apos;s history without joining, even though not everyone can join it.</source>
         <translation>任何人都可以在不加入此房间的情况下阅读其历史记录，但并非所有人都能加入。</translation>
     </message>
@@ -18404,12 +18404,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>为此房间选择你的头像</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+62"/>
         <source>Room permissions</source>
         <translation>房间权限</translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+166"/>
         <source>This room has no override — your account&apos;s notification settings apply.</source>
         <translation>此房间没有覆盖设置，因此适用你账号的通知设置。</translation>
     </message>
@@ -19567,7 +19567,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RoomsPanel</name>
     <message>
-        <location filename="../qml/RoomsPanel.qml" line="+207"/>
+        <location filename="../qml/RoomsPanel.qml" line="+208"/>
         <location line="+3"/>
         <location line="+5"/>
         <source>Lightning</source>
@@ -20960,7 +20960,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>贴纸</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+52"/>
         <location line="+11"/>
         <source>Search filters</source>
         <translation>搜索筛选条件</translation>
@@ -20971,7 +20971,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>搜索消息</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="-6"/>
         <source>Cancel filters</source>
         <translation>取消筛选</translation>
     </message>
@@ -20981,7 +20981,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>关闭搜索</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+41"/>
         <source>Search room history…</source>
         <translation>搜索房间历史记录…</translation>
     </message>
@@ -21001,7 +21001,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>打开来自 %1 的消息</translation>
     </message>
     <message>
-        <location line="-243"/>
+        <location line="-238"/>
         <source>Search could not be completed.</source>
         <translation>搜索未能完成。</translation>
     </message>
@@ -21016,12 +21016,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>请至少输入 %1 个字符。</translation>
     </message>
     <message>
-        <location line="+179"/>
+        <location line="+174"/>
         <source>Nothing is indexed yet.</source>
         <translation>尚未建立索引。</translation>
     </message>
     <message>
-        <location line="-176"/>
+        <location line="-171"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>没有匹配的消息。请尝试不太常见的词，或搜索本地索引。</translation>
     </message>
@@ -21031,7 +21031,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>没有匹配的消息</translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+102"/>
         <source>Indexed</source>
         <translation>本地索引</translation>
     </message>
@@ -32477,12 +32477,13 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ThreadPanel</name>
     <message>
-        <location filename="../qml/ThreadPanel.qml" line="+426"/>
+        <location filename="../qml/ThreadPanel.qml" line="+433"/>
+        <location line="+48"/>
         <source>Mark this thread read</source>
         <translation>将此话题标为已读</translation>
     </message>
     <message>
-        <location line="+1328"/>
+        <location line="+1304"/>
         <source>Jump to the newest reply</source>
         <translation>跳到最新回复</translation>
     </message>
@@ -32494,7 +32495,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message>
-        <location line="-1723"/>
+        <location line="-1754"/>
         <source>This room has been replaced.</source>
         <translation>此房间已被替换。</translation>
     </message>
@@ -32509,18 +32510,18 @@ Note: importing keys does not verify this session.</source>
         <translation>昨天</translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+183"/>
         <location line="+1"/>
         <source>Back to the room</source>
         <translation>返回房间</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+11"/>
         <source>Back to threads</source>
         <translation>返回话题列表</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Thread</source>
         <translation>话题</translation>
     </message>
@@ -32530,7 +32531,7 @@ Note: importing keys does not verify this session.</source>
         <translation>话题</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source>Unfollow</source>
         <translation>取消关注</translation>
     </message>
@@ -32550,7 +32551,7 @@ Note: importing keys does not verify this session.</source>
         <translation>关注此话题</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+24"/>
         <source>Show the thread in the side panel</source>
         <translation>在侧边面板中显示话题</translation>
     </message>
@@ -32560,13 +32561,12 @@ Note: importing keys does not verify this session.</source>
         <translation>在主视图中显示话题</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+1"/>
+        <location line="-99"/>
         <source>Close thread</source>
         <translation>关闭话题</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+162"/>
         <source>Loading threads…</source>
         <translation>正在加载话题…</translation>
     </message>
@@ -32624,7 +32624,7 @@ Note: importing keys does not verify this session.</source>
         <translation>在房间中打开</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-707"/>
         <source>Message deleted</source>
         <translation>消息已删除</translation>
     </message>
@@ -32634,7 +32634,12 @@ Note: importing keys does not verify this session.</source>
         <translation>无法解密此消息</translation>
     </message>
     <message>
-        <location line="+687"/>
+        <location line="+347"/>
+        <source>More actions</source>
+        <translation>更多操作</translation>
+    </message>
+    <message>
+        <location line="+371"/>
         <location line="+1"/>
         <source>Collapse thread root</source>
         <translation>折叠话题根消息</translation>

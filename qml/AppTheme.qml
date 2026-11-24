@@ -41,7 +41,10 @@ QtObject {
     readonly property int railGroupGap: compactDensity ? spacing6 : spacing8
     readonly property int railGroupBreakGap: compactDensity ? spacing12 + spacing2 : spacing16 + spacing2
     readonly property int headerBandHeight: compactDensity ? 48 : 60
-    readonly property int threadHeaderHeight: headerBandHeight - 2
+    // Every pane header's trailing action: one box size and one gap to the
+    // pane edge, so the rightmost buttons of side-by-side headers line up.
+    readonly property int headerActionSize: 34
+    readonly property int headerActionGutter: spacing20
     readonly property int roomRowPaddingV: compactDensity ? spacing4 : spacing6
     readonly property int channelRowMinHeight: compactDensity ? 28 : 32
     readonly property int composerInsetH: compactDensity ? spacing12 : spacing20

@@ -19,6 +19,7 @@
 #include <QQmlComponent>
 #include <QQmlContext>
 #include <QQmlExpression>
+#include <QQmlProperty>
 #include <QScopedPointer>
 #include <QQuickItem>
 #include <QQuickWindow>
@@ -26,6 +27,7 @@
 #include <QTemporaryDir>
 
 #include "app/AppController.h"
+#include "app/SettingsManager.h"
 #include "auth/AuthManager.h"
 #include "calls/CallController.h"
 #include "calls/CallMediaBackend.h"
@@ -34,6 +36,8 @@
 #include "calls/OneToOneDm.h"
 #include "calls/SfuCallController.h"
 #include "matrix/MockMatrixClient.h"
+#include "models/TimelineModel.h"
+#include "threads/ThreadController.h"
 
 namespace {
 constexpr int kSignalTimeoutMs = 5000;
@@ -124,6 +128,46 @@ private:
         }
         for (QQuickItem *c : it->childItems())
             controlsOutsideBox(c, box, out);
+    }
+
+    void setMirrored(bool rtl)
+    {
+        QQmlProperty mirror(m_window, QStringLiteral("LayoutMirroring.enabled"),
+                            qmlContext(m_window));
+        QVERIFY(mirror.isValid());
+        QVERIFY(mirror.write(rtl));
+        QCoreApplication::processEvents();
+    }
+
+    // The panel's last header action: the outermost visible IconButton whose
+    // centre lies in the panel's top header band.
+    QQuickItem *trailingHeaderButton(QQuickItem *panel, bool rtl) const
+    {
+        if (!panel)
+            return nullptr;
+        const QRectF p = panel->mapRectToScene(
+            QRectF(0, 0, panel->width(), panel->height()));
+        const qreal bandBottom = p.top() + 64;
+        QQuickItem *best = nullptr;
+        qreal bestX = 0;
+        QList<QQuickItem *> stack{ panel };
+        while (!stack.isEmpty()) {
+            QQuickItem *it = stack.takeLast();
+            if (!it->isVisible() || it->opacity() <= 0.01)
+                continue;
+            if (QByteArray(it->metaObject()->className()).startsWith("IconButton")
+                && it->width() > 0) {
+                const QRectF r = it->mapRectToScene(
+                    QRectF(0, 0, it->width(), it->height()));
+                const qreal x = rtl ? -r.left() : r.right();
+                if (r.center().y() < bandBottom && (!best || x > bestX)) {
+                    best = it;
+                    bestX = x;
+                }
+            }
+            stack.append(it->childItems());
+        }
+        return best;
     }
 
 private Q_SLOTS:
@@ -774,6 +818,302 @@ private Q_SLOTS:
                                 .arg(cr.width()).arg(cr.height())
                                 .arg(win.width()).arg(win.height())));
         QVERIFY2(stray.isEmpty(), qPrintable(stray.join(QStringLiteral("; "))));
+    }
+
+    void everyPaneHeadersLastActionSitsOnTheRoomHeadersRail_data()
+    {
+        QTest::addColumn<QSize>("size");
+        QTest::addColumn<bool>("rtl");
+        for (const QSize &sz : { QSize(640, 360), QSize(960, 540),
+                                 QSize(1280, 720) })
+            for (bool rtl : { false, true })
+                QTest::newRow(qPrintable(QStringLiteral("%1x%2 %3")
+                                             .arg(sz.width()).arg(sz.height())
+                                             .arg(QLatin1String(rtl ? "rtl" : "ltr"))))
+                    << sz << rtl;
+    }
+
+    void everyPaneHeadersLastActionSitsOnTheRoomHeadersRail()
+    {
+        QFETCH(QSize, size);
+        QFETCH(bool, rtl);
+        m_controller->showMain();
+        m_controller->setCurrentRoomId(QStringLiteral("!general:mock.local"));
+        m_controller->settings()->setSpacesRailVisible(false);
+        m_window->resize(size);
+        setMirrored(rtl);
+        QTest::qWait(250);
+        QQuickItem *pane = item("timelinePane");
+        QVERIFY(pane);
+
+        struct Seen { QString name; qreal gutter, w, h, cy, radius; };
+        QList<Seen> seen;
+        QStringList missing;
+        QQuickItem *band = item("roomHeaderBand");
+        QVERIFY(band);
+        const auto measure = [&](const QString &name, QQuickItem *edge,
+                                 QQuickItem *button) {
+            if (!edge || !button || !edge->isVisible() || !button->isVisible()
+                || button->width() <= 0) {
+                missing << name;
+                return;
+            }
+            const QRectF e = edge->mapRectToScene(
+                QRectF(0, 0, edge->width(), edge->height()));
+            const QRectF b = button->mapRectToScene(
+                QRectF(0, 0, button->width(), button->height()));
+            if (edge != band && name != QLatin1String("roomList")
+                && button->property("iconName").toString() != QLatin1String("close"))
+                missing << name + QStringLiteral(" (last action is not its close)");
+            seen.append({ name, rtl ? b.left() - e.left() : e.right() - b.right(),
+                          b.width(), b.height(), b.center().y() - e.top(),
+                          button->property("radius").toReal() });
+        };
+
+        QQuickItem *overflow = item("roomHeaderOverflowButton");
+        QVERIFY(overflow);
+        const qreal overflowX = overflow->mapToItem(
+            band, QPointF(overflow->width() / 2, 0)).x();
+        QVERIFY2(rtl == (overflowX < band->width() / 2.0),
+                 qPrintable(QStringLiteral("the header did not mirror: overflow "
+                                           "at %1 of %2").arg(overflowX)
+                                .arg(band->width())));
+
+        measure(QStringLiteral("room"), band, overflow);
+        int expected = 1;
+        QQuickItem *railActions = item("railHiddenActions");
+        QVERIFY(railActions);
+        if (railActions->isVisible()) {
+            measure(QStringLiteral("roomList"), railActions->parentItem(),
+                    item("headerAccountTile"));
+            ++expected;
+        } else {
+            QVERIFY2(size.width() < 1280, "the room list header was never shown");
+        }
+
+        QVERIFY(QMetaObject::invokeMethod(pane, "toggleThreadSurface"));
+        QTest::qWait(300);
+        measure(QStringLiteral("thread"), item("threadPanel"),
+                trailingHeaderButton(item("threadPanel"), rtl));
+        QVERIFY(QMetaObject::invokeMethod(pane, "toggleThreadSurface"));
+        QTest::qWait(150);
+
+        QVERIFY(QMetaObject::invokeMethod(pane, "toggleSearchPanel"));
+        QTest::qWait(300);
+        measure(QStringLiteral("search"), item("roomSearchPanel"),
+                trailingHeaderButton(item("roomSearchPanel"), rtl));
+        QVERIFY(QMetaObject::invokeMethod(pane, "toggleSearchPanel"));
+        QTest::qWait(150);
+
+        QQuickItem *infoPanel = item("roomInfoPanel");
+        QVERIFY(infoPanel);
+        // The mock has no pinned events, so the panel refuses that section.
+        for (const char *section : { "overview", "people", "media", "widgets" }) {
+            infoPanel->setProperty("section", QString::fromLatin1(section));
+            pane->setProperty("infoOpen", true);
+            QTest::qWait(400);
+            measure(QStringLiteral("roomInfo/") + QLatin1String(section),
+                    infoPanel, trailingHeaderButton(infoPanel, rtl));
+            pane->setProperty("infoOpen", false);
+            QTest::qWait(100);
+        }
+
+        m_controller->showSettings();
+        QTest::qWait(300);
+        measure(QStringLiteral("settings"), item("settingsHeaderBar"),
+                item("settingsCloseButton"));
+        m_controller->showMain();
+        expected += 7;
+
+        m_controller->settings()->setSpacesRailVisible(true);
+        setMirrored(false);
+        QTest::qWait(150);
+
+        QVERIFY(!seen.isEmpty());
+        const Seen ref = seen.first();
+        QStringList faults;
+        for (const Seen &h : seen) {
+            const QString got = QStringLiteral("%1: gutter %2 box %3x%4 centre %5 "
+                                               "radius %6")
+                                    .arg(h.name).arg(h.gutter).arg(h.w).arg(h.h)
+                                    .arg(h.cy).arg(h.radius);
+            if (qAbs(h.gutter - ref.gutter) > 0.5 || qAbs(h.w - ref.w) > 0.5
+                || qAbs(h.h - ref.h) > 0.5 || qAbs(h.cy - ref.cy) > 0.5
+                || (h.name != QLatin1String("roomList")
+                    && qAbs(h.radius - ref.radius) > 0.5))
+                faults << got;
+        }
+        for (const QString &m : missing)
+            faults << m + QStringLiteral(": not shown");
+        QVERIFY2(faults.isEmpty(),
+                 qPrintable(QStringLiteral("room header: gutter %1 box %2x%3 "
+                                           "centre %4 radius %5; differs: ")
+                                .arg(ref.gutter).arg(ref.w).arg(ref.h).arg(ref.cy)
+                                .arg(ref.radius)
+                            + faults.join(QStringLiteral("; "))));
+        QCOMPARE(seen.size(), expected);
+    }
+
+    void theRightmostHeaderTooltipsStayInsideTheWindow_data()
+    {
+        QTest::addColumn<bool>("rtl");
+        QTest::addColumn<bool>("settings");
+        QTest::newRow("room ltr") << false << false;
+        QTest::newRow("room rtl") << true << false;
+        QTest::newRow("settings ltr") << false << true;
+        QTest::newRow("settings rtl") << true << true;
+    }
+
+    void theRightmostHeaderTooltipsStayInsideTheWindow()
+    {
+        QFETCH(bool, rtl);
+        QFETCH(bool, settings);
+        m_controller->setCurrentRoomId(QStringLiteral("!general:mock.local"));
+        if (settings)
+            m_controller->showSettings();
+        else
+            m_controller->showMain();
+        m_window->resize(640, 360);
+        setMirrored(rtl);
+        QTest::qWait(250);
+        QQuickItem *button = item(settings ? "settingsCloseButton"
+                                           : "roomHeaderOverflowButton");
+        QVERIFY(button && button->isVisible());
+        QQmlExpression show(qmlContext(button), button,
+                            QStringLiteral("ToolTip.show(ToolTip.text, 5000), "
+                                           "ToolTip.toolTip"));
+        auto *tip = show.evaluate().value<QObject *>();
+        QVERIFY2(!show.hasError(), qPrintable(show.error().toString()));
+        QVERIFY(tip);
+        QTRY_VERIFY(tip->property("opened").toBool());
+        auto *content = tip->property("contentItem").value<QQuickItem *>();
+        QVERIFY(content && content->parentItem());
+        QQuickItem *box = content->parentItem();
+        const QRectF r = box->mapRectToScene(
+            QRectF(0, 0, box->width(), box->height()));
+        QQmlExpression(qmlContext(button), button,
+                       QStringLiteral("ToolTip.hide()")).evaluate();
+        setMirrored(false);
+        m_controller->showMain();
+        QVERIFY2(r.width() > 0
+                     && QRectF(0, 0, m_window->width(), m_window->height())
+                            .adjusted(-1, -1, 1, 1).contains(r),
+                 qPrintable(QStringLiteral("tooltip at %1,%2 %3x%4")
+                                .arg(r.x()).arg(r.y()).arg(r.width())
+                                .arg(r.height())));
+    }
+
+    void anOpenThreadsHeaderFitsTheNarrowestPanel_data()
+    {
+        QTest::addColumn<bool>("rtl");
+        QTest::newRow("ltr") << false;
+        QTest::newRow("rtl") << true;
+    }
+
+    void anOpenThreadsHeaderFitsTheNarrowestPanel()
+    {
+        QFETCH(bool, rtl);
+        const QString room = QStringLiteral("!general:mock.local");
+        m_controller->showMain();
+        m_controller->setCurrentRoomId(room);
+        m_window->resize(1280, 720);
+        const int widthBefore = m_controller->settings()->sidePanelWidth();
+        m_controller->settings()->setSidePanelWidth(
+            SettingsManager::sidePanelMinWidth());
+        setMirrored(rtl);
+        QTRY_VERIFY(m_controller->timeline()->rowCount() > 2);
+        QString root;
+        const auto findRoot = [&] {
+            for (const TimelineEvent &e : m_controller->timeline()->events())
+                if (e.isThreadRoot
+                    || e.body == QLatin1String("Anyone up for a mock deploy tomorrow?"))
+                    root = e.eventId;
+            return !root.isEmpty();
+        };
+        QTRY_VERIFY2(findRoot(), "the room has no thread to open");
+        ThreadController *thread = m_controller->thread();
+        thread->openList(room);
+        thread->openThread(room, root);
+        QTRY_VERIFY(thread->active());
+        QTRY_VERIFY(thread->followSupported());
+        QTest::qWait(300);
+
+        QQuickItem *panel = item("threadPanel");
+        QQuickItem *close = item("threadCloseButton");
+        QVERIFY(panel && close && close->parentItem());
+        QQuickItem *header = close->parentItem()->parentItem();
+        QVERIFY(header);
+        const qreal panelWidth = panel->width();
+        const QRectF band = header->mapRectToScene(
+            QRectF(0, 0, header->width(), header->height()));
+        QList<QQuickItem *> parts{ close };
+        for (QQuickItem *c : close->parentItem()->childItems().first()->childItems())
+            if (c->isVisible() && c->width() > 0)
+                parts << c;
+        QStringList faults;
+        const auto name = [](QQuickItem *it) {
+            return it->objectName().isEmpty()
+                ? QString::fromLatin1(it->metaObject()->className())
+                : it->objectName();
+        };
+        const auto box = [](QQuickItem *it) {
+            return it->mapRectToScene(QRectF(0, 0, it->width(), it->height()));
+        };
+        for (int i = 0; i < parts.size(); ++i) {
+            const QRectF a = box(parts.at(i));
+            if (!band.adjusted(-0.5, -0.5, 0.5, 0.5).contains(a))
+                faults << name(parts.at(i)) + QStringLiteral(" leaves the header");
+            const QByteArray cls = parts.at(i)->metaObject()->className();
+            if (cls.startsWith("IconButton") && (qAbs(a.width() - 34) > 0.5
+                                                 || qAbs(a.height() - 34) > 0.5))
+                faults << name(parts.at(i))
+                              + QStringLiteral(" squeezed to %1x%2")
+                                    .arg(a.width()).arg(a.height());
+            if (cls.contains("Label")
+                && parts.at(i)->width() + 0.5 < parts.at(i)->implicitWidth()
+                && parts.at(i)->property("elide").toInt() == 0)
+                faults << name(parts.at(i)) + QStringLiteral(" is cut, not elided");
+            for (int j = i + 1; j < parts.size(); ++j) {
+                const QRectF o = a.intersected(box(parts.at(j)));
+                if (o.width() > 0.5 && o.height() > 0.5)
+                    faults << QStringLiteral("%1 overlaps %2 by %3 px")
+                                  .arg(name(parts.at(i)), name(parts.at(j)))
+                                  .arg(o.width());
+            }
+        }
+        int reachable = 0;
+        QObject *more = m_window->findChild<QObject *>(
+            QStringLiteral("threadHeaderOverflowMenu"));
+        if (more) {
+            QMetaObject::invokeMethod(more, "open");
+            QTRY_VERIFY(more->property("opened").toBool());
+        }
+        for (const char *action : { "threadFollowButton", "threadMarkReadButton",
+                                    "threadPlacementButton" }) {
+            QQuickItem *inline_ = item(action);
+            QObject *row = more ? more->findChild<QObject *>(
+                                      QLatin1String(action) + QStringLiteral("Item"))
+                                : nullptr;
+            if ((inline_ && inline_->isVisible())
+                || (row && row->property("visible").toBool()
+                    && item("threadHeaderOverflowButton")
+                    && item("threadHeaderOverflowButton")->isVisible()))
+                ++reachable;
+        }
+        if (more) {
+            QMetaObject::invokeMethod(more, "close");
+            QTRY_VERIFY(!more->property("visible").toBool());
+        }
+
+        thread->close();
+        thread->closeList();
+        m_controller->settings()->setSidePanelWidth(widthBefore);
+        setMirrored(false);
+        QTest::qWait(150);
+        QCOMPARE(qRound(panelWidth), 260);
+        QVERIFY2(parts.size() >= 5, "the header shows less than it should");
+        QCOMPARE(reachable, 3);
+        QVERIFY2(faults.isEmpty(), qPrintable(faults.join(QStringLiteral("; "))));
     }
 };
 

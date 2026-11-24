@@ -1751,7 +1751,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+606"/>
+        <location filename="../qml/AppTheme.qml" line="+609"/>
         <source>Storm</source>
         <translation>Storm</translation>
     </message>
@@ -17173,7 +17173,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>الإعدادات</translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+56"/>
         <source>Account menu for %1</source>
         <translation>قائمة حساب %1</translation>
     </message>
@@ -18610,7 +18610,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>اختر صورة الغرفة الرمزية</translation>
     </message>
     <message>
-        <location line="+62"/>
+        <location line="+58"/>
         <source>Room information</source>
         <translation>معلومات الغرفة</translation>
     </message>
@@ -18630,12 +18630,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1أعضاء</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="-11"/>
         <source>Close room information</source>
         <translation>إغلاق معلومات الغرفة</translation>
     </message>
     <message>
-        <location line="-309"/>
+        <location line="-267"/>
         <source>Overview</source>
         <translation>نظرة عامة</translation>
     </message>
@@ -18655,7 +18655,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>الوسائط</translation>
     </message>
     <message>
-        <location line="+389"/>
+        <location line="+375"/>
         <source>Notifications</source>
         <translation>الإشعارات</translation>
     </message>
@@ -18718,12 +18718,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>غير معمّاة</translation>
     </message>
     <message>
-        <location line="-546"/>
+        <location line="-532"/>
         <source>Widgets</source>
         <translation>الودجات</translation>
     </message>
     <message>
-        <location line="+2121"/>
+        <location line="+2107"/>
         <source>Open</source>
         <translation>فتح</translation>
     </message>
@@ -18733,7 +18733,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>تصدير الغرفة…</translation>
     </message>
     <message>
-        <location line="-549"/>
+        <location line="-535"/>
         <source>Anyone can read this room&apos;s history without joining, even though not everyone can join it.</source>
         <translation>يمكن لأي شخص قراءة سجل هذه الغرفة دون الانضمام إليها، رغم أن الانضمام إليها ليس متاحًا للجميع.</translation>
     </message>
@@ -18774,12 +18774,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>اختر صورتك الرمزية لهذه الغرفة</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+62"/>
         <source>Room permissions</source>
         <translation>أذونات الغرفة</translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+166"/>
         <source>This room has no override — your account&apos;s notification settings apply.</source>
         <translation>ليس لهذه الغرفة تجاوز — تسري إعدادات إشعارات حسابك.</translation>
     </message>
@@ -19967,7 +19967,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RoomsPanel</name>
     <message>
-        <location filename="../qml/RoomsPanel.qml" line="+207"/>
+        <location filename="../qml/RoomsPanel.qml" line="+208"/>
         <location line="+3"/>
         <location line="+5"/>
         <source>Lightning</source>
@@ -21410,7 +21410,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>ملصق</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+52"/>
         <location line="+11"/>
         <source>Search filters</source>
         <translation>مرشّحات البحث</translation>
@@ -21421,7 +21421,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>البحث في الرسائل</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="-6"/>
         <source>Cancel filters</source>
         <translation>إلغاء المرشّحات</translation>
     </message>
@@ -21431,7 +21431,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>إغلاق البحث</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+41"/>
         <source>Search room history…</source>
         <translation>ابحث في سجل الغرفة…</translation>
     </message>
@@ -21451,7 +21451,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>فتح رسالة من %1</translation>
     </message>
     <message>
-        <location line="-243"/>
+        <location line="-238"/>
         <source>Search could not be completed.</source>
         <translation>تعذّر إتمام البحث.</translation>
     </message>
@@ -21466,12 +21466,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>اكتب %1 من الأحرف على الأقل.</translation>
     </message>
     <message>
-        <location line="+179"/>
+        <location line="+174"/>
         <source>Nothing is indexed yet.</source>
         <translation>لم يُفهرس شيء بعد.</translation>
     </message>
     <message>
-        <location line="-176"/>
+        <location line="-171"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>لا رسائل مطابقة. جرّب كلمة أقل شيوعًا، أو ابحث في الفهرس المحلي.</translation>
     </message>
@@ -21481,7 +21481,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>لا توجد رسائل مطابقة</translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+102"/>
         <source>Indexed</source>
         <translation>مفهرس</translation>
     </message>
@@ -33257,12 +33257,13 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ThreadPanel</name>
     <message>
-        <location filename="../qml/ThreadPanel.qml" line="+426"/>
+        <location filename="../qml/ThreadPanel.qml" line="+433"/>
+        <location line="+48"/>
         <source>Mark this thread read</source>
         <translation>تعليم هذا الخيط كمقروء</translation>
     </message>
     <message>
-        <location line="+1328"/>
+        <location line="+1304"/>
         <source>Jump to the newest reply</source>
         <translation>الانتقال إلى أحدث رد</translation>
     </message>
@@ -33279,7 +33280,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message>
-        <location line="-1723"/>
+        <location line="-1754"/>
         <source>This room has been replaced.</source>
         <translation>تم استبدال هذه الغرفة.</translation>
     </message>
@@ -33294,18 +33295,18 @@ Note: importing keys does not verify this session.</source>
         <translation>أمس</translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+183"/>
         <location line="+1"/>
         <source>Back to the room</source>
         <translation>العودة إلى الغرفة</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+11"/>
         <source>Back to threads</source>
         <translation>العودة إلى الخيوط</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Thread</source>
         <translation>خيط</translation>
     </message>
@@ -33315,7 +33316,7 @@ Note: importing keys does not verify this session.</source>
         <translation>الخيوط</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source>Unfollow</source>
         <translation>إلغاء المتابعة</translation>
     </message>
@@ -33335,7 +33336,7 @@ Note: importing keys does not verify this session.</source>
         <translation>متابعة هذا الخيط</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+24"/>
         <source>Show the thread in the side panel</source>
         <translation>عرض الخيط في اللوحة الجانبية</translation>
     </message>
@@ -33345,13 +33346,12 @@ Note: importing keys does not verify this session.</source>
         <translation>عرض الخيط في العرض الرئيسي</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+1"/>
+        <location line="-99"/>
         <source>Close thread</source>
         <translation>إغلاق الخيط</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+162"/>
         <source>Loading threads…</source>
         <translation>جارٍ تحميل الخيوط…</translation>
     </message>
@@ -33414,7 +33414,7 @@ Note: importing keys does not verify this session.</source>
         <translation>فتح في الغرفة</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-707"/>
         <source>Message deleted</source>
         <translation>حُذفت الرسالة</translation>
     </message>
@@ -33424,7 +33424,12 @@ Note: importing keys does not verify this session.</source>
         <translation>تعذّر فك تعمية هذه الرسالة</translation>
     </message>
     <message>
-        <location line="+687"/>
+        <location line="+347"/>
+        <source>More actions</source>
+        <translation>إجراءات أخرى</translation>
+    </message>
+    <message>
+        <location line="+371"/>
         <location line="+1"/>
         <source>Collapse thread root</source>
         <translation>طي جذر الخيط</translation>

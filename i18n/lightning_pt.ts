@@ -1707,7 +1707,7 @@ Não toca nas suas chaves de encriptação, na sua sessão nem em qualquer mensa
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+606"/>
+        <location filename="../qml/AppTheme.qml" line="+609"/>
         <source>Storm</source>
         <translation>Storm</translation>
     </message>
@@ -16917,7 +16917,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Definições</translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+56"/>
         <source>Account menu for %1</source>
         <translation>Menu de conta de %1</translation>
     </message>
@@ -18314,7 +18314,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Escolher o avatar da sala</translation>
     </message>
     <message>
-        <location line="+62"/>
+        <location line="+58"/>
         <source>Room information</source>
         <translation>Informações da sala</translation>
     </message>
@@ -18334,12 +18334,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>%1 membros</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="-11"/>
         <source>Close room information</source>
         <translation>Fechar as informações da sala</translation>
     </message>
     <message>
-        <location line="-309"/>
+        <location line="-267"/>
         <source>Overview</source>
         <translation>Visão geral</translation>
     </message>
@@ -18359,7 +18359,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Multimédia</translation>
     </message>
     <message>
-        <location line="+389"/>
+        <location line="+375"/>
         <source>Notifications</source>
         <translation>Notificações</translation>
     </message>
@@ -18422,12 +18422,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Não encriptada</translation>
     </message>
     <message>
-        <location line="-546"/>
+        <location line="-532"/>
         <source>Widgets</source>
         <translation>Widgets</translation>
     </message>
     <message>
-        <location line="+2121"/>
+        <location line="+2107"/>
         <source>Open</source>
         <translation>Abrir</translation>
     </message>
@@ -18437,7 +18437,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Exportar sala…</translation>
     </message>
     <message>
-        <location line="-549"/>
+        <location line="-535"/>
         <source>Anyone can read this room&apos;s history without joining, even though not everyone can join it.</source>
         <translation>Qualquer pessoa pode ler o histórico desta sala sem entrar, embora nem todos possam entrar.</translation>
     </message>
@@ -18478,12 +18478,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Escolha o seu avatar para esta sala</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+62"/>
         <source>Room permissions</source>
         <translation>Permissões da sala</translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+166"/>
         <source>This room has no override — your account&apos;s notification settings apply.</source>
         <translation>Esta sala não tem substituição — aplicam-se as definições de notificação da sua conta.</translation>
     </message>
@@ -19647,7 +19647,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>RoomsPanel</name>
     <message>
-        <location filename="../qml/RoomsPanel.qml" line="+207"/>
+        <location filename="../qml/RoomsPanel.qml" line="+208"/>
         <location line="+3"/>
         <location line="+5"/>
         <source>Lightning</source>
@@ -21050,7 +21050,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Autocolante</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+52"/>
         <location line="+11"/>
         <source>Search filters</source>
         <translation>Filtros de procura</translation>
@@ -21061,7 +21061,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Procurar mensagens</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="-6"/>
         <source>Cancel filters</source>
         <translation>Cancelar os filtros</translation>
     </message>
@@ -21071,7 +21071,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Fechar a procura</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+41"/>
         <source>Search room history…</source>
         <translation>Procurar no histórico da sala…</translation>
     </message>
@@ -21091,7 +21091,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Abrir a mensagem de %1</translation>
     </message>
     <message>
-        <location line="-243"/>
+        <location line="-238"/>
         <source>Search could not be completed.</source>
         <translation>Não foi possível concluir a procura.</translation>
     </message>
@@ -21106,12 +21106,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Escreva pelo menos %1 caracteres.</translation>
     </message>
     <message>
-        <location line="+179"/>
+        <location line="+174"/>
         <source>Nothing is indexed yet.</source>
         <translation>Ainda não há nada indexado.</translation>
     </message>
     <message>
-        <location line="-176"/>
+        <location line="-171"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>Nenhuma mensagem corresponde. Experimente uma palavra menos comum, ou pesquise no índice local.</translation>
     </message>
@@ -21121,7 +21121,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Nenhuma mensagem corresponde</translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+102"/>
         <source>Indexed</source>
         <translation>Indexado</translation>
     </message>
@@ -32633,12 +32633,13 @@ Nota: importar chaves não verifica esta sessão.</translation>
 <context>
     <name>ThreadPanel</name>
     <message>
-        <location filename="../qml/ThreadPanel.qml" line="+426"/>
+        <location filename="../qml/ThreadPanel.qml" line="+433"/>
+        <location line="+48"/>
         <source>Mark this thread read</source>
         <translation>Marcar este tópico como lido</translation>
     </message>
     <message>
-        <location line="+1328"/>
+        <location line="+1304"/>
         <source>Jump to the newest reply</source>
         <translation>Ir para a resposta mais recente</translation>
     </message>
@@ -32651,7 +32652,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         </translation>
     </message>
     <message>
-        <location line="-1723"/>
+        <location line="-1754"/>
         <source>This room has been replaced.</source>
         <translation>Esta sala foi substituída.</translation>
     </message>
@@ -32666,18 +32667,18 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Ontem</translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+183"/>
         <location line="+1"/>
         <source>Back to the room</source>
         <translation>Voltar à sala</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+11"/>
         <source>Back to threads</source>
         <translation>Voltar aos tópicos</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Thread</source>
         <translation>Tópico</translation>
     </message>
@@ -32687,7 +32688,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Tópicos</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source>Unfollow</source>
         <translation>Deixar de seguir</translation>
     </message>
@@ -32707,7 +32708,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Seguir este tópico</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+24"/>
         <source>Show the thread in the side panel</source>
         <translation>Mostrar o tópico no painel lateral</translation>
     </message>
@@ -32717,13 +32718,12 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Mostrar o tópico na vista principal</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+1"/>
+        <location line="-99"/>
         <source>Close thread</source>
         <translation>Fechar o tópico</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+162"/>
         <source>Loading threads…</source>
         <translation>A carregar os tópicos…</translation>
     </message>
@@ -32782,7 +32782,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Abrir na sala</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-707"/>
         <source>Message deleted</source>
         <translation>Mensagem eliminada</translation>
     </message>
@@ -32792,7 +32792,12 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Não é possível desencriptar esta mensagem</translation>
     </message>
     <message>
-        <location line="+687"/>
+        <location line="+347"/>
+        <source>More actions</source>
+        <translation>Mais ações</translation>
+    </message>
+    <message>
+        <location line="+371"/>
         <location line="+1"/>
         <source>Collapse thread root</source>
         <translation>Recolher raiz do tópico</translation>

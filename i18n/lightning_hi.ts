@@ -1707,7 +1707,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+606"/>
+        <location filename="../qml/AppTheme.qml" line="+609"/>
         <source>Storm</source>
         <translation>स्टॉर्म</translation>
     </message>
@@ -16917,7 +16917,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>सेटिंग्स</translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+56"/>
         <source>Account menu for %1</source>
         <translation>%1 का खाता मेनू</translation>
     </message>
@@ -18314,7 +18314,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>रूम अवतार चुनें</translation>
     </message>
     <message>
-        <location line="+62"/>
+        <location line="+58"/>
         <source>Room information</source>
         <translation>रूम की जानकारी</translation>
     </message>
@@ -18334,12 +18334,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1 सदस्य</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="-11"/>
         <source>Close room information</source>
         <translation>रूम की जानकारी बंद करें</translation>
     </message>
     <message>
-        <location line="-309"/>
+        <location line="-267"/>
         <source>Overview</source>
         <translation>अवलोकन</translation>
     </message>
@@ -18359,7 +18359,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>मीडिया</translation>
     </message>
     <message>
-        <location line="+389"/>
+        <location line="+375"/>
         <source>Notifications</source>
         <translation>सूचनाएँ</translation>
     </message>
@@ -18422,12 +18422,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>एन्क्रिप्टेड नहीं</translation>
     </message>
     <message>
-        <location line="-546"/>
+        <location line="-532"/>
         <source>Widgets</source>
         <translation>विजेट</translation>
     </message>
     <message>
-        <location line="+2121"/>
+        <location line="+2107"/>
         <source>Open</source>
         <translation>खोलें</translation>
     </message>
@@ -18437,7 +18437,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>रूम निर्यात करें…</translation>
     </message>
     <message>
-        <location line="-549"/>
+        <location line="-535"/>
         <source>Anyone can read this room&apos;s history without joining, even though not everyone can join it.</source>
         <translation>कोई भी इस रूम में शामिल हुए बिना इसका इतिहास पढ़ सकता है, हालाँकि हर कोई इसमें शामिल नहीं हो सकता।</translation>
     </message>
@@ -18478,12 +18478,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>इस रूम के लिए अपना अवतार चुनें</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+62"/>
         <source>Room permissions</source>
         <translation>रूम की अनुमतियाँ</translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+166"/>
         <source>This room has no override — your account&apos;s notification settings apply.</source>
         <translation>इस रूम में कोई ओवरराइड नहीं है — आपके खाते की सूचना सेटिंग्स लागू होती हैं।</translation>
     </message>
@@ -19647,7 +19647,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RoomsPanel</name>
     <message>
-        <location filename="../qml/RoomsPanel.qml" line="+207"/>
+        <location filename="../qml/RoomsPanel.qml" line="+208"/>
         <location line="+3"/>
         <location line="+5"/>
         <source>Lightning</source>
@@ -21050,7 +21050,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>स्टिकर</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+52"/>
         <location line="+11"/>
         <source>Search filters</source>
         <translation>खोज फ़िल्टर</translation>
@@ -21061,7 +21061,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>संदेश खोजें</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="-6"/>
         <source>Cancel filters</source>
         <translation>फ़िल्टर रद्द करें</translation>
     </message>
@@ -21071,7 +21071,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>खोज बंद करें</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+41"/>
         <source>Search room history…</source>
         <translation>रूम का इतिहास खोजें…</translation>
     </message>
@@ -21091,7 +21091,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1 का संदेश खोलें</translation>
     </message>
     <message>
-        <location line="-243"/>
+        <location line="-238"/>
         <source>Search could not be completed.</source>
         <translation>खोज पूरी नहीं हो सकी।</translation>
     </message>
@@ -21106,12 +21106,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>कम से कम %1 अक्षर टाइप करें।</translation>
     </message>
     <message>
-        <location line="+179"/>
+        <location line="+174"/>
         <source>Nothing is indexed yet.</source>
         <translation>अभी कुछ भी इंडेक्स नहीं हुआ है।</translation>
     </message>
     <message>
-        <location line="-176"/>
+        <location line="-171"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>कोई मेल खाता संदेश नहीं। कोई कम प्रचलित शब्द आज़माएँ, या स्थानीय इंडेक्स में खोजें।</translation>
     </message>
@@ -21121,7 +21121,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>कोई मेल खाता संदेश नहीं</translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+102"/>
         <source>Indexed</source>
         <translation>इंडेक्स किया हुआ</translation>
     </message>
@@ -32633,12 +32633,13 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ThreadPanel</name>
     <message>
-        <location filename="../qml/ThreadPanel.qml" line="+426"/>
+        <location filename="../qml/ThreadPanel.qml" line="+433"/>
+        <location line="+48"/>
         <source>Mark this thread read</source>
         <translation>इस थ्रेड को पढ़ा हुआ चिह्नित करें</translation>
     </message>
     <message>
-        <location line="+1328"/>
+        <location line="+1304"/>
         <source>Jump to the newest reply</source>
         <translation>सबसे नए जवाब पर जाएँ</translation>
     </message>
@@ -32651,7 +32652,7 @@ Note: importing keys does not verify this session.</source>
         </translation>
     </message>
     <message>
-        <location line="-1723"/>
+        <location line="-1754"/>
         <source>This room has been replaced.</source>
         <translation>यह रूम बदल दिया गया है।</translation>
     </message>
@@ -32666,18 +32667,18 @@ Note: importing keys does not verify this session.</source>
         <translation>कल</translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+183"/>
         <location line="+1"/>
         <source>Back to the room</source>
         <translation>रूम पर वापस जाएँ</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+11"/>
         <source>Back to threads</source>
         <translation>थ्रेड पर वापस</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Thread</source>
         <translation>थ्रेड</translation>
     </message>
@@ -32687,7 +32688,7 @@ Note: importing keys does not verify this session.</source>
         <translation>थ्रेड</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source>Unfollow</source>
         <translation>अनफ़ॉलो</translation>
     </message>
@@ -32707,7 +32708,7 @@ Note: importing keys does not verify this session.</source>
         <translation>इस थ्रेड को फ़ॉलो करें</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+24"/>
         <source>Show the thread in the side panel</source>
         <translation>थ्रेड को साइड पैनल में दिखाएँ</translation>
     </message>
@@ -32717,13 +32718,12 @@ Note: importing keys does not verify this session.</source>
         <translation>थ्रेड को मुख्य दृश्य में दिखाएँ</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+1"/>
+        <location line="-99"/>
         <source>Close thread</source>
         <translation>थ्रेड बंद करें</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+162"/>
         <source>Loading threads…</source>
         <translation>थ्रेड लोड हो रहे हैं…</translation>
     </message>
@@ -32782,7 +32782,7 @@ Note: importing keys does not verify this session.</source>
         <translation>रूम में खोलें</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-707"/>
         <source>Message deleted</source>
         <translation>संदेश हटाया गया</translation>
     </message>
@@ -32792,7 +32792,12 @@ Note: importing keys does not verify this session.</source>
         <translation>इस संदेश को डिक्रिप्ट नहीं किया जा सका</translation>
     </message>
     <message>
-        <location line="+687"/>
+        <location line="+347"/>
+        <source>More actions</source>
+        <translation>और कार्रवाइयाँ</translation>
+    </message>
+    <message>
+        <location line="+371"/>
         <location line="+1"/>
         <source>Collapse thread root</source>
         <translation>थ्रेड रूट समेटें</translation>
