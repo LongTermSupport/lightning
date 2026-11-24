@@ -167,13 +167,14 @@ NOT TESTED**. Automated tests named in commits do not establish live behavior.
   insecure QSettings fallback warning
 - Rust-backed unified sync/Sliding Sync behavior with compatibility fallback
 
-- **Live accounts, Phase 1 (Labs, OFF; 2026-10-20).** Accounts the user
+- **Live accounts, Phase 1 (Labs, ON by default since 0.11.0).** Accounts the user
   pins keep syncing, decrypting and notifying in the background, each in its
   own Rust handle (`src/accounts/`, `rust/src/labs.rs`, `rust/src/bgsession.rs`;
-  design: vault `Tasks/2026-10-15-live-accounts-design.md`). Offered in
-  Settings > Labs, OFF by default; runs only when the stored
-  `labsConcurrentAccounts` is true (and the Rust bridge is built in);
-  otherwise nothing of it is constructed and the Rust switch is never set.
+  design: vault `Tasks/2026-10-15-live-accounts-design.md`). Its switch in
+  Settings > Labs is ON by default and is the way to turn it off: it runs
+  unless `labsConcurrentAccounts` is stored false (and the Rust bridge is
+  built in); switched off, nothing of it is constructed and the Rust switch
+  is never set. No account keeps running until the user pins it.
   `LIGHTNING_LABS_LIVE_ACCOUNTS=0` forces it off (test override). The card
   is where the "always signed in" accounts are chosen. Binding: one store, one handle (the store registry's claims are
   enforced and Rust reserves the store before touching a file, keyed by its
@@ -188,7 +189,7 @@ NOT TESTED**. Automated tests named in commits do not establish live behavior.
   or presence; removal of a live one also signs it out on the server. Phase
   1 switching retires the host and then runs today's switch. The switches
   are not portable (not exported, not synced). Live: NOT TESTED.
-- **Unified inbox (#35, Labs, 2026-11-18).** With live accounts on, the
+- **Unified inbox (#35, 2026-11-18; default with live accounts).** With live accounts on, the
   Activity panel's All tab shows "From your other accounts": what a Running
   background account received that its notification rule would show
   (`NotificationManager::decide` without the notifications-on, synced and
@@ -201,9 +202,11 @@ NOT TESTED**. Automated tests named in commits do not establish live behavior.
   catch-up floor) is kept only while its room is unread. `add()` refuses an
   account that is not Running, is removed or is the foreground one, and a host
   epoch other than `SessionPool::epochFor`. A click switches account and
-  opens the room through `claimCrossAccountOpen`. Without live accounts, a
-  user with two or more saved accounts sees one line pointing at Settings >
-  Labs. Live: NOT TESTED.
+  opens the room through `claimCrossAccountOpen`. Drafts are scoped to the
+  account, and the composer drops unsaved text when the session it belongs
+  to signs out, so a switch from an inbox row cannot carry text into another
+  account. With live accounts switched off, a user with two or more saved
+  accounts sees one line pointing at Settings > Labs. Live: NOT TESTED.
 - **Warm account adoption (2026-10-27, review-gated).** Switching to a pinned
   account whose host is Running, past its initial sync, not being removed and
   with custody settled (no keyring write of its sign-in or live token write
@@ -1125,6 +1128,36 @@ in the per-room SDK Threads list. The server's highlight notification feed is
 paged by `next_token` 60 at a time, with a retry that keeps the same cursor.
 If the server lacks `/notifications`, older discovery is explicitly unavailable.
 No participant fan-out or all-room polling is involved.
+
+The Threads area also filters by Mentioned (any mention in the thread, read
+or not) and To do: threads holding a message marked "Needs reply" or
+"Waiting", a saved message or a reminder (`ActivityModel::PersonalThread`,
+fed by real room and root ids only; composite ids are refused). Such a thread
+is listed even when no activity row names it, opening the marked message. An
+empty list says why when it cannot know: the server does not report followed
+threads, or older activity is unavailable.
+
+#### Follow-ups and catch-up
+
+"Needs reply" and "Waiting for reply" are personal marks on a message, set
+and cleared from its menu and listed under Activity › To do
+(`FollowUpController`). Nothing is inferred: no message gets a mark the user
+did not set, and only the user marks one done. Sending a reply to a marked
+message, or a message in its thread, shows "You replied" on that row as an
+offer. Marks are local to this device in `follow-ups.json` under the
+account's recorded root (`kAccountFiles`): room id, event id, thread root, the
+state and a time, at most 500, written atomically, never any text. Nothing
+here sends a receipt or touches the server. A due date is an ordinary
+reminder on the same message.
+
+Activity › All opens with a catch-up card while anything is unread
+(`ActivityModel::catchUp`): unread mentions and replies, threads with unread
+replies (grouped by real room and root), and polls received since sign-in in
+rooms still unread. Every item opens its exact event; muted rooms are left
+out. It counts messages it cannot decrypt yet and names its coverage gaps:
+older activity not loaded, not available from the server, or past the
+activity limit. It is computed from loaded activity and stores nothing.
+Pinned-message changes are not included (the sync signal carries no event).
 
 ### Saved messages (Q4)
 

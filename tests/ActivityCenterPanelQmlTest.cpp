@@ -53,6 +53,22 @@ QtObject {
     property var roomList: QtObject { property bool roomFavouritesSupported: true }
     property string settingsSection: ""
     property var settings: QtObject { property string clockTimeFormat: "hh:mm" }
+    property var followUps: null
+    property var followUpsStub: QtObject {
+        property var items: [
+            { roomId: "!r:x", roomName: "Ops-Room", eventId: "$ask",
+              threadRootId: "", state: "reply", atMs: 1000, replied: true },
+            { roomId: "!r:x", roomName: "Ops-Room", eventId: "$wait",
+              threadRootId: "$root", state: "waiting", atMs: 900, replied: false }
+        ]
+        property string lastDone: ""
+        property string lastState: ""
+        function setState(r, e, t, s) { lastState = e + "|" + s }
+        function markDone(r, e) {
+            lastDone = r + "|" + e
+            items = items.filter(function(i) { return i.eventId !== e })
+        }
+    }
     property var stickers: QtObject {
         property int revision: 0
         function shortcodeForUrl(u) { return "" }
@@ -76,6 +92,11 @@ QtObject {
         property var keywords: []
         property string lastOpened: ""
         property int openCalls: 0
+        property int threadActivityRevision: 0
+        property var digest: ({ total: 0 })
+        function catchUp() { return digest }
+        property string lastOpenedEvent: ""
+        function openEvent(r, e, t) { lastOpenedEvent = r + "|" + e + "|" + t }
         function open(id) { lastOpened = id; openCalls += 1 }
         function markAllSeen() {}
         function loadOlderActivity() { olderPageCalls += 1 }
@@ -844,6 +865,84 @@ private Q_SLOTS:
         settle();
         QCOMPARE(empty->property("text").toString(),
                  QStringLiteral("No pending invites."));
+        QVERIFY2(f.warnings.isEmpty(), qPrintable(f.warnings.join('\n')));
+    }
+
+    void theCatchUpCardCountsWhatItCannotSeeAndOpensTheExactEvent()
+    {
+        Fixture f;
+        QVERIFY(make(f));
+        QObject *card = f.panel->findChild<QObject *>(QStringLiteral("catchUpCard"));
+        QVERIFY(card);
+        QVERIFY(!card->property("visible").toBool());
+        QVariantMap mention{ { "kind", "mention" }, { "roomId", "!r:x" },
+                             { "roomName", "Ops-Room" }, { "eventId", "$m" },
+                             { "threadRootId", "" }, { "count", 1 },
+                             { "encrypted", true } };
+        QVariantMap thread{ { "kind", "thread" }, { "roomId", "!r:x" },
+                            { "roomName", "Ops-Room" }, { "eventId", "$t" },
+                            { "threadRootId", "$root" }, { "count", 2 },
+                            { "encrypted", false } };
+        f.activity->setProperty("digest", QVariantMap{
+            { "total", 3 }, { "mentions", 1 }, { "threads", 1 }, { "polls", 1 },
+            { "undecryptable", 1 },
+            { "gaps", QStringList{ QStringLiteral("older_not_loaded") } },
+            { "items", QVariantList{ mention, thread } } });
+        f.activity->setProperty("threadActivityRevision", 1);
+        settle();
+        QVERIFY(card->property("visible").toBool());
+        QObject *undecryptable = card->findChild<QObject *>(
+            QStringLiteral("catchUpUndecryptable"));
+        QVERIFY(undecryptable && undecryptable->property("visible").toBool());
+        QObject *gap = card->findChild<QObject *>(QStringLiteral("catchUpGap"));
+        QVERIFY(gap);
+        QVERIFY(gap->property("text").toString().contains(QStringLiteral("Older activity")));
+        QObject *more = card->findChild<QObject *>(QStringLiteral("catchUpMore"));
+        QVERIFY(more && more->property("visible").toBool());
+        QVERIFY(QMetaObject::invokeMethod(card, "open", Q_ARG(QVariant, QVariant(thread))));
+        QCOMPARE(f.activity->property("lastOpenedEvent").toString(),
+                 QStringLiteral("!r:x|$t|$root"));
+        QTRY_VERIFY(!f.panel->property("visible").toBool());
+        QVERIFY2(f.warnings.isEmpty(), qPrintable(f.warnings.join('\n')));
+    }
+
+    void theToDoTabListsMarksAndOnlyTheUserMarksThemDone()
+    {
+        Fixture f;
+        QVERIFY(make(f));
+        auto *w = qobject_cast<QQuickWindow *>(f.window);
+        QVERIFY(!findVisualItem(w->contentItem(), QStringLiteral("activityFilter_todo")));
+        f.app->setProperty("followUps", f.app->property("followUpsStub"));
+        QTRY_VERIFY(findVisualItem(w->contentItem(), QStringLiteral("activityFilter_todo")));
+        f.activity->setProperty("filter", QStringLiteral("todo"));
+        settle();
+        auto *todo = f.panel->findChild<QQuickItem *>(QStringLiteral("followUpsList"));
+        QVERIFY(todo);
+        QVERIFY(todo->isVisible());
+        QVERIFY(!f.list->isVisible());
+        QTRY_COMPARE(todo->property("count").toInt(), 2);
+        QObject *stub = f.app->property("followUps").value<QObject *>();
+        QList<QQuickItem *> rows;
+        for (QQuickItem *c : todo->property("contentItem").value<QQuickItem *>()->childItems())
+            if (c->objectName() == QLatin1String("followUpRow"))
+                rows << c;
+        QCOMPARE(rows.size(), 2);
+        std::sort(rows.begin(), rows.end(), [](QQuickItem *a, QQuickItem *b) {
+            return a->property("index").toInt() < b->property("index").toInt();
+        });
+        QVERIFY(findVisualItem(rows.at(0), QStringLiteral("followUpReplied"))->isVisible());
+        QVERIFY(!findVisualItem(rows.at(1), QStringLiteral("followUpReplied"))->isVisible());
+        QCOMPARE(stub->property("lastDone").toString(), QString());
+        QVERIFY(QMetaObject::invokeMethod(
+            findVisualItem(rows.at(0), QStringLiteral("followUpDone")), "clicked"));
+        QCOMPARE(stub->property("lastDone").toString(), QStringLiteral("!r:x|$ask"));
+        QTRY_COMPARE(todo->property("count").toInt(), 1);
+        QObject *empty = f.panel->findChild<QObject *>(QStringLiteral("activityEmptyState"));
+        QVERIFY(!empty->property("visible").toBool());
+        QMetaObject::invokeMethod(stub, "markDone", Q_ARG(QVariant, QStringLiteral("!r:x")),
+                                  Q_ARG(QVariant, QStringLiteral("$wait")));
+        QTRY_VERIFY(empty->property("visible").toBool());
+        QVERIFY(empty->property("text").toString().startsWith(QStringLiteral("Nothing to do")));
         QVERIFY2(f.warnings.isEmpty(), qPrintable(f.warnings.join('\n')));
     }
 };
