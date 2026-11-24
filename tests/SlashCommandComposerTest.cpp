@@ -299,7 +299,7 @@ private Q_SLOTS:
                  QStringList{ QStringLiteral("!room:example.org|$root|Q|a,b|1") });
     }
 
-    void aRoomSwitchOrALostBackendEndsThePendingPoll()
+    void aRoomSwitchKeepsThePendingPollsAnswerAndALostBackendEndsIt()
     {
         m_client->pollOp = 7;
         QSignalSpy finished(m_composer, &MessageComposer::pollCreateFinished);
@@ -307,8 +307,16 @@ private Q_SLOTS:
                                        { QStringLiteral("a"), QStringLiteral("b") },
                                        false, 1));
         m_composer->setRoomId(QStringLiteral("!other:example.org"));
+        QVERIFY2(!m_composer->createPoll(QStringLiteral("Q"),
+                                         { QStringLiteral("a"), QStringLiteral("b") },
+                                         false, 1),
+                 "a room switch dropped the pending poll");
         Q_EMIT m_client->roomSendFinished(7, kRoom, true, QString());
-        QCOMPARE(finished.count(), 0);
+        QCOMPARE(finished.count(), 1);
+        QCOMPARE(finished.first().first().toBool(), true);
+        Q_EMIT m_client->roomSendFinished(7, kRoom, true, QString());
+        QCOMPARE(finished.count(), 1);
+        finished.clear();
         m_client->pollOp = 8;
         QVERIFY(m_composer->createPoll(QStringLiteral("Q"),
                                        { QStringLiteral("a"), QStringLiteral("b") },
@@ -316,6 +324,24 @@ private Q_SLOTS:
         Q_EMIT m_client->sendsAbandoned();
         QCOMPARE(finished.count(), 1);
         QCOMPARE(finished.first().first().toBool(), false);
+    }
+
+    void aSignOutOrAClientSwapAnswersThePendingPoll()
+    {
+        m_client->pollOp = 7;
+        QSignalSpy finished(m_composer, &MessageComposer::pollCreateFinished);
+        QVERIFY(m_composer->createPoll(QStringLiteral("Q"),
+                                       { QStringLiteral("a"), QStringLiteral("b") },
+                                       false, 1));
+        m_client->logout();
+        QCOMPARE(finished.count(), 1);
+        QCOMPARE(finished.first().first().toBool(), false);
+        QVERIFY(m_composer->createPoll(QStringLiteral("Q"),
+                                       { QStringLiteral("a"), QStringLiteral("b") },
+                                       false, 1));
+        m_composer->setClient(nullptr);
+        QCOMPARE(finished.count(), 2);
+        QCOMPARE(finished.last().first().toBool(), false);
     }
 
     void typingNoticesAreSentByDefault()
