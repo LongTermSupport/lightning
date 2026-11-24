@@ -7919,9 +7919,16 @@ fn spawn_unread_gap_watch(
     client: &Client,
     events: &Arc<Mutex<VecDeque<String>>>,
 ) -> tokio::task::JoinHandle<()> {
+    spawn_unread_gap_watch_on(client, events, client.subscribe_to_all_room_updates())
+}
+
+fn spawn_unread_gap_watch_on(
+    client: &Client,
+    events: &Arc<Mutex<VecDeque<String>>>,
+    mut updates: tokio::sync::broadcast::Receiver<matrix_sdk::sync::RoomUpdates>,
+) -> tokio::task::JoinHandle<()> {
     use tokio::sync::broadcast::error::RecvError;
     use tokio::time::Instant;
-    let mut updates = client.subscribe_to_all_room_updates();
     let client = client.clone();
     let events = Arc::clone(events);
     let (settled, mut queued) = tokio::sync::mpsc::channel::<PendingGap>(GAP_FETCH_PENDING_MAX);
