@@ -276,16 +276,13 @@ private Q_SLOTS:
                  "removal left the saved positions under the recorded root");
     }
 
-    // Removal deletes the recorded and the canonical root whole; sign-out
-    // deletes nothing but this file, so it is where the path has to be right.
     void signOutDeletesSavedPositionsUnderTheRecordedRoot()
     {
         ScriptedLabsBridge bridge;
         BridgeScope bridgeScope(&bridge);
         LabsEnvScope env(true);
         AppController app(AppController::MockBackend, false, inMemoryKeyring());
-        saveAccountsAndSignInAlice(app);
-        app.settings()->setStoreSlugFor(kAlice, QStringLiteral("Alice_typed"));
+        signInAliceAt(app, QStringLiteral("Alice_typed"));
         const auto alice = identityOf(app, kAlice);
         QVERIFY(!alice.accountRoot.isEmpty());
         QVERIFY2(alice.accountRoot != matrix::app_data::accountRoot(kAlice),
