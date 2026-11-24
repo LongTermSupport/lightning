@@ -1,5 +1,9 @@
 # Open items and the NOT TESTED inventory
 
+## 2026-11-24 — KNOWN LIMIT: a room export shows one revision, and a loaded-timeline export shows what the SDK selected
+
+Walked exports select edits through the shared reducer and say which edit they show; an export of the loaded timeline reports the SDK's choice, and no export carries the revision history.
+
 ## 2026-11-24 — KNOWN LIMIT: a thread card whose latest reply is hidden heals only on a repaint
 
 With no shown reply cached, the card shows its count alone; a shown reply fetched later (the thread panel) appears once something repaints the root row, at most 5 s after it reached the cache.
