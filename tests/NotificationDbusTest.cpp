@@ -928,6 +928,7 @@ void NotificationDbusTest::aResumedSyncBurstIsOneCardWithTheLatestMessage()
         manager.setSoundSource(NotificationManager::SourceSystem);
         NotificationManager::Context ctx = context();
         ctx.previewMode = NotificationManager::SenderAndMessage;
+        ctx.soundMode = NotificationManager::SoundAll;
         for (int n = 1; n <= 20; ++n) {
             if (twoBatches && n == 11)
                 QTest::qWait(200);
