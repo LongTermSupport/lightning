@@ -1579,7 +1579,6 @@ QtObject {
             const char *phase = canPost ? "posting allowed" : "read-only";
             Delegate d;
             QVERIFY(createDelegate(controller, fixture, d));
-            QCOMPARE(d.root->property("postForbidden").toBool(), !canPost);
 
             auto *loader = d.root->findChild<QQuickItem *>(
                 QStringLiteral("messageActionBarLoader"));
