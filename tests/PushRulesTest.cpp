@@ -45,6 +45,17 @@ public:
         writes.append({kind, key, value});
         return MockMatrixClient::writePushRule(kind, key, value);
     }
+    QString simulatedRoom;
+    QString simulatedBody;
+    bool simulatedMention = false;
+    quint64 simulatePushRule(const QString &roomId, const QString &body,
+                             bool mentionMe) override
+    {
+        simulatedRoom = roomId;
+        simulatedBody = body;
+        simulatedMention = mentionMe;
+        return 4242;
+    }
 };
 
 class StaleRemovalClient final : public RecordingClient
@@ -139,9 +150,13 @@ class StubApp final : public QObject
                    READ troubleshooter CONSTANT)
     Q_PROPERTY(QObject *settings READ settings CONSTANT)
     Q_PROPERTY(QString currentRoomId READ currentRoomId CONSTANT)
+    Q_PROPERTY(QObject *reminders READ reminders CONSTANT)
+    Q_PROPERTY(bool quietHoursActive READ quietHoursActive CONSTANT)
 public:
     StubApp(QObject *rules, QObject *shoot, QObject *settings)
         : m_rules(rules), m_shoot(shoot), m_settings(settings) {}
+    QObject *reminders() const { return nullptr; }
+    bool quietHoursActive() const { return false; }
     QObject *pushRules() const { return m_rules; }
     QObject *troubleshooter() const { return m_shoot; }
     QObject *settings() const { return m_settings; }
@@ -154,8 +169,22 @@ class StubSettings final : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool notificationsEnabled MEMBER enabled NOTIFY changed)
+    Q_PROPERTY(bool quietHoursEnabled MEMBER quiet NOTIFY changed)
+    Q_PROPERTY(int quietHoursStart MEMBER quietStart NOTIFY changed)
+    Q_PROPERTY(int quietHoursEnd MEMBER quietEnd NOTIFY changed)
+    Q_PROPERTY(bool quietHoursAllowMentions MEMBER quietMentions NOTIFY changed)
+    Q_PROPERTY(bool quietHoursAllowDirect MEMBER quietDirect NOTIFY changed)
+    Q_PROPERTY(QStringList quietHoursRooms MEMBER quietRooms NOTIFY changed)
+    Q_PROPERTY(QString clockTimeFormat MEMBER clock CONSTANT)
 public:
     bool enabled = false;
+    bool quiet = false;
+    int quietStart = 22 * 60;
+    int quietEnd = 8 * 60;
+    bool quietMentions = false;
+    bool quietDirect = false;
+    QStringList quietRooms;
+    QString clock = QStringLiteral("HH:mm");
 Q_SIGNALS:
     void changed();
 };
@@ -410,6 +439,78 @@ private Q_SLOTS:
         QVERIFY(!ctl.loaded());
         QCOMPARE(ctl.mentionUserId(), -1);
         QVERIFY(!ctl.masterMute());
+    }
+
+    void quietHoursSnoozeAndDoNotDisturbAreNamedAsSuch()
+    {
+        NotificationTroubleshooter::Inputs in;
+        in.delivery = NotificationTroubleshooter::DesktopService;
+        in.rulesKnown = true;
+        in.platform = QStringLiteral("linux");
+        in.roomId = QStringLiteral("!r:example.org");
+        QVERIFY(checkById(NotificationTroubleshooter::evaluate(in), "quiet").isEmpty());
+        QVERIFY(checkById(NotificationTroubleshooter::evaluate(in), "snooze").isEmpty());
+        in.quietNow = true;
+        in.roomSnoozed = true;
+        in.desktopInhibited = true;
+        const QVariantList checks = NotificationTroubleshooter::evaluate(in);
+        QCOMPARE(checkById(checks, "quiet").value("status").toInt(),
+                 int(NotificationTroubleshooter::Warn));
+        QVERIFY(checkById(checks, "quiet").value("detail").toString()
+                    .contains(QStringLiteral("Calls still ring")));
+        QCOMPARE(checkById(checks, "snooze").value("status").toInt(),
+                 int(NotificationTroubleshooter::Warn));
+        QCOMPARE(checkById(checks, "system").value("status").toInt(),
+                 int(NotificationTroubleshooter::Warn));
+    }
+
+    void theSimulatorSaysWhatThisDeviceAddsToTheRule()
+    {
+        NotificationTroubleshooter::Inputs in;
+        QVERIFY(NotificationTroubleshooter::localOutcome(in, false).isEmpty());
+        in.quietNow = true;
+        QVERIFY(!NotificationTroubleshooter::localOutcome(in, false).isEmpty());
+        in.quietAllowsMentions = true;
+        QVERIFY(NotificationTroubleshooter::localOutcome(in, true).isEmpty());
+        QVERIFY(!NotificationTroubleshooter::localOutcome(in, false).isEmpty());
+        in.quietNow = false;
+        in.desktopInhibited = true;
+        QVERIFY(NotificationTroubleshooter::localOutcome(in, false)
+                    .contains(QStringLiteral("Do Not Disturb")));
+        in.appEnabled = false;
+        QVERIFY(NotificationTroubleshooter::localOutcome(in, false)
+                    .contains(QStringLiteral("off")));
+    }
+
+    void theSimulatorAsksTheClientAndWritesNothing()
+    {
+        RecordingClient client;
+        QVERIFY(login(client));
+        NotificationTroubleshooter shoot;
+        shoot.setClient(&client);
+        shoot.setInputsProvider([](const QString &room) {
+            NotificationTroubleshooter::Inputs in;
+            in.roomId = room;
+            in.quietNow = true;
+            return in;
+        });
+        shoot.simulate(QString(), QStringLiteral("hi"), false);
+        QCOMPARE(shoot.simulation().value("state").toString(), QStringLiteral("noRoom"));
+        shoot.simulate(QStringLiteral("!r:example.org"), QStringLiteral("lunch?"), true);
+        QCOMPARE(client.simulatedRoom, QStringLiteral("!r:example.org"));
+        QCOMPARE(client.simulatedBody, QStringLiteral("lunch?"));
+        QVERIFY(client.simulatedMention);
+        QCOMPARE(shoot.simulation().value("state").toString(), QStringLiteral("pending"));
+        Q_EMIT client.pushRuleSimulated(1, true, {{"notify", true}});
+        QCOMPARE(shoot.simulation().value("state").toString(), QStringLiteral("pending"));
+        Q_EMIT client.pushRuleSimulated(4242, true,
+            {{"matched", true}, {"rule_id", "lunch"}, {"kind", "content"},
+             {"notify", true}, {"highlight", false}, {"sound", false}});
+        const QVariantMap sim = shoot.simulation();
+        QCOMPARE(sim.value("state").toString(), QStringLiteral("done"));
+        QVERIFY(sim.value("ruleName").toString().contains(QStringLiteral("lunch")));
+        QVERIFY(sim.value("local").toString().contains(QStringLiteral("quiet hours")));
+        QVERIFY(client.writes.isEmpty());
     }
 
     void theTroubleshooterNeverPassesWhatItCannotRead()
@@ -955,6 +1056,26 @@ Item {
         QCOMPARE(tests, 1);
         QVERIFY(status->property("text").toString().contains(
             QStringLiteral("Test sent")));
+
+        QVERIFY(QMetaObject::invokeMethod(find("quietHoursSwitch"), "toggled"));
+        QVERIFY(settings.quiet);
+        auto *preview = find("quietHoursPreview");
+        QVERIFY(preview);
+        QTRY_VERIFY_WITH_TIMEOUT(preview->property("visible").toBool(), kWaitMs);
+        QVERIFY(preview->property("text").toString().contains(QStringLiteral("22:00")));
+
+        shoot.setClient(&client);
+        QVERIFY(QMetaObject::invokeMethod(find("ruleSimulatorButton"), "clicked"));
+        QCOMPARE(client.simulatedRoom, QStringLiteral("!open:mock.local"));
+        Q_EMIT client.pushRuleSimulated(4242, true,
+            {{"matched", true}, {"rule_id", ".m.rule.message"}, {"kind", "underride"},
+             {"notify", true}, {"highlight", false}, {"sound", false}});
+        auto *result = find("ruleSimulatorResult");
+        QVERIFY(result);
+        QTRY_VERIFY_WITH_TIMEOUT(result->property("text").toString().contains(
+            QStringLiteral("Messages in group rooms")), kWaitMs);
+        QVERIFY(result->property("text").toString().contains(
+            QStringLiteral("Lightning would not show it")));
 
         QVERIFY2(warnings.isEmpty(), qPrintable(warnings.join(QLatin1Char('\n'))));
     }

@@ -94,6 +94,7 @@
 #include "models/TimelineModel.h"
 #include "app/PinnedMessagesController.h"
 #include "app/SavedMessagesController.h"
+#include "app/RemindersController.h"
 #include "app/RoomUpgradeController.h"
 #include "app/OpenRoomPermissions.h"
 #include "models/TimelineScrollController.h"
@@ -365,6 +366,8 @@ class AppController : public QObject
     Q_PROPERTY(AudioDeviceTester* audioTester READ audioTester CONSTANT)
     Q_PROPERTY(PinnedMessagesController* pinned READ pinned CONSTANT)
     Q_PROPERTY(SavedMessagesController* savedMessages READ savedMessages CONSTANT)
+    Q_PROPERTY(RemindersController* reminders READ reminders CONSTANT)
+    Q_PROPERTY(bool quietHoursActive READ quietHoursActive NOTIFY quietHoursActiveChanged)
     Q_PROPERTY(RoomUpgradeController* roomUpgrade READ roomUpgrade CONSTANT)
     Q_PROPERTY(OpenRoomPermissions* openRoomPermissions
                    READ openRoomPermissions CONSTANT)
@@ -655,6 +658,8 @@ public:
     bool hasParkedOpenForTest() const { return m_parkedOpen.has_value(); }
     PinnedMessagesController *pinned() const { return m_pinned.get(); }
     SavedMessagesController *savedMessages() const { return m_savedMessages.get(); }
+    RemindersController *reminders() const { return m_reminders.get(); }
+    bool quietHoursActive() const { return m_quietHoursActive; }
     RoomUpgradeController *roomUpgrade() const { return m_roomUpgrade.get(); }
     OpenRoomPermissions *openRoomPermissions() const
     { return m_openRoomPermissions.get(); }
@@ -997,6 +1002,7 @@ Q_SIGNALS:
     void currentRoomIdChanged();
     void composerFocusRequested(const QString &roomId);
     void loggedInChanged();
+    void quietHoursActiveChanged();
     void connectionStatusChanged();
     void syncModeChanged();
     void systemDarkModeChanged();
@@ -1393,6 +1399,10 @@ private:
     void noteRtcSessionForRing(const QString &roomId);
     std::unique_ptr<PinnedMessagesController> m_pinned;
     std::unique_ptr<SavedMessagesController> m_savedMessages;
+    std::unique_ptr<RemindersController> m_reminders;
+    QTimer m_quietHoursTimer;
+    bool m_quietHoursActive = false;
+    void refreshQuietHours();
     std::unique_ptr<RoomUpgradeController> m_roomUpgrade;
     std::unique_ptr<OpenRoomPermissions> m_openRoomPermissions;
     std::unique_ptr<ThreadController> m_thread;

@@ -1641,6 +1641,31 @@ most failure branches are **NOT TESTED**. The full inventory is at the end of
   "Mark as read" in the row menu follows the RAW unread state
   (`RoomListModel` `rawUnread`), not the dot, so a quiet room that matrix-sdk
   still counts can be marked read, as mark-all-read does.
+- **Reminders and snooze.** `RemindersController` keeps message reminders
+  and conversation snoozes in `reminders.json` under the account's RECORDED
+  root (`AppController::accountRootFor`, `kAccountFiles`): room id, event id,
+  thread root and a time, never text or names. It is closed and deleted on
+  sign-out and goes with the account root on removal. A reminder reads its
+  message from the SDK when it fires, honours the room's preview mode, opens
+  that exact event (or thread), says only that the message was removed when
+  it was redacted, and is removed from the file before its card is shown, so
+  it fires once; several due at once (or due while the app was closed) are
+  one summary card. A snooze is local to this device: it writes no push rule
+  and sends no receipt, holds the room's message cards until it ends, then
+  shows one summary.
+- **Quiet hours.** One device-wide daily window (`quietHoursStart/End`,
+  wall-clock minutes, so DST and zone changes follow the clock) with three
+  exceptions: mentions, direct messages and rooms chosen from the room menu.
+  `NotificationManager::setHoldCheck` holds a message card instead of
+  showing it; Activity and unread counts still update, calls are never asked,
+  and the end of the window (or turning it off) shows one summary card. A
+  sign-out drops what that account had held.
+- **Rule simulator.** Settings › Notifications asks matrix-sdk's own ruleset
+  (`mx_rust_push_rules_simulate`: `Ruleset::get_match` and `get_actions` on a
+  synthetic message from another user in the open room) which rule wins; it
+  never writes a rule. The troubleshooter adds what this device would do on
+  top (switch off, local mute, snooze, quiet hours, a freedesktop service
+  reporting itself inhibited).
 - **Receipts past events no row shows (2026-11-05).** matrix-sdk counts
   `m.room.message`, encrypted, sticker and poll start/end events after the
   newest receipt; the automatic receipt lands on the newest visible row.
