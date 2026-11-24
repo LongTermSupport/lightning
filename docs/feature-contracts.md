@@ -3793,3 +3793,29 @@ live, and the server answers presence. Research and design: vault note
 - Hiding read receipts is display only; whether this account SENDS them is
   the Privacy setting `readReceiptMode`.
 - Large emoji off renders an emoji-only message at the body size.
+
+## Performance budgets
+
+Budgets are deterministic gates unless a measured baseline is given; a
+wall-clock number from one machine is never a threshold.
+
+- Image send preparation, image edits and media saves do no file or pixel
+  work on the GUI thread above 1 MiB of input or 1 MP of edit
+  (`stalltrace::noteGuiWork` categories `image-send-prep`, `image-edit`,
+  `media-save`). Gates: `AttachmentQueueTest`
+  `aLargePhotoIsStrippedOffTheGuiThreadAndKeepsTheTrayOrder`,
+  `aLargePastedPngAndALargeAnimatedGifAreReadOffTheGuiThread`,
+  `aLargeImageEditRendersOffTheGuiThread`; `ThreadControllerTest`
+  `aLargeThreadPhotoIsStrippedOffTheGuiThreadEvenAfterTheThreadCloses`;
+  `MediaBridgeTest` `aSaveThatRunsOutOfSpaceFailsOnceAndLeavesNothing`.
+- Playable-file writes hold at most 64 MiB pending in total
+  (`MediaBridge::kPlayablePendingBudget`). Gate: `MediaBridgeTest`
+  `playableWritesStayInsideTheirPendingBudget`.
+- A portal capability probe never blocks its caller. Gate: `CameraPortalTest`
+  `aCapabilityProbeNeverBlocksTheCaller`.
+- Baseline, cold start (runner build `e4880fce`, `--backend=mock`, empty
+  profile, offscreen, i9-10900K, 2026-11-24): one start-up GUI stall of
+  2243-2294 ms, unattributed (5 runs); RSS 195-197 MB at 15 s, flat at 45 s;
+  idle 1 wakeup/s with tracing off (3 runs). `LIGHTNING_GUI_STALL_TRACE=<ms>`
+  is the harness; it adds about 60 wakeups/s itself, so measure idle power
+  with it unset.
