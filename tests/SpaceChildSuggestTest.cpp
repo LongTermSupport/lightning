@@ -541,7 +541,6 @@ private Q_SLOTS:
         client.fakeRooms[6].parentSpaceIds = { s2 };
         SpaceManager mgr;
         mgr.setClient(&client);
-        mgr.rebuild();
 
         const auto parents = [&mgr](const QString &id) {
             QStringList out;
