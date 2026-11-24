@@ -303,6 +303,98 @@ async fn the_thread_card_leaves_out_a_hidden_thread_event() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn a_hidden_latest_reply_with_no_shown_reply_cached_gives_no_preview() {
+    use matrix_sdk::test_utils::mocks::RoomRelationsResponseTemplate;
+    let server = MatrixMockServer::new().await;
+    let client = server
+        .client_builder()
+        .on_builder(|b| {
+            b.with_threading_support(matrix_sdk::ThreadingSupport::Enabled {
+                with_subscriptions: false,
+            })
+        })
+        .build()
+        .await;
+    client.event_cache().subscribe().unwrap();
+    let in_thread = |mut event: serde_json::Value| {
+        event["content"]["m.relates_to"] = json!({"rel_type":"m.thread", "event_id":"$rroot",
+            "is_falling_back":true, "m.in_reply_to":{"event_id":"$rroot"}});
+        event
+    };
+    let hidden = in_thread(json!({"type":"org.lightning.test.hidden", "event_id":"$rhidden",
+        "sender":SENDER, "origin_server_ts":4000, "content":{"body":"hidden"}}));
+    let mut root = message("$rroot", "root", 1000);
+    root["unsigned"] = json!({"m.relations": {"m.thread": {
+        "count": 4, "current_user_participated": false, "latest_event": hidden.clone()}}});
+    sync(&client, vec![root, hidden], "1").await;
+    let main = build(&client).await;
+    let room = client.get_room(room_id!("!edits:localhost")).unwrap();
+
+    let deadline = Instant::now() + Duration::from_secs(5);
+    let raw = loop {
+        let value = row(&main, "$rroot").await;
+        if value["thread_latest_timestamp_ms"] == 4000 {
+            break value;
+        }
+        assert!(Instant::now() < deadline, "summary never named the hidden reply: {value}");
+        tokio::time::sleep(Duration::from_millis(20)).await;
+    };
+    let raw_count = raw["thread_reply_count"].as_u64().unwrap();
+    async fn annotated(room: &matrix_sdk::Room, raw: &serde_json::Value) -> serde_json::Value {
+        let mut rows = [raw.clone()];
+        annotate_room_gone_rows(room, &mut rows).await;
+        let [card] = rows;
+        card
+    }
+    let reads = || {
+        crate::timeline::HIDDEN_THREAD_REPLY_READS
+            .lock()
+            .unwrap()
+            .iter()
+            .filter(|id| id.as_str() == "$rroot")
+            .count()
+    };
+    let card = annotated(&room, &raw).await;
+    assert_eq!(card["thread_reply_count"], raw_count - 1, "{card}");
+    for field in ["thread_latest_sender", "thread_latest_preview", "thread_latest_timestamp_ms"] {
+        assert!(card.get(field).is_none(), "{field} names the hidden reply: {card}");
+    }
+    let before = reads();
+    for _ in 0..5 {
+        annotated(&room, &raw).await;
+    }
+    assert_eq!(reads(), before, "an unchanged room re-read the store");
+
+    let mut shown = in_thread(message("$rshown", "reply three", 3000));
+    shown["room_id"] = json!(ROOM);
+    server
+        .mock_room_relations()
+        .match_target_event(matrix_sdk::ruma::EventId::parse("$rroot").unwrap())
+        .ok(RoomRelationsResponseTemplate::default()
+            .events(vec![Raw::from_json_string(shown.to_string()).unwrap()]))
+        .mount()
+        .await;
+    room.relations(
+        matrix_sdk::ruma::OwnedEventId::try_from("$rroot").unwrap(),
+        matrix_sdk::room::RelationsOptions::default(),
+    )
+    .await
+    .unwrap();
+    let deadline = Instant::now() + Duration::from_secs(15);
+    let healed = loop {
+        let card = annotated(&room, &raw).await;
+        if card["thread_latest_preview"] == "reply three" {
+            break card;
+        }
+        assert!(Instant::now() < deadline, "the cached shown reply never reached the card: {card}");
+        tokio::time::sleep(Duration::from_millis(250)).await;
+    };
+    assert_eq!(healed["thread_latest_sender"], SENDER, "{healed}");
+    assert_eq!(healed["thread_latest_timestamp_ms"], 3000, "{healed}");
+    assert_eq!(healed["thread_reply_count"], raw_count - 1, "{healed}");
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 #[ignore = "requires localhs and LIGHTNING_EDITS_LOCALHS_ACCOUNTS"]
 async fn localhs_remote_edit_over_http() {
     use matrix_sdk::{

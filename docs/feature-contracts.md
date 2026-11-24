@@ -1048,7 +1048,9 @@ NOT TESTED**. Automated tests named in commits do not establish live behavior.
   * The thread card counts what the thread panel shows: replies the panel
     hides (hidden event types) are subtracted from the SDK summary's count,
     and a hidden latest reply is replaced by the newest shown one
-    (`skip_hidden_thread_replies`, from the event cache only). Accepted
+    (`skip_hidden_thread_replies`, from the event cache only). When no shown
+    reply is cached the card shows the count alone, never a senderless
+    preview, and re-reads the cache at most every 5 s. Accepted
     limits: a hidden reply the cache never saw is still counted; a UTD reply
     that decrypts to a hidden type stays counted until the summary next
     changes; `thread_unread` is the SDK's; a swapped-in latest reply shows its
