@@ -12698,7 +12698,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Continuar na nova sala</translation>
     </message>
     <message>
-        <location line="+186"/>
+        <location line="+188"/>
         <source>Failed</source>
         <translation>Falhou</translation>
     </message>
@@ -12965,7 +12965,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Gravar uma mensagem de voz</translation>
     </message>
     <message>
-        <location line="-3173"/>
+        <location line="-3175"/>
         <source>A recording is already in progress.</source>
         <translation>Já está em curso uma gravação.</translation>
     </message>
@@ -12985,7 +12985,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>A gravação de voz está indisponível.</translation>
     </message>
     <message>
-        <location line="+2890"/>
+        <location line="+2892"/>
         <location line="+1"/>
         <source>More</source>
         <translation>Mais</translation>
@@ -13097,7 +13097,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>MessageDelegate</name>
     <message>
-        <location filename="../qml/MessageDelegate.qml" line="+1236"/>
+        <location filename="../qml/MessageDelegate.qml" line="+1244"/>
         <source>Today</source>
         <translation>Hoje</translation>
     </message>
@@ -13145,13 +13145,13 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     </message>
     <message>
         <location line="+91"/>
-        <location line="+924"/>
-        <location line="+1150"/>
+        <location line="+926"/>
+        <location line="+1152"/>
         <source>Reply</source>
         <translation>Responder</translation>
     </message>
     <message>
-        <location line="-2059"/>
+        <location line="-2063"/>
         <source>(original message not loaded)</source>
         <translation>(mensagem original não carregada)</translation>
     </message>
@@ -13206,12 +13206,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Definições de segurança</translation>
     </message>
     <message>
-        <location line="-1988"/>
+        <location line="-1990"/>
         <source>Link</source>
         <translation>Ligação</translation>
     </message>
     <message>
-        <location line="+1359"/>
+        <location line="+1361"/>
         <source>Open this thread</source>
         <translation>Abrir este tópico</translation>
     </message>
@@ -13252,30 +13252,30 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2340"/>
+        <location line="+2346"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>Tentar novamente</translation>
     </message>
     <message>
-        <location line="-3356"/>
-        <location line="+1227"/>
+        <location line="-3362"/>
+        <location line="+1229"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location line="-1222"/>
+        <location line="-1224"/>
         <source>Cancel sending this message</source>
         <translation>Cancelar o envio desta mensagem</translation>
     </message>
     <message>
         <location line="+188"/>
-        <location line="+1412"/>
+        <location line="+1418"/>
         <source>Hide image</source>
         <translation>Ocultar imagem</translation>
     </message>
     <message>
-        <location line="-1408"/>
+        <location line="-1414"/>
         <source>Hide</source>
         <translation>Ocultar</translation>
     </message>
@@ -13290,7 +13290,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Reagir</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+23"/>
         <source>Reply to message</source>
         <translation>Responder à mensagem</translation>
     </message>
@@ -13373,12 +13373,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     <message>
         <location line="-997"/>
         <location line="+4"/>
-        <location line="+1136"/>
+        <location line="+1140"/>
         <source>Reply in thread</source>
         <translation>Responder num tópico</translation>
     </message>
     <message>
-        <location line="-2072"/>
+        <location line="-2078"/>
         <source>Original message removed</source>
         <translation>Mensagem original removida</translation>
     </message>
@@ -13393,7 +13393,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Já não está nesta sala. Pode ter sido eliminada no servidor. Use «Sair da sala» para a remover da sua lista.</translation>
     </message>
     <message numerus="yes">
-        <location line="+490"/>
+        <location line="+492"/>
         <source>%1 and %n other(s)</source>
         <translation>
             <numerusform>%1 e mais %n</numerusform>
@@ -13401,7 +13401,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         </translation>
     </message>
     <message>
-        <location line="+969"/>
+        <location line="+973"/>
         <source>Open in room</source>
         <translation>Abrir na sala</translation>
     </message>
@@ -13608,13 +13608,13 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Tentar novamente</translation>
     </message>
     <message>
-        <location line="-3747"/>
-        <location line="+1135"/>
+        <location line="-3751"/>
+        <location line="+1139"/>
         <source>Edit</source>
         <translation>Editar</translation>
     </message>
     <message>
-        <location line="-3699"/>
+        <location line="-3707"/>
         <source>%1 B</source>
         <translation>%1 B</translation>
     </message>
@@ -13630,45 +13630,45 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     </message>
     <message>
         <location line="+19"/>
-        <location line="+576"/>
+        <location line="+578"/>
         <source>Sticker</source>
         <translation>Autocolante</translation>
     </message>
     <message>
-        <location line="-573"/>
+        <location line="-575"/>
         <source>Voice message</source>
         <translation>Mensagem de voz</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+570"/>
+        <location line="+572"/>
         <source>Audio</source>
         <translation>Áudio</translation>
     </message>
     <message>
-        <location line="-568"/>
-        <location line="+566"/>
-        <location line="+3685"/>
+        <location line="-570"/>
+        <location line="+568"/>
+        <location line="+3691"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5174"/>
+        <location line="-5182"/>
         <location line="+53"/>
-        <location line="+512"/>
-        <location line="+4234"/>
+        <location line="+514"/>
+        <location line="+4240"/>
         <source>Image</source>
         <translation>Imagem</translation>
     </message>
     <message>
-        <location line="-4797"/>
+        <location line="-4805"/>
         <source>Attachment</source>
         <translation>Anexo</translation>
     </message>
     <message numerus="yes">
-        <location line="+549"/>
+        <location line="+551"/>
         <source>%n image(s)</source>
         <translation>
             <numerusform>%n imagem</numerusform>
@@ -13729,7 +13729,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>(editada)</translation>
     </message>
     <message>
-        <location line="+1630"/>
+        <location line="+1636"/>
         <source>Add :%1: to my emoji</source>
         <translation>Adicionar :%1: aos meus emojis</translation>
     </message>
@@ -13769,13 +13769,13 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Denunciar a mensagem</translation>
     </message>
     <message>
-        <location line="-701"/>
-        <location line="+715"/>
+        <location line="-705"/>
+        <location line="+719"/>
         <source>Delete</source>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location line="-710"/>
+        <location line="-714"/>
         <source>Remove message?</source>
         <translation>Remover mensagem?</translation>
     </message>
@@ -13790,7 +13790,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Remover</translation>
     </message>
     <message>
-        <location line="+748"/>
+        <location line="+752"/>
         <source>Message details</source>
         <translation>Detalhes da mensagem</translation>
     </message>
@@ -13867,12 +13867,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Alvo da resposta</translation>
     </message>
     <message>
-        <location line="-1997"/>
+        <location line="-2003"/>
         <source>Show preview</source>
         <translation>Mostrar a pré-visualização</translation>
     </message>
     <message>
-        <location line="+1853"/>
+        <location line="+1859"/>
         <source>Remove edits?</source>
         <translation>Remover as edições?</translation>
     </message>
@@ -13892,7 +13892,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Isto fecha a votação e publica o resultado. Uma sondagem não pode ser reaberta.</translation>
     </message>
     <message>
-        <location line="-657"/>
+        <location line="-661"/>
         <source>Delete message?</source>
         <translation>Eliminar a mensagem?</translation>
     </message>
@@ -13902,7 +13902,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Isto remove a mensagem para todos na sala. Não pode ser desfeito.</translation>
     </message>
     <message>
-        <location line="+964"/>
+        <location line="+968"/>
         <source>Open link in browser</source>
         <translation>Abrir a ligação no navegador</translation>
     </message>
@@ -13984,10 +13984,10 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>O autocolante não carregou — clique para tentar novamente</translation>
     </message>
     <message>
-        <location line="-5591"/>
+        <location line="-5599"/>
         <location line="+57"/>
-        <location line="+515"/>
-        <location line="+4232"/>
+        <location line="+517"/>
+        <location line="+4238"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -14000,9 +14000,9 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>vídeo</translation>
     </message>
     <message>
-        <location line="-5972"/>
-        <location line="+568"/>
-        <location line="+4335"/>
+        <location line="-5980"/>
+        <location line="+570"/>
+        <location line="+4341"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -32644,7 +32644,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Marcar este tópico como lido</translation>
     </message>
     <message>
-        <location line="+1304"/>
+        <location line="+1305"/>
         <source>Jump to the newest reply</source>
         <translation>Ir para a resposta mais recente</translation>
     </message>
@@ -32657,7 +32657,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         </translation>
     </message>
     <message>
-        <location line="-1754"/>
+        <location line="-1755"/>
         <source>This room has been replaced.</source>
         <translation>Esta sala foi substituída.</translation>
     </message>
@@ -32878,7 +32878,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Ainda não há respostas. Comece a conversa abaixo.</translation>
     </message>
     <message>
-        <location line="+578"/>
+        <location line="+579"/>
         <source>Loading older replies…</source>
         <translation>A carregar respostas mais antigas…</translation>
     </message>
@@ -33315,12 +33315,12 @@ Nota: importar chaves não verifica esta sessão.</translation>
     <message>
         <location filename="../qml/SpaceLobby.qml" line="-519"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5438"/>
+        <location line="+5439"/>
         <source>Space</source>
         <translation>Espaço</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5437"/>
+        <location filename="../qml/TimelinePane.qml" line="-5438"/>
         <source>Home</source>
         <translation>Início</translation>
     </message>
@@ -33422,12 +33422,12 @@ Nota: importar chaves não verifica esta sessão.</translation>
     <message>
         <location line="+16"/>
         <location line="+2"/>
-        <location line="+3897"/>
+        <location line="+3898"/>
         <source>Room information</source>
         <translation>Informações da sala</translation>
     </message>
     <message>
-        <location line="-3886"/>
+        <location line="-3887"/>
         <location line="+1"/>
         <source>More room actions</source>
         <translation>Mais ações da sala</translation>
@@ -33678,7 +33678,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Não foi possível concluir a procura.</translation>
     </message>
     <message>
-        <location line="+2749"/>
+        <location line="+2750"/>
         <location line="+27"/>
         <location line="+463"/>
         <source>Loading older messages…</source>
@@ -34060,8 +34060,8 @@ Nota: importar chaves não verifica esta sessão.</translation>
     </message>
     <message>
         <location line="+298"/>
-        <location filename="../qml/TimelinePane.qml" line="-6736"/>
-        <location line="+6913"/>
+        <location filename="../qml/TimelinePane.qml" line="-6737"/>
+        <location line="+6914"/>
         <source>Room</source>
         <translation>Sala</translation>
     </message>
@@ -34136,13 +34136,13 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location line="-6028"/>
+        <location line="-6029"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation>Ver perfil</translation>
     </message>
     <message>
-        <location line="+5257"/>
+        <location line="+5258"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation>Imagens (*.png *.jpg *.jpeg *.gif *.webp *.svg)</translation>
     </message>
@@ -34218,7 +34218,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Largue ficheiros para os anexar</translation>
     </message>
     <message>
-        <location line="-5476"/>
+        <location line="-5477"/>
         <source>Join space</source>
         <translation>Entrar no espaço</translation>
     </message>

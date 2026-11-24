@@ -80,6 +80,9 @@ const auto kPath = QStringLiteral("/org/freedesktop/Notifications");
 const auto kInterface = QStringLiteral("org.freedesktop.Notifications");
 constexpr qint64 kSoundCoalesceMs = 1500;
 constexpr int kAvatarWaitMs = 1200;
+// A skewed client clock makes live messages look old; that only delays them by kCatchUpHoldMs.
+constexpr qint64 kCatchUpAgeMs = 5000;
+constexpr int kCatchUpHoldMs = 1000;
 constexpr int kFallbackAvatarEdge = 64;
 constexpr int kMaxLiveUndecryptable = 256;
 constexpr qint64 kUndecryptableMemoryMs = 10 * 60 * 1000;
@@ -319,6 +322,9 @@ NotificationManager::NotificationManager(QObject *parent)
     m_utdHoldTimer.setSingleShot(true);
     connect(&m_utdHoldTimer, &QTimer::timeout, this,
             &NotificationManager::flushHeldUndecryptable);
+    m_catchUpTimer.setSingleShot(true);
+    connect(&m_catchUpTimer, &QTimer::timeout, this,
+            &NotificationManager::releaseCatchUpHolds);
     m_callRingTimer.setInterval(5000);
     connect(&m_callRingTimer, &QTimer::timeout, this,
             &NotificationManager::onCallRingTick);
@@ -575,6 +581,45 @@ true,false);
             next = std::min(next, held.dueMs);
         m_utdHoldTimer.start(int(std::max<qint64>(0, next - nowMs())));
     }
+}
+
+void NotificationManager::releaseCatchUpHolds()
+{
+    const qint64 now = nowMs();
+    qint64 nextDue = 0;
+    QList<Card> due;
+    for (auto t = m_tables.begin(); t != m_tables.end(); ++t) {
+        for (auto it = t->groups.begin(); it != t->groups.end();) {
+            if (it->holdUntilMs == 0) {
+                ++it;
+                continue;
+            }
+            if (it->holdUntilMs > now) {
+                nextDue = nextDue == 0 ? it->holdUntilMs
+                                       : std::min(nextDue, it->holdUntilMs);
+                ++it;
+                continue;
+            }
+            it->holdUntilMs = 0;
+            it->inFlight = false;
+            if (it->next) {
+                Card card = std::move(*it->next);
+                it->next.reset();
+                card.catchUp = false;
+                due.append(std::move(card));
+                ++it;
+            } else if (it->id == 0) {
+                it = t->groups.erase(it);
+            } else {
+                it->withdrawn = false;
+                ++it;
+            }
+        }
+    }
+    if (nextDue != 0)
+        m_catchUpTimer.start(int(std::max<qint64>(0, nextDue - now)));
+    for (Card &card : due)
+        deliverNow(std::move(card));
 }
 
 void NotificationManager::processDecrypted(const TimelineEvent &event,
@@ -962,6 +1007,9 @@ void NotificationManager::deliverDecision(const TimelineEvent &event,
         offerHostCard(std::move(card), groupKey, groupWasEmpty);
         return;
     }
+    card.catchUp = !replacement && event.timestamp.isValid()
+        && QDateTime::currentMSecsSinceEpoch()
+                - event.timestamp.toMSecsSinceEpoch() > kCatchUpAgeMs;
     deliver(std::move(card));
 }
 
@@ -2264,6 +2312,15 @@ mention || roomId.isEmpty()))
                 card.replacement = card.replacement && group->next->replacement;
             }
             group->next = std::move(card);
+            return;
+        }
+        // A resumed sync delivers its backlog at once: one card for the room, its latest.
+        if (card.catchUp && !card.replacement) {
+            group->inFlight = true;
+            group->holdUntilMs = nowMs() + kCatchUpHoldMs;
+            group->next = std::move(card);
+            if (!m_catchUpTimer.isActive())
+                m_catchUpTimer.start(kCatchUpHoldMs);
             return;
         }
         replacesId = group->id;
