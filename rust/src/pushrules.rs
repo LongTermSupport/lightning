@@ -7,13 +7,18 @@ use matrix_sdk::{
         api::client::push::{delete_pushrule, set_pushrule_actions},
         push::{
             Action, ConditionalPushRule, HighlightTweakValue, PatternedPushRule,
-            PredefinedContentRuleId, PredefinedOverrideRuleId, PredefinedUnderrideRuleId,
-            RuleKind, Ruleset, SoundTweakValue, Tweak,
+            AnyPushRuleRef, PredefinedContentRuleId, PredefinedOverrideRuleId,
+            PredefinedUnderrideRuleId, PushConditionRoomCtx, RuleKind, Ruleset,
+            SoundTweakValue, Tweak,
         },
+        events::AnySyncTimelineEvent,
+        serde::Raw,
+        RoomId, UserId,
     },
 };
 use serde_json::{json, Value};
 
+use crate::push_verdict::fallback_room_ctx;
 use crate::rooms::{classify_room_error, require_client};
 use crate::{enqueue, notification_settings_handle, RustClient};
 
@@ -603,6 +608,103 @@ pub(crate) fn write_rule(
     Ok(())
 }
 
+/// The synthetic event the rule simulator asks about: from someone else in
+/// the room, never stored or sent.
+pub(crate) fn sample_event(room_id: &RoomId, own: &UserId, body: &str, mention: bool) -> Raw<AnySyncTimelineEvent> {
+    let mut content = json!({ "msgtype": "m.text", "body": body, "m.mentions": {} });
+    if mention {
+        content["m.mentions"] = json!({ "user_ids": [own] });
+    }
+    let sender = format!("@sample:{}", own.server_name());
+    Raw::new(&json!({
+        "type": "m.room.message",
+        "event_id": "$lightning-rule-simulation",
+        "room_id": room_id,
+        "sender": sender,
+        "origin_server_ts": 0,
+        "content": content,
+    }))
+    .expect("static JSON")
+    .cast_unchecked()
+}
+
+/// Which rule matrix-sdk's ruleset picks for `event` and what it does. The
+/// actions come from the same `get_actions` the live verdict uses.
+pub(crate) async fn simulation_report(
+    rules: &Ruleset,
+    event: &Raw<AnySyncTimelineEvent>,
+    context: &PushConditionRoomCtx,
+) -> Value {
+    let matched = rules.get_match(event, context).await;
+    let actions = rules.get_actions(event, context).await;
+    let kind = match matched {
+        Some(AnyPushRuleRef::Room(_)) => "room",
+        Some(AnyPushRuleRef::Content(_)) => "content",
+        Some(AnyPushRuleRef::Sender(_)) => "sender",
+        Some(AnyPushRuleRef::Override(_)) => "override",
+        Some(AnyPushRuleRef::Underride(_)) => "underride",
+        Some(_) => "other",
+        None => "",
+    };
+    json!({
+        "matched": matched.is_some(),
+        "rule_id": matched.map(|rule| rule.rule_id().to_owned()).unwrap_or_default(),
+        "kind": kind,
+        "notify": has_notify(actions),
+        "highlight": actions.iter().any(Action::is_highlight),
+        "sound": has_sound(actions),
+    })
+}
+
+pub(crate) fn simulate(
+    bridge: &RustClient,
+    room_id: String,
+    body: String,
+    mention: bool,
+    op_id: u64,
+) -> Result<(), String> {
+    let client = require_client(bridge)?;
+    let room_id = RoomId::parse(room_id).map_err(|_| "invalid room id".to_owned())?;
+    let events = Arc::clone(&bridge.events);
+    let timelines = Arc::clone(&bridge.timelines);
+    let lifecycle = timelines.lifecycle();
+    bridge.spawn_room_action(async move {
+        let outcome = async {
+            let room = client.get_room(&room_id).ok_or("room_not_found")?;
+            let context = match room.push_condition_room_ctx().await {
+                Ok(Some(context)) => Some(context),
+                _ => fallback_room_ctx(
+                    room.room_id(),
+                    room.own_user_id(),
+                    room.active_members_count(),
+                    room.own_user_id().localpart().to_owned(),
+                    room.power_levels().await.ok().map(Into::into),
+                ),
+            }
+            .ok_or("unavailable")?;
+            let rules = client.account().push_rules().await.map_err(|_| "unavailable")?;
+            let event = sample_event(room.room_id(), room.own_user_id(), &body, mention);
+            Ok::<Value, &str>(simulation_report(&rules, &event, &context).await)
+        }
+        .await;
+        if !timelines.lifecycle_current(lifecycle) {
+            return;
+        }
+        let mut event = match outcome {
+            Ok(report) => report,
+            Err(category) => json!({ "ok": false, "category": category }),
+        };
+        event["type"] = json!("push_rules_simulation");
+        event["op_id"] = json!(op_id);
+        event["lifecycle"] = json!(lifecycle);
+        if event.get("ok").is_none() {
+            event["ok"] = json!(true);
+        }
+        enqueue(&events, event);
+    });
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -842,5 +944,61 @@ mod tests {
         }));
         assert_eq!(summarize(&with)["keywords"].as_array().map(Vec::len), Some(0));
         assert_eq!(summarize(&with)["master_mute"], false);
+    }
+
+    #[tokio::test]
+    async fn the_simulator_agrees_with_the_live_verdict_on_every_fixture() {
+        use crate::push_verdict::PushVerdict;
+        use matrix_sdk::ruma::push::{NewPatternedPushRule, NewPushRule, NewSimplePushRule};
+        use matrix_sdk::ruma::{room_id, uint, user_id};
+
+        let me = user_id!("@me:example.org");
+        let room = room_id!("!room:example.org");
+        let context =
+            PushConditionRoomCtx::new(room.to_owned(), uint!(3), me.to_owned(), "Me".to_owned());
+        let plain = Ruleset::server_default(me);
+        let mut keyword = Ruleset::server_default(me);
+        keyword
+            .insert(
+                NewPushRule::Content(NewPatternedPushRule::new(
+                    "lunch".to_owned(),
+                    "lunch".to_owned(),
+                    actions_for(Level::Notify),
+                )),
+                None,
+                None,
+            )
+            .unwrap();
+        let mut quiet_room = Ruleset::server_default(me);
+        quiet_room
+            .insert(NewPushRule::Room(NewSimplePushRule::new(room.to_owned(), vec![])), None, None)
+            .unwrap();
+        let cases = [
+            (&plain, "hello", false, ".m.rule.message", "underride", true, false),
+            (&plain, "hello", true, ".m.rule.is_user_mention", "override", true, true),
+            (&keyword, "lunch now?", false, "lunch", "content", true, false),
+            (&quiet_room, "hello", false, room.as_str(), "room", false, false),
+            (&quiet_room, "hello", true, ".m.rule.is_user_mention", "override", true, true),
+        ];
+        for (rules, body, mention, rule_id, kind, notify, highlight) in cases {
+            let event = sample_event(room, me, body, mention);
+            let report = simulation_report(rules, &event, &context).await;
+            let live = PushVerdict::from_actions(rules.get_actions(&event, &context).await);
+            assert_eq!(report["rule_id"], rule_id, "{body} mention={mention}");
+            assert_eq!(report["kind"], kind, "{body} mention={mention}");
+            assert_eq!(report["notify"], live.notify, "{body} mention={mention}");
+            assert_eq!(report["highlight"], live.highlight, "{body} mention={mention}");
+            assert_eq!(report["notify"], notify, "{body} mention={mention}");
+            assert_eq!(report["highlight"], highlight, "{body} mention={mention}");
+        }
+    }
+
+    #[test]
+    fn the_sample_event_comes_from_someone_else() {
+        use matrix_sdk::ruma::{room_id, user_id};
+        let event = sample_event(room_id!("!r:example.org"), user_id!("@me:example.org"), "x", true);
+        let value: Value = serde_json::from_str(event.json().get()).unwrap();
+        assert_ne!(value["sender"], "@me:example.org");
+        assert_eq!(value["content"]["m.mentions"]["user_ids"][0], "@me:example.org");
     }
 }

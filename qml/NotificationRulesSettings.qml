@@ -441,6 +441,184 @@ ColumnLayout {
         }
     }
 
+    component SwitchRow: RowLayout {
+        id: switchRow
+        property string title
+        property bool checked: false
+        property string switchName
+        signal toggled(bool on)
+        Layout.fillWidth: true
+        spacing: AppTheme.spacing12
+        Label {
+            Layout.fillWidth: true
+            text: switchRow.title
+            color: AppTheme.stormText
+            font.pixelSize: AppTheme.textBody
+            wrapMode: Text.WordWrap
+        }
+        AppSwitch {
+            objectName: switchRow.switchName
+            checked: switchRow.checked
+            Accessible.name: switchRow.title
+            onToggled: switchRow.toggled(!switchRow.checked)
+        }
+    }
+
+    function timeLabel(minute) {
+        return Qt.formatTime(new Date(2000, 0, 1, Math.floor(minute / 60),
+                                      minute % 60),
+                             app.settings.clockTimeFormat)
+    }
+    readonly property var halfHours: {
+        var out = []
+        for (var m = 0; m < 24 * 60; m += 30)
+            out.push(root.timeLabel(m))
+        return out
+    }
+
+    Label {
+        text: qsTr("Quiet hours")
+        color: AppTheme.stormText
+        font.pixelSize: AppTheme.textTitle
+        font.weight: AppTheme.weightStrong
+        Layout.topMargin: AppTheme.spacing8
+        visible: typeof app !== "undefined" && !!app && !!app.settings
+    }
+    RulesCard {
+        objectName: "quietHoursCard"
+        visible: typeof app !== "undefined" && !!app && !!app.settings
+        ColumnLayout {
+            width: parent.width
+            spacing: AppTheme.spacing8
+
+            Hint {
+                text: qsTr("On this device only, notifications are held "
+                           + "during these hours and summed up when they end. "
+                           + "Activity and unread counts still update, and "
+                           + "calls still ring.")
+            }
+            SwitchRow {
+                title: qsTr("Quiet hours")
+                switchName: "quietHoursSwitch"
+                checked: app.settings.quietHoursEnabled
+                onToggled: (on) => app.settings.quietHoursEnabled = on
+            }
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: AppTheme.spacing8
+                enabled: app.settings.quietHoursEnabled
+                Label {
+                    text: qsTr("From")
+                    color: AppTheme.stormText
+                    font.pixelSize: AppTheme.textBody
+                }
+                AppComboBox {
+                    storm: true
+                    objectName: "quietHoursStartCombo"
+                    Layout.preferredWidth: 120
+                    model: root.halfHours
+                    Accessible.name: qsTr("Quiet hours start")
+                    currentIndex: Math.floor(app.settings.quietHoursStart / 30)
+                    onActivated: (index) => app.settings.quietHoursStart = index * 30
+                }
+                Label {
+                    text: qsTr("to")
+                    color: AppTheme.stormText
+                    font.pixelSize: AppTheme.textBody
+                }
+                AppComboBox {
+                    storm: true
+                    objectName: "quietHoursEndCombo"
+                    Layout.preferredWidth: 120
+                    model: root.halfHours
+                    Accessible.name: qsTr("Quiet hours end")
+                    currentIndex: Math.floor(app.settings.quietHoursEnd / 30)
+                    onActivated: (index) => app.settings.quietHoursEnd = index * 30
+                }
+                Item { Layout.fillWidth: true }
+            }
+            SubTitle {
+                text: qsTr("Still notify for")
+                enabled: app.settings.quietHoursEnabled
+            }
+            SwitchRow {
+                title: qsTr("Mentions of you")
+                switchName: "quietHoursMentionsSwitch"
+                enabled: app.settings.quietHoursEnabled
+                checked: app.settings.quietHoursAllowMentions
+                onToggled: (on) => app.settings.quietHoursAllowMentions = on
+            }
+            SwitchRow {
+                title: qsTr("Direct messages")
+                switchName: "quietHoursDirectSwitch"
+                enabled: app.settings.quietHoursEnabled
+                checked: app.settings.quietHoursAllowDirect
+                onToggled: (on) => app.settings.quietHoursAllowDirect = on
+            }
+            Hint {
+                objectName: "quietHoursRoomsHint"
+                text: app.settings.quietHoursRooms.length === 0
+                      ? qsTr("Choose rooms that may still notify from a "
+                             + "room's menu.")
+                      : qsTr("%n chosen room(s) may still notify. Change them "
+                             + "from a room's menu.", "",
+                             app.settings.quietHoursRooms.length)
+            }
+            Label {
+                objectName: "quietHoursPreview"
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
+                visible: app.settings.quietHoursEnabled
+                color: AppTheme.stormTextSecondary
+                font.pixelSize: AppTheme.textBody
+                text: (app.quietHoursActive
+                       ? qsTr("Quiet now, until %1.")
+                       : qsTr("Next quiet hours start at %1."))
+                      .arg(root.timeLabel(app.quietHoursActive
+                                          ? app.settings.quietHoursEnd
+                                          : app.settings.quietHoursStart))
+                      + " " + qsTr("Who can interrupt: %1.").arg(
+                          [qsTr("calls")]
+                          .concat(app.settings.quietHoursAllowMentions
+                                  ? [qsTr("mentions")] : [])
+                          .concat(app.settings.quietHoursAllowDirect
+                                  ? [qsTr("direct messages")] : [])
+                          .concat(app.settings.quietHoursRooms.length > 0
+                                  ? [qsTr("chosen rooms")] : [])
+                          .join(", "))
+            }
+            SubTitle {
+                objectName: "snoozedTitle"
+                visible: !!app.reminders && app.reminders.snoozed.length > 0
+                text: qsTr("Snoozed conversations")
+            }
+            Repeater {
+                model: app.reminders ? app.reminders.snoozed : []
+                delegate: RowLayout {
+                    id: snoozedRow
+                    required property var modelData
+                    Layout.fillWidth: true
+                    spacing: AppTheme.spacing8
+                    Label {
+                        Layout.fillWidth: true
+                        text: qsTr("%1, until %2").arg(snoozedRow.modelData.roomName)
+                              .arg(Qt.formatDateTime(new Date(snoozedRow.modelData.until),
+                                                     app.settings.clockTimeFormat))
+                        color: AppTheme.stormText
+                        font.pixelSize: AppTheme.textBody
+                        elide: Label.ElideRight
+                    }
+                    AppButton {
+                        storm: true
+                        size: "sm"
+                        text: qsTr("Unsnooze")
+                        onClicked: app.reminders.unsnooze(snoozedRow.modelData.roomId)
+                    }
+                }
+            }
+        }
+    }
+
     Label {
         text: qsTr("Not getting notifications?")
         color: AppTheme.stormText
@@ -510,6 +688,75 @@ ColumnLayout {
                                         + "Send a test notification to be sure."))
                             : ""
                 }
+            }
+            SubTitle {
+                text: qsTr("Test a message against your rules")
+                Layout.topMargin: AppTheme.spacing8
+            }
+            Hint {
+                text: qsTr("Asks your account's rules what they would do with "
+                           + "a message in the room you have open. Nothing is "
+                           + "sent and no rule is changed.")
+            }
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: AppTheme.spacing8
+                AppTextField {
+                    id: sampleField
+                    objectName: "ruleSimulatorText"
+                    storm: true
+                    Layout.fillWidth: true
+                    text: qsTr("Hello")
+                    maximumLength: 500
+                    Accessible.name: qsTr("Sample message")
+                    onAccepted: simulateButton.clicked()
+                }
+                AppSwitch {
+                    id: sampleMention
+                    objectName: "ruleSimulatorMention"
+                    Accessible.name: qsTr("Mentions me")
+                }
+                Label {
+                    text: qsTr("Mentions me")
+                    color: AppTheme.stormText
+                    font.pixelSize: AppTheme.textBody
+                }
+                AppButton {
+                    id: simulateButton
+                    objectName: "ruleSimulatorButton"
+                    storm: true
+                    text: qsTr("Check")
+                    onClicked: root.shoot.simulate(app.currentRoomId, sampleField.text,
+                                                   sampleMention.checked)
+                }
+            }
+            Label {
+                objectName: "ruleSimulatorResult"
+                readonly property var sim: root.shoot ? root.shoot.simulation : ({})
+                Layout.fillWidth: true
+                visible: text.length > 0
+                wrapMode: Text.WordWrap
+                color: AppTheme.stormText
+                font.pixelSize: AppTheme.textBody
+                text: sim.state === "noRoom"
+                      ? qsTr("Open a room first.")
+                      : sim.state === "unsupported"
+                        ? qsTr("This account cannot check its rules here.")
+                        : sim.state === "pending" ? qsTr("Checking…")
+                        : sim.state === "failed"
+                          ? qsTr("The rules could not be read. Try again.")
+                        : sim.state === "done"
+                          ? ((sim.matched
+                              ? qsTr("Rule: %1.").arg(sim.ruleName)
+                              : qsTr("No rule matches.")) + " "
+                             + (!sim.notify ? qsTr("It would not notify.")
+                                : sim.highlight ? qsTr("It would notify and highlight.")
+                                : qsTr("It would notify."))
+                             + (sim.notify
+                                ? " " + (sim.local.length > 0 ? sim.local
+                                         : qsTr("Lightning would show it."))
+                                : ""))
+                        : ""
             }
             Repeater {
                 model: root.shoot ? root.shoot.checks : []

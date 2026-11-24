@@ -10366,6 +10366,21 @@ quint64 RustSdkMatrixClient::requestPushRules()
     return result.isEmpty() ? opId : 0;
 }
 
+quint64 RustSdkMatrixClient::simulatePushRule(const QString &roomId,
+                                              const QString &body,
+                                              bool mentionMe)
+{
+    if (!m_rustHandle || roomId.isEmpty())
+        return 0;
+    const quint64 opId = nextOpId();
+    const QByteArray room = roomId.toUtf8();
+    const QByteArray text = body.toUtf8();
+    const QString result = takeRustString(mx_rust_push_rules_simulate(
+        m_rustHandle, room.constData(), text.constData(), mentionMe ? 1 : 0,
+        opId));
+    return result.isEmpty() ? opId : 0;
+}
+
 quint64 RustSdkMatrixClient::writePushRule(const QString &kind,
                                            const QString &key,
                                            const QString &value)
@@ -13894,6 +13909,13 @@ bool RustSdkMatrixClient::handleRoomCommandEvent(const QString &type,
             opId(), event.value(QStringLiteral("ok")).toBool(),
             PushRulesSnapshot::fromRustEvent(event),
             event.value(QStringLiteral("category")).toString());
+        return true;
+    }
+
+    if (type == QLatin1String("push_rules_simulation")) {
+        Q_EMIT pushRuleSimulated(opId(),
+                                 event.value(QStringLiteral("ok")).toBool(),
+                                 event.toVariantMap());
         return true;
     }
 

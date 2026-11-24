@@ -330,6 +330,13 @@ QString scrollPositionsFile(const QString &accountRootDir)
     return accountRootDir + QLatin1String("/scroll-positions.json");
 }
 
+QString remindersFile(const QString &accountRootDir)
+{
+    if (accountRootDir.trimmed().isEmpty())
+        return {};
+    return accountRootDir + QLatin1String("/reminders.json");
+}
+
 LegacyMove adoptLegacyEntry(const QString &legacyPath,
                             const QString &recordedPath)
 {
