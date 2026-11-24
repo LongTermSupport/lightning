@@ -84,7 +84,6 @@ Q_SIGNALS:
     void failed(const QString &message);
 
 private:
-    friend class VoiceFixC43Test;
     void watchInputDevices();
     void inputLost();
     enum class State { Idle, Recording, Processing };

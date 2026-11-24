@@ -8415,8 +8415,3 @@ if(BUILD_TESTING)
         endif()
     endforeach()
 endif()
-
-if(TARGET voice-fix-c43-test AND HAVE_LIGHTNING_WEBRTC AND Qt6_VERSION VERSION_GREATER_EQUAL 6.8)
-    target_link_libraries(voice-fix-c43-test PRIVATE PkgConfig::GSTWEBRTC)
-    target_compile_definitions(voice-fix-c43-test PRIVATE LIGHTNING_VOICE_BUFFER_PROBE)
-endif()

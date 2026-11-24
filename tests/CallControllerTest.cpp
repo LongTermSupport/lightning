@@ -6996,7 +6996,7 @@ true);
         QVERIFY(!call.cameraOn());
         QCOMPARE(failed.count(), 1);
         QVERIFY2(failed.at(0).at(0).toString().contains(
-                     QStringLiteral("turned off in your system settings")),
+                     QStringLiteral("Camera permission was denied")),
                  qPrintable(failed.at(0).at(0).toString()));
 
         call.setCameraRouteForTest(true, true, true);
