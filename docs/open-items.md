@@ -1,5 +1,9 @@
 # Open items and the NOT TESTED inventory
 
+## 2026-11-24 — KNOWN LIMIT: a burst of messages under 5 s old raises the room's card twice
+
+Only events older than 5 s are held 1 s and merged into one card; a fresh burst shows the first message, then the same card is replaced by the latest (one sound).
+
 ## 2026-11-23 — KNOWN LIMIT: a forged edit's mention still raises the room badge
 
 A rejected edit never notifies, but the room's @ badge reads the server's `highlight_count`, which counts the forged mention.
