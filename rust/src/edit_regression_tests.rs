@@ -796,7 +796,7 @@ async fn a_stable_poll_thread_root_in_the_panel_gets_its_tally_live() {
 }
 
 async fn open_thread_over(
-    root: serde_json::Value,
+    held: Vec<serde_json::Value>,
     uncached_replies: Vec<serde_json::Value>,
 ) -> (MatrixMockServer, Client, EventQueue, tokio::task::JoinHandle<()>) {
     let server = MatrixMockServer::new().await;
@@ -810,7 +810,8 @@ async fn open_thread_over(
         .build()
         .await;
     client.event_cache().subscribe().unwrap();
-    sync(&client, vec![root.clone()], "1").await;
+    let root = held.iter().find(|v| v["event_id"] == "$root").unwrap().clone();
+    sync(&client, held, "1").await;
     let mut fetched = root;
     fetched["room_id"] = json!(ROOM);
     server
@@ -880,7 +881,7 @@ async fn thread_row(events: &EventQueue, id: &str) -> serde_json::Value {
 async fn opening_a_thread_on_a_message_without_one_forwards_its_root_as_history() {
     let now = crate::push_verdict::now_ms();
     let (_server, client, events, task) =
-        open_thread_over(message("$root", "root", now - 5_000), Vec::new()).await;
+        open_thread_over(vec![message("$root", "root", now - 5_000)], Vec::new()).await;
     let root = thread_row(&events, "$root").await;
     assert_eq!(root["backlog"], json!(true), "the root was announced as new: {root}");
 
@@ -893,9 +894,10 @@ async fn opening_a_thread_on_a_message_without_one_forwards_its_root_as_history(
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn opening_an_uncached_old_thread_forwards_its_replies_as_history() {
+    let now = crate::push_verdict::now_ms();
     let (_server, _client, events, task) = open_thread_over(
-        message("$root", "root", 1000),
-        vec![thread_reply("$old", "@bob:localhost", 2000)],
+        vec![message("$root", "root", now - 60_000), message("$later", "later", now - 10_000)],
+        vec![thread_reply("$old", "@bob:localhost", now - 30_000)],
     )
     .await;
     let old = thread_row(&events, "$old").await;
