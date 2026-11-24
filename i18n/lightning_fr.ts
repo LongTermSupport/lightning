@@ -1033,7 +1033,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7397"/>
+        <location filename="../src/app/AppController.cpp" line="+7457"/>
         <source>Room invitation</source>
         <translation>Invitation au salon</translation>
     </message>
@@ -1154,7 +1154,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>Appel entrant</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5738"/>
+        <location filename="../src/app/AppController.cpp" line="-5741"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>La déconnexion a été annulée car le compte a changé. Rien n&apos;a été réinitialisé.</translation>
     </message>
@@ -1174,7 +1174,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>Vous avez manqué un appel vocal dans %1</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+697"/>
+        <location filename="../src/app/AppController.cpp" line="+699"/>
         <source>The room was created, but adding it to the Space failed.</source>
         <translation>Le salon a été créé, mais son ajout à l&apos;espace a échoué.</translation>
     </message>
@@ -1206,13 +1206,13 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4292"/>
-        <location line="+920"/>
+        <location line="+4293"/>
+        <location line="+942"/>
         <source>Not connected</source>
         <translation>Non connecté</translation>
     </message>
     <message>
-        <location line="-5253"/>
+        <location line="-5276"/>
         <source>Connecting…</source>
         <translation>Connexion…</translation>
     </message>
@@ -1285,12 +1285,12 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4087"/>
+        <location line="+4088"/>
         <source>Not signed in.</source>
         <translation>Non connecté.</translation>
     </message>
     <message>
-        <location line="-4085"/>
+        <location line="-4086"/>
         <source>Room-key import failed.</source>
         <translation>L&apos;import des clés de salon a échoué.</translation>
     </message>
@@ -1315,28 +1315,28 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>Utilisez des dates réelles au format YYYY-MM-DD, avec « Du » pas après « Au ».</translation>
     </message>
     <message>
-        <location line="-4820"/>
-        <location line="+2726"/>
+        <location line="-4854"/>
+        <location line="+2760"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
     <message>
-        <location line="-2725"/>
+        <location line="-2759"/>
         <source>This is a test notification. If you can read it, desktop notifications work.</source>
         <translation>Ceci est une notification de test. Si vous pouvez la lire, les notifications du bureau fonctionnent.</translation>
     </message>
     <message>
-        <location line="+354"/>
+        <location line="+385"/>
         <source>New mentions</source>
         <translation>Nouvelles mentions</translation>
     </message>
     <message>
-        <location line="+554"/>
+        <location line="+555"/>
         <source>Call started</source>
         <translation>Appel lancé</translation>
     </message>
     <message>
-        <location line="+959"/>
+        <location line="+961"/>
         <source>Joined the space</source>
         <translation>Vous avez rejoint l&apos;espace</translation>
     </message>
@@ -1552,15 +1552,15 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>Effacer les données locales de cet appareil ne résoudrait pas ce problème et détruirait des clés de chiffrement dont vous avez encore besoin.</translation>
     </message>
     <message>
-        <location line="+499"/>
-        <location line="+910"/>
+        <location line="+500"/>
+        <location line="+932"/>
         <location line="+748"/>
         <location line="+15"/>
         <source>Removal did not finish: the account&apos;s data is still in use. Nothing was deleted.</source>
         <translation>La suppression n&apos;a pas abouti : les données du compte sont encore utilisées. Rien n&apos;a été supprimé.</translation>
     </message>
     <message>
-        <location line="-1476"/>
+        <location line="-1498"/>
         <source>This backend cannot change your display name.</source>
         <translation>Ce backend ne peut pas modifier votre nom affiché.</translation>
     </message>
@@ -1587,12 +1587,12 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
     </message>
     <message>
         <location line="+148"/>
-        <location line="+677"/>
+        <location line="+699"/>
         <source>That account is not signed in on this device.</source>
         <translation>Ce compte n&apos;est pas connecté sur cet appareil.</translation>
     </message>
     <message>
-        <location line="-654"/>
+        <location line="-676"/>
         <source>That account&apos;s sign-in has expired. Sign in to it again.</source>
         <translation>La connexion de ce compte a expiré. Reconnectez-vous.</translation>
     </message>
@@ -1602,7 +1602,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>Votre trousseau système ne renvoie plus la connexion enregistrée de ce compte. Rien n&apos;a été supprimé : reconnectez-vous à ce compte pour continuer sur cet appareil.</translation>
     </message>
     <message>
-        <location line="+413"/>
+        <location line="+435"/>
         <location line="+731"/>
         <source>This account can&apos;t be removed while the system keyring can&apos;t be read: its saved sign-in is there and would be left behind. Unlock the keyring, or start it, and try again.</source>
         <translation>Ce compte ne peut pas être supprimé tant que le trousseau système est illisible : sa connexion enregistrée y est encore et serait laissée derrière. Déverrouillez le trousseau, ou démarrez-le, puis réessayez.</translation>
@@ -1645,9 +1645,9 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
     </message>
     <message>
         <location filename="../qml/LoginScreen.qml" line="+433"/>
-        <location filename="../src/app/AppController.cpp" line="-2251"/>
+        <location filename="../src/app/AppController.cpp" line="-2274"/>
         <location line="+25"/>
-        <location line="+530"/>
+        <location line="+531"/>
         <location line="+454"/>
         <source>Lightning can&apos;t read this device&apos;s saved sign-ins right now — the system keyring is locked or unavailable. Unlock it and try again.</source>
         <translation>Lightning ne peut pas lire les connexions enregistrées sur cet appareil pour le moment : le trousseau système est verrouillé ou indisponible. Déverrouillez-le et réessayez.</translation>
@@ -13260,13 +13260,13 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2346"/>
+        <location line="+2390"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>Réessayer</translation>
     </message>
     <message>
-        <location line="-3362"/>
+        <location line="-3406"/>
         <location line="+1229"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
@@ -13278,12 +13278,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     </message>
     <message>
         <location line="+188"/>
-        <location line="+1418"/>
+        <location line="+1462"/>
         <source>Hide image</source>
         <translation>Masquer l&apos;image</translation>
     </message>
     <message>
-        <location line="-1414"/>
+        <location line="-1458"/>
         <source>Hide</source>
         <translation>Masquer</translation>
     </message>
@@ -13434,7 +13434,22 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Enregistrer le message</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+30"/>
+        <source>Remind me in 1 hour</source>
+        <translation>Me le rappeler dans 1 heure</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Remind me tomorrow</source>
+        <translation>Me le rappeler demain</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Cancel reminder (%1)</source>
+        <translation>Annuler le rappel (%1)</translation>
+    </message>
+    <message>
+        <location line="+12"/>
         <source>Copy text</source>
         <translation>Copier le texte</translation>
     </message>
@@ -13651,7 +13666,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Aucune position reçue pour l’instant.</translation>
     </message>
     <message>
-        <location line="-3938"/>
+        <location line="-3982"/>
         <location line="+1139"/>
         <source>Edit</source>
         <translation>Modifier</translation>
@@ -13691,22 +13706,22 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     <message>
         <location line="-570"/>
         <location line="+568"/>
-        <location line="+3692"/>
+        <location line="+3736"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5183"/>
+        <location line="-5227"/>
         <location line="+53"/>
         <location line="+514"/>
-        <location line="+4241"/>
+        <location line="+4285"/>
         <source>Image</source>
         <translation>Image</translation>
     </message>
     <message>
-        <location line="-4806"/>
+        <location line="-4850"/>
         <source>Attachment</source>
         <translation>Pièce jointe</translation>
     </message>
@@ -13772,7 +13787,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>(modifié)</translation>
     </message>
     <message>
-        <location line="+1636"/>
+        <location line="+1680"/>
         <source>Add :%1: to my emoji</source>
         <translation>Ajouter :%1: à mes emoji</translation>
     </message>
@@ -13812,13 +13827,13 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Signaler le message</translation>
     </message>
     <message>
-        <location line="-705"/>
-        <location line="+719"/>
+        <location line="-749"/>
+        <location line="+763"/>
         <source>Delete</source>
         <translation>Supprimer</translation>
     </message>
     <message>
-        <location line="-714"/>
+        <location line="-758"/>
         <source>Remove message?</source>
         <translation>Supprimer le message ?</translation>
     </message>
@@ -13833,7 +13848,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Supprimer</translation>
     </message>
     <message>
-        <location line="+752"/>
+        <location line="+796"/>
         <source>Message details</source>
         <translation>Détails du message</translation>
     </message>
@@ -13910,12 +13925,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Cible de la réponse</translation>
     </message>
     <message>
-        <location line="-2003"/>
+        <location line="-2047"/>
         <source>Show preview</source>
         <translation>Afficher l&apos;aperçu</translation>
     </message>
     <message>
-        <location line="+1859"/>
+        <location line="+1903"/>
         <source>Remove edits?</source>
         <translation>Supprimer les modifications ?</translation>
     </message>
@@ -13935,7 +13950,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Cela clôt le vote et publie le résultat. Un sondage ne peut pas être rouvert.</translation>
     </message>
     <message>
-        <location line="-661"/>
+        <location line="-705"/>
         <source>Delete message?</source>
         <translation>Supprimer le message ?</translation>
     </message>
@@ -13945,7 +13960,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Cela supprime le message pour tout le monde dans le salon. Cette action est irréversible.</translation>
     </message>
     <message>
-        <location line="+968"/>
+        <location line="+1012"/>
         <source>Open link in browser</source>
         <translation>Ouvrir le lien dans le navigateur</translation>
     </message>
@@ -14027,10 +14042,10 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Échec du chargement de l&apos;autocollant — cliquez pour réessayer</translation>
     </message>
     <message>
-        <location line="-5600"/>
+        <location line="-5644"/>
         <location line="+57"/>
         <location line="+517"/>
-        <location line="+4239"/>
+        <location line="+4283"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
@@ -14043,9 +14058,9 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>vidéo</translation>
     </message>
     <message>
-        <location line="-5981"/>
+        <location line="-6025"/>
         <location line="+570"/>
-        <location line="+4342"/>
+        <location line="+4386"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -14991,7 +15006,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+2021"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+2085"/>
         <location line="+1016"/>
         <source>Open</source>
         <translation>Ouvrir</translation>
@@ -15101,11 +15116,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     </message>
     <message>
         <location line="+13"/>
+        <location line="+360"/>
         <source>Direct messages</source>
         <translation>Messages directs</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="-357"/>
         <location line="+8"/>
         <source>All messages</source>
         <translation>Tous les messages</translation>
@@ -15237,6 +15253,110 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Les messages de bots sont les avis automatiques publiés par certains ponts et bots. Désactivé les garde silencieux ; Notifier les traite comme n&apos;importe quel autre message de ce salon.</translation>
     </message>
     <message>
+        <location line="+44"/>
+        <location line="+21"/>
+        <source>Quiet hours</source>
+        <translation>Heures calmes</translation>
+    </message>
+    <message>
+        <location line="-6"/>
+        <source>On this device only, notifications are held during these hours and summed up when they end. Activity and unread counts still update, and calls still ring.</source>
+        <translation>Sur cet appareil uniquement, les notifications sont retenues pendant ces heures et résumées à la fin. L&apos;activité et les compteurs de non-lus continuent de se mettre à jour, et les appels sonnent toujours.</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>From</source>
+        <translation>De</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Quiet hours start</source>
+        <translation>Début des heures calmes</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>to</source>
+        <translation>à</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Quiet hours end</source>
+        <translation>Fin des heures calmes</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Still notify for</source>
+        <translation>Notifier quand même pour</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Mentions of you</source>
+        <translation>Les mentions de vous</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Choose rooms that may still notify from a room&apos;s menu.</source>
+        <translation>Choisissez depuis le menu d&apos;un salon les salons qui peuvent quand même notifier.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>%n chosen room(s) may still notify. Change them from a room&apos;s menu.</source>
+        <translation>
+            <numerusform>%n salon choisi peut quand même notifier. Modifiez-le depuis le menu d&apos;un salon.</numerusform>
+            <numerusform>%n salons choisis peuvent quand même notifier. Modifiez-les depuis le menu d&apos;un salon.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Quiet now, until %1.</source>
+        <translation>Calme jusqu&apos;à %1.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Next quiet hours start at %1.</source>
+        <translation>Les prochaines heures calmes commencent à %1.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Who can interrupt: %1.</source>
+        <translation>Qui peut interrompre : %1.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>calls</source>
+        <translation>appels</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>mentions</source>
+        <translation>mentions</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>direct messages</source>
+        <translation>messages directs</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>chosen rooms</source>
+        <translation>salons choisis</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Snoozed conversations</source>
+        <translation>Conversations en pause</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>%1, until %2</source>
+        <translation>%1, jusqu&apos;à %2</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Unsnooze</source>
+        <translation>Reprendre</translation>
+    </message>
+    <message>
         <location line="+9"/>
         <source>Not getting notifications?</source>
         <translation>Vous ne recevez pas de notifications ?</translation>
@@ -15287,12 +15407,89 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Lightning ne voit aucun problème. Envoyez une notification de test pour en être sûr.</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+6"/>
+        <source>Test a message against your rules</source>
+        <translation>Tester un message avec vos règles</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Asks your account&apos;s rules what they would do with a message in the room you have open. Nothing is sent and no rule is changed.</source>
+        <translation>Demande aux règles de votre compte ce qu&apos;elles feraient d&apos;un message dans le salon ouvert. Rien n&apos;est envoyé et aucune règle n&apos;est modifiée.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Hello</source>
+        <translation>Bonjour</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Sample message</source>
+        <translation>Message d&apos;exemple</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <location line="+3"/>
+        <source>Mentions me</source>
+        <translation>Me mentionne</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Open a room first.</source>
+        <translation>Ouvrez d&apos;abord un salon.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This account cannot check its rules here.</source>
+        <translation>Ce compte ne peut pas vérifier ses règles ici.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Checking…</source>
+        <translation>Vérification…</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The rules could not be read. Try again.</source>
+        <translation>Les règles n&apos;ont pas pu être lues. Réessayez.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Rule: %1.</source>
+        <translation>Règle : %1.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>No rule matches.</source>
+        <translation>Aucune règle ne correspond.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>It would not notify.</source>
+        <translation>Il n&apos;y aurait pas de notification.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>It would notify and highlight.</source>
+        <translation>Il y aurait une notification avec mise en évidence.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>It would notify.</source>
+        <translation>Il y aurait une notification.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Lightning would show it.</source>
+        <translation>Lightning l&apos;afficherait.</translation>
+    </message>
+    <message>
+        <location line="+16"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-45"/>
+        <location line="+46"/>
         <source>Check</source>
         <translation>Vérifier</translation>
     </message>
@@ -15340,7 +15537,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
 <context>
     <name>NotificationTroubleshooter</name>
     <message>
-        <location filename="../src/app/NotificationTroubleshooter.cpp" line="+77"/>
+        <location filename="../src/app/NotificationTroubleshooter.cpp" line="+80"/>
         <source>A notification service is running</source>
         <translation>Un service de notification est en cours d&apos;exécution</translation>
     </message>
@@ -15400,12 +15597,22 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Lightning ne peut pas savoir si votre bureau est en mode Ne pas déranger ni s&apos;il a mis Lightning en sourdine. Si le test ci-dessous n&apos;apparaît pas, vérifiez les paramètres de notification de votre bureau.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
+        <source>Your desktop is in Do Not Disturb</source>
+        <translation>Votre bureau est en mode Ne pas déranger</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Your notification service says it is not showing notifications right now. Lightning still sends them, and your desktop keeps them in its history.</source>
+        <translation>Votre service de notifications indique qu&apos;il n&apos;affiche pas de notifications pour le moment. Lightning les envoie quand même, et votre bureau les garde dans son historique.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>System permission and Do Not Disturb</source>
         <translation>Autorisation système et Ne pas déranger</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>Desktop notifications are on</source>
         <translation>Les notifications du bureau sont activées</translation>
     </message>
@@ -15520,11 +15727,116 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <source>It has no setting of its own, and your account default could not be read, so whether ordinary messages notify is not known.</source>
         <translation>Il n&apos;a pas de réglage propre, et votre réglage par défaut du compte n&apos;a pas pu être lu, on ne sait donc pas si les messages ordinaires notifient.</translation>
     </message>
+    <message>
+        <location line="+8"/>
+        <source>This conversation is snoozed</source>
+        <translation>Cette conversation est en pause</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Its notifications are held until the snooze ends, then summed up in one notification. Unsnooze it from the room&apos;s menu.</source>
+        <translation>Ses notifications sont retenues jusqu&apos;à la fin de la pause, puis résumées en une seule notification. Reprenez-la depuis le menu du salon.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Mentions still notify.</source>
+        <translation>Les mentions notifient toujours.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Direct messages still notify.</source>
+        <translation>Les messages directs notifient toujours.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This room still notifies.</source>
+        <translation>Ce salon notifie toujours.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Calls still ring.</source>
+        <translation>Les appels sonnent toujours.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Quiet hours are on</source>
+        <translation>Les heures calmes sont actives</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Notifications are held until quiet hours end, then summed up in one notification. They still reach Activity and the unread counts.</source>
+        <translation>Les notifications sont retenues jusqu&apos;à la fin des heures calmes, puis résumées en une seule notification. Elles arrivent toujours dans l&apos;Activité et les compteurs de non-lus.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Lightning would not show it: desktop notifications are off on this device.</source>
+        <translation>Lightning ne l&apos;afficherait pas : les notifications de bureau sont désactivées sur cet appareil.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Lightning would not show it: this room is muted.</source>
+        <translation>Lightning ne l&apos;afficherait pas : ce salon est en sourdine.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Lightning would hold it until this conversation&apos;s snooze ends.</source>
+        <translation>Lightning la retiendrait jusqu&apos;à la fin de la pause de cette conversation.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Lightning would hold it until quiet hours end.</source>
+        <translation>Lightning la retiendrait jusqu&apos;à la fin des heures calmes.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Lightning would send it, but your desktop is in Do Not Disturb and will not show it now.</source>
+        <translation>Lightning l&apos;enverrait, mais votre bureau est en mode Ne pas déranger et ne l&apos;affichera pas maintenant.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>This room&apos;s own setting</source>
+        <translation>Paramètre propre à ce salon</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Your user name</source>
+        <translation>Votre nom d&apos;utilisateur</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Keyword “%1”</source>
+        <translation>Mot-clé « %1 »</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Mute all notifications</source>
+        <translation>Couper toutes les notifications</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Mentions of you</source>
+        <translation>Les mentions de vous</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Mentions of the whole room</source>
+        <translation>Mentions de tout le salon</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Direct messages</source>
+        <translation>Messages directs</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Messages in group rooms</source>
+        <translation>Messages dans les salons de groupe</translation>
+    </message>
 </context>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2917"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2981"/>
         <source>(spoiler)</source>
         <translation>(spoiler)</translation>
     </message>
@@ -15590,8 +15902,8 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     </message>
     <message numerus="yes">
         <location line="+272"/>
-        <location line="+218"/>
-        <location line="+1752"/>
+        <location line="+235"/>
+        <location line="+1799"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n nouveau message</numerusform>
@@ -15599,16 +15911,47 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1966"/>
-        <location line="+212"/>
+        <location line="-2030"/>
+        <location line="+229"/>
         <source>%n new Matrix notifications</source>
         <translation>
             <numerusform>%n nouvelle notification Matrix</numerusform>
             <numerusform>%n nouvelles notifications Matrix</numerusform>
         </translation>
     </message>
+    <message>
+        <location line="+118"/>
+        <source>Snooze ended</source>
+        <translation>Pause terminée</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Quiet hours ended</source>
+        <translation>Heures calmes terminées</translation>
+    </message>
     <message numerus="yes">
-        <location line="+1757"/>
+        <location line="+4"/>
+        <source>%n notification(s) arrived while this conversation was snoozed.</source>
+        <translation>
+            <numerusform>%n notification est arrivée pendant la pause de cette conversation.</numerusform>
+            <numerusform>%n notifications sont arrivées pendant la pause de cette conversation.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+4"/>
+        <source>%n notification(s) arrived during quiet hours.</source>
+        <translation>
+            <numerusform>%n notification est arrivée pendant les heures calmes.</numerusform>
+            <numerusform>%n notifications sont arrivées pendant les heures calmes.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>You were mentioned.</source>
+        <translation>Vous avez été mentionné.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1669"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>dans %n salon</numerusform>
@@ -17045,6 +17388,74 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     </message>
 </context>
 <context>
+    <name>RemindersController</name>
+    <message>
+        <location filename="../src/app/RemindersController.cpp" line="+301"/>
+        <location line="+88"/>
+        <source>a room</source>
+        <translation>un salon</translation>
+    </message>
+    <message numerus="yes">
+        <location line="-80"/>
+        <source>%n reminder(s) are due.</source>
+        <translation>
+            <numerusform>%n rappel est arrivé à échéance.</numerusform>
+            <numerusform>%n rappels sont arrivés à échéance.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>In %1.</source>
+        <translation>Dans %1.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Reminders</source>
+        <translation>Rappels</translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>An attachment</source>
+        <translation>Une pièce jointe</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>A sticker</source>
+        <translation>Un autocollant</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <location line="+6"/>
+        <source>Reminder</source>
+        <translation>Rappel</translation>
+    </message>
+    <message>
+        <location line="-5"/>
+        <source>A message you asked to be reminded about was removed.</source>
+        <translation>Un message dont vous aviez demandé un rappel a été supprimé.</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>%1: %2</source>
+        <translation>%1 : %2</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>A message from %1</source>
+        <translation>Un message de %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>A message in this room</source>
+        <translation>Un message dans ce salon</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Reminder: %1</source>
+        <translation>Rappel : %1</translation>
+    </message>
+</context>
+<context>
     <name>ReportMessageDialog</name>
     <message>
         <location filename="../qml/ReportMessageDialog.qml" line="+48"/>
@@ -17175,7 +17586,32 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Réglage local : cela ne modifie pas les règles push du serveur pour ce salon.</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+24"/>
+        <source>Snooze for 1 hour</source>
+        <translation>Mettre en pause 1 heure</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Snooze until tomorrow</source>
+        <translation>Mettre en pause jusqu&apos;à demain</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Unsnooze (snoozed until %1)</source>
+        <translation>Reprendre (en pause jusqu&apos;à %1)</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Keep quiet during quiet hours</source>
+        <translation>Rester silencieux pendant les heures calmes</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Notify during quiet hours</source>
+        <translation>Notifier pendant les heures calmes</translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>Chat background…</source>
         <translation>Fond de discussion…</translation>
     </message>
@@ -32679,7 +33115,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
 <context>
     <name>ThreadController</name>
     <message>
-        <location filename="../src/threads/ThreadController.cpp" line="+768"/>
+        <location filename="../src/threads/ThreadController.cpp" line="+770"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>Les pièces jointes ne sont pas prises en charge par ce backend.</translation>

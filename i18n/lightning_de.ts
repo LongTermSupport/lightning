@@ -1034,31 +1034,31 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     <name>AppController</name>
     <message>
         <location filename="../qml/LoginScreen.qml" line="+433"/>
-        <location filename="../src/app/AppController.cpp" line="+6466"/>
+        <location filename="../src/app/AppController.cpp" line="+6525"/>
         <location line="+25"/>
-        <location line="+530"/>
+        <location line="+531"/>
         <location line="+454"/>
         <source>Lightning can&apos;t read this device&apos;s saved sign-ins right now — the system keyring is locked or unavailable. Unlock it and try again.</source>
         <translation>Lightning kann die gespeicherten Anmeldungen dieses Geräts gerade nicht lesen – der System-Schlüsselbund ist gesperrt oder nicht verfügbar. Entsperre ihn und versuche es erneut.</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-6870"/>
-        <location line="+2726"/>
+        <location filename="../src/app/AppController.cpp" line="-6905"/>
+        <location line="+2760"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
     <message>
-        <location line="-2725"/>
+        <location line="-2759"/>
         <source>This is a test notification. If you can read it, desktop notifications work.</source>
         <translation>Dies ist eine Testbenachrichtigung. Wenn du sie lesen kannst, funktionieren Desktop-Benachrichtigungen.</translation>
     </message>
     <message>
-        <location line="+354"/>
+        <location line="+385"/>
         <source>New mentions</source>
         <translation>Neue Erwähnungen</translation>
     </message>
     <message>
-        <location line="+554"/>
+        <location line="+555"/>
         <source>Call started</source>
         <translation>Anruf gestartet</translation>
     </message>
@@ -1073,7 +1073,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Verpasster Anruf</translation>
     </message>
     <message>
-        <location line="+697"/>
+        <location line="+699"/>
         <source>The room was created, but adding it to the Space failed.</source>
         <translation>Der Raum wurde erstellt, aber das Hinzufügen zum Space ist fehlgeschlagen.</translation>
     </message>
@@ -1115,13 +1115,13 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4292"/>
-        <location line="+920"/>
+        <location line="+4293"/>
+        <location line="+942"/>
         <source>Not connected</source>
         <translation>Nicht verbunden</translation>
     </message>
     <message>
-        <location line="-5253"/>
+        <location line="-5276"/>
         <source>Connecting…</source>
         <translation>Verbindet …</translation>
     </message>
@@ -1189,12 +1189,12 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4087"/>
+        <location line="+4088"/>
         <source>Not signed in.</source>
         <translation>Nicht angemeldet.</translation>
     </message>
     <message>
-        <location line="-4085"/>
+        <location line="-4086"/>
         <source>Room-key import failed.</source>
         <translation>Der Raumschlüssel-Import ist fehlgeschlagen.</translation>
     </message>
@@ -1425,15 +1425,15 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Das Löschen der lokalen Daten dieses Geräts würde das nicht beheben und Verschlüsselungsschlüssel zerstören, die du noch brauchst.</translation>
     </message>
     <message>
-        <location line="+499"/>
-        <location line="+910"/>
+        <location line="+500"/>
+        <location line="+932"/>
         <location line="+748"/>
         <location line="+15"/>
         <source>Removal did not finish: the account&apos;s data is still in use. Nothing was deleted.</source>
         <translation>Entfernen nicht abgeschlossen: Die Daten des Kontos sind noch in Gebrauch. Es wurde nichts gelöscht.</translation>
     </message>
     <message>
-        <location line="-1476"/>
+        <location line="-1498"/>
         <source>This backend cannot change your display name.</source>
         <translation>Dieses Backend kann deinen Anzeigenamen nicht ändern.</translation>
     </message>
@@ -1465,12 +1465,12 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     </message>
     <message>
         <location line="+40"/>
-        <location line="+677"/>
+        <location line="+699"/>
         <source>That account is not signed in on this device.</source>
         <translation>Dieses Konto ist auf diesem Gerät nicht angemeldet.</translation>
     </message>
     <message>
-        <location line="-654"/>
+        <location line="-676"/>
         <source>That account&apos;s sign-in has expired. Sign in to it again.</source>
         <translation>Die Anmeldung dieses Kontos ist abgelaufen. Melde dich erneut an.</translation>
     </message>
@@ -1490,7 +1490,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Das ausgewählte Konto konnte nicht aktiviert werden.</translation>
     </message>
     <message>
-        <location line="+336"/>
+        <location line="+358"/>
         <location line="+731"/>
         <source>This account can&apos;t be removed while the system keyring can&apos;t be read: its saved sign-in is there and would be left behind. Unlock the keyring, or start it, and try again.</source>
         <translation>Dieses Konto kann nicht entfernt werden, solange der System-Schlüsselbund nicht gelesen werden kann: Seine gespeicherte Anmeldung liegt dort und würde zurückbleiben. Entsperre oder starte den Schlüsselbund und versuche es erneut.</translation>
@@ -13129,14 +13129,14 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="-577"/>
         <location line="+57"/>
         <location line="+517"/>
-        <location line="+4239"/>
+        <location line="+4283"/>
         <location line="+1064"/>
         <location line="+93"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location line="-5968"/>
+        <location line="-6012"/>
         <source>Voice message</source>
         <translation>Sprachnachricht</translation>
     </message>
@@ -13149,24 +13149,24 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="-570"/>
         <location line="+568"/>
-        <location line="+3692"/>
+        <location line="+3736"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5183"/>
+        <location line="-5227"/>
         <location line="+53"/>
         <location line="+514"/>
-        <location line="+4241"/>
+        <location line="+4285"/>
         <source>Image</source>
         <translation>Bild</translation>
     </message>
     <message>
-        <location line="-4807"/>
+        <location line="-4851"/>
         <location line="+570"/>
-        <location line="+4342"/>
+        <location line="+4386"/>
         <location line="+1268"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -13174,7 +13174,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Datei</translation>
     </message>
     <message>
-        <location line="-6210"/>
+        <location line="-6254"/>
         <source>Attachment</source>
         <translation>Anhang</translation>
     </message>
@@ -13410,13 +13410,13 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2346"/>
+        <location line="+2390"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>Wiederholen</translation>
     </message>
     <message>
-        <location line="-3362"/>
+        <location line="-3406"/>
         <location line="+1229"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
@@ -13428,12 +13428,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+188"/>
-        <location line="+1418"/>
+        <location line="+1462"/>
         <source>Hide image</source>
         <translation>Bild ausblenden</translation>
     </message>
     <message>
-        <location line="-1414"/>
+        <location line="-1458"/>
         <source>Hide</source>
         <translation>Ausblenden</translation>
     </message>
@@ -13567,7 +13567,22 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Nachricht speichern</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+30"/>
+        <source>Remind me in 1 hour</source>
+        <translation>Erinnere mich in 1 Stunde</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Remind me tomorrow</source>
+        <translation>Erinnere mich morgen</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Cancel reminder (%1)</source>
+        <translation>Erinnerung abbrechen (%1)</translation>
+    </message>
+    <message>
+        <location line="+12"/>
         <source>Copy text</source>
         <translation>Text kopieren</translation>
     </message>
@@ -13758,13 +13773,13 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Noch keine Position empfangen.</translation>
     </message>
     <message>
-        <location line="-3148"/>
-        <location line="+719"/>
+        <location line="-3192"/>
+        <location line="+763"/>
         <source>Delete</source>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-2635"/>
+        <location line="-2679"/>
         <source>Open this thread</source>
         <translation>Diesen Thread öffnen</translation>
     </message>
@@ -13802,7 +13817,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Entfernen</translation>
     </message>
     <message>
-        <location line="+752"/>
+        <location line="+796"/>
         <source>Message details</source>
         <translation>Nachrichtendetails</translation>
     </message>
@@ -14991,7 +15006,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>NotificationManager</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="+2021"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="+2085"/>
         <location line="+1016"/>
         <source>Open</source>
         <translation>Öffnen</translation>
@@ -15101,11 +15116,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+13"/>
+        <location line="+360"/>
         <source>Direct messages</source>
         <translation>Direktnachrichten</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="-357"/>
         <location line="+8"/>
         <source>All messages</source>
         <translation>Alle Nachrichten</translation>
@@ -15237,6 +15253,110 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Bot-Nachrichten sind die automatischen Hinweise, die manche Bridges und Bots posten. „Aus“ hält sie ruhig; „Benachrichtigen“ behandelt sie wie jede andere Nachricht in diesem Raum.</translation>
     </message>
     <message>
+        <location line="+44"/>
+        <location line="+21"/>
+        <source>Quiet hours</source>
+        <translation>Ruhezeiten</translation>
+    </message>
+    <message>
+        <location line="-6"/>
+        <source>On this device only, notifications are held during these hours and summed up when they end. Activity and unread counts still update, and calls still ring.</source>
+        <translation>Nur auf diesem Gerät werden Benachrichtigungen in diesen Stunden zurückgehalten und am Ende zusammengefasst. Aktivität und Ungelesen-Zähler werden weiter aktualisiert, und Anrufe klingeln weiterhin.</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>From</source>
+        <translation>Von</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Quiet hours start</source>
+        <translation>Beginn der Ruhezeiten</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>to</source>
+        <translation>bis</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Quiet hours end</source>
+        <translation>Ende der Ruhezeiten</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Still notify for</source>
+        <translation>Trotzdem benachrichtigen bei</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Mentions of you</source>
+        <translation>Erwähnungen von dir</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Choose rooms that may still notify from a room&apos;s menu.</source>
+        <translation>Wähle im Menü eines Raums, welche Räume trotzdem benachrichtigen dürfen.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>%n chosen room(s) may still notify. Change them from a room&apos;s menu.</source>
+        <translation>
+            <numerusform>%n ausgewählter Raum darf trotzdem benachrichtigen. Ändere das im Menü eines Raums.</numerusform>
+            <numerusform>%n ausgewählte Räume dürfen trotzdem benachrichtigen. Ändere das im Menü eines Raums.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Quiet now, until %1.</source>
+        <translation>Jetzt ruhig, bis %1.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Next quiet hours start at %1.</source>
+        <translation>Nächste Ruhezeiten beginnen um %1.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Who can interrupt: %1.</source>
+        <translation>Wer stören darf: %1.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>calls</source>
+        <translation>Anrufe</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>mentions</source>
+        <translation>Erwähnungen</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>direct messages</source>
+        <translation>Direktnachrichten</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>chosen rooms</source>
+        <translation>ausgewählte Räume</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Snoozed conversations</source>
+        <translation>Pausierte Unterhaltungen</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>%1, until %2</source>
+        <translation>%1, bis %2</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Unsnooze</source>
+        <translation>Pause beenden</translation>
+    </message>
+    <message>
         <location line="+9"/>
         <source>Not getting notifications?</source>
         <translation>Du bekommst keine Benachrichtigungen?</translation>
@@ -15287,12 +15407,89 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Lightning sieht keine Probleme. Sende eine Testbenachrichtigung, um sicherzugehen.</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+6"/>
+        <source>Test a message against your rules</source>
+        <translation>Eine Nachricht mit deinen Regeln testen</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Asks your account&apos;s rules what they would do with a message in the room you have open. Nothing is sent and no rule is changed.</source>
+        <translation>Fragt die Regeln deines Kontos, was sie mit einer Nachricht im geöffneten Raum tun würden. Es wird nichts gesendet und keine Regel geändert.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Hello</source>
+        <translation>Hallo</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Sample message</source>
+        <translation>Beispielnachricht</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <location line="+3"/>
+        <source>Mentions me</source>
+        <translation>Erwähnt mich</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Open a room first.</source>
+        <translation>Öffne zuerst einen Raum.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This account cannot check its rules here.</source>
+        <translation>Dieses Konto kann seine Regeln hier nicht prüfen.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Checking…</source>
+        <translation>Wird geprüft…</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The rules could not be read. Try again.</source>
+        <translation>Die Regeln konnten nicht gelesen werden. Versuche es erneut.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Rule: %1.</source>
+        <translation>Regel: %1.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>No rule matches.</source>
+        <translation>Keine Regel trifft zu.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>It would not notify.</source>
+        <translation>Es würde nicht benachrichtigen.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>It would notify and highlight.</source>
+        <translation>Es würde benachrichtigen und hervorheben.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>It would notify.</source>
+        <translation>Es würde benachrichtigen.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Lightning would show it.</source>
+        <translation>Lightning würde sie anzeigen.</translation>
+    </message>
+    <message>
+        <location line="+16"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-45"/>
+        <location line="+46"/>
         <source>Check</source>
         <translation>Prüfung</translation>
     </message>
@@ -15340,7 +15537,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>NotificationTroubleshooter</name>
     <message>
-        <location filename="../src/app/NotificationTroubleshooter.cpp" line="+77"/>
+        <location filename="../src/app/NotificationTroubleshooter.cpp" line="+80"/>
         <source>A notification service is running</source>
         <translation>Ein Benachrichtigungsdienst läuft</translation>
     </message>
@@ -15400,12 +15597,22 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Lightning kann nicht lesen, ob dein Desktop auf „Nicht stören“ steht oder Lightning stummgeschaltet hat. Wenn der Test unten nicht erscheint, prüfe die Benachrichtigungseinstellungen deines Desktops.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
+        <source>Your desktop is in Do Not Disturb</source>
+        <translation>Dein Desktop ist im Modus „Nicht stören“</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Your notification service says it is not showing notifications right now. Lightning still sends them, and your desktop keeps them in its history.</source>
+        <translation>Dein Benachrichtigungsdienst meldet, dass er gerade keine Benachrichtigungen anzeigt. Lightning sendet sie trotzdem, und dein Desktop behält sie im Verlauf.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>System permission and Do Not Disturb</source>
         <translation>Systemberechtigung und „Nicht stören“</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>Desktop notifications are on</source>
         <translation>Desktop-Benachrichtigungen sind an</translation>
     </message>
@@ -15520,11 +15727,116 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <source>It has no setting of its own, and your account default could not be read, so whether ordinary messages notify is not known.</source>
         <translation>Er hat keine eigene Einstellung, und dein Kontostandard konnte nicht gelesen werden, daher ist nicht bekannt, ob normale Nachrichten benachrichtigen.</translation>
     </message>
+    <message>
+        <location line="+8"/>
+        <source>This conversation is snoozed</source>
+        <translation>Diese Unterhaltung ist pausiert</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Its notifications are held until the snooze ends, then summed up in one notification. Unsnooze it from the room&apos;s menu.</source>
+        <translation>Ihre Benachrichtigungen werden bis zum Ende der Pause zurückgehalten und dann in einer Benachrichtigung zusammengefasst. Beende die Pause im Menü des Raums.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Mentions still notify.</source>
+        <translation>Erwähnungen benachrichtigen weiterhin.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Direct messages still notify.</source>
+        <translation>Direktnachrichten benachrichtigen weiterhin.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This room still notifies.</source>
+        <translation>Dieser Raum benachrichtigt weiterhin.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Calls still ring.</source>
+        <translation>Anrufe klingeln weiterhin.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Quiet hours are on</source>
+        <translation>Ruhezeiten sind aktiv</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Notifications are held until quiet hours end, then summed up in one notification. They still reach Activity and the unread counts.</source>
+        <translation>Benachrichtigungen werden bis zum Ende der Ruhezeiten zurückgehalten und dann in einer Benachrichtigung zusammengefasst. Sie erscheinen weiterhin in Aktivität und in den Ungelesen-Zählern.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Lightning would not show it: desktop notifications are off on this device.</source>
+        <translation>Lightning würde sie nicht anzeigen: Desktop-Benachrichtigungen sind auf diesem Gerät aus.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Lightning would not show it: this room is muted.</source>
+        <translation>Lightning würde sie nicht anzeigen: Dieser Raum ist stummgeschaltet.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Lightning would hold it until this conversation&apos;s snooze ends.</source>
+        <translation>Lightning würde sie bis zum Ende der Pause dieser Unterhaltung zurückhalten.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Lightning would hold it until quiet hours end.</source>
+        <translation>Lightning würde sie bis zum Ende der Ruhezeiten zurückhalten.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Lightning would send it, but your desktop is in Do Not Disturb and will not show it now.</source>
+        <translation>Lightning würde sie senden, aber dein Desktop ist im Modus „Nicht stören“ und zeigt sie jetzt nicht an.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>This room&apos;s own setting</source>
+        <translation>Eigene Einstellung dieses Raums</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Your user name</source>
+        <translation>Dein Benutzername</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Keyword “%1”</source>
+        <translation>Stichwort „%1“</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Mute all notifications</source>
+        <translation>Alle Benachrichtigungen stummschalten</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Mentions of you</source>
+        <translation>Erwähnungen von dir</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Mentions of the whole room</source>
+        <translation>Erwähnungen des ganzen Raums</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Direct messages</source>
+        <translation>Direktnachrichten</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Messages in group rooms</source>
+        <translation>Nachrichten in Gruppenräumen</translation>
+    </message>
 </context>
 <context>
     <name>Notifications</name>
     <message>
-        <location filename="../src/notifications/NotificationManager.cpp" line="-2917"/>
+        <location filename="../src/notifications/NotificationManager.cpp" line="-2981"/>
         <source>(spoiler)</source>
         <translation>(Spoiler)</translation>
     </message>
@@ -15590,8 +15902,8 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message numerus="yes">
         <location line="+272"/>
-        <location line="+218"/>
-        <location line="+1752"/>
+        <location line="+235"/>
+        <location line="+1799"/>
         <source>%n new messages</source>
         <translation>
             <numerusform>%n neue Nachricht</numerusform>
@@ -15599,16 +15911,47 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="-1966"/>
-        <location line="+212"/>
+        <location line="-2030"/>
+        <location line="+229"/>
         <source>%n new Matrix notifications</source>
         <translation>
             <numerusform>%n neue Matrix-Benachrichtigung</numerusform>
             <numerusform>%n neue Matrix-Benachrichtigungen</numerusform>
         </translation>
     </message>
+    <message>
+        <location line="+118"/>
+        <source>Snooze ended</source>
+        <translation>Pause beendet</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Quiet hours ended</source>
+        <translation>Ruhezeiten beendet</translation>
+    </message>
     <message numerus="yes">
-        <location line="+1757"/>
+        <location line="+4"/>
+        <source>%n notification(s) arrived while this conversation was snoozed.</source>
+        <translation>
+            <numerusform>%n Benachrichtigung kam an, während diese Unterhaltung pausiert war.</numerusform>
+            <numerusform>%n Benachrichtigungen kamen an, während diese Unterhaltung pausiert war.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+4"/>
+        <source>%n notification(s) arrived during quiet hours.</source>
+        <translation>
+            <numerusform>%n Benachrichtigung kam während der Ruhezeiten an.</numerusform>
+            <numerusform>%n Benachrichtigungen kamen während der Ruhezeiten an.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>You were mentioned.</source>
+        <translation>Du wurdest erwähnt.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1669"/>
         <source>in %n rooms</source>
         <translation>
             <numerusform>in %n Raum</numerusform>
@@ -17045,6 +17388,74 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
 </context>
 <context>
+    <name>RemindersController</name>
+    <message>
+        <location filename="../src/app/RemindersController.cpp" line="+301"/>
+        <location line="+88"/>
+        <source>a room</source>
+        <translation>einem Raum</translation>
+    </message>
+    <message numerus="yes">
+        <location line="-80"/>
+        <source>%n reminder(s) are due.</source>
+        <translation>
+            <numerusform>%n Erinnerung ist fällig.</numerusform>
+            <numerusform>%n Erinnerungen sind fällig.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>In %1.</source>
+        <translation>In %1.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Reminders</source>
+        <translation>Erinnerungen</translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>An attachment</source>
+        <translation>Ein Anhang</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>A sticker</source>
+        <translation>Ein Sticker</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <location line="+6"/>
+        <source>Reminder</source>
+        <translation>Erinnerung</translation>
+    </message>
+    <message>
+        <location line="-5"/>
+        <source>A message you asked to be reminded about was removed.</source>
+        <translation>Eine Nachricht, an die du erinnert werden wolltest, wurde entfernt.</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>%1: %2</source>
+        <translation>%1: %2</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>A message from %1</source>
+        <translation>Eine Nachricht von %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>A message in this room</source>
+        <translation>Eine Nachricht in diesem Raum</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Reminder: %1</source>
+        <translation>Erinnerung: %1</translation>
+    </message>
+</context>
+<context>
     <name>ReportMessageDialog</name>
     <message>
         <location filename="../qml/ReportMessageDialog.qml" line="+48"/>
@@ -17175,7 +17586,32 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Lokale Einstellung: Sie ändert die Server-Push-Regeln dieses Raums nicht.</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+24"/>
+        <source>Snooze for 1 hour</source>
+        <translation>1 Stunde pausieren</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Snooze until tomorrow</source>
+        <translation>Bis morgen pausieren</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Unsnooze (snoozed until %1)</source>
+        <translation>Pause beenden (pausiert bis %1)</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Keep quiet during quiet hours</source>
+        <translation>Während der Ruhezeiten still bleiben</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Notify during quiet hours</source>
+        <translation>Während der Ruhezeiten benachrichtigen</translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>Chat background…</source>
         <translation>Chat-Hintergrund …</translation>
     </message>
@@ -32679,7 +33115,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>ThreadController</name>
     <message>
-        <location filename="../src/threads/ThreadController.cpp" line="+768"/>
+        <location filename="../src/threads/ThreadController.cpp" line="+770"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>Anhänge werden von diesem Backend nicht unterstützt.</translation>
