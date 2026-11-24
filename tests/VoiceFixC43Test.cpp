@@ -74,10 +74,10 @@ private Q_SLOTS:
         QVERIFY(anon.recording());
     }
 
-    void aReplacementDefaultInterruptsTheCurrentTake()
+    void aTakeOnTheDefaultDoesNotFollowAReplacementDefault()
     {
         VoiceRecorder rec;
-        rec.setRecordingForTest("old-default");
+        rec.setRecordingForTest("old-default", QString(), 0, true);
         QSignalSpy failed(&rec, &VoiceRecorder::failed);
         QSignalSpy ready(&rec, &VoiceRecorder::ready);
         rec.inputDevicesChanged({{"usb", false}, {"new-default", true}});

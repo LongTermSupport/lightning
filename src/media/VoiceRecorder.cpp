@@ -197,8 +197,9 @@ void VoiceRecorder::inputLost()
 
 void VoiceRecorder::setRecordingForTest(const QByteArray &deviceId,
                                         const QString &activeFile,
-                                        qint64 durationMs)
+                                        qint64 durationMs, bool wasDefault)
 {
+    Q_UNUSED(wasDefault);
     m_state = State::Recording;
     m_recordingDeviceId = deviceId;
     m_activeFile = activeFile;

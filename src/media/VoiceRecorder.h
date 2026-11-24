@@ -67,7 +67,7 @@ public:
     QMediaDevices *watchInputDevicesForTest();
     void setRecordingForTest(const QByteArray &deviceId,
                              const QString &activeFile = QString(),
-                             qint64 durationMs = 0);
+                             qint64 durationMs = 0, bool wasDefault = false);
     void finishForTest();
     bool endedByDisconnect() const { return m_endedByDisconnect; }
     int startNowCallsForTest() const { return m_startNowCalls; }
