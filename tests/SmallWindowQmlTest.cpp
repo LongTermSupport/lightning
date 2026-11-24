@@ -1031,20 +1031,21 @@ private Q_SLOTS:
                             + faults.join(QStringLiteral("; "))));
         QCOMPARE(seen.size(), expected);
 
-        // Room, search and the four Room information sections each have an
-        // action beside their last one.
+        // Search and the four Room information sections each have an action
+        // beside their last one; the room header too unless it folded them.
         QStringList gapNames;
         for (const auto &g : gaps)
             gapNames << g.first;
-        QVERIFY2(!gaps.isEmpty() && gaps.first().first == QLatin1String("room"),
+        QVERIFY2(!gaps.isEmpty()
+                     && (size.width() < 960 || gaps.first().first == QLatin1String("room")),
                  qPrintable(gapNames.join(QStringLiteral(", "))));
         QStringList spacing;
         for (const auto &g : gaps)
             if (qAbs(g.second - gaps.first().second) > 0.5)
                 spacing << QStringLiteral("%1: %2").arg(g.first).arg(g.second);
         QVERIFY2(spacing.isEmpty(),
-                 qPrintable(QStringLiteral("room header actions %1 px apart; "
-                                           "differs: ").arg(gaps.first().second)
+                 qPrintable(QStringLiteral("%1 actions %2 px apart; differs: ")
+                                .arg(gaps.first().first).arg(gaps.first().second)
                             + spacing.join(QStringLiteral("; "))));
         for (const char *n : { "search", "roomInfo/overview", "roomInfo/people",
                                "roomInfo/media", "roomInfo/widgets" })
