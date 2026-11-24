@@ -333,13 +333,14 @@ private Q_SLOTS:
         QVERIFY(m_composer->createPoll(QStringLiteral("Q"),
                                        { QStringLiteral("a"), QStringLiteral("b") },
                                        false, 1));
-        m_client->logout();
+        m_composer->setClient(nullptr);
         QCOMPARE(finished.count(), 1);
         QCOMPARE(finished.first().first().toBool(), false);
+        m_composer->setClient(m_client);
         QVERIFY(m_composer->createPoll(QStringLiteral("Q"),
                                        { QStringLiteral("a"), QStringLiteral("b") },
                                        false, 1));
-        m_composer->setClient(nullptr);
+        m_client->logout();
         QCOMPARE(finished.count(), 2);
         QCOMPARE(finished.last().first().toBool(), false);
     }
