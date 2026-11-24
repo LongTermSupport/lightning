@@ -30,6 +30,8 @@
 
 #include <QBuffer>
 #include <QImage>
+#include <QTranslator>
+#include <QXmlStreamReader>
 
 #include "app/AppController.h"
 #include "app/ForwardController.h"
@@ -94,6 +96,19 @@ private:
     inline static QStringList s_messages;
 };
 }
+
+// Serves one chosen translation per source text; anything else falls through.
+class PillTranslator final : public QTranslator
+{
+public:
+    QHash<QString, QString> texts;
+    bool isEmpty() const override { return false; }
+    QString translate(const char *, const char *source, const char *,
+                      int) const override
+    {
+        return texts.value(QString::fromUtf8(source));
+    }
+};
 
 class TimelinePaneQmlTest : public QObject
 {
@@ -12951,6 +12966,273 @@ false);
                      "the loading chip shares the pill's place");
         pill->setProperty("visible", false);
         QTRY_COMPARE(chip->y(), 0.0);
+    }
+
+private:
+    static const QStringList &topPillSources()
+    {
+        static const QStringList sources{
+            QStringLiteral("First unread"),
+            QStringLiteral("Couldn't find the first unread message")};
+        return sources;
+    }
+
+    // The longest translation of each top pill's text in one shipped language.
+    static QHash<QString, QString> longestPillTexts(const QString &code)
+    {
+        QHash<QString, QString> out;
+        if (code == QLatin1String("en")) {
+            for (const QString &s : topPillSources())
+                out.insert(s, s);
+            return out;
+        }
+        QFile f(QFINDTESTDATA(QStringLiteral("../i18n/lightning_%1.ts").arg(code)));
+        if (!f.open(QIODevice::ReadOnly))
+            return out;
+        QXmlStreamReader xml(&f);
+        QString source;
+        while (!xml.atEnd()) {
+            if (!xml.readNextStartElement())
+                continue;
+            if (xml.name() == u"source") {
+                source = xml.readElementText();
+            } else if (xml.name() == u"translation") {
+                const QString t = xml.readElementText(
+                    QXmlStreamReader::IncludeChildElements);
+                if (topPillSources().contains(source)
+                    && t.size() > out.value(source).size())
+                    out.insert(source, t);
+            }
+        }
+        return out;
+    }
+
+    static const QStringList &pillLocales()
+    {
+        static const QStringList codes{
+            QStringLiteral("en"), QStringLiteral("de"), QStringLiteral("lt"),
+            QStringLiteral("es"), QStringLiteral("fr"), QStringLiteral("pt"),
+            QStringLiteral("ru"), QStringLiteral("id"), QStringLiteral("zh_CN"),
+            QStringLiteral("ar"), QStringLiteral("hi"), QStringLiteral("bn")};
+        return codes;
+    }
+
+    // Translates the pane into `code` and mirrors it for Arabic; proves the
+    // labels now carry that language's longest texts.
+    static bool applyPillLocale(PillTranslator &translator,
+                                QQmlApplicationEngine &engine,
+                                QQuickItem *root, const QString &code,
+                                QString *why)
+    {
+        translator.texts = longestPillTexts(code);
+        if (translator.texts.size() != topPillSources().size()) {
+            *why = QStringLiteral("%1: pill texts missing from the .ts").arg(code);
+            return false;
+        }
+        engine.retranslate();
+        const bool rtl = code == QLatin1String("ar");
+        QQmlProperty(root, QStringLiteral("LayoutMirroring.childrenInherit"),
+                     qmlContext(root)).write(true);
+        QQmlProperty(root, QStringLiteral("LayoutMirroring.enabled"),
+                     qmlContext(root)).write(rtl);
+        for (int i = 0; i < 4; ++i)
+            QCoreApplication::processEvents();
+        auto *unread = root->findChild<QQuickItem *>(
+            QStringLiteral("jumpToFirstUnreadLabel"));
+        QQuickItem *failed = nullptr;
+        if (auto *note = root->findChild<QQuickItem *>(
+                QStringLiteral("firstUnreadFailedNote"))) {
+            for (QQuickItem *child : note->childItems()) {
+                if (child->property("text").isValid())
+                    failed = child;
+            }
+        }
+        if (!unread || !failed
+            || unread->property("text").toString()
+                   != translator.texts.value(topPillSources().at(0))
+            || failed->property("text").toString()
+                   != translator.texts.value(topPillSources().at(1))) {
+            *why = QStringLiteral("%1: the pills did not take the translation")
+                       .arg(code);
+            return false;
+        }
+        return true;
+    }
+
+    static QRectF sceneRect(QQuickItem *item)
+    {
+        return item->mapRectToScene(QRectF(0, 0, item->width(), item->height()));
+    }
+
+private Q_SLOTS:
+    // The loading bar ran under the floating top pill while history loaded,
+    // worst in Russian.
+    void theTopPillsNeverShareTheLoadingBarInAnyLanguage()
+    {
+        AppController controller(AppController::MockBackend);
+        QVERIFY(!loginAndRoomIdAt(controller, 0).isEmpty());
+        const QString roomId = QStringLiteral("!general:mock.local");
+        auto *mock = controller.findChild<MockMatrixClient *>();
+        QVERIFY(mock != nullptr);
+        PillTranslator translator;
+        QCoreApplication::installTranslator(&translator);
+        auto untranslate = qScopeGuard(
+            [&] { QCoreApplication::removeTranslator(&translator); });
+        QQmlApplicationEngine engine;
+        QQuickWindow window;
+        QQuickItem *timeline = nullptr;
+        QQuickItem *root = paneWithEvents(
+            controller, engine, window, roomId,
+            textFixture(roomId, 30, QStringLiteral("pill"), QStringLiteral("body")),
+            /*paginationPages=*/10, /*viewportHeight=*/600, &timeline);
+        QVERIFY(root != nullptr);
+        QTRY_VERIFY_WITH_TIMEOUT(!controller.pagination()->busy(), 5000);
+        QVERIFY(controller.pagination()->moreHistory());
+        mock->setPaginationDelayForTest(600000);
+        controller.pagination()->requestNearTop();
+        QTRY_COMPARE(controller.pagination()->presentationState(),
+                     PaginationController::Loading);
+        root->setWidth(320);
+        QCoreApplication::processEvents();
+
+        auto *bar = root->findChild<QQuickItem *>(
+            QStringLiteral("paginationLoadingBar"));
+        auto *pill = root->findChild<QQuickItem *>(
+            QStringLiteral("jumpToFirstUnreadButton"));
+        auto *note = root->findChild<QQuickItem *>(
+            QStringLiteral("firstUnreadFailedNote"));
+        QVERIFY(bar && pill && note);
+        QTRY_VERIFY(bar->isVisible());
+        QTRY_VERIFY(sceneRect(pill->parentItem()).width() > 0
+                    && sceneRect(pill->parentItem()).width() <= 320.0);
+        const QRectF area = sceneRect(pill->parentItem());
+
+        auto check = [&](QQuickItem *item, const QString &code) {
+            const QRectF r = sceneRect(item);
+            const QRectF b = sceneRect(bar);
+            QVERIFY2(bar->isVisible() && b.width() > 0 && b.height() > 0,
+                     "the loading bar is not drawn");
+            QVERIFY2(!b.intersects(r),
+                     qPrintable(QStringLiteral("%1 %2: pill y %3-%4 shares "
+                                               "the bar's band y %5-%6")
+                                    .arg(code, item->objectName())
+                                    .arg(r.top()).arg(r.bottom())
+                                    .arg(b.top()).arg(b.bottom())));
+            QVERIFY2(r.left() >= area.left() && r.right() <= area.right(),
+                     qPrintable(QStringLiteral("%1 %2: x %3-%4 outside the "
+                                               "timeline %5-%6")
+                                    .arg(code, item->objectName())
+                                    .arg(r.left()).arg(r.right())
+                                    .arg(area.left()).arg(area.right())));
+        };
+
+        int checked = 0;
+        for (const QString &code : pillLocales()) {
+            QString why;
+            QVERIFY2(applyPillLocale(translator, engine, root, code, &why),
+                     qPrintable(why));
+            QVERIFY(root->setProperty("firstUnreadNoteShown", false));
+            QVERIFY(root->setProperty("firstUnreadHuntFailed", false));
+            QVERIFY(root->setProperty("openedWithUnread", true));
+            QTRY_VERIFY2(pill->isVisible(), qPrintable(code));
+            check(pill, code);
+            if (QTest::currentTestFailed())
+                return;
+
+            QVERIFY(root->setProperty("openedWithUnread", false));
+            QVERIFY(root->setProperty("firstUnreadNoteShown", true));
+            QTRY_VERIFY2(note->isVisible() && !pill->isVisible(), qPrintable(code));
+            check(note, code);
+            if (QTest::currentTestFailed())
+                return;
+            ++checked;
+        }
+        QCOMPARE(checked, pillLocales().size());
+    }
+
+    // At the room start the pills move to the trailing corner, which is the
+    // left one when the layout is mirrored.
+    void theTopPillsKeepToTheTrailingCornerInEveryLanguage()
+    {
+        AppController controller(AppController::MockBackend);
+        QVERIFY(!loginAndRoomIdAt(controller, 0).isEmpty());
+        const QString roomId = QStringLiteral("!general:mock.local");
+        PillTranslator translator;
+        QCoreApplication::installTranslator(&translator);
+        auto untranslate = qScopeGuard(
+            [&] { QCoreApplication::removeTranslator(&translator); });
+        QQmlApplicationEngine engine;
+        QQuickWindow window;
+        QQuickItem *timeline = nullptr;
+        QList<TimelineEvent> events =
+            textFixture(roomId, 60, QStringLiteral("c"), QStringLiteral("body"));
+        TimelineEvent marker;
+        marker.roomId = roomId;
+        marker.type = TimelineEvent::ReadMarker;
+        events.insert(10, marker);
+        QQuickItem *root = paneWithEvents(controller, engine, window, roomId,
+                                          events, /*paginationPages=*/1,
+                                          /*viewportHeight=*/600, &timeline);
+        QVERIFY(root != nullptr);
+        auto *pill = root->findChild<QQuickItem *>(
+            QStringLiteral("jumpToFirstUnreadButton"));
+        auto *note = root->findChild<QQuickItem *>(
+            QStringLiteral("firstUnreadFailedNote"));
+        QVERIFY(pill && note);
+        QTRY_VERIFY_WITH_TIMEOUT(pill->isVisible(), 2000);
+        for (int i = 0; i < 4 && !controller.pagination()->reachedStart(); ++i) {
+            controller.pagination()->requestNearTop();
+            QTRY_VERIFY_WITH_TIMEOUT(!controller.pagination()->busy(), 5000);
+        }
+        QTRY_VERIFY_WITH_TIMEOUT(controller.pagination()->reachedStart(), 5000);
+        root->setWidth(320);
+        QCoreApplication::processEvents();
+        QTRY_VERIFY(sceneRect(pill->parentItem()).width() > 0
+                    && sceneRect(pill->parentItem()).width() <= 320.0);
+        const QRectF area = sceneRect(pill->parentItem());
+
+        auto check = [&](QQuickItem *item, const QString &code) {
+            const QRectF r = sceneRect(item);
+            const bool rtl = code == QLatin1String("ar");
+            QVERIFY2(r.left() >= area.left() && r.right() <= area.right(),
+                     qPrintable(QStringLiteral("%1 %2: x %3-%4 outside the "
+                                               "timeline %5-%6")
+                                    .arg(code, item->objectName())
+                                    .arg(r.left()).arg(r.right())
+                                    .arg(area.left()).arg(area.right())));
+            QVERIFY2(rtl ? r.center().x() < area.center().x()
+                         : r.center().x() > area.center().x(),
+                     qPrintable(QStringLiteral("%1 %2: centre %3 is not on the "
+                                               "trailing side of %4")
+                                    .arg(code, item->objectName())
+                                    .arg(r.center().x())
+                                    .arg(area.center().x())));
+        };
+
+        int checked = 0;
+        for (const QString &code : pillLocales()) {
+            QString why;
+            QVERIFY2(applyPillLocale(translator, engine, root, code, &why),
+                     qPrintable(why));
+            QTRY_VERIFY2(pill->isVisible(), qPrintable(code));
+            check(pill, code);
+            if (QTest::currentTestFailed())
+                return;
+            ++checked;
+        }
+        pill->setProperty("visible", false);
+        QVERIFY(root->setProperty("firstUnreadNoteShown", true));
+        for (const QString &code : pillLocales()) {
+            QString why;
+            QVERIFY2(applyPillLocale(translator, engine, root, code, &why),
+                     qPrintable(why));
+            QTRY_VERIFY2(note->isVisible(), qPrintable(code));
+            check(note, code);
+            if (QTest::currentTestFailed())
+                return;
+            ++checked;
+        }
+        QCOMPARE(checked, 2 * pillLocales().size());
     }
 
     void theActionBarOfACutRowStaysInsideTheTimeline()
