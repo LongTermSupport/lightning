@@ -7769,8 +7769,6 @@ bool AppController::removeAccountLocalStateFiles(
     const auto removed = matrix::app_data::removeAccountRustState(identity);
     if (m_accountAvatars)
         m_accountAvatars->forget(identity.userId);
-    if (m_stickers)
-        m_stickers->forgetAccount(identity.userId);
 
     const QString starredDir =
         matrix::app_data::starredGifsDir(identity.accountRoot);
