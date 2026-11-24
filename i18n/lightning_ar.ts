@@ -1073,7 +1073,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7422"/>
+        <location filename="../src/app/AppController.cpp" line="+7432"/>
         <source>Room invitation</source>
         <translation>دعوة إلى غرفة</translation>
     </message>
@@ -1198,7 +1198,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>مكالمة واردة</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5764"/>
+        <location filename="../src/app/AppController.cpp" line="-5773"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>أُلغي تسجيل الخروج لأن الحساب تغيّر. لم يُعَد ضبط أي شيء.</translation>
     </message>
@@ -1250,13 +1250,13 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4315"/>
+        <location line="+4324"/>
         <location line="+821"/>
         <source>Not connected</source>
         <translation>غير متصل</translation>
     </message>
     <message>
-        <location line="-5177"/>
+        <location line="-5186"/>
         <source>Connecting…</source>
         <translation>جارٍ الاتصال…</translation>
     </message>
@@ -1317,29 +1317,29 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+4"/>
-        <location line="+3111"/>
+        <location line="+3120"/>
         <location line="+9"/>
         <source>Lightning could not read the selected file.</source>
         <translation>تعذّر على Lightning قراءة الملف المحدد.</translation>
     </message>
     <message>
-        <location line="-3117"/>
+        <location line="-3126"/>
         <source>A room-key import is already in progress.</source>
         <translation>هناك استيراد لمفاتيح الغرف قيد التنفيذ بالفعل.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4110"/>
+        <location line="+4119"/>
         <source>Not signed in.</source>
         <translation>لم تسجّل الدخول.</translation>
     </message>
     <message>
-        <location line="-4108"/>
+        <location line="-4117"/>
         <source>Room-key import failed.</source>
         <translation>فشل استيراد مفاتيح الغرف.</translation>
     </message>
     <message>
-        <location line="+2280"/>
+        <location line="+2283"/>
         <source>Enter a size limit from 1 to 2000 MB.</source>
         <translation>أدخل حدًّا للحجم من 1 إلى 2000 ميغابايت.</translation>
     </message>
@@ -1354,7 +1354,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>استخدم تواريخ حقيقية بصيغة YYYY-MM-DD، على ألا يكون «من» بعد «إلى».</translation>
     </message>
     <message>
-        <location line="-4820"/>
+        <location line="-4823"/>
         <location line="+2729"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
@@ -1456,14 +1456,14 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+8"/>
-        <location line="+1847"/>
+        <location line="+1856"/>
         <location line="+41"/>
         <location line="+201"/>
         <source>This build has no Rust SDK backend.</source>
         <translation>هذه النسخة لا تتضمن خلفية Rust SDK.</translation>
     </message>
     <message>
-        <location line="-1800"/>
+        <location line="-1809"/>
         <source>Choose a local image file.</source>
         <translation>اختر ملف صورة محلي.</translation>
     </message>
@@ -1507,7 +1507,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>تعذّر حفظ الأيقونة.</translation>
     </message>
     <message>
-        <location line="+421"/>
+        <location line="+424"/>
         <source>You are no longer in that room, so it cannot be opened.</source>
         <translation>لم تعد في تلك الغرفة، لذا لا يمكن فتحها.</translation>
     </message>
@@ -1533,7 +1533,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>هذه الصورة غير قابلة للنسخ.</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+15"/>
         <source>Couldn&apos;t decode the image.</source>
         <translation>تعذّر فك ترميز الصورة.</translation>
     </message>
@@ -1543,7 +1543,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>الحافظة غير متاحة.</translation>
     </message>
     <message>
-        <location line="+163"/>
+        <location line="+164"/>
         <source>Verification is only available on the Rust backend.</source>
         <translation>التحقّق متاح فقط على خلفية Rust.</translation>
     </message>
@@ -1952,7 +1952,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>الصورة أكبر من حد الرفع في الخادوم (%1).</translation>
     </message>
     <message>
-        <location line="+215"/>
+        <location line="+218"/>
         <source>The attachment is no longer available.</source>
         <translation>المرفق لم يعد متوفرا.</translation>
     </message>
@@ -1967,18 +1967,18 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>تعديل الصورة غير صالح.</translation>
     </message>
     <message>
-        <location line="-113"/>
-        <location line="+144"/>
+        <location line="-116"/>
+        <location line="+147"/>
         <source>This image is too large to edit.</source>
         <translation>هذه الصورة كبيرة جدًا بحيث لا يمكن تعديلها.</translation>
     </message>
     <message>
-        <location line="-162"/>
+        <location line="-165"/>
         <source>This image format cannot be edited.</source>
         <translation>لا يمكن تحرير تنسيق الصورة هذا.</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+29"/>
         <source>This image could not be decoded safely.</source>
         <translation>لا يمكن فك تشفير هذه الصورة بشكل آمن.</translation>
     </message>
@@ -10056,13 +10056,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+7"/>
-        <location line="+658"/>
+        <location line="+659"/>
         <location line="+1"/>
         <source>Open in browser</source>
         <translation>فتح في المتصفح</translation>
     </message>
     <message>
-        <location line="-651"/>
+        <location line="-652"/>
         <source>Close</source>
         <translation>إغلاق</translation>
     </message>
@@ -10097,7 +10097,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>إغلاق عارض الصور</translation>
     </message>
     <message>
-        <location line="+154"/>
+        <location line="+155"/>
         <source>Image %1 of %2, shown</source>
         <translation>الصورة %1 من %2، معروضة</translation>
     </message>
@@ -11874,7 +11874,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1373"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1378"/>
         <location line="+689"/>
         <source>The file could not be downloaded.</source>
         <translation>تعذّر تنزيل الملف.</translation>
