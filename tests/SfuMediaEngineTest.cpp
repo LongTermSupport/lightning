@@ -2762,6 +2762,30 @@ true,-1);
 #endif
     }
 
+    void aSerialShareThatDoesNotBuildFallsBackOnceToTheNode()
+    {
+        ShareTargetFallback target(true);
+        QVERIFY(target.fallBack(false));
+        QCOMPARE(QByteArray(ShareTargetFallback::name(target.path())), QByteArray("node-id"));
+        QVERIFY2(!target.fallBack(false),
+                 "a build fallback left the first-frame fallback armed");
+    }
+
+    void aPathFallbackLeavesTheMemoryRetryAvailable()
+    {
+        ShareCaptureRetry retry;
+        QVERIFY(retry.beginPathFallback());
+        retry.publish();
+        const int afterPath = retry.stamp();
+        QCOMPARE(afterPath, 1);
+        QVERIFY2(retry.begin(), "the node-id fallback spent the memory retry");
+        QVERIFY(retry.isStale(afterPath));
+        retry.publish();
+        QCOMPARE(retry.stamp(), 2);
+        QVERIFY(!retry.begin());
+        QVERIFY(!retry.beginPathFallback());
+    }
+
     void aStoppedShareCancelsItsPendingFallback()
     {
         ShareTargetFallback target(true);

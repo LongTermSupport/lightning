@@ -5706,6 +5706,7 @@ void SfuMediaEngine::publishVideo(const QString &cid, bool screenShare,
                                   std::optional<quint64> serial)
 {
     bool portalShare = false;
+    ShareTargetFallback shareTarget(serial.has_value());
     struct PortalFd {
         int fd;
         ~PortalFd()
@@ -5922,6 +5923,22 @@ void SfuMediaEngine::publishVideo(const QString &cid, bool screenShare,
             source, screenShare ? videoRateStage(true) : cameraRateStage(portalCamera),
             limits, encoder, selfView,
             nextPublishSsrc(), scaleStageInUse, captureEntryFilter(false));
+        bin = gst_parse_bin_from_description(description.toUtf8().constData(),
+                                             TRUE, &error);
+    }
+    if (error && portalShare && shareTarget.fallBack(false)) {
+        qCWarning(lcSfuMedia) << "screen share serial path did not build; path="
+                              << ShareTargetFallback::name(shareTarget.path());
+        g_clear_error(&error);
+        if (bin) {
+            gst_object_unref(bin);
+            bin = nullptr;
+        }
+        source = screenShareSource(nodeId, pipewireFd, windowHandle, captureRect,
+                                   std::nullopt);
+        description = videoPipelineDescription(
+            source, videoRateStage(true), limits, encoder, selfView,
+            nextPublishSsrc(), scaleStageInUse, entryInUse, codec);
         bin = gst_parse_bin_from_description(description.toUtf8().constData(),
                                              TRUE, &error);
     }
@@ -6328,10 +6345,9 @@ void SfuMediaEngine::publishVideo(const QString &cid, bool screenShare,
     m_publisherEverPublished = true;
     renegotiatePublisher();
     if (portalShare) {
-        const ShareTargetFallback target(serial.has_value());
-        qCInfo(lcSfuMedia) << "screen share path=" << ShareTargetFallback::name(target.path());
-        if (!target.settled()) {
-            m_shareTargets.insert(cid, {target, nodeId});
+        qCInfo(lcSfuMedia) << "screen share path=" << ShareTargetFallback::name(shareTarget.path());
+        if (!shareTarget.settled()) {
+            m_shareTargets.insert(cid, {shareTarget, nodeId});
             const quint64 generation = m_generation.load();
             QTimer::singleShot(m_shareSerialFirstFrameMs, this, [this, cid, generation] {
                 if (generation == m_generation.load())
@@ -9307,11 +9323,8 @@ bool SfuMediaEngine::settleShareTarget(const QString &cid)
                            << ShareTargetFallback::name(target.fallback.path());
         return false;
     }
-    if (!watch->retry || !watch->retry->begin()) {
-        qCWarning(lcSfuMedia) << "screen share serial path delivered nothing and "
-                                 "its one restart is spent";
+    if (!watch->retry || !watch->retry->beginPathFallback())
         return false;
-    }
     qCWarning(lcSfuMedia) << "screen share serial path delivered nothing; path="
                           << ShareTargetFallback::name(target.fallback.path());
     struct NodeRestart {
