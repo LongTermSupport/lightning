@@ -582,6 +582,11 @@ mod tests {
                 let body = content["body"].as_str().unwrap();
                 assert_eq!(row.body, body, "{}", case.name);
                 assert_eq!(row.edited, case.original.as_ref().unwrap()["content"] != *content, "{}", case.name);
+                assert_eq!(
+                    row.to_json("", "")["replaced_by"],
+                    json!(case.selected_edit().unwrap_or("")),
+                    "{}", case.name
+                );
                 assert_eq!(row.is_attachment(), content.get("url").is_some(), "{}", case.name);
                 if row.is_attachment() {
                     assert_eq!(row.filename, content["filename"].as_str().unwrap_or(body), "{}", case.name);
