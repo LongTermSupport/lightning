@@ -77,6 +77,8 @@ public:
     static constexpr qint64 kWindowMs = 2000;
     static constexpr qint64 kLookbackMs = 15000;
     static constexpr int kMaxRooms = 20000;
+    // Past the history fetch's own 20 s timeout.
+    static constexpr qint64 kEvidenceMs = 30000;
 
     void creditHighlight(const QString &roomId, qint64 nowMs)
     {
@@ -151,6 +153,21 @@ public:
         return out;
     }
 
+    void awaitEvidence(const QString &roomId, qint64 nowMs)
+    {
+        if (!roomId.isEmpty())
+            m_rooms[roomId].evidenceUntilMs = nowMs + kEvidenceMs;
+    }
+
+    bool takeEvidence(const QString &roomId, qint64 nowMs)
+    {
+        auto it = m_rooms.find(roomId);
+        if (it == m_rooms.end() || it->evidenceUntilMs < nowMs)
+            return false;
+        it->evidenceUntilMs = 0;
+        return true;
+    }
+
     qint64 nextDueMs() const
     {
         qint64 next = std::numeric_limits<qint64>::max();
@@ -181,6 +198,7 @@ private:
         qint64 dueMs = 0;
         qint64 riseAtMs = 0;
         qint64 backlogAtMs = 0;
+        qint64 evidenceUntilMs = 0;
         QList<qint64> credits;
     };
 

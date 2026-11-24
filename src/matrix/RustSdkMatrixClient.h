@@ -1220,6 +1220,7 @@ private:
     QHash<QString, QList<TimelineEvent>> m_timelines;
     matrix::notification_producer::BoundedIdMap m_forwardedEditIds{512};
     matrix::notification_producer::BoundedIdMap m_undecryptableSeen{4096};
+    matrix::notification_producer::BoundedIdMap m_highlightsNotified{1024};
     matrix::notification_producer::HighlightGapTracker m_highlightGaps;
     QTimer m_highlightGapTimer;
     bool m_coalesceTimelineInserts = false;

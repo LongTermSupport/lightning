@@ -816,6 +816,119 @@ private slots:
 #endif
     }
 
+    static QJsonObject fetched(QJsonObject event, bool highlight)
+    {
+        event.insert(QStringLiteral("fetched"), true);
+        event.insert(QStringLiteral("backlog"), true);
+        event.insert(QStringLiteral("push_highlight"), highlight);
+        return event;
+    }
+
+    static QJsonObject decryptedMention(const QString &eventId)
+    {
+        QJsonObject event = message(eventId, QStringLiteral("@me"));
+        event.insert(QStringLiteral("is_encrypted"), true);
+        event.insert(QStringLiteral("is_decrypted"), true);
+        return event;
+    }
+
+    void anEncryptedRoomsMissedMentionCardsOnceOnFetchedEvidence()
+    {
+#ifndef ENABLE_RUST_SDK_BACKEND
+        QSKIP("needs the Rust backend");
+#else
+        Sink sink;
+        SettingsManager settings;
+        RustSdkMatrixClient client(&settings);
+        watch(client, sink);
+        startLive(client, true);
+
+        listRoom(client, 1, true);
+        QTest::qWait(HighlightGapWaitMs);
+        QVERIFY(sink.highlightGaps.isEmpty());
+
+        client.handleRustEventForTest(envelope(QStringLiteral("timeline_event"),
+                                               fetched(decryptedMention(QStringLiteral("$x")), true)));
+        QCOMPARE(sink.highlightGaps.size(), 1);
+        QCOMPARE(sink.highlightGaps.first().first, kRoom);
+        QCOMPARE(sink.highlightGaps.first().second, 1);
+
+        client.handleRustEventForTest(envelope(QStringLiteral("timeline_event"),
+                                               fetched(decryptedMention(QStringLiteral("$y")), true)));
+        QCOMPARE(sink.highlightGaps.size(), 1);
+#endif
+    }
+
+    void aFetchedHighlightAlreadyNotifiedLiveIsNoEvidence()
+    {
+#ifndef ENABLE_RUST_SDK_BACKEND
+        QSKIP("needs the Rust backend");
+#else
+        Sink sink;
+        SettingsManager settings;
+        RustSdkMatrixClient client(&settings);
+        watch(client, sink);
+        startLive(client, true);
+
+        QJsonObject live = decryptedMention(QStringLiteral("$m"));
+        live.insert(QStringLiteral("push_notify"), true);
+        live.insert(QStringLiteral("push_highlight"), true);
+        client.handleRustEventForTest(envelope(QStringLiteral("timeline_event"), live));
+        listRoom(client, 2, true);
+        QTest::qWait(HighlightGapWaitMs);
+        QVERIFY(sink.highlightGaps.isEmpty());
+
+        client.handleRustEventForTest(envelope(QStringLiteral("timeline_event"),
+                                               fetched(decryptedMention(QStringLiteral("$m")), true)));
+        QVERIFY(sink.highlightGaps.isEmpty());
+        client.handleRustEventForTest(envelope(QStringLiteral("timeline_event"),
+                                               fetched(decryptedMention(QStringLiteral("$x")), true)));
+        QCOMPARE(sink.highlightGaps.size(), 1);
+#endif
+    }
+
+    void anEncryptedRiseWithNoAdmittedFetchedHighlightCardsNothing()
+    {
+#ifndef ENABLE_RUST_SDK_BACKEND
+        QSKIP("needs the Rust backend");
+#else
+        Sink sink;
+        SettingsManager settings;
+        RustSdkMatrixClient client(&settings);
+        watch(client, sink);
+        startLive(client, true);
+
+        listRoom(client, 1, true);
+        QTest::qWait(HighlightGapWaitMs);
+        client.handleRustEventForTest(envelope(QStringLiteral("timeline_event"),
+                                               fetched(decryptedMention(QStringLiteral("$plain")), false)));
+        client.handleRustEventForTest(envelope(QStringLiteral("timeline_event"),
+                                               fetched(undecryptable(QStringLiteral("$utd")), true)));
+        QVERIFY(sink.highlightGaps.isEmpty());
+        QCOMPARE(client.roomInfo(kRoom).highlightCount, 1);
+#endif
+    }
+
+    void anEncryptedRoomsEvidenceWindowCloses()
+    {
+#ifndef ENABLE_RUST_SDK_BACKEND
+        QSKIP("needs the Rust backend");
+#else
+        Sink sink;
+        SettingsManager settings;
+        RustSdkMatrixClient client(&settings);
+        watch(client, sink);
+        startLive(client, true);
+
+        listRoom(client, 1, true);
+        QTest::qWait(HighlightGapWaitMs + 31000);
+        client.handleRustEventForTest(envelope(QStringLiteral("timeline_event"),
+                                               fetched(decryptedMention(QStringLiteral("$late")), true)));
+        QVERIFY(sink.highlightGaps.isEmpty());
+        QCOMPARE(client.roomInfo(kRoom).highlightCount, 1);
+#endif
+    }
+
     void aPlainRoomRiseExplainedOnlyByARejectedEditIsNotReported()
     {
 #ifndef ENABLE_RUST_SDK_BACKEND

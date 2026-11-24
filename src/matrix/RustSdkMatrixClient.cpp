@@ -7368,9 +7368,11 @@ void RustSdkMatrixClient::flushHighlightGaps()
                        << matrix::e2ee::redactId(gap.first)
                        << "count=" << gap.second;
         const RoomInfo room = m_rooms.value(gap.first);
-        // A forged plaintext edit raises the server's count; encrypted rooms notify only admitted events.
+        // A forged plaintext edit raises the server's count; encrypted rooms card only on a fetched admitted highlight.
         if (!room.encrypted && room.encryptionKnown)
             Q_EMIT roomHighlightsUnnotified(gap.first, gap.second);
+        else
+            m_highlightGaps.awaitEvidence(gap.first, now);
         if (m_rustHandle) {
             const QByteArray room = gap.first.toUtf8();
             takeRustString(mx_rust_fetch_unread_events(m_rustHandle, room.constData()));
@@ -7385,6 +7387,7 @@ void RustSdkMatrixClient::flushHighlightGaps()
 void RustSdkMatrixClient::resetNotificationProducerState()
 {
     m_undecryptableSeen.clear();
+    m_highlightsNotified.clear();
     m_highlightGaps.reset();
     m_highlightGapTimer.stop();
 }
@@ -7519,6 +7522,13 @@ void RustSdkMatrixClient::handleSpacesEvent(const QJsonArray &spaces)
     noteRoomsChanged();
 }
 
+static bool highlightsMe(const TimelineEvent &event)
+{
+    return event.pushHighlight
+        || (event.pushVerdict == TimelineEvent::PushVerdict::Unknown
+            && (event.mentionsMe || event.mentionsRoom));
+}
+
 void RustSdkMatrixClient::handleTimelineEvent(const QJsonObject &event)
 {
     const QString roomId = event.value(QStringLiteral("room_id")).toString();
@@ -7545,6 +7555,10 @@ void RustSdkMatrixClient::handleTimelineEvent(const QJsonObject &event)
             Q_EMIT roomUpdated(roomId);
         }
         timelineEvent.senderDisplayName = displayNameFor(roomId, timelineEvent.sender);
+        if (highlightsMe(timelineEvent) && !timelineEvent.undecryptable
+            && !m_highlightsNotified.contains(eventId)
+            && m_highlightGaps.takeEvidence(roomId, QDateTime::currentMSecsSinceEpoch()))
+            Q_EMIT roomHighlightsUnnotified(roomId, 1);
         Q_EMIT liveEventObserved(roomId, timelineEvent);
         return;
     }
@@ -7653,11 +7667,10 @@ void RustSdkMatrixClient::noteNotifiedEvent(const QString &roomId,
         m_highlightGaps.noteBacklog(roomId, now);
         return;
     }
-    const bool highlighted = event.pushHighlight
-        || (event.pushVerdict == TimelineEvent::PushVerdict::Unknown
-            && (event.mentionsMe || event.mentionsRoom));
-    if (highlighted)
+    if (highlightsMe(event)) {
+        m_highlightsNotified.insert(event.eventId, false);
         m_highlightGaps.creditHighlight(roomId, now);
+    }
 }
 
 void RustSdkMatrixClient::emitDecryptedOnce(const QString &roomId,
