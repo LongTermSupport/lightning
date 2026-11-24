@@ -369,6 +369,7 @@ private:
         QImage fallback;
         bool replacement = false;
         QString accountKey;
+        bool catchUp = false;
     };
     void deliver(Card card);
     bool replacementStillOwned(const Card &card) const;
@@ -381,6 +382,7 @@ private:
     void deliverCallNotification();
     void flushAvatarWaits(bool fallbackAll);
     void flushHeldUndecryptable();
+    void releaseCatchUpHolds();
     void forgetUndecryptableOf(const QString &accountKey);
     void recordPayload(const QString &accountKey, quint32 id,
                        const QVariantMap &payload);
@@ -504,6 +506,8 @@ private:
         // older one delivered late cannot bring back superseded text.
         qint64 editStampMs = 0;
         bool encrypted = false;
+        // While non-zero the group is held (inFlight) collecting a catch-up burst.
+        qint64 holdUntilMs = 0;
     };
     struct AccountTable {
         QHash<quint32, QVariantMap> pendingPayloads;
@@ -570,6 +574,7 @@ private:
     };
     QList<HeldUtd> m_heldUtds;
     QTimer m_utdHoldTimer;
+    QTimer m_catchUpTimer;
     int m_utdHoldMs = 3000;
     enum class UtdState : quint8 { Quiet, Held, Delivered, Decided };
     struct LiveUtd {
