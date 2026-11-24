@@ -72,6 +72,18 @@ struct Scanner {
         return !cancelled.load() && review.error.isEmpty();
     }
 
+    void dropUnder(const QString &prefix)
+    {
+        for (auto it = review.files.begin(); it != review.files.end();) {
+            if (it->name.startsWith(prefix)) {
+                total -= it->bytes.size();
+                it = review.files.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    }
+
     void snapshot(QFile &file, const QString &relative)
     {
         const qint64 size = file.size();
@@ -119,8 +131,15 @@ struct Scanner {
                 && fstatat(fd, leaf.constData(), &st, AT_SYMLINK_NOFOLLOW) == 0) {
                 if (S_ISDIR(st.st_mode) && depth < maxDepth) {
                     const int child = openat(fd, leaf.constData(), O_RDONLY | O_CLOEXEC | O_DIRECTORY | O_NOFOLLOW);
-                    if (child >= 0 && directory(child, relative + u'/', depth + 1))
-                        continue;
+                    struct stat opened{};
+                    if (child >= 0 && (fstat(child, &opened) != 0 || opened.st_dev != st.st_dev
+                                       || opened.st_ino != st.st_ino)) {
+                        close(child);
+                    } else if (child >= 0) {
+                        if (directory(child, relative + u'/', depth + 1))
+                            continue;
+                        dropUnder(relative + u'/');
+                    }
                 } else if (S_ISREG(st.st_mode)) {
                     const int child = openat(fd, leaf.constData(), O_RDONLY | O_CLOEXEC | O_NONBLOCK | O_NOFOLLOW);
                     if (child >= 0) {
@@ -198,8 +217,10 @@ struct Scanner {
                 return false;
             const QString name = QString::fromStdWString(it->path().filename().wstring());
             const QString child = relative.isEmpty() ? name : relative + u'/' + name;
-            if (!include(name, child) || !walk(path + u'/' + name, child, depth + 1))
+            if (!include(name, child) || !walk(path + u'/' + name, child, depth + 1)) {
+                dropUnder(child + u'/');
                 review.omissions.append(child);
+            }
             if (!review.error.isEmpty())
                 return false;
             it.increment(ec);
@@ -228,7 +249,8 @@ Review scan(const QString &folder, const std::atomic_bool &cancelled)
     }
     if (!ok && scanner.review.error.isEmpty())
         scanner.review.error = QCoreApplication::translate("FolderArchive", "The folder could not be reviewed.");
-    scanner.review.fileName = info.fileName() + QStringLiteral(".zip");
+    scanner.review.fileName = (info.fileName().isEmpty() ? QStringLiteral("folder") : info.fileName())
+                              + QStringLiteral(".zip");
     std::sort(scanner.review.files.begin(), scanner.review.files.end(),
               [](const File &a, const File &b) { return a.name < b.name; });
     scanner.review.omissions.sort();

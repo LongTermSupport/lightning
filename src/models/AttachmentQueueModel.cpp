@@ -4,6 +4,7 @@
 #include "app/LogExport.h"
 #include "media/StagedImageStore.h"
 #include "media/AnimatedImageSniff.h"
+#include "media/ImageMetadata.h"
 #include "media/ImageMetadataSize.h"
 
 #include "matrix/MatrixClient.h"
@@ -29,7 +30,6 @@
 #include <QRegularExpression>
 #include <QSize>
 #include <QSet>
-#include "media/ImageMetadata.h"
 #include <QSysInfo>
 #include <QTemporaryDir>
 #include <QThreadPool>
@@ -1371,8 +1371,13 @@ void AttachmentQueueModel::reviewFolder(const QUrl &folder)
 
 void AttachmentQueueModel::createFolderArchive(const QStringList &selected)
 {
-    if (!m_folderCancel || m_buildingArchive || !m_folderReview.error.isEmpty() || selected.isEmpty())
+    if (m_buildingArchive)
         return;
+    const QString stale = tr("The folder review is no longer available. Choose the folder again.");
+    if (!m_folderCancel || !m_folderReview.error.isEmpty() || selected.isEmpty()) {
+        Q_EMIT archiveCreated(stale);
+        return;
+    }
     const auto flag = m_folderCancel;
     const QSet<QString> wanted(selected.begin(), selected.end());
     QList<lightning::logexport::ZipEntry> entries;
@@ -1380,8 +1385,10 @@ void AttachmentQueueModel::createFolderArchive(const QStringList &selected)
         if (wanted.contains(file.name))
             entries.append({file.name, file.bytes});
     }
-    if (entries.size() != wanted.size())
+    if (entries.size() != wanted.size()) {
+        Q_EMIT archiveCreated(stale);
         return;
+    }
     const QString name = matrix::presentable_name::withoutFormatCharacters(m_folderReview.fileName);
     m_buildingArchive = true;
     QPointer<AttachmentQueueModel> self(this);
@@ -1491,6 +1498,8 @@ quint64 AttachmentQueueModel::inspectPhoto(int row, const QString &mode)
                 Q_EMIT self->photoInspected(request, summary);
                 return;
             }
+            Q_EMIT self->photoInspected(request, QVariantMap{{QStringLiteral("error"),
+                tr("This attachment changed before inspection finished.")}});
         }, Qt::QueuedConnection);
     });
     return request;

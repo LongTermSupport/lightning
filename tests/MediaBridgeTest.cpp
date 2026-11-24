@@ -1815,11 +1815,18 @@ private Q_SLOTS:
         const QString key = QStringLiteral("$shared");
         QObject first;
         auto second = std::make_unique<QObject>();
-        bridge.ownedVideoPoster(&first, key, 12000);
-        bridge.ownedVideoPoster(second.get(), key, 12000);
+        const auto own = [&](QObject *owner) {
+            QString source;
+            return QMetaObject::invokeMethod(&bridge, "ownedVideoPoster",
+                Q_RETURN_ARG(QString, source), Q_ARG(QObject *, owner),
+                Q_ARG(QString, key), Q_ARG(double, 12000));
+        };
+        QVERIFY(own(&first));
+        QVERIFY(own(second.get()));
         bridge.playableSource(key);
         QCOMPARE(client.fetches.size(), 1);
-        bridge.releaseVideoPoster(&first);
+        QVERIFY(QMetaObject::invokeMethod(&bridge, "releaseVideoPoster",
+                                          Q_ARG(QObject *, &first)));
         QCOMPARE(bridge.healthSnapshot().value(QStringLiteral("wantedPosters")).toInt(), 1);
         second.reset();
         QCOMPARE(bridge.healthSnapshot().value(QStringLiteral("wantedPosters")).toInt(), 0);
