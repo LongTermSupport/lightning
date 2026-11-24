@@ -1632,19 +1632,26 @@ QtObject {
                 reset();
             }
 
-            auto *row = d.root->findChild<QQuickItem *>(
+            // The geometry doubleClickBesideTheBubbleStartsAReplyInEveryLayout uses.
+            Delegate dc;
+            QVERIFY(createDelegate(controller, fixture, dc,
+                                   {{QStringLiteral("isDirectRoom"), true}}));
+            auto *row = dc.root->findChild<QQuickItem *>(
                 QStringLiteral("messagePresentationRow"));
-            auto *body = d.root->findChild<QQuickItem *>(QStringLiteral("messageBody"));
-            QVERIFY(row && body);
-            QVERIFY(QQmlProperty::write(loader, QStringLiteral("active"), false));
-            QTest::qWait(50);
+            auto *body = dc.root->findChild<QQuickItem *>(QStringLiteral("messageBody"));
+            QVERIFY(row && body && body->isVisible());
             const QPointF bodyInRow = body->mapToItem(row, QPointF(0, body->height() / 2));
-            const QPoint probe = row->mapToScene(
-                QPointF(bodyInRow.x() + body->width() + 40, bodyInRow.y())).toPoint();
-            QTest::mouseDClick(d.window.get(), Qt::LeftButton, {}, probe);
-            QTest::qWait(50);
-            QCOMPARE(controller.composer()->replyingToEventId(),
-                     canPost ? id : QString());
+            const qreal x = bodyInRow.x() + body->width() + 40;
+            QVERIFY(x < row->width() - 200);
+            const QPoint probe = row->mapToScene(QPointF(x, bodyInRow.y())).toPoint();
+            QTest::mouseDClick(dc.window.get(), Qt::LeftButton, {}, probe);
+            if (canPost) {
+                QTRY_COMPARE_WITH_TIMEOUT(controller.composer()->replyingToEventId(),
+                                          id, kSignalTimeoutMs);
+            } else {
+                QTest::qWait(200);
+                QCOMPARE(controller.composer()->replyingToEventId(), QString());
+            }
             reset();
         };
 
