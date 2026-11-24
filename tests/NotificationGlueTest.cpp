@@ -159,6 +159,35 @@ private Q_SLOTS:
                  "never came");
     }
 
+    void aBacklogCopyDoesNotSilenceTheLiveCopyOfTheSameEvent()
+    {
+        AppController controller(AppController::MockBackend);
+        QVERIFY(login(controller));
+        auto *client = mock(controller);
+        QVERIFY(client);
+        QSignalSpy delivered(controller.notificationsForTest(),
+                             &NotificationManager::messageDelivered);
+
+        TimelineEvent reply;
+        reply.eventId = QStringLiteral("$fresh-thread-reply:mock.local");
+        reply.roomId = kRoom;
+        reply.sender = kPeer;
+        reply.type = TimelineEvent::TextMessage;
+        reply.body = QStringLiteral("a new reply");
+        reply.threadRootId = QStringLiteral("$root:mock.local");
+        reply.timestamp = QDateTime::currentDateTimeUtc();
+
+        TimelineEvent history = reply;
+        history.backlog = true;
+        Q_EMIT client->liveEventObserved(kRoom, history);
+        Q_EMIT client->liveEventObserved(kRoom, reply);
+        QTRY_COMPARE_WITH_TIMEOUT(delivered.count(), 1, 10000);
+
+        Q_EMIT client->liveEventObserved(kRoom, reply);
+        QTest::qWait(200);
+        QCOMPARE(delivered.count(), 1);
+    }
+
     void aBurstOfFreshCallIdsIsStillBounded()
     {
         AppController controller(AppController::MockBackend);

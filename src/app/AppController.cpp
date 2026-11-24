@@ -36,6 +36,7 @@
 #include "matrix/MockMatrixClient.h"
 #endif
 #include "matrix/RoomUnreadRule.h"
+#include "media/ImageMetadataSize.h"
 #include "media/MediaManager.h"
 #include "media/MprisServer.h"
 #include "models/MessageComposer.h"
@@ -2288,10 +2289,7 @@ true, ringSeconds, acceptOffered,
     m_pagination->setClient(m_client.get());
     m_pagination->setTimelineModel(m_timeline.get());
     m_pagination->setAnchorFileResolver([this](const QString &userId) {
-        matrix::app_data::AccountIdentity identity;
-        return resolveRemovalIdentity(userId, &identity)
-            ? matrix::app_data::scrollPositionsFile(identity.accountRoot)
-            : QString{};
+        return matrix::app_data::scrollPositionsFile(accountRootFor(userId));
     });
     m_pagination->setAnchorPersistence(m_backend == RustBackend);
     m_pagination->setContextOpener([this](const QString &eventId,
@@ -4936,7 +4934,10 @@ void AppController::handleLiveEvent(const QString &composedRoomId,
         : composedRoomId;
     if (roomId.isEmpty())
         return;
-    if (!event.eventId.isEmpty() && !m_notifiedEventIds.insert(event.eventId))
+    // A backlog copy is never delivered, so it must not shadow a live copy.
+    if (!event.eventId.isEmpty()
+        && (event.backlog ? m_notifiedEventIds.contains(event.eventId)
+                          : !m_notifiedEventIds.insert(event.eventId)))
         return;
     if (m_presence && event.sender != m_client->currentUserId())
         m_presence->noteActivity(event.sender);
@@ -5850,8 +5851,13 @@ void AppController::copyImageBytesToClipboard(const QString &mediaKey,
     decodeBuffer.open(QIODevice::ReadOnly);
     QImageReader reader(&decodeBuffer);
     reader.setAutoTransform(true);
-    const QImage image = reader.read();
-    if (image.isNull()) {
+    // Qt's Wayland clipboard serves every image/* flavour from the decoded image when there is
+    // one, so a photo too large to decode in full goes out as its original bytes alone.
+    const bool decodeInFull =
+        imagemeta::decodeSizeWithinBudget(reader, QSize(), qint64(64) << 20)
+        == reader.size();
+    const QImage image = decodeInFull ? reader.read() : QImage();
+    if (decodeInFull && image.isNull()) {
         Q_EMIT copyImageFinished(false, tr("Couldn't decode the image."));
         return;
     }
@@ -5862,7 +5868,8 @@ void AppController::copyImageBytesToClipboard(const QString &mediaKey,
         return;
     }
     auto *mime = new QMimeData;
-    mime->setImageData(image);
+    if (!image.isNull())
+        mime->setImageData(image);
     mime->setData(identified, bytes);
     guiApp->clipboard()->setMimeData(mime);
     Q_EMIT copyImageFinished(true, QString());
@@ -6707,7 +6714,10 @@ void AppController::onLoginSucceeded()
                   << "— switching to main + starting sync";
     const bool accountChanged =
         !m_lastSessionUserId.isEmpty() && m_lastSessionUserId != uid;
+    m_sessionAccountRoot.clear();
     m_lastSessionUserId = uid;
+    m_sessionAccountRoot = accountRootFor(uid);
+    adoptLegacyAccountFiles(uid, m_sessionAccountRoot);
     refreshTrayAccountLabel();
     if (accountChanged) {
         clearCrossAccountCaches();
@@ -6739,8 +6749,10 @@ void AppController::onLoginSucceeded()
     }
     if (m_notifications)
         m_notifications->setAccountUserId(uid);
-    m_gif->openStarredStoreFor(matrix::app_data::starredGifsDir(uid));
-    m_bridgeLabels.openFor(matrix::app_data::bridgeLabelsFile(uid));
+    m_gif->openStarredStoreFor(
+        matrix::app_data::starredGifsDir(m_sessionAccountRoot));
+    m_bridgeLabels.openFor(
+        matrix::app_data::bridgeLabelsFile(m_sessionAccountRoot));
     if (m_roomList) {
         const auto remembered = m_bridgeLabels.positiveLabels();
         for (auto it = remembered.constBegin(); it != remembered.constEnd();
@@ -6947,45 +6959,7 @@ void AppController::onLoggedOut()
     if (m_stickers && !m_lastSessionUserId.isEmpty())
         m_stickers->forgetAccount(m_lastSessionUserId);
     if (!m_lastSessionUserId.isEmpty()) {
-        const QString bridgeFile =
-            matrix::app_data::bridgeLabelsFile(m_lastSessionUserId);
-        const bool bridgeExisted = !bridgeFile.isEmpty()
-                                   && QFile::exists(bridgeFile);
-        if (!BridgeLabelStore::removeStore(bridgeFile)) {
-            qCWarning(lcApp)
-                << "bridge badge store sign-out cleanup FAILED slug="
-                << matrix::app_data::safeUserSlug(m_lastSessionUserId);
-        } else {
-            qCInfo(lcApp) << "bridge badge store sign-out cleanup"
-                          << "slug="
-                          << matrix::app_data::safeUserSlug(m_lastSessionUserId)
-                          << "outcome="
-                          << (bridgeExisted ? "deleted" : "absent");
-        }
-        m_gif->closeStarredStore(); // never delete a directory still "open"
-        const QString starredDir =
-            matrix::app_data::starredGifsDir(m_lastSessionUserId);
-        const auto outcome = matrix::app_data::removeAppDataDir(starredDir);
-        if (outcome == matrix::app_data::DirRemoval::Failed) {
-            qCWarning(lcApp)
-                << "starred-GIF store sign-out cleanup FAILED slug="
-                << matrix::app_data::safeUserSlug(m_lastSessionUserId);
-        } else {
-            qCInfo(lcApp) << "starred-GIF store sign-out cleanup"
-                          << "slug="
-                          << matrix::app_data::safeUserSlug(m_lastSessionUserId)
-                          << "outcome="
-                          << (outcome == matrix::app_data::DirRemoval::Deleted
-                                  ? "deleted"
-                                  : "absent");
-        }
-        const QString backgroundsDir = matrix::app_data::personalBackgroundsDir(
-            matrix::app_data::accountRoot(m_lastSessionUserId));
-        if (matrix::app_data::removeAppDataDir(backgroundsDir)
-            == matrix::app_data::DirRemoval::Failed) {
-            qCWarning(lcApp) << "personal backgrounds sign-out cleanup FAILED slug="
-                             << matrix::app_data::safeUserSlug(m_lastSessionUserId);
-        }
+        removeSignedOutAccountFiles(m_lastSessionUserId);
         signOutAccountResidue(m_lastSessionUserId);
     }
     QString removalRefusedUserId;
@@ -7025,6 +6999,7 @@ void AppController::onLoggedOut()
     }
     m_accounts->clearActiveUser();
     m_lastSessionUserId.clear();
+    m_sessionAccountRoot.clear();
     refreshTrayAccountLabel();
     m_addAccountReturnTo.clear();
     m_backgroundRestore = false;
@@ -7639,18 +7614,115 @@ void AppController::signOutAccountResidue(const QString &userId)
                           << "outcome=" << (removed ? "deleted" : "absent");
         }
     }
-    const QString root = matrix::app_data::accountRoot(userId);
-    if (root.isEmpty())
+    QStringList roots{accountRootFor(userId)};
+    const QString canonical = matrix::app_data::accountRoot(userId);
+    if (!roots.contains(canonical))
+        roots.append(canonical);
+    for (const QString &root : std::as_const(roots)) {
+        if (root.isEmpty())
+            continue;
+        const auto outcome = matrix::app_data::removeAccountRootIfEmpty(root);
+        if (outcome == matrix::app_data::EmptyDirRemoval::Failed) {
+            qCWarning(lcApp) << "account directory sign-out cleanup FAILED slug="
+                             << matrix::app_data::safeUserSlug(userId);
+        } else {
+            qCInfo(lcApp) << "account directory sign-out cleanup"
+                          << "slug=" << matrix::app_data::safeUserSlug(userId)
+                          << "outcome="
+                          << matrix::app_data::emptyDirRemovalName(outcome);
+        }
+    }
+}
+
+QString AppController::accountRootFor(const QString &userId) const
+{
+    matrix::app_data::AccountIdentity identity;
+    if (m_settings->resolveSavedIdentity(userId, &identity))
+        return identity.accountRoot;
+    if (userId == m_lastSessionUserId && !m_sessionAccountRoot.isEmpty())
+        return m_sessionAccountRoot;
+    return resolveRemovalIdentity(userId, &identity)
+        ? identity.accountRoot
+        : matrix::app_data::accountRoot(userId);
+}
+
+// The root derived from the user id, where these files used to live; empty
+// when it is the recorded root or another saved account's recorded root.
+QString AppController::legacyAccountRoot(const QString &userId,
+                                         const QString &recordedRoot) const
+{
+    const QString derived = matrix::app_data::accountRoot(userId);
+    if (derived.isEmpty() || recordedRoot.isEmpty() || derived == recordedRoot
+        || m_settings->isRecordedRootOfAnotherAccount(userId, derived))
+        return {};
+    return derived;
+}
+
+namespace {
+using AccountFileFn = QString (*)(const QString &);
+constexpr AccountFileFn kAccountFiles[] = {
+    &matrix::app_data::bridgeLabelsFile,
+    &matrix::app_data::starredGifsDir,
+    &matrix::app_data::scrollPositionsFile,
+    &matrix::app_data::personalBackgroundsDir,
+};
+}
+
+void AppController::adoptLegacyAccountFiles(const QString &userId,
+                                            const QString &root)
+{
+    const QString legacy = legacyAccountRoot(userId, root);
+    if (legacy.isEmpty())
         return;
-    const auto outcome = matrix::app_data::removeAccountRootIfEmpty(root);
-    if (outcome == matrix::app_data::EmptyDirRemoval::Failed) {
-        qCWarning(lcApp) << "account directory sign-out cleanup FAILED slug="
-                         << matrix::app_data::safeUserSlug(userId);
-    } else {
-        qCInfo(lcApp) << "account directory sign-out cleanup"
+    for (const AccountFileFn path : kAccountFiles) {
+        const auto outcome =
+            matrix::app_data::adoptLegacyEntry(path(legacy), path(root));
+        if (outcome == matrix::app_data::LegacyMove::Absent)
+            continue;
+        qCInfo(lcApp) << "account file moved to the recorded root"
                       << "slug=" << matrix::app_data::safeUserSlug(userId)
-                      << "outcome="
-                      << matrix::app_data::emptyDirRemovalName(outcome);
+                      << "outcome=" << matrix::app_data::legacyMoveName(outcome);
+    }
+}
+
+void AppController::removeSignedOutAccountFiles(const QString &userId)
+{
+    m_gif->closeStarredStore(); // never delete a directory still "open"
+    const QString recorded = accountRootFor(userId);
+    int deleted = 0;
+    int failed = 0;
+    for (const QString &root :
+         {recorded, legacyAccountRoot(userId, recorded)}) {
+        if (root.isEmpty())
+            continue;
+        for (const AccountFileFn path : kAccountFiles) {
+            const QString target = path(root);
+            const QFileInfo info(target);
+            const bool existed = info.exists() || info.isSymLink();
+            bool removed = true;
+            if (path == &matrix::app_data::bridgeLabelsFile)
+                removed = BridgeLabelStore::removeStore(target);
+            else if (!existed)
+                continue;
+            else if (info.isDir() && !info.isSymLink())
+                removed = QDir(target).removeRecursively();
+            else
+                removed = QFile::remove(target);
+            if (!removed)
+                ++failed;
+            else if (existed)
+                ++deleted;
+        }
+    }
+    if (failed > 0) {
+        qCWarning(lcApp) << "account files sign-out cleanup FAILED slug="
+                         << matrix::app_data::safeUserSlug(userId)
+                         << "failed=" << failed;
+    } else {
+        qCInfo(lcApp) << "account files sign-out cleanup"
+                      << "slug=" << matrix::app_data::safeUserSlug(userId)
+                      << "outcome=" << (deleted > 0 ? "deleted" : "absent")
+                      << "count=" << deleted;
     }
 }
 
@@ -7709,11 +7781,11 @@ bool AppController::removeAccountLocalStateFiles(
         m_accountAvatars->forget(identity.userId);
 
     const QString starredDir =
-        matrix::app_data::starredGifsDir(identity.userId);
+        matrix::app_data::starredGifsDir(identity.accountRoot);
     if (m_gif->starredStore()->currentDirectory() == starredDir)
         m_gif->closeStarredStore();
     const QString bridgeFile =
-        matrix::app_data::bridgeLabelsFile(identity.userId);
+        matrix::app_data::bridgeLabelsFile(identity.accountRoot);
     if (!bridgeFile.isEmpty() && m_bridgeLabels.filePath() == bridgeFile) {
         m_bridgeSaveTimer.stop();
         m_bridgeLabels.close();
@@ -7741,7 +7813,8 @@ bool AppController::removeAccountLocalStateFiles(
     // cache.sqlite. Both must go.
     QStringList roots{identity.accountRoot};
     const QString canonical = matrix::app_data::accountRoot(identity.userId);
-    if (!canonical.isEmpty() && !roots.contains(canonical))
+    if (!canonical.isEmpty() && !roots.contains(canonical)
+        && !m_settings->isRecordedRootOfAnotherAccount(identity.userId, canonical))
         roots.append(canonical);
     int rootsDeleted = 0;
     int rootsFailed = 0;
@@ -7854,6 +7927,7 @@ void AppController::removeAccount(const QString &userId)
     m_accounts->removeAccount(target);
     if (isActive) {
         m_lastSessionUserId.clear();
+        m_sessionAccountRoot.clear();
         refreshTrayAccountLabel();
         setConnectionStatus(tr("Not connected"));
     }

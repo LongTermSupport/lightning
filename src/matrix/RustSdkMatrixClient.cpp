@@ -189,7 +189,9 @@ void finishInterruptedSignOuts(SettingsManager *settings)
         const bool sessionOk =
             settings->clearSessionForAccount(identity.userId, &matchedRecord);
         const auto files = matrix::app_data::removeAccountRustState(identity);
-        const auto backgrounds = matrix::app_data::removePersonalBackgrounds(identity);
+        const auto backgrounds = matrix::app_data::removePersonalBackgrounds(
+            identity, !settings->isRecordedRootOfAnotherAccount(
+                          identity.userId, matrix::app_data::accountRoot(identity.userId)));
         const auto accountDir =
             matrix::app_data::removeAccountRootIfEmpty(identity.accountRoot);
         if (files.ok() && sessionOk)
@@ -5845,7 +5847,11 @@ void RustSdkMatrixClient::finishSignOut(const QString &serverResult,
     const bool didSomething = matchedRecord || files.removedAnything();
     const bool ok = sessionOk && files.ok() && didSomething;
     const auto backgrounds = (identity.isValid() && claimGranted)
-        ? matrix::app_data::removePersonalBackgrounds(identity)
+        ? matrix::app_data::removePersonalBackgrounds(
+              identity, !m_settings
+                            || !m_settings->isRecordedRootOfAnotherAccount(
+                                identity.userId,
+                                matrix::app_data::accountRoot(identity.userId)))
         : matrix::app_data::RemovalSummary{0, 0, 0};
     if (!backgrounds.ok()) {
         qCWarning(lcRust) << "personal backgrounds sign-out cleanup FAILED slug="
@@ -6784,6 +6790,11 @@ void RustSdkMatrixClient::handleRustEvent(const QJsonObject &event,
         handleTimelineEvent(event);
         return;
     }
+    if (type == QLatin1String("rejected_edit_highlight")) {
+        m_highlightGaps.creditHighlight(event.value(QStringLiteral("room_id")).toString(),
+                                        QDateTime::currentMSecsSinceEpoch());
+        return;
+    }
     if (type == QLatin1String("event_redacted")) {
         handleEventRedacted(event);
         return;
@@ -7362,7 +7373,12 @@ void RustSdkMatrixClient::flushHighlightGaps()
         qCInfo(lcRust) << "highlights not delivered as events room="
                        << matrix::e2ee::redactId(gap.first)
                        << "count=" << gap.second;
-        Q_EMIT roomHighlightsUnnotified(gap.first, gap.second);
+        const RoomInfo room = m_rooms.value(gap.first);
+        // A forged plaintext edit raises the server's count; encrypted rooms card only on a fetched admitted highlight.
+        if (!room.encrypted && room.encryptionKnown)
+            Q_EMIT roomHighlightsUnnotified(gap.first, gap.second);
+        else
+            m_highlightGaps.awaitEvidence(gap.first, now);
         if (m_rustHandle) {
             const QByteArray room = gap.first.toUtf8();
             takeRustString(mx_rust_fetch_unread_events(m_rustHandle, room.constData()));
@@ -7377,6 +7393,7 @@ void RustSdkMatrixClient::flushHighlightGaps()
 void RustSdkMatrixClient::resetNotificationProducerState()
 {
     m_undecryptableSeen.clear();
+    m_highlightsNotified.clear();
     m_highlightGaps.reset();
     m_highlightGapTimer.stop();
 }
@@ -7511,6 +7528,13 @@ void RustSdkMatrixClient::handleSpacesEvent(const QJsonArray &spaces)
     noteRoomsChanged();
 }
 
+static bool highlightsMe(const TimelineEvent &event)
+{
+    return event.pushHighlight
+        || (event.pushVerdict == TimelineEvent::PushVerdict::Unknown
+            && (event.mentionsMe || event.mentionsRoom));
+}
+
 void RustSdkMatrixClient::handleTimelineEvent(const QJsonObject &event)
 {
     const QString roomId = event.value(QStringLiteral("room_id")).toString();
@@ -7537,6 +7561,10 @@ void RustSdkMatrixClient::handleTimelineEvent(const QJsonObject &event)
             Q_EMIT roomUpdated(roomId);
         }
         timelineEvent.senderDisplayName = displayNameFor(roomId, timelineEvent.sender);
+        if (highlightsMe(timelineEvent) && !timelineEvent.undecryptable
+            && !m_highlightsNotified.contains(eventId)
+            && m_highlightGaps.takeEvidence(roomId, QDateTime::currentMSecsSinceEpoch()))
+            Q_EMIT roomHighlightsUnnotified(roomId, 1);
         Q_EMIT liveEventObserved(roomId, timelineEvent);
         return;
     }
@@ -7645,11 +7673,10 @@ void RustSdkMatrixClient::noteNotifiedEvent(const QString &roomId,
         m_highlightGaps.noteBacklog(roomId, now);
         return;
     }
-    const bool highlighted = event.pushHighlight
-        || (event.pushVerdict == TimelineEvent::PushVerdict::Unknown
-            && (event.mentionsMe || event.mentionsRoom));
-    if (highlighted)
+    if (highlightsMe(event)) {
+        m_highlightsNotified.insert(event.eventId, false);
         m_highlightGaps.creditHighlight(roomId, now);
+    }
 }
 
 void RustSdkMatrixClient::emitDecryptedOnce(const QString &roomId,
