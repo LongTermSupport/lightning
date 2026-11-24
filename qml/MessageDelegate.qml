@@ -1525,6 +1525,48 @@ Item {
         z: 0
     }
 
+    // On the delegate root, not bubbleRow: the top gap and the layout's
+    // spacing would otherwise be a line between rows that no handler owns.
+    TapHandler {
+        objectName: "rowEmptySideTap"
+        enabled: root.rowActionsEnabled && layout.visible
+        acceptedButtons: Qt.LeftButton
+        function inOwnedBand(pos) {
+            var skip = [bubble, avatarSlot.visible ? avatarSlot : null,
+                        receiptStripLoader.row,
+                        messageActionBarLoader.visible
+                            ? messageActionBarLoader : null]
+            for (var i = 0; i < skip.length; ++i) {
+                var b = skip[i]
+                if (!b) continue
+                // contains(), as pointer delivery does: an inclusive edge
+                // here leaves a pixel neither handler takes.
+                if (b.contains(root.mapToItem(b, pos.x, pos.y)))
+                    return true
+            }
+            return false
+        }
+        onTapped: (eventPoint) => {
+            if (!inOwnedBand(eventPoint.position))
+                root.toggleActionsPin()
+        }
+        // A hugging bubble (Bubbles layout) has almost no empty part
+        // of its own, so the row beside it is the double-click target.
+        onDoubleTapped: (eventPoint, button) => {
+            if (!inOwnedBand(eventPoint.position))
+                root.replyOnDoubleTap(bubbleRow, root.mapToItem(
+                    bubbleRow, eventPoint.position.x, eventPoint.position.y))
+        }
+    }
+    TapHandler {
+        objectName: "rowContextTap"
+        enabled: layout.visible
+        acceptedButtons: Qt.RightButton
+        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+        onTapped: (eventPoint, button) =>
+            root.openContextMenu(eventPoint.position.x, eventPoint.position.y)
+    }
+
     ColumnLayout {
         id: layout
         visible: !root.isVirtualRow && !root.isStateActivity && !root.isCallEvent
@@ -1561,46 +1603,6 @@ Item {
                     }
                 }
             }
-            TapHandler {
-                objectName: "rowEmptySideTap"
-                enabled: root.rowActionsEnabled
-                acceptedButtons: Qt.LeftButton
-                function inOwnedBand(pos) {
-                    var skip = [bubble, avatarSlot.visible ? avatarSlot : null,
-                                receiptStripLoader.row,
-                                messageActionBarLoader.visible
-                                    ? messageActionBarLoader : null]
-                    for (var i = 0; i < skip.length; ++i) {
-                        var b = skip[i]
-                        if (!b) continue
-                        // contains(), as pointer delivery does: an inclusive edge
-                        // here leaves a pixel neither handler takes.
-                        if (b.contains(bubbleRow.mapToItem(b, pos.x, pos.y)))
-                            return true
-                    }
-                    return false
-                }
-                onTapped: (eventPoint) => {
-                    if (!inOwnedBand(eventPoint.position))
-                        root.toggleActionsPin()
-                }
-                // A hugging bubble (Bubbles layout) has almost no empty part
-                // of its own, so the row beside it is the double-click target.
-                onDoubleTapped: (eventPoint, button) => {
-                    if (!inOwnedBand(eventPoint.position))
-                        root.replyOnDoubleTap(bubbleRow, eventPoint.position)
-                }
-            }
-            TapHandler {
-                acceptedButtons: Qt.RightButton
-                acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
-                onTapped: (eventPoint, button) => {
-                    var p = bubbleRow.mapToItem(root, eventPoint.position.x,
-                                               eventPoint.position.y)
-                    root.openContextMenu(p.x, p.y)
-                }
-            }
-
             Item {
                 id: avatarSlot
                 objectName: "senderAvatarSlot"
