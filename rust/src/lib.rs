@@ -8613,7 +8613,7 @@ pub unsafe extern "C" fn mx_rust_search_index_deep(
                     "messages": 0, "indexed_rooms": 0,
                     "category": if error.storage {
                         "local_storage"
-                    } else if error.message == localsearch::DEEP_BUSY {
+                    } else if error.busy {
                         "busy"
                     } else {
                         rooms::classify_room_error(&error.message)
@@ -8767,6 +8767,7 @@ async fn index_all_walk(
     match localsearch::deep_index_room_gated(&room, index, gate, localsearch::DEEP_MAX_PAGES)
         .await
     {
+        Ok(outcome) if outcome.busy => indexall::RoomResult::Busy,
         Ok(outcome) if outcome.interrupted => indexall::RoomResult::Interrupted {
             written: outcome.written,
         },

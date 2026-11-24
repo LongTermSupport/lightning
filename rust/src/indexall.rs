@@ -232,6 +232,8 @@ pub(crate) enum RoomResult {
         undecryptable: usize,
     },
     Interrupted { written: usize },
+    /// Another walk holds this room's receipt; nothing was fetched.
+    Busy,
     Failed {
         rate_limited: bool,
         retry_after_ms: Option<u64>,
@@ -788,7 +790,7 @@ impl Control {
                 }
             }
             RoomResult::Failed { .. } => progress.failed_rooms += 1,
-            RoomResult::Gone | RoomResult::Interrupted { .. } => {}
+            RoomResult::Gone | RoomResult::Interrupted { .. } | RoomResult::Busy => {}
         }
         progress.position += 1;
         let snapshot = progress.clone();
@@ -943,6 +945,7 @@ where
     let mut first_room = true;
     let mut failures: u32 = 0;
     let mut rate_limited_failures: u32 = 0;
+    let mut busy: u32 = 0;
     let mut last_room = String::new();
     loop {
         if let Some(ending) = control.ending_now(&*gate.alive) {
@@ -974,6 +977,7 @@ where
         if room_id != last_room {
             failures = 0;
             rate_limited_failures = 0;
+            busy = 0;
             last_room = room_id.clone();
         }
         if !first_room && !wait_checked(&gate, Duration::from_millis(ROOM_GAP_MS), &mut sleep).await
@@ -989,6 +993,13 @@ where
         match result {
             RoomResult::Interrupted { written } => {
                 control.commit_partial(epoch, written, spent);
+            }
+            RoomResult::Busy => {
+                busy += 1;
+                if busy >= MAX_ROOM_ATTEMPTS {
+                    let failed = RoomResult::Failed { rate_limited: false, retry_after_ms: None };
+                    control.commit_room(epoch, &room_id, failed, spent);
+                }
             }
             RoomResult::Failed {
                 rate_limited,
@@ -1807,6 +1818,24 @@ mod tests {
             status.complete_rooms, 1,
             "a failed room was recorded complete"
         );
+    }
+
+    #[tokio::test]
+    async fn a_room_another_walk_holds_is_retried_a_bounded_number_of_times() {
+        let control = Arc::new(Control::new(Path::new("")));
+        assert_eq!(
+            control.begin(false, || rooms(&[("!held:x", 2), ("!ok:x", 1)])),
+            Begin::Started
+        );
+        let (gate, _) = gate_for(&control, Arc::new(AtomicBool::new(true)));
+        let (walk, asked) = scripted(vec![RoomResult::Busy; MAX_ROOM_ATTEMPTS as usize]);
+        let (sleep, _) = recorder();
+        assert_eq!(drive(gate, walk, sleep).await, Ending::Finished);
+        let asked = asked.lock().unwrap().clone();
+        assert_eq!(asked.iter().filter(|r| *r == "!held:x").count(), MAX_ROOM_ATTEMPTS as usize);
+        assert_eq!(asked.last().unwrap(), "!ok:x");
+        assert_eq!(control.status(None).failed_rooms, 1);
+        assert_eq!(control.status(None).complete_rooms, 1, "the held room was recorded complete");
     }
 
     #[tokio::test]

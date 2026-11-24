@@ -734,7 +734,7 @@ pub(crate) async fn deep_index_room(
 ) -> Result<(u16, bool, usize), DeepError> {
     let outcome = deep_index_room_gated(room, index, gate, max_pages).await?;
     if outcome.busy {
-        return Err(DeepError::plain(DEEP_BUSY.to_owned()));
+        return Err(DeepError::busy());
     }
     if outcome.interrupted {
         return Err(DeepError::plain("indexing cancelled".to_owned()));
@@ -795,11 +795,17 @@ pub(crate) struct DeepError {
     pub retry_after_ms: Option<u64>,
     /// The local index refused a write: not the server, and not cleared.
     pub storage: bool,
+    /// Another walk of the same room is running; nothing was attempted.
+    pub busy: bool,
 }
 
 impl DeepError {
     fn plain(message: String) -> Self {
-        Self { message, rate_limited: false, retry_after_ms: None, storage: false }
+        Self { message, rate_limited: false, retry_after_ms: None, storage: false, busy: false }
+    }
+
+    fn busy() -> Self {
+        Self { busy: true, ..Self::plain("room scan already running".to_owned()) }
     }
 
     fn storage() -> Self {
@@ -944,6 +950,7 @@ pub(crate) async fn deep_index_room_gated<G: PageGate>(
     } else {
         None
     };
+    let _release = receipt.map(|(control, serial)| ScanRelease { control, room: room_id, serial });
     let result = walk_pages(room, index, generation, gate, max_pages, &mut outcome, receipt).await;
     if let Some((control, serial)) = receipt {
         let state = match &result {
@@ -969,6 +976,19 @@ pub(crate) async fn deep_index_room_gated<G: PageGate>(
         }
     }
     result.map(|()| outcome)
+}
+
+/// Frees the room's scan slot if the walk is dropped mid-await; a no-op after `finish_scan`.
+struct ScanRelease<'a> {
+    control: &'a crate::indexall::Control,
+    room: &'a str,
+    serial: u64,
+}
+
+impl Drop for ScanRelease<'_> {
+    fn drop(&mut self) {
+        self.control.abandon_scan(self.room, self.serial);
+    }
 }
 
 async fn walk_pages<G: PageGate>(
@@ -1070,7 +1090,6 @@ fn is_undecryptable(raw: &serde_json::Value) -> bool {
 pub(crate) const SWEEP_ROOM_BATCH: usize = 40;
 
 pub(crate) const DEEP_MAX_PAGES: u16 = 50;
-pub(crate) const DEEP_BUSY: &str = "room scan already running";
 
 static SWEEP_CURSORS: std::sync::Mutex<Option<std::collections::HashMap<String, usize>>> =
     std::sync::Mutex::new(None);

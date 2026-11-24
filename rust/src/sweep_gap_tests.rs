@@ -665,5 +665,7 @@ async fn bounded_room_scans_distinguish_page_key_and_fetch_gaps() {
     let _other_walk = control.start_scan(ROOM).unwrap();
     let busy = deep_index_room_gated(&room, &index, &gate, 2).await.unwrap();
     assert!(busy.busy && busy.interrupted);
+    let refused = deep_index_room(&room, &index, &gate, 2).await.unwrap_err();
+    assert!(refused.busy && !refused.storage);
     assert_eq!(control.room_receipt(ROOM).state, ScanState::Scanning);
 }

@@ -155,6 +155,20 @@ private Q_SLOTS:
         QVERIFY(client.lastWrite.isEmpty());
     }
 
+    void aFullSaveKeepsTheServersListNotAStaleCopy()
+    {
+        SavedFakeClient client;
+        SavedMessagesController saved;
+        saved.setClient(&client);
+        Q_EMIT client.accountPrefRead(client.lastType, true, manyRefs(1));
+        saved.save(QStringLiteral("!room:example.org"), QStringLiteral("$new"), {});
+        Q_EMIT client.accountPrefRead(client.lastType, true, manyRefs(100));
+        QVERIFY(client.lastWrite.isEmpty());
+        QCOMPARE(saved.count(), 100);
+        QVERIFY(saved.isSaved(QStringLiteral("!room:example.org"), QStringLiteral("$99")));
+        QVERIFY(!saved.isSaved(QStringLiteral("!room:example.org"), QStringLiteral("$new")));
+    }
+
     void racingWriteThatRestoresARemovalIsReported()
     {
         SavedFakeClient client;
