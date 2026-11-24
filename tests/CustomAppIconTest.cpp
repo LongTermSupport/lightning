@@ -6,6 +6,7 @@
 #include "PngFixture.h"
 
 #include <QBuffer>
+#include <cmath>
 #include <QImage>
 #include <QImageReader>
 #include <QRegularExpression>
@@ -157,11 +158,16 @@ private Q_SLOTS:
         const auto restore = qScopeGuard([before] { QImageReader::setAllocationLimit(before); });
         QTest::failOnWarning(QRegularExpression(QStringLiteral("allocation limit")));
 
-        // 100 MB at 32 bpp fits the icon's 128 MiB; 144 MB does not, though both edges are allowed.
-        QVERIFY(appicon::normalizeIconBytes(pngfixture::blackRgb(5000, 5000)).ok);
+        // The edge the "too large" message states is the largest square the budget admits.
+        const int derived = qMin(appicon::kMaxInputEdge,
+                                 int(std::sqrt(double(appicon::kMaxDecodeBytes) / 4)));
+        QCOMPARE(appicon::kMaxSquareEdge, derived);
+        QVERIFY(appicon::kMaxSquareEdge < appicon::kMaxInputEdge);
+        const int edge = appicon::kMaxSquareEdge;
+        QVERIFY(appicon::normalizeIconBytes(pngfixture::blackRgb(edge, edge)).ok);
         QCOMPARE(QImageReader::allocationLimit(), 256);
         const appicon::NormalizeResult over =
-            appicon::normalizeIconBytes(pngfixture::blackRgb(6000, 6000));
+            appicon::normalizeIconBytes(pngfixture::blackRgb(edge + 1, edge + 1));
         QVERIFY(!over.ok);
         QCOMPARE(over.category, QStringLiteral("too_large_dimensions"));
         QCOMPARE(QImageReader::allocationLimit(), 256);

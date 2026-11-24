@@ -3,8 +3,8 @@
 #include <QByteArray>
 #include <QtGlobal>
 
-// A valid all-black 8-bit RGB PNG of any size, built without allocating the image: one
-// fixed-Huffman deflate block of (length 258, distance 1) matches.
+// A valid all-black 8- or 16-bit RGB PNG of any size, built without allocating the image; a
+// 9000x9000 one is about 230 KB.
 namespace pngfixture {
 
 inline quint32 crc32(const QByteArray &data)
@@ -31,9 +31,9 @@ inline void appendChunk(QByteArray &png, const char *type, const QByteArray &dat
     appendBe32(png, crc32(body));
 }
 
-inline QByteArray blackRgb(int width, int height)
+inline QByteArray blackRgb(int width, int height, int bitDepth = 8)
 {
-    const qint64 raw = qint64(height) * (1 + 3 * qint64(width));
+    const qint64 raw = qint64(height) * (1 + 3 * qint64(width) * (bitDepth / 8));
     QByteArray deflate;
     quint32 acc = 0;
     int bits = 0;
@@ -46,22 +46,39 @@ inline QByteArray blackRgb(int width, int height)
             bits -= 8;
         }
     };
-    // Fixed Huffman codes go out most significant bit first.
+    // Huffman codes go out most significant bit first.
     const auto code = [&](quint32 value, int count) {
         for (int i = count - 1; i >= 0; --i)
             put((value >> i) & 1u, 1);
     };
+    // One dynamic block whose only codes are literal 0 (10), end of block (11), length 258 (0)
+    // and distance 1 (0): two bits per 258 zero bytes.
     put(1, 1);
-    put(1, 2);
-    code(0x30, 8);
+    put(2, 2);
+    put(29, 5);
+    put(0, 5);
+    put(14, 4);
+    for (const int length : {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2})
+        put(quint32(length), 3);
+    code(3, 2);
+    code(0, 1);
+    put(127, 7);
+    code(0, 1);
+    put(106, 7);
+    code(3, 2);
+    code(0, 1);
+    put(17, 7);
+    code(2, 2);
+    code(2, 2);
+    code(2, 2);
     qint64 left = raw - 1;
     for (; left >= 258; left -= 258) {
-        code(0xC5, 8);
-        code(0, 5);
+        code(0, 1);
+        code(0, 1);
     }
     for (; left > 0; --left)
-        code(0x30, 8);
-    code(0, 7);
+        code(2, 2);
+    code(3, 2);
     if (bits > 0)
         put(0, 8 - bits);
 
@@ -72,7 +89,7 @@ inline QByteArray blackRgb(int width, int height)
     QByteArray ihdr;
     appendBe32(ihdr, quint32(width));
     appendBe32(ihdr, quint32(height));
-    ihdr.append(char(8)).append(char(2)).append(char(0)).append(char(0)).append(char(0));
+    ihdr.append(char(bitDepth)).append(char(2)).append(char(0)).append(char(0)).append(char(0));
 
     QByteArray png("\x89PNG\r\n\x1a\n", 8);
     appendChunk(png, "IHDR", ihdr);
