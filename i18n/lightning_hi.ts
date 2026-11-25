@@ -2603,12 +2603,27 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>(डिफ़ॉल्ट)</translation>
     </message>
     <message>
+        <location line="+10"/>
+        <source>Use only this microphone for this session</source>
+        <translation>इस सत्र के लिए केवल इसी माइक्रोफ़ोन का उपयोग करें</translation>
+    </message>
+    <message>
         <location line="+12"/>
+        <source>Waiting for your chosen microphone. Choose another input to speak.</source>
+        <translation>आपके चुने गए माइक्रोफ़ोन की प्रतीक्षा की जा रही है। बोलने के लिए कोई दूसरा इनपुट चुनें।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone isn&apos;t connected</source>
         <translation>आपका चुना हुआ माइक्रोफ़ोन कनेक्ट नहीं है</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
+        <source>Your chosen microphone could not be opened. Choose another input to speak.</source>
+        <translation>आपका चुना गया माइक्रोफ़ोन खोला नहीं जा सका। बोलने के लिए कोई दूसरा इनपुट चुनें।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone couldn&apos;t be opened. The call uses the system default.</source>
         <translation>आपका चुना हुआ माइक्रोफ़ोन नहीं खुल सका। कॉल सिस्टम का डिफ़ॉल्ट उपयोग कर रही है।</translation>
     </message>
@@ -2702,6 +2717,11 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>चुना हुआ कैमरा कनेक्ट नहीं है</translation>
     </message>
     <message>
+        <location line="+1"/>
+        <source>Chosen microphone not connected</source>
+        <translation>चुना गया माइक्रोफ़ोन कनेक्ट नहीं है</translation>
+    </message>
+    <message>
         <location line="+3"/>
         <source>System default</source>
         <translation>सिस्टम डिफ़ॉल्ट</translation>
@@ -2717,17 +2737,32 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>माइक्रोफ़ोन</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
         <source>No microphone was found. You can still join a call and listen.</source>
         <translation>कोई माइक्रोफ़ोन नहीं मिला. आप अभी भी कॉल में शामिल हो सकते हैं और सुन सकते हैं।</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+6"/>
+        <source>Use only this microphone for this session</source>
+        <translation>इस सत्र के लिए केवल इसी माइक्रोफ़ोन का उपयोग करें</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Waiting for your chosen microphone. Choose another input to speak.</source>
+        <translation>आपके चुने गए माइक्रोफ़ोन की प्रतीक्षा की जा रही है। बोलने के लिए कोई दूसरा इनपुट चुनें।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone isn&apos;t connected. Calls use the system default until it&apos;s back.</source>
         <translation>आपका चुना हुआ माइक्रोफ़ोन कनेक्ट नहीं है. कॉल वापस आने तक सिस्टम डिफ़ॉल्ट का उपयोग करते हैं।</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+16"/>
+        <source>Your chosen microphone could not be opened. Choose another input to speak.</source>
+        <translation>आपका चुना गया माइक्रोफ़ोन खोला नहीं जा सका। बोलने के लिए कोई दूसरा इनपुट चुनें।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone couldn&apos;t be opened, so the system default was used. Choose it again or reconnect it.</source>
         <translation>आपका चुना हुआ माइक्रोफ़ोन नहीं खुल सका, इसलिए सिस्टम का डिफ़ॉल्ट उपयोग किया गया। इसे फिर से चुनें या दोबारा कनेक्ट करें।</translation>
     </message>
@@ -3090,34 +3125,39 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+46"/>
-        <location line="+28"/>
+        <location line="+30"/>
         <source>Turn off camera</source>
         <translation>कैमरा बंद करें</translation>
     </message>
     <message>
-        <location line="-27"/>
-        <location line="+28"/>
+        <location line="-29"/>
+        <location line="+32"/>
         <source>Turn on camera</source>
         <translation>कैमरा चालू करें</translation>
     </message>
     <message>
-        <location line="-20"/>
-        <location line="+28"/>
+        <location line="-24"/>
+        <location line="+32"/>
         <source>Choose camera</source>
         <translation>कैमरा चुनें</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="-12"/>
+        <source>Waiting for desktop camera permission. Click to cancel.</source>
+        <translation>डेस्कटॉप से कैमरा अनुमति की प्रतीक्षा की जा रही है। रद्द करने के लिए क्लिक करें।</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Camera request cancelled. Click to try again.</source>
+        <translation>कैमरा अनुरोध रद्द किया गया। फिर से प्रयास करने के लिए क्लिक करें।</translation>
+    </message>
+    <message>
+        <location line="+30"/>
         <source>Stop sharing your screen</source>
         <translation>अपनी स्क्रीन साझा करना बंद करें</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Cancel screen sharing</source>
-        <translation>स्क्रीन शेयरिंग रद्द करें</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+5"/>
         <source>Share your screen</source>
         <translation>अपनी स्क्रीन साझा करें</translation>
     </message>
@@ -3193,7 +3233,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>कॉल को तैरती विंडो में निकालें</translation>
     </message>
     <message>
-        <location line="-393"/>
+        <location line="-399"/>
         <source>Unmute microphone</source>
         <translation>माइक्रोफ़ोन अनम्यूट करें</translation>
     </message>
@@ -3243,7 +3283,17 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>आउटपुट डिवाइस चुनें</translation>
     </message>
     <message>
-        <location line="+369"/>
+        <location line="+84"/>
+        <source>Waiting for desktop screen sharing permission. Click to cancel.</source>
+        <translation>डेस्कटॉप से स्क्रीन शेयरिंग अनुमति की प्रतीक्षा की जा रही है। रद्द करने के लिए क्लिक करें।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Screen sharing request cancelled. Click to try again.</source>
+        <translation>स्क्रीन शेयरिंग अनुरोध रद्द किया गया। फिर से प्रयास करने के लिए क्लिक करें।</translation>
+    </message>
+    <message>
+        <location line="+289"/>
         <source>Leave call</source>
         <translation>कॉल छोड़ें</translation>
     </message>
@@ -27679,20 +27729,20 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SfuCallController</name>
     <message>
-        <location filename="../src/calls/SfuCallController.cpp" line="+637"/>
-        <location line="+396"/>
+        <location filename="../src/calls/SfuCallController.cpp" line="+645"/>
+        <location line="+406"/>
         <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
         <translation>इस डेस्कटॉप पर स्क्रीन शेयरिंग उपलब्ध नहीं है.</translation>
     </message>
     <message>
-        <location line="-559"/>
-        <location line="+933"/>
+        <location line="-569"/>
+        <location line="+945"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>स्क्रीन शेयरिंग प्रारंभ नहीं हो सकी.</translation>
     </message>
     <message>
-        <location line="-567"/>
+        <location line="-569"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>वेलैंड पर स्क्रीन शेयरिंग के लिए xdg-डेस्कटॉप-पोर्टल की आवश्यकता है, और यह प्रतिक्रिया नहीं दे रहा है। अपने डेस्कटॉप के लिए पोर्टल स्थापित करें या प्रारंभ करें - उदाहरण के लिए xdg-desktop-portal-kde या xdg-desktop-portal-gnome - फिर पुनः प्रयास करें।</translation>
     </message>
@@ -27738,22 +27788,32 @@ Note: importing keys does not verify this session.</source>
         <translation>इस कॉल की सेवा ने अपने किसी भी पते पर समय पर उत्तर नहीं दिया।</translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+47"/>
         <source>Lightning couldn&apos;t open the camera. It may be in use by another app, or unplugged.</source>
         <translation>Lightning कैमरा नहीं खोल सका। हो सकता है वह किसी दूसरे ऐप में उपयोग में हो, या निकाला हुआ हो।</translation>
     </message>
     <message>
-        <location line="+414"/>
+        <location line="+6"/>
+        <source>Camera permission was denied. Check your desktop’s camera privacy settings, then turn the camera on again.</source>
+        <translation>कैमरा अनुमति अस्वीकार कर दी गई। अपने डेस्कटॉप की कैमरा निजता सेटिंग जाँचें, फिर कैमरा दोबारा चालू करें।</translation>
+    </message>
+    <message>
+        <location line="+408"/>
         <source>Calling isn&apos;t available on this homeserver.</source>
         <translation>इस होमसर्वर पर कॉलिंग उपलब्ध नहीं है.</translation>
     </message>
     <message>
-        <location line="-494"/>
+        <location line="-496"/>
         <source>Too many attempts. Try again in a moment.</source>
         <translation>बहुत अधिक प्रयास. थोड़ी देर में पुनः प्रयास करें.</translation>
     </message>
     <message>
-        <location line="-734"/>
+        <location line="-881"/>
+        <source>Screen sharing permission was denied. Check your desktop’s privacy settings, then try sharing again.</source>
+        <translation>स्क्रीन शेयरिंग की अनुमति अस्वीकार कर दी गई। अपने डेस्कटॉप की निजता सेटिंग जाँचें, फिर दोबारा शेयर करने का प्रयास करें।</translation>
+    </message>
+    <message>
+        <location line="+147"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>आपके डेस्कटॉप के कैमरा पोर्टल ने Lightning को कोई कैमरा नहीं दिया। यदि कैमरा अन्य ऐप में काम करता है, तो Lightning को सभी डिवाइस इस्तेमाल करने दें (Flatseal में: &quot;All devices&quot;), फिर कैमरा दोबारा चालू करें।</translation>
     </message>
@@ -27859,13 +27919,13 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+8"/>
-        <location line="+451"/>
+        <location line="+453"/>
         <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>कॉल से कनेक्ट नहीं हो सका.</translation>
     </message>
     <message>
-        <location line="-811"/>
+        <location line="-813"/>
         <source>The calling service is having trouble.</source>
         <translation>कॉलिंग सेवा में दिक्कत आ रही है.</translation>
     </message>
@@ -27876,6 +27936,11 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+3"/>
+        <source>Your desktop ended screen sharing. Choose a source to share again.</source>
+        <translation>आपके डेस्कटॉप ने स्क्रीन शेयरिंग समाप्त कर दी। दोबारा शेयर करने के लिए कोई स्रोत चुनें।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The window you were sharing was closed.</source>
         <translation>जो विंडो आप साझा कर रहे थे वह बंद थी.</translation>
     </message>
@@ -27905,12 +27970,7 @@ Note: importing keys does not verify this session.</source>
         <translation>कैमरे ने कोई तस्वीर नहीं भेजी। यदि यह वर्चुअल कैमरा है, तो सुनिश्चित करें कि कुछ उसे फ़ीड कर रहा है।</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Camera access is turned off in your system settings.</source>
-        <translation>आपकी सिस्टम सेटिंग्स में कैमरा एक्सेस बंद है।</translation>
-    </message>
-    <message>
-        <location line="+8"/>
+        <location line="+11"/>
         <source>The camera you chose isn&apos;t available, so no camera was turned on. Choose a camera in Settings.</source>
         <translation>आपका चुना कैमरा उपलब्ध नहीं है, इसलिए कोई कैमरा चालू नहीं हुआ। सेटिंग्स में कोई कैमरा चुनें।</translation>
     </message>
@@ -27998,7 +28058,7 @@ Note: importing keys does not verify this session.</source>
         <translation>कॉल का ऑडियो रुक गया: इस कंप्यूटर का साउंड आउटपुट डिस्कनेक्ट हो गया। आउटपुट दोबारा उपलब्ध होने पर यह फिर शुरू होता है; न हो तो कॉल छोड़कर फिर शामिल हों।</translation>
     </message>
     <message>
-        <location line="+2177"/>
+        <location line="+2185"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>स्क्रीन शेयर की ध्वनि बंद है: इस पैकेज में आवश्यक ऑडियो कैप्चर प्लगइन नहीं हैं।</translation>
     </message>
@@ -28083,7 +28143,7 @@ Note: importing keys does not verify this session.</source>
         <translation>प्रतिभागी</translation>
     </message>
     <message>
-        <location line="-4612"/>
+        <location line="-4620"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>यह रूम एन्क्रिप्टेड है, और इस बिल्ड पर एन्क्रिप्टेड कॉल अभी तक उपलब्ध नहीं हैं।</translation>
     </message>
@@ -32218,7 +32278,17 @@ Proposed audience
         <translation>एनकोडर: %1 · स्केलिंग: %2 · कैप्चर: %3</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
+        <source>Encoded frames observed</source>
+        <translation>एन्कोड किए गए फ़्रेम देखे गए</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Waiting for an encoded frame</source>
+        <translation>एन्कोड किए गए फ़्रेम की प्रतीक्षा</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>RTP packets sent: %1 · Lost on the way to the server: %2</source>
         <translation>भेजे गए RTP पैकेट: %1 · सर्वर तक पहुँचते हुए खोए: %2</translation>
     </message>
@@ -36643,7 +36713,7 @@ Proposed audience
         <translation>रिकॉर्डिंग अंतिम रूप नहीं दी जा सकी।</translation>
     </message>
     <message>
-        <location line="+67"/>
+        <location line="+65"/>
         <source>Nothing was recorded.</source>
         <translation>कुछ भी रिकॉर्ड नहीं हुआ।</translation>
     </message>
@@ -36653,13 +36723,13 @@ Proposed audience
         <translation>रिकॉर्डिंग विफल रही।</translation>
     </message>
     <message>
-        <location line="+95"/>
-        <location line="+156"/>
+        <location line="+91"/>
+        <location line="+166"/>
         <source>The sound server is not answering. Try recording again in a moment.</source>
         <translation>साउंड सर्वर जवाब नहीं दे रहा। थोड़ी देर बाद दोबारा रिकॉर्ड करने की कोशिश करें।</translation>
     </message>
     <message>
-        <location line="-141"/>
+        <location line="-150"/>
         <source>No microphone or audio encoder is available.</source>
         <translation>कोई माइक्रोफ़ोन या ऑडियो एन्कोडर उपलब्ध नहीं है।</translation>
     </message>
@@ -36669,12 +36739,12 @@ Proposed audience
         <translation>रिकॉर्डिंग संग्रहण तैयार नहीं किया जा सका।</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+39"/>
         <source>Recording could not start.</source>
         <translation>रिकॉर्डिंग शुरू नहीं हो सकी।</translation>
     </message>
     <message>
-        <location line="+211"/>
+        <location line="+209"/>
         <source>The microphone was disconnected. The recording was discarded.</source>
         <translation>माइक्रोफ़ोन डिस्कनेक्ट हो गया। रिकॉर्डिंग रद्द कर दी गई।</translation>
     </message>
@@ -36920,7 +36990,7 @@ Proposed audience
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2462"/>
+        <location filename="../src/main.cpp" line="+2454"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>नेटिव Qt/QML Matrix क्लाइंट। बैकएंड: --backend={mock,http,rust}। डिफ़ॉल्ट: rust (Rust SDK रहित बिल्ड में http)।</translation>
     </message>
