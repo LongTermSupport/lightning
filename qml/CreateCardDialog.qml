@@ -195,7 +195,8 @@ Dialog {
                 id: dateField
                 objectName: "createCardDate"
                 Layout.fillWidth: true
-                placeholderText: "YYYY-MM-DD"
+                //: The date format this field accepts.
+                placeholderText: qsTr("YYYY-MM-DD")
                 inputMethodHints: Qt.ImhDate
             }
             Label { text: qsTr("Starts"); color: AppTheme.textSecondary }
@@ -203,13 +204,15 @@ Dialog {
                 id: startField
                 objectName: "createCardStart"
                 Layout.fillWidth: true
-                placeholderText: "HH:MM"
+                //: The time format this field accepts (24-hour).
+                placeholderText: qsTr("HH:MM")
             }
             Label { text: qsTr("Ends (optional)"); color: AppTheme.textSecondary }
             AppTextField {
                 id: endField
                 Layout.fillWidth: true
-                placeholderText: "HH:MM"
+                //: The time format this field accepts (24-hour).
+                placeholderText: qsTr("HH:MM")
             }
             Label { text: qsTr("Time zone"); color: AppTheme.textSecondary }
             AppComboBox {
