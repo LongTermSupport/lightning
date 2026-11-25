@@ -6935,7 +6935,10 @@ Item {
                                 Label {
                                     Layout.fillWidth: true
                                     wrapMode: Text.WordWrap
+                                    lineHeight: AppTheme.lineHeightBody
+                                    lineHeightMode: Text.ProportionalHeight
                                     color: AppTheme.stormTextSecondary
+                                    font.pixelSize: AppTheme.settingsHintSize
                                     text: qsTr("You can hide up to %1 images. Show an image to free a slot.")
                                         .arg(app.mediaVisibility.capacity)
                                 }
