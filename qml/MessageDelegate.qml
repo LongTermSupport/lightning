@@ -4211,6 +4211,50 @@ Item {
                 onTriggered: root.toggleSavedMessage()
             }
             AppMenuItem {
+                id: remindMenuItem
+                objectName: "remindMessageMenuItem"
+                iconName: "schedule"
+                readonly property string targetRoom:
+                    root.timelineModel.realRoomIdForEvent(root.menuEventId)
+                readonly property real due:
+                    app.reminders && app.reminders.revision >= 0
+                    ? app.reminders.reminderDue(targetRoom, root.menuEventId) : 0
+                readonly property bool remindable: !!app.reminders
+                    && model.redacted !== true && model.isLocalEcho !== true
+                    && model.isVirtual !== true && targetRoom !== ""
+                    && root.menuEventId.startsWith("$")
+                function remindAt(preset) {
+                    const details = root.timelineModel.messageDetails(root.menuEventId)
+                    const threadRootId = root.inThreadPanel
+                          ? app.thread.rootEventId : (details.threadRootId || "")
+                    app.reminders.remind(targetRoom, root.menuEventId, threadRootId,
+                                         app.reminders.presetTime(preset))
+                }
+                text: qsTr("Remind me in 1 hour")
+                visible: remindable && due <= 0
+                enabled: visible
+                onTriggered: remindAt("1h")
+            }
+            AppMenuItem {
+                objectName: "remindTomorrowMenuItem"
+                iconName: "schedule"
+                text: qsTr("Remind me tomorrow")
+                visible: remindMenuItem.visible
+                enabled: visible
+                onTriggered: remindMenuItem.remindAt("tomorrow")
+            }
+            AppMenuItem {
+                objectName: "cancelReminderMenuItem"
+                iconName: "close"
+                text: qsTr("Cancel reminder (%1)")
+                      .arg(Qt.formatDateTime(new Date(remindMenuItem.due),
+                                             app.settings.clockTimeFormat))
+                visible: remindMenuItem.remindable && remindMenuItem.due > 0
+                enabled: visible
+                onTriggered: app.reminders.cancelReminder(remindMenuItem.targetRoom,
+                                                          root.menuEventId)
+            }
+            AppMenuItem {
                 id: copyTextMenuItem
                 objectName: "copyTextMenuItem"
                 iconName: "content_copy"

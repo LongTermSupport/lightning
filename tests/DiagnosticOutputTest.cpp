@@ -150,7 +150,7 @@ private Q_SLOTS:
                      "got:\n%1").arg(log)));
     }
 
-    void callMediaStatusNamesTheShareEncoder()
+    void callMediaStatusSeparatesInstalledFactoriesFromRuntimeEvidence()
     {
         const Run r = run({ QStringLiteral("--call-media-status") });
         QVERIFY(r.started);
@@ -158,7 +158,7 @@ private Q_SLOTS:
             || r.out.contains(QStringLiteral("gstreamer: FAILED")))
             QSKIP("no call media engine in this build");
         QVERIFY2(QRegularExpression(QStringLiteral(
-                     "(?m)^screen share encoder: \\S+ (cpu|gpu-readback|gpu-zero-copy) "))
+                     "(?m)^screen share encoder: requested=(hardware|vp8enc) hardware-factories=\\S+ gpu-requested=(yes|no) gpu-factories=(present|incomplete) runtime=deferred$"))
                      .match(r.out).hasMatch(),
                  qUtf8Printable(r.out));
     }

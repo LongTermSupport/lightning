@@ -25,6 +25,8 @@ Item {
 
     signal activated()
 
+    // Without a sender there is no latest reply to preview, only a count.
+    readonly property bool hasPreview: latestSenderId.length > 0
     readonly property bool hasReplies:
         replyCount > 0 || latestPreview.length > 0 || latestSender.length > 0
 
@@ -76,7 +78,7 @@ Item {
                         replyCount).arg(base)
         if (latestSender.length > 0)
             base = qsTr("%1, latest reply from %2").arg(base).arg(latestSender)
-        var p = previewLabel()
+        var p = hasPreview ? previewLabel() : ""
         if (p.length > 0)
             base = qsTr("%1: %2", "thread card, name then message preview")
                 .arg(base).arg(p)
@@ -183,6 +185,8 @@ Item {
             }
 
             Label {
+                objectName: "threadSummaryPreview"
+                visible: card.hasPreview
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
                 elide: Text.ElideRight

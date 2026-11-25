@@ -87,6 +87,14 @@ public:
         m_bus.send(response);
     }
 
+    void closeSession(const QString &path)
+    {
+        QDBusMessage closed = QDBusMessage::createTargetedSignal(
+            caller, path, QString::fromLatin1(kSession), QStringLiteral("Closed"));
+        closed << QVariantMap();
+        m_bus.send(closed);
+    }
+
     void releaseHeldProperties(const QVariantMap &properties)
     {
         for (const QDBusMessage &held : std::as_const(heldProperties))
@@ -137,9 +145,11 @@ public:
             }
             return false;
         }
-        if (message.interface() == QLatin1String(kScreenCast))
+        if (message.interface() == QLatin1String(kScreenCast)
+            && message.member() != QLatin1String("OpenPipeWireRemote"))
             return handleScreenCast(message);
-        if (message.interface() != QLatin1String(kCamera))
+        if (message.interface() != QLatin1String(kCamera)
+            && message.interface() != QLatin1String(kScreenCast))
             return false;
 
         if (message.member() == QLatin1String("AccessCamera")) {
@@ -282,6 +292,9 @@ private Q_SLOTS:
     void aCameraRequestThatTimesOutIsClosed();
     void aScreenShareOnlyAsksForWhatThePortalAdvertises_data();
     void aScreenShareOnlyAsksForWhatThePortalAdvertises();
+    void aPortalStreamKeepsItsIdentityUntilItsSessionCloses_data();
+    void aPortalStreamKeepsItsIdentityUntilItsSessionCloses();
+    void aCancelledScreenRequestCannotChangeItsRetry();
     void theCursorModeIsReadAgainForEveryShare();
     void aSessionCreatedAfterCancellingIsClosed();
     void cancellingAnOpenPickerClosesItsRequestAndSession();
@@ -412,11 +425,12 @@ void CameraPortalTest::aRefusalIsNeverMistakenForAMissingPortal()
         return CameraPortal::failureCategory(QString::fromLatin1(name), true);
     };
     for (const char *refusal : { "org.freedesktop.portal.Error.NotAllowed",
-                                 "org.freedesktop.portal.Error.Cancelled",
                                  "org.freedesktop.DBus.Error.AccessDenied" }) {
         QCOMPARE(access(refusal), QStringLiteral("not_allowed"));
         QCOMPARE(open(refusal), QStringLiteral("not_allowed"));
     }
+    QCOMPARE(access("org.freedesktop.portal.Error.Cancelled"), QStringLiteral("cancelled"));
+    QCOMPARE(open("org.freedesktop.portal.Error.Cancelled"), QStringLiteral("cancelled"));
     for (const char *absent :
          { "org.freedesktop.DBus.Error.ServiceUnknown",
            "org.freedesktop.DBus.Error.UnknownMethod",
@@ -512,6 +526,8 @@ void CameraPortalTest::cancellingAPendingCameraRequestClosesItOnce()
     const int opensBefore = m_fake->openCalls;
     auto *portal = new CameraPortal;
     QSignalSpy ready(portal, &CameraPortal::ready);
+    QSignalSpy cancelled(portal, &CameraPortal::cancelled);
+    QSignalSpy failed(portal, &CameraPortal::failed);
 
     portal->requestAccess();
     QTRY_COMPARE(m_fake->accessCalls, accessBefore + 1);
@@ -540,6 +556,8 @@ void CameraPortalTest::cancellingAPendingCameraRequestClosesItOnce()
     }
     QCOMPARE(m_fake->openCalls, opensBefore);
     QCOMPARE(ready.count(), 0);
+    QCOMPARE(cancelled.count(), byDestruction ? 0 : 1);
+    QCOMPARE(failed.count(), 0);
     delete portal;
     m_fake->answer = FakeCameraPortal::Answer::InstantGrant;
 }
@@ -615,6 +633,75 @@ void CameraPortalTest::aScreenShareOnlyAsksForWhatThePortalAdvertises()
                  cursorMode);
     }
     QCOMPARE(failed.count(), 0);
+}
+
+void CameraPortalTest::aPortalStreamKeepsItsIdentityUntilItsSessionCloses_data()
+{
+    QTest::addColumn<QVariant>("serial");
+    QTest::newRow("legacy") << QVariant();
+    QTest::newRow("hotplug") << QVariant::fromValue(0xffffeeee12345678ULL);
+    QTest::newRow("resume") << QVariant::fromValue(0xffffeeee12345679ULL);
+}
+
+void CameraPortalTest::aPortalStreamKeepsItsIdentityUntilItsSessionCloses()
+{
+    QFETCH(QVariant, serial);
+    using Stream = QPair<uint, QVariantMap>;
+    qDBusRegisterMetaType<Stream>();
+    qDBusRegisterMetaType<QList<Stream>>();
+    m_fake->cast = FakeCameraPortal::Cast::HoldStartResponse;
+    m_fake->castProperties = {{QStringLiteral("version"), serial.isValid() ? 6u : 5u}};
+    const int starts = m_fake->startCalls;
+    ScreenCastPortal portal;
+    QSignalSpy ready(&portal, &ScreenCastPortal::ready);
+    QSignalSpy closed(&portal, &ScreenCastPortal::sessionClosed);
+    portal.requestShare();
+    QTRY_COMPARE(m_fake->startCalls, starts + 1);
+    QVariantMap properties;
+    if (serial.isValid())
+        properties.insert(QStringLiteral("pipewire-serial"), serial);
+    const QList<Stream> streams{{42u, properties}};
+    m_fake->respond(m_fake->lastRequestPath, 0,
+                    {{QStringLiteral("streams"), QVariant::fromValue(streams)}});
+    QTRY_COMPARE(ready.size(), 1);
+    const auto grant = ready.front();
+    ::close(grant.at(1).toInt());
+    QCOMPARE(grant.at(0).toUInt(), 42u);
+    const auto selected = grant.at(2).value<std::optional<quint64>>();
+    QCOMPARE(selected.has_value(), serial.isValid());
+    if (serial.isValid())
+        QCOMPARE(selected.value(), serial.toULongLong());
+    m_fake->closeSession(m_fake->lastSessionPath);
+    QTRY_COMPARE(closed.size(), 1);
+    QVERIFY(!portal.busy());
+    QCOMPARE(ready.size(), 1);
+    QCOMPARE(m_fake->startCalls, starts + 1);
+}
+
+void CameraPortalTest::aCancelledScreenRequestCannotChangeItsRetry()
+{
+    m_fake->cast = FakeCameraPortal::Cast::HoldStartResponse;
+    const int starts = m_fake->startCalls;
+    ScreenCastPortal portal;
+    QSignalSpy cancelled(&portal, &ScreenCastPortal::cancelled);
+    QSignalSpy failed(&portal, &ScreenCastPortal::failed);
+    QSignalSpy ready(&portal, &ScreenCastPortal::ready);
+    portal.requestShare();
+    QTRY_COMPARE(m_fake->startCalls, starts + 1);
+    const QString old = m_fake->lastRequestPath;
+    portal.cancel();
+    QCOMPARE(cancelled.count(), 1);
+    QVERIFY(portal.wasCancelled());
+    portal.requestShare();
+    QTRY_COMPARE(m_fake->startCalls, starts + 2);
+    QVERIFY(!portal.wasCancelled());
+    m_fake->respond(old, 0);
+    m_fake->respond(m_fake->lastRequestPath, 2);
+    QTRY_COMPARE(failed.count(), 1);
+    QCOMPARE(failed.first().first().toString(), QStringLiteral("start_failed"));
+    QCOMPARE(cancelled.count(), 1);
+    QCOMPARE(ready.count(), 0);
+    QVERIFY(!portal.busy());
 }
 
 void CameraPortalTest::theCursorModeIsReadAgainForEveryShare()

@@ -1,5 +1,29 @@
 # Open items and the NOT TESTED inventory
 
+## 2026-11-25 — OPEN: screen share serial path and voice-take continuity
+
+A portal screen share targets the stream serial and falls back once to the node id when the serial path does not build or gives no first frame within 3 s; the serial path is NOT TESTED live and blocks the release until a portal share proves it. A voice-message take is bound to the input it started on by device id only; its samples are not checked.
+
+## 2026-11-24 — KNOWN LIMITS: Space announcement review
+
+Enabling member proposals writes the Space's power levels without a compare-and-swap, as the existing power-level editors do, so a concurrent edit can be overwritten; a second reviewer's interrupted publish reads "pending" until the first reviewer retries.
+
+## 2026-11-24 — KNOWN LIMITS: reminders, snooze and quiet hours
+
+There is no list of pending reminders (a reminder is seen and cancelled from its message's menu); snooze applies to the foreground account only, not to background live accounts; quiet hours are one daily schedule, with no one-off focus timer.
+
+## 2026-11-24 — KNOWN LIMIT: a room misordered by an older build stays misordered
+
+The back-pagination fix prevents own known pages from being moved above a room's creation; a store an older build already misordered is not repaired, and only a fresh sign-in rebuilds it in order.
+
+## 2026-11-24 — KNOWN LIMIT: a room export shows one revision, and a loaded-timeline export shows what the SDK selected
+
+Walked exports select edits through the shared reducer and say which edit they show; an export of the loaded timeline reports the SDK's choice, and no export carries the revision history.
+
+## 2026-11-24 — KNOWN LIMIT: a thread card whose latest reply is hidden heals only on a repaint
+
+With no shown reply cached, the card shows its count alone; a shown reply fetched later (the thread panel) appears once something repaints the root row, at most 5 s after it reached the cache.
+
 ## 2026-11-24 — KNOWN LIMIT: no undo for an automatic conversion in the main composer's rich mode
 
 Backspace or Undo reverts a shortcode/emoticon conversion in the plain and thread composers; the main composer's rich (formatted) mode does not, so use /plain there.

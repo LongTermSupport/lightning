@@ -91,6 +91,8 @@ struct TimelineEvent {
     Type type = TextMessage;
     Status status = Sent;
     bool edited = false;
+    // Room export only: the replacement event whose content this row shows.
+    QString replacementEventId;
     bool redacted = false;
 
     QString threadRootId;

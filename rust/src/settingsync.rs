@@ -76,6 +76,12 @@ async fn put(client: &Client, event_type: &str, content: &Value) -> Result<(), S
         .map_err(|err| classify_write_error(&err.to_string()).0.to_owned())
 }
 
+/// A removal is confirmed only by reading back an empty blob with the switch
+/// off; an unreadable blob is not evidence of anything.
+pub(crate) fn removal_confirmed(blob: Option<&Value>, switch_on: bool) -> bool {
+    !switch_on && blob.is_none_or(|b| b.as_object().is_some_and(|o| o.is_empty()))
+}
+
 pub(crate) fn check_blob(content: &Value) -> Result<(), &'static str> {
     let Some(object) = content.as_object() else {
         return Err("invalid_content");
@@ -170,7 +176,15 @@ pub(crate) fn write(bridge: &RustClient, op_id: u64, kind: u32, content_json: St
                     Ok(())
                 }
                 1 => put(&client, SWITCH_TYPE, &compose_switch(content["enabled"].as_bool().unwrap_or(false))).await,
-                _ => put(&client, BLOB_TYPE, &json!({})).await,
+                _ => {
+                    put(&client, BLOB_TYPE, &json!({})).await?;
+                    let blob = read_server(&client, BLOB_TYPE).await?;
+                    if removal_confirmed(blob.as_ref(), read_switch(&client).await?) {
+                        Ok(())
+                    } else {
+                        Err("removal_not_confirmed".to_owned())
+                    }
+                }
             }
         }
         .await;
@@ -245,6 +259,15 @@ mod tests {
         assert!(check_blob(&json!({ "version": 1 })).is_err());
         assert!(check_blob(&json!({ "version": 1, "settings": [] })).is_err());
         assert!(check_blob(&json!([1])).is_err());
+    }
+
+    #[test]
+    fn only_an_empty_blob_with_the_switch_off_confirms_a_removal() {
+        assert!(removal_confirmed(None, false));
+        assert!(removal_confirmed(Some(&json!({})), false));
+        assert!(!removal_confirmed(Some(&json!({})), true));
+        assert!(!removal_confirmed(Some(&json!({ "version": 1, "settings": {} })), false));
+        assert!(!removal_confirmed(Some(&Value::Null), false));
     }
 
     #[test]

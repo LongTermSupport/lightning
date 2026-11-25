@@ -10366,6 +10366,21 @@ quint64 RustSdkMatrixClient::requestPushRules()
     return result.isEmpty() ? opId : 0;
 }
 
+quint64 RustSdkMatrixClient::simulatePushRule(const QString &roomId,
+                                              const QString &body,
+                                              bool mentionMe)
+{
+    if (!m_rustHandle || roomId.isEmpty())
+        return 0;
+    const quint64 opId = nextOpId();
+    const QByteArray room = roomId.toUtf8();
+    const QByteArray text = body.toUtf8();
+    const QString result = takeRustString(mx_rust_push_rules_simulate(
+        m_rustHandle, room.constData(), text.constData(), mentionMe ? 1 : 0,
+        opId));
+    return result.isEmpty() ? opId : 0;
+}
+
 quint64 RustSdkMatrixClient::writePushRule(const QString &kind,
                                            const QString &key,
                                            const QString &value)
@@ -12895,6 +12910,8 @@ bool RustSdkMatrixClient::handleRoomCommandEvent(const QString &type,
                   row.value(QStringLiteral("reply_to")).toString() },
                 { QStringLiteral("edited"),
                   row.value(QStringLiteral("edited")).toBool() },
+                { QStringLiteral("replacedBy"),
+                  row.value(QStringLiteral("replaced_by")).toString() },
                 { QStringLiteral("filename"),
                   row.value(QStringLiteral("filename")).toString() },
                 { QStringLiteral("mimetype"),
@@ -13605,6 +13622,15 @@ bool RustSdkMatrixClient::handleRoomCommandEvent(const QString &type,
         return true;
     }
 
+    if (type == QLatin1String("space_community_result")) {
+        Q_EMIT spaceCommunityFinished(opId(),
+            event.value(QStringLiteral("room_id")).toString(),
+            event.value(QStringLiteral("action")).toString(),
+            event.value(QStringLiteral("ok")).toBool(),
+            event.value(QStringLiteral("result")).toObject().toVariantMap());
+        return true;
+    }
+
     if (type == QLatin1String("room_power_matrix_result")) {
         Q_EMIT roomPowerMatrixFinished(
             opId(),
@@ -13897,6 +13923,13 @@ bool RustSdkMatrixClient::handleRoomCommandEvent(const QString &type,
         return true;
     }
 
+    if (type == QLatin1String("push_rules_simulation")) {
+        Q_EMIT pushRuleSimulated(opId(),
+                                 event.value(QStringLiteral("ok")).toBool(),
+                                 event.toVariantMap());
+        return true;
+    }
+
     if (type == QLatin1String("push_rules_write")) {
         Q_EMIT pushRuleWriteFinished(
             opId(), event.value(QStringLiteral("kind")).toString(),
@@ -14131,4 +14164,19 @@ bool RustSdkMatrixClient::handleRoomCommandEvent(const QString &type,
     }
 
     return false;
+}
+
+quint64 RustSdkMatrixClient::spaceCommunityAction(
+    const QString &roomId, const QString &action, const QVariantMap &payload)
+{
+    if (!m_rustHandle || roomId.isEmpty())
+        return 0;
+    const quint64 opId = nextOpId();
+    const QByteArray room = roomId.toUtf8();
+    const QByteArray verb = action.toUtf8();
+    const QByteArray data = QJsonDocument(QJsonObject::fromVariantMap(payload))
+                                .toJson(QJsonDocument::Compact);
+    const QString result = takeRustString(mx_rust_space_community(
+        m_rustHandle, room.constData(), verb.constData(), data.constData(), opId));
+    return result.isEmpty() ? opId : 0;
 }

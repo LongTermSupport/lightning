@@ -918,6 +918,23 @@ void NotificationManager::deliverDecision(const TimelineEvent &event,
     const QString threadRootId =
         routableThreadRootId(event.roomId, event.threadRootId);
     const QString accountKey = context.accountUserId;
+    if (!replacement && m_holdCheck) {
+        const QString holdKey = m_holdCheck(roomId, context.roomIsDirect,
+                                            decision.mention, accountKey);
+        if (!holdKey.isEmpty()) {
+            Held &held = m_held[holdKey];
+            if (held.count > 0 && held.roomId != roomId)
+                held.oneRoom = false;
+            ++held.count;
+            if (decision.mention)
+                ++held.mentions;
+            held.roomId = roomId;
+            held.roomName = context.roomName;
+            held.hideRoom = held.hideRoom || context.previewMode == Private;
+            held.accountUserId = accountKey;
+            return;
+        }
+    }
     const bool hostCard = m_liveAccountsMode && !accountKey.isEmpty();
     if (m_liveAccountsMode && !replacement
         && mergeIntoEventCard(event, context, roomId, decision))
@@ -1018,13 +1035,15 @@ void NotificationManager::showGeneric(const QString &title,
                                       const QString &roomId,
                                       const QString &avatarMxc, bool sound,
                                       const QString &key,
-                                      const QString &accountUserId)
+                                      const QString &accountUserId,
+                                      const QString &eventId,
+                                      const QString &threadRootId)
 {
     ++m_genericNoticeCount;
     QVariantMap payload;
     payload.insert(QStringLiteral("roomId"), roomId);
-    payload.insert(QStringLiteral("eventId"), QString{});
-    payload.insert(QStringLiteral("threadRootId"), QString{});
+    payload.insert(QStringLiteral("eventId"), eventId);
+    payload.insert(QStringLiteral("threadRootId"), threadRootId);
     payload.insert(QStringLiteral("accountUserId"),
                    accountUserId.isEmpty() ? m_accountUserId : accountUserId);
     if (!key.isEmpty()) {
@@ -1039,6 +1058,48 @@ void NotificationManager::showGeneric(const QString &title,
     card.sound = sound;
     card.avatarMxc = avatarMxc;
     deliver(std::move(card));
+}
+
+void NotificationManager::releaseHeld(const QString &key)
+{
+    const QString scoped = key + QLatin1Char(':');
+    const QStringList keys = m_held.keys();
+    for (const QString &k : keys) {
+        if (k == key || k.startsWith(scoped))
+            showHeldSummary(k, m_held.take(k));
+    }
+}
+
+void NotificationManager::showHeldSummary(const QString &key, const Held &held)
+{
+    if (held.count == 0)
+        return;
+    const bool snooze = key.startsWith(QLatin1String("snooze:"));
+    QString title;
+    if (snooze) {
+        title = held.roomName.isEmpty() || held.hideRoom
+            ? QCoreApplication::translate("Notifications", "Snooze ended")
+            : held.roomName;
+    } else {
+        title = QCoreApplication::translate("Notifications",
+                                            "Quiet hours ended");
+    }
+    QString body = snooze
+        ? QCoreApplication::translate(
+              "Notifications",
+              "%n notification(s) arrived while this conversation was "
+              "snoozed.", nullptr, held.count)
+        : QCoreApplication::translate(
+              "Notifications",
+              "%n notification(s) arrived during quiet hours.", nullptr,
+              held.count);
+    if (held.mentions > 0) {
+        body += QLatin1Char(' ')
+            + QCoreApplication::translate("Notifications",
+                                          "You were mentioned.");
+    }
+    showGeneric(title, body, held.oneRoom ? held.roomId : QString(), {},
+                false, QString(), held.accountUserId);
 }
 
 void NotificationManager::withdrawGeneric(const QString &key)
@@ -1097,6 +1158,9 @@ void NotificationManager::clearPendingFor(const QString &accountUserId)
 {
     const bool foreground = accountUserId.isEmpty();
     forgetLiveAccountsStateFor(accountUserId);
+    m_held.removeIf([&accountUserId](decltype(m_held)::iterator it) {
+        return it.value().accountUserId == accountUserId;
+    });
     if (foreground)
         stopIncomingCall(QString());
     AccountTable &own = table(accountUserId);
