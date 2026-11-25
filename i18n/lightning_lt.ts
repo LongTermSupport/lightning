@@ -5400,17 +5400,30 @@ EXIF orientacija: %4</translation>
         <translation>Data</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+6"/>
+        <source>YYYY-MM-DD</source>
+        <extracomment>The date format this field accepts.</extracomment>
+        <translation>YYYY-MM-DD</translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Starts</source>
         <translation>Prasideda</translation>
     </message>
     <message>
+        <location line="+6"/>
         <location line="+7"/>
+        <source>HH:MM</source>
+        <extracomment>The time format this field accepts (24-hour).</extracomment>
+        <translation>HH:MM</translation>
+    </message>
+    <message>
+        <location line="-5"/>
         <source>Ends (optional)</source>
         <translation>Baigiasi (neprivaloma)</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Time zone</source>
         <translation>Laiko juosta</translation>
     </message>
@@ -10134,6 +10147,159 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     </message>
 </context>
 <context>
+    <name>Handoff</name>
+    <message>
+        <location filename="../src/privacy/Handoff.cpp" line="+103"/>
+        <source>[link removed]</source>
+        <translation>[nuoroda pašalinta]</translation>
+    </message>
+    <message>
+        <location line="+97"/>
+        <source>Only files on this computer can be shared.</source>
+        <translation>Galima bendrinti tik šio kompiuterio failus.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>That file cannot be read.</source>
+        <translation>Šio failo nepavyksta perskaityti.</translation>
+    </message>
+</context>
+<context>
+    <name>HandoffDialog</name>
+    <message>
+        <location filename="../qml/HandoffDialog.qml" line="+65"/>
+        <source>Save calendar event</source>
+        <translation>Išsaugoti kalendoriaus įvykį</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Save task</source>
+        <translation>Išsaugoti užduotį</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Calendar file (*.ics)</source>
+        <translation>Kalendoriaus failas (*.ics)</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>All files (*)</source>
+        <translation>Visi failai (*)</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Saved. Open the file with your task or calendar app.</source>
+        <translation>Išsaugota. Atidarykite failą savo užduočių ar kalendoriaus programa.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The file could not be saved.</source>
+        <translation>Nepavyko išsaugoti failo.</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Export message</source>
+        <translation>Eksportuoti žinutę</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Task</source>
+        <translation>Užduotis</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Calendar event</source>
+        <translation>Kalendoriaus įvykis</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <location line="+1"/>
+        <source>Title</source>
+        <translation>Pavadinimas</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>yyyy-mm-dd</source>
+        <translation>mmmm-mm-dd</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Date</source>
+        <translation>Data</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>hh:mm</source>
+        <translation>vv:mm</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Start time</source>
+        <translation>Pradžios laikas</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>30 min</source>
+        <translation>30 min.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>1 hour</source>
+        <translation>1 valanda</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>2 hours</source>
+        <translation>2 valandos</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Enter a valid date and time.</source>
+        <translation>Įveskite tinkamą datą ir laiką.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <location line="+1"/>
+        <source>Notes</source>
+        <translation>Pastabos</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Include a link to this message</source>
+        <translation>Įtraukti nuorodą į šią žinutę</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Include a link to this message. Only people in the room can open it.</source>
+        <translation>Įtraukti nuorodą į šią žinutę. Ją atidaryti gali tik kambario nariai.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Exactly this leaves Lightning. The app you hand it to is outside the room&apos;s encryption.</source>
+        <translation>Būtent tai palieka Lightning. Programa, kuriai tai perduodate, yra už kambario šifravimo ribų.</translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>Cancel</source>
+        <translation>Atšaukti</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Copy as text</source>
+        <translation>Kopijuoti kaip tekstą</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Copied.</source>
+        <translation>Nukopijuota.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Save .ics…</source>
+        <translation>Išsaugoti .ics…</translation>
+    </message>
+</context>
+<context>
     <name>HomePane</name>
     <message>
         <location filename="../qml/HomePane.qml" line="+46"/>
@@ -12201,7 +12367,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>MainScreen</name>
     <message>
-        <location filename="../qml/MainScreen.qml" line="+627"/>
+        <location filename="../qml/MainScreen.qml" line="+632"/>
         <source>Resize room list</source>
         <translation>Keisti kambarių sąrašo dydį</translation>
     </message>
@@ -13843,13 +14009,13 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2431"/>
+        <location line="+2455"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>Bandykite dar kartą</translation>
     </message>
     <message>
-        <location line="-3447"/>
+        <location line="-3471"/>
         <location line="+1231"/>
         <source>Cancel</source>
         <translation>Atšaukti</translation>
@@ -13861,12 +14027,12 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     </message>
     <message>
         <location line="+190"/>
-        <location line="+1501"/>
+        <location line="+1509"/>
         <source>Hide image</source>
         <translation>Slėpti vaizdą</translation>
     </message>
     <message>
-        <location line="-1497"/>
+        <location line="-1505"/>
         <source>Hide</source>
         <translation>Slėpti</translation>
     </message>
@@ -13989,7 +14155,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Nukopijuoti žinutės nuorodą</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+16"/>
         <source>Open image</source>
         <translation>Atidaryti vaizdą</translation>
     </message>
@@ -14015,12 +14181,12 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     </message>
     <message>
         <location line="+10"/>
-        <location line="+647"/>
+        <location line="+663"/>
         <source>Show link preview</source>
         <translation>Rodyti nuorodos peržiūrą</translation>
     </message>
     <message>
-        <location line="-637"/>
+        <location line="-653"/>
         <source>Copy image</source>
         <translation>Kopijuoti vaizdą</translation>
     </message>
@@ -14045,7 +14211,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Peržiūrėti šaltinį</translation>
     </message>
     <message>
-        <location line="-1493"/>
+        <location line="-1501"/>
         <location line="+1139"/>
         <source>Edit</source>
         <translation>Redaguoti</translation>
@@ -14085,22 +14251,22 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     <message>
         <location line="-570"/>
         <location line="+568"/>
-        <location line="+3798"/>
+        <location line="+3822"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5289"/>
+        <location line="-5313"/>
         <location line="+53"/>
         <location line="+514"/>
-        <location line="+4347"/>
+        <location line="+4371"/>
         <source>Image</source>
         <translation>Paveikslėlis</translation>
     </message>
     <message>
-        <location line="-4912"/>
+        <location line="-4936"/>
         <source>Attachment</source>
         <translation>Priedas</translation>
     </message>
@@ -14173,7 +14339,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Išsiųsta</translation>
     </message>
     <message>
-        <location line="+981"/>
+        <location line="+989"/>
         <source>Add :%1: to my emoji</source>
         <translation>Pridėti :%1: prie mano jaustukų</translation>
     </message>
@@ -14239,13 +14405,13 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Pranešti apie žinutę</translation>
     </message>
     <message>
-        <location line="-788"/>
-        <location line="+802"/>
+        <location line="-796"/>
+        <location line="+810"/>
         <source>Delete</source>
         <translation>Ištrinti</translation>
     </message>
     <message>
-        <location line="-2741"/>
+        <location line="-2749"/>
         <source>Open this thread</source>
         <translation>Atverti šią giją</translation>
     </message>
@@ -14266,12 +14432,12 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     </message>
     <message>
         <location line="+241"/>
-        <location line="+1501"/>
+        <location line="+1509"/>
         <source>Hidden image limit reached</source>
         <translation>Pasiekta paslėptų vaizdų riba</translation>
     </message>
     <message numerus="yes">
-        <location line="-1248"/>
+        <location line="-1256"/>
         <source>%1 and %n other(s)</source>
         <translation>
             <numerusform>%1 ir dar %n</numerusform>
@@ -14350,7 +14516,12 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Kopijuoti žinutes</translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+16"/>
+        <source>Export as task or event…</source>
+        <translation>Eksportuoti kaip užduotį ar įvykį…</translation>
+    </message>
+    <message>
+        <location line="+37"/>
         <source>Add to my stickers…</source>
         <translation>Pridėti prie mano lipdukų…</translation>
     </message>
@@ -14360,7 +14531,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Nukopijuokite vartotojo ID</translation>
     </message>
     <message>
-        <location line="+170"/>
+        <location line="+186"/>
         <source>Message details</source>
         <translation>Išsami žinutės informacija</translation>
     </message>
@@ -14635,10 +14806,10 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Vieta dar negauta.</translation>
     </message>
     <message>
-        <location line="-6592"/>
+        <location line="-6616"/>
         <location line="+57"/>
         <location line="+517"/>
-        <location line="+4345"/>
+        <location line="+4369"/>
         <location line="+1066"/>
         <location line="+93"/>
         <source>Video</source>
@@ -14651,9 +14822,9 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>vaizdo įrašą</translation>
     </message>
     <message>
-        <location line="-6089"/>
+        <location line="-6113"/>
         <location line="+570"/>
-        <location line="+4448"/>
+        <location line="+4472"/>
         <location line="+1270"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -29260,6 +29431,44 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     </message>
 </context>
 <context>
+    <name>ShareTargetDialog</name>
+    <message>
+        <location filename="../qml/ShareTargetDialog.qml" line="+56"/>
+        <source>Share to a room</source>
+        <translation>Bendrinti kambaryje</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>As %1. The file is added to the room&apos;s message box and is not sent until you press Send.</source>
+        <translation>Kaip %1. Failas įtraukiamas į kambario žinutės laukelį ir neišsiunčiamas, kol nespustelėsite Siųsti.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Search rooms…</source>
+        <translation>Ieškoti kambarių…</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Search rooms</source>
+        <translation>Ieškoti kambarių</translation>
+    </message>
+    <message>
+        <location line="+48"/>
+        <source>Attach</source>
+        <translation>Prikabinti</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Attach in %1</source>
+        <translation>Prikabinti kambaryje %1</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Cancel</source>
+        <translation>Atšaukti</translation>
+    </message>
+</context>
+<context>
     <name>ShortcutRegistry</name>
     <message>
         <location filename="../src/app/ShortcutRegistry.cpp" line="+360"/>
@@ -38136,7 +38345,7 @@ Siūloma auditorija
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2454"/>
+        <location filename="../src/main.cpp" line="+2449"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>Vietinė Qt/QML Matrix programa. Posistemė: --backend={mock,http,rust}. Numatytoji: rust (versijose be Rust SDK – http).</translation>
     </message>

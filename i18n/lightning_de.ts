@@ -5366,17 +5366,30 @@ EXIF-Ausrichtung: %4</translation>
         <translation>Datum</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+6"/>
+        <source>YYYY-MM-DD</source>
+        <extracomment>The date format this field accepts.</extracomment>
+        <translation>YYYY-MM-DD</translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Starts</source>
         <translation>Beginnt</translation>
     </message>
     <message>
+        <location line="+6"/>
         <location line="+7"/>
+        <source>HH:MM</source>
+        <extracomment>The time format this field accepts (24-hour).</extracomment>
+        <translation>HH:MM</translation>
+    </message>
+    <message>
+        <location line="-5"/>
         <source>Ends (optional)</source>
         <translation>Endet (optional)</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Time zone</source>
         <translation>Zeitzone</translation>
     </message>
@@ -10087,6 +10100,159 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
 </context>
 <context>
+    <name>Handoff</name>
+    <message>
+        <location filename="../src/privacy/Handoff.cpp" line="+103"/>
+        <source>[link removed]</source>
+        <translation>[Link entfernt]</translation>
+    </message>
+    <message>
+        <location line="+97"/>
+        <source>Only files on this computer can be shared.</source>
+        <translation>Nur Dateien von diesem Computer können geteilt werden.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>That file cannot be read.</source>
+        <translation>Diese Datei kann nicht gelesen werden.</translation>
+    </message>
+</context>
+<context>
+    <name>HandoffDialog</name>
+    <message>
+        <location filename="../qml/HandoffDialog.qml" line="+65"/>
+        <source>Save calendar event</source>
+        <translation>Kalendertermin speichern</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Save task</source>
+        <translation>Aufgabe speichern</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Calendar file (*.ics)</source>
+        <translation>Kalenderdatei (*.ics)</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>All files (*)</source>
+        <translation>Alle Dateien (*)</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Saved. Open the file with your task or calendar app.</source>
+        <translation>Gespeichert. Öffne die Datei mit deiner Aufgaben- oder Kalender-App.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The file could not be saved.</source>
+        <translation>Die Datei konnte nicht gespeichert werden.</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Export message</source>
+        <translation>Nachricht exportieren</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Task</source>
+        <translation>Aufgabe</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Calendar event</source>
+        <translation>Kalendertermin</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <location line="+1"/>
+        <source>Title</source>
+        <translation>Titel</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>yyyy-mm-dd</source>
+        <translation>JJJJ-MM-TT</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Date</source>
+        <translation>Datum</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>hh:mm</source>
+        <translation>hh:mm</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Start time</source>
+        <translation>Startzeit</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>30 min</source>
+        <translation>30 Min.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>1 hour</source>
+        <translation>1 Stunde</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>2 hours</source>
+        <translation>2 Stunden</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Enter a valid date and time.</source>
+        <translation>Gib ein gültiges Datum und eine gültige Uhrzeit ein.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <location line="+1"/>
+        <source>Notes</source>
+        <translation>Notizen</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Include a link to this message</source>
+        <translation>Link zu dieser Nachricht einfügen</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Include a link to this message. Only people in the room can open it.</source>
+        <translation>Link zu dieser Nachricht einfügen. Nur Personen im Raum können ihn öffnen.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Exactly this leaves Lightning. The app you hand it to is outside the room&apos;s encryption.</source>
+        <translation>Genau das verlässt Lightning. Die App, an die du es übergibst, liegt außerhalb der Verschlüsselung des Raums.</translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Copy as text</source>
+        <translation>Als Text kopieren</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Copied.</source>
+        <translation>Kopiert.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Save .ics…</source>
+        <translation>.ics speichern …</translation>
+    </message>
+</context>
+<context>
     <name>HomePane</name>
     <message>
         <location filename="../qml/HomePane.qml" line="+46"/>
@@ -12149,7 +12315,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>MainScreen</name>
     <message>
-        <location filename="../qml/MainScreen.qml" line="+627"/>
+        <location filename="../qml/MainScreen.qml" line="+632"/>
         <source>Resize room list</source>
         <translation>Raumliste in der Größe ändern</translation>
     </message>
@@ -13655,14 +13821,14 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="-577"/>
         <location line="+57"/>
         <location line="+517"/>
-        <location line="+4345"/>
+        <location line="+4369"/>
         <location line="+1066"/>
         <location line="+93"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location line="-6076"/>
+        <location line="-6100"/>
         <source>Voice message</source>
         <translation>Sprachnachricht</translation>
     </message>
@@ -13675,24 +13841,24 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="-570"/>
         <location line="+568"/>
-        <location line="+3798"/>
+        <location line="+3822"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5289"/>
+        <location line="-5313"/>
         <location line="+53"/>
         <location line="+514"/>
-        <location line="+4347"/>
+        <location line="+4371"/>
         <source>Image</source>
         <translation>Bild</translation>
     </message>
     <message>
-        <location line="-4913"/>
+        <location line="-4937"/>
         <location line="+570"/>
-        <location line="+4448"/>
+        <location line="+4472"/>
         <location line="+1270"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -13700,7 +13866,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Datei</translation>
     </message>
     <message>
-        <location line="-6318"/>
+        <location line="-6342"/>
         <source>Attachment</source>
         <translation>Anhang</translation>
     </message>
@@ -13936,13 +14102,13 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2431"/>
+        <location line="+2455"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>Wiederholen</translation>
     </message>
     <message>
-        <location line="-3447"/>
+        <location line="-3471"/>
         <location line="+1231"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
@@ -13954,18 +14120,18 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+190"/>
-        <location line="+1501"/>
+        <location line="+1509"/>
         <source>Hide image</source>
         <translation>Bild ausblenden</translation>
     </message>
     <message>
-        <location line="-1501"/>
-        <location line="+1501"/>
+        <location line="-1509"/>
+        <location line="+1509"/>
         <source>Hidden image limit reached</source>
         <translation>Limit für ausgeblendete Bilder erreicht</translation>
     </message>
     <message>
-        <location line="-1497"/>
+        <location line="-1505"/>
         <source>Hide</source>
         <translation>Ausblenden</translation>
     </message>
@@ -14145,6 +14311,11 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+8"/>
+        <source>Export as task or event…</source>
+        <translation>Als Aufgabe oder Termin exportieren …</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>Open image</source>
         <translation>Bild öffnen</translation>
     </message>
@@ -14188,12 +14359,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+10"/>
-        <location line="+647"/>
+        <location line="+663"/>
         <source>Show link preview</source>
         <translation>Linkvorschau anzeigen</translation>
     </message>
     <message>
-        <location line="-637"/>
+        <location line="-653"/>
         <source>Copy image</source>
         <translation>Bild kopieren</translation>
     </message>
@@ -14275,7 +14446,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Nachricht melden</translation>
     </message>
     <message>
-        <location line="+1302"/>
+        <location line="+1318"/>
         <source>Remove from the GIF picker</source>
         <translation>Aus der GIF-Auswahl entfernen</translation>
     </message>
@@ -14320,13 +14491,13 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Noch keine Position empfangen.</translation>
     </message>
     <message>
-        <location line="-3233"/>
-        <location line="+802"/>
+        <location line="-3257"/>
+        <location line="+810"/>
         <source>Delete</source>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-2741"/>
+        <location line="-2749"/>
         <source>Open this thread</source>
         <translation>Diesen Thread öffnen</translation>
     </message>
@@ -14364,7 +14535,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Entfernen</translation>
     </message>
     <message>
-        <location line="+835"/>
+        <location line="+859"/>
         <source>Message details</source>
         <translation>Nachrichtendetails</translation>
     </message>
@@ -29134,6 +29305,44 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
 </context>
 <context>
+    <name>ShareTargetDialog</name>
+    <message>
+        <location filename="../qml/ShareTargetDialog.qml" line="+56"/>
+        <source>Share to a room</source>
+        <translation>In einen Raum teilen</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>As %1. The file is added to the room&apos;s message box and is not sent until you press Send.</source>
+        <translation>Als %1. Die Datei wird dem Nachrichtenfeld des Raums hinzugefügt und erst gesendet, wenn du auf Senden drückst.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Search rooms…</source>
+        <translation>Räume suchen …</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Search rooms</source>
+        <translation>Räume suchen</translation>
+    </message>
+    <message>
+        <location line="+48"/>
+        <source>Attach</source>
+        <translation>Anhängen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Attach in %1</source>
+        <translation>In %1 anhängen</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
+    </message>
+</context>
+<context>
     <name>ShortcutRegistry</name>
     <message>
         <location filename="../src/app/ShortcutRegistry.cpp" line="+360"/>
@@ -37945,7 +38154,7 @@ Vorgeschlagene Zielgruppe
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2454"/>
+        <location filename="../src/main.cpp" line="+2449"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>Nativer Qt/QML-Matrix-Client. Backend: --backend={mock,http,rust}. Standard: rust (http in Versionen ohne das Rust-SDK).</translation>
     </message>

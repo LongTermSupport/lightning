@@ -5332,17 +5332,30 @@ Orientasi EXIF: %4</translation>
         <translation>Tanggal</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+6"/>
+        <source>YYYY-MM-DD</source>
+        <extracomment>The date format this field accepts.</extracomment>
+        <translation>YYYY-MM-DD</translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Starts</source>
         <translation>Mulai</translation>
     </message>
     <message>
+        <location line="+6"/>
         <location line="+7"/>
+        <source>HH:MM</source>
+        <extracomment>The time format this field accepts (24-hour).</extracomment>
+        <translation>HH:MM</translation>
+    </message>
+    <message>
+        <location line="-5"/>
         <source>Ends (optional)</source>
         <translation>Selesai (opsional)</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Time zone</source>
         <translation>Zona waktu</translation>
     </message>
@@ -10040,6 +10053,159 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     </message>
 </context>
 <context>
+    <name>Handoff</name>
+    <message>
+        <location filename="../src/privacy/Handoff.cpp" line="+103"/>
+        <source>[link removed]</source>
+        <translation>[tautan dihapus]</translation>
+    </message>
+    <message>
+        <location line="+97"/>
+        <source>Only files on this computer can be shared.</source>
+        <translation>Hanya berkas di komputer ini yang dapat dibagikan.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>That file cannot be read.</source>
+        <translation>Berkas itu tidak dapat dibaca.</translation>
+    </message>
+</context>
+<context>
+    <name>HandoffDialog</name>
+    <message>
+        <location filename="../qml/HandoffDialog.qml" line="+65"/>
+        <source>Save calendar event</source>
+        <translation>Simpan acara kalender</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Save task</source>
+        <translation>Simpan tugas</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Calendar file (*.ics)</source>
+        <translation>Berkas kalender (*.ics)</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>All files (*)</source>
+        <translation>Semua berkas (*)</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Saved. Open the file with your task or calendar app.</source>
+        <translation>Tersimpan. Buka berkas dengan aplikasi tugas atau kalender Anda.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The file could not be saved.</source>
+        <translation>Berkas tidak dapat disimpan.</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Export message</source>
+        <translation>Ekspor pesan</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Task</source>
+        <translation>Tugas</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Calendar event</source>
+        <translation>Acara kalender</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <location line="+1"/>
+        <source>Title</source>
+        <translation>Judul</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>yyyy-mm-dd</source>
+        <translation>yyyy-mm-dd</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Date</source>
+        <translation>Tanggal</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>hh:mm</source>
+        <translation>jj:mm</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Start time</source>
+        <translation>Waktu mulai</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>30 min</source>
+        <translation>30 mnt</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>1 hour</source>
+        <translation>1 jam</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>2 hours</source>
+        <translation>2 jam</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Enter a valid date and time.</source>
+        <translation>Masukkan tanggal dan waktu yang valid.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <location line="+1"/>
+        <source>Notes</source>
+        <translation>Catatan</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Include a link to this message</source>
+        <translation>Sertakan tautan ke pesan ini</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Include a link to this message. Only people in the room can open it.</source>
+        <translation>Sertakan tautan ke pesan ini. Hanya orang di ruang ini yang dapat membukanya.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Exactly this leaves Lightning. The app you hand it to is outside the room&apos;s encryption.</source>
+        <translation>Persis inilah yang keluar dari Lightning. Aplikasi yang Anda beri berada di luar enkripsi ruang.</translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>Cancel</source>
+        <translation>Batal</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Copy as text</source>
+        <translation>Salin sebagai teks</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Copied.</source>
+        <translation>Tersalin.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Save .ics…</source>
+        <translation>Simpan .ics…</translation>
+    </message>
+</context>
+<context>
     <name>HomePane</name>
     <message>
         <location filename="../qml/HomePane.qml" line="+46"/>
@@ -12097,7 +12263,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
 <context>
     <name>MainScreen</name>
     <message>
-        <location filename="../qml/MainScreen.qml" line="+627"/>
+        <location filename="../qml/MainScreen.qml" line="+632"/>
         <source>Resize room list</source>
         <translation>Ubah ukuran daftar ruang</translation>
     </message>
@@ -13729,13 +13895,13 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2431"/>
+        <location line="+2455"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>Coba lagi</translation>
     </message>
     <message>
-        <location line="-3447"/>
+        <location line="-3471"/>
         <location line="+1231"/>
         <source>Cancel</source>
         <translation>Batal</translation>
@@ -13747,12 +13913,12 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     </message>
     <message>
         <location line="+190"/>
-        <location line="+1501"/>
+        <location line="+1509"/>
         <source>Hide image</source>
         <translation>Sembunyikan gambar</translation>
     </message>
     <message>
-        <location line="-1497"/>
+        <location line="-1505"/>
         <source>Hide</source>
         <translation>Sembunyikan</translation>
     </message>
@@ -13871,12 +14037,12 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     </message>
     <message>
         <location line="+241"/>
-        <location line="+1501"/>
+        <location line="+1509"/>
         <source>Hidden image limit reached</source>
         <translation>Batas gambar tersembunyi tercapai</translation>
     </message>
     <message numerus="yes">
-        <location line="-1248"/>
+        <location line="-1256"/>
         <source>%1 and %n other(s)</source>
         <translation>
             <numerusform>%1 dan %n lainnya</numerusform>
@@ -13954,6 +14120,11 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     </message>
     <message>
         <location line="+8"/>
+        <source>Export as task or event…</source>
+        <translation>Ekspor sebagai tugas atau acara…</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>Open image</source>
         <translation>Buka gambar</translation>
     </message>
@@ -13984,12 +14155,12 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     </message>
     <message>
         <location line="+10"/>
-        <location line="+647"/>
+        <location line="+663"/>
         <source>Show link preview</source>
         <translation>Tampilkan pratinjau tautan</translation>
     </message>
     <message>
-        <location line="-637"/>
+        <location line="-653"/>
         <source>Copy image</source>
         <translation>Salin gambar</translation>
     </message>
@@ -14024,7 +14195,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Lihat sumber</translation>
     </message>
     <message>
-        <location line="+548"/>
+        <location line="+564"/>
         <source>Your server sees this URL — never direct</source>
         <translation>Server Anda melihat URL ini — tidak pernah langsung</translation>
     </message>
@@ -14155,7 +14326,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Belum ada posisi yang diterima.</translation>
     </message>
     <message>
-        <location line="-4023"/>
+        <location line="-4047"/>
         <location line="+1139"/>
         <source>Edit</source>
         <translation>Sunting</translation>
@@ -14195,22 +14366,22 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
     <message>
         <location line="-570"/>
         <location line="+568"/>
-        <location line="+3798"/>
+        <location line="+3822"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5289"/>
+        <location line="-5313"/>
         <location line="+53"/>
         <location line="+514"/>
-        <location line="+4347"/>
+        <location line="+4371"/>
         <source>Image</source>
         <translation>Gambar</translation>
     </message>
     <message>
-        <location line="-4912"/>
+        <location line="-4936"/>
         <source>Attachment</source>
         <translation>Lampiran</translation>
     </message>
@@ -14274,7 +14445,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>(disunting)</translation>
     </message>
     <message>
-        <location line="+1719"/>
+        <location line="+1727"/>
         <source>Add :%1: to my emoji</source>
         <translation>Tambahkan :%1: ke emoji saya</translation>
     </message>
@@ -14313,13 +14484,13 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Laporkan pesan</translation>
     </message>
     <message>
-        <location line="-788"/>
-        <location line="+802"/>
+        <location line="-796"/>
+        <location line="+810"/>
         <source>Delete</source>
         <translation>Hapus</translation>
     </message>
     <message>
-        <location line="-797"/>
+        <location line="-805"/>
         <source>Remove message?</source>
         <translation>Hapus pesan?</translation>
     </message>
@@ -14334,7 +14505,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Hapus</translation>
     </message>
     <message>
-        <location line="+835"/>
+        <location line="+859"/>
         <source>Message details</source>
         <translation>Detail pesan</translation>
     </message>
@@ -14411,12 +14582,12 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Target balasan</translation>
     </message>
     <message>
-        <location line="-2088"/>
+        <location line="-2112"/>
         <source>Show preview</source>
         <translation>Tampilkan pratinjau</translation>
     </message>
     <message>
-        <location line="+1944"/>
+        <location line="+1952"/>
         <source>Remove edits?</source>
         <translation>Hapus suntingan?</translation>
     </message>
@@ -14436,7 +14607,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Ini menutup pemungutan suara dan mempublikasikan hasilnya. Jajak pendapat tidak dapat dibuka kembali.</translation>
     </message>
     <message>
-        <location line="-744"/>
+        <location line="-752"/>
         <source>Delete message?</source>
         <translation>Hapus pesan?</translation>
     </message>
@@ -14446,7 +14617,7 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Ini menghapus pesan untuk semua orang di ruang. Tindakan ini tidak dapat dibatalkan.</translation>
     </message>
     <message>
-        <location line="+1051"/>
+        <location line="+1075"/>
         <source>Open link in browser</source>
         <translation>Buka tautan di peramban</translation>
     </message>
@@ -14528,10 +14699,10 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>Stiker gagal dimuat — klik untuk mencoba lagi</translation>
     </message>
     <message>
-        <location line="-5706"/>
+        <location line="-5730"/>
         <location line="+57"/>
         <location line="+517"/>
-        <location line="+4345"/>
+        <location line="+4369"/>
         <location line="+1066"/>
         <location line="+93"/>
         <source>Video</source>
@@ -14544,9 +14715,9 @@ Keluar lalu masuk lagi adalah satu-satunya perbaikan.</translation>
         <translation>video</translation>
     </message>
     <message>
-        <location line="-6089"/>
+        <location line="-6113"/>
         <location line="+570"/>
-        <location line="+4448"/>
+        <location line="+4472"/>
         <location line="+1270"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -29008,6 +29179,44 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
     </message>
 </context>
 <context>
+    <name>ShareTargetDialog</name>
+    <message>
+        <location filename="../qml/ShareTargetDialog.qml" line="+56"/>
+        <source>Share to a room</source>
+        <translation>Bagikan ke ruang</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>As %1. The file is added to the room&apos;s message box and is not sent until you press Send.</source>
+        <translation>Sebagai %1. Berkas ditambahkan ke kotak pesan ruang dan tidak dikirim sampai Anda menekan Kirim.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Search rooms…</source>
+        <translation>Cari ruang…</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Search rooms</source>
+        <translation>Cari ruang</translation>
+    </message>
+    <message>
+        <location line="+48"/>
+        <source>Attach</source>
+        <translation>Lampirkan</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Attach in %1</source>
+        <translation>Lampirkan di %1</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Cancel</source>
+        <translation>Batal</translation>
+    </message>
+</context>
+<context>
     <name>ShortcutRegistry</name>
     <message>
         <location filename="../src/app/ShortcutRegistry.cpp" line="+360"/>
@@ -37754,7 +37963,7 @@ Audiens yang diusulkan
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2454"/>
+        <location filename="../src/main.cpp" line="+2449"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>Klien Matrix Qt/QML asli. Backend: --backend={mock,http,rust}. Bawaan: rust (http pada build tanpa Rust SDK).</translation>
     </message>

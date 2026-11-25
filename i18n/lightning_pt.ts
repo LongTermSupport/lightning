@@ -5366,17 +5366,30 @@ Orientação EXIF: %4</translation>
         <translation>Data</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+6"/>
+        <source>YYYY-MM-DD</source>
+        <extracomment>The date format this field accepts.</extracomment>
+        <translation>YYYY-MM-DD</translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Starts</source>
         <translation>Começa</translation>
     </message>
     <message>
+        <location line="+6"/>
         <location line="+7"/>
+        <source>HH:MM</source>
+        <extracomment>The time format this field accepts (24-hour).</extracomment>
+        <translation>HH:MM</translation>
+    </message>
+    <message>
+        <location line="-5"/>
         <source>Ends (optional)</source>
         <translation>Termina (opcional)</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Time zone</source>
         <translation>Fuso horário</translation>
     </message>
@@ -10087,6 +10100,159 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     </message>
 </context>
 <context>
+    <name>Handoff</name>
+    <message>
+        <location filename="../src/privacy/Handoff.cpp" line="+103"/>
+        <source>[link removed]</source>
+        <translation>[link removido]</translation>
+    </message>
+    <message>
+        <location line="+97"/>
+        <source>Only files on this computer can be shared.</source>
+        <translation>Só é possível partilhar ficheiros deste computador.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>That file cannot be read.</source>
+        <translation>Não é possível ler esse ficheiro.</translation>
+    </message>
+</context>
+<context>
+    <name>HandoffDialog</name>
+    <message>
+        <location filename="../qml/HandoffDialog.qml" line="+65"/>
+        <source>Save calendar event</source>
+        <translation>Guardar evento de calendário</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Save task</source>
+        <translation>Guardar tarefa</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Calendar file (*.ics)</source>
+        <translation>Ficheiro de calendário (*.ics)</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>All files (*)</source>
+        <translation>Todos os ficheiros (*)</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Saved. Open the file with your task or calendar app.</source>
+        <translation>Guardado. Abra o ficheiro com a sua aplicação de tarefas ou de calendário.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The file could not be saved.</source>
+        <translation>Não foi possível guardar o ficheiro.</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Export message</source>
+        <translation>Exportar mensagem</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Task</source>
+        <translation>Tarefa</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Calendar event</source>
+        <translation>Evento de calendário</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <location line="+1"/>
+        <source>Title</source>
+        <translation>Título</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>yyyy-mm-dd</source>
+        <translation>aaaa-mm-dd</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Date</source>
+        <translation>Data</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>hh:mm</source>
+        <translation>hh:mm</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Start time</source>
+        <translation>Hora de início</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>30 min</source>
+        <translation>30 min</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>1 hour</source>
+        <translation>1 hora</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>2 hours</source>
+        <translation>2 horas</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Enter a valid date and time.</source>
+        <translation>Introduza uma data e uma hora válidas.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <location line="+1"/>
+        <source>Notes</source>
+        <translation>Notas</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Include a link to this message</source>
+        <translation>Incluir uma ligação para esta mensagem</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Include a link to this message. Only people in the room can open it.</source>
+        <translation>Incluir uma ligação para esta mensagem. Só quem está na sala a pode abrir.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Exactly this leaves Lightning. The app you hand it to is outside the room&apos;s encryption.</source>
+        <translation>É exatamente isto que sai do Lightning. A aplicação a que o entrega fica fora da encriptação da sala.</translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>Cancel</source>
+        <translation>Cancelar</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Copy as text</source>
+        <translation>Copiar como texto</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Copied.</source>
+        <translation>Copiado.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Save .ics…</source>
+        <translation>Guardar .ics…</translation>
+    </message>
+</context>
+<context>
     <name>HomePane</name>
     <message>
         <location filename="../qml/HomePane.qml" line="+46"/>
@@ -12149,7 +12315,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
 <context>
     <name>MainScreen</name>
     <message>
-        <location filename="../qml/MainScreen.qml" line="+627"/>
+        <location filename="../qml/MainScreen.qml" line="+632"/>
         <source>Resize room list</source>
         <translation>Redimensionar a lista de salas</translation>
     </message>
@@ -13786,13 +13952,13 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2431"/>
+        <location line="+2455"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>Tentar novamente</translation>
     </message>
     <message>
-        <location line="-3447"/>
+        <location line="-3471"/>
         <location line="+1231"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
@@ -13804,12 +13970,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     </message>
     <message>
         <location line="+190"/>
-        <location line="+1501"/>
+        <location line="+1509"/>
         <source>Hide image</source>
         <translation>Ocultar imagem</translation>
     </message>
     <message>
-        <location line="-1497"/>
+        <location line="-1505"/>
         <source>Hide</source>
         <translation>Ocultar</translation>
     </message>
@@ -13928,12 +14094,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     </message>
     <message>
         <location line="+241"/>
-        <location line="+1501"/>
+        <location line="+1509"/>
         <source>Hidden image limit reached</source>
         <translation>Limite de imagens ocultas atingido</translation>
     </message>
     <message numerus="yes">
-        <location line="-1248"/>
+        <location line="-1256"/>
         <source>%1 and %n other(s)</source>
         <translation>
             <numerusform>%1 e mais %n</numerusform>
@@ -14012,6 +14178,11 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     </message>
     <message>
         <location line="+8"/>
+        <source>Export as task or event…</source>
+        <translation>Exportar como tarefa ou evento…</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>Open image</source>
         <translation>Abrir a imagem</translation>
     </message>
@@ -14042,12 +14213,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     </message>
     <message>
         <location line="+10"/>
-        <location line="+647"/>
+        <location line="+663"/>
         <source>Show link preview</source>
         <translation>Mostrar visualização do link</translation>
     </message>
     <message>
-        <location line="-637"/>
+        <location line="-653"/>
         <source>Copy image</source>
         <translation>Copiar a imagem</translation>
     </message>
@@ -14082,7 +14253,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Ver código-fonte</translation>
     </message>
     <message>
-        <location line="+548"/>
+        <location line="+564"/>
         <source>Your server sees this URL — never direct</source>
         <translation>O seu servidor vê este URL — nunca direto</translation>
     </message>
@@ -14213,7 +14384,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Nenhuma posição recebida ainda.</translation>
     </message>
     <message>
-        <location line="-4023"/>
+        <location line="-4047"/>
         <location line="+1139"/>
         <source>Edit</source>
         <translation>Editar</translation>
@@ -14253,22 +14424,22 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
     <message>
         <location line="-570"/>
         <location line="+568"/>
-        <location line="+3798"/>
+        <location line="+3822"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5289"/>
+        <location line="-5313"/>
         <location line="+53"/>
         <location line="+514"/>
-        <location line="+4347"/>
+        <location line="+4371"/>
         <source>Image</source>
         <translation>Imagem</translation>
     </message>
     <message>
-        <location line="-4912"/>
+        <location line="-4936"/>
         <source>Attachment</source>
         <translation>Anexo</translation>
     </message>
@@ -14334,7 +14505,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>(editada)</translation>
     </message>
     <message>
-        <location line="+1719"/>
+        <location line="+1727"/>
         <source>Add :%1: to my emoji</source>
         <translation>Adicionar :%1: aos meus emojis</translation>
     </message>
@@ -14374,13 +14545,13 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Denunciar a mensagem</translation>
     </message>
     <message>
-        <location line="-788"/>
-        <location line="+802"/>
+        <location line="-796"/>
+        <location line="+810"/>
         <source>Delete</source>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location line="-797"/>
+        <location line="-805"/>
         <source>Remove message?</source>
         <translation>Remover mensagem?</translation>
     </message>
@@ -14395,7 +14566,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Remover</translation>
     </message>
     <message>
-        <location line="+835"/>
+        <location line="+859"/>
         <source>Message details</source>
         <translation>Detalhes da mensagem</translation>
     </message>
@@ -14472,12 +14643,12 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Alvo da resposta</translation>
     </message>
     <message>
-        <location line="-2088"/>
+        <location line="-2112"/>
         <source>Show preview</source>
         <translation>Mostrar a pré-visualização</translation>
     </message>
     <message>
-        <location line="+1944"/>
+        <location line="+1952"/>
         <source>Remove edits?</source>
         <translation>Remover as edições?</translation>
     </message>
@@ -14497,7 +14668,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Isto fecha a votação e publica o resultado. Uma sondagem não pode ser reaberta.</translation>
     </message>
     <message>
-        <location line="-744"/>
+        <location line="-752"/>
         <source>Delete message?</source>
         <translation>Eliminar a mensagem?</translation>
     </message>
@@ -14507,7 +14678,7 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>Isto remove a mensagem para todos na sala. Não pode ser desfeito.</translation>
     </message>
     <message>
-        <location line="+1051"/>
+        <location line="+1075"/>
         <source>Open link in browser</source>
         <translation>Abrir a ligação no navegador</translation>
     </message>
@@ -14589,10 +14760,10 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>O autocolante não carregou — clique para tentar novamente</translation>
     </message>
     <message>
-        <location line="-5706"/>
+        <location line="-5730"/>
         <location line="+57"/>
         <location line="+517"/>
-        <location line="+4345"/>
+        <location line="+4369"/>
         <location line="+1066"/>
         <location line="+93"/>
         <source>Video</source>
@@ -14605,9 +14776,9 @@ Terminar a sessão e voltar a iniciá-la é a única solução.</translation>
         <translation>vídeo</translation>
     </message>
     <message>
-        <location line="-6089"/>
+        <location line="-6113"/>
         <location line="+570"/>
-        <location line="+4448"/>
+        <location line="+4472"/>
         <location line="+1270"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -29134,6 +29305,44 @@ Nota: importar chaves não verifica esta sessão.</translation>
     </message>
 </context>
 <context>
+    <name>ShareTargetDialog</name>
+    <message>
+        <location filename="../qml/ShareTargetDialog.qml" line="+56"/>
+        <source>Share to a room</source>
+        <translation>Partilhar numa sala</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>As %1. The file is added to the room&apos;s message box and is not sent until you press Send.</source>
+        <translation>Como %1. O ficheiro é adicionado à caixa de mensagem da sala e só é enviado quando premir Enviar.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Search rooms…</source>
+        <translation>Procurar salas…</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Search rooms</source>
+        <translation>Procurar salas</translation>
+    </message>
+    <message>
+        <location line="+48"/>
+        <source>Attach</source>
+        <translation>Anexar</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Attach in %1</source>
+        <translation>Anexar em %1</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Cancel</source>
+        <translation>Cancelar</translation>
+    </message>
+</context>
+<context>
     <name>ShortcutRegistry</name>
     <message>
         <location filename="../src/app/ShortcutRegistry.cpp" line="+360"/>
@@ -37945,7 +38154,7 @@ Público proposto
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2454"/>
+        <location filename="../src/main.cpp" line="+2449"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>Cliente Matrix nativo Qt/QML. Backend: --backend={mock,http,rust}. Predefinição: rust (http em compilações sem o Rust SDK).</translation>
     </message>
