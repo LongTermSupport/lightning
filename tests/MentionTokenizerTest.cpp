@@ -81,7 +81,7 @@ private slots:
         const Expansion e = expand(QStringLiteral("hi @juz:shynkent.ovh, ok"), {});
         QCOMPARE(e.userIds, QStringList{ QStringLiteral("@juz:shynkent.ovh") });
         QVERIFY(e.body.contains(
-            QStringLiteral("[@juz:shynkent.ovh](https://matrix.to/#/%40juz%3Ashynkent.ovh)")));
+            QStringLiteral("](https://matrix.to/#/%40juz%3Ashynkent.ovh), ok")));
 
         QVERIFY(expand(QStringLiteral("mail a@b:c.d"), {}).userIds.isEmpty());
         QVERIFY(expand(QStringLiteral("`@juz:shynkent.ovh`"), {}).userIds.isEmpty());
