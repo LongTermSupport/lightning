@@ -3294,6 +3294,49 @@ server name before deleting a server. Lightning offers the two honest pieces.
   behaviour of a large close (the SDK retries 429s within the 60 s per-request
   bound), and the admin delete against a real Synapse.
 
+### Space guides, announcement review, access and lifecycle previews
+
+- **Guide.** State `org.lightning_matrix.room_guide`, state key "", on the
+  Space: `{welcome, rules, rooms, links}`. Text up to 4000 characters each,
+  at most 12 room ids and 8 plain `https` links (no userinfo). Editable by
+  whoever the power levels let send that state type (`state_default` unless
+  set). The lobby shows it above the room list; a recommended room appears
+  only if the reader's lobby already lists it, and joining or knocking is
+  always the reader's click. On read the content is treated as hostile: text
+  is cut to 4000 characters, invalid rooms and non-https links are dropped
+  and the lists cut to 12 and 8; everything renders as plain text and a link
+  opens only through `MediaManager::openWebUrl`.
+- **Announcement review.** Proposal: state
+  `org.lightning_matrix.announcement_proposal`, state key = the author's
+  user id (so the server forbids filing one for someone else),
+  `{body, target}`. Members can propose only once an administrator sets that
+  type's level to 0 ("Enable member proposals", a power-level change written
+  without compare-and-swap, like the existing power-level editors). At most
+  100 proposals are listed. A proposal whose author can no longer send that
+  type is shown as such and is never publishable.
+  Review marker: state `org.lightning_matrix.announcement_review`, state key =
+  the proposal's event id (an `@` key must equal its sender), holding
+  `{status: publishing|published, revision, body, target, reviewer, author,
+  event_id}`. Reviewers are whoever may send that type. A reviewer previews
+  the exact final text and the destination's current join rule, allow list,
+  history visibility and member count; publishing sends an `m.text` from the
+  REVIEWER's own account with `org.lightning_matrix.announcement`
+  `{space, revision, author, reviewer}`. Publish is refused as stale when the
+  proposal revision, the text or the destination's access changed since the
+  preview. The transaction id is derived from revision, text, destination and
+  reviewer, so a retried publish cannot post twice; a `published` marker
+  ends the proposal.
+- **Access and role previews** (Space settings) are computed from the room's
+  current power levels and join/history rules only. They describe this room
+  or Space alone and say that servers enforce access and may hold newer
+  state; nothing is applied until the explicit confirm, and a refused change
+  leaves the shown state at the server's.
+- **Lifecycle review** (leave, close, upgrade dialogs) shows last known
+  activity, joined members, parent Spaces and predecessor/successor links
+  from the local room list. It states that archiving is local, leaving
+  affects only the viewer and closing changes server access. It sends
+  nothing.
+
 ### SVG images (rasterised on send)
 
 - §6 still holds: nothing RECEIVED is ever decoded as SVG. A received SVG

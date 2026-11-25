@@ -67,6 +67,12 @@ Dialog {
             width: bodyScroll.width
         spacing: AppTheme.spacing12
 
+        RoomLifecycleReview {
+            Layout.fillWidth: true
+            roomId: root.targetRoomId
+            action: "upgrade"
+        }
+
         Label {
             text: root.isSpace ? qsTr("Upgrade this space")
                                : qsTr("Upgrade this room")

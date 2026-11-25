@@ -653,6 +653,7 @@ const CLASSES: &[(&str, EventClass)] = {
         ("room_pin_result", UiOnly),
         ("room_power_level_result", UiOnly),
         ("room_power_matrix_result", UiOnly),
+        ("space_community_result", UiOnly),
         ("room_preview_backfill", UiOnly),
         ("room_profile_result", UiOnly),
         ("room_send_result", UiOnly),

@@ -4128,7 +4128,7 @@ EXIF orientation: %4</source>
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+349"/>
+        <location filename="../qml/SpaceLobby.qml" line="+359"/>
         <source>%1, collapsed</source>
         <translation>%1، تم تصغيره</translation>
     </message>
@@ -10913,7 +10913,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>مغادرة الغرفة؟</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+51"/>
         <source>You are the only administrator. If you leave, nobody will be able to change this room&apos;s settings or manage its members. Make someone else an administrator first.</source>
         <translation>أنت المدير الوحيد. إذا غادرت، فلن يتمكن أحد من تغيير إعدادات هذه الغرفة أو إدارة أعضائها. اجعل شخصًا آخر مديرًا أولًا.</translation>
     </message>
@@ -18287,7 +18287,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RoomCloseDialog</name>
     <message>
-        <location filename="../qml/RoomCloseDialog.qml" line="+75"/>
+        <location filename="../qml/RoomCloseDialog.qml" line="+81"/>
         <source>Leave once it is closed. If anything is left undone you stay, so you can run it again.</source>
         <translation>المغادرة بعد الإغلاق. إن بقي أي شيء دون إنجاز فستبقى، لتتمكن من تشغيله مجددًا.</translation>
     </message>
@@ -20192,6 +20192,69 @@ Signing out and signing in again is the only fix.</source>
     </message>
 </context>
 <context>
+    <name>RoomLifecycleReview</name>
+    <message>
+        <location filename="../qml/RoomLifecycleReview.qml" line="+28"/>
+        <source>Hide lifecycle review</source>
+        <translation>إخفاء مراجعة دورة الحياة</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Review room activity and links</source>
+        <translation>مراجعة نشاط الغرفة وروابطها</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Archive hides a room for your account; it does not close it for other members. Leaving removes only you. Closing changes server access and may remove other members. No rooms are cleaned up automatically.</source>
+        <translation>الأرشفة تُخفي الغرفة لحسابك فقط ولا تغلقها أمام الأعضاء الآخرين. المغادرة تُزيلك أنت فقط. الإغلاق يغيّر الوصول على الخادم وقد يُزيل أعضاء آخرين. لا تُنظَّف أي غرفة تلقائيًا.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Last known activity: %1. This device may not have all activity.</source>
+        <translation>آخر نشاط معروف: %1. قد لا يملك هذا الجهاز كل النشاط.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Last activity is not known. Missing history does not prove inactivity.</source>
+        <translation>آخر نشاط غير معروف. غياب السجل لا يثبت عدم النشاط.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Joined members: %1. Closure&apos;s room-by-room plan shows who can be removed and who stays. Roles and ownership are separate in every room.</source>
+        <translation>الأعضاء المنضمون: %1. تُظهر خطة الإغلاق لكل غرفة على حدة من يمكن إزالته ومن يبقى. الأدوار والملكية منفصلة في كل غرفة.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Membership and ownership are not known. Check them before continuing.</source>
+        <translation>العضوية والملكية غير معروفتين. تحقّق منهما قبل المتابعة.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>The plan below lists the exact selected rooms and their outcomes. A Space&apos;s child rooms are separate rooms; shared rooms may belong to other Spaces.</source>
+        <translation>تسرد الخطة أدناه الغرف المحددة بالضبط ونتائجها. الغرف الفرعية للفضاء غرف منفصلة؛ وقد تنتمي الغرف المشتركة إلى فضاءات أخرى.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>This action affects only %1. Rooms inside a Space are not left or upgraded with it.</source>
+        <translation>هذا الإجراء يؤثر في %1 فقط. لا تُغادَر الغرف الموجودة داخل الفضاء ولا تُرقّى معه.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Predecessor: %1
+Successor: %2
+These links remain in room state. Open the successor from the room&apos;s replacement notice before leaving if you need to continue there.</source>
+        <translation>السابقة: %1
+اللاحقة: %2
+تبقى هذه الروابط في حالة الغرفة. افتح الغرفة اللاحقة من إشعار الاستبدال في الغرفة قبل المغادرة إن كنت تحتاج إلى المتابعة هناك.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+1"/>
+        <source>None known</source>
+        <translation>لا شيء معروف</translation>
+    </message>
+</context>
+<context>
     <name>RoomListAttentionLocator</name>
     <message>
         <location filename="../qml/RoomListAttentionLocator.qml" line="+93"/>
@@ -20551,7 +20614,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RoomUpgradeDialog</name>
     <message>
-        <location filename="../qml/RoomUpgradeDialog.qml" line="+71"/>
+        <location filename="../qml/RoomUpgradeDialog.qml" line="+77"/>
         <source>Upgrade this space</source>
         <translation>ترقية هذا الفضاء</translation>
     </message>
@@ -29705,6 +29768,218 @@ Note: importing keys does not verify this session.</source>
     </message>
 </context>
 <context>
+    <name>SpaceCommunityPanel</name>
+    <message>
+        <location filename="../qml/SpaceCommunityPanel.qml" line="+56"/>
+        <source>Start here</source>
+        <translation>ابدأ من هنا</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Edit guide</source>
+        <translation>تعديل الدليل</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Announcements</source>
+        <translation>الإعلانات</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Refresh</source>
+        <translation>تحديث</translation>
+    </message>
+    <message>
+        <location line="+53"/>
+        <source>Open</source>
+        <translation>فتح</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Ask to join</source>
+        <translation>طلب الانضمام</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Join</source>
+        <translation>انضمام</translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>Open link</source>
+        <translation>فتح الرابط</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Room guide</source>
+        <translation>دليل الغرف</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>The guide is shared room state. Servers and people allowed to read this Space&apos;s state can read it.</source>
+        <translation>الدليل جزء من حالة الغرفة المشتركة. يمكن للخوادم والأشخاص المسموح لهم بقراءة حالة هذا الفضاء قراءته.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Welcome (up to 4000 characters)</source>
+        <translation>الترحيب (حتى 4000 حرف)</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Welcome</source>
+        <translation>الترحيب</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Rules (up to 4000 characters)</source>
+        <translation>القواعد (حتى 4000 حرف)</translation>
+    </message>
+    <message>
+        <location line="-102"/>
+        <location line="+106"/>
+        <source>Rules</source>
+        <translation>القواعد</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Recommended room IDs in order (one per line, up to 12). Readers see only rooms already visible in their lobby.</source>
+        <translation>معرّفات الغرف الموصى بها بالترتيب (واحد في كل سطر، حتى 12). لا يرى القرّاء إلا الغرف المرئية لهم بالفعل في الردهة.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Recommended rooms</source>
+        <translation>الغرف الموصى بها</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>HTTPS links (one per line, up to 8)</source>
+        <translation>روابط HTTPS (واحد في كل سطر، حتى 8)</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Important links</source>
+        <translation>روابط مهمة</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Save guide</source>
+        <translation>حفظ الدليل</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Cancel</source>
+        <translation>إلغاء</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Announcement review</source>
+        <translation>مراجعة الإعلانات</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Submitting shares your proposal as unencrypted Space state with the server and authorized readers. Only a reviewer can publish through this workflow, using their own identity. Keep private drafts out of shared state.</source>
+        <translation>عند الإرسال يُشارَك اقتراحك كحالة فضاء غير مشفّرة مع الخادم والقرّاء المخوَّلين. لا يمكن النشر عبر هذا المسار إلا للمراجِع، وبهويته الخاصة. أبقِ المسودات الخاصة خارج الحالة المشتركة.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Enable member proposals…</source>
+        <translation>تفعيل اقتراحات الأعضاء…</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>A room administrator must enable proposals for members first.</source>
+        <translation>يجب أن يفعّل مدير الغرفة الاقتراحات للأعضاء أولًا.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Destination room</source>
+        <translation>الغرفة الوجهة</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Announcement proposal</source>
+        <translation>اقتراح إعلان</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Submit or replace my proposal</source>
+        <translation>إرسال اقتراحي أو استبداله</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Only the first 100 proposals are shown.</source>
+        <translation>تُعرض أول 100 اقتراح فقط.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Published proposal from %1</source>
+        <translation>اقتراح منشور من %1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Proposal from %1 (author can no longer propose)</source>
+        <translation>اقتراح من %1 (لم يعد بإمكان الكاتب الاقتراح)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Proposal from %1</source>
+        <translation>اقتراح من %1</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Review</source>
+        <translation>مراجعة</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Final announcement text</source>
+        <translation>نص الإعلان النهائي</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Preview exact text and audience</source>
+        <translation>معاينة النص الدقيق والجمهور</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Publish as %1
+Proposed by %2
+Destination: %3 (%4)
+Current joined members: %5
+%6</source>
+        <translation>النشر باسم %1
+اقترحه %2
+الوجهة: %3 (%4)
+الأعضاء المنضمون حاليًا: %5
+%6</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Approve and publish</source>
+        <translation>الموافقة والنشر</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Edit final text</source>
+        <translation>تعديل النص النهائي</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Close</source>
+        <translation>إغلاق</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Enable member proposals?</source>
+        <translation>تفعيل اقتراحات الأعضاء؟</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>This sets the announcement proposal event permission to 0. Members at that level can submit shared proposals. The reviewer permission and ordinary message permissions stay as they are.</source>
+        <translation>يضبط هذا صلاحية حدث اقتراح الإعلان على 0. يمكن للأعضاء في هذا المستوى إرسال اقتراحات مشتركة. تبقى صلاحية المراجِع وصلاحيات الرسائل العادية كما هي.</translation>
+    </message>
+</context>
+<context>
     <name>SpaceLobby</name>
     <message numerus="yes">
         <location filename="../qml/SpaceLobby.qml" line="-127"/>
@@ -29773,7 +30048,12 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+381"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+23"/>
+        <source>The result is not known. Refresh before trying again; publishing the same reviewed text reuses its transaction.</source>
+        <translation>النتيجة غير معروفة. حدّث قبل إعادة المحاولة؛ نشر النص المراجَع نفسه يعيد استخدام معاملته.</translation>
+    </message>
+    <message>
+        <location line="+368"/>
         <source>All rooms</source>
         <translation>كل الغرف</translation>
     </message>
@@ -29786,6 +30066,176 @@ Note: importing keys does not verify this session.</source>
         <location line="+1"/>
         <source>Rooms not in any Space</source>
         <translation>غرف ليست في أي فضاء</translation>
+    </message>
+    <message>
+        <location line="+1264"/>
+        <source>This action is unavailable. Refresh and check your permissions.</source>
+        <translation>هذا الإجراء غير متاح. حدّث وتحقّق من صلاحياتك.</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>The proposal or audience changed. Refresh and review it again.</source>
+        <translation>تغيّر الاقتراح أو الجمهور. حدّث وراجعه مجددًا.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The server refused this action. Refresh and check your permissions.</source>
+        <translation>رفض الخادم هذا الإجراء. حدّث وتحقّق من صلاحياتك.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This content was not accepted. Check the room IDs, that links use https, and the limits.</source>
+        <translation>لم يُقبل هذا المحتوى. تحقّق من معرّفات الغرف، ومن أن الروابط تستخدم https، ومن الحدود.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Another reviewer is publishing this proposal. Refresh in a moment.</source>
+        <translation>مراجِع آخر ينشر هذا الاقتراح. حدّث بعد قليل.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The action did not complete. A publish may already have arrived; retrying the same reviewed text will not send a second post.</source>
+        <translation>لم يكتمل الإجراء. ربما وصل النشر بالفعل؛ وإعادة المحاولة بالنص المراجَع نفسه لن ترسل منشورًا ثانيًا.</translation>
+    </message>
+    <message>
+        <location line="+47"/>
+        <source>Send other message events</source>
+        <translation>إرسال أحداث رسائل أخرى</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Invite people</source>
+        <translation>دعوة الأشخاص</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Remove members below their level</source>
+        <translation>إزالة الأعضاء الأدنى مستوى</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Ban members below their level</source>
+        <translation>حظر الأعضاء الأدنى مستوى</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Remove other people&apos;s messages</source>
+        <translation>إزالة رسائل الآخرين</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Notify the whole room</source>
+        <translation>تنبيه الغرفة بأكملها</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change other room state</source>
+        <translation>تغيير حالة الغرفة الأخرى</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Manage rooms in this Space</source>
+        <translation>إدارة الغرف في هذا الفضاء</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change the name</source>
+        <translation>تغيير الاسم</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change the topic</source>
+        <translation>تغيير الموضوع</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change the avatar</source>
+        <translation>تغيير الصورة الرمزية</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change who can join</source>
+        <translation>تغيير من يمكنه الانضمام</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change who can read history</source>
+        <translation>تغيير من يمكنه قراءة السجل</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change roles below their level</source>
+        <translation>تغيير الأدوار الأدنى مستوى</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Upgrade the room</source>
+        <translation>ترقية الغرفة</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Anyone who is not banned can join without an invite.</source>
+        <translation>يمكن لأي شخص غير محظور الانضمام دون دعوة.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Only invited people can join.</source>
+        <translation>لا يمكن الانضمام إلا للمدعوين.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>People can ask to join; a member with invite permission must admit them.</source>
+        <translation>يمكن للأشخاص طلب الانضمام؛ ويجب أن يقبلهم عضو يملك صلاحية الدعوة.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Invited people and eligible members of these rooms can join: %1. The server checks membership and authorization.</source>
+        <translation>يمكن للمدعوين والأعضاء المؤهلين في هذه الغرف الانضمام: %1. يتحقق الخادم من العضوية والتفويض.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>not known</source>
+        <translation>غير معروف</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Who can join is not known.</source>
+        <translation>من يمكنه الانضمام غير معروف.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Other people can ask to join.</source>
+        <translation>يمكن للآخرين طلب الانضمام.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Anyone can read the history, including people outside the room.</source>
+        <translation>يمكن لأي شخص قراءة السجل، بمن في ذلك من هم خارج الغرفة.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Members can read history from when they joined.</source>
+        <translation>يمكن للأعضاء قراءة السجل منذ انضمامهم.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Members can read history from when they were invited.</source>
+        <translation>يمكن للأعضاء قراءة السجل منذ دعوتهم.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Members can read all history, including messages sent before they joined.</source>
+        <translation>يمكن للأعضاء قراءة السجل كله، بما في ذلك الرسائل المرسلة قبل انضمامهم.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>History access is not known.</source>
+        <translation>الوصول إلى السجل غير معروف.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This applies only to this room or Space. Child rooms keep their own rules. Servers enforce access and may have newer state.</source>
+        <translation>ينطبق هذا على هذه الغرفة أو هذا الفضاء فقط. تحتفظ الغرف الفرعية بقواعدها الخاصة. تفرض الخوادم الوصول وقد تملك حالة أحدث.</translation>
     </message>
 </context>
 <context>
@@ -30144,12 +30594,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="-40"/>
         <location line="+43"/>
-        <location line="+1049"/>
+        <location line="+1050"/>
         <source>Invite</source>
         <translation>دعوة</translation>
     </message>
     <message>
-        <location line="-1091"/>
+        <location line="-1092"/>
         <location line="+43"/>
         <source>Kick</source>
         <translation>ركلة</translation>
@@ -30375,12 +30825,12 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+16"/>
-        <location line="+395"/>
+        <location line="+396"/>
         <source>Save</source>
         <translation>حفظ</translation>
     </message>
     <message>
-        <location line="-382"/>
+        <location line="-383"/>
         <source>Banner</source>
         <translation>راية</translation>
     </message>
@@ -30480,7 +30930,7 @@ Note: importing keys does not verify this session.</source>
         <translation>طلب الانضمام (طَرْق)</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source>Members of another space can join. Lightning can&apos;t change space-restricted access yet.</source>
         <translation>يمكن لأعضاء مساحة أخرى الانضمام. لا يستطيع Lightning تغيير الوصول المقيد بمساحة حتى الآن.</translation>
     </message>
@@ -30838,7 +31288,29 @@ Note: importing keys does not verify this session.</source>
         <translation>تغيير الدور؟</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+38"/>
+        <source>Capabilities in this room or Space only. Moderation can target only members below the new level. Servers enforce permissions and may have newer state.</source>
+        <translation>القدرات في هذه الغرفة أو هذا الفضاء فقط. لا يمكن أن يستهدف الإشراف إلا الأعضاء الأدنى من المستوى الجديد. تفرض الخوادم الصلاحيات وقد تملك حالة أحدث.</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>%1: %2 → %3 (level %4)</source>
+        <translation>%1: %2 → %3 (المستوى %4)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+1"/>
+        <source>Allowed</source>
+        <translation>مسموح</translation>
+    </message>
+    <message>
+        <location line="-1"/>
+        <location line="+1"/>
+        <source>Not allowed</source>
+        <translation>غير مسموح</translation>
+    </message>
+    <message>
+        <location line="+12"/>
         <source>Set %1 to %2 in this room?</source>
         <translation>تعيين %1 إلى %2 في هذه الغرفة؟</translation>
     </message>
@@ -30866,6 +31338,39 @@ Note: importing keys does not verify this session.</source>
         <location line="+1"/>
         <source>You will also no longer be able to change roles or permissions in this space.</source>
         <translation>ولن تستطيع أيضًا تغيير الأدوار أو الأذونات في هذا الفضاء.</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>Review access change</source>
+        <translation>مراجعة تغيير الوصول</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>Current audience
+%1
+
+Proposed audience
+%2</source>
+        <translation>الجمهور الحالي
+%1
+
+الجمهور المقترح
+%2</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Room state changed. Cancel and review again.</source>
+        <translation>تغيّرت حالة الغرفة. ألغِ وراجع مجددًا.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Apply access change</source>
+        <translation>تطبيق تغيير الوصول</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Cancel</source>
+        <translation>إلغاء</translation>
     </message>
 </context>
 <context>

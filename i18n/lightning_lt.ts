@@ -4059,7 +4059,7 @@ EXIF orientacija: %4</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+349"/>
+        <location filename="../qml/SpaceLobby.qml" line="+359"/>
         <source>%1, collapsed</source>
         <translation>%1, sutraukta</translation>
     </message>
@@ -10790,7 +10790,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Išeiti iš kambario?</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+51"/>
         <source>You are the only administrator. If you leave, nobody will be able to change this room&apos;s settings or manage its members. Make someone else an administrator first.</source>
         <translation>Jūs esate vienintelis administratorius. Jei išeisite, niekas negalės keisti šio kambario nustatymų ar tvarkyti jo narių. Pirmiausia paskirkite administratoriumi ką nors kitą.</translation>
     </message>
@@ -18068,7 +18068,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>RoomCloseDialog</name>
     <message>
-        <location filename="../qml/RoomCloseDialog.qml" line="+75"/>
+        <location filename="../qml/RoomCloseDialog.qml" line="+81"/>
         <source>Leave once it is closed. If anything is left undone you stay, so you can run it again.</source>
         <translation>Išeiti, kai bus uždaryta. Jei kas nors lieka neatlikta, pasiliekate, kad galėtumėte paleisti dar kartą.</translation>
     </message>
@@ -19937,6 +19937,69 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     </message>
 </context>
 <context>
+    <name>RoomLifecycleReview</name>
+    <message>
+        <location filename="../qml/RoomLifecycleReview.qml" line="+28"/>
+        <source>Hide lifecycle review</source>
+        <translation>Slėpti gyvavimo ciklo peržiūrą</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Review room activity and links</source>
+        <translation>Peržiūrėti kambario veiklą ir nuorodas</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Archive hides a room for your account; it does not close it for other members. Leaving removes only you. Closing changes server access and may remove other members. No rooms are cleaned up automatically.</source>
+        <translation>Archyvavimas paslepia kambarį tik jūsų paskyrai; kitiems nariams jis neuždaromas. Išėjus pašalinami tik jūs. Uždarymas keičia prieigą serveryje ir gali pašalinti kitus narius. Jokie kambariai nevalomi automatiškai.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Last known activity: %1. This device may not have all activity.</source>
+        <translation>Paskutinė žinoma veikla: %1. Šiame įrenginyje gali būti ne visa veikla.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Last activity is not known. Missing history does not prove inactivity.</source>
+        <translation>Paskutinė veikla nežinoma. Trūkstama istorija neįrodo neaktyvumo.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Joined members: %1. Closure&apos;s room-by-room plan shows who can be removed and who stays. Roles and ownership are separate in every room.</source>
+        <translation>Prisijungę nariai: %1. Uždarymo plane kiekvienam kambariui nurodyta, kas gali būti pašalintas ir kas lieka. Vaidmenys ir nuosavybė kiekviename kambaryje yra atskiri.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Membership and ownership are not known. Check them before continuing.</source>
+        <translation>Narystė ir nuosavybė nežinomos. Patikrinkite jas prieš tęsdami.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>The plan below lists the exact selected rooms and their outcomes. A Space&apos;s child rooms are separate rooms; shared rooms may belong to other Spaces.</source>
+        <translation>Žemiau esantis planas nurodo tiksliai pasirinktus kambarius ir jų rezultatus. Erdvės vaikiniai kambariai yra atskiri kambariai; bendri kambariai gali priklausyti kitoms erdvėms.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>This action affects only %1. Rooms inside a Space are not left or upgraded with it.</source>
+        <translation>Šis veiksmas paveikia tik %1. Erdvės viduje esantys kambariai kartu nepaliekami ir neatnaujinami.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Predecessor: %1
+Successor: %2
+These links remain in room state. Open the successor from the room&apos;s replacement notice before leaving if you need to continue there.</source>
+        <translation>Pirmtakas: %1
+Įpėdinis: %2
+Šios nuorodos lieka kambario būsenoje. Jei norite tęsti ten, prieš išeidami atidarykite įpėdinį iš kambario pakeitimo pranešimo.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+1"/>
+        <source>None known</source>
+        <translation>Nežinoma</translation>
+    </message>
+</context>
+<context>
     <name>RoomListAttentionLocator</name>
     <message>
         <location filename="../qml/RoomListAttentionLocator.qml" line="+93"/>
@@ -20293,7 +20356,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>RoomUpgradeDialog</name>
     <message>
-        <location filename="../qml/RoomUpgradeDialog.qml" line="+71"/>
+        <location filename="../qml/RoomUpgradeDialog.qml" line="+77"/>
         <source>Upgrade this space</source>
         <translation>Atnaujinti šią erdvę</translation>
     </message>
@@ -29363,6 +29426,218 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     </message>
 </context>
 <context>
+    <name>SpaceCommunityPanel</name>
+    <message>
+        <location filename="../qml/SpaceCommunityPanel.qml" line="+56"/>
+        <source>Start here</source>
+        <translation>Pradėkite čia</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Edit guide</source>
+        <translation>Redaguoti gidą</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Announcements</source>
+        <translation>Skelbimai</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Refresh</source>
+        <translation>Atnaujinti</translation>
+    </message>
+    <message>
+        <location line="+53"/>
+        <source>Open</source>
+        <translation>Atidaryti</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Ask to join</source>
+        <translation>Paprašykite prisijungti</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Join</source>
+        <translation>Prisijungti</translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>Open link</source>
+        <translation>Atidaryti nuorodą</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Room guide</source>
+        <translation>Kambario gidas</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>The guide is shared room state. Servers and people allowed to read this Space&apos;s state can read it.</source>
+        <translation>Gidas yra bendra kambario būsena. Jį gali skaityti serveriai ir žmonės, kuriems leidžiama skaityti šios erdvės būseną.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Welcome (up to 4000 characters)</source>
+        <translation>Pasveikinimas (iki 4000 simbolių)</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Welcome</source>
+        <translation>Pasveikinimas</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Rules (up to 4000 characters)</source>
+        <translation>Taisyklės (iki 4000 simbolių)</translation>
+    </message>
+    <message>
+        <location line="-102"/>
+        <location line="+106"/>
+        <source>Rules</source>
+        <translation>Taisyklės</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Recommended room IDs in order (one per line, up to 12). Readers see only rooms already visible in their lobby.</source>
+        <translation>Rekomenduojamų kambarių ID eilės tvarka (po vieną eilutėje, iki 12). Skaitytojai mato tik kambarius, jau matomus jų vestibiulyje.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Recommended rooms</source>
+        <translation>Rekomenduojami kambariai</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>HTTPS links (one per line, up to 8)</source>
+        <translation>HTTPS nuorodos (po vieną eilutėje, iki 8)</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Important links</source>
+        <translation>Svarbios nuorodos</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Save guide</source>
+        <translation>Išsaugoti gidą</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Cancel</source>
+        <translation>Atšaukti</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Announcement review</source>
+        <translation>Skelbimų peržiūra</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Submitting shares your proposal as unencrypted Space state with the server and authorized readers. Only a reviewer can publish through this workflow, using their own identity. Keep private drafts out of shared state.</source>
+        <translation>Pateikus pasiūlymas bendrinamas kaip nešifruota erdvės būsena su serveriu ir įgaliotais skaitytojais. Per šią eigą skelbti gali tik peržiūrėtojas, savo paties tapatybe. Privačių juodraščių nelaikykite bendroje būsenoje.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Enable member proposals…</source>
+        <translation>Įjungti narių pasiūlymus…</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>A room administrator must enable proposals for members first.</source>
+        <translation>Kambario administratorius pirmiausia turi įjungti pasiūlymus nariams.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Destination room</source>
+        <translation>Paskirties kambarys</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Announcement proposal</source>
+        <translation>Skelbimo pasiūlymas</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Submit or replace my proposal</source>
+        <translation>Pateikti arba pakeisti mano pasiūlymą</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Only the first 100 proposals are shown.</source>
+        <translation>Rodomi tik pirmieji 100 pasiūlymų.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Published proposal from %1</source>
+        <translation>Paskelbtas pasiūlymas (%1)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Proposal from %1 (author can no longer propose)</source>
+        <translation>Pasiūlymas (%1; autorius nebegali siūlyti)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Proposal from %1</source>
+        <translation>Pasiūlymas (%1)</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Review</source>
+        <translation>Peržiūrėti</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Final announcement text</source>
+        <translation>Galutinis skelbimo tekstas</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Preview exact text and audience</source>
+        <translation>Peržiūrėti tikslų tekstą ir auditoriją</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Publish as %1
+Proposed by %2
+Destination: %3 (%4)
+Current joined members: %5
+%6</source>
+        <translation>Skelbti kaip %1
+Pasiūlė %2
+Paskirtis: %3 (%4)
+Dabar prisijungusių narių: %5
+%6</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Approve and publish</source>
+        <translation>Patvirtinti ir paskelbti</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Edit final text</source>
+        <translation>Redaguoti galutinį tekstą</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Close</source>
+        <translation>Uždaryti</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Enable member proposals?</source>
+        <translation>Įjungti narių pasiūlymus?</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>This sets the announcement proposal event permission to 0. Members at that level can submit shared proposals. The reviewer permission and ordinary message permissions stay as they are.</source>
+        <translation>Tai nustato skelbimo pasiūlymo įvykio leidimą į 0. To lygio nariai galės pateikti bendrus pasiūlymus. Peržiūrėtojo leidimas ir įprasti žinučių leidimai lieka nepakeisti.</translation>
+    </message>
+</context>
+<context>
     <name>SpaceLobby</name>
     <message numerus="yes">
         <location filename="../qml/SpaceLobby.qml" line="-127"/>
@@ -29428,7 +29703,12 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+381"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+23"/>
+        <source>The result is not known. Refresh before trying again; publishing the same reviewed text reuses its transaction.</source>
+        <translation>Rezultatas nežinomas. Prieš bandydami dar kartą atnaujinkite; skelbiant tą patį peržiūrėtą tekstą pakartotinai naudojama jo transakcija.</translation>
+    </message>
+    <message>
+        <location line="+368"/>
         <source>All rooms</source>
         <translation>Visi kambariai</translation>
     </message>
@@ -29441,6 +29721,176 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <location line="+1"/>
         <source>Rooms not in any Space</source>
         <translation>Jokiai erdvei nepriskirti kambariai</translation>
+    </message>
+    <message>
+        <location line="+1264"/>
+        <source>This action is unavailable. Refresh and check your permissions.</source>
+        <translation>Šis veiksmas neprieinamas. Atnaujinkite ir patikrinkite savo leidimus.</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>The proposal or audience changed. Refresh and review it again.</source>
+        <translation>Pasiūlymas arba auditorija pasikeitė. Atnaujinkite ir peržiūrėkite dar kartą.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The server refused this action. Refresh and check your permissions.</source>
+        <translation>Serveris atmetė šį veiksmą. Atnaujinkite ir patikrinkite savo leidimus.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This content was not accepted. Check the room IDs, that links use https, and the limits.</source>
+        <translation>Šis turinys nepriimtas. Patikrinkite kambarių ID, ar nuorodos naudoja https, ir apribojimus.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Another reviewer is publishing this proposal. Refresh in a moment.</source>
+        <translation>Kitas peržiūrėtojas skelbia šį pasiūlymą. Netrukus atnaujinkite.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The action did not complete. A publish may already have arrived; retrying the same reviewed text will not send a second post.</source>
+        <translation>Veiksmas nebaigtas. Paskelbimas jau galėjo pasiekti tikslą; pakartojus tą patį peržiūrėtą tekstą antras įrašas nebus išsiųstas.</translation>
+    </message>
+    <message>
+        <location line="+47"/>
+        <source>Send other message events</source>
+        <translation>Siųsti kitus žinučių įvykius</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Invite people</source>
+        <translation>Kviesti žmones</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Remove members below their level</source>
+        <translation>Šalinti žemesnio lygio narius</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Ban members below their level</source>
+        <translation>Drausti žemesnio lygio narius</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Remove other people&apos;s messages</source>
+        <translation>Šalinti kitų žmonių žinutes</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Notify the whole room</source>
+        <translation>Pranešti visam kambariui</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change other room state</source>
+        <translation>Keisti kitą kambario būseną</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Manage rooms in this Space</source>
+        <translation>Tvarkyti kambarius šioje erdvėje</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change the name</source>
+        <translation>Keisti pavadinimą</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change the topic</source>
+        <translation>Keisti temą</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change the avatar</source>
+        <translation>Keisti avatarą</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change who can join</source>
+        <translation>Keisti, kas gali prisijungti</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change who can read history</source>
+        <translation>Keisti, kas gali skaityti istoriją</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change roles below their level</source>
+        <translation>Keisti žemesnio lygio vaidmenis</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Upgrade the room</source>
+        <translation>Atnaujinti kambarį</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Anyone who is not banned can join without an invite.</source>
+        <translation>Bet kas, kam neuždrausta, gali prisijungti be kvietimo.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Only invited people can join.</source>
+        <translation>Prisijungti gali tik pakviesti žmonės.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>People can ask to join; a member with invite permission must admit them.</source>
+        <translation>Žmonės gali prašyti prisijungti; juos įleisti turi narys, turintis teisę kviesti.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Invited people and eligible members of these rooms can join: %1. The server checks membership and authorization.</source>
+        <translation>Prisijungti gali pakviesti žmonės ir tinkami šių kambarių nariai: %1. Narystę ir įgaliojimus tikrina serveris.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>not known</source>
+        <translation>nežinoma</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Who can join is not known.</source>
+        <translation>Nežinoma, kas gali prisijungti.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Other people can ask to join.</source>
+        <translation>Kiti žmonės gali prašyti prisijungti.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Anyone can read the history, including people outside the room.</source>
+        <translation>Istoriją gali skaityti bet kas, net žmonės už kambario ribų.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Members can read history from when they joined.</source>
+        <translation>Nariai gali skaityti istoriją nuo prisijungimo.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Members can read history from when they were invited.</source>
+        <translation>Nariai gali skaityti istoriją nuo pakvietimo.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Members can read all history, including messages sent before they joined.</source>
+        <translation>Nariai gali skaityti visą istoriją, įskaitant žinutes, išsiųstas prieš jiems prisijungiant.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>History access is not known.</source>
+        <translation>Prieiga prie istorijos nežinoma.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This applies only to this room or Space. Child rooms keep their own rules. Servers enforce access and may have newer state.</source>
+        <translation>Tai taikoma tik šiam kambariui ar erdvei. Vaikiniai kambariai išlaiko savo taisykles. Prieigą užtikrina serveriai, ir juose gali būti naujesnė būsena.</translation>
     </message>
 </context>
 <context>
@@ -29799,12 +30249,12 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     <message>
         <location line="-40"/>
         <location line="+43"/>
-        <location line="+1049"/>
+        <location line="+1050"/>
         <source>Invite</source>
         <translation>Pakviesti</translation>
     </message>
     <message>
-        <location line="-1091"/>
+        <location line="-1092"/>
         <location line="+43"/>
         <source>Kick</source>
         <translation>Pašalinti</translation>
@@ -30030,12 +30480,12 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     </message>
     <message>
         <location line="+16"/>
-        <location line="+395"/>
+        <location line="+396"/>
         <source>Save</source>
         <translation>Išsaugoti</translation>
     </message>
     <message>
-        <location line="-382"/>
+        <location line="-383"/>
         <source>Banner</source>
         <translation>Baneris</translation>
     </message>
@@ -30135,7 +30585,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Paprašyti prisijungti (belsti)</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source>Members of another space can join. Lightning can&apos;t change space-restricted access yet.</source>
         <translation>Gali prisijungti kitos erdvės nariai. Lightning dar negali pakeisti erdvės apribotos prieigos.</translation>
     </message>
@@ -30490,7 +30940,29 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Keisti vaidmenį?</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+38"/>
+        <source>Capabilities in this room or Space only. Moderation can target only members below the new level. Servers enforce permissions and may have newer state.</source>
+        <translation>Galimybės tik šiame kambaryje ar erdvėje. Moderavimas gali paveikti tik narius, esančius žemiau naujo lygio. Leidimus užtikrina serveriai, ir juose gali būti naujesnė būsena.</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>%1: %2 → %3 (level %4)</source>
+        <translation>%1: %2 → %3 (lygis %4)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+1"/>
+        <source>Allowed</source>
+        <translation>Leidžiama</translation>
+    </message>
+    <message>
+        <location line="-1"/>
+        <location line="+1"/>
+        <source>Not allowed</source>
+        <translation>Neleidžiama</translation>
+    </message>
+    <message>
+        <location line="+12"/>
         <source>Set %1 to %2 in this room?</source>
         <translation>Nustatyti %1 vaidmenį „%2“ šiame kambaryje?</translation>
     </message>
@@ -30518,6 +30990,39 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <location line="+1"/>
         <source>You will also no longer be able to change roles or permissions in this space.</source>
         <translation>Taip pat nebegalėsite keisti vaidmenų ar leidimų šioje erdvėje.</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>Review access change</source>
+        <translation>Peržiūrėti prieigos pakeitimą</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>Current audience
+%1
+
+Proposed audience
+%2</source>
+        <translation>Dabartinė auditorija
+%1
+
+Siūloma auditorija
+%2</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Room state changed. Cancel and review again.</source>
+        <translation>Kambario būsena pasikeitė. Atšaukite ir peržiūrėkite dar kartą.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Apply access change</source>
+        <translation>Taikyti prieigos pakeitimą</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Cancel</source>
+        <translation>Atšaukti</translation>
     </message>
 </context>
 <context>

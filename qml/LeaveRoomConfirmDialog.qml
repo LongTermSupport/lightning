@@ -134,6 +134,11 @@ Dialog {
 
     contentItem: ColumnLayout {
         spacing: AppTheme.spacing12
+        RoomLifecycleReview {
+            Layout.fillWidth: true
+            roomId: root.pendingRoomId
+            action: "leave"
+        }
         Label {
             objectName: "leaveRoomConfirmBody"
             Layout.fillWidth: true
