@@ -192,9 +192,11 @@ private Q_SLOTS:
 
     void localTimeCrossesDaylightSavingCorrectly()
     {
-        const QTimeZone vilnius(QByteArrayLiteral("Europe/Vilnius"));
+        QTimeZone vilnius(QByteArrayLiteral("Europe/Vilnius"));
+        // The CI image has no tz database; the same zone as a POSIX rule.
         if (!vilnius.isValid())
-            QSKIP("no tz database on this runner");
+            vilnius = QTimeZone(QByteArrayLiteral("EET-2EEST,M3.5.0/3,M10.5.0/4"));
+        QVERIFY(vilnius.isValid());
         const auto start = [&](const QString &date) {
             return line(ics(fieldsFrom(eventFields(date, QStringLiteral("10:00"), 90), vilnius),
                             QDateTime::currentDateTimeUtc()),
