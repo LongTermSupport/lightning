@@ -4292,7 +4292,7 @@ EXIF orientation: %4</source>
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+359"/>
+        <location filename="../qml/SpaceLobby.qml" line="+366"/>
         <source>%1, collapsed</source>
         <translation>%1, свернуто</translation>
     </message>
@@ -11948,13 +11948,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+424"/>
+        <location line="+426"/>
         <location line="+3"/>
         <source>Dismiss</source>
         <translation>Скрыть</translation>
     </message>
     <message>
-        <location line="-374"/>
+        <location line="-376"/>
         <source>This message&apos;s edits could not be read. Check your connection and try again.</source>
         <translation>Не удалось прочитать правки этого сообщения. Проверьте подключение и повторите попытку.</translation>
     </message>
@@ -11974,7 +11974,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>Удалено правок: %1. Остались ещё — запустите снова.</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
+        <source>Message saved. %1</source>
+        <translation>Сообщение сохранено. %1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Message saved.</source>
         <translation>Сообщение сохранено.</translation>
     </message>
@@ -12088,7 +12093,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>Изменить размер списка комнат</translation>
     </message>
     <message>
-        <location line="+217"/>
+        <location line="+218"/>
         <source>Signing out…</source>
         <translation>Выход…</translation>
     </message>
@@ -20606,6 +20611,111 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
 </context>
 <context>
+    <name>RoomSearchCoverage</name>
+    <message>
+        <location filename="../qml/RoomSearchCoverage.qml" line="+50"/>
+        <source>Type at least %1 characters.</source>
+        <translation>Введите не менее %1 симв.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Indexing another room.</source>
+        <translation>Индексируется другая комната.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>%n indexed message(s) in this room.</source>
+        <translation>
+            <numerusform>В этой комнате проиндексировано %n сообщение.</numerusform>
+            <numerusform>В этой комнате проиндексировано %n сообщения.</numerusform>
+            <numerusform>В этой комнате проиндексировано %n сообщений.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Scanning room history… %n page(s) indexed.</source>
+        <translation>
+            <numerusform>Сканирование истории комнаты… Проиндексирована %n страница.</numerusform>
+            <numerusform>Сканирование истории комнаты… Проиндексировано %n страницы.</numerusform>
+            <numerusform>Сканирование истории комнаты… Проиндексировано %n страниц.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The search index could not be updated. Retry this room after checking local storage.</source>
+        <translation>Не удалось обновить индекс поиска. Проверьте локальное хранилище и повторите попытку для этой комнаты.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The last scan reached the start of the room.</source>
+        <translation>Последнее сканирование дошло до начала комнаты.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The last scan reached its page limit. Older messages may be missing.</source>
+        <translation>Последнее сканирование достигло лимита страниц. Более старые сообщения могут отсутствовать.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Room history could not be read. Retry this room.</source>
+        <translation>Не удалось прочитать историю комнаты. Повторите попытку для этой комнаты.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The last room scan was interrupted.</source>
+        <translation>Последнее сканирование комнаты было прервано.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Some messages are waiting for decryption keys.</source>
+        <translation>Некоторые сообщения ожидают ключей расшифровки.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>No detailed room scan is available.</source>
+        <translation>Подробные данные сканирования комнаты недоступны.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The scan also reached its page limit.</source>
+        <translation>Сканирование также достигло лимита страниц.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>At least %n message(s) could not be decrypted.</source>
+        <translation>
+            <numerusform>Не удалось расшифровать как минимум %n сообщение.</numerusform>
+            <numerusform>Не удалось расшифровать как минимум %n сообщения.</numerusform>
+            <numerusform>Не удалось расшифровать как минимум %n сообщений.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Last scan: %1</source>
+        <translation>Последнее сканирование: %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Oldest message scanned: %1</source>
+        <translation>Самое старое просканированное сообщение: %1</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Cancel indexing</source>
+        <translation>Отменить индексацию</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Retry this room</source>
+        <translation>Повторить для этой комнаты</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Index this room</source>
+        <translation>Проиндексировать эту комнату</translation>
+    </message>
+</context>
+<context>
     <name>RoomUpgradeController</name>
     <message>
         <location filename="../src/app/RoomUpgradeController.cpp" line="+195"/>
@@ -21514,7 +21624,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
 <context>
     <name>SavedMessagesController</name>
     <message>
-        <location filename="../src/app/SavedMessagesController.cpp" line="+251"/>
+        <location filename="../src/app/SavedMessagesController.cpp" line="+254"/>
         <source>Saved messages could not be loaded. Retry.</source>
         <translation>Не удалось загрузить сохраненные сообщения. Повторить попытку.</translation>
     </message>
@@ -21525,20 +21635,34 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Не удалось обновить сохраненные сообщения. Повторить попытку.</translation>
     </message>
     <message>
-        <location line="-80"/>
-        <location line="+156"/>
+        <location line="-81"/>
+        <location line="+164"/>
         <source>Saved messages data is unavailable.</source>
         <translation>Данные сохраненных сообщений недоступны.</translation>
     </message>
     <message>
-        <location line="-123"/>
-        <location line="+228"/>
+        <location line="-130"/>
+        <location line="+261"/>
         <location line="+15"/>
         <source>Saved messages are full. Remove an older item first.</source>
         <translation>Сохраненные сообщения заполнены. Сначала удалите старый элемент.</translation>
     </message>
     <message>
-        <location line="+285"/>
+        <location line="-137"/>
+        <source>Another device restored a removed saved message. Review the list and remove it again if needed.</source>
+        <translation>Другое устройство восстановило удаленное сохраненное сообщение. Проверьте список и при необходимости удалите его снова.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+112"/>
+        <source>Saved message capacity remaining: %n slot(s), %1 bytes.</source>
+        <translation>
+            <numerusform>Оставшийся объем сохраненных сообщений: %n место, %1 байт.</numerusform>
+            <numerusform>Оставшийся объем сохраненных сообщений: %n места, %1 байт.</numerusform>
+            <numerusform>Оставшийся объем сохраненных сообщений: %n мест, %1 байт.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+310"/>
         <source>Sticker</source>
         <translation>Стикер</translation>
     </message>
@@ -21572,12 +21696,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
     <name>SavedMessagesPanel</name>
     <message>
         <location filename="../qml/SavedMessagesPanel.qml" line="+68"/>
-        <location line="+159"/>
+        <location line="+166"/>
         <source>Saved messages</source>
         <translation>Сохраненные сообщения</translation>
     </message>
     <message>
-        <location line="-142"/>
+        <location line="-149"/>
         <source>Undo remove</source>
         <translation>Отменить удаление</translation>
     </message>
@@ -21587,7 +21711,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Закрыть</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+15"/>
         <source>Filter saved messages</source>
         <translation>Фильтровать сохраненные сообщения</translation>
     </message>
@@ -22024,8 +22148,8 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+8"/>
-        <source>No messages found</source>
-        <translation>Сообщения не найдены</translation>
+        <source>No matches in indexed messages</source>
+        <translation>Нет совпадений в проиндексированных сообщениях</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -22176,12 +22300,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Найти в загруженных сообщениях</translation>
     </message>
     <message>
-        <location line="+145"/>
+        <location line="+105"/>
         <source>Open message from %1</source>
         <translation>Открыть сообщение от %1</translation>
     </message>
     <message>
-        <location line="-239"/>
+        <location line="-199"/>
         <source>Search could not be completed.</source>
         <translation>Не удалось выполнить поиск.</translation>
     </message>
@@ -22196,12 +22320,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Введите не менее %1 символов.</translation>
     </message>
     <message>
-        <location line="+175"/>
-        <source>Nothing is indexed yet.</source>
-        <translation>Индекс ещё не создан.</translation>
-    </message>
-    <message>
-        <location line="-172"/>
+        <location line="+3"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>Подходящих сообщений нет. Попробуйте менее частое слово или поищите в локальном индексе.</translation>
     </message>
@@ -22246,32 +22365,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Фильтры по стикерам и упоминаниям не применяются к индексированному поиску. Переключитесь на «Сервер», чтобы использовать их.</translation>
     </message>
     <message>
-        <location line="+24"/>
-        <source>Indexing this room&apos;s history…</source>
-        <translation>Индексация истории этой комнаты…</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>The search index could not be updated. Index this room again to retry.</source>
-        <translation>Не удалось обновить поисковый индекс. Проиндексируйте эту комнату ещё раз, чтобы повторить попытку.</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Searching %1 messages Lightning has indexed, including encrypted ones.</source>
-        <translation>Поиск по %1 сообщениям, которые проиндексировал Lightning, включая зашифрованные.</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Index this room</source>
-        <translation>Проиндексировать эту комнату</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Fetch this room&apos;s older messages so they can be searched</source>
-        <translation>Загрузить старые сообщения этой комнаты, чтобы их можно было искать</translation>
-    </message>
-    <message>
-        <location line="+155"/>
+        <location line="+164"/>
         <source>Load more</source>
         <translation>Загрузить ещё</translation>
     </message>
@@ -29946,43 +30040,63 @@ Current joined members: %5
 </context>
 <context>
     <name>SpaceLobby</name>
-    <message numerus="yes">
-        <location filename="../qml/SpaceLobby.qml" line="-127"/>
-        <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
-        <translation>
-            <numerusform>Показана только первая %n комната этого пространства. Комнату, которой нет в списке, всё равно можно открыть по адресу.</numerusform>
-            <numerusform>Показаны только первые %n комнаты этого пространства. Комнату, которой нет в списке, всё равно можно открыть по адресу.</numerusform>
-            <numerusform>Показаны только первые %n комнат этого пространства. Комнату, которой нет в списке, всё равно можно открыть по адресу.</numerusform>
-        </translation>
-    </message>
     <message>
-        <location line="+3"/>
-        <source>This Space could not be refreshed. Showing the rooms loaded earlier.</source>
-        <translation>Не удалось обновить это пространство. Показаны ранее загруженные комнаты.</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Loading stopped early, so some rooms of this Space may be missing.</source>
-        <translation>Загрузка прервалась раньше времени, поэтому некоторых комнат этого пространства может не быть.</translation>
-    </message>
-    <message>
-        <location line="+12"/>
+        <location filename="../qml/SpaceLobby.qml" line="-116"/>
         <source>Retry</source>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+13"/>
         <source>This Space has too many members to list, and Lightning could not confirm whether some of your direct-message contacts belong to it. Your room list may show direct messages with people outside it.</source>
         <translation>В этом пространстве слишком много участников, чтобы их перечислить, и Lightning не смог подтвердить, входят ли в него некоторые ваши собеседники по личным сообщениям. В списке комнат могут быть личные сообщения с людьми вне его.</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="-30"/>
+        <location line="+73"/>
         <location line="+264"/>
         <source>Loading rooms…</source>
         <translation>Загрузка комнат…</translation>
     </message>
     <message>
-        <location line="-226"/>
+        <location line="-336"/>
+        <source>The rooms of this Space could not be loaded.</source>
+        <translation>Не удалось загрузить комнаты этого пространства.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Only the first %n room(s) of a Space are listed. More rooms may be available.</source>
+        <translation>
+            <numerusform>Показана только первая %n комната пространства. Могут быть доступны и другие комнаты.</numerusform>
+            <numerusform>Показаны только первые %n комнаты пространства. Могут быть доступны и другие комнаты.</numerusform>
+            <numerusform>Показаны только первые %n комнат пространства. Могут быть доступны и другие комнаты.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1"/>
+        <source>The Space listing is incomplete. Showing %n previously loaded room(s) for this Space.</source>
+        <translation>
+            <numerusform>Список пространства неполный. Показана %n ранее загруженная комната этого пространства.</numerusform>
+            <numerusform>Список пространства неполный. Показаны %n ранее загруженные комнаты этого пространства.</numerusform>
+            <numerusform>Список пространства неполный. Показано %n ранее загруженных комнат этого пространства.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Cancel</source>
+        <translation>Отмена</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Find by address</source>
+        <translation>Найти по адресу</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>No loaded rooms or spaces match “%1”.</source>
+        <translation>Нет загруженных комнат или пространств, соответствующих «%1».</translation>
+    </message>
+    <message>
+        <location line="+64"/>
         <source>Rooms</source>
         <translation>Комнаты</translation>
     </message>
@@ -29992,7 +30106,12 @@ Current joined members: %5
         <translation>Дополнительные действия для %1</translation>
     </message>
     <message>
-        <location line="+128"/>
+        <location line="+50"/>
+        <source>No rooms loaded</source>
+        <translation>Комнаты не загружены</translation>
+    </message>
+    <message>
+        <location line="+79"/>
         <source>%1, not joined</source>
         <translation>%1, вы не вступили</translation>
     </message>
@@ -34957,7 +35076,7 @@ Proposed audience
 <context>
     <name>TimelinePane</name>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="+808"/>
+        <location filename="../qml/TimelinePane.qml" line="+809"/>
         <source>Seen by 1 person</source>
         <translation>Прочитал 1 человек</translation>
     </message>
@@ -34976,14 +35095,14 @@ Proposed audience
         </translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-519"/>
+        <location filename="../qml/SpaceLobby.qml" line="-520"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5439"/>
+        <location line="+5408"/>
         <source>Space</source>
         <translation>Пространство</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5438"/>
+        <location filename="../qml/TimelinePane.qml" line="-5407"/>
         <source>Home</source>
         <translation>Главная</translation>
     </message>
@@ -35085,12 +35204,12 @@ Proposed audience
     <message>
         <location line="+16"/>
         <location line="+2"/>
-        <location line="+3898"/>
+        <location line="+3854"/>
         <source>Room information</source>
         <translation>Сведения о комнате</translation>
     </message>
     <message>
-        <location line="-3887"/>
+        <location line="-3843"/>
         <location line="+1"/>
         <source>More room actions</source>
         <translation>Другие действия с комнатой</translation>
@@ -35262,41 +35381,6 @@ Proposed audience
     </message>
     <message>
         <location line="+28"/>
-        <source>Indexing this room&apos;s history…</source>
-        <translation>Индексация истории этой комнаты…</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>The search index could not be updated. Index this room again to retry.</source>
-        <translation>Не удалось обновить поисковый индекс. Проиндексируйте эту комнату ещё раз, чтобы повторить попытку.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Type at least %1 characters.</source>
-        <translation>Введите не менее %1 символов.</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Nothing is indexed yet.</source>
-        <translation>Индекс ещё не создан.</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Searching %1 messages Lightning has indexed, including encrypted ones.</source>
-        <translation>Поиск по %1 сообщениям, которые проиндексировал Lightning, включая зашифрованные.</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Index this room</source>
-        <translation>Проиндексировать эту комнату</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Fetch this room&apos;s older messages so they can be searched</source>
-        <translation>Загрузить старые сообщения этой комнаты, чтобы их можно было искать</translation>
-    </message>
-    <message>
-        <location line="+16"/>
         <source>Indexed</source>
         <translation>Проиндексировано</translation>
     </message>
@@ -35447,7 +35531,7 @@ Proposed audience
         <translation>Переслать…</translation>
     </message>
     <message>
-        <location line="+442"/>
+        <location line="+455"/>
         <source>Room added — waiting for the server to confirm.</source>
         <translation>Комната добавлена — ожидается подтверждение сервера.</translation>
     </message>
@@ -35512,7 +35596,7 @@ Proposed audience
         <translation>Не удалось сохранить баннер (%1).</translation>
     </message>
     <message numerus="yes">
-        <location line="+496"/>
+        <location line="+498"/>
         <source>Remove %n room(s) from %1?</source>
         <translation>
             <numerusform>Удалить %n комнату из %1?</numerusform>
@@ -35536,7 +35620,7 @@ Proposed audience
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/TimelinePane.qml" line="-519"/>
+        <location filename="../qml/TimelinePane.qml" line="-521"/>
         <source>%n joined room(s)</source>
         <comment>joined rooms inside a Space</comment>
         <translation>
@@ -35591,7 +35675,7 @@ Proposed audience
         <translation>Показать баннер</translation>
     </message>
     <message>
-        <location line="+292"/>
+        <location line="+294"/>
         <source>People in this Space</source>
         <translation>Люди в этом пространстве</translation>
     </message>
@@ -35606,7 +35690,7 @@ Proposed audience
         <translation>Показаны первые 60 из %1.</translation>
     </message>
     <message>
-        <location line="-301"/>
+        <location line="-303"/>
         <source>Choose Space avatar</source>
         <translation>Выберите аватар пространства</translation>
     </message>
@@ -35667,17 +35751,17 @@ Proposed audience
     </message>
     <message>
         <location line="+27"/>
-        <location line="+302"/>
+        <location line="+304"/>
         <source>Leave Space</source>
         <translation>Покинуть пространство</translation>
     </message>
     <message>
-        <location line="-296"/>
+        <location line="-298"/>
         <source>Leaving does not remove the rooms inside it.</source>
         <translation>Выход не удаляет комнаты внутри него.</translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-305"/>
+        <location filename="../qml/SpaceLobby.qml" line="-310"/>
         <source>ROOMS AND SPACES</source>
         <translation>КОМНАТЫ И ПРОСТРАНСТВА</translation>
     </message>
@@ -35692,24 +35776,24 @@ Proposed audience
     </message>
     <message>
         <location line="+21"/>
-        <location filename="../qml/TimelinePane.qml" line="+219"/>
+        <location filename="../qml/TimelinePane.qml" line="+221"/>
         <source>Remove</source>
         <translation>Убрать</translation>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+645"/>
+        <location line="+651"/>
         <source>Mark as not suggested</source>
         <translation>Снять пометку «рекомендуется»</translation>
     </message>
     <message>
-        <location line="-644"/>
-        <location line="+645"/>
+        <location line="-650"/>
+        <location line="+651"/>
         <source>Mark as suggested</source>
         <translation>Пометить как рекомендуемую</translation>
     </message>
     <message>
-        <location line="-634"/>
+        <location line="-640"/>
         <source>Search names and descriptions</source>
         <translation>Поиск по названиям и описаниям</translation>
     </message>
@@ -35719,25 +35803,25 @@ Proposed audience
         <translation>Поиск комнат и пространств</translation>
     </message>
     <message>
-        <location line="+58"/>
+        <location line="+64"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>Ни одна комната или пространство не совпадает с «%1».</translation>
     </message>
     <message>
-        <location line="+27"/>
-        <location line="+264"/>
+        <location line="+26"/>
+        <location line="+265"/>
         <source>No rooms yet</source>
         <translation>Комнат пока нет</translation>
     </message>
     <message>
-        <location line="-255"/>
+        <location line="-256"/>
         <source>Create a room here or add one of your existing rooms to organise it under this Space.</source>
         <translation>Создайте комнату здесь или добавьте одну из существующих, чтобы организовать её в этом пространстве.</translation>
     </message>
     <message>
-        <location line="+298"/>
-        <location filename="../qml/TimelinePane.qml" line="-6744"/>
-        <location line="+6921"/>
+        <location line="+299"/>
+        <location filename="../qml/TimelinePane.qml" line="-6715"/>
+        <location line="+6892"/>
         <source>Room</source>
         <translation>Комната</translation>
     </message>
@@ -35799,21 +35883,21 @@ Proposed audience
         <translation>Комнаты продолжат существовать, и вы останетесь в них — они лишь покинут список этого пространства.</translation>
     </message>
     <message>
-        <location line="-1455"/>
+        <location line="-1470"/>
         <location line="+209"/>
-        <location line="+1260"/>
+        <location line="+1275"/>
         <location line="+77"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location line="-6036"/>
+        <location line="-6007"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation>Посмотреть профиль</translation>
     </message>
     <message>
-        <location line="+5258"/>
+        <location line="+5227"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation>Изображения (*.png *.jpg *.jpeg *.gif *.webp *.svg)</translation>
     </message>
@@ -35828,7 +35912,7 @@ Proposed audience
         <translation>Изменить это могут только администраторы пространства.</translation>
     </message>
     <message>
-        <location line="+349"/>
+        <location line="+351"/>
         <source>Leave %1?</source>
         <translation>Покинуть %1?</translation>
     </message>
@@ -35890,7 +35974,7 @@ Proposed audience
         <translation>Перетащите файлы, чтобы прикрепить</translation>
     </message>
     <message>
-        <location line="-5484"/>
+        <location line="-5455"/>
         <source>Join space</source>
         <translation>Присоединиться к пространству</translation>
     </message>

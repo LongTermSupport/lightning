@@ -117,6 +117,25 @@ Rectangle {
     }
 
 private Q_SLOTS:
+    void filterMissExplainsPartialCoverage()
+    {
+        H h;
+        QVERIFY(build(h));
+        h.lobby->setProperty("sections", QVariantList{});
+        h.lobby->setProperty("filterText", QStringLiteral("Missing"));
+        h.lobby->setProperty("coverage", QStringLiteral("limit"));
+        const auto labels = all(h.lobby, "spaceLobbyNoMatches");
+        QCOMPARE(labels.size(), 1);
+        QVERIFY(labels.first()->property("text").toString().contains(QStringLiteral("loaded")));
+        const auto buttons = all(h.lobby, "spaceLobbyPartialRetry");
+        QCOMPARE(buttons.size(), 1);
+        QSignalSpy address(h.lobby, SIGNAL(addressRequested()));
+        QVERIFY(QMetaObject::invokeMethod(buttons.first(), "clicked"));
+        QCOMPARE(address.count(), 1);
+        h.lobby->setProperty("coverage", QString());
+        QVERIFY(!labels.first()->property("text").toString().contains(QStringLiteral("loaded")));
+    }
+
     void aSpaceTooLargeToCheckSaysWhyItsPeopleAreUnscoped()
     {
         H h;

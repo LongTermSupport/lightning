@@ -117,6 +117,10 @@ class DeepIndexClient final : public MockMatrixClient
 public:
     quint64 answer = 0;
     int asked = 0;
+    quint64 coverageOp = 0;
+    quint64 cancelled = 0;
+    quint64 requestRoomSearchCoverage(const QString &) override { return ++coverageOp; }
+    void cancelRoomSearchIndex(quint64 op) override { cancelled = op; }
 
     quint64 deepenSearchIndex(const QString &) override
     {
@@ -1005,6 +1009,38 @@ private Q_SLOTS:
         QCOMPARE(model.data(model.index(0, 0),
                             MessageSearchController::FilenameRole).toString(),
                  QStringLiteral("IMG_2041.png"));
+    }
+
+    void changingRoomsKeepsTheScanTargetAndRejectsStaleCoverage()
+    {
+        DeepIndexClient client;
+        QVERIFY(login(client));
+        MessageSearchController model;
+        model.setClient(&client);
+        const QString first = QStringLiteral("!first:mock.local");
+        const QString second = QStringLiteral("!second:mock.local");
+        model.setRoomId(first);
+        model.refreshRoomCoverage();
+        const auto old = client.coverageOp;
+        client.answer = 45;
+        model.indexRoomHistory(first);
+        model.setRoomId(second);
+        model.refreshRoomCoverage();
+        const QVariantMap receipt{{QStringLiteral("state"), QStringLiteral("capped")}};
+        Q_EMIT client.roomSearchCoverageReceived(old, first, receipt);
+        QVERIFY(model.roomCoverage().isEmpty());
+        Q_EMIT client.roomSearchCoverageReceived(client.coverageOp, second, receipt);
+        QCOMPARE(model.roomCoverage(), receipt);
+        QCOMPARE(model.indexingRoomId(), first);
+        model.cancelRoomIndex();
+        QCOMPARE(client.cancelled, quint64(45));
+        Q_EMIT client.searchIndexDeepened(45, false, first, 0, false, 0, 0, QStringLiteral("local_storage"));
+        QVERIFY(!model.indexWriteFailed());
+        model.setRoomId(first);
+        QVERIFY(model.indexWriteFailed());
+        Q_EMIT client.loggedOut();
+        QVERIFY(model.roomCoverage().isEmpty());
+        QVERIFY(!model.indexWriteFailed());
     }
 
     void aRefusedRoomIndexEndsAtOnceAndCanBeRetried()

@@ -62,6 +62,7 @@ Rectangle {
     signal newConversationRequested(string mode, var options)
     signal searchAllRoomsRequested(string query)
     signal discoverRoomsRequested()
+    signal discoverAddressRequested()
 
     property var currentRoom: ({})
     property int spacesTick: 0
@@ -2245,57 +2246,13 @@ Rectangle {
                 }
             }
 
-            RowLayout {
+            RoomSearchCoverage {
                 objectName: "findLocalCoverageRow"
                 Layout.fillWidth: true
                 visible: root.findHistoryMode
                          && app.messageSearch.source === "local"
-                spacing: AppTheme.spacingS
-                Label {
-                    objectName: "findLocalCoverage"
-                    Layout.fillWidth: true
-                    wrapMode: Text.WordWrap
-                    textFormat: Text.PlainText
-                    color: AppTheme.textMuted
-                    font.family: AppTheme.uiFont
-                    font.pixelSize: AppTheme.scaled(AppTheme.textMeta)
-                    text: {
-                        if (app.messageSearch.indexing)
-                            return qsTr("Indexing this room's history…")
-                        if (app.messageSearch.indexWriteFailed)
-                            return qsTr("The search index could not be updated. "
-                                        + "Index this room again to retry.")
-                        if (app.messageSearch.state === "too_short")
-                            return qsTr("Type at least %1 characters.")
-                                .arg(app.messageSearch.minLocalChars)
-                        var n = app.messageSearch.indexedMessages
-                        if (n <= 0 && app.messageSearch.count > 0)
-                            return ""
-                        if (n <= 0)
-                            return qsTr("Nothing is indexed yet.")
-                        return qsTr("Searching %1 messages Lightning has "
-                                    + "indexed, including encrypted ones.")
-                                   .arg(n)
-                    }
-                }
-                AppBusyIndicator {
-                    visible: app.messageSearch.indexing
-                    implicitWidth: 16
-                    implicitHeight: 16
-                }
-                AppButton {
-                    objectName: "findIndexRoomButton"
-                    text: qsTr("Index this room")
-                    kind: "ghost"
-                    enabled: !app.messageSearch.indexing
-                             && app.currentRoomId !== ""
-                    ToolTip.text: qsTr("Fetch this room's older messages so "
-                                       + "they can be searched")
-                    ToolTip.visible: hovered
-                    ToolTip.delay: 500
-                    onClicked: app.messageSearch.indexRoomHistory(
-                                   app.currentRoomId)
-                }
+                labelName: "findLocalCoverage"
+                actionName: "findIndexRoomButton"
             }
             SegmentedControl {
                 objectName: "findSourceToggle"
@@ -6124,6 +6081,7 @@ Rectangle {
             property var hierarchyBySpace: ({})
             property bool homeLoading: false
             property string homeCoverage: ""
+            property string coverageSpaceId: ""
             property int homeLoadedCount: 0
             property var loadingIds: ({})
             property var unjoinedChildren: []
@@ -6218,14 +6176,26 @@ Rectangle {
             function refreshUnjoined() {
                 var byspace = {}
                 var loading = {}
+                var partialId = ""
+                var reason = ""
+                var partialPriority = 0
                 var out = []
                 if (spaceId !== "" && app.discovery.supported) {
                     var ids = [spaceId].concat(lobbySubspaceIds)
                     for (var i = 0; i < ids.length; ++i) {
                         var rows = app.discovery.spaceChildren(ids[i])
                         byspace[ids[i]] = rows
-                        if (app.discovery.spaceChildrenState(ids[i])
-                                === "loading")
+                        var state = app.discovery.spaceChildrenState(ids[i])
+                        var gap = app.discovery.spaceChildrenCoverage(ids[i])
+                        if (state === "loading" || state === "failed")
+                            gap = state
+                        var priority = gap === "loading" ? 3 : gap === "limit" ? 1 : gap ? 2 : 0
+                        if (priority > partialPriority) {
+                            partialId = ids[i]
+                            reason = gap
+                            partialPriority = priority
+                        }
+                        if (state === "loading")
                             loading[ids[i]] = true
                         for (var j = 0; j < rows.length; ++j) {
                             if (rows[j].membership !== "joined")
@@ -6236,9 +6206,9 @@ Rectangle {
                 hierarchyBySpace = byspace
                 loadingIds = loading
                 homeLoading = loading[spaceId] === true
-                homeCoverage = spaceId !== "" && app.discovery.supported
-                    ? app.discovery.spaceChildrenCoverage(spaceId) : ""
-                homeLoadedCount = (byspace[spaceId] || []).length
+                coverageSpaceId = partialId
+                homeCoverage = reason
+                homeLoadedCount = (byspace[partialId] || []).length
                 unjoinedChildren = out
                 scheduleRebuild()
             }
@@ -6948,7 +6918,9 @@ Rectangle {
                         homeLoading: spaceHome.homeLoading
                         coverage: spaceHome.homeCoverage
                         loadedCount: spaceHome.homeLoadedCount
-                        onRetryRequested: spaceHome.requestHierarchy()
+                        onRetryRequested: app.discovery.refreshSpaceChildren(spaceHome.coverageSpaceId)
+                        onCancelRequested: app.discovery.cancelSpaceChildren(spaceHome.coverageSpaceId)
+                        onAddressRequested: root.discoverAddressRequested()
                         loadingIds: spaceHome.loadingIds
                         onFilterEdited: (text) => {
                             spaceHome.childFilter = text

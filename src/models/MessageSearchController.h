@@ -45,6 +45,8 @@ class MessageSearchController : public QAbstractListModel
     Q_PROPERTY(qint64 indexedMessages READ indexedMessages
                    NOTIFY indexStatsChanged)
     Q_PROPERTY(qint64 indexedRooms READ indexedRooms NOTIFY indexStatsChanged)
+    Q_PROPERTY(QVariantMap roomCoverage READ roomCoverage NOTIFY roomCoverageChanged)
+    Q_PROPERTY(QString indexingRoomId READ indexingRoomId NOTIFY indexingChanged)
     Q_PROPERTY(bool indexing READ indexing NOTIFY indexingChanged)
     Q_PROPERTY(bool indexWriteFailed READ indexWriteFailed NOTIFY indexingChanged)
     /// A sweep for newly arrived messages is in flight.
@@ -120,8 +122,10 @@ public:
     bool localAvailable() const;
     qint64 indexedMessages() const { return m_indexedMessages; }
     qint64 indexedRooms() const { return m_indexedRooms; }
+    QVariantMap roomCoverage() const { return m_roomCoverage; }
+    QString indexingRoomId() const { return m_deepRoom; }
     bool indexing() const { return m_deepOp != 0; }
-    bool indexWriteFailed() const { return m_indexWriteFailed; }
+    bool indexWriteFailed() const { return !m_failedRoom.isEmpty() && m_failedRoom == m_roomId; }
     bool sweeping() const { return m_sweepOp != 0; }
     int minLocalChars() const { return m_minLocalChars; }
     QString indexAllState() const { return m_indexAllState; }
@@ -140,6 +144,8 @@ public:
     qint64 indexAllFinishedMs() const { return m_indexAllFinishedMs; }
 
     Q_INVOKABLE void refreshIndexStats();
+    Q_INVOKABLE void refreshRoomCoverage();
+    Q_INVOKABLE void cancelRoomIndex();
     Q_INVOKABLE void sweepIndex();
     Q_INVOKABLE void indexRoomHistory(const QString &roomId);
     Q_INVOKABLE bool clearIndex();
@@ -171,6 +177,7 @@ Q_SIGNALS:
     void filtersChanged();
     void sourceChanged();
     void indexStatsChanged();
+    void roomCoverageChanged();
     void indexingChanged();
     void indexAllChanged();
     void indexAllOfferChanged();
@@ -226,8 +233,11 @@ private:
     QString m_source = QStringLiteral("local");
     bool m_scanLimited = false;
     qint64 m_indexedMessages = 0;
-    bool m_indexWriteFailed = false;
+    QString m_failedRoom;
     qint64 m_indexedRooms = 0;
+    QVariantMap m_roomCoverage;
+    quint64 m_coverageOp = 0;
+    QString m_deepRoom;
     quint64 m_deepOp = 0;
     quint64 m_sweepOp = 0;
     int m_minLocalChars = 0;

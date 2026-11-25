@@ -4382,7 +4382,7 @@ EXIF orientation: %4</source>
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+359"/>
+        <location filename="../qml/SpaceLobby.qml" line="+366"/>
         <source>%1, collapsed</source>
         <translation>%1، تم تصغيره</translation>
     </message>
@@ -12104,13 +12104,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+424"/>
+        <location line="+426"/>
         <location line="+3"/>
         <source>Dismiss</source>
         <translation>إخفاء</translation>
     </message>
     <message>
-        <location line="-374"/>
+        <location line="-376"/>
         <source>This message&apos;s edits could not be read. Check your connection and try again.</source>
         <translation>تعذّرت قراءة تعديلات هذه الرسالة. تحقّق من اتصالك وأعد المحاولة.</translation>
     </message>
@@ -12130,7 +12130,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>أُزيل %1 تعديلًا. ما زال هناك المزيد — شغّلها مجددًا.</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
+        <source>Message saved. %1</source>
+        <translation>تم حفظ الرسالة. %1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Message saved.</source>
         <translation>تم حفظ الرسالة.</translation>
     </message>
@@ -12244,7 +12249,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>تغيير حجم قائمة الغرف</translation>
     </message>
     <message>
-        <location line="+217"/>
+        <location line="+218"/>
         <source>Signing out…</source>
         <translation>جارٍ تسجيل الخروج…</translation>
     </message>
@@ -20885,6 +20890,120 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
 </context>
 <context>
+    <name>RoomSearchCoverage</name>
+    <message>
+        <location filename="../qml/RoomSearchCoverage.qml" line="+50"/>
+        <source>Type at least %1 characters.</source>
+        <translation>اكتب ما لا يقل عن %1 من الأحرف.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Indexing another room.</source>
+        <translation>تجري فهرسة غرفة أخرى.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>%n indexed message(s) in this room.</source>
+        <translation>
+            <numerusform>لا توجد رسائل مفهرسة في هذه الغرفة (%n).</numerusform>
+            <numerusform>رسالة مفهرسة واحدة (%n) في هذه الغرفة.</numerusform>
+            <numerusform>رسالتان مفهرستان (%n) في هذه الغرفة.</numerusform>
+            <numerusform>%n رسائل مفهرسة في هذه الغرفة.</numerusform>
+            <numerusform>%n رسالة مفهرسة في هذه الغرفة.</numerusform>
+            <numerusform>%n رسالة مفهرسة في هذه الغرفة.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Scanning room history… %n page(s) indexed.</source>
+        <translation>
+            <numerusform>جارٍ فحص سجل الغرفة… لم تُفهرس أي صفحة (%n).</numerusform>
+            <numerusform>جارٍ فحص سجل الغرفة… فُهرست صفحة واحدة (%n).</numerusform>
+            <numerusform>جارٍ فحص سجل الغرفة… فُهرست صفحتان (%n).</numerusform>
+            <numerusform>جارٍ فحص سجل الغرفة… فُهرست %n صفحات.</numerusform>
+            <numerusform>جارٍ فحص سجل الغرفة… فُهرست %n صفحة.</numerusform>
+            <numerusform>جارٍ فحص سجل الغرفة… فُهرست %n صفحة.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The search index could not be updated. Retry this room after checking local storage.</source>
+        <translation>تعذّر تحديث فهرس البحث. تحقق من التخزين المحلي ثم أعد المحاولة لهذه الغرفة.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The last scan reached the start of the room.</source>
+        <translation>وصل الفحص الأخير إلى بداية الغرفة.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The last scan reached its page limit. Older messages may be missing.</source>
+        <translation>بلغ الفحص الأخير حدّ الصفحات. قد تكون بعض الرسائل الأقدم مفقودة.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Room history could not be read. Retry this room.</source>
+        <translation>تعذّرت قراءة سجل الغرفة. أعد المحاولة لهذه الغرفة.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The last room scan was interrupted.</source>
+        <translation>انقطع الفحص الأخير للغرفة.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Some messages are waiting for decryption keys.</source>
+        <translation>بعض الرسائل بانتظار مفاتيح فك التعمية.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>No detailed room scan is available.</source>
+        <translation>لا يتوفر فحص مفصّل للغرفة.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The scan also reached its page limit.</source>
+        <translation>بلغ الفحص أيضًا حدّ الصفحات.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>At least %n message(s) could not be decrypted.</source>
+        <translation>
+            <numerusform>تعذّر فك تعمية %n رسالة على الأقل.</numerusform>
+            <numerusform>تعذّر فك تعمية رسالة واحدة (%n) على الأقل.</numerusform>
+            <numerusform>تعذّر فك تعمية رسالتين (%n) على الأقل.</numerusform>
+            <numerusform>تعذّر فك تعمية %n رسائل على الأقل.</numerusform>
+            <numerusform>تعذّر فك تعمية %n رسالة على الأقل.</numerusform>
+            <numerusform>تعذّر فك تعمية %n رسالة على الأقل.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Last scan: %1</source>
+        <translation>آخر فحص: %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Oldest message scanned: %1</source>
+        <translation>أقدم رسالة تم فحصها: %1</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Cancel indexing</source>
+        <translation>إلغاء الفهرسة</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Retry this room</source>
+        <translation>إعادة المحاولة لهذه الغرفة</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Index this room</source>
+        <translation>فهرسة هذه الغرفة</translation>
+    </message>
+</context>
+<context>
     <name>RoomUpgradeController</name>
     <message>
         <location filename="../src/app/RoomUpgradeController.cpp" line="+195"/>
@@ -21808,7 +21927,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
 <context>
     <name>SavedMessagesController</name>
     <message>
-        <location filename="../src/app/SavedMessagesController.cpp" line="+251"/>
+        <location filename="../src/app/SavedMessagesController.cpp" line="+254"/>
         <source>Saved messages could not be loaded. Retry.</source>
         <translation>لا يمكن تحميل الرسائل المحفوظة. أعد المحاولة.</translation>
     </message>
@@ -21819,20 +21938,37 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>لا يمكن تحديث الرسائل المحفوظة. أعد المحاولة.</translation>
     </message>
     <message>
-        <location line="-80"/>
-        <location line="+156"/>
+        <location line="-81"/>
+        <location line="+164"/>
         <source>Saved messages data is unavailable.</source>
         <translation>بيانات الرسائل المحفوظة غير متوفرة.</translation>
     </message>
     <message>
-        <location line="-123"/>
-        <location line="+228"/>
+        <location line="-130"/>
+        <location line="+261"/>
         <location line="+15"/>
         <source>Saved messages are full. Remove an older item first.</source>
         <translation>الرسائل المحفوظة ممتلئة. قم بإزالة العنصر الأقدم أولاً.</translation>
     </message>
     <message>
-        <location line="+285"/>
+        <location line="-137"/>
+        <source>Another device restored a removed saved message. Review the list and remove it again if needed.</source>
+        <translation>استعاد جهاز آخر رسالة محفوظة كانت قد أُزيلت. راجع القائمة وأزلها مرة أخرى إن لزم الأمر.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+112"/>
+        <source>Saved message capacity remaining: %n slot(s), %1 bytes.</source>
+        <translation>
+            <numerusform>السعة المتبقية للرسائل المحفوظة: لا خانات (%n)، %1 بايت.</numerusform>
+            <numerusform>السعة المتبقية للرسائل المحفوظة: خانة واحدة (%n)، %1 بايت.</numerusform>
+            <numerusform>السعة المتبقية للرسائل المحفوظة: خانتان (%n)، %1 بايت.</numerusform>
+            <numerusform>السعة المتبقية للرسائل المحفوظة: %n خانات، %1 بايت.</numerusform>
+            <numerusform>السعة المتبقية للرسائل المحفوظة: %n خانة، %1 بايت.</numerusform>
+            <numerusform>السعة المتبقية للرسائل المحفوظة: %n خانة، %1 بايت.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+310"/>
         <source>Sticker</source>
         <translation>ملصق</translation>
     </message>
@@ -21866,12 +22002,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
     <name>SavedMessagesPanel</name>
     <message>
         <location filename="../qml/SavedMessagesPanel.qml" line="+68"/>
-        <location line="+159"/>
+        <location line="+166"/>
         <source>Saved messages</source>
         <translation>الرسائل المحفوظة</translation>
     </message>
     <message>
-        <location line="-142"/>
+        <location line="-149"/>
         <source>Undo remove</source>
         <translation>التراجع عن الإزالة</translation>
     </message>
@@ -21881,7 +22017,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>إغلاق</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+15"/>
         <source>Filter saved messages</source>
         <translation>تصفية الرسائل المحفوظة</translation>
     </message>
@@ -22333,8 +22469,8 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+8"/>
-        <source>No messages found</source>
-        <translation>لم يُعثر على رسائل</translation>
+        <source>No matches in indexed messages</source>
+        <translation>لا توجد نتائج مطابقة في الرسائل المفهرسة</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -22485,12 +22621,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>البحث في الرسائل المحمّلة</translation>
     </message>
     <message>
-        <location line="+145"/>
+        <location line="+105"/>
         <source>Open message from %1</source>
         <translation>فتح رسالة من %1</translation>
     </message>
     <message>
-        <location line="-239"/>
+        <location line="-199"/>
         <source>Search could not be completed.</source>
         <translation>تعذّر إتمام البحث.</translation>
     </message>
@@ -22505,12 +22641,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>اكتب %1 من الأحرف على الأقل.</translation>
     </message>
     <message>
-        <location line="+175"/>
-        <source>Nothing is indexed yet.</source>
-        <translation>لم يُفهرس شيء بعد.</translation>
-    </message>
-    <message>
-        <location line="-172"/>
+        <location line="+3"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>لا رسائل مطابقة. جرّب كلمة أقل شيوعًا، أو ابحث في الفهرس المحلي.</translation>
     </message>
@@ -22555,32 +22686,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>لا تُطبَّق عوامل تصفية الملصقات والإشارات على البحث المفهرس. انتقل إلى «الخادوم» لاستخدامها.</translation>
     </message>
     <message>
-        <location line="+24"/>
-        <source>Indexing this room&apos;s history…</source>
-        <translation>جارٍ فهرسة سجلّ هذه الغرفة…</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>The search index could not be updated. Index this room again to retry.</source>
-        <translation>تعذّر تحديث فهرس البحث. أعد فهرسة هذه الغرفة للمحاولة مرة أخرى.</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Searching %1 messages Lightning has indexed, including encrypted ones.</source>
-        <translation>جارٍ البحث في %1 من الرسائل التي فهرسها Lightning، ومنها المعمّاة.</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Index this room</source>
-        <translation>فهرسة هذه الغرفة</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Fetch this room&apos;s older messages so they can be searched</source>
-        <translation>جلب الرسائل الأقدم لهذه الغرفة ليمكن البحث فيها</translation>
-    </message>
-    <message>
-        <location line="+155"/>
+        <location line="+164"/>
         <source>Load more</source>
         <translation>تحميل المزيد</translation>
     </message>
@@ -30309,46 +30415,69 @@ Current joined members: %5
 </context>
 <context>
     <name>SpaceLobby</name>
-    <message numerus="yes">
-        <location filename="../qml/SpaceLobby.qml" line="-127"/>
-        <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
-        <translation>
-            <numerusform>لا تُعرض أي غرفة من هذه المساحة. لا يزال بالإمكان فتح الغرفة غير المدرجة بعنوانها.</numerusform>
-            <numerusform>تُعرض أول غرفة فقط من هذه المساحة. لا يزال بالإمكان فتح الغرفة غير المدرجة بعنوانها.</numerusform>
-            <numerusform>تُعرض أول غرفتين فقط من هذه المساحة. لا يزال بالإمكان فتح الغرفة غير المدرجة بعنوانها.</numerusform>
-            <numerusform>تُعرض أول %n غرف فقط من هذه المساحة. لا يزال بالإمكان فتح الغرفة غير المدرجة بعنوانها.</numerusform>
-            <numerusform>تُعرض أول %n غرفة فقط من هذه المساحة. لا يزال بالإمكان فتح الغرفة غير المدرجة بعنوانها.</numerusform>
-            <numerusform>تُعرض أول %n غرفة فقط من هذه المساحة. لا يزال بالإمكان فتح الغرفة غير المدرجة بعنوانها.</numerusform>
-        </translation>
-    </message>
     <message>
-        <location line="+3"/>
-        <source>This Space could not be refreshed. Showing the rooms loaded earlier.</source>
-        <translation>تعذّر تحديث هذه المساحة. تُعرض الغرف المحمّلة سابقًا.</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Loading stopped early, so some rooms of this Space may be missing.</source>
-        <translation>توقف التحميل مبكرًا، لذا قد تكون بعض غرف هذه المساحة مفقودة.</translation>
-    </message>
-    <message>
-        <location line="+12"/>
+        <location filename="../qml/SpaceLobby.qml" line="-116"/>
         <source>Retry</source>
         <translation>إعادة المحاولة</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+13"/>
         <source>This Space has too many members to list, and Lightning could not confirm whether some of your direct-message contacts belong to it. Your room list may show direct messages with people outside it.</source>
         <translation>هذه المساحة فيها أعضاء أكثر من أن يُدرَجوا، ولم يتمكن Lightning من التأكد مما إذا كان بعض جهات اتصال رسائلك المباشرة ينتمون إليها. قد تعرض قائمة غرفك رسائل مباشرة مع أشخاص من خارجها.</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="-30"/>
+        <location line="+73"/>
         <location line="+264"/>
         <source>Loading rooms…</source>
         <translation>جارٍ تحميل الغرف…</translation>
     </message>
     <message>
-        <location line="-226"/>
+        <location line="-336"/>
+        <source>The rooms of this Space could not be loaded.</source>
+        <translation>تعذّر تحميل غرف هذا الفضاء.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Only the first %n room(s) of a Space are listed. More rooms may be available.</source>
+        <translation>
+            <numerusform>لا تُعرض أي غرف من الفضاء (%n). قد تتوفر غرف أخرى.</numerusform>
+            <numerusform>تُعرض الغرفة الأولى فقط (%n) من الفضاء. قد تتوفر غرف أخرى.</numerusform>
+            <numerusform>تُعرض أول غرفتين فقط (%n) من الفضاء. قد تتوفر غرف أخرى.</numerusform>
+            <numerusform>تُعرض أول %n غرف فقط من الفضاء. قد تتوفر غرف أخرى.</numerusform>
+            <numerusform>تُعرض أول %n غرفة فقط من الفضاء. قد تتوفر غرف أخرى.</numerusform>
+            <numerusform>تُعرض أول %n غرفة فقط من الفضاء. قد تتوفر غرف أخرى.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1"/>
+        <source>The Space listing is incomplete. Showing %n previously loaded room(s) for this Space.</source>
+        <translation>
+            <numerusform>قائمة الفضاء غير مكتملة. لا توجد غرف محمّلة سابقًا لهذا الفضاء (%n).</numerusform>
+            <numerusform>قائمة الفضاء غير مكتملة. تُعرض غرفة واحدة (%n) محمّلة سابقًا لهذا الفضاء.</numerusform>
+            <numerusform>قائمة الفضاء غير مكتملة. تُعرض غرفتان (%n) محمّلتان سابقًا لهذا الفضاء.</numerusform>
+            <numerusform>قائمة الفضاء غير مكتملة. تُعرض %n غرف محمّلة سابقًا لهذا الفضاء.</numerusform>
+            <numerusform>قائمة الفضاء غير مكتملة. تُعرض %n غرفة محمّلة سابقًا لهذا الفضاء.</numerusform>
+            <numerusform>قائمة الفضاء غير مكتملة. تُعرض %n غرفة محمّلة سابقًا لهذا الفضاء.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Cancel</source>
+        <translation>إلغاء</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Find by address</source>
+        <translation>البحث بالعنوان</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>No loaded rooms or spaces match “%1”.</source>
+        <translation>لا توجد غرف أو فضاءات محمّلة تطابق «%1».</translation>
+    </message>
+    <message>
+        <location line="+64"/>
         <source>Rooms</source>
         <translation>الغرف</translation>
     </message>
@@ -30358,7 +30487,12 @@ Current joined members: %5
         <translation>المزيد من الإجراءات لـ %1</translation>
     </message>
     <message>
-        <location line="+128"/>
+        <location line="+50"/>
+        <source>No rooms loaded</source>
+        <translation>لم تُحمَّل أي غرف</translation>
+    </message>
+    <message>
+        <location line="+79"/>
         <source>%1, not joined</source>
         <translation>%1، غير منضم</translation>
     </message>
@@ -35479,7 +35613,7 @@ Proposed audience
 <context>
     <name>TimelinePane</name>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="+808"/>
+        <location filename="../qml/TimelinePane.qml" line="+809"/>
         <source>Seen by 1 person</source>
         <translation>قرأها شخص واحد</translation>
     </message>
@@ -35501,14 +35635,14 @@ Proposed audience
         </translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-519"/>
+        <location filename="../qml/SpaceLobby.qml" line="-520"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5439"/>
+        <location line="+5408"/>
         <source>Space</source>
         <translation>فضاء</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5438"/>
+        <location filename="../qml/TimelinePane.qml" line="-5407"/>
         <source>Home</source>
         <translation>الرئيسية</translation>
     </message>
@@ -35610,12 +35744,12 @@ Proposed audience
     <message>
         <location line="+16"/>
         <location line="+2"/>
-        <location line="+3898"/>
+        <location line="+3854"/>
         <source>Room information</source>
         <translation>معلومات الغرفة</translation>
     </message>
     <message>
-        <location line="-3887"/>
+        <location line="-3843"/>
         <location line="+1"/>
         <source>More room actions</source>
         <translation>المزيد من إجراءات الغرفة</translation>
@@ -35787,41 +35921,6 @@ Proposed audience
     </message>
     <message>
         <location line="+28"/>
-        <source>Indexing this room&apos;s history…</source>
-        <translation>جارٍ فهرسة سجلّ هذه الغرفة…</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>The search index could not be updated. Index this room again to retry.</source>
-        <translation>تعذّر تحديث فهرس البحث. أعد فهرسة هذه الغرفة للمحاولة مرة أخرى.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Type at least %1 characters.</source>
-        <translation>اكتب %1 من الأحرف على الأقل.</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Nothing is indexed yet.</source>
-        <translation>لم يُفهرس شيء بعد.</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Searching %1 messages Lightning has indexed, including encrypted ones.</source>
-        <translation>جارٍ البحث في %1 من الرسائل التي فهرسها Lightning، ومنها المعمّاة.</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Index this room</source>
-        <translation>فهرسة هذه الغرفة</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Fetch this room&apos;s older messages so they can be searched</source>
-        <translation>جلب الرسائل الأقدم لهذه الغرفة ليمكن البحث فيها</translation>
-    </message>
-    <message>
-        <location line="+16"/>
         <source>Indexed</source>
         <translation>مفهرس</translation>
     </message>
@@ -35975,7 +36074,7 @@ Proposed audience
         <translation>إعادة توجيه…</translation>
     </message>
     <message>
-        <location line="+442"/>
+        <location line="+455"/>
         <source>Room added — waiting for the server to confirm.</source>
         <translation>أُضيفت الغرفة — في انتظار تأكيد الخادوم.</translation>
     </message>
@@ -36040,7 +36139,7 @@ Proposed audience
         <translation>تعذّر حفظ البانر (%1).</translation>
     </message>
     <message numerus="yes">
-        <location line="+496"/>
+        <location line="+498"/>
         <source>Remove %n room(s) from %1?</source>
         <translation>
             <numerusform>إزالة %n غرفة من %1؟</numerusform>
@@ -36070,7 +36169,7 @@ Proposed audience
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/TimelinePane.qml" line="-519"/>
+        <location filename="../qml/TimelinePane.qml" line="-521"/>
         <source>%n joined room(s)</source>
         <comment>joined rooms inside a Space</comment>
         <translation>
@@ -36128,7 +36227,7 @@ Proposed audience
         <translation>عرض لافتة</translation>
     </message>
     <message>
-        <location line="+292"/>
+        <location line="+294"/>
         <source>People in this Space</source>
         <translation>الأشخاص في هذا الفضاء</translation>
     </message>
@@ -36143,7 +36242,7 @@ Proposed audience
         <translation>تُعرض أول 60 من %1.</translation>
     </message>
     <message>
-        <location line="-301"/>
+        <location line="-303"/>
         <source>Choose Space avatar</source>
         <translation>اختر صورة الفضاء الرمزية</translation>
     </message>
@@ -36204,17 +36303,17 @@ Proposed audience
     </message>
     <message>
         <location line="+27"/>
-        <location line="+302"/>
+        <location line="+304"/>
         <source>Leave Space</source>
         <translation>مغادرة الفضاء</translation>
     </message>
     <message>
-        <location line="-296"/>
+        <location line="-298"/>
         <source>Leaving does not remove the rooms inside it.</source>
         <translation>المغادرة لا تزيل الغرف التي بداخله.</translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-305"/>
+        <location filename="../qml/SpaceLobby.qml" line="-310"/>
         <source>ROOMS AND SPACES</source>
         <translation>الغرف والفضاءات</translation>
     </message>
@@ -36232,24 +36331,24 @@ Proposed audience
     </message>
     <message>
         <location line="+21"/>
-        <location filename="../qml/TimelinePane.qml" line="+219"/>
+        <location filename="../qml/TimelinePane.qml" line="+221"/>
         <source>Remove</source>
         <translation>إزالة</translation>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+645"/>
+        <location line="+651"/>
         <source>Mark as not suggested</source>
         <translation>تعليمها كغير مقترحة</translation>
     </message>
     <message>
-        <location line="-644"/>
-        <location line="+645"/>
+        <location line="-650"/>
+        <location line="+651"/>
         <source>Mark as suggested</source>
         <translation>تعليمها كمقترحة</translation>
     </message>
     <message>
-        <location line="-634"/>
+        <location line="-640"/>
         <source>Search names and descriptions</source>
         <translation>ابحث في الأسماء والأوصاف</translation>
     </message>
@@ -36259,25 +36358,25 @@ Proposed audience
         <translation>البحث في الغرف والفضاءات</translation>
     </message>
     <message>
-        <location line="+58"/>
+        <location line="+64"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>لا توجد غرف أو فضاءات تطابق «%1».</translation>
     </message>
     <message>
-        <location line="+27"/>
-        <location line="+264"/>
+        <location line="+26"/>
+        <location line="+265"/>
         <source>No rooms yet</source>
         <translation>لا غرف بعد</translation>
     </message>
     <message>
-        <location line="-255"/>
+        <location line="-256"/>
         <source>Create a room here or add one of your existing rooms to organise it under this Space.</source>
         <translation>أنشئ غرفة هنا أو أضف إحدى غرفك الموجودة لتنظيمها ضمن هذا الفضاء.</translation>
     </message>
     <message>
-        <location line="+298"/>
-        <location filename="../qml/TimelinePane.qml" line="-6744"/>
-        <location line="+6921"/>
+        <location line="+299"/>
+        <location filename="../qml/TimelinePane.qml" line="-6715"/>
+        <location line="+6892"/>
         <source>Room</source>
         <translation>غرفة</translation>
     </message>
@@ -36348,21 +36447,21 @@ Proposed audience
         <translation>تبقى الغرف موجودة وتبقى أنت فيها — إنما تغادر قائمة هذا الفضاء فحسب.</translation>
     </message>
     <message>
-        <location line="-1455"/>
+        <location line="-1470"/>
         <location line="+209"/>
-        <location line="+1260"/>
+        <location line="+1275"/>
         <location line="+77"/>
         <source>Cancel</source>
         <translation>إلغاء</translation>
     </message>
     <message>
-        <location line="-6036"/>
+        <location line="-6007"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation>عرض الملف الشخصي</translation>
     </message>
     <message>
-        <location line="+5258"/>
+        <location line="+5227"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation>الصور (*.png *.jpg *.jpeg *.gif *.webp *.svg)</translation>
     </message>
@@ -36377,7 +36476,7 @@ Proposed audience
         <translation>مشرفو الفضاء وحدهم يمكنهم تغيير هذا.</translation>
     </message>
     <message>
-        <location line="+349"/>
+        <location line="+351"/>
         <source>Leave %1?</source>
         <translation>مغادرة %1؟</translation>
     </message>
@@ -36439,7 +36538,7 @@ Proposed audience
         <translation>أفلت الملفات لإرفاقها</translation>
     </message>
     <message>
-        <location line="-5484"/>
+        <location line="-5455"/>
         <source>Join space</source>
         <translation>انضم إلى المساحة</translation>
     </message>

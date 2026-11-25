@@ -4262,7 +4262,7 @@ EXIF ओरिएंटेशन: %4</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+359"/>
+        <location filename="../qml/SpaceLobby.qml" line="+366"/>
         <source>%1, collapsed</source>
         <translation>%1, ढह गया</translation>
     </message>
@@ -11896,13 +11896,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+424"/>
+        <location line="+426"/>
         <location line="+3"/>
         <source>Dismiss</source>
         <translation>खारिज करें</translation>
     </message>
     <message>
-        <location line="-374"/>
+        <location line="-376"/>
         <source>This message&apos;s edits could not be read. Check your connection and try again.</source>
         <translation>इस संदेश के संपादन पढ़े नहीं जा सके। अपना कनेक्शन जांचें और फिर कोशिश करें।</translation>
     </message>
@@ -11922,7 +11922,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1 संपादन हटाए गए। कुछ और बचे हैं — दोबारा चलाएं।</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
+        <source>Message saved. %1</source>
+        <translation>संदेश सहेजा गया। %1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Message saved.</source>
         <translation>संदेश सहेजा गया।</translation>
     </message>
@@ -12036,7 +12041,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>रूम सूची का आकार बदलें</translation>
     </message>
     <message>
-        <location line="+217"/>
+        <location line="+218"/>
         <source>Signing out…</source>
         <translation>साइन आउट हो रहा है…</translation>
     </message>
@@ -20513,6 +20518,108 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
 </context>
 <context>
+    <name>RoomSearchCoverage</name>
+    <message>
+        <location filename="../qml/RoomSearchCoverage.qml" line="+50"/>
+        <source>Type at least %1 characters.</source>
+        <translation>कम से कम %1 वर्ण लिखें।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Indexing another room.</source>
+        <translation>दूसरा रूम इंडेक्स किया जा रहा है।</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>%n indexed message(s) in this room.</source>
+        <translation>
+            <numerusform>इस रूम में %n इंडेक्स किया गया संदेश।</numerusform>
+            <numerusform>इस रूम में %n इंडेक्स किए गए संदेश।</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Scanning room history… %n page(s) indexed.</source>
+        <translation>
+            <numerusform>रूम का इतिहास स्कैन हो रहा है… %n पेज इंडेक्स हुआ।</numerusform>
+            <numerusform>रूम का इतिहास स्कैन हो रहा है… %n पेज इंडेक्स हुए।</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The search index could not be updated. Retry this room after checking local storage.</source>
+        <translation>खोज इंडेक्स अपडेट नहीं हो सका। लोकल स्टोरेज जाँचने के बाद इस रूम के लिए दोबारा कोशिश करें।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The last scan reached the start of the room.</source>
+        <translation>पिछला स्कैन रूम की शुरुआत तक पहुँच गया।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The last scan reached its page limit. Older messages may be missing.</source>
+        <translation>पिछला स्कैन अपनी पेज सीमा तक पहुँच गया। पुराने संदेश छूट सकते हैं।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Room history could not be read. Retry this room.</source>
+        <translation>रूम का इतिहास पढ़ा नहीं जा सका। इस रूम के लिए दोबारा कोशिश करें।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The last room scan was interrupted.</source>
+        <translation>पिछला रूम स्कैन बीच में रुक गया।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Some messages are waiting for decryption keys.</source>
+        <translation>कुछ संदेश डिक्रिप्शन कुंजियों की प्रतीक्षा कर रहे हैं।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>No detailed room scan is available.</source>
+        <translation>रूम का कोई विस्तृत स्कैन उपलब्ध नहीं है।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The scan also reached its page limit.</source>
+        <translation>स्कैन अपनी पेज सीमा तक भी पहुँच गया।</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>At least %n message(s) could not be decrypted.</source>
+        <translation>
+            <numerusform>कम से कम %n संदेश डिक्रिप्ट नहीं हो सका।</numerusform>
+            <numerusform>कम से कम %n संदेश डिक्रिप्ट नहीं हो सके।</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Last scan: %1</source>
+        <translation>पिछला स्कैन: %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Oldest message scanned: %1</source>
+        <translation>स्कैन किया गया सबसे पुराना संदेश: %1</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Cancel indexing</source>
+        <translation>इंडेक्सिंग रद्द करें</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Retry this room</source>
+        <translation>इस रूम के लिए दोबारा कोशिश करें</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Index this room</source>
+        <translation>इस रूम को इंडेक्स करें</translation>
+    </message>
+</context>
+<context>
     <name>RoomUpgradeController</name>
     <message>
         <location filename="../src/app/RoomUpgradeController.cpp" line="+195"/>
@@ -21416,7 +21523,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
 <context>
     <name>SavedMessagesController</name>
     <message>
-        <location filename="../src/app/SavedMessagesController.cpp" line="+251"/>
+        <location filename="../src/app/SavedMessagesController.cpp" line="+254"/>
         <source>Saved messages could not be loaded. Retry.</source>
         <translation>सहेजे गए संदेश लोड नहीं किए जा सके। पुनः प्रयास करें.</translation>
     </message>
@@ -21427,20 +21534,33 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>सहेजे गए संदेशों को अद्यतन नहीं किया जा सका। पुनः प्रयास करें.</translation>
     </message>
     <message>
-        <location line="-80"/>
-        <location line="+156"/>
+        <location line="-81"/>
+        <location line="+164"/>
         <source>Saved messages data is unavailable.</source>
         <translation>सहेजे गए संदेशों का डेटा उपलब्ध नहीं है।</translation>
     </message>
     <message>
-        <location line="-123"/>
-        <location line="+228"/>
+        <location line="-130"/>
+        <location line="+261"/>
         <location line="+15"/>
         <source>Saved messages are full. Remove an older item first.</source>
         <translation>सहेजे गए संदेश भरे हुए हैं। पहले कोई पुरानी वस्तु हटाएँ।</translation>
     </message>
     <message>
-        <location line="+285"/>
+        <location line="-137"/>
+        <source>Another device restored a removed saved message. Review the list and remove it again if needed.</source>
+        <translation>किसी दूसरे डिवाइस ने हटाया गया सहेजा संदेश वापस ला दिया। सूची देखें और ज़रूरत हो तो उसे फिर से हटाएँ।</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+112"/>
+        <source>Saved message capacity remaining: %n slot(s), %1 bytes.</source>
+        <translation>
+            <numerusform>सहेजे गए संदेशों की बची क्षमता: %n स्लॉट, %1 बाइट।</numerusform>
+            <numerusform>सहेजे गए संदेशों की बची क्षमता: %n स्लॉट, %1 बाइट।</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+310"/>
         <source>Sticker</source>
         <translation>स्टिकर</translation>
     </message>
@@ -21474,12 +21594,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
     <name>SavedMessagesPanel</name>
     <message>
         <location filename="../qml/SavedMessagesPanel.qml" line="+68"/>
-        <location line="+159"/>
+        <location line="+166"/>
         <source>Saved messages</source>
         <translation>सहेजे गए संदेश</translation>
     </message>
     <message>
-        <location line="-142"/>
+        <location line="-149"/>
         <source>Undo remove</source>
         <translation>पूर्ववत हटाएं</translation>
     </message>
@@ -21489,7 +21609,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>बंद करें</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+15"/>
         <source>Filter saved messages</source>
         <translation>सहेजे गए संदेशों को फ़िल्टर करें</translation>
     </message>
@@ -21921,8 +22041,8 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+8"/>
-        <source>No messages found</source>
-        <translation>कोई संदेश नहीं मिला</translation>
+        <source>No matches in indexed messages</source>
+        <translation>इंडेक्स किए गए संदेशों में कोई मिलान नहीं</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -22073,12 +22193,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>लोड हुए संदेशों में ढूँढें</translation>
     </message>
     <message>
-        <location line="+145"/>
+        <location line="+105"/>
         <source>Open message from %1</source>
         <translation>%1 का संदेश खोलें</translation>
     </message>
     <message>
-        <location line="-239"/>
+        <location line="-199"/>
         <source>Search could not be completed.</source>
         <translation>खोज पूरी नहीं हो सकी।</translation>
     </message>
@@ -22093,12 +22213,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>कम से कम %1 अक्षर टाइप करें।</translation>
     </message>
     <message>
-        <location line="+175"/>
-        <source>Nothing is indexed yet.</source>
-        <translation>अभी कुछ भी इंडेक्स नहीं हुआ है।</translation>
-    </message>
-    <message>
-        <location line="-172"/>
+        <location line="+3"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>कोई मेल खाता संदेश नहीं। कोई कम प्रचलित शब्द आज़माएँ, या स्थानीय इंडेक्स में खोजें।</translation>
     </message>
@@ -22143,32 +22258,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>स्टिकर और मेंशन फ़िल्टर इंडेक्स की गई खोज पर लागू नहीं होते। इनका उपयोग करने के लिए सर्वर पर जाएँ।</translation>
     </message>
     <message>
-        <location line="+24"/>
-        <source>Indexing this room&apos;s history…</source>
-        <translation>इस रूम का इतिहास इंडेक्स हो रहा है…</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>The search index could not be updated. Index this room again to retry.</source>
-        <translation>खोज इंडेक्स अपडेट नहीं हो सका। फिर से कोशिश करने के लिए इस रूम को दोबारा इंडेक्स करें।</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Searching %1 messages Lightning has indexed, including encrypted ones.</source>
-        <translation>Lightning ने जो %1 संदेश इंडेक्स किए हैं, एन्क्रिप्टेड समेत, उनमें खोजा जा रहा है।</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Index this room</source>
-        <translation>इस रूम को इंडेक्स करें</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Fetch this room&apos;s older messages so they can be searched</source>
-        <translation>इस रूम के पुराने संदेश लाएँ ताकि उनमें खोजा जा सके</translation>
-    </message>
-    <message>
-        <location line="+155"/>
+        <location line="+164"/>
         <source>Load more</source>
         <translation>और लोड करें</translation>
     </message>
@@ -29825,42 +29915,61 @@ Current joined members: %5
 </context>
 <context>
     <name>SpaceLobby</name>
-    <message numerus="yes">
-        <location filename="../qml/SpaceLobby.qml" line="-127"/>
-        <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
-        <translation>
-            <numerusform>इस स्पेस का केवल पहला %n रूम दिखाया गया है। जो रूम सूची में नहीं है उसे अब भी उसके पते से खोला जा सकता है।</numerusform>
-            <numerusform>इस स्पेस के केवल पहले %n रूम दिखाए गए हैं। जो रूम सूची में नहीं है उसे अब भी उसके पते से खोला जा सकता है।</numerusform>
-        </translation>
-    </message>
     <message>
-        <location line="+3"/>
-        <source>This Space could not be refreshed. Showing the rooms loaded earlier.</source>
-        <translation>यह स्पेस रीफ़्रेश नहीं हो सका। पहले लोड किए गए रूम दिखाए जा रहे हैं।</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Loading stopped early, so some rooms of this Space may be missing.</source>
-        <translation>लोडिंग जल्दी रुक गई, इसलिए इस स्पेस के कुछ रूम गायब हो सकते हैं।</translation>
-    </message>
-    <message>
-        <location line="+12"/>
+        <location filename="../qml/SpaceLobby.qml" line="-116"/>
         <source>Retry</source>
         <translation>फिर से कोशिश करें</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+13"/>
         <source>This Space has too many members to list, and Lightning could not confirm whether some of your direct-message contacts belong to it. Your room list may show direct messages with people outside it.</source>
         <translation>इस स्पेस में इतने सदस्य हैं कि उन्हें सूचीबद्ध नहीं किया जा सकता, और Lightning पुष्टि नहीं कर सका कि आपके कुछ सीधे संदेश संपर्क इसके सदस्य हैं या नहीं। आपकी रूम सूची में बाहर के लोगों से सीधे संदेश दिख सकते हैं।</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="-30"/>
+        <location line="+73"/>
         <location line="+264"/>
         <source>Loading rooms…</source>
         <translation>रूम लोड हो रहे हैं…</translation>
     </message>
     <message>
-        <location line="-226"/>
+        <location line="-336"/>
+        <source>The rooms of this Space could not be loaded.</source>
+        <translation>इस स्पेस के रूम लोड नहीं हो सके।</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Only the first %n room(s) of a Space are listed. More rooms may be available.</source>
+        <translation>
+            <numerusform>स्पेस का केवल पहला %n रूम दिखाया गया है। और रूम उपलब्ध हो सकते हैं।</numerusform>
+            <numerusform>स्पेस के केवल पहले %n रूम दिखाए गए हैं। और रूम उपलब्ध हो सकते हैं।</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1"/>
+        <source>The Space listing is incomplete. Showing %n previously loaded room(s) for this Space.</source>
+        <translation>
+            <numerusform>स्पेस की सूची अधूरी है। इस स्पेस के लिए पहले लोड किया गया %n रूम दिखाया जा रहा है।</numerusform>
+            <numerusform>स्पेस की सूची अधूरी है। इस स्पेस के लिए पहले लोड किए गए %n रूम दिखाए जा रहे हैं।</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Cancel</source>
+        <translation>रद्द करें</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Find by address</source>
+        <translation>पते से खोजें</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>No loaded rooms or spaces match “%1”.</source>
+        <translation>कोई लोड किया गया रूम या स्पेस “%1” से मेल नहीं खाता।</translation>
+    </message>
+    <message>
+        <location line="+64"/>
         <source>Rooms</source>
         <translation>रूम</translation>
     </message>
@@ -29870,7 +29979,12 @@ Current joined members: %5
         <translation>%1 के लिए और कार्रवाइयाँ</translation>
     </message>
     <message>
-        <location line="+128"/>
+        <location line="+50"/>
+        <source>No rooms loaded</source>
+        <translation>कोई रूम लोड नहीं हुआ</translation>
+    </message>
+    <message>
+        <location line="+79"/>
         <source>%1, not joined</source>
         <translation>%1, शामिल नहीं</translation>
     </message>
@@ -34783,7 +34897,7 @@ Proposed audience
 <context>
     <name>TimelinePane</name>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="+808"/>
+        <location filename="../qml/TimelinePane.qml" line="+809"/>
         <source>Seen by 1 person</source>
         <translation>1 व्यक्ति ने देखा</translation>
     </message>
@@ -34801,14 +34915,14 @@ Proposed audience
         </translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-519"/>
+        <location filename="../qml/SpaceLobby.qml" line="-520"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5439"/>
+        <location line="+5408"/>
         <source>Space</source>
         <translation>स्पेस</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5438"/>
+        <location filename="../qml/TimelinePane.qml" line="-5407"/>
         <source>Home</source>
         <translation>होम</translation>
     </message>
@@ -34910,12 +35024,12 @@ Proposed audience
     <message>
         <location line="+16"/>
         <location line="+2"/>
-        <location line="+3898"/>
+        <location line="+3854"/>
         <source>Room information</source>
         <translation>कक्ष जानकारी</translation>
     </message>
     <message>
-        <location line="-3887"/>
+        <location line="-3843"/>
         <location line="+1"/>
         <source>More room actions</source>
         <translation>रूम की और कार्रवाइयाँ</translation>
@@ -35087,41 +35201,6 @@ Proposed audience
     </message>
     <message>
         <location line="+28"/>
-        <source>Indexing this room&apos;s history…</source>
-        <translation>इस रूम का इतिहास इंडेक्स हो रहा है…</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>The search index could not be updated. Index this room again to retry.</source>
-        <translation>खोज इंडेक्स अपडेट नहीं हो सका। फिर से कोशिश करने के लिए इस रूम को दोबारा इंडेक्स करें।</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Type at least %1 characters.</source>
-        <translation>कम से कम %1 अक्षर टाइप करें।</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Nothing is indexed yet.</source>
-        <translation>अभी कुछ भी इंडेक्स नहीं हुआ है।</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Searching %1 messages Lightning has indexed, including encrypted ones.</source>
-        <translation>Lightning ने जो %1 संदेश इंडेक्स किए हैं, एन्क्रिप्टेड समेत, उनमें खोजा जा रहा है।</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Index this room</source>
-        <translation>इस रूम को इंडेक्स करें</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Fetch this room&apos;s older messages so they can be searched</source>
-        <translation>इस रूम के पुराने संदेश लाएँ ताकि उनमें खोजा जा सके</translation>
-    </message>
-    <message>
-        <location line="+16"/>
         <source>Indexed</source>
         <translation>इंडेक्स किया हुआ</translation>
     </message>
@@ -35271,7 +35350,7 @@ Proposed audience
         <translation>फ़ॉरवर्ड करें…</translation>
     </message>
     <message>
-        <location line="+442"/>
+        <location line="+455"/>
         <source>Room added — waiting for the server to confirm.</source>
         <translation>कक्ष जोड़ा गया — सर्वर की पुष्टि की प्रतीक्षा है।</translation>
     </message>
@@ -35336,7 +35415,7 @@ Proposed audience
         <translation>बैनर सहेजा नहीं जा सका (%1)।</translation>
     </message>
     <message numerus="yes">
-        <location line="+496"/>
+        <location line="+498"/>
         <source>Remove %n room(s) from %1?</source>
         <translation>
             <numerusform>%1 से %n रूम हटाएँ?</numerusform>
@@ -35358,7 +35437,7 @@ Proposed audience
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/TimelinePane.qml" line="-519"/>
+        <location filename="../qml/TimelinePane.qml" line="-521"/>
         <source>%n joined room(s)</source>
         <comment>joined rooms inside a Space</comment>
         <translation>
@@ -35412,7 +35491,7 @@ Proposed audience
         <translation>बैनर दिखाओ</translation>
     </message>
     <message>
-        <location line="+292"/>
+        <location line="+294"/>
         <source>People in this Space</source>
         <translation>इस स्पेस के लोग</translation>
     </message>
@@ -35427,7 +35506,7 @@ Proposed audience
         <translation>%1 में से पहले 60 दिखाए जा रहे हैं।</translation>
     </message>
     <message>
-        <location line="-301"/>
+        <location line="-303"/>
         <source>Choose Space avatar</source>
         <translation>स्पेस अवतार चुनें</translation>
     </message>
@@ -35488,17 +35567,17 @@ Proposed audience
     </message>
     <message>
         <location line="+27"/>
-        <location line="+302"/>
+        <location line="+304"/>
         <source>Leave Space</source>
         <translation>स्पेस छोड़ें</translation>
     </message>
     <message>
-        <location line="-296"/>
+        <location line="-298"/>
         <source>Leaving does not remove the rooms inside it.</source>
         <translation>छोड़ने से उसके भीतर के कक्ष नहीं हटते।</translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-305"/>
+        <location filename="../qml/SpaceLobby.qml" line="-310"/>
         <source>ROOMS AND SPACES</source>
         <translation>कक्ष और स्पेस</translation>
     </message>
@@ -35512,24 +35591,24 @@ Proposed audience
     </message>
     <message>
         <location line="+21"/>
-        <location filename="../qml/TimelinePane.qml" line="+219"/>
+        <location filename="../qml/TimelinePane.qml" line="+221"/>
         <source>Remove</source>
         <translation>हटाएँ</translation>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+645"/>
+        <location line="+651"/>
         <source>Mark as not suggested</source>
         <translation>“सुझाया गया” चिह्न हटाएँ</translation>
     </message>
     <message>
-        <location line="-644"/>
-        <location line="+645"/>
+        <location line="-650"/>
+        <location line="+651"/>
         <source>Mark as suggested</source>
         <translation>सुझाया गया चिह्नित करें</translation>
     </message>
     <message>
-        <location line="-634"/>
+        <location line="-640"/>
         <source>Search names and descriptions</source>
         <translation>नाम और विवरण खोजें</translation>
     </message>
@@ -35539,25 +35618,25 @@ Proposed audience
         <translation>कक्ष और स्पेस खोजें</translation>
     </message>
     <message>
-        <location line="+58"/>
+        <location line="+64"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>“%1” से कोई कक्ष या स्पेस मेल नहीं खाता।</translation>
     </message>
     <message>
-        <location line="+27"/>
-        <location line="+264"/>
+        <location line="+26"/>
+        <location line="+265"/>
         <source>No rooms yet</source>
         <translation>अभी कोई कक्ष नहीं</translation>
     </message>
     <message>
-        <location line="-255"/>
+        <location line="-256"/>
         <source>Create a room here or add one of your existing rooms to organise it under this Space.</source>
         <translation>यहाँ कक्ष बनाएँ, या अपने किसी मौजूदा कक्ष को इस स्पेस के अंतर्गत व्यवस्थित करने के लिए जोड़ें।</translation>
     </message>
     <message>
-        <location line="+298"/>
-        <location filename="../qml/TimelinePane.qml" line="-6744"/>
-        <location line="+6921"/>
+        <location line="+299"/>
+        <location filename="../qml/TimelinePane.qml" line="-6715"/>
+        <location line="+6892"/>
         <source>Room</source>
         <translation>कक्ष</translation>
     </message>
@@ -35616,21 +35695,21 @@ Proposed audience
         <translation>कक्ष बने रहते हैं और आप उनमें बने रहते हैं — वे बस इस स्पेस की सूची से निकल जाते हैं।</translation>
     </message>
     <message>
-        <location line="-1455"/>
+        <location line="-1470"/>
         <location line="+209"/>
-        <location line="+1260"/>
+        <location line="+1275"/>
         <location line="+77"/>
         <source>Cancel</source>
         <translation>रद्द करें</translation>
     </message>
     <message>
-        <location line="-6036"/>
+        <location line="-6007"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation>प्रोफ़ाइल देखें</translation>
     </message>
     <message>
-        <location line="+5258"/>
+        <location line="+5227"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation>तस्वीरें (*.png *.jpg *.jpeg *.gif *.webp *.svg)</translation>
     </message>
@@ -35645,7 +35724,7 @@ Proposed audience
         <translation>केवल स्पेस एडमिन इसे बदल सकते हैं।</translation>
     </message>
     <message>
-        <location line="+349"/>
+        <location line="+351"/>
         <source>Leave %1?</source>
         <translation>%1 छोड़ें?</translation>
     </message>
@@ -35707,7 +35786,7 @@ Proposed audience
         <translation>संलग्न करने के लिए फ़ाइलें छोड़ें</translation>
     </message>
     <message>
-        <location line="-5484"/>
+        <location line="-5455"/>
         <source>Join space</source>
         <translation>स्पेस में शामिल हों</translation>
     </message>
