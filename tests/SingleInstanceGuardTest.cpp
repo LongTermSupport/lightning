@@ -553,6 +553,43 @@ private Q_SLOTS:
             QStringLiteral("matrix:r/") + QString(SingleInstanceGuard::kMaxLinkBytes, QLatin1Char('a'))));
     }
 
+    void aSharedFileIsForwardedAsALocalFileUrlOnly()
+    {
+        QTemporaryDir dir;
+        QFile file(dir.filePath(QStringLiteral("shared photo.png")));
+        QVERIFY(file.open(QIODevice::WriteOnly));
+        file.close();
+        const QString path = file.fileName();
+        const QString url = QUrl::fromLocalFile(path).toString(QUrl::FullyEncoded);
+
+        QCOMPARE(SingleInstanceGuard::linkFromArguments(
+                     {QStringLiteral("--backend=rust"), path}), url);
+        QCOMPARE(SingleInstanceGuard::linkFromArguments({url}), url);
+        QCOMPARE(SingleInstanceGuard::linkFromArguments(
+                     {QStringLiteral("--backend=rust"), QStringLiteral("matrix:r/a:example.org")}),
+                 QStringLiteral("matrix:r/a:example.org"));
+        // An option's value, a directory, a relative path and a remote file
+        // are not shares.
+        QVERIFY(SingleInstanceGuard::linkFromArguments(
+                    {QStringLiteral("--log-file"), path}).isEmpty());
+        QVERIFY(SingleInstanceGuard::linkFromArguments({dir.path()}).isEmpty());
+        QVERIFY(SingleInstanceGuard::linkFromArguments(
+                    {QStringLiteral("shared photo.png")}).isEmpty());
+        QVERIFY(SingleInstanceGuard::linkFromArguments(
+                    {QStringLiteral("file://evil.example/a.png"),
+                     QStringLiteral("javascript:alert(1)"),
+                     QStringLiteral("https://evil.example/a.png")}).isEmpty());
+
+        QString token;
+        QString link;
+        QVERIFY(SingleInstanceGuard::parseRequest(
+            "show - " + url.toLatin1(), &token, &link));
+        QCOMPARE(link, url);
+        QVERIFY(SingleInstanceGuard::parseRequest(
+            "show - file://evil.example/a.png", &token, &link));
+        QVERIFY(link.isEmpty());
+    }
+
     void aSecondLaunchForwardsItsLink()
     {
         const QString root = freshRoot();

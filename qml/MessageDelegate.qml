@@ -4341,6 +4341,14 @@ Item {
                 onTriggered: root.copyMessageLink()
             }
             AppMenuItem {
+                objectName: "exportMessageMenuItem"
+                iconName: "schedule"
+                text: qsTr("Export as task or event…")
+                visible: root.copyableText
+                enabled: visible
+                onTriggered: root.openHandoff()
+            }
+            AppMenuItem {
                 objectName: "openMediaMenuItem"
                 iconName: "open_in_full"
                 text: qsTr("Open image")
@@ -4670,6 +4678,22 @@ Item {
         if (!eventSourceDialogItem)
             eventSourceDialogItem = eventSourceDialogComponent.createObject(root)
         eventSourceDialogItem.openFor(root.timelineModel, eventId)
+    }
+    property var handoffDialogItem: null
+    function openHandoff() {
+        if (root.menuEventId === "" || !root.copyableText)
+            return
+        if (!handoffDialogItem)
+            handoffDialogItem = handoffDialogComponent.createObject(root)
+        handoffDialogItem.openFor(
+            root.timelineModel.copyTextForEvent(root.menuEventId),
+            root.timelineModel.messagePermalink(root.menuEventId),
+            root.timelineModel.realRoomIdForEvent(root.menuEventId) + "\n"
+                + root.menuEventId)
+    }
+    Component {
+        id: handoffDialogComponent
+        HandoffDialog {}
     }
     property var detailsDialogItem: null
     Component {

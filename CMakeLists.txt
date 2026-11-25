@@ -900,6 +900,8 @@ set(APP_SOURCES
     src/media/MediaManager.cpp
     src/app/UrlLauncher.h
     src/app/UrlLauncher.cpp
+    src/privacy/Handoff.h
+    src/privacy/Handoff.cpp
     src/app/SaveNaming.h
     src/app/SaveNaming.cpp
     src/app/FileChooser.h
@@ -1277,6 +1279,8 @@ set(APP_QML_FILES
     qml/EventSourceDialog.qml
     qml/StatusDialog.qml
     qml/SendLaterDialog.qml
+    qml/HandoffDialog.qml
+    qml/ShareTargetDialog.qml
     qml/ActivityCenterPanel.qml
     qml/SavedMessagesPanel.qml
     qml/AnchoredPopup.qml
@@ -7185,6 +7189,17 @@ if(BUILD_TESTING)
     target_include_directories(url-launcher-test PRIVATE src)
     target_link_libraries(url-launcher-test PRIVATE Qt6::Core Qt6::Gui Qt6::Test)
     add_test(NAME url-launcher COMMAND url-launcher-test)
+
+    # Handing a message to a task or calendar app, and a file shared in from
+    # another app: what may and may not cross either boundary.
+    qt_add_executable(handoff-test
+        tests/HandoffTest.cpp
+    )
+    lightning_configure_qml_test(handoff-test)
+    target_link_libraries(handoff-test PRIVATE Qt6::Test)
+    add_test(NAME handoff COMMAND handoff-test)
+    set_tests_properties(handoff PROPERTIES
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
     # The composer's emoji face, asserted on the document's applied format:
     # Qt's fallback differs by version, so emoji faces are applied per range by
