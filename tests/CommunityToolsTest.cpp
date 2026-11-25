@@ -156,6 +156,24 @@ private Q_SLOTS:
         QVERIFY(ics.contains(QStringLiteral("STATUS:CANCELLED\r\n")));
     }
 
+    void eventFallbackAndCalendarFileUseAbsoluteTimes()
+    {
+        const qint64 start = QDateTime(QDate(2026, 7, 1), QTime(15, 0), QTimeZone::UTC).toMSecsSinceEpoch();
+        const QString body = RoomCardsController::fallbackBody(QStringLiteral("event"),
+            {{QStringLiteral("title"), QStringLiteral("Meetup")}, {QStringLiteral("start"), start},
+             {QStringLiteral("tz"), QStringLiteral("UTC")}, {QStringLiteral("cancelled"), true}});
+        QVERIFY2(body.startsWith(QStringLiteral("Cancelled event: Meetup\nWhen: 2026-07-01 15:00 (UTC, UTC+00:00)")),
+                 qPrintable(body));
+        const QString ics = RoomCardsController::icsText(
+            {{QStringLiteral("kind"), QStringLiteral("event")}, {QStringLiteral("root"), root},
+             {QStringLiteral("title"), QStringLiteral("Meet; up")}, {QStringLiteral("start"), start},
+             {QStringLiteral("cancelled"), true}}, room);
+        QVERIFY2(ics.contains(QStringLiteral("DTSTART:20260701T150000Z\r\n")), qPrintable(ics));
+        QVERIFY(ics.contains(QStringLiteral("DTEND:20260701T160000Z\r\n")));
+        QVERIFY(ics.contains(QStringLiteral("SUMMARY:Meet\\; up\r\n")));
+        QVERIFY(ics.contains(QStringLiteral("STATUS:CANCELLED\r\n")));
+    }
+
     void checklistFallbackListsEveryItemForOtherClients()
     {
         const QString body = RoomCardsController::fallbackBody(QStringLiteral("checklist"),

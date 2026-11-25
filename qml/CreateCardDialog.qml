@@ -34,7 +34,7 @@ Dialog {
     function pad(n) { return (n < 10 ? "0" : "") + n }
     function isoDate(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) }
 
-    function reset() {
+    function resetFields() {
         failure = ""
         sending = false
         titleField.text = ""
@@ -53,7 +53,7 @@ Dialog {
         kind = cardKind
         editEventId = ""
         original = ({})
-        reset()
+        resetFields()
         open()
         titleField.forceActiveFocus()
     }
@@ -62,7 +62,7 @@ Dialog {
         kind = cardKind
         editEventId = eventId
         original = info
-        reset()
+        resetFields()
         titleField.text = info.title || ""
         if (cardKind === "checklist") {
             anyoneSwitch.checked = info.anyone_edits !== false
@@ -178,7 +178,7 @@ Dialog {
                     color: AppTheme.textPrimary
                 }
             }
-            AppSwitch {
+            CheckBox {
                 id: anyoneSwitch
                 text: qsTr("Anyone in the room can tick and add items")
             }
