@@ -50,6 +50,16 @@ ColumnLayout {
 
     readonly property int selectedCount: Object.keys(selectedIds).length
 
+    SpaceCommunityPanel {
+        Layout.fillWidth: true
+        manager: root.spacesSource
+        sections: root.sections
+        onOpenRoomRequested: roomId => root.openRoomRequested(roomId)
+        onOpenSpaceRequested: spaceId => root.openSpaceRequested(spaceId)
+        onJoinRequested: (roomId, via, isSpace) => root.joinRequested(roomId, via, isSpace)
+        onKnockRequested: (roomId, via) => root.knockRequested(roomId, via)
+    }
+
     property string focusSectionId: ""
     property bool restoreFocus: false
 

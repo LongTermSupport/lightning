@@ -1,5 +1,13 @@
 # Open items and the NOT TESTED inventory
 
+## 2026-11-24 — KNOWN LIMITS: Space announcement review
+
+Enabling member proposals writes the Space's power levels without a compare-and-swap, as the existing power-level editors do, so a concurrent edit can be overwritten; a second reviewer's interrupted publish reads "pending" until the first reviewer retries.
+
+## 2026-11-24 — KNOWN LIMITS: reminders, snooze and quiet hours
+
+There is no list of pending reminders (a reminder is seen and cancelled from its message's menu); snooze applies to the foreground account only, not to background live accounts; quiet hours are one daily schedule, with no one-off focus timer.
+
 ## 2026-11-24 — KNOWN LIMIT: a room misordered by an older build stays misordered
 
 The back-pagination fix prevents own known pages from being moved above a room's creation; a store an older build already misordered is not repaired, and only a fresh sign-in rebuilds it in order.

@@ -1916,6 +1916,14 @@ char *mx_rust_push_rules_write(void *client,
                                const char *key,
                                const char *value,
                                unsigned long long op_id);
+/* Read-only: which push rule matches a synthetic message in the room.
+ * Answers push_rules_simulation { op_id, ok, category, matched, rule_id,
+ * kind, notify, highlight, sound }. */
+char *mx_rust_push_rules_simulate(void *client,
+                                  const char *room_id,
+                                  const char *body,
+                                  int mention,
+                                  unsigned long long op_id);
 char *mx_rust_report_message(void *client,
                              const char *room_id,
                              const char *event_id,
@@ -2675,6 +2683,16 @@ char *mx_rust_take_custody(void *client);
  * reservation: (st_dev, st_ino) on Unix, the canonical path elsewhere. */
 int mx_rust_store_any_held(const char *store_path);
 
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+char *mx_rust_space_community(void *client, const char *room_id,
+                              const char *action, const char *payload_json,
+                              uint64_t op_id);
 #ifdef __cplusplus
 }
 #endif

@@ -43,6 +43,12 @@ AppDialog {
     contentItem: ColumnLayout {
         spacing: AppTheme.spacing12
 
+        RoomLifecycleReview {
+            Layout.fillWidth: true
+            roomId: root.ctl ? root.ctl.targetId : ""
+            action: root.mode
+        }
+
         Label {
             objectName: "roomCloseNotice"
             Layout.fillWidth: true
