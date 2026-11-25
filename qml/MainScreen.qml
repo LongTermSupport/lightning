@@ -493,8 +493,13 @@ Item {
     }
     function openExternalMatrixLink() {
         var link = app.takeExternalMatrixLink()
-        if (link.length > 0)
+        if (link.indexOf("file:") === 0)
+            shareTargetDialog.openFor(link)
+        else if (link.length > 0)
             roomsPanel.openDiscoverForLink(link)
+    }
+    ShareTargetDialog {
+        id: shareTargetDialog
     }
 
     function findDemoDescendant(obj, name) {

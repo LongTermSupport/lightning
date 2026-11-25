@@ -2335,13 +2335,8 @@ int main(int argc, char *argv[])
     // a fast relaunch open the same store while that close is still in
     // flight.
     instanceGuard.holdLockUntilProcessExit();
-    QString linkToOpen;
-    for (const QString &arg : QCoreApplication::arguments().mid(1)) {
-        if (lightning::SingleInstanceGuard::isOpenableLink(arg)) {
-            linkToOpen = arg;
-            break;
-        }
-    }
+    const QString linkToOpen = lightning::SingleInstanceGuard::linkFromArguments(
+        QCoreApplication::arguments().mid(1));
     instanceGuard.setLinkToOpen(linkToOpen);
     switch (instanceGuard.claim()) {
     case lightning::SingleInstanceGuard::Claim::Primary:

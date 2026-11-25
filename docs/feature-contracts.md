@@ -2829,6 +2829,27 @@ room history" forever; and the initial category never pushed to the model
 (`onCategoryChanged` fires only on a CHANGE), so the Media tab listed files
 and links.
 
+### Handing a message to another app, and sharing a file in
+
+One message's menu offers "Export as task or event…" (`HandoffDialog.qml`,
+`src/app/Handoff.*`): an editable title and notes, prefilled from that one
+message only, a preview that is exactly what leaves, then "Copy as text" or
+"Save .ics…" (a VTODO or a VEVENT in UTC) to a location the user picks,
+written owner-only. Nothing is written anywhere else. The output never
+carries a Matrix media URL, an `mxc:` URI, an `access_token` link or a
+reply's quoted parent; the message permalink only when the user switches it
+on. An event has no ORGANIZER or ATTENDEE, so no calendar app can send an
+invitation from it, and the UID is a hash of room and event, so exporting
+the same message again updates the entry.
+
+Sharing in: a file passed on the command line, which is how "Open with
+Lightning" and the desktop entry's `%u` deliver it, travels to the running
+instance as a `file:///` link. `ShareTargetDialog.qml` names the file and the
+active account; picking a room only stages the file in that room's composer
+through the normal attachment screen (MIME, size, the SVG rule). Nothing is
+sent until the user presses Send, and Cancel leaves nothing behind. Text from
+other apps is not accepted.
+
 ### Forwarding a selection
 
 Multi-select in the timeline, multi-destination picker

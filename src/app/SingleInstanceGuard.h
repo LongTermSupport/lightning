@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QStringList>
 
 class QLocalServer;
 class QLocalSocket;
@@ -45,7 +46,7 @@ public:
 
     Claim claim(int budgetMs = kDefaultBudgetMs);
 
-    // A matrix: or matrix.to link to hand to the running instance on Deferred.
+    // A matrix link or shared file: URL to hand to the running instance on Deferred.
     void setLinkToOpen(const QString &link) { m_link = link; }
 
     void stopListening();
@@ -95,6 +96,8 @@ public:
     static QString currentUser();
     static bool isAcceptableActivationToken(const QByteArray &token);
     static bool isOpenableLink(const QString &link);
+    // The first matrix link, file: URL or absolute path to a regular file.
+    static QString linkFromArguments(const QStringList &args);
     // "show", "show TOKEN", or "show TOKEN|- LINK"; an older instance reads the
     // last form as an unusable token and still raises its window.
     static bool parseRequest(const QByteArray &line, QString *activationToken,
