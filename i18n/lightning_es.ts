@@ -3936,7 +3936,7 @@ No toca tus claves de cifrado, tu inicio de sesión ni ningún mensaje del servi
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+349"/>
+        <location filename="../qml/SpaceLobby.qml" line="+359"/>
         <source>%1, collapsed</source>
         <translation>%1, colapsado</translation>
     </message>
@@ -10636,7 +10636,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
         <translation>¿Salir de la sala?</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+51"/>
         <source>You are the only administrator. If you leave, nobody will be able to change this room&apos;s settings or manage its members. Make someone else an administrator first.</source>
         <translation>Eres el único administrador. Si sales, nadie podrá cambiar los ajustes de esta sala ni gestionar sus miembros. Haz administrador a otra persona primero.</translation>
     </message>
@@ -17866,7 +17866,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
 <context>
     <name>RoomCloseDialog</name>
     <message>
-        <location filename="../qml/RoomCloseDialog.qml" line="+75"/>
+        <location filename="../qml/RoomCloseDialog.qml" line="+81"/>
         <source>Leave once it is closed. If anything is left undone you stay, so you can run it again.</source>
         <translation>Sal una vez cerrado. Si queda algo sin hacer, te quedas, así que puedes volver a ejecutarlo.</translation>
     </message>
@@ -19723,6 +19723,69 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
     </message>
 </context>
 <context>
+    <name>RoomLifecycleReview</name>
+    <message>
+        <location filename="../qml/RoomLifecycleReview.qml" line="+28"/>
+        <source>Hide lifecycle review</source>
+        <translation>Ocultar revisión del ciclo de vida</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Review room activity and links</source>
+        <translation>Revisar actividad y enlaces de la sala</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Archive hides a room for your account; it does not close it for other members. Leaving removes only you. Closing changes server access and may remove other members. No rooms are cleaned up automatically.</source>
+        <translation>Archivar oculta una sala solo para tu cuenta; no la cierra para otros miembros. Salir solo te elimina a ti. Cerrar cambia el acceso en el servidor y puede eliminar a otros miembros. Ninguna sala se limpia automáticamente.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Last known activity: %1. This device may not have all activity.</source>
+        <translation>Última actividad conocida: %1. Puede que este dispositivo no tenga toda la actividad.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Last activity is not known. Missing history does not prove inactivity.</source>
+        <translation>No se conoce la última actividad. Que falte historial no demuestra inactividad.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Joined members: %1. Closure&apos;s room-by-room plan shows who can be removed and who stays. Roles and ownership are separate in every room.</source>
+        <translation>Miembros unidos: %1. El plan de cierre sala por sala muestra a quién se puede eliminar y quién se queda. Los roles y la propiedad son independientes en cada sala.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Membership and ownership are not known. Check them before continuing.</source>
+        <translation>No se conocen la membresía ni la propiedad. Compruébalas antes de continuar.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>The plan below lists the exact selected rooms and their outcomes. A Space&apos;s child rooms are separate rooms; shared rooms may belong to other Spaces.</source>
+        <translation>El plan de abajo enumera exactamente las salas seleccionadas y su resultado. Las salas hijas de un Espacio son salas independientes; las salas compartidas pueden pertenecer a otros Espacios.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>This action affects only %1. Rooms inside a Space are not left or upgraded with it.</source>
+        <translation>Esta acción solo afecta a %1. Las salas dentro de un Espacio no se abandonan ni se actualizan con él.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Predecessor: %1
+Successor: %2
+These links remain in room state. Open the successor from the room&apos;s replacement notice before leaving if you need to continue there.</source>
+        <translation>Predecesora: %1
+Sucesora: %2
+Estos enlaces permanecen en el estado de la sala. Abre la sucesora desde el aviso de sustitución de la sala antes de salir si necesitas continuar allí.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+1"/>
+        <source>None known</source>
+        <translation>Ninguna conocida</translation>
+    </message>
+</context>
+<context>
     <name>RoomListAttentionLocator</name>
     <message>
         <location filename="../qml/RoomListAttentionLocator.qml" line="+93"/>
@@ -20078,7 +20141,7 @@ La única solución es cerrar sesión y volver a iniciarla.</translation>
 <context>
     <name>RoomUpgradeDialog</name>
     <message>
-        <location filename="../qml/RoomUpgradeDialog.qml" line="+71"/>
+        <location filename="../qml/RoomUpgradeDialog.qml" line="+77"/>
         <source>Upgrade this space</source>
         <translation>Actualizar este espacio</translation>
     </message>
@@ -29115,6 +29178,218 @@ Nota: importar claves no verifica esta sesión.</translation>
     </message>
 </context>
 <context>
+    <name>SpaceCommunityPanel</name>
+    <message>
+        <location filename="../qml/SpaceCommunityPanel.qml" line="+56"/>
+        <source>Start here</source>
+        <translation>Empieza aquí</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Edit guide</source>
+        <translation>Editar guía</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Announcements</source>
+        <translation>Anuncios</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Refresh</source>
+        <translation>Actualizar</translation>
+    </message>
+    <message>
+        <location line="+53"/>
+        <source>Open</source>
+        <translation>Abrir</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Ask to join</source>
+        <translation>Solicitar acceso</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Join</source>
+        <translation>Unirse</translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>Open link</source>
+        <translation>Abrir enlace</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Room guide</source>
+        <translation>Guía de la sala</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>The guide is shared room state. Servers and people allowed to read this Space&apos;s state can read it.</source>
+        <translation>La guía es estado compartido de la sala. Los servidores y las personas que pueden leer el estado de este Espacio pueden leerla.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Welcome (up to 4000 characters)</source>
+        <translation>Bienvenida (hasta 4000 caracteres)</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Welcome</source>
+        <translation>Bienvenida</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Rules (up to 4000 characters)</source>
+        <translation>Normas (hasta 4000 caracteres)</translation>
+    </message>
+    <message>
+        <location line="-102"/>
+        <location line="+106"/>
+        <source>Rules</source>
+        <translation>Normas</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Recommended room IDs in order (one per line, up to 12). Readers see only rooms already visible in their lobby.</source>
+        <translation>ID de salas recomendadas en orden (uno por línea, hasta 12). Los lectores solo ven las salas ya visibles en su vestíbulo.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Recommended rooms</source>
+        <translation>Salas recomendadas</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>HTTPS links (one per line, up to 8)</source>
+        <translation>Enlaces HTTPS (uno por línea, hasta 8)</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Important links</source>
+        <translation>Enlaces importantes</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Save guide</source>
+        <translation>Guardar guía</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Cancel</source>
+        <translation>Cancelar</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Announcement review</source>
+        <translation>Revisión de anuncios</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Submitting shares your proposal as unencrypted Space state with the server and authorized readers. Only a reviewer can publish through this workflow, using their own identity. Keep private drafts out of shared state.</source>
+        <translation>Al enviar, tu propuesta se comparte como estado del Espacio sin cifrar con el servidor y los lectores autorizados. Solo un revisor puede publicar mediante este flujo, con su propia identidad. No pongas borradores privados en el estado compartido.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Enable member proposals…</source>
+        <translation>Habilitar propuestas de miembros…</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>A room administrator must enable proposals for members first.</source>
+        <translation>Un administrador de la sala debe habilitar primero las propuestas de los miembros.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Destination room</source>
+        <translation>Sala de destino</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Announcement proposal</source>
+        <translation>Propuesta de anuncio</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Submit or replace my proposal</source>
+        <translation>Enviar o sustituir mi propuesta</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Only the first 100 proposals are shown.</source>
+        <translation>Solo se muestran las primeras 100 propuestas.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Published proposal from %1</source>
+        <translation>Propuesta publicada de %1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Proposal from %1 (author can no longer propose)</source>
+        <translation>Propuesta de %1 (el autor ya no puede proponer)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Proposal from %1</source>
+        <translation>Propuesta de %1</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Review</source>
+        <translation>Revisar</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Final announcement text</source>
+        <translation>Texto final del anuncio</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Preview exact text and audience</source>
+        <translation>Previsualizar el texto exacto y la audiencia</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Publish as %1
+Proposed by %2
+Destination: %3 (%4)
+Current joined members: %5
+%6</source>
+        <translation>Publicar como %1
+Propuesto por %2
+Destino: %3 (%4)
+Miembros unidos actualmente: %5
+%6</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Approve and publish</source>
+        <translation>Aprobar y publicar</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Edit final text</source>
+        <translation>Editar texto final</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Close</source>
+        <translation>Cerrar</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Enable member proposals?</source>
+        <translation>¿Habilitar propuestas de miembros?</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>This sets the announcement proposal event permission to 0. Members at that level can submit shared proposals. The reviewer permission and ordinary message permissions stay as they are.</source>
+        <translation>Esto establece en 0 el permiso del evento de propuesta de anuncio. Los miembros de ese nivel pueden enviar propuestas compartidas. El permiso de revisor y los permisos de mensajes normales no cambian.</translation>
+    </message>
+</context>
+<context>
     <name>SpaceLobby</name>
     <message numerus="yes">
         <location filename="../qml/SpaceLobby.qml" line="-127"/>
@@ -29179,7 +29454,12 @@ Nota: importar claves no verifica esta sesión.</translation>
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+381"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+23"/>
+        <source>The result is not known. Refresh before trying again; publishing the same reviewed text reuses its transaction.</source>
+        <translation>No se conoce el resultado. Actualiza antes de volver a intentarlo; publicar el mismo texto revisado reutiliza su transacción.</translation>
+    </message>
+    <message>
+        <location line="+368"/>
         <source>All rooms</source>
         <translation>Todas las salas</translation>
     </message>
@@ -29192,6 +29472,176 @@ Nota: importar claves no verifica esta sesión.</translation>
         <location line="+1"/>
         <source>Rooms not in any Space</source>
         <translation>Salas que no están en ningún espacio</translation>
+    </message>
+    <message>
+        <location line="+1264"/>
+        <source>This action is unavailable. Refresh and check your permissions.</source>
+        <translation>Esta acción no está disponible. Actualiza y comprueba tus permisos.</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>The proposal or audience changed. Refresh and review it again.</source>
+        <translation>La propuesta o la audiencia ha cambiado. Actualiza y vuelve a revisarla.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The server refused this action. Refresh and check your permissions.</source>
+        <translation>El servidor rechazó esta acción. Actualiza y comprueba tus permisos.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This content was not accepted. Check the room IDs, that links use https, and the limits.</source>
+        <translation>Este contenido no se aceptó. Comprueba los ID de sala, que los enlaces usen https y los límites.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Another reviewer is publishing this proposal. Refresh in a moment.</source>
+        <translation>Otro revisor está publicando esta propuesta. Actualiza en un momento.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The action did not complete. A publish may already have arrived; retrying the same reviewed text will not send a second post.</source>
+        <translation>La acción no se completó. Puede que ya haya llegado una publicación; reintentar con el mismo texto revisado no enviará una segunda publicación.</translation>
+    </message>
+    <message>
+        <location line="+47"/>
+        <source>Send other message events</source>
+        <translation>Enviar otros eventos de mensaje</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Invite people</source>
+        <translation>Invitar a personas</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Remove members below their level</source>
+        <translation>Expulsar a miembros de nivel inferior</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Ban members below their level</source>
+        <translation>Vetar a miembros de nivel inferior</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Remove other people&apos;s messages</source>
+        <translation>Eliminar mensajes de otras personas</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Notify the whole room</source>
+        <translation>Notificar a toda la sala</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change other room state</source>
+        <translation>Cambiar otro estado de la sala</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Manage rooms in this Space</source>
+        <translation>Gestionar salas en este Espacio</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change the name</source>
+        <translation>Cambiar el nombre</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change the topic</source>
+        <translation>Cambiar el tema</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change the avatar</source>
+        <translation>Cambiar el avatar</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change who can join</source>
+        <translation>Cambiar quién puede unirse</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change who can read history</source>
+        <translation>Cambiar quién puede leer el historial</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change roles below their level</source>
+        <translation>Cambiar roles de nivel inferior</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Upgrade the room</source>
+        <translation>Actualizar la sala</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Anyone who is not banned can join without an invite.</source>
+        <translation>Cualquiera que no esté vetado puede unirse sin invitación.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Only invited people can join.</source>
+        <translation>Solo las personas invitadas pueden unirse.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>People can ask to join; a member with invite permission must admit them.</source>
+        <translation>Las personas pueden solicitar acceso; un miembro con permiso para invitar debe admitirlas.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Invited people and eligible members of these rooms can join: %1. The server checks membership and authorization.</source>
+        <translation>Las personas invitadas y los miembros aptos de estas salas pueden unirse: %1. El servidor comprueba la membresía y la autorización.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>not known</source>
+        <translation>desconocido</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Who can join is not known.</source>
+        <translation>No se sabe quién puede unirse.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Other people can ask to join.</source>
+        <translation>Otras personas pueden solicitar acceso.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Anyone can read the history, including people outside the room.</source>
+        <translation>Cualquiera puede leer el historial, incluso personas ajenas a la sala.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Members can read history from when they joined.</source>
+        <translation>Los miembros pueden leer el historial desde que se unieron.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Members can read history from when they were invited.</source>
+        <translation>Los miembros pueden leer el historial desde que fueron invitados.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Members can read all history, including messages sent before they joined.</source>
+        <translation>Los miembros pueden leer todo el historial, incluidos los mensajes enviados antes de unirse.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>History access is not known.</source>
+        <translation>No se conoce el acceso al historial.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This applies only to this room or Space. Child rooms keep their own rules. Servers enforce access and may have newer state.</source>
+        <translation>Esto solo se aplica a esta sala o Espacio. Las salas hijas conservan sus propias reglas. Los servidores aplican el acceso y pueden tener un estado más reciente.</translation>
     </message>
 </context>
 <context>
@@ -29550,12 +30000,12 @@ Nota: importar claves no verifica esta sesión.</translation>
     <message>
         <location line="-40"/>
         <location line="+43"/>
-        <location line="+1049"/>
+        <location line="+1050"/>
         <source>Invite</source>
         <translation>Invitar</translation>
     </message>
     <message>
-        <location line="-1091"/>
+        <location line="-1092"/>
         <location line="+43"/>
         <source>Kick</source>
         <translation>patada</translation>
@@ -29781,12 +30231,12 @@ Nota: importar claves no verifica esta sesión.</translation>
     </message>
     <message>
         <location line="+16"/>
-        <location line="+395"/>
+        <location line="+396"/>
         <source>Save</source>
         <translation>Guardar</translation>
     </message>
     <message>
-        <location line="-382"/>
+        <location line="-383"/>
         <source>Banner</source>
         <translation>pancarta</translation>
     </message>
@@ -29886,7 +30336,7 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>Solicitar unirse (knock)</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source>Members of another space can join. Lightning can&apos;t change space-restricted access yet.</source>
         <translation>Pueden unirse miembros de otro espacio. Lightning aún no puede cambiar el acceso con espacio restringido.</translation>
     </message>
@@ -30240,7 +30690,29 @@ Nota: importar claves no verifica esta sesión.</translation>
         <translation>¿Cambiar el rol?</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+38"/>
+        <source>Capabilities in this room or Space only. Moderation can target only members below the new level. Servers enforce permissions and may have newer state.</source>
+        <translation>Capacidades solo en esta sala o Espacio. La moderación solo puede afectar a miembros por debajo del nuevo nivel. Los servidores aplican los permisos y pueden tener un estado más reciente.</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>%1: %2 → %3 (level %4)</source>
+        <translation>%1: %2 → %3 (nivel %4)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+1"/>
+        <source>Allowed</source>
+        <translation>Permitido</translation>
+    </message>
+    <message>
+        <location line="-1"/>
+        <location line="+1"/>
+        <source>Not allowed</source>
+        <translation>No permitido</translation>
+    </message>
+    <message>
+        <location line="+12"/>
         <source>Set %1 to %2 in this room?</source>
         <translation>¿Establecer a %1 como %2 en esta sala?</translation>
     </message>
@@ -30268,6 +30740,39 @@ Nota: importar claves no verifica esta sesión.</translation>
         <location line="+1"/>
         <source>You will also no longer be able to change roles or permissions in this space.</source>
         <translation>Además, ya no podrás cambiar roles ni permisos en este espacio.</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>Review access change</source>
+        <translation>Revisar cambio de acceso</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>Current audience
+%1
+
+Proposed audience
+%2</source>
+        <translation>Audiencia actual
+%1
+
+Audiencia propuesta
+%2</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Room state changed. Cancel and review again.</source>
+        <translation>El estado de la sala ha cambiado. Cancela y vuelve a revisarlo.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Apply access change</source>
+        <translation>Aplicar cambio de acceso</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Cancel</source>
+        <translation>Cancelar</translation>
     </message>
 </context>
 <context>

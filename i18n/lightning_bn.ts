@@ -3936,7 +3936,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+349"/>
+        <location filename="../qml/SpaceLobby.qml" line="+359"/>
         <source>%1, collapsed</source>
         <translation>%1, ভেঙে পড়েছে</translation>
     </message>
@@ -10636,7 +10636,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>রুম ছাড়বেন?</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+51"/>
         <source>You are the only administrator. If you leave, nobody will be able to change this room&apos;s settings or manage its members. Make someone else an administrator first.</source>
         <translation>আপনিই একমাত্র অ্যাডমিনিস্ট্রেটর। আপনি চলে গেলে কেউ এই রুমের সেটিংস বদলাতে বা এর সদস্যদের পরিচালনা করতে পারবে না। আগে অন্য কাউকে অ্যাডমিনিস্ট্রেটর করুন।</translation>
     </message>
@@ -17866,7 +17866,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RoomCloseDialog</name>
     <message>
-        <location filename="../qml/RoomCloseDialog.qml" line="+75"/>
+        <location filename="../qml/RoomCloseDialog.qml" line="+81"/>
         <source>Leave once it is closed. If anything is left undone you stay, so you can run it again.</source>
         <translation>বন্ধ হওয়ার পর ছেড়ে যান। কিছু বাকি থাকলে আপনি থেকে যাবেন, যাতে আবার চালাতে পারেন।</translation>
     </message>
@@ -19723,6 +19723,69 @@ Signing out and signing in again is the only fix.</source>
     </message>
 </context>
 <context>
+    <name>RoomLifecycleReview</name>
+    <message>
+        <location filename="../qml/RoomLifecycleReview.qml" line="+28"/>
+        <source>Hide lifecycle review</source>
+        <translation>লাইফসাইকেল পর্যালোচনা লুকান</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Review room activity and links</source>
+        <translation>রুমের কার্যকলাপ ও লিংক পর্যালোচনা করুন</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Archive hides a room for your account; it does not close it for other members. Leaving removes only you. Closing changes server access and may remove other members. No rooms are cleaned up automatically.</source>
+        <translation>আর্কাইভ করলে রুমটি শুধু আপনার অ্যাকাউন্টের জন্য লুকানো হয়; অন্য সদস্যদের জন্য এটি বন্ধ হয় না। ছেড়ে গেলে শুধু আপনিই সরে যান। বন্ধ করলে সার্ভারে অ্যাক্সেস বদলায় এবং অন্য সদস্যরা সরানো হতে পারে। কোনো রুম স্বয়ংক্রিয়ভাবে পরিষ্কার করা হয় না।</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Last known activity: %1. This device may not have all activity.</source>
+        <translation>সর্বশেষ জানা কার্যকলাপ: %1। এই ডিভাইসে সব কার্যকলাপ না-ও থাকতে পারে।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Last activity is not known. Missing history does not prove inactivity.</source>
+        <translation>সর্বশেষ কার্যকলাপ জানা নেই। ইতিহাস না থাকা নিষ্ক্রিয়তার প্রমাণ নয়।</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Joined members: %1. Closure&apos;s room-by-room plan shows who can be removed and who stays. Roles and ownership are separate in every room.</source>
+        <translation>যোগ দেওয়া সদস্য: %1। বন্ধ করার রুম-ভিত্তিক পরিকল্পনা দেখায় কাকে সরানো যাবে আর কে থাকবে। প্রতিটি রুমে ভূমিকা ও মালিকানা আলাদা।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Membership and ownership are not known. Check them before continuing.</source>
+        <translation>সদস্যপদ ও মালিকানা জানা নেই। এগোনোর আগে এগুলো যাচাই করুন।</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>The plan below lists the exact selected rooms and their outcomes. A Space&apos;s child rooms are separate rooms; shared rooms may belong to other Spaces.</source>
+        <translation>নিচের পরিকল্পনায় হুবহু নির্বাচিত রুমগুলো এবং তাদের ফলাফল তালিকাভুক্ত আছে। কোনো স্পেসের চাইল্ড রুমগুলো আলাদা রুম; শেয়ার করা রুম অন্য স্পেসেরও হতে পারে।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>This action affects only %1. Rooms inside a Space are not left or upgraded with it.</source>
+        <translation>এই কাজটি শুধু %1-এর ওপর প্রভাব ফেলে। স্পেসের ভেতরের রুমগুলো এর সঙ্গে ছেড়ে যাওয়া বা আপগ্রেড করা হয় না।</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Predecessor: %1
+Successor: %2
+These links remain in room state. Open the successor from the room&apos;s replacement notice before leaving if you need to continue there.</source>
+        <translation>পূর্বসূরি: %1
+উত্তরসূরি: %2
+এই লিংকগুলো রুমের স্টেটে থেকে যায়। সেখানে চালিয়ে যেতে হলে ছেড়ে যাওয়ার আগে রুমের প্রতিস্থাপন বিজ্ঞপ্তি থেকে উত্তরসূরি রুমটি খুলুন।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+1"/>
+        <source>None known</source>
+        <translation>কিছু জানা নেই</translation>
+    </message>
+</context>
+<context>
     <name>RoomListAttentionLocator</name>
     <message>
         <location filename="../qml/RoomListAttentionLocator.qml" line="+93"/>
@@ -20078,7 +20141,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RoomUpgradeDialog</name>
     <message>
-        <location filename="../qml/RoomUpgradeDialog.qml" line="+71"/>
+        <location filename="../qml/RoomUpgradeDialog.qml" line="+77"/>
         <source>Upgrade this space</source>
         <translation>এই স্পেস আপগ্রেড করুন</translation>
     </message>
@@ -29115,6 +29178,218 @@ Note: importing keys does not verify this session.</source>
     </message>
 </context>
 <context>
+    <name>SpaceCommunityPanel</name>
+    <message>
+        <location filename="../qml/SpaceCommunityPanel.qml" line="+56"/>
+        <source>Start here</source>
+        <translation>এখান থেকে শুরু করুন</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Edit guide</source>
+        <translation>গাইড সম্পাদনা করুন</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Announcements</source>
+        <translation>ঘোষণা</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Refresh</source>
+        <translation>রিফ্রেশ</translation>
+    </message>
+    <message>
+        <location line="+53"/>
+        <source>Open</source>
+        <translation>খুলুন</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Ask to join</source>
+        <translation>যোগ দেওয়ার অনুরোধ</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Join</source>
+        <translation>যোগ দিন</translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>Open link</source>
+        <translation>লিংক খুলুন</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Room guide</source>
+        <translation>রুম গাইড</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>The guide is shared room state. Servers and people allowed to read this Space&apos;s state can read it.</source>
+        <translation>গাইডটি শেয়ার করা রুম স্টেট। এই স্পেসের স্টেট পড়ার অনুমতি থাকা সার্ভার ও ব্যক্তিরা এটি পড়তে পারেন।</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Welcome (up to 4000 characters)</source>
+        <translation>স্বাগত বার্তা (সর্বোচ্চ 4000 অক্ষর)</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Welcome</source>
+        <translation>স্বাগত বার্তা</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Rules (up to 4000 characters)</source>
+        <translation>নিয়ম (সর্বোচ্চ 4000 অক্ষর)</translation>
+    </message>
+    <message>
+        <location line="-102"/>
+        <location line="+106"/>
+        <source>Rules</source>
+        <translation>নিয়ম</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Recommended room IDs in order (one per line, up to 12). Readers see only rooms already visible in their lobby.</source>
+        <translation>প্রস্তাবিত রুম ID ক্রম অনুযায়ী (প্রতি লাইনে একটি, সর্বোচ্চ 12টি)। পাঠকেরা শুধু তাদের লবিতে আগে থেকেই দৃশ্যমান রুমগুলো দেখেন।</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Recommended rooms</source>
+        <translation>প্রস্তাবিত রুম</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>HTTPS links (one per line, up to 8)</source>
+        <translation>HTTPS লিংক (প্রতি লাইনে একটি, সর্বোচ্চ 8টি)</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Important links</source>
+        <translation>গুরুত্বপূর্ণ লিংক</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Save guide</source>
+        <translation>গাইড সংরক্ষণ করুন</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Cancel</source>
+        <translation>বাতিল</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Announcement review</source>
+        <translation>ঘোষণা পর্যালোচনা</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Submitting shares your proposal as unencrypted Space state with the server and authorized readers. Only a reviewer can publish through this workflow, using their own identity. Keep private drafts out of shared state.</source>
+        <translation>জমা দিলে আপনার প্রস্তাব এনক্রিপ্ট না করা স্পেস স্টেট হিসেবে সার্ভার ও অনুমোদিত পাঠকদের সঙ্গে শেয়ার হয়। এই প্রক্রিয়ায় শুধু একজন পর্যালোচক নিজের পরিচয়ে প্রকাশ করতে পারেন। ব্যক্তিগত খসড়া শেয়ার করা স্টেটে রাখবেন না।</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Enable member proposals…</source>
+        <translation>সদস্যদের প্রস্তাব চালু করুন…</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>A room administrator must enable proposals for members first.</source>
+        <translation>প্রথমে একজন রুম প্রশাসককে সদস্যদের জন্য প্রস্তাব চালু করতে হবে।</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Destination room</source>
+        <translation>গন্তব্য রুম</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Announcement proposal</source>
+        <translation>ঘোষণার প্রস্তাব</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Submit or replace my proposal</source>
+        <translation>আমার প্রস্তাব জমা দিন বা প্রতিস্থাপন করুন</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Only the first 100 proposals are shown.</source>
+        <translation>শুধু প্রথম 100টি প্রস্তাব দেখানো হচ্ছে।</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Published proposal from %1</source>
+        <translation>%1-এর প্রকাশিত প্রস্তাব</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Proposal from %1 (author can no longer propose)</source>
+        <translation>%1-এর প্রস্তাব (লেখক আর প্রস্তাব দিতে পারবেন না)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Proposal from %1</source>
+        <translation>%1-এর প্রস্তাব</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Review</source>
+        <translation>পর্যালোচনা করুন</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Final announcement text</source>
+        <translation>চূড়ান্ত ঘোষণার লেখা</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Preview exact text and audience</source>
+        <translation>সঠিক লেখা ও দর্শক প্রিভিউ করুন</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Publish as %1
+Proposed by %2
+Destination: %3 (%4)
+Current joined members: %5
+%6</source>
+        <translation>%1 হিসেবে প্রকাশ করুন
+প্রস্তাবক: %2
+গন্তব্য: %3 (%4)
+বর্তমানে যোগ দেওয়া সদস্য: %5
+%6</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Approve and publish</source>
+        <translation>অনুমোদন করে প্রকাশ করুন</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Edit final text</source>
+        <translation>চূড়ান্ত লেখা সম্পাদনা করুন</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Close</source>
+        <translation>বন্ধ করুন</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Enable member proposals?</source>
+        <translation>সদস্যদের প্রস্তাব চালু করবেন?</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>This sets the announcement proposal event permission to 0. Members at that level can submit shared proposals. The reviewer permission and ordinary message permissions stay as they are.</source>
+        <translation>এটি ঘোষণা-প্রস্তাব ইভেন্টের অনুমতি 0-তে সেট করে। ওই স্তরের সদস্যরা শেয়ার করা প্রস্তাব জমা দিতে পারবেন। পর্যালোচকের অনুমতি ও সাধারণ বার্তার অনুমতি যেমন আছে তেমনই থাকে।</translation>
+    </message>
+</context>
+<context>
     <name>SpaceLobby</name>
     <message numerus="yes">
         <location filename="../qml/SpaceLobby.qml" line="-127"/>
@@ -29179,7 +29454,12 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+381"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+23"/>
+        <source>The result is not known. Refresh before trying again; publishing the same reviewed text reuses its transaction.</source>
+        <translation>ফলাফল জানা নেই। আবার চেষ্টা করার আগে রিফ্রেশ করুন; পর্যালোচিত একই লেখা প্রকাশ করলে তার লেনদেন পুনরায় ব্যবহৃত হয়।</translation>
+    </message>
+    <message>
+        <location line="+368"/>
         <source>All rooms</source>
         <translation>সব রুম</translation>
     </message>
@@ -29192,6 +29472,176 @@ Note: importing keys does not verify this session.</source>
         <location line="+1"/>
         <source>Rooms not in any Space</source>
         <translation>কোনো স্পেসে নেই এমন রুম</translation>
+    </message>
+    <message>
+        <location line="+1264"/>
+        <source>This action is unavailable. Refresh and check your permissions.</source>
+        <translation>এই কাজটি উপলভ্য নয়। রিফ্রেশ করে আপনার অনুমতি যাচাই করুন।</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>The proposal or audience changed. Refresh and review it again.</source>
+        <translation>প্রস্তাব বা দর্শক বদলে গেছে। রিফ্রেশ করে আবার পর্যালোচনা করুন।</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The server refused this action. Refresh and check your permissions.</source>
+        <translation>সার্ভার এই কাজটি প্রত্যাখ্যান করেছে। রিফ্রেশ করে আপনার অনুমতি যাচাই করুন।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This content was not accepted. Check the room IDs, that links use https, and the limits.</source>
+        <translation>এই বিষয়বস্তু গৃহীত হয়নি। রুম ID, লিংকগুলো https ব্যবহার করে কি না, এবং সীমাগুলো যাচাই করুন।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Another reviewer is publishing this proposal. Refresh in a moment.</source>
+        <translation>অন্য একজন পর্যালোচক এই প্রস্তাবটি প্রকাশ করছেন। একটু পরে রিফ্রেশ করুন।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The action did not complete. A publish may already have arrived; retrying the same reviewed text will not send a second post.</source>
+        <translation>কাজটি সম্পূর্ণ হয়নি। প্রকাশনা হয়তো ইতিমধ্যে পৌঁছে গেছে; পর্যালোচিত একই লেখা দিয়ে আবার চেষ্টা করলে দ্বিতীয় পোস্ট পাঠানো হবে না।</translation>
+    </message>
+    <message>
+        <location line="+47"/>
+        <source>Send other message events</source>
+        <translation>অন্যান্য বার্তা ইভেন্ট পাঠান</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Invite people</source>
+        <translation>লোকজনকে আমন্ত্রণ করুন</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Remove members below their level</source>
+        <translation>নিজের চেয়ে নিচের স্তরের সদস্যদের সরান</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Ban members below their level</source>
+        <translation>নিজের চেয়ে নিচের স্তরের সদস্যদের নিষিদ্ধ করুন</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Remove other people&apos;s messages</source>
+        <translation>অন্যদের বার্তা সরান</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Notify the whole room</source>
+        <translation>পুরো রুমকে জানান</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change other room state</source>
+        <translation>রুমের অন্যান্য স্টেট পরিবর্তন করুন</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Manage rooms in this Space</source>
+        <translation>এই স্পেসের রুমগুলো পরিচালনা করুন</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change the name</source>
+        <translation>নাম পরিবর্তন করুন</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change the topic</source>
+        <translation>বিষয় পরিবর্তন করুন</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change the avatar</source>
+        <translation>অবতার পরিবর্তন করুন</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change who can join</source>
+        <translation>কে যোগ দিতে পারবে তা পরিবর্তন করুন</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change who can read history</source>
+        <translation>কে ইতিহাস পড়তে পারবে তা পরিবর্তন করুন</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change roles below their level</source>
+        <translation>নিজের চেয়ে নিচের স্তরের ভূমিকা পরিবর্তন করুন</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Upgrade the room</source>
+        <translation>রুম আপগ্রেড করুন</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Anyone who is not banned can join without an invite.</source>
+        <translation>নিষিদ্ধ নন এমন যে কেউ আমন্ত্রণ ছাড়াই যোগ দিতে পারেন।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Only invited people can join.</source>
+        <translation>শুধু আমন্ত্রিত ব্যক্তিরা যোগ দিতে পারেন।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>People can ask to join; a member with invite permission must admit them.</source>
+        <translation>লোকজন যোগ দেওয়ার অনুরোধ করতে পারেন; আমন্ত্রণের অনুমতি থাকা কোনো সদস্যকে তাদের গ্রহণ করতে হবে।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Invited people and eligible members of these rooms can join: %1. The server checks membership and authorization.</source>
+        <translation>আমন্ত্রিত ব্যক্তি এবং এই রুমগুলোর যোগ্য সদস্যরা যোগ দিতে পারেন: %1। সার্ভার সদস্যপদ ও অনুমোদন যাচাই করে।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>not known</source>
+        <translation>জানা নেই</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Who can join is not known.</source>
+        <translation>কে যোগ দিতে পারবে তা জানা নেই।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Other people can ask to join.</source>
+        <translation>অন্যরা যোগ দেওয়ার অনুরোধ করতে পারেন।</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Anyone can read the history, including people outside the room.</source>
+        <translation>যে কেউ ইতিহাস পড়তে পারেন, রুমের বাইরের লোকজনও।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Members can read history from when they joined.</source>
+        <translation>সদস্যরা যোগ দেওয়ার সময় থেকে ইতিহাস পড়তে পারেন।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Members can read history from when they were invited.</source>
+        <translation>সদস্যরা আমন্ত্রিত হওয়ার সময় থেকে ইতিহাস পড়তে পারেন।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Members can read all history, including messages sent before they joined.</source>
+        <translation>সদস্যরা পুরো ইতিহাস পড়তে পারেন, যোগ দেওয়ার আগে পাঠানো বার্তাসহ।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>History access is not known.</source>
+        <translation>ইতিহাসে অ্যাক্সেস জানা নেই।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This applies only to this room or Space. Child rooms keep their own rules. Servers enforce access and may have newer state.</source>
+        <translation>এটি শুধু এই রুম বা স্পেসে প্রযোজ্য। চাইল্ড রুমগুলো নিজস্ব নিয়ম বজায় রাখে। সার্ভার অ্যাক্সেস প্রয়োগ করে এবং তাদের কাছে নতুনতর স্টেট থাকতে পারে।</translation>
     </message>
 </context>
 <context>
@@ -29550,12 +30000,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="-40"/>
         <location line="+43"/>
-        <location line="+1049"/>
+        <location line="+1050"/>
         <source>Invite</source>
         <translation>আমন্ত্রণ করুন</translation>
     </message>
     <message>
-        <location line="-1091"/>
+        <location line="-1092"/>
         <location line="+43"/>
         <source>Kick</source>
         <translation>লাথি</translation>
@@ -29781,12 +30231,12 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+16"/>
-        <location line="+395"/>
+        <location line="+396"/>
         <source>Save</source>
         <translation>সংরক্ষণ করুন</translation>
     </message>
     <message>
-        <location line="-382"/>
+        <location line="-383"/>
         <source>Banner</source>
         <translation>ব্যানার</translation>
     </message>
@@ -29886,7 +30336,7 @@ Note: importing keys does not verify this session.</source>
         <translation>যোগ দেওয়ার অনুরোধ (নক)</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source>Members of another space can join. Lightning can&apos;t change space-restricted access yet.</source>
         <translation>অন্য স্পেসের সদস্যরা যোগ দিতে পারেন। Lightning এখনও স্থান-সীমাবদ্ধ অ্যাক্সেস পরিবর্তন করতে পারে না।</translation>
     </message>
@@ -30240,7 +30690,29 @@ Note: importing keys does not verify this session.</source>
         <translation>ভূমিকা বদলাবেন?</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+38"/>
+        <source>Capabilities in this room or Space only. Moderation can target only members below the new level. Servers enforce permissions and may have newer state.</source>
+        <translation>শুধু এই রুম বা স্পেসের সক্ষমতা। মডারেশন শুধু নতুন স্তরের নিচের সদস্যদের লক্ষ্য করতে পারে। সার্ভার অনুমতি প্রয়োগ করে এবং তাদের কাছে নতুনতর স্টেট থাকতে পারে।</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>%1: %2 → %3 (level %4)</source>
+        <translation>%1: %2 → %3 (স্তর %4)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+1"/>
+        <source>Allowed</source>
+        <translation>অনুমোদিত</translation>
+    </message>
+    <message>
+        <location line="-1"/>
+        <location line="+1"/>
+        <source>Not allowed</source>
+        <translation>অনুমোদিত নয়</translation>
+    </message>
+    <message>
+        <location line="+12"/>
         <source>Set %1 to %2 in this room?</source>
         <translation>এই রুমে %1-কে %2 করবেন?</translation>
     </message>
@@ -30268,6 +30740,39 @@ Note: importing keys does not verify this session.</source>
         <location line="+1"/>
         <source>You will also no longer be able to change roles or permissions in this space.</source>
         <translation>এই স্পেসে আপনি আর ভূমিকা বা অনুমতি বদলাতেও পারবেন না।</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>Review access change</source>
+        <translation>অ্যাক্সেস পরিবর্তন পর্যালোচনা করুন</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>Current audience
+%1
+
+Proposed audience
+%2</source>
+        <translation>বর্তমান দর্শক
+%1
+
+প্রস্তাবিত দর্শক
+%2</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Room state changed. Cancel and review again.</source>
+        <translation>রুমের স্টেট বদলে গেছে। বাতিল করে আবার পর্যালোচনা করুন।</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Apply access change</source>
+        <translation>অ্যাক্সেস পরিবর্তন প্রয়োগ করুন</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Cancel</source>
+        <translation>বাতিল</translation>
     </message>
 </context>
 <context>

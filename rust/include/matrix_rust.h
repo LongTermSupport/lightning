@@ -2686,3 +2686,13 @@ int mx_rust_store_any_held(const char *store_path);
 #ifdef __cplusplus
 }
 #endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+char *mx_rust_space_community(void *client, const char *room_id,
+                              const char *action, const char *payload_json,
+                              uint64_t op_id);
+#ifdef __cplusplus
+}
+#endif

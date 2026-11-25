@@ -22,6 +22,10 @@ class MatrixClient : public QObject
 {
     Q_OBJECT
 public:
+    virtual quint64 spaceCommunityAction(const QString &roomId, const QString &action,
+                                         const QVariantMap &payload)
+    { Q_UNUSED(roomId); Q_UNUSED(action); Q_UNUSED(payload); return 0; }
+
     enum ConnectionState {
         Disconnected,
         Connecting,
@@ -1461,6 +1465,9 @@ public:
     virtual qint64 maxUploadSize() const { return 0; }
 
 Q_SIGNALS:
+    void spaceCommunityFinished(quint64 opId, const QString &roomId,
+                                const QString &action, bool ok,
+                                const QVariantMap &result);
     void loginSucceeded(const QString &userId);
     void loginFailed(const QString &reason);
     void loggedOut();

@@ -22437,3 +22437,22 @@ mod forged_edit_tests;
 
 #[cfg(test)]
 mod event_cache_burst_tests;
+
+mod community;
+
+#[no_mangle]
+pub unsafe extern "C" fn mx_rust_space_community(
+    ptr: *mut c_void,
+    room_id: *const c_char,
+    action: *const c_char,
+    payload_json: *const c_char,
+    op_id: u64,
+) -> *mut c_char {
+    ffi_string(|| {
+        let bridge = unsafe { bridge(ptr)? };
+        let room_id = unsafe { cstr_arg(room_id) }?;
+        let action = unsafe { cstr_arg(action) }?;
+        let payload = unsafe { cstr_arg(payload_json) }?;
+        community::dispatch(bridge, room_id, action, payload, op_id).map(|_| String::new())
+    })
+}
