@@ -232,6 +232,36 @@ private Q_SLOTS:
                     .isEmpty());
     }
 
+    void aPinnedMicrophoneIsNeverMatchedByName()
+    {
+        const auto candidates = QList<GstDeviceCandidate>{
+            pipewire(QStringLiteral("USB Microphone"), QStringLiteral("91"),
+                     QStringLiteral("alsa_input.usb-other"))};
+        const QString wanted = QStringLiteral("alsa_input.usb-wanted");
+        const QString name = QStringLiteral("USB Microphone");
+        QCOMPARE(resolveDeviceBinding(CaptureKind::Microphone,
+                                      QStringLiteral("pipewiresrc"), wanted,
+                                      name, candidates)
+                     .value,
+                 QStringLiteral("91"));
+        const DeviceBinding pinned = resolveDeviceBinding(
+            CaptureKind::PinnedMicrophone, QStringLiteral("pipewiresrc"),
+            wanted, name, candidates);
+        QVERIFY2(pinned.isEmpty(), "a same-name device replaced the pinned one");
+        QVERIFY(pinned.refused);
+        QVERIFY(pinned.requireIdentity);
+
+        const DeviceBinding same = resolveDeviceBinding(
+            CaptureKind::PinnedMicrophone, QStringLiteral("pipewiresrc"),
+            QStringLiteral("alsa_input.usb-other"), name, candidates);
+        QCOMPARE(same.value, QStringLiteral("91"));
+        QVERIFY(!same.refused);
+        QVERIFY(resolveDeviceBinding(CaptureKind::PinnedMicrophone,
+                                     QStringLiteral("pipewiresrc"), QString(),
+                                     name, candidates)
+                    .refused);
+    }
+
     void anUnknownElementBindsNothing()
     {
         const auto candidates = QList<GstDeviceCandidate>{

@@ -38,7 +38,7 @@ ColumnLayout {
         Layout.fillWidth: true
         horizontalAlignment: Text.AlignHCenter
         wrapMode: Text.Wrap
-        text: qsTr("No messages found")
+        text: qsTr("No matches in indexed messages")
         color: root.storm ? AppTheme.stormTextMuted : AppTheme.textMuted
         font.pixelSize: AppTheme.textBody
     }

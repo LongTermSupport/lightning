@@ -531,7 +531,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
 <context>
     <name>ActivityCenterPanel</name>
     <message>
-        <location filename="../qml/ActivityCenterPanel.qml" line="+166"/>
+        <location filename="../qml/ActivityCenterPanel.qml" line="+171"/>
         <source>custom emoji</source>
         <translation>Benutzerdefiniertes Emoji</translation>
     </message>
@@ -597,12 +597,12 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     </message>
     <message>
         <location line="+47"/>
-        <location line="+324"/>
+        <location line="+357"/>
         <source>Activity</source>
         <translation>Aktivität</translation>
     </message>
     <message numerus="yes">
-        <location line="-314"/>
+        <location line="-347"/>
         <source>%n new</source>
         <translation>
             <numerusform>%n neu</numerusform>
@@ -682,6 +682,17 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     </message>
     <message>
         <location line="+3"/>
+        <location line="+35"/>
+        <source>To do</source>
+        <translation>Zu erledigen</translation>
+    </message>
+    <message>
+        <location line="-34"/>
+        <source>Messages you marked as needing a reply or waiting</source>
+        <translation>Nachrichten, die du als „Antwort nötig“ oder „Wartet auf Antwort“ markiert hast</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>Reactions</source>
         <translation>Reaktionen</translation>
     </message>
@@ -696,9 +707,14 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Stichwörter</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+26"/>
         <source>Unread</source>
         <translation>Ungelesen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Mentioned</source>
+        <translation>Erwähnt</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -707,12 +723,17 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     </message>
     <message>
         <location line="+1"/>
-        <location line="+484"/>
+        <location line="+515"/>
         <source>Following</source>
         <translation>Nachfolgend</translation>
     </message>
     <message>
-        <location line="-483"/>
+        <location line="-513"/>
+        <source>Threads you marked, saved or set a reminder in</source>
+        <translation>Threads, in denen du etwas markiert, gespeichert oder eine Erinnerung gesetzt hast</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>All known</source>
         <translation>Alles bekannt</translation>
     </message>
@@ -732,7 +753,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Stichwort-Einstellungen öffnen</translation>
     </message>
     <message>
-        <location line="+54"/>
+        <location line="+56"/>
         <source>Unseen only</source>
         <translation>Nur Ungesehenes</translation>
     </message>
@@ -762,12 +783,17 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Nur Aktivität aus favorisierten Räumen anzeigen</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+31"/>
         <source>Older activity is not available from this server.</source>
         <translation>Ältere Aktivität ist von diesem Server nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+18"/>
+        <source>Nothing to do. Mark a message as needing a reply from its menu and it stays here until you mark it done.</source>
+        <translation>Nichts zu erledigen. Markiere eine Nachricht über ihr Menü als „Antwort nötig“, dann bleibt sie hier, bis du sie als erledigt markierst.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>No loaded activity matches your search.</source>
         <translation>Keine geladene Aktivität passt zu deiner Suche.</translation>
     </message>
@@ -782,7 +808,27 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Keine Aktivität aus favorisierten Räumen.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+6"/>
+        <source>This server does not say which threads you follow.</source>
+        <translation>Dieser Server gibt nicht an, welchen Threads du folgst.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Older activity is not available from this server, so threads may be missing. New thread replies will show up here as they arrive.</source>
+        <translation>Ältere Aktivität ist von diesem Server nicht verfügbar, daher können Threads fehlen. Neue Thread-Antworten erscheinen hier, sobald sie eintreffen.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>No threads with a reply mark, a saved message or a reminder.</source>
+        <translation>Keine Threads mit Antwortmarkierung, gespeicherter Nachricht oder Erinnerung.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>No threads that mention you found in recent activity.</source>
+        <translation>In der letzten Aktivität wurden keine Threads gefunden, in denen du erwähnt wirst.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>No followed threads found in recent activity.</source>
         <translation>Keine verfolgten Threads in der letzten Aktivität gefunden.</translation>
     </message>
@@ -827,19 +873,39 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Noch nichts da. Erwähnungen, Antworten und Reaktionen auf dich erscheinen hier, sobald sie eintreffen.</translation>
     </message>
     <message>
-        <location line="-113"/>
+        <location line="+321"/>
+        <source>Needs reply</source>
+        <translation>Antwort nötig</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Waiting for reply</source>
+        <translation>Wartet auf Antwort</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Saved</source>
+        <translation>Gespeichert</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Reminder: %1</source>
+        <translation>Erinnerung: %1</translation>
+    </message>
+    <message>
+        <location line="-463"/>
         <source>Search loaded activity</source>
         <translation>Geladene Aktivität durchsuchen</translation>
     </message>
     <message>
-        <location line="+292"/>
+        <location line="+317"/>
         <location line="+83"/>
-        <location line="+33"/>
+        <location line="+35"/>
         <source>Encrypted message</source>
         <translation>Verschlüsselte Nachricht</translation>
     </message>
     <message>
-        <location line="-114"/>
+        <location line="-116"/>
         <source>From %1</source>
         <translation>Von %1</translation>
     </message>
@@ -872,7 +938,12 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Thread in %1, %2: %3</translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+36"/>
+        <source>No new replies in loaded activity</source>
+        <translation>Keine neuen Antworten in der geladenen Aktivität</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>Root: %1</source>
         <translation>Root: %1</translation>
     </message>
@@ -882,7 +953,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Der Root-Kontext wird beim Öffnen geladen</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+11"/>
         <source>Mention</source>
         <translation>Erwähnung</translation>
     </message>
@@ -890,8 +961,8 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
 <context>
     <name>ActivityModel</name>
     <message>
-        <location filename="../src/models/ActivityModel.cpp" line="+836"/>
-        <location line="+140"/>
+        <location filename="../src/models/ActivityModel.cpp" line="+906"/>
+        <location line="+316"/>
         <source>Encrypted message</source>
         <translation>Verschlüsselte Nachricht</translation>
     </message>
@@ -1034,31 +1105,31 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     <name>AppController</name>
     <message>
         <location filename="../qml/LoginScreen.qml" line="+433"/>
-        <location filename="../src/app/AppController.cpp" line="+6525"/>
+        <location filename="../src/app/AppController.cpp" line="+6573"/>
         <location line="+25"/>
-        <location line="+531"/>
+        <location line="+532"/>
         <location line="+454"/>
         <source>Lightning can&apos;t read this device&apos;s saved sign-ins right now — the system keyring is locked or unavailable. Unlock it and try again.</source>
         <translation>Lightning kann die gespeicherten Anmeldungen dieses Geräts gerade nicht lesen – der System-Schlüsselbund ist gesperrt oder nicht verfügbar. Entsperre ihn und versuche es erneut.</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-6905"/>
-        <location line="+2760"/>
+        <location filename="../src/app/AppController.cpp" line="-6954"/>
+        <location line="+2803"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
     <message>
-        <location line="-2759"/>
+        <location line="-2802"/>
         <source>This is a test notification. If you can read it, desktop notifications work.</source>
         <translation>Dies ist eine Testbenachrichtigung. Wenn du sie lesen kannst, funktionieren Desktop-Benachrichtigungen.</translation>
     </message>
     <message>
-        <location line="+385"/>
+        <location line="+427"/>
         <source>New mentions</source>
         <translation>Neue Erwähnungen</translation>
     </message>
     <message>
-        <location line="+555"/>
+        <location line="+556"/>
         <source>Call started</source>
         <translation>Anruf gestartet</translation>
     </message>
@@ -1115,13 +1186,13 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4293"/>
-        <location line="+942"/>
+        <location line="+4299"/>
+        <location line="+947"/>
         <source>Not connected</source>
         <translation>Nicht verbunden</translation>
     </message>
     <message>
-        <location line="-5276"/>
+        <location line="-5287"/>
         <source>Connecting…</source>
         <translation>Verbindet …</translation>
     </message>
@@ -1177,24 +1248,24 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     </message>
     <message>
         <location line="+4"/>
-        <location line="+3120"/>
+        <location line="+3125"/>
         <location line="+9"/>
         <source>Lightning could not read the selected file.</source>
         <translation>Lightning konnte die ausgewählte Datei nicht lesen.</translation>
     </message>
     <message>
-        <location line="-3126"/>
+        <location line="-3131"/>
         <source>A room-key import is already in progress.</source>
         <translation>Ein Raumschlüssel-Import läuft bereits.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4088"/>
+        <location line="+4094"/>
         <source>Not signed in.</source>
         <translation>Nicht angemeldet.</translation>
     </message>
     <message>
-        <location line="-4086"/>
+        <location line="-4092"/>
         <source>Room-key import failed.</source>
         <translation>Der Raumschlüssel-Import ist fehlgeschlagen.</translation>
     </message>
@@ -1270,14 +1341,14 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     </message>
     <message>
         <location line="+8"/>
-        <location line="+1856"/>
+        <location line="+1861"/>
         <location line="+41"/>
         <location line="+201"/>
         <source>This build has no Rust SDK backend.</source>
         <translation>Diese Version enthält kein Rust-SDK-Backend.</translation>
     </message>
     <message>
-        <location line="-1809"/>
+        <location line="-1814"/>
         <source>Choose a local image file.</source>
         <translation>Wähle eine lokale Bilddatei aus.</translation>
     </message>
@@ -1321,7 +1392,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Das Symbol konnte nicht gespeichert werden.</translation>
     </message>
     <message>
-        <location line="+424"/>
+        <location line="+429"/>
         <source>You are no longer in that room, so it cannot be opened.</source>
         <translation>Du bist nicht mehr in diesem Raum, daher kann er nicht geöffnet werden.</translation>
     </message>
@@ -1425,15 +1496,15 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Das Löschen der lokalen Daten dieses Geräts würde das nicht beheben und Verschlüsselungsschlüssel zerstören, die du noch brauchst.</translation>
     </message>
     <message>
-        <location line="+500"/>
-        <location line="+932"/>
+        <location line="+501"/>
+        <location line="+937"/>
         <location line="+748"/>
         <location line="+15"/>
         <source>Removal did not finish: the account&apos;s data is still in use. Nothing was deleted.</source>
         <translation>Entfernen nicht abgeschlossen: Die Daten des Kontos sind noch in Gebrauch. Es wurde nichts gelöscht.</translation>
     </message>
     <message>
-        <location line="-1498"/>
+        <location line="-1503"/>
         <source>This backend cannot change your display name.</source>
         <translation>Dieses Backend kann deinen Anzeigenamen nicht ändern.</translation>
     </message>
@@ -1465,12 +1536,12 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     </message>
     <message>
         <location line="+40"/>
-        <location line="+699"/>
+        <location line="+704"/>
         <source>That account is not signed in on this device.</source>
         <translation>Dieses Konto ist auf diesem Gerät nicht angemeldet.</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-681"/>
         <source>That account&apos;s sign-in has expired. Sign in to it again.</source>
         <translation>Die Anmeldung dieses Kontos ist abgelaufen. Melde dich erneut an.</translation>
     </message>
@@ -1490,7 +1561,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Das ausgewählte Konto konnte nicht aktiviert werden.</translation>
     </message>
     <message>
-        <location line="+358"/>
+        <location line="+363"/>
         <location line="+731"/>
         <source>This account can&apos;t be removed while the system keyring can&apos;t be read: its saved sign-in is there and would be left behind. Unlock the keyring, or start it, and try again.</source>
         <translation>Dieses Konto kann nicht entfernt werden, solange der System-Schlüsselbund nicht gelesen werden kann: Seine gespeicherte Anmeldung liegt dort und würde zurückbleiben. Entsperre oder starte den Schlüsselbund und versuche es erneut.</translation>
@@ -1858,7 +1929,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
 <context>
     <name>AttachmentQueueModel</name>
     <message>
-        <location filename="../src/models/AttachmentQueueModel.cpp" line="+82"/>
+        <location filename="../src/models/AttachmentQueueModel.cpp" line="+87"/>
         <source>The file is larger than the server&apos;s upload limit (%1).</source>
         <translation>Die Datei ist größer als das Upload-Limit des Servers (%1).</translation>
     </message>
@@ -1893,7 +1964,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Diese Datei ist bereits angehängt.</translation>
     </message>
     <message>
-        <location line="+276"/>
+        <location line="+281"/>
         <source>The converted picture couldn&apos;t be saved.</source>
         <translation>Das konvertierte Bild konnte nicht gespeichert werden.</translation>
     </message>
@@ -1923,7 +1994,48 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Ungültige Bildbearbeitung.</translation>
     </message>
     <message>
-        <location line="-116"/>
+        <location line="+371"/>
+        <source>The folder review is no longer available. Choose the folder again.</source>
+        <translation>Die Ordnerprüfung ist nicht mehr verfügbar. Wähle den Ordner erneut.</translation>
+    </message>
+    <message>
+        <location line="+76"/>
+        <source>Inspection requires a readable photo of 16 MiB or less.</source>
+        <translation>Die Prüfung erfordert ein lesbares Foto von höchstens 16 MiB.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>This photo cannot be sent with the selected metadata policy.</source>
+        <translation>Dieses Foto kann mit der gewählten Metadaten-Richtlinie nicht gesendet werden.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <location line="+3"/>
+        <source>Unknown</source>
+        <translation>Unbekannt</translation>
+    </message>
+    <message>
+        <location line="-1"/>
+        <source>Retained</source>
+        <translation>Beibehalten</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Removed</source>
+        <translation>Entfernt</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The reviewed copy could not be prepared.</source>
+        <translation>Die geprüfte Kopie konnte nicht vorbereitet werden.</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>This attachment changed before inspection finished.</source>
+        <translation>Dieser Anhang hat sich geändert, bevor die Prüfung abgeschlossen war.</translation>
+    </message>
+    <message>
+        <location line="-613"/>
         <location line="+147"/>
         <source>This image is too large to edit.</source>
         <translation>Dieses Bild ist zu groß zum Bearbeiten.</translation>
@@ -1968,6 +2080,65 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <location line="+59"/>
         <source>The image edit could not be saved.</source>
         <translation>Die Bildbearbeitung konnte nicht gespeichert werden.</translation>
+    </message>
+</context>
+<context>
+    <name>AttachmentReviewDialogs</name>
+    <message>
+        <location filename="../qml/AttachmentReviewDialogs.qml" line="+20"/>
+        <source>Photo metadata</source>
+        <translation>Foto-Metadaten</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>EXIF GPS: %1
+EXIF timestamp: %2
+Camera make or model: %3
+EXIF orientation: %4</source>
+        <translation>EXIF GPS: %1
+EXIF-Zeitstempel: %2
+Kamerahersteller oder -modell: %3
+EXIF-Ausrichtung: %4</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Inspecting photo…</source>
+        <translation>Foto wird geprüft…</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Choose a folder to archive</source>
+        <translation>Ordner zum Archivieren wählen</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Review folder archive</source>
+        <translation>Ordnerarchiv prüfen</translation>
+    </message>
+    <message>
+        <location line="+45"/>
+        <source>Preparing archive…</source>
+        <translation>Archiv wird vorbereitet…</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>%1 files selected (%2 bytes)</source>
+        <translation>%1 Dateien ausgewählt (%2 Bytes)</translation>
+    </message>
+    <message>
+        <location line="+41"/>
+        <source>Excluded: %1</source>
+        <translation>Ausgeschlossen: %1</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Create archive</source>
+        <translation>Archiv erstellen</translation>
     </message>
 </context>
 <context>
@@ -2603,12 +2774,27 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>(Standard)</translation>
     </message>
     <message>
+        <location line="+10"/>
+        <source>Use only this microphone for this session</source>
+        <translation>Nur dieses Mikrofon für diese Sitzung verwenden</translation>
+    </message>
+    <message>
         <location line="+12"/>
+        <source>Waiting for your chosen microphone. Choose another input to speak.</source>
+        <translation>Warte auf dein ausgewähltes Mikrofon. Wähle einen anderen Eingang, um zu sprechen.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone isn&apos;t connected</source>
         <translation>Dein ausgewähltes Mikrofon ist nicht verbunden</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
+        <source>Your chosen microphone could not be opened. Choose another input to speak.</source>
+        <translation>Dein ausgewähltes Mikrofon konnte nicht geöffnet werden. Wähle einen anderen Eingang, um zu sprechen.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone couldn&apos;t be opened. The call uses the system default.</source>
         <translation>Dein ausgewähltes Mikrofon konnte nicht geöffnet werden. Der Anruf verwendet das Systemmikrofon.</translation>
     </message>
@@ -2702,6 +2888,11 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Die ausgewählte Kamera ist nicht verbunden</translation>
     </message>
     <message>
+        <location line="+1"/>
+        <source>Chosen microphone not connected</source>
+        <translation>Ausgewähltes Mikrofon nicht verbunden</translation>
+    </message>
+    <message>
         <location line="+3"/>
         <source>System default</source>
         <translation>Systemstandard</translation>
@@ -2717,17 +2908,32 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
         <source>No microphone was found. You can still join a call and listen.</source>
         <translation>Es wurde kein Mikrofon gefunden. Du kannst trotzdem einem Anruf beitreten und zuhören.</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+6"/>
+        <source>Use only this microphone for this session</source>
+        <translation>Nur dieses Mikrofon für diese Sitzung verwenden</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Waiting for your chosen microphone. Choose another input to speak.</source>
+        <translation>Warte auf dein ausgewähltes Mikrofon. Wähle einen anderen Eingang, um zu sprechen.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone isn&apos;t connected. Calls use the system default until it&apos;s back.</source>
         <translation>Dein ausgewähltes Mikrofon ist nicht verbunden. Anrufe verwenden den Systemstandard, bis es wieder da ist.</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+16"/>
+        <source>Your chosen microphone could not be opened. Choose another input to speak.</source>
+        <translation>Dein ausgewähltes Mikrofon konnte nicht geöffnet werden. Wähle einen anderen Eingang, um zu sprechen.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone couldn&apos;t be opened, so the system default was used. Choose it again or reconnect it.</source>
         <translation>Dein ausgewähltes Mikrofon konnte nicht geöffnet werden, daher wurde das Systemmikrofon verwendet. Wähle es erneut aus oder schließe es neu an.</translation>
     </message>
@@ -3140,31 +3346,46 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     </message>
     <message>
         <location line="+20"/>
-        <location line="+28"/>
+        <location line="+30"/>
         <source>Turn off camera</source>
         <translation>Kamera ausschalten</translation>
     </message>
     <message>
-        <location line="-27"/>
-        <location line="+28"/>
+        <location line="-29"/>
+        <location line="+32"/>
         <source>Turn on camera</source>
         <translation>Kamera einschalten</translation>
     </message>
     <message>
-        <location line="-20"/>
-        <location line="+28"/>
+        <location line="-24"/>
+        <location line="+32"/>
         <source>Choose camera</source>
         <translation>Kamera auswählen</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="-12"/>
+        <source>Waiting for desktop camera permission. Click to cancel.</source>
+        <translation>Warte auf die Kameraberechtigung des Desktops. Zum Abbrechen klicken.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Camera request cancelled. Click to try again.</source>
+        <translation>Kameraanfrage abgebrochen. Klicke, um es erneut zu versuchen.</translation>
+    </message>
+    <message>
+        <location line="+30"/>
         <source>Stop sharing your screen</source>
         <translation>Bildschirmfreigabe beenden</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Cancel screen sharing</source>
-        <translation>Bildschirmfreigabe abbrechen</translation>
+        <source>Waiting for desktop screen sharing permission. Click to cancel.</source>
+        <translation>Warte auf die Berechtigung des Desktops für die Bildschirmfreigabe. Zum Abbrechen klicken.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Screen sharing request cancelled. Click to try again.</source>
+        <translation>Anfrage zur Bildschirmfreigabe abgebrochen. Klicke, um es erneut zu versuchen.</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3833,6 +4054,111 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     </message>
 </context>
 <context>
+    <name>CatchUpCard</name>
+    <message numerus="yes">
+        <location filename="../qml/CatchUpCard.qml" line="+42"/>
+        <source>%n mention(s)</source>
+        <translation>
+            <numerusform>%n Erwähnung</numerusform>
+            <numerusform>%n Erwähnungen</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>%n reply(s)</source>
+        <translation>
+            <numerusform>%n Antwort</numerusform>
+            <numerusform>%n Antworten</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>%n thread(s) with new replies</source>
+        <translation>
+            <numerusform>%n Thread mit neuen Antworten</numerusform>
+            <numerusform>%n Threads mit neuen Antworten</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>%n poll(s)</source>
+        <translation>
+            <numerusform>%n Umfrage</numerusform>
+            <numerusform>%n Umfragen</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Older activity is not available from this server.</source>
+        <translation>Ältere Aktivität ist von diesem Server nicht verfügbar.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Only loaded activity is counted. Older activity may be missing.</source>
+        <translation>Nur geladene Aktivität wird gezählt. Ältere Aktivität kann fehlen.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Activity is at its limit, so the oldest items are not counted.</source>
+        <translation>Die Aktivität hat ihr Limit erreicht, daher werden die ältesten Einträge nicht gezählt.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Mention</source>
+        <translation>Erwähnung</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Reply</source>
+        <translation>Antwort</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1"/>
+        <source>%n new thread reply(s)</source>
+        <translation>
+            <numerusform>%n neue Thread-Antwort</numerusform>
+            <numerusform>%n neue Thread-Antworten</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Poll</source>
+        <translation>Umfrage</translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <location line="+46"/>
+        <source>Catch up</source>
+        <translation>Verpasstes</translation>
+    </message>
+    <message numerus="yes">
+        <location line="-27"/>
+        <source>%n message(s) could not be decrypted yet.</source>
+        <translation>
+            <numerusform>%n Nachricht konnte noch nicht entschlüsselt werden.</numerusform>
+            <numerusform>%n Nachrichten konnten noch nicht entschlüsselt werden.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>%1 in %2</source>
+        <translation>%1 in %2</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>Encrypted</source>
+        <translation>Verschlüsselt</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+11"/>
+        <source>%n more not listed.</source>
+        <translation>
+            <numerusform>%n weiterer Eintrag nicht aufgeführt.</numerusform>
+            <numerusform>%n weitere Einträge nicht aufgeführt.</numerusform>
+        </translation>
+    </message>
+</context>
+<context>
     <name>ChangePasswordSection</name>
     <message>
         <location filename="../qml/ChangePasswordSection.qml" line="+83"/>
@@ -3936,7 +4262,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+359"/>
+        <location filename="../qml/SpaceLobby.qml" line="+366"/>
         <source>%1, collapsed</source>
         <translation>%1, eingeklappt</translation>
     </message>
@@ -8704,6 +9030,68 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
 </context>
 <context>
+    <name>FolderArchive</name>
+    <message>
+        <location filename="../src/media/FolderArchive.cpp" line="+71"/>
+        <source>This folder exceeds the 256-entry review limit.</source>
+        <translation>Dieser Ordner überschreitet das Prüflimit von 256 Einträgen.</translation>
+    </message>
+    <message>
+        <location line="+180"/>
+        <source>The folder could not be reviewed.</source>
+        <translation>Der Ordner konnte nicht geprüft werden.</translation>
+    </message>
+</context>
+<context>
+    <name>FollowUpsList</name>
+    <message>
+        <location filename="../qml/FollowUpsList.qml" line="+31"/>
+        <source>Waiting for reply</source>
+        <translation>Wartet auf Antwort</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <location line="+112"/>
+        <source>Needs reply</source>
+        <translation>Antwort nötig</translation>
+    </message>
+    <message>
+        <location line="-91"/>
+        <source>To do</source>
+        <translation>Zu erledigen</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>%1 in %2</source>
+        <translation>%1 in %2</translation>
+    </message>
+    <message>
+        <location line="+40"/>
+        <source>In a thread</source>
+        <translation>In einem Thread</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>You replied. Mark it done if that settles it.</source>
+        <translation>Du hast geantwortet. Markiere es als erledigt, wenn sich die Sache damit erledigt hat.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Reminder: %1</source>
+        <translation>Erinnerung: %1</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Waiting</source>
+        <translation>Wartet</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Done</source>
+        <translation>Erledigt</translation>
+    </message>
+</context>
+<context>
     <name>ForwardController</name>
     <message>
         <location filename="../src/app/ForwardController.cpp" line="+99"/>
@@ -10702,7 +11090,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Über %1</translation>
     </message>
     <message>
-        <location line="+133"/>
+        <location line="+139"/>
         <source>Too large to play here</source>
         <translation>Zu groß zum Abspielen hier</translation>
     </message>
@@ -11508,13 +11896,13 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+424"/>
+        <location line="+426"/>
         <location line="+3"/>
         <source>Dismiss</source>
         <translation>Schließen</translation>
     </message>
     <message>
-        <location line="-374"/>
+        <location line="-376"/>
         <source>This message&apos;s edits could not be read. Check your connection and try again.</source>
         <translation>Die Bearbeitungen dieser Nachricht konnten nicht gelesen werden. Prüfe deine Verbindung und versuche es erneut.</translation>
     </message>
@@ -11534,7 +11922,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>%1 Bearbeitungen entfernt. Es sind noch weitere übrig – führe es erneut aus.</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
+        <source>Message saved. %1</source>
+        <translation>Nachricht gespeichert. %1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Message saved.</source>
         <translation>Nachricht gespeichert.</translation>
     </message>
@@ -11648,7 +12041,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Raumliste in der Größe ändern</translation>
     </message>
     <message>
-        <location line="+217"/>
+        <location line="+218"/>
         <source>Signing out…</source>
         <translation>Abmeldung läuft …</translation>
     </message>
@@ -11699,18 +12092,18 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>MediaBridge</name>
     <message>
-        <location filename="../src/media/MediaBridge.cpp" line="+1396"/>
-        <location line="+691"/>
+        <location filename="../src/media/MediaBridge.cpp" line="+1453"/>
+        <location line="+692"/>
         <source>The file could not be downloaded.</source>
         <translation>Die Datei konnte nicht heruntergeladen werden.</translation>
     </message>
     <message>
-        <location line="-536"/>
+        <location line="-537"/>
         <source>The download timed out.</source>
         <translation>Beim Download ist eine Zeitüberschreitung aufgetreten.</translation>
     </message>
     <message>
-        <location line="+534"/>
+        <location line="+535"/>
         <source>The media server is unreachable. Try again in a few minutes.</source>
         <translation>Der Medienserver ist nicht erreichbar. Versuche es in ein paar Minuten erneut.</translation>
     </message>
@@ -12602,7 +12995,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>MessageComposerBar</name>
     <message>
-        <location filename="../qml/MessageComposerBar.qml" line="+34"/>
+        <location filename="../qml/MessageComposerBar.qml" line="+35"/>
         <source>This room has been replaced.</source>
         <translation>Dieser Raum wurde ersetzt.</translation>
     </message>
@@ -12689,26 +13082,31 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+6"/>
-        <location line="+37"/>
+        <location line="+42"/>
         <source>Emoji…</source>
         <translation>Emoji …</translation>
     </message>
     <message>
-        <location line="-30"/>
-        <location line="+37"/>
+        <location line="-35"/>
+        <location line="+42"/>
         <source>GIFs and stickers…</source>
         <translation>GIFs und Sticker …</translation>
     </message>
     <message>
-        <location line="-36"/>
-        <location line="+37"/>
+        <location line="-41"/>
+        <location line="+42"/>
         <source>GIF…</source>
         <translation>GIF …</translation>
     </message>
     <message>
-        <location line="-21"/>
+        <location line="-26"/>
         <source>Attach files…</source>
         <translation>Dateien anhängen …</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Create folder archive…</source>
+        <translation>Ordnerarchiv erstellen…</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -12736,7 +13134,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Wird gesendet …</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+23"/>
+        <source>Inspect photo metadata</source>
+        <translation>Foto-Metadaten prüfen</translation>
+    </message>
+    <message>
+        <location line="+13"/>
         <source>Edit image %1</source>
         <translation>Bild %1 bearbeiten</translation>
     </message>
@@ -13129,14 +13532,14 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="-577"/>
         <location line="+57"/>
         <location line="+517"/>
-        <location line="+4283"/>
-        <location line="+1064"/>
+        <location line="+4324"/>
+        <location line="+1066"/>
         <location line="+93"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location line="-6012"/>
+        <location line="-6055"/>
         <source>Voice message</source>
         <translation>Sprachnachricht</translation>
     </message>
@@ -13149,32 +13552,32 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="-570"/>
         <location line="+568"/>
-        <location line="+3736"/>
+        <location line="+3777"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5227"/>
+        <location line="-5268"/>
         <location line="+53"/>
         <location line="+514"/>
-        <location line="+4285"/>
+        <location line="+4326"/>
         <source>Image</source>
         <translation>Bild</translation>
     </message>
     <message>
-        <location line="-4851"/>
+        <location line="-4892"/>
         <location line="+570"/>
-        <location line="+4386"/>
-        <location line="+1268"/>
+        <location line="+4427"/>
+        <location line="+1270"/>
         <location line="+2"/>
         <location line="+29"/>
         <source>File</source>
         <translation>Datei</translation>
     </message>
     <message>
-        <location line="-6254"/>
+        <location line="-6297"/>
         <source>Attachment</source>
         <translation>Anhang</translation>
     </message>
@@ -13279,13 +13682,13 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+91"/>
-        <location line="+926"/>
+        <location line="+928"/>
         <location line="+1152"/>
         <source>Reply</source>
         <translation>Antworten</translation>
     </message>
     <message>
-        <location line="-2065"/>
+        <location line="-2067"/>
         <source>Original message removed</source>
         <translation>Ursprüngliche Nachricht entfernt</translation>
     </message>
@@ -13410,30 +13813,36 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2390"/>
+        <location line="+2431"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>Wiederholen</translation>
     </message>
     <message>
-        <location line="-3406"/>
-        <location line="+1229"/>
+        <location line="-3447"/>
+        <location line="+1231"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location line="-1224"/>
+        <location line="-1226"/>
         <source>Cancel sending this message</source>
         <translation>Senden dieser Nachricht abbrechen</translation>
     </message>
     <message>
-        <location line="+188"/>
-        <location line="+1462"/>
+        <location line="+190"/>
+        <location line="+1501"/>
         <source>Hide image</source>
         <translation>Bild ausblenden</translation>
     </message>
     <message>
-        <location line="-1458"/>
+        <location line="-1501"/>
+        <location line="+1501"/>
+        <source>Hidden image limit reached</source>
+        <translation>Limit für ausgeblendete Bilder erreicht</translation>
+    </message>
+    <message>
+        <location line="-1497"/>
         <source>Hide</source>
         <translation>Ausblenden</translation>
     </message>
@@ -13582,7 +13991,22 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Erinnerung abbrechen (%1)</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+22"/>
+        <source>Needs reply</source>
+        <translation>Antwort nötig</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Waiting for reply</source>
+        <translation>Wartet auf Antwort</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Mark done</source>
+        <translation>Als erledigt markieren</translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>Copy text</source>
         <translation>Text kopieren</translation>
     </message>
@@ -13635,7 +14059,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Speichern unter …</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+24"/>
         <source>Show image</source>
         <translation>Bild anzeigen</translation>
     </message>
@@ -13738,7 +14162,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>In der GIF-Auswahl speichern</translation>
     </message>
     <message>
-        <location line="+1092"/>
+        <location line="+1094"/>
         <source>Updated %1</source>
         <translation>Aktualisiert %1</translation>
     </message>
@@ -13773,18 +14197,18 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Noch keine Position empfangen.</translation>
     </message>
     <message>
-        <location line="-3192"/>
-        <location line="+763"/>
+        <location line="-3233"/>
+        <location line="+802"/>
         <source>Delete</source>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-2679"/>
+        <location line="-2720"/>
         <source>Open this thread</source>
         <translation>Diesen Thread öffnen</translation>
     </message>
     <message numerus="yes">
-        <location line="+1282"/>
+        <location line="+1284"/>
         <source>%1 and %n other(s)</source>
         <translation>
             <numerusform>%1 und %n weitere Person</numerusform>
@@ -13817,7 +14241,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Entfernen</translation>
     </message>
     <message>
-        <location line="+796"/>
+        <location line="+835"/>
         <source>Message details</source>
         <translation>Nachrichtendetails</translation>
     </message>
@@ -13957,26 +14381,26 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+363"/>
-        <location line="+1047"/>
+        <location line="+1049"/>
         <location line="+306"/>
         <source>Download %1</source>
         <translation>%1 herunterladen</translation>
     </message>
     <message>
-        <location line="-1352"/>
-        <location line="+1353"/>
+        <location line="-1354"/>
+        <location line="+1355"/>
         <source>file</source>
         <translation>Datei</translation>
     </message>
     <message>
-        <location line="-1352"/>
-        <location line="+1047"/>
+        <location line="-1354"/>
+        <location line="+1049"/>
         <location line="+309"/>
         <source>Download</source>
         <translation>Herunterladen</translation>
     </message>
     <message>
-        <location line="-887"/>
+        <location line="-889"/>
         <source>Media server unreachable — retrying in %1 min</source>
         <translation>Medienserver nicht erreichbar – neuer Versuch in %1 Min.</translation>
     </message>
@@ -13997,7 +14421,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Sticker konnte nicht geladen werden – klicken, um es erneut zu versuchen</translation>
     </message>
     <message>
-        <location line="+229"/>
+        <location line="+231"/>
         <location line="+158"/>
         <source>video</source>
         <translation>Video</translation>
@@ -20094,6 +20518,108 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
 </context>
 <context>
+    <name>RoomSearchCoverage</name>
+    <message>
+        <location filename="../qml/RoomSearchCoverage.qml" line="+50"/>
+        <source>Type at least %1 characters.</source>
+        <translation>Gib mindestens %1 Zeichen ein.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Indexing another room.</source>
+        <translation>Ein anderer Raum wird gerade indiziert.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>%n indexed message(s) in this room.</source>
+        <translation>
+            <numerusform>%n indizierte Nachricht in diesem Raum.</numerusform>
+            <numerusform>%n indizierte Nachrichten in diesem Raum.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Scanning room history… %n page(s) indexed.</source>
+        <translation>
+            <numerusform>Raumverlauf wird durchsucht… %n Seite indiziert.</numerusform>
+            <numerusform>Raumverlauf wird durchsucht… %n Seiten indiziert.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The search index could not be updated. Retry this room after checking local storage.</source>
+        <translation>Der Suchindex konnte nicht aktualisiert werden. Prüfe den lokalen Speicher und versuche es für diesen Raum erneut.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The last scan reached the start of the room.</source>
+        <translation>Der letzte Scan hat den Anfang des Raums erreicht.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The last scan reached its page limit. Older messages may be missing.</source>
+        <translation>Der letzte Scan hat sein Seitenlimit erreicht. Ältere Nachrichten fehlen möglicherweise.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Room history could not be read. Retry this room.</source>
+        <translation>Der Raumverlauf konnte nicht gelesen werden. Versuche es für diesen Raum erneut.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The last room scan was interrupted.</source>
+        <translation>Der letzte Raumscan wurde unterbrochen.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Some messages are waiting for decryption keys.</source>
+        <translation>Einige Nachrichten warten auf Entschlüsselungsschlüssel.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>No detailed room scan is available.</source>
+        <translation>Kein detaillierter Raumscan verfügbar.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The scan also reached its page limit.</source>
+        <translation>Der Scan hat außerdem sein Seitenlimit erreicht.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>At least %n message(s) could not be decrypted.</source>
+        <translation>
+            <numerusform>Mindestens %n Nachricht konnte nicht entschlüsselt werden.</numerusform>
+            <numerusform>Mindestens %n Nachrichten konnten nicht entschlüsselt werden.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Last scan: %1</source>
+        <translation>Letzter Scan: %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Oldest message scanned: %1</source>
+        <translation>Älteste gescannte Nachricht: %1</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Cancel indexing</source>
+        <translation>Indizierung abbrechen</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Retry this room</source>
+        <translation>Diesen Raum erneut versuchen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Index this room</source>
+        <translation>Diesen Raum indizieren</translation>
+    </message>
+</context>
+<context>
     <name>RoomUpgradeController</name>
     <message>
         <location filename="../src/app/RoomUpgradeController.cpp" line="+195"/>
@@ -20997,7 +21523,7 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
 <context>
     <name>SavedMessagesController</name>
     <message>
-        <location filename="../src/app/SavedMessagesController.cpp" line="+251"/>
+        <location filename="../src/app/SavedMessagesController.cpp" line="+254"/>
         <source>Saved messages could not be loaded. Retry.</source>
         <translation>Gespeicherte Nachrichten konnten nicht geladen werden. Wiederholen.</translation>
     </message>
@@ -21008,20 +21534,33 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <translation>Gespeicherte Nachrichten konnten nicht aktualisiert werden. Wiederholen.</translation>
     </message>
     <message>
-        <location line="-80"/>
-        <location line="+156"/>
+        <location line="-81"/>
+        <location line="+164"/>
         <source>Saved messages data is unavailable.</source>
         <translation>Gespeicherte Nachrichtendaten sind nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="-123"/>
-        <location line="+228"/>
+        <location line="-130"/>
+        <location line="+261"/>
         <location line="+15"/>
         <source>Saved messages are full. Remove an older item first.</source>
         <translation>Die gespeicherten Nachrichten sind voll. Entferne zuerst ein älteres Element.</translation>
     </message>
     <message>
-        <location line="+285"/>
+        <location line="-137"/>
+        <source>Another device restored a removed saved message. Review the list and remove it again if needed.</source>
+        <translation>Ein anderes Gerät hat eine entfernte gespeicherte Nachricht wiederhergestellt. Prüfe die Liste und entferne sie bei Bedarf erneut.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+112"/>
+        <source>Saved message capacity remaining: %n slot(s), %1 bytes.</source>
+        <translation>
+            <numerusform>Verbleibende Kapazität für gespeicherte Nachrichten: %n Platz, %1 Bytes.</numerusform>
+            <numerusform>Verbleibende Kapazität für gespeicherte Nachrichten: %n Plätze, %1 Bytes.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+310"/>
         <source>Sticker</source>
         <translation>Sticker</translation>
     </message>
@@ -21055,12 +21594,12 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     <name>SavedMessagesPanel</name>
     <message>
         <location filename="../qml/SavedMessagesPanel.qml" line="+68"/>
-        <location line="+159"/>
+        <location line="+166"/>
         <source>Saved messages</source>
         <translation>Gespeicherte Nachrichten</translation>
     </message>
     <message>
-        <location line="-142"/>
+        <location line="-149"/>
         <source>Undo remove</source>
         <translation>Entfernen rückgängig machen</translation>
     </message>
@@ -21070,7 +21609,7 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <translation>Schließen</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+15"/>
         <source>Filter saved messages</source>
         <translation>Gespeicherte Nachrichten filtern</translation>
     </message>
@@ -21502,8 +22041,8 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="+8"/>
-        <source>No messages found</source>
-        <translation>Keine Nachrichten gefunden</translation>
+        <source>No matches in indexed messages</source>
+        <translation>Keine Treffer in indizierten Nachrichten</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -21633,12 +22172,7 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <translation>Gib mindestens %1 Zeichen ein.</translation>
     </message>
     <message>
-        <location line="+175"/>
-        <source>Nothing is indexed yet.</source>
-        <translation>Es ist noch nichts indiziert.</translation>
-    </message>
-    <message>
-        <location line="-172"/>
+        <location line="+3"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>Keine passenden Nachrichten. Versuche ein weniger gebräuchliches Wort oder durchsuche den lokalen Index.</translation>
     </message>
@@ -21719,32 +22253,7 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <translation>Die Filter „Sticker“ und „Erwähnungen“ gelten nicht für die indizierte Suche. Wechsle zu „Server“, um sie zu verwenden.</translation>
     </message>
     <message>
-        <location line="+24"/>
-        <source>Indexing this room&apos;s history…</source>
-        <translation>Der Verlauf dieses Raums wird indiziert …</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>The search index could not be updated. Index this room again to retry.</source>
-        <translation>Der Suchindex konnte nicht aktualisiert werden. Indexiere diesen Raum erneut, um es noch einmal zu versuchen.</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Searching %1 messages Lightning has indexed, including encrypted ones.</source>
-        <translation>Es werden %1 von Lightning indizierte Nachrichten durchsucht, auch verschlüsselte.</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Index this room</source>
-        <translation>Diesen Raum indizieren</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Fetch this room&apos;s older messages so they can be searched</source>
-        <translation>Die älteren Nachrichten dieses Raums abrufen, damit sie durchsucht werden können</translation>
-    </message>
-    <message>
-        <location line="+45"/>
+        <location line="+54"/>
         <source>Open message from %1</source>
         <translation>Nachricht von %1 öffnen</translation>
     </message>
@@ -22358,12 +22867,12 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <location line="+3"/>
         <location line="+1505"/>
         <location line="+892"/>
-        <location line="+5420"/>
+        <location line="+5430"/>
         <source>Account</source>
         <translation>Konto</translation>
     </message>
     <message>
-        <location line="-7833"/>
+        <location line="-7843"/>
         <source>account profile</source>
         <translation>konto profil</translation>
     </message>
@@ -22394,23 +22903,23 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="+3"/>
-        <location line="+8867"/>
+        <location line="+8877"/>
         <source>Homeserver</source>
         <translation>Homeserver</translation>
     </message>
     <message>
-        <location line="-8867"/>
+        <location line="-8877"/>
         <source>homeserver server url</source>
         <translation>homeserver server url adresse</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+8902"/>
+        <location line="+8912"/>
         <source>Start minimized</source>
         <translation>Minimiert starten</translation>
     </message>
     <message>
-        <location line="-8902"/>
+        <location line="-8912"/>
         <source>startup minimized</source>
         <translation>start autostart minimiert</translation>
     </message>
@@ -23178,13 +23687,13 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="+3"/>
-        <location line="+7209"/>
+        <location line="+7219"/>
         <location line="+20"/>
         <source>Media playback volume</source>
         <translation>Lautstärke der Medienwiedergabe</translation>
     </message>
     <message>
-        <location line="-7228"/>
+        <location line="-7238"/>
         <source>volume sound audio video voice message playback level media loud</source>
         <translation>lautstärke ton audio video sprachnachricht wiedergabe pegel medien laut</translation>
     </message>
@@ -23233,12 +23742,12 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     <message>
         <location line="+3"/>
         <location line="+547"/>
-        <location line="+6718"/>
+        <location line="+6728"/>
         <source>Call sounds</source>
         <translation>Anruftöne</translation>
     </message>
     <message>
-        <location line="-7264"/>
+        <location line="-7274"/>
         <source>call sounds join leave mute deafen unmute screen share hand chime beep effects</source>
         <translation>anruftöne beitreten verlassen stummschalten taubschalten aufheben bildschirmfreigabe hand signalton piepton effekte</translation>
     </message>
@@ -23250,13 +23759,13 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="-3"/>
-        <location line="+7363"/>
+        <location line="+7373"/>
         <location line="+28"/>
         <source>Ringer volume</source>
         <translation>Klingeltonlautstärke</translation>
     </message>
     <message>
-        <location line="-7390"/>
+        <location line="-7400"/>
         <source>ringer ringtone ring volume incoming call loud</source>
         <translation>klingelton lautstärke eingehender anruf laut</translation>
     </message>
@@ -23277,12 +23786,12 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="+2"/>
-        <location line="+6898"/>
+        <location line="+6908"/>
         <source>Ring for incoming voice calls</source>
         <translation>Bei eingehenden Sprachanrufen klingeln</translation>
     </message>
     <message>
-        <location line="-6897"/>
+        <location line="-6907"/>
         <source>ring ringer ringtone sound incoming call alert</source>
         <translation>klingeln klingelton ton eingehender anruf warnung</translation>
     </message>
@@ -23297,32 +23806,32 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <location line="+5"/>
         <location line="+1065"/>
         <location line="+941"/>
-        <location line="+4651"/>
+        <location line="+4661"/>
         <source>Notifications</source>
         <translation>Benachrichtigungen</translation>
     </message>
     <message>
-        <location line="-6689"/>
+        <location line="-6699"/>
         <location line="+507"/>
         <location line="+1282"/>
-        <location line="+4912"/>
+        <location line="+4922"/>
         <location line="+207"/>
         <source>Desktop notifications</source>
         <translation>Desktop-Benachrichtigungen</translation>
     </message>
     <message>
-        <location line="-6907"/>
+        <location line="-6917"/>
         <source>notifications desktop enable</source>
         <translation>benachrichtigungen desktop aktivieren</translation>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+6691"/>
+        <location line="+6701"/>
         <source>Notification preview</source>
         <translation>Benachrichtigungsvorschau</translation>
     </message>
     <message>
-        <location line="-6690"/>
+        <location line="-6700"/>
         <source>notification preview privacy sender message</source>
         <translation>benachrichtigungsvorschau datenschutz absender nachricht</translation>
     </message>
@@ -23338,12 +23847,12 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="+4"/>
-        <location line="+6747"/>
+        <location line="+6757"/>
         <source>Notification sound</source>
         <translation>Benachrichtigungston</translation>
     </message>
     <message>
-        <location line="-6746"/>
+        <location line="-6756"/>
         <source>notification sound mute</source>
         <translation>benachrichtigungston stummschalten</translation>
     </message>
@@ -23450,12 +23959,12 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="+3"/>
-        <location line="+6377"/>
+        <location line="+6387"/>
         <source>Keep downloaded media on this device</source>
         <translation>Heruntergeladene Medien auf diesem Gerät behalten</translation>
     </message>
     <message>
-        <location line="-6376"/>
+        <location line="-6386"/>
         <source>media cache video image picture file download offline storage disk keep clear</source>
         <translation>medien cache video bild foto datei download offline speicher festplatte behalten leeren</translation>
     </message>
@@ -23482,12 +23991,12 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="-4"/>
-        <location line="+6554"/>
+        <location line="+6564"/>
         <source>Always ask where to save files</source>
         <translation>Immer fragen, wo Dateien gespeichert werden</translation>
     </message>
     <message>
-        <location line="-6553"/>
+        <location line="-6563"/>
         <source>download downloads save folder location directory ask where file</source>
         <translation>download downloads speichern ordner ort verzeichnis fragen wo datei</translation>
     </message>
@@ -23591,13 +24100,13 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <location line="+5"/>
         <location line="+868"/>
         <location line="+896"/>
-        <location line="+6910"/>
+        <location line="+6920"/>
         <location line="+509"/>
         <source>Sessions</source>
         <translation>Sitzungen</translation>
     </message>
     <message>
-        <location line="-9269"/>
+        <location line="-9279"/>
         <location line="+1634"/>
         <location line="+4298"/>
         <source>Automatically load previews in unencrypted rooms</source>
@@ -23725,12 +24234,12 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="+3"/>
-        <location line="+8381"/>
+        <location line="+8391"/>
         <source>Security status</source>
         <translation>Sicherheitsstatus</translation>
     </message>
     <message>
-        <location line="-8380"/>
+        <location line="-8390"/>
         <source>e2ee encryption status cross-signing backup</source>
         <translation>e2ee verschlüsselung status cross-signing backup</translation>
     </message>
@@ -23744,12 +24253,12 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="-5178"/>
-        <location line="+9725"/>
+        <location line="+9735"/>
         <source>Recovery key or passphrase</source>
         <translation>Wiederherstellungsschlüssel oder Passphrase</translation>
     </message>
     <message>
-        <location line="-9724"/>
+        <location line="-9734"/>
         <source>recovery key passphrase backup restore</source>
         <translation>wiederherstellungsschlüssel passphrase backup wiederherstellen</translation>
     </message>
@@ -23763,12 +24272,12 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="-11"/>
-        <location line="+9735"/>
+        <location line="+9745"/>
         <source>Import room keys</source>
         <translation>Raumschlüssel importieren</translation>
     </message>
     <message>
-        <location line="-9734"/>
+        <location line="-9744"/>
         <source>import room keys export</source>
         <translation>raumschlüssel importieren exportieren</translation>
     </message>
@@ -23784,12 +24293,12 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="+4"/>
-        <location line="+9950"/>
+        <location line="+9960"/>
         <source>Danger Zone</source>
         <translation>Gefahrenzone</translation>
     </message>
     <message>
-        <location line="-9949"/>
+        <location line="-9959"/>
         <source>reset danger local session</source>
         <translation>zurücksetzen gefahr lokale sitzung</translation>
     </message>
@@ -23800,46 +24309,46 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="+3"/>
-        <location line="+9503"/>
+        <location line="+9513"/>
         <source>Current session</source>
         <translation>Aktuelle Sitzung</translation>
     </message>
     <message>
-        <location line="-9502"/>
+        <location line="-9512"/>
         <source>device id session status</source>
         <translation>geräte-id sitzung status</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+8705"/>
+        <location line="+8715"/>
         <source>Sign in another device</source>
         <translation>Weiteres Gerät anmelden</translation>
     </message>
     <message>
-        <location line="-8704"/>
+        <location line="-8714"/>
         <source>qr code scan sign in another device phone link msc4108 login</source>
         <translation>qr-code scannen weiteres gerät anmelden handy link msc4108 login</translation>
     </message>
     <message>
         <location line="+5"/>
-        <location line="+9548"/>
+        <location line="+9558"/>
         <source>Verify this session</source>
         <translation>Diese Sitzung verifizieren</translation>
     </message>
     <message>
-        <location line="-9547"/>
+        <location line="-9557"/>
         <source>verify verification sas cross-signing</source>
         <translation>verifizieren verifizierung sas cross-signing</translation>
     </message>
     <message>
         <location line="+4"/>
-        <location line="+6880"/>
+        <location line="+6890"/>
         <location line="+3158"/>
         <source>Microphone noise suppression</source>
         <translation>Mikrofon-Rauschunterdrückung</translation>
     </message>
     <message>
-        <location line="-10037"/>
+        <location line="-10047"/>
         <source>noise suppression cancellation microphone background webrtc rnnoise deepfilternet denoise</source>
         <translation>rauschunterdrückung geräuschunterdrückung mikrofon hintergrund webrtc rnnoise deepfilternet entrauschen</translation>
     </message>
@@ -23854,12 +24363,12 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <location line="+4"/>
         <location line="+837"/>
         <location line="+949"/>
-        <location line="+8207"/>
+        <location line="+8217"/>
         <source>Labs</source>
         <translation>Labor</translation>
     </message>
     <message>
-        <location line="-10017"/>
+        <location line="-10027"/>
         <source>Run several accounts at once</source>
         <translation>Mehrere Konten gleichzeitig nutzen</translation>
     </message>
@@ -23870,23 +24379,23 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="+4"/>
-        <location line="+10078"/>
+        <location line="+10088"/>
         <source>Game activity</source>
         <translation>Spielaktivität</translation>
     </message>
     <message>
-        <location line="-10077"/>
+        <location line="-10087"/>
         <source>playing game status steam presence activity</source>
         <translation>spielt spiel status steam präsenz aktivität</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+10084"/>
+        <location line="+10094"/>
         <source>Music activity</source>
         <translation>Musikaktivität</translation>
     </message>
     <message>
-        <location line="-10083"/>
+        <location line="-10093"/>
         <source>listening music spotify song status presence activity</source>
         <translation>hören musik spotify song status präsenz aktivität</translation>
     </message>
@@ -23922,12 +24431,12 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="+3"/>
-        <location line="+10115"/>
+        <location line="+10125"/>
         <source>Refresh current room</source>
         <translation>Aktuellen Raum aktualisieren</translation>
     </message>
     <message>
-        <location line="-10114"/>
+        <location line="-10124"/>
         <source>refresh reload timeline</source>
         <translation>aktualisieren neu laden zeitleiste</translation>
     </message>
@@ -23967,12 +24476,12 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <location line="+826"/>
         <location line="+987"/>
         <location line="+11"/>
-        <location line="+8322"/>
+        <location line="+8332"/>
         <source>About</source>
         <translation>Über</translation>
     </message>
     <message>
-        <location line="-10147"/>
+        <location line="-10157"/>
         <source>about version license</source>
         <translation>über version lizenz</translation>
     </message>
@@ -24006,30 +24515,30 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="+48"/>
-        <location line="+9129"/>
+        <location line="+9139"/>
         <location line="+100"/>
         <source>Verified</source>
         <translation>Verifiziert</translation>
     </message>
     <message>
-        <location line="-9228"/>
-        <location line="+9230"/>
+        <location line="-9238"/>
+        <location line="+9240"/>
         <source>Not verified</source>
         <translation>Nicht verifiziert</translation>
     </message>
     <message>
-        <location line="-9229"/>
+        <location line="-9239"/>
         <source>Cross-signing unavailable</source>
         <translation>Cross-Signing nicht verfügbar</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+8366"/>
+        <location line="+8376"/>
         <source>Unknown</source>
         <translation>Unbekannt</translation>
     </message>
     <message>
-        <location line="-8359"/>
+        <location line="-8369"/>
         <source>unknown</source>
         <translation>unbekannt</translation>
     </message>
@@ -24203,25 +24712,25 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="+2"/>
-        <location line="+9363"/>
+        <location line="+9373"/>
         <source>Recovery key</source>
         <translation>Wiederherstellungsschlüssel</translation>
     </message>
     <message>
-        <location line="-9166"/>
+        <location line="-9176"/>
         <source>Confirm</source>
         <translation>Bestätigen</translation>
     </message>
     <message>
         <location line="+48"/>
-        <location line="+6875"/>
+        <location line="+6885"/>
         <location line="+183"/>
         <location line="+1388"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location line="-8230"/>
+        <location line="-8240"/>
         <source>Collapse %1</source>
         <translation>%1 einklappen</translation>
     </message>
@@ -24248,12 +24757,12 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     <message>
         <location line="+49"/>
         <location line="+946"/>
-        <location line="+5026"/>
+        <location line="+5036"/>
         <source>Sound &amp; video</source>
         <translation>Ton &amp; Video</translation>
     </message>
     <message>
-        <location line="-5684"/>
+        <location line="-5694"/>
         <source>Clear the search index?</source>
         <translation>Suchindex leeren?</translation>
     </message>
@@ -24280,14 +24789,14 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="+1"/>
-        <location line="+6262"/>
+        <location line="+6272"/>
         <location line="+370"/>
         <location line="+1968"/>
         <source>Clear</source>
         <translation>Leeren</translation>
     </message>
     <message>
-        <location line="-8590"/>
+        <location line="-8600"/>
         <source>Remove every provider GIF you&apos;ve saved on this device? GIFs you saved out of chats are unaffected. This cannot be undone.</source>
         <translation>Alle Anbieter-GIF-Dateien entfernen, die du auf diesem Gerät gespeichert hast? GIF-Dateien, die du aus Chats gespeichert hast, bleiben unberührt. Das lässt sich nicht rückgängig machen.</translation>
     </message>
@@ -24369,12 +24878,12 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <location line="-2132"/>
         <location line="+2133"/>
         <location line="+67"/>
-        <location line="+3307"/>
+        <location line="+3317"/>
         <source>Compact</source>
         <translation>Kompakt</translation>
     </message>
     <message>
-        <location line="-5491"/>
+        <location line="-5501"/>
         <location line="+2375"/>
         <source>Regions</source>
         <translation>Bereiche</translation>
@@ -24725,13 +25234,13 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="+4"/>
-        <location line="+4639"/>
+        <location line="+4649"/>
         <location line="+441"/>
         <source>Remove</source>
         <translation>Entfernen</translation>
     </message>
     <message>
-        <location line="-5079"/>
+        <location line="-5089"/>
         <source>Remove this imported font</source>
         <translation>Diese importierte Schriftart entfernen</translation>
     </message>
@@ -24996,12 +25505,12 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="+24"/>
-        <location line="+4940"/>
+        <location line="+4950"/>
         <source>Choose image…</source>
         <translation>Bild auswählen …</translation>
     </message>
     <message>
-        <location line="-4933"/>
+        <location line="-4943"/>
         <source>Reset to Lightning default</source>
         <translation>Auf Lightning-Standard zurücksetzen</translation>
     </message>
@@ -25072,13 +25581,13 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="+1"/>
-        <location line="+3222"/>
+        <location line="+3232"/>
         <location line="+209"/>
         <source>Off</source>
         <translation>Aus</translation>
     </message>
     <message>
-        <location line="-3426"/>
+        <location line="-3436"/>
         <source>How strongly sender name colours are adjusted to stay readable</source>
         <translation>Wie stark Absendernamen-Farben angepasst werden, damit sie lesbar bleiben</translation>
     </message>
@@ -25711,7 +26220,7 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <translation>%1 Bilder sind auf diesem Gerät für dieses Konto ausgeblendet.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+16"/>
         <source>Show all hidden images</source>
         <translation>Alle ausgeblendeten Bilder anzeigen</translation>
     </message>
@@ -25865,13 +26374,13 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <translation>Stil des Benachrichtigungstons</translation>
     </message>
     <message>
-        <location line="-3034"/>
-        <location line="+3046"/>
+        <location line="-3044"/>
+        <location line="+3056"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
     <message>
-        <location line="-7215"/>
+        <location line="-7225"/>
         <location line="+4164"/>
         <source>Layout preset</source>
         <translation>Layout-Voreinstellung</translation>
@@ -26019,31 +26528,31 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="+96"/>
-        <location line="+7243"/>
+        <location line="+7253"/>
         <location line="+10"/>
         <source>Album art</source>
         <translation>Albumcover</translation>
     </message>
     <message>
-        <location line="-7218"/>
+        <location line="-7228"/>
         <location line="+507"/>
-        <location line="+6427"/>
+        <location line="+6437"/>
         <source>Unread dot</source>
         <translation>Ungelesen-Punkt</translation>
     </message>
     <message>
-        <location line="-6933"/>
+        <location line="-6943"/>
         <source>unread dot badge indicator room list bold muted mentions hide</source>
         <translation>ungelesen punkt badge anzeige raumliste fett stummgeschaltet erwähnungen ausblenden</translation>
     </message>
     <message>
         <location line="+4"/>
-        <location line="+6962"/>
+        <location line="+6972"/>
         <source>Mark all rooms read automatically</source>
         <translation>Alle Räume automatisch als gelesen markieren</translation>
     </message>
     <message>
-        <location line="-6961"/>
+        <location line="-6971"/>
         <source>mark all read automatically auto timer interval minutes unread clear</source>
         <translation>alle gelesen markieren automatisch auto timer intervall minuten ungelesen leeren</translation>
     </message>
@@ -26216,7 +26725,7 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <translation>Stärke der Spoiler-Unschärfe</translation>
     </message>
     <message>
-        <location line="+558"/>
+        <location line="+568"/>
         <source>System default</source>
         <translation>Systemstandard</translation>
     </message>
@@ -26274,8 +26783,8 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <translation>Lightning registriert sich nicht für Push, daher kommen seine Benachrichtigungen nur an, solange es läuft, im Fenster oder im Tray.</translation>
     </message>
     <message>
-        <location line="-3043"/>
-        <location line="+3066"/>
+        <location line="-3053"/>
+        <location line="+3076"/>
         <source>All rooms</source>
         <translation>Alle Räume</translation>
     </message>
@@ -26285,13 +26794,13 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <translation>Nur Räume mit aktivierten Benachrichtigungen</translation>
     </message>
     <message>
-        <location line="-1344"/>
-        <location line="+1345"/>
+        <location line="-1354"/>
+        <location line="+1355"/>
         <source>Never</source>
         <translation>Nie</translation>
     </message>
     <message>
-        <location line="-7340"/>
+        <location line="-7350"/>
         <location line="+4256"/>
         <location line="+29"/>
         <source>Use bubbles in</source>
@@ -26387,7 +26896,7 @@ Escape und einige Tasten, die Lightning selbst verwendet, sind reserviert. Eine 
         <translation>Punkte für online, abwesend und offline neben Personen. Manche Server, etwa matrix.org, teilen niemandes Status, sodass alle offline wirken würden; „Automatisch“ blendet die Punkte dort aus. „Nie“ fragt den Server auch nicht mehr.</translation>
     </message>
     <message>
-        <location line="+1344"/>
+        <location line="+1354"/>
         <source>Muted rooms never show it. With notifications on only, a room set to mentions and keywords, or following an account default of mentions only, shows no dot. Mention badges are always shown.</source>
         <translation>Stummgeschaltete Räume zeigen ihn nie. Bei „Nur mit aktivierten Benachrichtigungen“ zeigt ein Raum, der auf Erwähnungen und Stichwörter eingestellt ist oder einem Kontostandard von nur Erwähnungen folgt, keinen Punkt. Erwähnungs-Badges werden immer angezeigt.</translation>
     </message>
@@ -26668,14 +27177,14 @@ Escape und einige Tasten, die Lightning selbst verwendet, sind reserviert. Eine 
         <translation>Bilder (*.png *.jpg *.jpeg *.webp *.gif *.bmp *.svg)</translation>
     </message>
     <message>
-        <location line="-8842"/>
+        <location line="-8852"/>
         <location line="+902"/>
-        <location line="+7493"/>
+        <location line="+7503"/>
         <source>About you</source>
         <translation>Über dich</translation>
     </message>
     <message>
-        <location line="-3557"/>
+        <location line="-3567"/>
         <source>Also list events the timeline normally hides, such as unsupported event types</source>
         <translation>Auch Ereignisse auflisten, die der Verlauf normalerweise ausblendet, etwa nicht unterstützte Ereignistypen</translation>
     </message>
@@ -26685,7 +27194,12 @@ Escape und einige Tasten, die Lightning selbst verwendet, sind reserviert. Eine 
         <translation>Eine Zeile „Nachricht gelöscht“ lassen, wo eine Nachricht entfernt wurde</translation>
     </message>
     <message>
-        <location line="+3558"/>
+        <location line="+2023"/>
+        <source>You can hide up to %1 images. Show an image to free a slot.</source>
+        <translation>Du kannst bis zu %1 Bilder ausblenden. Blende ein Bild wieder ein, um Platz zu schaffen.</translation>
+    </message>
+    <message>
+        <location line="+1545"/>
         <source>A short note about yourself. Anyone who opens your profile can read it.</source>
         <translation>Eine kurze Notiz über dich. Jeder, der dein Profil öffnet, kann sie lesen.</translation>
     </message>
@@ -27448,14 +27962,14 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Die Verifizierung begründet Vertrauen in diese Sitzung. Sicheres Backup und Raumschlüssel-Importe liefern Entschlüsselungsschlüssel für den Nachrichtenverlauf. Das sind getrennte Vorgänge.</translation>
     </message>
     <message>
-        <location line="-10568"/>
-        <location line="+10601"/>
+        <location line="-10578"/>
+        <location line="+10611"/>
         <source>Hide</source>
         <translation>Ausblenden</translation>
     </message>
     <message>
-        <location line="-10603"/>
-        <location line="+10603"/>
+        <location line="-10613"/>
+        <location line="+10613"/>
         <source>Show</source>
         <translation>Anzeigen</translation>
     </message>
@@ -27550,7 +28064,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Lizenz: GPL-3.0-or-later</translation>
     </message>
     <message>
-        <location line="-10682"/>
+        <location line="-10692"/>
         <location line="+3815"/>
         <source>Disable cursor blinking</source>
         <translation>Blinken des Textcursors deaktivieren</translation>
@@ -27679,20 +28193,25 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>SfuCallController</name>
     <message>
-        <location filename="../src/calls/SfuCallController.cpp" line="+637"/>
-        <location line="+396"/>
+        <location filename="../src/calls/SfuCallController.cpp" line="+641"/>
+        <source>Screen sharing permission was denied. Check your desktop’s privacy settings, then try sharing again.</source>
+        <translation>Die Berechtigung zur Bildschirmfreigabe wurde verweigert. Prüfe die Datenschutzeinstellungen deines Desktops und versuche dann erneut, zu teilen.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <location line="+406"/>
         <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
         <translation>Bildschirmfreigabe ist auf diesem Desktop nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="-559"/>
-        <location line="+933"/>
+        <location line="-569"/>
+        <location line="+945"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>Die Bildschirmfreigabe konnte nicht gestartet werden.</translation>
     </message>
     <message>
-        <location line="-802"/>
+        <location line="-804"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>Das Kamera-Portal deines Desktops hat Lightning keine Kamera angeboten. Wenn die Kamera in anderen Apps funktioniert, erlaube Lightning die Nutzung aller Geräte (in Flatseal: „All devices“) und schalte die Kamera dann erneut ein.</translation>
     </message>
@@ -27849,13 +28368,13 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location line="+8"/>
-        <location line="+451"/>
+        <location line="+453"/>
         <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>Verbindung zum Anruf konnte nicht hergestellt werden.</translation>
     </message>
     <message>
-        <location line="-811"/>
+        <location line="-813"/>
         <source>The calling service is having trouble.</source>
         <translation>Der Anrufdienst hat Probleme.</translation>
     </message>
@@ -27866,6 +28385,11 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location line="+3"/>
+        <source>Your desktop ended screen sharing. Choose a source to share again.</source>
+        <translation>Dein Desktop hat die Bildschirmfreigabe beendet. Wähle eine Quelle, um erneut zu teilen.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The window you were sharing was closed.</source>
         <translation>Das Fenster, das du freigegeben hast, wurde geschlossen.</translation>
     </message>
@@ -27901,8 +28425,8 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     </message>
     <message>
         <location line="+3"/>
-        <source>Camera access is turned off in your system settings.</source>
-        <translation>Der Kamerazugriff ist in deinen Systemeinstellungen ausgeschaltet.</translation>
+        <source>Camera permission was denied. Check your desktop’s camera privacy settings, then turn the camera on again.</source>
+        <translation>Die Kameraberechtigung wurde verweigert. Prüfe die Kamera-Datenschutzeinstellungen deines Desktops und schalte die Kamera dann wieder ein.</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -28013,7 +28537,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Anruf-Audio gestoppt: Die Tonausgabe dieses Computers wurde getrennt. Es läuft weiter, sobald wieder eine Ausgabe verfügbar ist; falls nicht, verlasse den Anruf und tritt erneut bei.</translation>
     </message>
     <message>
-        <location line="+2177"/>
+        <location line="+2185"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>Der Ton der Bildschirmfreigabe ist aus: Diesem Paket fehlen die nötigen Audioaufnahme-Plugins.</translation>
     </message>
@@ -29391,42 +29915,61 @@ Aktuell beigetretene Mitglieder: %5
 </context>
 <context>
     <name>SpaceLobby</name>
-    <message numerus="yes">
-        <location filename="../qml/SpaceLobby.qml" line="-127"/>
-        <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
-        <translation>
-            <numerusform>Nur der erste %n Raum dieses Spaces wird angezeigt. Ein nicht aufgeführter Raum kann weiterhin über seine Adresse geöffnet werden.</numerusform>
-            <numerusform>Nur die ersten %n Räume dieses Spaces werden angezeigt. Ein nicht aufgeführter Raum kann weiterhin über seine Adresse geöffnet werden.</numerusform>
-        </translation>
-    </message>
     <message>
-        <location line="+3"/>
-        <source>This Space could not be refreshed. Showing the rooms loaded earlier.</source>
-        <translation>Dieser Space konnte nicht aktualisiert werden. Es werden die zuvor geladenen Räume angezeigt.</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Loading stopped early, so some rooms of this Space may be missing.</source>
-        <translation>Das Laden wurde vorzeitig beendet, daher fehlen möglicherweise einige Räume dieses Spaces.</translation>
-    </message>
-    <message>
-        <location line="+12"/>
+        <location filename="../qml/SpaceLobby.qml" line="-116"/>
         <source>Retry</source>
         <translation>Erneut versuchen</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+13"/>
         <source>This Space has too many members to list, and Lightning could not confirm whether some of your direct-message contacts belong to it. Your room list may show direct messages with people outside it.</source>
         <translation>Dieser Space hat zu viele Mitglieder, um sie aufzulisten, und Lightning konnte nicht bestätigen, ob einige deiner Direktnachrichten-Kontakte dazugehören. Deine Raumliste zeigt möglicherweise Direktnachrichten mit Personen außerhalb.</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="-30"/>
+        <location line="+73"/>
         <location line="+264"/>
         <source>Loading rooms…</source>
         <translation>Räume werden geladen …</translation>
     </message>
     <message>
-        <location line="-226"/>
+        <location line="-336"/>
+        <source>The rooms of this Space could not be loaded.</source>
+        <translation>Die Räume dieses Space konnten nicht geladen werden.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Only the first %n room(s) of a Space are listed. More rooms may be available.</source>
+        <translation>
+            <numerusform>Nur der erste %n Raum eines Space wird aufgeführt. Möglicherweise sind weitere Räume verfügbar.</numerusform>
+            <numerusform>Nur die ersten %n Räume eines Space werden aufgeführt. Möglicherweise sind weitere Räume verfügbar.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1"/>
+        <source>The Space listing is incomplete. Showing %n previously loaded room(s) for this Space.</source>
+        <translation>
+            <numerusform>Die Space-Liste ist unvollständig. Es wird %n zuvor geladener Raum für diesen Space angezeigt.</numerusform>
+            <numerusform>Die Space-Liste ist unvollständig. Es werden %n zuvor geladene Räume für diesen Space angezeigt.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Find by address</source>
+        <translation>Nach Adresse suchen</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>No loaded rooms or spaces match “%1”.</source>
+        <translation>Keine geladenen Räume oder Spaces passen zu „%1“.</translation>
+    </message>
+    <message>
+        <location line="+64"/>
         <source>Rooms</source>
         <translation>Räume</translation>
     </message>
@@ -29436,7 +29979,12 @@ Aktuell beigetretene Mitglieder: %5
         <translation>Weitere Aktionen für %1</translation>
     </message>
     <message>
-        <location line="+128"/>
+        <location line="+50"/>
+        <source>No rooms loaded</source>
+        <translation>Keine Räume geladen</translation>
+    </message>
+    <message>
+        <location line="+79"/>
         <source>%1, not joined</source>
         <translation>%1, nicht beigetreten</translation>
     </message>
@@ -32218,7 +32766,17 @@ Vorgeschlagene Zielgruppe
         <translation>Encoder: %1 · Skalierung: %2 · Aufnahme: %3</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
+        <source>Encoded frames observed</source>
+        <translation>Kodierte Frames erkannt</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Waiting for an encoded frame</source>
+        <translation>Warte auf einen kodierten Frame</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>RTP packets sent: %1 · Lost on the way to the server: %2</source>
         <translation>Gesendete RTP-Pakete: %1 · Auf dem Weg zum Server verloren: %2</translation>
     </message>
@@ -34339,7 +34897,7 @@ Vorgeschlagene Zielgruppe
 <context>
     <name>TimelinePane</name>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-696"/>
+        <location filename="../qml/SpaceLobby.qml" line="-702"/>
         <source>ROOMS AND SPACES</source>
         <translation>RÄUME UND SPACES</translation>
     </message>
@@ -34353,24 +34911,24 @@ Vorgeschlagene Zielgruppe
     </message>
     <message>
         <location line="+21"/>
-        <location filename="../qml/TimelinePane.qml" line="+7145"/>
+        <location filename="../qml/TimelinePane.qml" line="+7117"/>
         <source>Remove</source>
         <translation>Entfernen</translation>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+645"/>
+        <location line="+651"/>
         <source>Mark as not suggested</source>
         <translation>Als nicht empfohlen markieren</translation>
     </message>
     <message>
-        <location line="-644"/>
-        <location line="+645"/>
+        <location line="-650"/>
+        <location line="+651"/>
         <source>Mark as suggested</source>
         <translation>Als empfohlen markieren</translation>
     </message>
     <message>
-        <location line="-634"/>
+        <location line="-640"/>
         <source>Search names and descriptions</source>
         <translation>Namen und Beschreibungen durchsuchen</translation>
     </message>
@@ -34380,25 +34938,25 @@ Vorgeschlagene Zielgruppe
         <translation>Räume und Spaces durchsuchen</translation>
     </message>
     <message>
-        <location line="+58"/>
+        <location line="+64"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>Keine Räume oder Spaces passen zu „%1“.</translation>
     </message>
     <message>
-        <location line="+27"/>
-        <location line="+264"/>
+        <location line="+26"/>
+        <location line="+265"/>
         <source>No rooms yet</source>
         <translation>Noch keine Räume</translation>
     </message>
     <message>
-        <location line="-255"/>
+        <location line="-256"/>
         <source>Create a room here or add one of your existing rooms to organise it under this Space.</source>
         <translation>Erstelle hier einen Raum oder füge einen deiner bestehenden Räume hinzu, um ihn unter diesem Space zu ordnen.</translation>
     </message>
     <message>
         <location line="+29"/>
-        <location filename="../qml/TimelinePane.qml" line="-5929"/>
-        <location line="+5439"/>
+        <location filename="../qml/TimelinePane.qml" line="-5900"/>
+        <location line="+5408"/>
         <source>Space</source>
         <translation>Space</translation>
     </message>
@@ -34421,9 +34979,9 @@ Vorgeschlagene Zielgruppe
         </translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="+141"/>
-        <location filename="../qml/TimelinePane.qml" line="-6279"/>
-        <location line="+6921"/>
+        <location filename="../qml/SpaceLobby.qml" line="+142"/>
+        <location filename="../qml/TimelinePane.qml" line="-6248"/>
+        <location line="+6892"/>
         <source>Room</source>
         <translation>Raum</translation>
     </message>
@@ -34477,7 +35035,7 @@ Vorgeschlagene Zielgruppe
         <translation>%1 auswählen</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-6514"/>
+        <location filename="../qml/TimelinePane.qml" line="-6485"/>
         <source>Seen by 1 person</source>
         <translation>Von 1 Person gesehen</translation>
     </message>
@@ -34603,12 +35161,12 @@ Vorgeschlagene Zielgruppe
     <message>
         <location line="+16"/>
         <location line="+2"/>
-        <location line="+3898"/>
+        <location line="+3854"/>
         <source>Room information</source>
         <translation>Rauminformationen</translation>
     </message>
     <message>
-        <location line="-3887"/>
+        <location line="-3843"/>
         <location line="+1"/>
         <source>More room actions</source>
         <translation>Weitere Raumaktionen</translation>
@@ -34780,41 +35338,6 @@ Vorgeschlagene Zielgruppe
     </message>
     <message>
         <location line="+28"/>
-        <source>Indexing this room&apos;s history…</source>
-        <translation>Der Verlauf dieses Raums wird indiziert …</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>The search index could not be updated. Index this room again to retry.</source>
-        <translation>Der Suchindex konnte nicht aktualisiert werden. Indexiere diesen Raum erneut, um es noch einmal zu versuchen.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Type at least %1 characters.</source>
-        <translation>Gib mindestens %1 Zeichen ein.</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Nothing is indexed yet.</source>
-        <translation>Es ist noch nichts indiziert.</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Searching %1 messages Lightning has indexed, including encrypted ones.</source>
-        <translation>Es werden %1 von Lightning indizierte Nachrichten durchsucht, auch verschlüsselte.</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Index this room</source>
-        <translation>Diesen Raum indizieren</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Fetch this room&apos;s older messages so they can be searched</source>
-        <translation>Die älteren Nachrichten dieses Raums abrufen, damit sie durchsucht werden können</translation>
-    </message>
-    <message>
-        <location line="+16"/>
         <source>Indexed</source>
         <translation>Indiziert</translation>
     </message>
@@ -34943,13 +35466,13 @@ Vorgeschlagene Zielgruppe
     <message>
         <location line="+81"/>
         <location line="+209"/>
-        <location line="+1260"/>
+        <location line="+1275"/>
         <location line="+77"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message numerus="yes">
-        <location line="-1353"/>
+        <location line="-1368"/>
         <source>%n message(s) selected</source>
         <translation>
             <numerusform>%n Nachricht ausgewählt</numerusform>
@@ -34972,7 +35495,7 @@ Vorgeschlagene Zielgruppe
         <translation>Weiterleiten …</translation>
     </message>
     <message>
-        <location line="+442"/>
+        <location line="+455"/>
         <source>Room added — waiting for the server to confirm.</source>
         <translation>Raum hinzugefügt – wartet auf die Bestätigung des Servers.</translation>
     </message>
@@ -35092,7 +35615,7 @@ Vorgeschlagene Zielgruppe
         <translation>Nur Space-Admins können das ändern.</translation>
     </message>
     <message>
-        <location line="+222"/>
+        <location line="+224"/>
         <source>People in this Space</source>
         <translation>Personen in diesem Space</translation>
     </message>
@@ -35120,7 +35643,7 @@ Vorgeschlagene Zielgruppe
         <translation>Du bist der einzige Administrator. Wenn du gehst, kann niemand mehr die Einstellungen dieses Space ändern oder seine Räume und Mitglieder verwalten. Mache zuerst jemand anderen zum Administrator.</translation>
     </message>
     <message>
-        <location line="-414"/>
+        <location line="-416"/>
         <source>Choose Space avatar</source>
         <translation>Space-Avatar auswählen</translation>
     </message>
@@ -35186,17 +35709,17 @@ Vorgeschlagene Zielgruppe
     </message>
     <message>
         <location line="+27"/>
-        <location line="+302"/>
+        <location line="+304"/>
         <source>Leave Space</source>
         <translation>Space verlassen</translation>
     </message>
     <message>
-        <location line="-296"/>
+        <location line="-298"/>
         <source>Leaving does not remove the rooms inside it.</source>
         <translation>Beim Verlassen werden die darin enthaltenen Räume nicht entfernt.</translation>
     </message>
     <message>
-        <location line="+198"/>
+        <location line="+200"/>
         <source>The rooms keep existing and you stay in them — they just leave this Space&apos;s list.</source>
         <translation>Die Räume bleiben bestehen, und du bleibst in ihnen – sie verschwinden nur aus der Liste dieses Space.</translation>
     </message>
@@ -35263,7 +35786,7 @@ Vorgeschlagene Zielgruppe
         <translation>Dateien zum Anhängen hier ablegen</translation>
     </message>
     <message>
-        <location line="-5484"/>
+        <location line="-5455"/>
         <source>Join space</source>
         <translation>Space beitreten</translation>
     </message>
@@ -36643,7 +37166,7 @@ Vorgeschlagene Zielgruppe
         <translation>Die Aufnahme konnte nicht abgeschlossen werden.</translation>
     </message>
     <message>
-        <location line="+67"/>
+        <location line="+65"/>
         <source>Nothing was recorded.</source>
         <translation>Es wurde nichts aufgenommen.</translation>
     </message>
@@ -36653,13 +37176,13 @@ Vorgeschlagene Zielgruppe
         <translation>Die Aufnahme ist fehlgeschlagen.</translation>
     </message>
     <message>
-        <location line="+95"/>
-        <location line="+156"/>
+        <location line="+91"/>
+        <location line="+166"/>
         <source>The sound server is not answering. Try recording again in a moment.</source>
         <translation>Der Soundserver antwortet nicht. Versuche die Aufnahme gleich noch einmal.</translation>
     </message>
     <message>
-        <location line="-141"/>
+        <location line="-150"/>
         <source>No microphone or audio encoder is available.</source>
         <translation>Es ist kein Mikrofon oder Audio-Encoder verfügbar.</translation>
     </message>
@@ -36669,12 +37192,12 @@ Vorgeschlagene Zielgruppe
         <translation>Der Aufnahmespeicher konnte nicht vorbereitet werden.</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+39"/>
         <source>Recording could not start.</source>
         <translation>Die Aufnahme konnte nicht gestartet werden.</translation>
     </message>
     <message>
-        <location line="+211"/>
+        <location line="+209"/>
         <source>The microphone was disconnected. The recording was discarded.</source>
         <translation>Das Mikrofon wurde getrennt. Die Aufnahme wurde verworfen.</translation>
     </message>
@@ -36920,7 +37443,7 @@ Vorgeschlagene Zielgruppe
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2462"/>
+        <location filename="../src/main.cpp" line="+2454"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>Nativer Qt/QML-Matrix-Client. Backend: --backend={mock,http,rust}. Standard: rust (http in Versionen ohne das Rust-SDK).</translation>
     </message>

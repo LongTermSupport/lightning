@@ -637,6 +637,8 @@ set(APP_SOURCES
     src/app/NotificationTroubleshooter.cpp
     src/app/RemindersController.h
     src/app/RemindersController.cpp
+    src/app/FollowUpController.h
+    src/app/FollowUpController.cpp
     src/app/ForwardController.h
     src/app/ForwardController.cpp
     src/app/BulkRedactionController.h
@@ -1134,6 +1136,7 @@ if(HAVE_LIGHTNING_WEBRTC)
         src/calls/CaptureDeviceSelection.h
         src/calls/CaptureClock.h
         src/calls/ShareCaptureRetry.h
+        src/calls/ShareTargetFallback.h
         src/calls/CaptureDeviceSelection.cpp
         src/calls/RtpVp8Payloader.h
         src/calls/RtpVp8Payloader.cpp
@@ -1182,6 +1185,7 @@ set(APP_QML_FILES
     # Themed replacements for the unstyled Qt Basic controls.
     qml/AppDialog.qml
     qml/ImageCropDialog.qml
+    qml/AttachmentReviewDialogs.qml
     qml/AttachmentImageEditDialog.qml
     qml/AppProgressBar.qml
     qml/AppBusyIndicator.qml
@@ -1301,6 +1305,7 @@ set(APP_QML_FILES
     qml/DiscoverJoinDialog.qml
     qml/MessageSearchDialog.qml
     qml/SearchPanel.qml
+    qml/RoomSearchCoverage.qml
     qml/SearchIndexEmptyState.qml
     qml/SearchMemberSection.qml
     qml/MediaListThumbnail.qml
@@ -1424,6 +1429,8 @@ set(APP_QML_FILES
     qml/AccountActivityBadge.qml
     qml/AccountActivityFeed.qml
     qml/UnifiedInboxSection.qml
+    qml/CatchUpCard.qml
+    qml/FollowUpsList.qml
     qml/LabsConcurrentAccountsCard.qml
     qml/TrustCard.qml
     qml/RecoveryKeyEntry.qml
@@ -3906,6 +3913,15 @@ if(BUILD_TESTING)
     target_include_directories(reminders-controller-test PRIVATE src)
     target_link_libraries(reminders-controller-test PRIVATE Qt6::Core Qt6::Test)
     add_test(NAME reminders-controller COMMAND reminders-controller-test)
+
+    qt_add_executable(follow-up-controller-test
+        tests/FollowUpControllerTest.cpp
+        src/app/FollowUpController.h
+        src/app/FollowUpController.cpp
+    )
+    target_include_directories(follow-up-controller-test PRIVATE src)
+    target_link_libraries(follow-up-controller-test PRIVATE Qt6::Core Qt6::Test)
+    add_test(NAME follow-up-controller COMMAND follow-up-controller-test)
 
     qt_add_executable(quiet-hours-test
         tests/QuietHoursTest.cpp
@@ -8456,6 +8472,22 @@ if(BUILD_TESTING)
     endforeach()
 endif()
 
+if(TARGET attachment-queue-test)
+    add_library(lightning-attachment-zip-test-support STATIC
+        src/app/LogExport.cpp src/app/AsyncLogSink.cpp
+        src/app/SessionDiagnostics.cpp src/crypto/E2eeDiagnostics.cpp)
+    target_include_directories(lightning-attachment-zip-test-support PRIVATE src)
+    target_link_libraries(lightning-attachment-zip-test-support PRIVATE Qt6::Core Qt6::Gui)
+endif()
+foreach(_target lightning-matrix lightning-app-testlib attachment-queue-test
+        attachment-order-test draft-store-test thread-controller-test context-controller-test)
+    if(TARGET ${_target})
+        target_sources(${_target} PRIVATE src/media/FolderArchive.cpp)
+        if(TARGET lightning-attachment-zip-test-support AND _target MATCHES "-test$")
+            target_link_libraries(${_target} PRIVATE lightning-attachment-zip-test-support)
+        endif()
+    endif()
+endforeach()
 if(BUILD_TESTING)
     qt_add_executable(space-community-test
         tests/SpaceCommunityTest.cpp

@@ -115,6 +115,8 @@ void SavedMessagesController::reset()
 {
     m_refs.clear();
     m_beforeWrite.clear();
+    m_desiredBeforeMerge.clear();
+    m_removed.clear();
     m_undo = {};
     m_undoValid = false;
     m_loaded = false;
@@ -220,6 +222,7 @@ void SavedMessagesController::setClient(MatrixClient *client)
             }
         }
         if (merged.size() > kMaxRefs) {
+            m_beforeWrite = remote;
             failWrite(tr("Saved messages are full. Remove an older item first."));
             return;
         }
@@ -227,7 +230,7 @@ void SavedMessagesController::setClient(MatrixClient *client)
             return a.savedAtMs > b.savedAtMs;
         });
         m_refs = std::move(merged);
-        sendWrite();
+        sendWrite(remote);
     });
     connect(client, &MatrixClient::accountPrefReadFailed, this,
             [this](const QString &type, const QString &) {
@@ -271,6 +274,13 @@ void SavedMessagesController::setClient(MatrixClient *client)
             Q_EMIT actionFailed(m_error);
         } else {
             m_error.clear();
+            if (m_undoValid) {
+                m_removed.append(qMakePair(key(m_undo.roomId, m_undo.eventId), m_undo.savedAtMs));
+                while (m_removed.size() > kMaxRefs)
+                    m_removed.removeFirst();
+            } else if (!m_saving) {
+                m_removed.removeAll(qMakePair(key(m_undo.roomId, m_undo.eventId), m_undo.savedAtMs));
+            }
             if (m_saving)
                 Q_EMIT saveSucceeded();
         }
@@ -350,6 +360,12 @@ void SavedMessagesController::receive(const QVariantMap &content, bool present)
     m_refs = std::move(next);
     m_loaded = true;
     m_error.clear();
+    for (const Ref &ref : std::as_const(m_refs)) {
+        if (m_removed.contains(qMakePair(key(ref.roomId, ref.eventId), ref.savedAtMs))) {
+            m_error = tr("Another device restored a removed saved message. Review the list and remove it again if needed.");
+            break;
+        }
+    }
     m_resolving.clear();
     m_attempted.clear();
     for (Ref &ref : m_refs) {
@@ -371,6 +387,7 @@ bool SavedMessagesController::parseRefs(const QVariantMap &content, bool present
         && (content.size() != 2
             || !content.value(QStringLiteral("entries")).canConvert<QVariantList>()
             || content.value(QStringLiteral("version")).toInt() != 1
+            || QJsonDocument(QJsonObject::fromVariantMap(content)).toJson(QJsonDocument::Compact).size() > kMaxBytes
             || raw.size() > kMaxRefs)) {
         return false;
     }
@@ -432,7 +449,7 @@ void SavedMessagesController::failWrite(const QString &message)
     emitChanged();
 }
 
-void SavedMessagesController::sendWrite()
+QVariantMap SavedMessagesController::referenceContent() const
 {
     QVariantList entries;
     for (const Ref &ref : std::as_const(m_refs))
@@ -442,12 +459,31 @@ void SavedMessagesController::sendWrite()
             { QStringLiteral("thread_root_id"), ref.rootId },
             { QStringLiteral("saved_at_ms"), ref.savedAtMs },
         });
-    const QVariantMap content{
+    return {
         { QStringLiteral("version"), 1 },
         { QStringLiteral("entries"), entries },
     };
+}
+
+QString SavedMessagesController::capacityNotice() const
+{
+    if (!m_loaded)
+        return {};
+    const int freeSlots = kMaxRefs - count();
+    const auto bytes = kMaxBytes - QJsonDocument(QJsonObject::fromVariantMap(referenceContent()))
+                                       .toJson(QJsonDocument::Compact).size();
+    if (freeSlots > 10 && bytes > kMaxBytes / 10)
+        return {};
+    return tr("Saved message capacity remaining: %n slot(s), %1 bytes.", "", freeSlots)
+        .arg(qMax<qsizetype>(0, bytes));
+}
+
+void SavedMessagesController::sendWrite(const QVector<Ref> &remote)
+{
+    const QVariantMap content = referenceContent();
     if (QJsonDocument(QJsonObject::fromVariantMap(content))
             .toJson(QJsonDocument::Compact).size() > kMaxBytes) {
+        m_beforeWrite = remote;
         failWrite(tr("Saved messages are full. Remove an older item first."));
         return;
     }

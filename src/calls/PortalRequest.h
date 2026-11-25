@@ -21,6 +21,24 @@
 
 namespace portal {
 
+inline QString permissionError(const QString &errorName)
+{
+    if (errorName == QLatin1String("org.freedesktop.portal.Error.Cancelled"))
+        return QStringLiteral("cancelled");
+    if (errorName == QLatin1String("org.freedesktop.portal.Error.NotAllowed")
+        || errorName == QLatin1String("org.freedesktop.DBus.Error.AccessDenied"))
+        return QStringLiteral("not_allowed");
+    if (errorName == QLatin1String("org.freedesktop.DBus.Error.ServiceUnknown")
+        || errorName == QLatin1String("org.freedesktop.DBus.Error.UnknownMethod")
+        || errorName
+            == QLatin1String("org.freedesktop.DBus.Error.UnknownInterface")
+        || errorName == QLatin1String("org.freedesktop.DBus.Error.UnknownObject")
+        || errorName
+            == QLatin1String("org.freedesktop.DBus.Error.NameHasNoOwner"))
+        return QStringLiteral("no_portal");
+    return {};
+}
+
 inline QString predictedRequestPath(QString uniqueName, const QString &token)
 {
     if (uniqueName.isEmpty() || token.isEmpty())
@@ -48,7 +66,7 @@ Subscription<Step> subscribeBeforeCall(Owner *owner, const QString &uniqueName,
     if (sub.path.isEmpty())
         return sub;
     sub.step = new Step(owner, sub.path);
-    QObject::connect(sub.step.data(), &Step::answered, owner, onAnswer);
+    QObject::connect(sub.step.data(), &Step::answered, owner, onAnswer, Qt::SingleShotConnection);
     return sub;
 }
 
@@ -65,7 +83,7 @@ void reconcileRequestPath(Owner *owner, Subscription<Step> &sub,
     if (actualPath.isEmpty())
         return;
     sub.step = new Step(owner, actualPath);
-    QObject::connect(sub.step.data(), &Step::answered, owner, onAnswer);
+    QObject::connect(sub.step.data(), &Step::answered, owner, onAnswer, Qt::SingleShotConnection);
 }
 
 template <typename Step>

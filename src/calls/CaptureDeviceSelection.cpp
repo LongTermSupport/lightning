@@ -199,20 +199,16 @@ DeviceBinding resolveDeviceBinding(CaptureKind kind, const QString &element,
                                    const QString &qtDescription,
                                    const QList<GstDeviceCandidate> &candidates)
 {
-    if (qtDeviceId.isEmpty())
+    const bool pinned = kind == CaptureKind::PinnedMicrophone;
+    if (qtDeviceId.isEmpty() && !pinned)
         return {};
     const ElementProfile *profile = profileFor(element);
-    DeviceBinding binding = profile
-        ? resolveOnce(*profile, element, qtDeviceId, qtDescription,
+    DeviceBinding binding = profile && !qtDeviceId.isEmpty()
+        ? resolveOnce(*profile, element, qtDeviceId, pinned ? QString() : qtDescription,
                       unserializedCandidates(candidates))
         : DeviceBinding{};
-    // A chosen camera that cannot be bound is refused, not replaced: the
-    // default is a different camera, and opening a camera the user did not
-    // pick is a privacy failure. A microphone or speaker deliberately keeps
-    // the platform default instead: a wrong `device=` would lose the call's
-    // audio, and the default device is the one the user already hears.
-    if (binding.isEmpty() && kind == CaptureKind::Camera)
-        binding.refused = true;
+    binding.requireIdentity = pinned;
+    binding.refused = binding.isEmpty() && (kind == CaptureKind::Camera || pinned);
     return binding;
 }
 

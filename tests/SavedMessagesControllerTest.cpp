@@ -130,6 +130,62 @@ class SavedMessagesControllerTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
+    void nearCapacityFeedbackUsesBothLimits()
+    {
+        SavedFakeClient client;
+        SavedMessagesController saved;
+        saved.setClient(&client);
+        Q_EMIT client.accountPrefRead(client.lastType, true, manyRefs(89));
+        QVERIFY(saved.capacityNotice().isEmpty());
+        Q_EMIT client.accountPrefRead(client.lastType, true, manyRefs(90));
+        QVERIFY(!saved.capacityNotice().isEmpty());
+        QVariantList large;
+        for (int i = 0; i < 48; ++i)
+            large << savedRef(QStringLiteral("!room:example.org"),
+                             QStringLiteral("$%1").arg(i) + QString(235, QLatin1Char('a')), 42);
+        const auto payload = savedList(large);
+        const auto bytes = QJsonDocument(QJsonObject::fromVariantMap(payload)).toJson(QJsonDocument::Compact).size();
+        QVERIFY(bytes <= 16384 && bytes > 14746);
+        Q_EMIT client.accountPrefRead(client.lastType, true, payload);
+        QVERIFY(saved.capacityNotice().contains(QString::number(16384 - bytes)));
+        large += QVariantList(large);
+        Q_EMIT client.accountPrefRead(client.lastType, true, savedList(large));
+        QVERIFY(!saved.loaded());
+        saved.save(QStringLiteral("!room:example.org"), QStringLiteral("$new"), {});
+        QVERIFY(client.lastWrite.isEmpty());
+    }
+
+    void aFullSaveKeepsTheServersListNotAStaleCopy()
+    {
+        SavedFakeClient client;
+        SavedMessagesController saved;
+        saved.setClient(&client);
+        Q_EMIT client.accountPrefRead(client.lastType, true, manyRefs(1));
+        saved.save(QStringLiteral("!room:example.org"), QStringLiteral("$new"), {});
+        Q_EMIT client.accountPrefRead(client.lastType, true, manyRefs(100));
+        QVERIFY(client.lastWrite.isEmpty());
+        QCOMPARE(saved.count(), 100);
+        QVERIFY(saved.isSaved(QStringLiteral("!room:example.org"), QStringLiteral("$99")));
+        QVERIFY(!saved.isSaved(QStringLiteral("!room:example.org"), QStringLiteral("$new")));
+    }
+
+    void racingWriteThatRestoresARemovalIsReported()
+    {
+        SavedFakeClient client;
+        SavedMessagesController saved;
+        saved.setClient(&client);
+        const auto old = manyRefs(1);
+        Q_EMIT client.accountPrefRead(client.lastType, true, old);
+        saved.remove(QStringLiteral("!room:example.org"), QStringLiteral("$0"));
+        Q_EMIT client.accountPrefRead(client.lastType, true, old);
+        Q_EMIT client.accountPrefWritten(client.lastType, true, {});
+        Q_EMIT client.accountPrefRead(client.lastType, true, savedList({}));
+        QVERIFY(saved.error().isEmpty());
+        Q_EMIT client.accountPrefRead(client.lastType, true, old);
+        QCOMPARE(saved.count(), 1);
+        QVERIFY(!saved.error().isEmpty());
+    }
+
     void mergesFreshServerListAndKeepsLocalRemoval()
     {
         SavedFakeClient client;

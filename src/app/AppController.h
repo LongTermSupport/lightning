@@ -97,6 +97,7 @@
 #include "app/PinnedMessagesController.h"
 #include "app/SavedMessagesController.h"
 #include "app/RemindersController.h"
+#include "app/FollowUpController.h"
 #include "app/RoomUpgradeController.h"
 #include "app/OpenRoomPermissions.h"
 #include "models/TimelineScrollController.h"
@@ -371,6 +372,7 @@ class AppController : public QObject
     Q_PROPERTY(PinnedMessagesController* pinned READ pinned CONSTANT)
     Q_PROPERTY(SavedMessagesController* savedMessages READ savedMessages CONSTANT)
     Q_PROPERTY(RemindersController* reminders READ reminders CONSTANT)
+    Q_PROPERTY(FollowUpController* followUps READ followUps CONSTANT)
     Q_PROPERTY(bool quietHoursActive READ quietHoursActive NOTIFY quietHoursActiveChanged)
     Q_PROPERTY(RoomUpgradeController* roomUpgrade READ roomUpgrade CONSTANT)
     Q_PROPERTY(OpenRoomPermissions* openRoomPermissions
@@ -665,6 +667,7 @@ public:
     PinnedMessagesController *pinned() const { return m_pinned.get(); }
     SavedMessagesController *savedMessages() const { return m_savedMessages.get(); }
     RemindersController *reminders() const { return m_reminders.get(); }
+    FollowUpController *followUps() const { return m_followUps.get(); }
     bool quietHoursActive() const { return m_quietHoursActive; }
     RoomUpgradeController *roomUpgrade() const { return m_roomUpgrade.get(); }
     OpenRoomPermissions *openRoomPermissions() const
@@ -1406,6 +1409,7 @@ private:
     std::unique_ptr<PinnedMessagesController> m_pinned;
     std::unique_ptr<SavedMessagesController> m_savedMessages;
     std::unique_ptr<RemindersController> m_reminders;
+    std::unique_ptr<FollowUpController> m_followUps;
     QTimer m_quietHoursTimer;
     bool m_quietHoursActive = false;
     void refreshQuietHours();

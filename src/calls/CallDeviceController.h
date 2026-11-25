@@ -1,5 +1,7 @@
 #pragma once
 
+#include "calls/CaptureDeviceSelection.h"
+
 #include <QObject>
 #include <QPointer>
 #include <QString>
@@ -30,6 +32,7 @@ class CallDeviceController : public QObject
                    NOTIFY selectionChanged)
     Q_PROPERTY(QString activeCameraId READ activeCameraId
                    NOTIFY selectionChanged)
+    Q_PROPERTY(bool microphonePinned READ microphonePinned WRITE setMicrophonePinned NOTIFY selectionChanged)
     Q_PROPERTY(bool preferredMicrophoneMissing READ preferredMicrophoneMissing
                    NOTIFY selectionChanged)
     /// A capture pipeline could not open the chosen microphone and used the
@@ -54,6 +57,8 @@ public:
     QString activeMicrophoneId() const;
     QString activeSpeakerId() const;
     QString activeCameraId() const;
+    bool microphonePinned() const;
+    void setMicrophonePinned(bool pinned);
     bool preferredMicrophoneMissing() const;
     bool preferredCameraMissing() const;
     bool preferredMicrophoneUnusable() const;
@@ -67,11 +72,7 @@ public:
     Q_INVOKABLE void selectSpeaker(const QString &id);
     Q_INVOKABLE void selectCamera(const QString &id);
 
-    struct Selection {
-        QString id;
-        QString description;
-        bool preferredMissing = false;
-    };
+    using Selection = lightning::calls::DeviceChoice;
     Selection cameraSelection() const;
     Selection microphoneSelection() const;
     Selection speakerSelection() const;
@@ -91,6 +92,7 @@ private:
 
     mutable QMediaDevices *m_devices = nullptr;
     QPointer<SettingsManager> m_settings;
+    QString m_pinnedMicrophoneId;
     QString m_lastActiveMic;
     QString m_lastActiveSpeaker;
     QString m_lastActiveCamera;

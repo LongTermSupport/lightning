@@ -10,6 +10,7 @@ import "VimEditing.js" as VimEditing
 Item {
     id: root
     AttachmentImageEditDialog { id: attachmentImageEditor }
+    AttachmentReviewDialogs { id: attachmentReview; onArchiveStaged: root.focusStagedAttachmentSend() }
     focus: false
     property bool composerExpanded: false
     function toggleComposerHeight() { composerExpanded = !composerExpanded }
@@ -1322,6 +1323,11 @@ Item {
             onTriggered: root.openPicker(pickAttachmentsDialog)
         }
         AppMenuItem {
+            iconName: "folder"
+            text: qsTr("Create folder archive…")
+            onTriggered: attachmentReview.chooseFolder()
+        }
+        AppMenuItem {
             objectName: "createPollMenuItem"
             iconName: "check_circle"
             text: qsTr("Create poll…")
@@ -1750,6 +1756,17 @@ Item {
                                 ToolTip.delay: 500
                                 ToolTip.text: model.error || ""
                             }
+                        }
+                        IconButton {
+                            visible: model.isImage && model.state === "queued"
+                                     && model.mime !== "image/svg+xml"
+                            implicitWidth: 20; implicitHeight: 20
+                            iconName: "info"
+                            iconSize: 14
+                            Accessible.name: qsTr("Inspect photo metadata")
+                            ToolTip.text: Accessible.name
+                            ToolTip.visible: hovered
+                            onClicked: attachmentReview.inspect(index)
                         }
                         IconButton {
                             visible: model.isImage && model.state !== "dispatching"

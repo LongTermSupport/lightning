@@ -808,6 +808,7 @@ Item {
                 (mode, options) => roomsPanel.startConversation(mode, options)
             onSearchAllRoomsRequested:
                 (query) => messageSearchDialog.openDialog(query)
+            onDiscoverAddressRequested: roomsPanel.openDiscover("address")
             onDiscoverRoomsRequested: roomsPanel.openDiscover("browse")
         }
     }

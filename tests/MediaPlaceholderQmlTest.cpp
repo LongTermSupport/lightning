@@ -2162,17 +2162,20 @@ QtObject {
                  "images and stickers");
     }
 
-    void theHiddenSetIsBoundedAndEvictsTheOldest()
+    void fullHiddenSetKeepsExistingChoicesUntilExplicitlyShown()
     {
         MediaVisibilityStore store;
-        for (int i = 0; i < MediaVisibilityStore::kMaxHidden + 10; ++i)
+        for (int i = 0; i < MediaVisibilityStore::kMaxHidden; ++i)
             store.hide(QStringLiteral("$k%1").arg(i));
+        QSignalSpy changes(&store, &MediaVisibilityStore::hiddenChanged);
+        store.hide(QStringLiteral("$extra"));
+        QCOMPARE(changes.count(), 0);
+        QVERIFY(store.isHidden(QStringLiteral("$k0")));
+        QVERIFY(!store.isHidden(QStringLiteral("$extra")));
+        store.show(QStringLiteral("$k1"));
+        store.hide(QStringLiteral("$extra"));
         QCOMPARE(store.hiddenCount(), MediaVisibilityStore::kMaxHidden);
-        QVERIFY2(!store.isHidden(QStringLiteral("$k0")),
-                 "the cap refused the newest hide instead of releasing the "
-                 "oldest");
-        QVERIFY(store.isHidden(
-            QStringLiteral("$k%1").arg(MediaVisibilityStore::kMaxHidden + 9)));
+        QVERIFY(store.isHidden(QStringLiteral("$extra")));
         store.clear();
         QCOMPARE(store.hiddenCount(), 0);
         store.hide(QString());

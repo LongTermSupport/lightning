@@ -175,6 +175,7 @@ struct RustClient {
     search_index: Arc<Mutex<Option<localsearch::SearchIndex>>>,
     index_shutdown: Arc<AtomicBool>,
     index_all: Arc<indexall::Control>,
+    hierarchy_requests: Mutex<HashMap<u64, tokio::sync::oneshot::Sender<()>>>,
     media_history: Arc<Mutex<HashMap<String, mediahistory::Cursor>>>,
     session_file: Arc<Mutex<Option<PathBuf>>>,
     client: Arc<Mutex<Option<Client>>>,
@@ -280,6 +281,7 @@ impl RustClient {
             search_index: Arc::new(Mutex::new(None)),
             index_shutdown: Arc::new(AtomicBool::new(false)),
             index_all,
+            hierarchy_requests: Mutex::new(HashMap::new()),
             media_history: Arc::new(Mutex::new(HashMap::new())),
             session_file: Arc::new(Mutex::new(None)),
             client: Arc::new(Mutex::new(None)),
@@ -8586,6 +8588,7 @@ pub unsafe extern "C" fn mx_rust_search_index_deep(
             .ok_or_else(|| "unknown room".to_owned())?;
         let index = Arc::clone(&bridge.search_index);
         let stop = Arc::clone(&bridge.index_shutdown);
+        let stop = bridge.index_all.manual_gate(stop, op_id);
         let events = Arc::clone(&bridge.events);
         bridge.spawn_room_action(async move {
             match localsearch::deep_index_room(
@@ -8610,12 +8613,48 @@ pub unsafe extern "C" fn mx_rust_search_index_deep(
                     "messages": 0, "indexed_rooms": 0,
                     "category": if error.storage {
                         "local_storage"
+                    } else if error.busy {
+                        "busy"
                     } else {
                         rooms::classify_room_error(&error.message)
                     },
                 })),
             }
         });
+        Ok(String::new())
+    })
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn mx_rust_room_search_coverage(
+    ptr: *mut c_void, room_id: *const c_char, op_id: u64,
+) -> *mut c_char {
+    ffi_string(|| {
+        let bridge = unsafe { bridge(ptr)? };
+        let room_id = unsafe { cstr_arg(room_id) }?;
+        ensure_search_index(bridge)?;
+        let index = Arc::clone(&bridge.search_index);
+        let control = Arc::clone(&bridge.index_all);
+        let events = Arc::clone(&bridge.events);
+        let lifecycle = bridge.timelines.lifecycle();
+        bridge.spawn_room_action(async move {
+            let receipt = control.room_receipt(&room_id);
+            let count = index.lock().ok()
+                .and_then(|g| g.as_ref().and_then(|ix| ix.room_count(&room_id).ok()));
+            enqueue(&events, json!({
+                "type": "room_search_coverage", "op_id": op_id, "lifecycle": lifecycle,
+                "room_id": room_id, "receipt": receipt, "messages": count
+            }));
+        });
+        Ok(String::new())
+    })
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn mx_rust_cancel_room_search_index(ptr: *mut c_void, op_id: u64) -> *mut c_char {
+    ffi_string(|| {
+        let bridge = unsafe { bridge(ptr)? };
+        bridge.index_all.cancel_manual(op_id);
         Ok(String::new())
     })
 }
@@ -8728,6 +8767,7 @@ async fn index_all_walk(
     match localsearch::deep_index_room_gated(&room, index, gate, localsearch::DEEP_MAX_PAGES)
         .await
     {
+        Ok(outcome) if outcome.busy => indexall::RoomResult::Busy,
         Ok(outcome) if outcome.interrupted => indexall::RoomResult::Interrupted {
             written: outcome.written,
         },
@@ -9915,6 +9955,19 @@ pub unsafe extern "C" fn mx_rust_space_children(
         let bridge = unsafe { bridge(ptr)? };
         let space_id = unsafe { cstr_arg(space_id) }?;
         discover::space_children(bridge, space_id, op_id).map(|_| String::new())
+    })
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn mx_rust_cancel_space_children(ptr: *mut c_void, op_id: u64) -> *mut c_char {
+    ffi_string(|| {
+        let bridge = unsafe { bridge(ptr)? };
+        if let Ok(mut requests) = bridge.hierarchy_requests.lock() {
+            if let Some(sender) = requests.remove(&op_id) {
+                let _ = sender.send(());
+            }
+        }
+        Ok(String::new())
     })
 }
 

@@ -132,9 +132,14 @@ void MessageSearchController::setClient(MatrixClient *client)
     if (m_client)
         disconnect(m_client, nullptr, this, nullptr);
     m_client = client;
+    m_deepRoom.clear();
+    m_coverageOp = 0;
+    m_roomCoverage.clear();
     m_sweepOp = 0;
     m_deepOp = 0;
-    m_indexWriteFailed = false;
+    m_failedRoom.clear();
+    Q_EMIT roomCoverageChanged();
+    Q_EMIT indexingChanged();
     m_backgroundIndex.stop();
     m_backgroundIndexSpent = false;
     clear();
@@ -174,14 +179,27 @@ void MessageSearchController::setClient(MatrixClient *client)
             dispatch(false);
         }
     });
+    connect(m_client, &MatrixClient::roomSearchCoverageReceived, this,
+            [this](quint64 op, const QString &room, const QVariantMap &coverage) {
+        if (!op || op != m_coverageOp || room != m_roomId)
+            return;
+        m_coverageOp = 0;
+        if (coverage != m_roomCoverage) {
+            m_roomCoverage = coverage;
+            Q_EMIT roomCoverageChanged();
+        }
+    });
     connect(m_client, &MatrixClient::searchIndexDeepened, this,
             [this](quint64 opId, bool ok, const QString &roomId, int,
                    bool reachedStart, int written, qint64 messages,
                    const QString &category) {
-        if (opId != m_deepOp)
+        if (!opId || opId != m_deepOp || roomId != m_deepRoom)
             return;
         m_deepOp = 0;
-        m_indexWriteFailed = !ok && category == QLatin1String("local_storage");
+        m_deepRoom.clear();
+        if (roomId == m_roomId)
+            refreshRoomCoverage();
+        m_failedRoom = !ok && category == QLatin1String("local_storage") ? roomId : QString();
         // A failed walk reports no count, not an empty index.
         if (ok)
             m_indexedMessages = messages;
@@ -249,12 +267,16 @@ void MessageSearchController::setClient(MatrixClient *client)
     connect(m_client, &MatrixClient::loggedOut, this, [this] {
         clear();
         resetIndexAll();
+        m_deepRoom.clear();
+        m_roomCoverage.clear();
+        m_coverageOp = 0;
+        Q_EMIT roomCoverageChanged();
         m_backgroundIndex.stop();
         m_backgroundIndexSpent = false;
-        if (m_sweepOp != 0 || m_deepOp != 0 || m_indexWriteFailed) {
+        if (m_sweepOp != 0 || m_deepOp != 0 || !m_failedRoom.isEmpty()) {
             m_sweepOp = 0;
             m_deepOp = 0;
-            m_indexWriteFailed = false;
+            m_failedRoom.clear();
             Q_EMIT indexingChanged();
         }
         setProperty(kIgnoredUsersProperty, QStringList());
@@ -310,6 +332,18 @@ void MessageSearchController::refreshIndexStats()
         m_client->searchIndexStats();
 }
 
+void MessageSearchController::refreshRoomCoverage()
+{
+    if (m_client && !m_roomId.isEmpty() && localAvailable())
+        m_coverageOp = m_client->requestRoomSearchCoverage(m_roomId);
+}
+
+void MessageSearchController::cancelRoomIndex()
+{
+    if (m_client && m_deepOp)
+        m_client->cancelRoomSearchIndex(m_deepOp);
+}
+
 void MessageSearchController::sweepIndex()
 {
     if (!m_client)
@@ -326,7 +360,8 @@ void MessageSearchController::indexRoomHistory(const QString &roomId)
         return;
     m_deepOp = m_client->deepenSearchIndex(roomId);
     if (m_deepOp != 0) {
-        m_indexWriteFailed = false;
+        m_deepRoom = roomId;
+        m_failedRoom.clear();
         Q_EMIT indexingChanged();
     }
     else
@@ -337,6 +372,14 @@ bool MessageSearchController::clearIndex()
 {
     if (!m_client || !m_client->clearSearchIndex())
         return false;
+    m_roomCoverage.clear();
+    m_deepRoom.clear();
+    m_deepOp = 0;
+    m_failedRoom.clear();
+    m_coverageOp = 0;
+    Q_EMIT roomCoverageChanged();
+    Q_EMIT indexingChanged();
+    refreshRoomCoverage();
     m_indexedMessages = 0;
     m_indexedRooms = 0;
     Q_EMIT indexStatsChanged();
@@ -619,7 +662,11 @@ void MessageSearchController::setRoomId(const QString &roomId)
     if (m_roomId == roomId)
         return;
     m_roomId = roomId;
+    m_roomCoverage.clear();
+    m_coverageOp = 0;
+    Q_EMIT roomCoverageChanged();
     Q_EMIT roomIdChanged();
+    Q_EMIT indexingChanged();
     clear();
 }
 

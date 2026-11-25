@@ -926,7 +926,9 @@ ApplicationWindow {
                 pinNotice.show(message, true)
             }
             function onSaveSucceeded() {
-                pinNotice.show(qsTr("Message saved."), false)
+                const capacity = app.savedMessages.capacityNotice
+                pinNotice.show(capacity ? qsTr("Message saved. %1").arg(capacity)
+                                        : qsTr("Message saved."), false)
             }
         }
         Connections {

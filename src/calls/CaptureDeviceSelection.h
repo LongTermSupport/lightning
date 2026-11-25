@@ -9,7 +9,15 @@ namespace lightning::calls {
 enum class CaptureKind {
     Camera,
     Microphone,
+    PinnedMicrophone,
     Speaker,
+};
+
+struct DeviceChoice {
+    QString id;
+    QString description;
+    bool preferredMissing = false;
+    bool requireIdentity = false;
 };
 
 struct GstDeviceCandidate {
@@ -23,6 +31,7 @@ struct DeviceBinding {
     QString reason;
     int channels = 0;
     bool refused = false;
+    bool requireIdentity = false;
 
     bool isEmpty() const { return property.isEmpty(); }
 };
