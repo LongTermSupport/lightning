@@ -2832,7 +2832,7 @@ and links.
 ### Handing a message to another app, and sharing a file in
 
 One message's menu offers "Export as task or event…" (`HandoffDialog.qml`,
-`src/app/Handoff.*`): an editable title and notes, prefilled from that one
+`src/privacy/Handoff.*`): an editable title and notes, prefilled from that one
 message only, a preview that is exactly what leaves, then "Copy as text" or
 "Save .ics…" (a VTODO or a VEVENT in UTC) to a location the user picks,
 written owner-only. Nothing is written anywhere else. The output never

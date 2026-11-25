@@ -898,8 +898,8 @@ set(APP_SOURCES
     src/media/MediaManager.cpp
     src/app/UrlLauncher.h
     src/app/UrlLauncher.cpp
-    src/app/Handoff.h
-    src/app/Handoff.cpp
+    src/privacy/Handoff.h
+    src/privacy/Handoff.cpp
     src/app/SaveNaming.h
     src/app/SaveNaming.cpp
     src/app/FileChooser.h

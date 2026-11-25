@@ -1,5 +1,5 @@
 #include "app/AppController.h"
-#include "app/Handoff.h"
+#include "privacy/Handoff.h"
 #include "auth/AuthManager.h"
 #include "models/AttachmentQueueModel.h"
 #include "models/MessageComposer.h"

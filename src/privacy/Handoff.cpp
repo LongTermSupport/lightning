@@ -1,4 +1,4 @@
-#include "app/Handoff.h"
+#include "privacy/Handoff.h"
 
 #include "app/UrlLauncher.h"
 
