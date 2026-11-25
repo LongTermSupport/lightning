@@ -13066,7 +13066,7 @@ private:
 
 private Q_SLOTS:
     // The loading bar ran under the floating top pill while history loaded,
-    // worst in Russian.
+    // worst in Russian: it keeps the top band and the pills sit below it.
     void theTopPillsNeverShareTheLoadingBarInAnyLanguage()
     {
         AppController controller(AppController::MockBackend);
@@ -13112,9 +13112,9 @@ private Q_SLOTS:
             const QRectF b = sceneRect(bar);
             QVERIFY2(bar->isVisible() && b.width() > 0 && b.height() > 0,
                      "the loading bar is not drawn");
-            QVERIFY2(!b.intersects(r),
-                     qPrintable(QStringLiteral("%1 %2: pill y %3-%4 shares "
-                                               "the bar's band y %5-%6")
+            QVERIFY2(!b.intersects(r) && r.top() >= b.bottom(),
+                     qPrintable(QStringLiteral("%1 %2: pill y %3-%4 is not "
+                                               "below the bar's band y %5-%6")
                                     .arg(code, item->objectName())
                                     .arg(r.top()).arg(r.bottom())
                                     .arg(b.top()).arg(b.bottom())));
@@ -13185,6 +13185,8 @@ private Q_SLOTS:
             QTRY_VERIFY_WITH_TIMEOUT(!controller.pagination()->busy(), 5000);
         }
         QTRY_VERIFY_WITH_TIMEOUT(controller.pagination()->reachedStart(), 5000);
+        // Only the placement is under test here, not when the pill shows.
+        pill->setProperty("visible", true);
         root->setWidth(320);
         QCoreApplication::processEvents();
         QTRY_VERIFY(sceneRect(pill->parentItem()).width() > 0

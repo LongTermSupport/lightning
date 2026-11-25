@@ -5141,7 +5141,12 @@ Rectangle {
             Item {
                 objectName: "paginationHeader"
                 anchors.top: parent.top
+                // The loading bar keeps the top band above the pills; only the
+                // status chip, centred where they are, moves below them.
                 anchors.topMargin: {
+                    if (app.pagination.presentationState
+                            === PaginationController.Loading)
+                        return 0
                     const pill = jumpToFirstUnreadButton.visible
                                ? jumpToFirstUnreadButton
                                : firstUnreadFailedNote.visible
