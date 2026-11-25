@@ -684,6 +684,7 @@ const CLASSES: &[(&str, EventClass)] = {
         ("scheduled_update_result", UiOnly),
         ("search_index_all", UiOnly),
         ("search_index_deepened", UiOnly),
+        ("room_search_coverage", UiOnly),
         ("search_index_stats", UiOnly),
         ("search_index_swept", UiOnly),
         ("send_failed", UiOnly),

@@ -48,6 +48,7 @@ void CallDeviceController::setSettings(SettingsManager *settings)
         return;
     if (m_settings)
         disconnect(m_settings, nullptr, this, nullptr);
+    m_pinnedMicrophoneId.clear();
     m_settings = settings;
     if (m_settings) {
         connect(m_settings, &SettingsManager::callDevicePreferenceChanged,
@@ -103,6 +104,23 @@ QString CallDeviceController::activeSpeakerId() const
 QString CallDeviceController::activeCameraId() const
 {
     return cameraSelection().id;
+}
+
+bool CallDeviceController::microphonePinned() const
+{
+    return m_settings && !m_pinnedMicrophoneId.isEmpty()
+        && m_pinnedMicrophoneId == m_settings->preferredMicrophoneId();
+}
+
+void CallDeviceController::setMicrophonePinned(bool pinned)
+{
+    const QString id = pinned && m_settings ? m_settings->preferredMicrophoneId() : QString();
+    if (m_pinnedMicrophoneId == id)
+        return;
+    m_pinnedMicrophoneId = id;
+    m_microphoneFellBackFrom.clear();
+    Q_EMIT selectionChanged();
+    Q_EMIT activeDevicesChanged();
 }
 
 bool CallDeviceController::preferredMicrophoneMissing() const
@@ -236,8 +254,13 @@ QVariantList CallDeviceController::cameras() const
 
 void CallDeviceController::selectMicrophone(const QString &id)
 {
-    if (m_settings)
-        m_settings->setPreferredMicrophoneId(id);
+    if (!m_settings)
+        return;
+    if (id == m_settings->preferredMicrophoneId()) {
+        Q_EMIT activeDevicesChanged();
+        return;
+    }
+    m_settings->setPreferredMicrophoneId(id);
 }
 
 void CallDeviceController::selectSpeaker(const QString &id)
@@ -301,6 +324,9 @@ CallDeviceController::Selection CallDeviceController::microphoneSelection() cons
 {
     ensureBackend();
     const QString id = activeMicrophoneId();
+    if (microphonePinned())
+        return {m_pinnedMicrophoneId, describe(QMediaDevices::audioInputs(), id),
+                id.isEmpty(), true};
     return {id, describe(QMediaDevices::audioInputs(), id)};
 }
 
@@ -313,6 +339,9 @@ CallDeviceController::Selection CallDeviceController::speakerSelection() const
 
 void CallDeviceController::onDeviceListChanged()
 {
+    const bool unpinned = !m_pinnedMicrophoneId.isEmpty() && !microphonePinned();
+    if (unpinned)
+        m_pinnedMicrophoneId.clear();
     Q_EMIT devicesChanged();
     Q_EMIT selectionChanged();
 
@@ -320,7 +349,7 @@ void CallDeviceController::onDeviceListChanged()
     const QString speaker = activeSpeakerId();
     const Selection cameraNow = cameraSelection();
     const QString camera = cameraNow.id;
-    const bool moved = mic != m_lastActiveMic
+    const bool moved = unpinned || mic != m_lastActiveMic
         || speaker != m_lastActiveSpeaker || camera != m_lastActiveCamera
         || cameraNow.preferredMissing != m_lastCameraMissing;
     m_lastActiveMic = mic;

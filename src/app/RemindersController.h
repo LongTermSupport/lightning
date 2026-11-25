@@ -58,13 +58,16 @@ Q_SIGNALS:
                 const QString &threadRootId);
     void snoozeEnded(const QString &roomId);
 
-private:
+public:
     struct Reminder {
         QString roomId;
         QString eventId;
         QString rootId;
         qint64 dueMs = 0;
     };
+    const QVector<Reminder> &reminders() const { return m_reminders; }
+
+private:
     struct Snooze {
         QString roomId;
         qint64 untilMs = 0;

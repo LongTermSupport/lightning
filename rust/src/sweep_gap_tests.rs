@@ -591,3 +591,81 @@ async fn a_room_still_receiving_limited_syncs_is_not_paged() {
     filler.abort();
     assert_eq!(pages().await, 1, "one burst is one fill");
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn room_scan_receipt_survives_a_refused_page_and_targeted_repair() {
+    use crate::indexall::{Control, ScanState};
+    let server = MatrixMockServer::new().await;
+    let client = server.client_builder().build().await;
+    client.event_cache().subscribe().unwrap();
+    sync(&client, vec![message("$live", "a newer message", 2000)], "1", Some("page")).await;
+    let older: Raw<matrix_sdk::ruma::events::AnyTimelineEvent> =
+        serde_json::from_value(message("$old", "an earlier message", 1000)).unwrap();
+    server.mock_room_messages().match_from("page")
+        .ok(RoomMessagesResponseTemplate::default().events(vec![older])).mount().await;
+    let room = client.get_room(room_id!("!dm:localhost")).unwrap();
+    let index = Arc::new(Mutex::new(Some(SearchIndex::open_in_memory().unwrap())));
+    let control = Arc::new(Control::new(Path::new("")));
+    let gate = control.manual_gate(Arc::new(AtomicBool::new(false)), 1);
+    index.lock().unwrap().as_ref().unwrap().conn.execute_batch(
+        "CREATE TRIGGER refuse_old BEFORE INSERT ON messages WHEN new.event_id = '$old'
+         BEGIN SELECT RAISE(ABORT, 'write refused'); END;"
+    ).unwrap();
+    assert!(deep_index_room_gated(&room, &index, &gate, 2).await.unwrap_err().storage);
+    let failed = control.room_receipt(ROOM);
+    assert_eq!(failed.state, ScanState::StorageFailed);
+    assert_eq!(failed.pages, 0);
+    assert!(!failed.reached_start);
+    assert!(indexed(&index, "$live"));
+    assert!(!indexed(&index, "$old"));
+    index.lock().unwrap().as_ref().unwrap().conn.execute_batch("DROP TRIGGER refuse_old").unwrap();
+    deep_index_room_gated(&room, &index, &gate, 2).await.unwrap();
+    let repaired = control.room_receipt(ROOM);
+    assert_eq!(repaired.state, ScanState::Covered);
+    assert_eq!(repaired.oldest_ms, Some(1000));
+    assert!(repaired.scanned_ms > 0);
+    assert!(indexed(&index, "$old"));
+    assert_eq!(control.room_receipt("!other:localhost").state, ScanState::Unscanned);
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn bounded_room_scans_distinguish_page_key_and_fetch_gaps() {
+    use crate::indexall::{Control, ScanState};
+    let server = MatrixMockServer::new().await;
+    let client = server.client_builder().build().await;
+    client.event_cache().subscribe().unwrap();
+    sync(&client, vec![message("$recent", "recent", 2000)], "1", Some("older")).await;
+    let index = Arc::new(Mutex::new(Some(SearchIndex::open_in_memory().unwrap())));
+    let control = Arc::new(Control::new(Path::new("")));
+    let gate = control.manual_gate(Arc::new(AtomicBool::new(false)), 1);
+    let room = client.get_room(room_id!("!dm:localhost")).unwrap();
+    deep_index_room_gated(&room, &index, &gate, 0).await.unwrap();
+    assert_eq!(control.room_receipt(ROOM).state, ScanState::Capped);
+    {
+        let _error = server.mock_room_messages().match_from("older")
+            .error_unrecognized().mount_as_scoped().await;
+        assert!(deep_index_room_gated(&room, &index, &gate, 1).await.is_err());
+        assert_eq!(control.room_receipt(ROOM).state, ScanState::FetchFailed);
+    }
+    let locked: Raw<matrix_sdk::ruma::events::AnyTimelineEvent> =
+        serde_json::from_value(serde_json::json!({
+            "type": "m.room.encrypted", "event_id": "$locked", "room_id": ROOM,
+            "sender": "@friend:localhost", "origin_server_ts": 1000,
+            "content": {"algorithm": "m.megolm.v1.aes-sha2", "session_id": "missing",
+                        "ciphertext": "AwgAEpAB", "device_id": "TEST", "sender_key": "missing"}
+        })).unwrap();
+    server.mock_room_messages().match_from("older")
+        .ok(RoomMessagesResponseTemplate::default().events(vec![locked])).mount().await;
+    deep_index_room_gated(&room, &index, &gate, 2).await.unwrap();
+    let receipt = control.room_receipt(ROOM);
+    assert_eq!(receipt.state, ScanState::WaitingForKeys);
+    assert_eq!(receipt.undecryptable, 1);
+    assert!(receipt.reached_start);
+    assert!(!indexed(&index, "$locked"));
+    let _other_walk = control.start_scan(ROOM).unwrap();
+    let busy = deep_index_room_gated(&room, &index, &gate, 2).await.unwrap();
+    assert!(busy.busy && busy.interrupted);
+    let refused = deep_index_room(&room, &index, &gate, 2).await.unwrap_err();
+    assert!(refused.busy && !refused.storage);
+    assert_eq!(control.room_receipt(ROOM).state, ScanState::Scanning);
+}

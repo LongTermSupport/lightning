@@ -337,6 +337,13 @@ QString remindersFile(const QString &accountRootDir)
     return accountRootDir + QLatin1String("/reminders.json");
 }
 
+QString followUpsFile(const QString &accountRootDir)
+{
+    if (accountRootDir.trimmed().isEmpty())
+        return {};
+    return accountRootDir + QLatin1String("/follow-ups.json");
+}
+
 LegacyMove adoptLegacyEntry(const QString &legacyPath,
                             const QString &recordedPath)
 {

@@ -143,6 +143,8 @@ constexpr const char *kComponents[] = {
     "AccountActivityBadge",
     "AccountActivityFeed",
     "UnifiedInboxSection",
+    "CatchUpCard",
+    "FollowUpsList",
 };
 
 struct Excluded { const char *name; const char *why; };

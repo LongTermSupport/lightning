@@ -508,7 +508,16 @@ pub(crate) fn space_children(
     let events = Arc::clone(&bridge.events);
     let timelines = Arc::clone(&bridge.timelines);
     let lifecycle = timelines.lifecycle();
-    bridge.spawn_room_action(async move {
+    let (sender, cancelled) = tokio::sync::oneshot::channel();
+    {
+        let mut requests = bridge.hierarchy_requests.lock().map_err(|_| "hierarchy unavailable")?;
+        requests.retain(|_, sender| !sender.is_closed());
+        requests.insert(op_id, sender);
+    }
+    let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(45);
+    let result_events = Arc::clone(&events);
+    let result_id = parsed.clone();
+    let request = async move {
         let list = SpaceRoomList::new(client.clone(), parsed.clone()).await;
         let mut pages = 0usize;
         let mut failure: Option<&'static str> = None;
@@ -524,7 +533,7 @@ pub(crate) fn space_children(
                 break;
             }
             let step =
-                tokio::time::timeout(DISCOVER_REQUEST_TIMEOUT, list.paginate()).await;
+                tokio::time::timeout_at(deadline.min(tokio::time::Instant::now() + DISCOVER_REQUEST_TIMEOUT), list.paginate()).await;
             match step {
                 Ok(Ok(())) => pages += 1,
                 Ok(Err(err)) => {
@@ -611,6 +620,19 @@ pub(crate) fn space_children(
             "category": partial.unwrap_or_default(),
             "results": results,
         }));
+    };
+    bridge.spawn_room_action(async move {
+        tokio::select! {
+            _ = cancelled => {},
+            result = tokio::time::timeout_at(deadline + std::time::Duration::from_secs(1), request) => {
+                if result.is_err() {
+                    enqueue(&result_events, json!({
+                        "type": "space_children_result", "op_id": op_id, "lifecycle": lifecycle,
+                        "space_id": result_id, "ok": false, "category": "network", "results": [],
+                    }));
+                }
+            }
+        }
     });
     Ok(())
 }

@@ -81,7 +81,8 @@ QStringList accountFilesUnder(const QString &root)
     return { matrix::app_data::bridgeLabelsFile(root),
              matrix::app_data::starredGifsDir(root) + QStringLiteral("/marker"),
              matrix::app_data::scrollPositionsFile(root),
-             matrix::app_data::remindersFile(root) };
+             matrix::app_data::remindersFile(root),
+             matrix::app_data::followUpsFile(root) };
 }
 
 void signInAliceAt(AppController &app, const QString &storeSlug)
@@ -318,6 +319,29 @@ private Q_SLOTS:
                      matrix::app_data::starredGifsDir(alice.accountRoot));
         QCOMPARE(app.reminders()->filePath(),
                  matrix::app_data::remindersFile(alice.accountRoot));
+        QCOMPARE(app.followUps()->filePath(),
+                 matrix::app_data::followUpsFile(alice.accountRoot));
+    }
+
+    void signOutDeletesTheFollowUpMarksTheSessionWrote()
+    {
+        ScriptedLabsBridge bridge;
+        BridgeScope bridgeScope(&bridge);
+        LabsEnvScope env(true);
+        AppController app(AppController::MockBackend, false, inMemoryKeyring());
+        signInAliceAt(app, QStringLiteral("Alice_followup"));
+        const auto alice = identityOf(app, kAlice);
+        const QString file = matrix::app_data::followUpsFile(alice.accountRoot);
+        app.followUps()->setState(QStringLiteral("!r:one.example"), QStringLiteral("$e"),
+                                  QString(), QStringLiteral("reply"));
+        QVERIFY(QFile::exists(file));
+
+        app.auth()->logout();
+
+        QTRY_VERIFY2_WITH_TIMEOUT(!QFile::exists(file),
+            "sign-out left follow-up marks under the recorded root", 5000);
+        QCOMPARE(app.followUps()->openCount(), 0);
+        QCOMPARE(app.followUps()->filePath(), QString());
     }
 
     void signOutDeletesRemindersAndSnoozesTheSessionWrote()

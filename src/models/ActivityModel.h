@@ -71,6 +71,20 @@ public:
     static constexpr int kMaxRememberedInvites = 64;
     static constexpr qint64 kLeftRoomGraceMs = 15000;
     static constexpr qint64 kUnknownRoomGraceMs = 60000;
+    static constexpr int kMaxPolls = 50;
+    static constexpr int kMaxDigestItems = 30;
+
+    // A thread the user marked for themselves (reply flag, saved message,
+    // reminder), by real room and root ids.
+    struct PersonalThread {
+        QString roomId;
+        QString rootId;
+        QString eventId;
+        bool needsReply = false;
+        bool waiting = false;
+        bool saved = false;
+        qint64 reminderMs = 0;
+    };
 
     explicit ActivityModel(QObject *parent = nullptr);
 
@@ -119,6 +133,16 @@ public:
     Q_INVOKABLE void openThreadActivity(const QString &roomId,
                                        const QString &rootEventId,
                                        const QString &eventId);
+    Q_INVOKABLE void openEvent(const QString &roomId, const QString &eventId,
+                               const QString &threadRootId);
+    // "" when the thread list's emptiness means nothing is there, otherwise
+    // why it cannot say: "no_follow_support" or "history_unavailable".
+    Q_INVOKABLE QString threadCoverage(const QString &scope) const;
+    // Unread mentions, replies, thread activity and polls with their exact
+    // targets, plus what the digest cannot see.
+    Q_INVOKABLE QVariantMap catchUp() const;
+    void setPersonalThreadSource(std::function<QList<PersonalThread>()> source);
+    void personalThreadsChanged();
     static bool seedFailureIsPermanent(const QString &category);
 
     bool ingest(const TimelineEvent &event, const QString &roomName);
@@ -222,8 +246,20 @@ private:
     void refreshFavourites();
     bool passesFavourites(const Entry &e) const;
 
+    struct Poll {
+        QString roomId;
+        QString roomName;
+        QString eventId;
+        QString threadRootId;
+        qint64 timestampMs = 0;
+    };
+    void notePoll(const TimelineEvent &event, const QString &roomName);
+    void bumpThreadActivity();
+
     MatrixClient *m_client = nullptr;
     Store m_store;
+    QList<Poll> m_polls;
+    std::function<QList<PersonalThread>()> m_personalThreads;
     QList<Entry> m_entries;
     QList<int> m_visible;
     QSet<QString> m_ids;

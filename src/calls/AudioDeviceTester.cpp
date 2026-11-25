@@ -248,7 +248,11 @@ void AudioDeviceTester::Relay::run(std::shared_ptr<Relay> relay,
         } else {
             capture = SfuMediaEngine::resolveMicrophoneCapture(plan.microphone);
             relay->deliverMicrophoneBinding(plan.microphone.id,
-                                            capture.fellBack);
+                                            capture.fellBack || capture.binding.refused);
+            if (capture.binding.refused) {
+                relay->deliverFailed(generation, QStringLiteral("microphone"));
+                return;
+            }
         }
         if (plan.testChannels > 0)
             capture.channels = plan.testChannels;
@@ -284,8 +288,14 @@ void AudioDeviceTester::Relay::run(std::shared_ptr<Relay> relay,
         relay->deliverFailed(generation, QStringLiteral("pipeline"));
         return;
     }
-    if (!capture.binding.isEmpty())
-        SfuMediaEngine::applyCaptureBinding(pipeline, "micsrc", capture.binding);
+    if (!capture.binding.isEmpty()
+        && !SfuMediaEngine::applyCaptureBinding(pipeline, "micsrc", capture.binding)
+        && capture.binding.requireIdentity) {
+        gst_object_unref(pipeline);
+        relay->deliverMicrophoneBinding(plan.microphone.id, true);
+        relay->deliverFailed(generation, QStringLiteral("microphone"));
+        return;
+    }
     if (!output.binding.isEmpty())
         SfuMediaEngine::applyCaptureBinding(pipeline, "outsink", output.binding);
 
@@ -517,7 +527,7 @@ bool AudioDeviceTester::start(Mode mode)
             m_devices->microphoneSelection();
         const CallDeviceController::Selection speaker =
             m_devices->speakerSelection();
-        plan.microphone = {mic.id, mic.description};
+        plan.microphone = mic;
         plan.speaker = {speaker.id, speaker.description};
     }
     plan.gainPercent = m_settings ? m_settings->microphoneGain() : 100;
@@ -582,6 +592,8 @@ QString AudioDeviceTester::deviceKey(Mode mode) const
     if (!m_devices)
         return {};
     QString key = m_devices->activeMicrophoneId();
+    if (m_devices->microphonePinned())
+        key += QStringLiteral("|pinned");
     if (m_devices->preferredMicrophoneMissing())
         key += QStringLiteral("|missing");
     if (mode == Mode::Loopback)

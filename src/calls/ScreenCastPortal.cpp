@@ -36,6 +36,9 @@ constexpr auto kRequest = "org.freedesktop.portal.Request";
 
 QString errorCategory(const QDBusError &error, const QString &fallback)
 {
+    const QString category = portal::permissionError(error.name());
+    if (!category.isEmpty())
+        return category;
     const QString message = error.message();
     if (message.contains(QLatin1String("X11"), Qt::CaseSensitive)
         && (message.contains(QLatin1String("not available"),
@@ -81,14 +84,14 @@ public:
         : QObject(owner)
     {
         QDBusConnection::sessionBus().connect(
-            QString(), requestPath, kRequest, QStringLiteral("Response"),
+            QString::fromLatin1(kService), requestPath, kRequest, QStringLiteral("Response"),
             this, SLOT(onResponse(uint, QVariantMap)));
         m_path = requestPath;
     }
     ~PortalStep() override
     {
         QDBusConnection::sessionBus().disconnect(
-            QString(), m_path, kRequest, QStringLiteral("Response"), this,
+            QString::fromLatin1(kService), m_path, kRequest, QStringLiteral("Response"), this,
             SLOT(onResponse(uint, QVariantMap)));
     }
 
@@ -118,7 +121,7 @@ ScreenCastPortal::ScreenCastPortal(QObject *parent)
         if (!m_busy)
             return;
         qCWarning(lcPortal) << "screen share request timed out; releasing";
-        cancel();
+        retire();
         Q_EMIT failed(QStringLiteral("timeout"));
     });
     m_answerWatchdog.setSingleShot(true);
@@ -128,7 +131,7 @@ ScreenCastPortal::ScreenCastPortal(QObject *parent)
         qCWarning(lcPortal)
             << "screen share portal gave no answer within the caller's bound; "
                "abandoning it";
-        cancel();
+        retire();
         Q_EMIT failed(QStringLiteral("no_answer"));
     });
 }
@@ -143,7 +146,7 @@ void ScreenCastPortal::armAnswerWatchdog(int ms)
 
 ScreenCastPortal::~ScreenCastPortal()
 {
-    cancel();
+    retire();
 }
 
 portal::Capability ScreenCastPortal::capability()
@@ -166,11 +169,35 @@ void ScreenCastPortal::refreshCapability()
 
 void ScreenCastPortal::cancel()
 {
+    const bool pending = m_busy;
+    retire();
+    if (pending) {
+        m_cancelled = true;
+        Q_EMIT cancelled();
+    }
+}
+
+void ScreenCastPortal::finishError(const QString &category)
+{
+    if (category == QLatin1String("cancelled")) {
+        cancel();
+        return;
+    }
+    retire();
+    Q_EMIT failed(category);
+}
+
+void ScreenCastPortal::retire()
+{
     ++m_generation;
     m_busy = false;
     m_requestTimeout.stop();
     m_answerWatchdog.stop();
 #ifdef HAVE_QT_DBUS
+    if (!m_sessionHandle.isEmpty())
+        QDBusConnection::sessionBus().disconnect(kService, m_sessionHandle,
+            QStringLiteral("org.freedesktop.portal.Session"), QStringLiteral("Closed"),
+            this, SLOT(onSessionClosed(QVariantMap,QDBusMessage)));
     closePortalObject(m_requestPath, kRequest);
     closePortalObject(m_sessionHandle, "org.freedesktop.portal.Session");
 #endif
@@ -178,13 +205,23 @@ void ScreenCastPortal::cancel()
     m_sessionHandle.clear();
 }
 
-void ScreenCastPortal::reset()
+#ifdef HAVE_QT_DBUS
+void ScreenCastPortal::onSessionClosed(const QVariantMap &, const QDBusMessage &message)
 {
-    m_busy = false;
-    m_answerWatchdog.stop();
+    if (message.path() != m_sessionHandle)
+        return;
+    const bool requesting = m_busy;
+    QDBusConnection::sessionBus().disconnect(kService, m_sessionHandle,
+        QStringLiteral("org.freedesktop.portal.Session"), QStringLiteral("Closed"),
+        this, SLOT(onSessionClosed(QVariantMap,QDBusMessage)));
     m_sessionHandle.clear();
-    m_requestPath.clear();
+    retire();
+    if (requesting)
+        Q_EMIT failed(QStringLiteral("session_closed"));
+    else
+        Q_EMIT sessionClosed();
 }
+#endif
 
 #if defined(Q_OS_WIN) || defined(Q_OS_MACOS)
 void ScreenCastPortal::requestShare(int types, int preparationBoundMs,
@@ -207,7 +244,7 @@ void ScreenCastPortal::requestShare(int types, int preparationBoundMs,
     if (!screen)
         screen = QGuiApplication::primaryScreen();
     const int index = screen ? int(screens.indexOf(screen)) : 0;
-    Q_EMIT ready(static_cast<unsigned>(index < 0 ? 0 : index), -1);
+    Q_EMIT ready(static_cast<unsigned>(index < 0 ? 0 : index), -1, std::nullopt);
 }
 #elif !defined(HAVE_QT_DBUS)
 void ScreenCastPortal::requestShare(int types, int preparationBoundMs,
@@ -231,6 +268,7 @@ void ScreenCastPortal::requestShare(int types, int preparationBoundMs,
         return;
     }
 
+    m_cancelled = false;
     m_busy = true;
     m_requestTimeout.start();
     m_pickerBoundMs = pickerBoundMs;
@@ -260,19 +298,26 @@ void ScreenCastPortal::requestShare(int types, int preparationBoundMs,
             return;
         }
         m_requestPath.clear();
+        if (response == 1) {
+            cancel();
+            return;
+        }
         if (response != 0) {
             qCWarning(lcPortal) << "screen share session refused response="
                                 << response;
-            reset();
+            retire();
             Q_EMIT failed(QStringLiteral("session_refused"));
             return;
         }
         m_sessionHandle = session;
         if (m_sessionHandle.isEmpty()) {
-            reset();
+            retire();
             Q_EMIT failed(QStringLiteral("no_session"));
             return;
         }
+        QDBusConnection::sessionBus().connect(kService, session,
+            QStringLiteral("org.freedesktop.portal.Session"), QStringLiteral("Closed"),
+            this, SLOT(onSessionClosed(QVariantMap,QDBusMessage)));
         negotiateSources(types);
     };
     auto subscription = portal::subscribeBeforeCall<PortalStep>(
@@ -303,17 +348,17 @@ void ScreenCastPortal::requestShare(int types, int preparationBoundMs,
                                            &QObject::deleteLater);
                     return;
                 }
+                if (m_requestPath != subscription.path)
+                    return;
                 if (reply.isError()) {
                     portal::dropSubscription(subscription);
-                    reset();
-                    Q_EMIT failed(errorCategory(reply.error(),
-                                                QStringLiteral("no_portal")));
+                    finishError(errorCategory(reply.error(),
+                                                QStringLiteral("session_failed")));
                     return;
                 }
                 portal::reconcileRequestPath(this, subscription,
                                              reply.value().path(), onAnswer);
-                if (!m_requestPath.isEmpty())
-                    m_requestPath = subscription.path;
+                m_requestPath = subscription.path;
             });
 }
 
@@ -361,7 +406,7 @@ void ScreenCastPortal::negotiateSources(int types)
                         << "screen share portal offers none of the requested "
                            "source types requested=" << types << "available="
                         << sourceTypes.toUInt();
-                    cancel();
+                    retire();
                     Q_EMIT failed(QStringLiteral("no_source_type"));
                     return;
                 }
@@ -393,13 +438,12 @@ void ScreenCastPortal::selectSources(int types, uint cursorMode)
         m_requestPath.clear();
         if (response == 1) {
             cancel();
-            Q_EMIT cancelled();
             return;
         }
         if (response != 0) {
             qCWarning(lcPortal) << "screen share source selection refused "
                                    "response=" << response;
-            cancel();
+            retire();
             Q_EMIT failed(QStringLiteral("session_refused"));
             return;
         }
@@ -423,18 +467,18 @@ void ScreenCastPortal::selectSources(int types, uint cursorMode)
                     portal::dropSubscription(subscription);
                     return;
                 }
+                if (m_requestPath != subscription.path)
+                    return;
                 if (reply.isError()) {
                     portal::dropSubscription(subscription);
                     m_requestPath.clear();
-                    cancel();
-                    Q_EMIT failed(errorCategory(
+                    finishError(errorCategory(
                         reply.error(), QStringLiteral("select_failed")));
                     return;
                 }
                 portal::reconcileRequestPath(this, subscription,
                                              reply.value().path(), onAnswer);
-                if (!m_requestPath.isEmpty())
-                    m_requestPath = subscription.path;
+                m_requestPath = subscription.path;
             });
 }
 
@@ -460,8 +504,8 @@ void ScreenCastPortal::startSession()
             return;
         m_requestPath.clear();
         if (response != 0) {
-            cancel();
-            Q_EMIT cancelled();
+            finishError(response == 1 ? QStringLiteral("cancelled")
+                                      : QStringLiteral("start_failed"));
             return;
         }
         handleStreams(results);
@@ -484,18 +528,18 @@ void ScreenCastPortal::startSession()
                     portal::dropSubscription(subscription);
                     return;
                 }
+                if (m_requestPath != subscription.path)
+                    return;
                 if (reply.isError()) {
                     portal::dropSubscription(subscription);
                     m_requestPath.clear();
-                    cancel();
-                    Q_EMIT failed(errorCategory(
+                    finishError(errorCategory(
                         reply.error(), QStringLiteral("start_failed")));
                     return;
                 }
                 portal::reconcileRequestPath(this, subscription,
                                              reply.value().path(), onAnswer);
-                if (!m_requestPath.isEmpty())
-                    m_requestPath = subscription.path;
+                m_requestPath = subscription.path;
             });
 }
 
@@ -504,11 +548,13 @@ void ScreenCastPortal::handleStreams(const QVariantMap &results)
     const QVariant streams = results.value(QStringLiteral("streams"));
     const QDBusArgument argument = streams.value<QDBusArgument>();
     if (argument.currentType() != QDBusArgument::ArrayType) {
-        cancel();
+        retire();
         Q_EMIT failed(QStringLiteral("no_stream"));
         return;
     }
     uint nodeId = 0;
+    std::optional<quint64> serial;
+    bool invalidSerial = false;
     bool found = false;
     argument.beginArray();
     while (!argument.atEnd()) {
@@ -520,21 +566,28 @@ void ScreenCastPortal::handleStreams(const QVariantMap &results)
         argument.endStructure();
         if (!found) {
             nodeId = id;
+            const auto it = properties.constFind(QStringLiteral("pipewire-serial"));
+            if (it != properties.cend()) {
+                if (it->metaType().id() == QMetaType::ULongLong)
+                    serial = it->toULongLong();
+                else
+                    invalidSerial = true;
+            }
             found = true;
         }
     }
     argument.endArray();
 
-    if (!found) {
-        cancel();
+    if (!found || invalidSerial) {
+        retire();
         Q_EMIT failed(QStringLiteral("no_stream"));
         return;
     }
     qCInfo(lcPortal) << "screen share source selected";
-    openRemote(nodeId);
+    openRemote(nodeId, serial);
 }
 
-void ScreenCastPortal::openRemote(unsigned nodeId)
+void ScreenCastPortal::openRemote(unsigned nodeId, std::optional<quint64> serial)
 {
     // OpenPipeWireRemote grants actual access: the node id alone names a node
     // in a remote we were never given, and the pipeline then runs without
@@ -548,7 +601,7 @@ void ScreenCastPortal::openRemote(unsigned nodeId)
     auto *watcher = new QDBusPendingCallWatcher(
         QDBusConnection::sessionBus().asyncCall(open), this);
     connect(watcher, &QDBusPendingCallWatcher::finished, this,
-            [this, generation, nodeId](QDBusPendingCallWatcher *w) {
+            [this, generation, nodeId, serial](QDBusPendingCallWatcher *w) {
                 w->deleteLater();
                 QDBusPendingReply<QDBusUnixFileDescriptor> reply = *w;
                 if (generation != m_generation)
@@ -558,22 +611,22 @@ void ScreenCastPortal::openRemote(unsigned nodeId)
                         << "OpenPipeWireRemote failed error="
                         << (reply.isError() ? reply.error().name()
                                             : QStringLiteral("no_fd"));
-                    cancel();
-                    Q_EMIT failed(QStringLiteral("no_pipewire_remote"));
+                    finishError(reply.isError() ? errorCategory(reply.error(), QStringLiteral("no_pipewire_remote"))
+                                                : QStringLiteral("no_pipewire_remote"));
                     return;
                 }
                 // QDBusUnixFileDescriptor closes its fd with the last copy, so
                 // hand over a dup; the receiver owns it.
                 const int fd = ::dup(reply.value().fileDescriptor());
                 if (fd < 0) {
-                    cancel();
+                    retire();
                     Q_EMIT failed(QStringLiteral("no_pipewire_remote"));
                     return;
                 }
                 m_busy = false;
                 m_requestTimeout.stop();
                 m_answerWatchdog.stop();
-                Q_EMIT ready(nodeId, fd);
+                Q_EMIT ready(nodeId, fd, serial);
             });
 }
 #endif

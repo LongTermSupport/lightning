@@ -4,6 +4,8 @@
 #include "matrix/MatrixClient.h"
 
 #include <QCoreApplication>
+#include <QSet>
+#include <utility>
 
 namespace {
 constexpr int kRoomWaitTimeoutMs = 10000;
@@ -153,13 +155,26 @@ void RoomDiscoveryController::refreshSpaceChildren(const QString &spaceId)
         return;
     const quint64 opId = m_client->requestSpaceChildren(spaceId);
     if (opId == 0) {
-        entry.state = QStringLiteral("failed");
+        entry.state = entry.rows.isEmpty() ? QStringLiteral("failed") : QStringLiteral("ready");
+        entry.coverage = QStringLiteral("stale");
         Q_EMIT spaceChildrenChanged(spaceId);
         return;
     }
     entry.pendingOp = opId;
-    if (entry.state.isEmpty() || entry.state == QStringLiteral("failed"))
-        entry.state = QStringLiteral("loading");
+    entry.state = QStringLiteral("loading");
+    Q_EMIT spaceChildrenChanged(spaceId);
+}
+
+void RoomDiscoveryController::cancelSpaceChildren(const QString &spaceId)
+{
+    auto it = m_spaceChildren.find(spaceId);
+    if (!m_client || it == m_spaceChildren.end() || !it->pendingOp)
+        return;
+    const auto op = it->pendingOp;
+    it->pendingOp = 0;
+    it->state = QStringLiteral("ready");
+    it->coverage = QStringLiteral("cancelled");
+    m_client->cancelSpaceChildren(op);
     Q_EMIT spaceChildrenChanged(spaceId);
 }
 
@@ -276,7 +291,19 @@ void RoomDiscoveryController::onSpaceChildren(quint64 opId,
         Q_EMIT spaceChildrenChanged(spaceId);
         return;
     }
-    it->rows = rooms;
+    QVariantList next = rooms;
+    if (truncated) {
+        QSet<QString> seen;
+        for (const auto &row : rooms)
+            seen.insert(row.toMap().value(QStringLiteral("roomId")).toString());
+        for (const auto &row : std::as_const(it->rows)) {
+            if (next.size() >= 200)
+                break;
+            if (!seen.contains(row.toMap().value(QStringLiteral("roomId")).toString()))
+                next.append(row);
+        }
+    }
+    it->rows = std::move(next);
     it->state = QStringLiteral("ready");
     it->coverage = !truncated ? QString()
         : category.isEmpty() ? QStringLiteral("limit") : category;

@@ -267,8 +267,12 @@ Rectangle {
                     role: app.groupCall.cameraOn ? "active" : "neutral"
                     diameter: root.controlDiameter
                     glyphSize: root.controlGlyph
-                    tooltip: app.groupCall.cameraOn ? qsTr("Turn off camera")
-                                                    : qsTr("Turn on camera")
+                    tooltip: app.groupCall.cameraPermissionPending
+                             ? qsTr("Waiting for desktop camera permission. Click to cancel.")
+                             : app.groupCall.cameraOn ? qsTr("Turn off camera")
+                             : app.groupCall.cameraPermissionCancelled
+                               ? qsTr("Camera request cancelled. Click to try again.")
+                               : qsTr("Turn on camera")
                     onClicked: app.groupCall.toggleCamera()
                 }
                 CallDeviceChevron {
@@ -299,7 +303,9 @@ Rectangle {
                     tooltip: app.groupCall.screenSharing
                              ? qsTr("Stop sharing your screen")
                              : app.groupCall.screenShareStarting
-                               ? qsTr("Cancel screen sharing")
+                               ? qsTr("Waiting for desktop screen sharing permission. Click to cancel.")
+                               : app.groupCall.sharePermissionCancelled
+                                 ? qsTr("Screen sharing request cancelled. Click to try again.")
                                : qsTr("Share your screen")
                     // requestScreenShare() cancels a share that is still starting.
                     onClicked: {

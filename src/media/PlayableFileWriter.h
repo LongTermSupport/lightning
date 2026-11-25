@@ -20,6 +20,7 @@ struct PlayableWriteControl
     mutable QMutex mutex;
     quint64 nextSerial = 1;
     QHash<QString, quint64> live;
+    QHash<quint64, QByteArray> waiting;
     QSet<quint64> cancelled;
 };
 
@@ -36,6 +37,8 @@ public:
 
     void cancel(const QString &cacheKey);
     void cancelAll();
+
+    QObject *workerForTest() const;
 
     static constexpr qint64 kChunkBytes = 1024 * 1024;
 
@@ -62,7 +65,7 @@ public:
 
 public Q_SLOTS:
     void enqueue(const QString &cacheKey, const QString &path,
-                 const QByteArray &bytes, quint64 generation, quint64 serial);
+                 quint64 generation, quint64 serial);
 
 Q_SIGNALS:
     void writeFinished(quint64 serial, const QString &cacheKey,

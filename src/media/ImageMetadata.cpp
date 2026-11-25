@@ -14,6 +14,7 @@ struct Ctx {
     Mode mode = Mode::RemoveLocation;
     bool foundLocation = false;
     int orientation = 0;
+    ExifFields *fields = nullptr;
 };
 
 inline quint16 be16(const uchar *p) { return quint16((p[0] << 8) | p[1]); }
@@ -230,12 +231,40 @@ void tiffScrubToOrientation(uchar *d, qsizetype n, int orientation)
     }
 }
 
+void collectExif(const Tiff &t, ExifFields &fields)
+{
+    const auto chain = ifdChain(t);
+    if (chain.isEmpty()) {
+        fields.known = false;
+        return;
+    }
+    for (const auto ifd : chain) {
+        fields.timestamp |= findEntry(t, ifd, 0x0132) >= 0;
+        fields.device |= findEntry(t, ifd, 0x010f) >= 0 || findEntry(t, ifd, 0x0110) >= 0;
+        const int sub = findEntry(t, ifd, 0x8769);
+        if (sub < 0)
+            continue;
+        const auto offset = t.u32(ifd + 2 + sub * 12 + 8);
+        if (ifdCount(t, offset) < 0) {
+            fields.known = false;
+            continue;
+        }
+        fields.timestamp |= findEntry(t, offset, 0x9003) >= 0 || findEntry(t, offset, 0x9004) >= 0;
+    }
+    fields.location |= tiffHasGps(t);
+}
+
 void inspectTiff(const QByteArray &block, Ctx &ctx)
 {
     QByteArray copy = block;
     Tiff t;
-    if (!openTiff(reinterpret_cast<uchar *>(copy.data()), copy.size(), t))
+    if (!openTiff(reinterpret_cast<uchar *>(copy.data()), copy.size(), t)) {
+        if (ctx.fields)
+            ctx.fields->known = false;
         return;
+    }
+    if (ctx.fields)
+        collectExif(t, *ctx.fields);
     if (ctx.orientation == 0)
         ctx.orientation = tiffOrientation(t);
     if (tiffHasGps(t))
@@ -890,6 +919,8 @@ Result processBmff(const QByteArray &in, Ctx &ctx)
             Tiff t;
             if (!openTiff(s + off + tiffOff, len - tiffOff, t))
                 return fail;
+            if (ctx.fields)
+                collectExif(t, *ctx.fields);
             const int orient = tiffOrientation(t);
             if (ctx.orientation == 0)
                 ctx.orientation = orient;
@@ -980,6 +1011,21 @@ Result strip(const QByteArray &input, Mode mode)
     Ctx ctx;
     ctx.mode = mode;
     return run(input, ctx);
+}
+
+ExifFields inspectExif(const QByteArray &input)
+{
+    ExifFields fields;
+    if (input.size() > 16 * 1024 * 1024)
+        return fields;
+    fields.known = true;
+    Ctx ctx;
+    ctx.mode = Mode::RemoveAll;
+    ctx.fields = &fields;
+    const auto result = run(input, ctx);
+    fields.known &= result.status == Status::Stripped || result.status == Status::Unchanged;
+    fields.orientation = ctx.orientation != 0;
+    return fields;
 }
 
 bool containsLocation(const QByteArray &input)
