@@ -1,5 +1,9 @@
 # Open items and the NOT TESTED inventory
 
+## 2026-11-25 — OPEN: screen share serial path and voice-take continuity
+
+A portal screen share targets the stream serial and falls back once to the node id when the serial path does not build or gives no first frame within 3 s; the serial path is NOT TESTED live and blocks the release until a portal share proves it. A voice-message take is bound to the input it started on by device id only; its samples are not checked.
+
 ## 2026-11-24 — KNOWN LIMITS: Space announcement review
 
 Enabling member proposals writes the Space's power levels without a compare-and-swap, as the existing power-level editors do, so a concurrent edit can be overwritten; a second reviewer's interrupted publish reads "pending" until the first reviewer retries.
