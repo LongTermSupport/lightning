@@ -22439,6 +22439,8 @@ mod forged_edit_tests;
 mod event_cache_burst_tests;
 
 mod community;
+mod modqueue;
+mod roomcards;
 
 #[no_mangle]
 pub unsafe extern "C" fn mx_rust_space_community(

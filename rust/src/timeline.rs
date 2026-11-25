@@ -4489,11 +4489,12 @@ fn thread_list_item_to_json(item: &ThreadListItem) -> serde_json::Value {
         "root_event_id": item.root_event.event_id.to_string(),
         "root_sender": item.root_event.sender.to_string(),
         "root_timestamp_ms": u64::from(item.root_event.timestamp.get()),
+        // Long enough for a forum title line and its #tags.
         "root_preview": item
             .root_event
             .content
             .as_ref()
-            .map(content_preview)
+            .map(|c| content_preview_capped(c, 320))
             .unwrap_or_else(|| "[unsupported event]".to_owned()),
         "reply_count": item.num_replies,
     });
@@ -6592,6 +6593,12 @@ fn fill_message_content(
                     .and_then(|l| l.description.as_deref()),
                 Some(content.asset_type().as_str()),
             );
+            None
+        }
+        other if crate::roomcards::card_kind(other.msgtype()).is_some() => {
+            out["msgtype"] = "text".into();
+            out["card_kind"] = crate::roomcards::card_kind(other.msgtype()).into();
+            out["body"] = other.body().to_owned().into();
             None
         }
         other => {

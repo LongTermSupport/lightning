@@ -163,6 +163,9 @@ struct TimelineEvent {
     QList<ReadReceipt> readBy;
     int readByTotal = 0;
 
+    // "checklist" or "event" for a Lightning card message; its body is the fallback text.
+    QString cardKind;
+
     QString pollQuestion;
     QString pollKind;
     int pollMaxSelections = 1;

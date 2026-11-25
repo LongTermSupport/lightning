@@ -1000,6 +1000,10 @@ set(APP_SOURCES
     src/app/AboutController.cpp
     src/app/PolicyListController.h
     src/app/PolicyListController.cpp
+    src/app/RoomCardsController.h
+    src/app/RoomCardsController.cpp
+    src/app/ModerationQueueController.h
+    src/app/ModerationQueueController.cpp
     src/spaces/SpaceManager.h
     src/spaces/SpaceManager.cpp
     src/spaces/SpaceModerationController.h
@@ -1010,6 +1014,8 @@ set(APP_SOURCES
     src/threads/ThreadManager.cpp
     src/threads/ThreadController.h
     src/threads/ThreadController.cpp
+    src/threads/ForumView.h
+    src/threads/ForumView.cpp
     src/models/ContextController.h
     src/models/ContextController.cpp
     src/presence/PresenceManager.h
@@ -1441,7 +1447,10 @@ endif()
 # resolved via QQmlApplicationEngine::loadFromModule("MatrixClient", "Main").
 list(APPEND APP_QML_FILES
     qml/SpaceCommunityPanel.qml
-    qml/RoomLifecycleReview.qml)
+    qml/RoomLifecycleReview.qml
+    qml/ModerationQueueDialog.qml
+    qml/RoomCard.qml
+    qml/CreateCardDialog.qml)
 
 foreach(_qml_file IN LISTS APP_QML_FILES)
     get_filename_component(_qml_name ${_qml_file} NAME)
@@ -4403,6 +4412,7 @@ if(BUILD_TESTING)
         src/media/VideoPosterExtractor.cpp
         src/threads/ThreadController.h
         src/threads/ThreadController.cpp
+        src/threads/ForumView.cpp
         src/crypto/E2eeDiagnostics.h
         src/crypto/E2eeDiagnostics.cpp
         src/media/ImageMetadata.h
@@ -5259,6 +5269,7 @@ if(BUILD_TESTING)
         src/app/JoinErrorText.cpp
         src/threads/ThreadController.h
         src/threads/ThreadController.cpp
+        src/threads/ForumView.cpp
         src/crypto/E2eeDiagnostics.h
         src/crypto/E2eeDiagnostics.cpp
         src/media/ImageMetadata.h
@@ -8458,4 +8469,23 @@ if(BUILD_TESTING)
     target_compile_definitions(space-community-test PRIVATE
         QML_DIR="${CMAKE_CURRENT_SOURCE_DIR}/qml")
     add_test(NAME space-community COMMAND space-community-test)
+endif()
+
+if(BUILD_TESTING)
+    qt_add_executable(community-tools-test
+        tests/CommunityToolsTest.cpp
+        src/app/RoomCardsController.h
+        src/app/RoomCardsController.cpp
+        src/app/ModerationQueueController.h
+        src/app/ModerationQueueController.cpp
+        src/app/RemindersController.h
+        src/app/RemindersController.cpp
+        src/threads/ForumView.h
+        src/threads/ForumView.cpp
+        src/matrix/MatrixClient.h
+        src/matrix/MatrixClient.cpp
+    )
+    target_include_directories(community-tools-test PRIVATE src)
+    target_link_libraries(community-tools-test PRIVATE Qt6::Core Qt6::Test)
+    add_test(NAME community-tools COMMAND community-tools-test)
 endif()

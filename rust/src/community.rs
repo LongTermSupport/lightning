@@ -32,11 +32,11 @@ const MAX_BODY: usize = 4000;
 
 type Result<T> = std::result::Result<T, String>;
 
-fn err(e: impl ToString) -> String {
+pub(crate) fn err(e: impl ToString) -> String {
     classify_room_error(&e.to_string()).to_owned()
 }
 
-fn text<'a>(v: &'a Value, key: &str) -> &'a str {
+pub(crate) fn text<'a>(v: &'a Value, key: &str) -> &'a str {
     v.get(key).and_then(Value::as_str).unwrap_or("")
 }
 
@@ -56,7 +56,7 @@ fn valid_guide(v: &Value) -> bool {
         })
 }
 
-fn https_link(s: &str) -> bool {
+pub(crate) fn https_link(s: &str) -> bool {
     s.len() <= 512
         && url::Url::parse(s).is_ok_and(|u| {
             u.scheme() == "https" && u.host_str().is_some() && u.username().is_empty() && u.password().is_none()
@@ -148,7 +148,7 @@ fn proposals(state: &StateMap, authorized: &dyn Fn(&str) -> bool) -> (Vec<Value>
     (out, false)
 }
 
-fn digest(value: &Value) -> String {
+pub(crate) fn digest(value: &Value) -> String {
     format!("{:x}", Sha256::digest(serde_json::to_vec(value).unwrap_or_default()))
 }
 
@@ -376,11 +376,14 @@ async fn run(client: &Client, room_id: &str, action: &str, payload: &Value) -> R
             room.send_state_event_raw(REVIEW, revision, audit).await.map_err(err)?;
             Ok(json!({ "published": true }))
         }
+        a if a.starts_with("card_") => crate::roomcards::run(&room, &own, a, payload).await,
+        a if a.starts_with("mod_") => crate::modqueue::run(client, &room, &own, a, payload).await,
         _ => Err("invalid".into()),
     }
 }
 
-const ACTIONS: [&str; 7] = ["load", "proposals", "guide", "enable", "propose", "preview", "publish"];
+const ACTIONS: [&str; 14] = ["load", "proposals", "guide", "enable", "propose", "preview", "publish",
+    "card_load", "card_create", "card_edit", "card_update", "card_rsvp", "mod_cases", "mod_act"];
 
 pub(crate) fn dispatch(
     bridge: &RustClient,

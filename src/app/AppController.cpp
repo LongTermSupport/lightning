@@ -317,6 +317,8 @@ AppController::AppController(Backend backend, bool screenshotDemo,
             &AppController::armIdleLiveTrim);
     m_composer     = std::make_unique<MessageComposer>(this);
     m_policy       = std::make_unique<PolicyListController>(this);
+    m_roomCards    = std::make_unique<RoomCardsController>(this);
+    m_moderationQueue = std::make_unique<ModerationQueueController>(this);
     m_about        = std::make_unique<AboutController>(this);
     connect(m_localization.get(), &LocalizationManager::languageChanged,
             m_about.get(), &AboutController::versionSummaryChanged);
@@ -727,6 +729,7 @@ AppController::AppController(Backend backend, bool screenshotDemo,
         return !m_callSounds || m_callSounds->policy().allowsNotificationSound();
     });
     m_reminders = std::make_unique<RemindersController>(this);
+    m_roomCards->setReminders(m_reminders.get());
     m_reminders->setPreviewPolicy(
         [this](const QString &roomId) { return noticePreviewFor(roomId); });
     connect(m_reminders.get(), &RemindersController::notify, this,
@@ -1346,6 +1349,8 @@ AppController::AppController(Backend backend, bool screenshotDemo,
     m_mediaHistory->setClient(m_client.get());
     m_qrLogin->setClient(m_client.get());
     m_policy->setClient(m_client.get());
+    m_roomCards->setClient(m_client.get());
+    m_moderationQueue->setClient(m_client.get());
     m_about->setClient(m_client.get());
     applyPrivacyPreferences();
     applyThreadStyle(false);

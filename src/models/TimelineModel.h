@@ -171,6 +171,7 @@ public:
         SentReceiptRole,
         LocationTsRole,
         LocationLiveUntilRole,
+        CardKindRole,
     };
 
     explicit TimelineModel(QObject *parent = nullptr);

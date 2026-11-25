@@ -35,6 +35,8 @@
 #include "crypto/QrImageProvider.h"
 #include "app/AboutController.h"
 #include "app/PolicyListController.h"
+#include "app/RoomCardsController.h"
+#include "app/ModerationQueueController.h"
 #include "crypto/QrLoginController.h"
 #include "crypto/OwnDeviceKeyWatch.h"
 #include "storage/AppDataPaths.h"
@@ -331,6 +333,8 @@ class AppController : public QObject
     Q_PROPERTY(CryptoManager* crypto READ crypto CONSTANT)
     Q_PROPERTY(QrLoginController* qrLogin READ qrLogin CONSTANT)
     Q_PROPERTY(PolicyListController* policy READ policy CONSTANT)
+    Q_PROPERTY(RoomCardsController* roomCards READ roomCards CONSTANT)
+    Q_PROPERTY(ModerationQueueController* moderationQueue READ moderationQueue CONSTANT)
     Q_PROPERTY(AboutController* about READ about CONSTANT)
     Q_PROPERTY(CryptoHealthModel* cryptoHealth READ cryptoHealth CONSTANT)
     Q_PROPERTY(QObject* backup READ backup CONSTANT)
@@ -584,6 +588,8 @@ public:
     CryptoManager *crypto() const;
     QrLoginController *qrLogin() const { return m_qrLogin.get(); }
     PolicyListController *policy() const { return m_policy.get(); }
+    RoomCardsController *roomCards() const { return m_roomCards.get(); }
+    ModerationQueueController *moderationQueue() const { return m_moderationQueue.get(); }
     AboutController *about() const { return m_about.get(); }
     CryptoHealthModel *cryptoHealth() const { return m_cryptoHealth.get(); }
     QObject *backup() const;
@@ -1472,6 +1478,8 @@ private:
     QrCodeStore m_qrCodeStore;
     std::unique_ptr<QrLoginController> m_qrLogin;
     std::unique_ptr<PolicyListController> m_policy;
+    std::unique_ptr<RoomCardsController> m_roomCards;
+    std::unique_ptr<ModerationQueueController> m_moderationQueue;
     std::unique_ptr<AboutController> m_about;
     StagedImageStore m_stagedImages;
     ImageCropper m_imageCrop;

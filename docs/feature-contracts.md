@@ -3337,6 +3337,51 @@ server name before deleting a server. Lightning offers the two honest pieces.
   affects only the viewer and closing changes server access. It sends
   nothing.
 
+### Forum view, shared checklists, community events, moderation queue
+
+- **Forum view** (Threads list). Each thread is its root's first line as a
+  title, the rest as a preview, and up to five `#tags` read from the root's
+  text (not inside a word or URL, never `#alias:server`). Sort (latest
+  activity, newest, most replies), filter (all, unread, no replies yet) and a
+  tag are view state of this panel only: never stored or sent, and cleared on
+  a room change. Tags need no permission beyond posting and nobody can tag
+  another member's thread. "All threads" hides nothing. Threads stay ordinary
+  `m.thread` threads opened by their real room and root ids (§8).
+- **Checklist / event cards.** An `m.room.message` with msgtype
+  `org.lightning_matrix.checklist` or `org.lightning_matrix.event`, a plain
+  `body` other clients show (the items, or title, zoned time, UTC time, place,
+  link), and the data under the msgtype key: checklist `{title, anyone_edits,
+  items: [{id, text}]}` (1-100 items, 300 chars, unique ids); event `{title,
+  start, end, tz, location, link, cancelled}` (UTC ms, end 0 or within a year,
+  IANA zone, `https` link only). Only the sender's `m.replace` edits count.
+  Updates are reference relations: `org.lightning_matrix.checklist.update`
+  `{op: add|done|undone|remove, item, text}` (an added item's id is its
+  event id) and `org.lightning_matrix.rsvp` `{status: yes|maybe|no}`, the
+  latest per member. Every reader folds them in (origin_server_ts, event_id)
+  order, so concurrent edits converge; a redacted update or root stops
+  counting. When the creator turns `anyone_edits` off, other members'
+  updates are ignored except from those who may redact others' events. All
+  of it is room events: encrypted in an encrypted room and visible only to
+  its members. Other clients do not see ticks, added items or RSVPs.
+- Times are entered as wall time in a chosen zone; a time skipped by a DST
+  change is refused. The card shows the event's zone and the reader's own
+  time. RSVP "going" or "maybe" sets a reminder 15 minutes before; when a
+  loaded card shows a moved time the reminder moves, and a cancellation or
+  "can't go" removes it. "Save to calendar" writes a UTC `.ics` file.
+- A visible card re-reads the local event cache every 15 s (updates are
+  hidden events); it fetches `/relations` from the server once when shown.
+- **Moderation queue** (Room information). Members (joined, invited,
+  knocking) covered by a ban rule in a followed policy list, one case per
+  member with every matching list and rule as evidence, at most 200. A match
+  enforces nothing. "Ban…" opens a confirmation for that one member; on
+  confirm Rust re-reads the lists (no longer covered: refused as stale) and
+  re-checks the member and the viewer's power with the Space-moderation
+  verdict before banning. One action at a time, no bulk path. Decisions
+  (open, dismissed, banned) are the moderator's own account data
+  `org.lightning_matrix.moderation_cases`: room id, user id, status, time,
+  newest 500 kept. Reports sent with "Report" go to the homeserver's admins
+  and do not reach this queue.
+
 ### SVG images (rasterised on send)
 
 - §6 still holds: nothing RECEIVED is ever decoded as SVG. A received SVG

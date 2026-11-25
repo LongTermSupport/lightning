@@ -2156,6 +2156,26 @@ Item {
                     }
 
                     Loader {
+                        id: roomCardLoader
+                        objectName: "roomCardLoader"
+                        active: (model.cardKind || "") !== "" && !model.redacted
+                                && String(model.eventId || "").charAt(0) === "$"
+                        readonly property bool cardShown: !!item && item.shown
+                        visible: cardShown
+                        Layout.alignment: Qt.AlignLeft
+                        Layout.preferredWidth: item ? item.implicitWidth : 0
+                        Layout.maximumWidth: root.contentInnerCap
+                        sourceComponent: Component {
+                            RoomCard {
+                                roomId: app.currentRoomId
+                                eventId: model.eventId || ""
+                                kind: model.cardKind || ""
+                                readOnly: root.readOnlyView
+                            }
+                        }
+                    }
+
+                    Loader {
                         id: bodyLoader
                         objectName: "messageBodyLoader"
                         readonly property bool isMediaRow: root.mediaRowBody
@@ -2182,6 +2202,7 @@ Item {
                             }
                             if (model.isPoll === true) return ""
                             if (model.isLocation === true) return ""
+                            if (roomCardLoader.cardShown) return ""
                             if (isMediaRow && !isMediaCaption) return ""
                             var fb = model.formattedBody
                             var html = (fb && fb.length > 0)
