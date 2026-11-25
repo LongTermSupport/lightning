@@ -14,15 +14,10 @@ bool MediaVisibilityStore::isHidden(const QString &key) const
 
 void MediaVisibilityStore::hide(const QString &key)
 {
-    if (key.isEmpty() || m_hidden.contains(key))
+    if (key.isEmpty() || m_hidden.contains(key) || hiddenCount() >= capacity())
         return;
     m_hidden.insert(key);
     m_order.append(key);
-    while (m_order.size() > kMaxHidden) {
-        const QString evicted = m_order.takeFirst();
-        if (m_hidden.remove(evicted))
-            Q_EMIT hiddenChanged(evicted, false);
-    }
     Q_EMIT hiddenChanged(key, true);
     Q_EMIT hiddenCountChanged();
     persist();

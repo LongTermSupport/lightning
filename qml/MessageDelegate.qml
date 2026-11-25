@@ -2922,11 +2922,13 @@ Item {
                         id: threadHideMediaButton
                         objectName: "messageHideMediaButton"
                         visible: root.mediaHideable && !root.mediaHidden
+                        enabled: !app.mediaVisibility
+                                 || app.mediaVisibility.hiddenCount < app.mediaVisibility.capacity
                         implicitWidth: 28; implicitHeight: 28
                         radius: AppTheme.radiusControl
                         iconName: "visibility_off"
                         iconSize: 18
-                        Accessible.name: qsTr("Hide image")
+                        Accessible.name: enabled ? qsTr("Hide image") : qsTr("Hidden image limit reached")
                         ToolTip {
                             visible: threadHideMediaButton.hovered
                             delay: 500
@@ -4211,6 +4213,50 @@ Item {
                 onTriggered: root.toggleSavedMessage()
             }
             AppMenuItem {
+                id: remindMenuItem
+                objectName: "remindMessageMenuItem"
+                iconName: "schedule"
+                readonly property string targetRoom:
+                    root.timelineModel.realRoomIdForEvent(root.menuEventId)
+                readonly property real due:
+                    app.reminders && app.reminders.revision >= 0
+                    ? app.reminders.reminderDue(targetRoom, root.menuEventId) : 0
+                readonly property bool remindable: !!app.reminders
+                    && model.redacted !== true && model.isLocalEcho !== true
+                    && model.isVirtual !== true && targetRoom !== ""
+                    && root.menuEventId.startsWith("$")
+                function remindAt(preset) {
+                    const details = root.timelineModel.messageDetails(root.menuEventId)
+                    const threadRootId = root.inThreadPanel
+                          ? app.thread.rootEventId : (details.threadRootId || "")
+                    app.reminders.remind(targetRoom, root.menuEventId, threadRootId,
+                                         app.reminders.presetTime(preset))
+                }
+                text: qsTr("Remind me in 1 hour")
+                visible: remindable && due <= 0
+                enabled: visible
+                onTriggered: remindAt("1h")
+            }
+            AppMenuItem {
+                objectName: "remindTomorrowMenuItem"
+                iconName: "schedule"
+                text: qsTr("Remind me tomorrow")
+                visible: remindMenuItem.visible
+                enabled: visible
+                onTriggered: remindMenuItem.remindAt("tomorrow")
+            }
+            AppMenuItem {
+                objectName: "cancelReminderMenuItem"
+                iconName: "close"
+                text: qsTr("Cancel reminder (%1)")
+                      .arg(Qt.formatDateTime(new Date(remindMenuItem.due),
+                                             app.settings.clockTimeFormat))
+                visible: remindMenuItem.remindable && remindMenuItem.due > 0
+                enabled: visible
+                onTriggered: app.reminders.cancelReminder(remindMenuItem.targetRoom,
+                                                          root.menuEventId)
+            }
+            AppMenuItem {
                 id: copyTextMenuItem
                 objectName: "copyTextMenuItem"
                 iconName: "content_copy"
@@ -4343,10 +4389,12 @@ Item {
             AppMenuItem {
                 objectName: "hideMediaMenuItem"
                 iconName: root.mediaHidden ? "visibility" : "visibility_off"
+                readonly property bool full: !!app.mediaVisibility
+                    && app.mediaVisibility.hiddenCount >= app.mediaVisibility.capacity
                 text: root.mediaHidden ? qsTr("Show image")
-                                       : qsTr("Hide image")
+                    : full ? qsTr("Hidden image limit reached") : qsTr("Hide image")
                 visible: root.mediaHideable
-                enabled: visible
+                enabled: visible && (root.mediaHidden || !full)
                 onTriggered: root.setMediaHidden(!root.mediaHidden)
             }
 
@@ -6171,8 +6219,8 @@ Item {
                     bridgeSource = app.mediaBridge.mediaSource(model.mediaKey,
                                                                "thumb")
                 } else if (root.speculativeMediaAllowed) {
-                    bridgeSource = app.mediaBridge.videoPosterSource(
-                        model.mediaKey, prefetchSize, prefetchCap)
+                    bridgeSource = app.mediaBridge.ownedVideoPoster(
+                        videoBox, model.mediaKey, prefetchSize, prefetchCap)
                 } else {
                     bridgeSource = ""
                 }
@@ -6183,6 +6231,7 @@ Item {
             }
             readonly property bool coverOnScreen: root.speculativeMediaAllowed
             onCoverOnScreenChanged: {
+                if (!coverOnScreen) app.mediaBridge.releaseVideoPoster(videoBox)
                 if (coverOnScreen && bridgeSource.length === 0
                     && !bridgeFailed)
                     videoSourceRefresh.restart()
@@ -6196,6 +6245,7 @@ Item {
                 refreshBridgeSource()
             }
             function resetForMedia() {
+                app.mediaBridge.releaseVideoPoster(videoBox)
                 playerActive = false
                 bridgeSource = ""
                 bridgeFailed = false
@@ -6239,13 +6289,13 @@ Item {
                         videoBox.refreshBridgeSource()
                 }
                 function onPlayableMediaReady(cacheKey) {
-                    if (cacheKey === "full:" + (model.mediaKey || "")
+                    if (videoBox.coverOnScreen && cacheKey === "full:" + (model.mediaKey || "")
                         && model.mediaThumbAvailable !== true
                         && videoBox.bridgeSource.length === 0
                         && !videoBox.bridgeFailed)
                         videoBox.bridgeSource =
-                            app.mediaBridge.videoPosterSource(
-                                model.mediaKey, 0)
+                            app.mediaBridge.ownedVideoPoster(
+                                videoBox, model.mediaKey, 0)
                 }
             }
 

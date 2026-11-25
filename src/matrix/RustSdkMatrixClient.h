@@ -30,6 +30,8 @@ class RustSdkMatrixClient final : public MatrixClient
 {
     Q_OBJECT
 public:
+    quint64 spaceCommunityAction(const QString &roomId, const QString &action,
+                                 const QVariantMap &payload) override;
     static constexpr int kStoreCloseBudgetMs = 15000;
 
     /// Block until every handle retired by releaseRustHandle() has closed, or
@@ -699,6 +701,8 @@ public:
     quint64 requestIgnoredUsers() override;
     bool supportsPushRules() const override { return true; }
     quint64 requestPushRules() override;
+    quint64 simulatePushRule(const QString &roomId, const QString &body,
+                             bool mentionMe) override;
     quint64 writePushRule(const QString &kind, const QString &key,
                           const QString &value) override;
     bool supportsEventReporting() const override { return true; }

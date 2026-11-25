@@ -22,6 +22,10 @@ class MatrixClient : public QObject
 {
     Q_OBJECT
 public:
+    virtual quint64 spaceCommunityAction(const QString &roomId, const QString &action,
+                                         const QVariantMap &payload)
+    { Q_UNUSED(roomId); Q_UNUSED(action); Q_UNUSED(payload); return 0; }
+
     enum ConnectionState {
         Disconnected,
         Connecting,
@@ -1007,6 +1011,10 @@ public:
     virtual quint64 writePushRule(const QString &kind, const QString &key,
                                   const QString &value)
     { Q_UNUSED(kind); Q_UNUSED(key); Q_UNUSED(value); return 0; }
+    // Read-only: asks matrix-sdk which rule matches a synthetic message.
+    virtual quint64 simulatePushRule(const QString &roomId, const QString &body,
+                                     bool mentionMe)
+    { Q_UNUSED(roomId); Q_UNUSED(body); Q_UNUSED(mentionMe); return 0; }
     virtual bool supportsEventReporting() const { return false; }
     virtual quint64 reportMessage(const QString &roomId,
                                   const QString &eventId,
@@ -1460,6 +1468,9 @@ public:
     virtual qint64 maxUploadSize() const { return 0; }
 
 Q_SIGNALS:
+    void spaceCommunityFinished(quint64 opId, const QString &roomId,
+                                const QString &action, bool ok,
+                                const QVariantMap &result);
     void loginSucceeded(const QString &userId);
     void loginFailed(const QString &reason);
     void loggedOut();
@@ -1819,6 +1830,7 @@ Q_SIGNALS:
     void ignoredUsersReceived(quint64 opId, bool ok, const QStringList &users);
     void ignoredUsersChanged(const QStringList &users);
     void eventCacheRepaired();
+    void pushRuleSimulated(quint64 opId, bool ok, const QVariantMap &result);
     void pushRulesReceived(quint64 opId, bool ok, const QVariantMap &snapshot,
                            const QString &category);
     void pushRuleWriteFinished(quint64 opId, const QString &kind, bool ok,

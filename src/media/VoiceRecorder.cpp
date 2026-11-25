@@ -89,7 +89,7 @@ bool VoiceRecorder::available()
     return resolveProfile() != nullptr;
 }
 
-bool VoiceRecorder::ensureCaptureChain()
+bool VoiceRecorder::ensureRecorder()
 {
     if (!m_dir) {
         m_dir = std::make_unique<QTemporaryDir>(
@@ -104,16 +104,10 @@ bool VoiceRecorder::ensureCaptureChain()
     }
     if (!m_session) {
         m_session = std::make_unique<QMediaCaptureSession>();
-        m_audioInput = std::make_unique<QAudioInput>();
         m_recorder = std::make_unique<QMediaRecorder>();
-        m_session->setAudioInput(m_audioInput.get());
         m_session->setRecorder(m_recorder.get());
         connect(m_recorder.get(), &QMediaRecorder::durationChanged,
                 this, &VoiceRecorder::durationChanged);
-        // A microphone unplugged mid-recording produces silence for the rest
-        // of the clip and nothing reports it (the recorder raises no error).
-        // Watch the device list for the one this recording started on.
-        watchInputDevices();
         connect(m_recorder.get(), &QMediaRecorder::recorderStateChanged,
                 this, [this](QMediaRecorder::RecorderState state) {
                     if (state != QMediaRecorder::StoppedState)
@@ -124,6 +118,10 @@ bool VoiceRecorder::ensureCaptureChain()
                         discardActiveFile();
                         m_state = State::Idle;
                         Q_EMIT stateChanged();
+                        return;
+                    }
+                    if (m_endedByDisconnect) {
+                        finishWithWaveform({});
                         return;
                     }
                     const QString actual =
@@ -179,24 +177,19 @@ QMediaDevices *VoiceRecorder::watchInputDevicesForTest()
     return m_devices.get();
 }
 
-bool VoiceRecorder::inputStillPresent(const QByteArray &id, bool wasDefault,
-                                      const QList<InputInfo> &inputs)
-{
-    for (const InputInfo &input : inputs) {
-        if (input.id == id)
-            return true;
-        if (wasDefault && input.isDefault)
-            return true;
-    }
-    return false;
-}
-
 void VoiceRecorder::inputDevicesChanged(const QList<InputInfo> &inputs)
 {
-    if (m_state != State::Recording || m_recordingDeviceId.isEmpty())
+    if (!recording() || m_recordingDeviceId.isEmpty())
         return;
-    if (inputStillPresent(m_recordingDeviceId, m_recordingWasDefault, inputs))
-        return;
+    for (const auto &input : inputs) {
+        if (input.id == m_recordingDeviceId)
+            return;
+    }
+    inputLost();
+}
+
+void VoiceRecorder::inputLost()
+{
     qCWarning(lcVoice, "the capture device disappeared during recording");
     m_endedByDisconnect = true;
     stop();
@@ -204,8 +197,9 @@ void VoiceRecorder::inputDevicesChanged(const QList<InputInfo> &inputs)
 
 void VoiceRecorder::setRecordingForTest(const QByteArray &deviceId,
                                         const QString &activeFile,
-                                        qint64 durationMs)
+                                        qint64 durationMs, bool wasDefault)
 {
+    Q_UNUSED(wasDefault);
     m_state = State::Recording;
     m_recordingDeviceId = deviceId;
     m_activeFile = activeFile;
@@ -263,13 +257,25 @@ bool VoiceRecorder::startNow()
     if (m_startNowForTest)
         return m_startNowForTest();
     const EncoderProfile *profile = resolveProfile();
-    if (QMediaDevices::defaultAudioInput().isNull() || !profile) {
+    const QAudioDevice device = QMediaDevices::defaultAudioInput();
+    if (device.isNull() || !profile) {
         Q_EMIT failed(tr("No microphone or audio encoder is available."));
         return false;
     }
-    if (!ensureCaptureChain()) {
+    if (!ensureRecorder()) {
         Q_EMIT failed(tr("Recording storage could not be prepared."));
         return false;
+    }
+    if (!m_audioInput) {
+        m_audioInput = std::make_unique<QAudioInput>(device);
+        m_session->setAudioInput(m_audioInput.get());
+        connect(m_audioInput.get(), &QAudioInput::deviceChanged, this, [this] {
+            if (recording() && m_audioInput->device().id() != m_recordingDeviceId)
+                inputLost();
+        });
+        watchInputDevices();
+    } else {
+        m_audioInput->setDevice(device);
     }
     discardActiveFile();
 
@@ -288,10 +294,10 @@ bool VoiceRecorder::startNow()
     m_recorder->setOutputLocation(QUrl::fromLocalFile(m_activeFile));
     m_cancelRequested = false;
     m_finalDurationMs = 0;
-    return beginRecording();
+    return beginRecording(device.id());
 }
 
-bool VoiceRecorder::beginRecording()
+bool VoiceRecorder::beginRecording(const QByteArray &deviceId)
 {
     ++m_recordStarts;
     m_recorder->record();
@@ -302,9 +308,7 @@ bool VoiceRecorder::beginRecording()
     m_state = State::Recording;
     m_paused = false;
     m_endedByDisconnect = false;
-    m_recordingDeviceId = m_audioInput ? m_audioInput->device().id()
-                                       : QByteArray();
-    m_recordingWasDefault = m_audioInput && m_audioInput->device().isDefault();
+    m_recordingDeviceId = deviceId;
     m_maxDurationGuard.setInterval(static_cast<int>(kMaxDurationMs));
     m_maxDurationGuard.start();
     Q_EMIT stateChanged();

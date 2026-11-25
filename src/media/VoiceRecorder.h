@@ -63,13 +63,11 @@ public:
         QByteArray id;
         bool isDefault = false;
     };
-    static bool inputStillPresent(const QByteArray &id, bool wasDefault,
-                                  const QList<InputInfo> &inputs);
     void inputDevicesChanged(const QList<InputInfo> &inputs);
     QMediaDevices *watchInputDevicesForTest();
     void setRecordingForTest(const QByteArray &deviceId,
                              const QString &activeFile = QString(),
-                             qint64 durationMs = 0);
+                             qint64 durationMs = 0, bool wasDefault = false);
     void finishForTest();
     bool endedByDisconnect() const { return m_endedByDisconnect; }
     int startNowCallsForTest() const { return m_startNowCalls; }
@@ -87,11 +85,12 @@ Q_SIGNALS:
 
 private:
     void watchInputDevices();
+    void inputLost();
     enum class State { Idle, Recording, Processing };
 
-    bool ensureCaptureChain();
+    bool ensureRecorder();
     bool startNow();
-    bool beginRecording();
+    bool beginRecording(const QByteArray &deviceId);
     void dropPendingStart();
     void beginWaveformExtraction();
     void finishLater(quint64 tag, const QList<int> &waveform);
@@ -109,7 +108,6 @@ private:
     std::unique_ptr<QAudioInput> m_audioInput;
     std::unique_ptr<QMediaDevices> m_devices;
     QByteArray m_recordingDeviceId;
-    bool m_recordingWasDefault = false;
     bool m_endedByDisconnect = false;
     std::unique_ptr<QMediaRecorder> m_recorder;
     std::unique_ptr<QAudioDecoder> m_decoder;

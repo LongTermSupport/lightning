@@ -6996,7 +6996,7 @@ true);
         QVERIFY(!call.cameraOn());
         QCOMPARE(failed.count(), 1);
         QVERIFY2(failed.at(0).at(0).toString().contains(
-                     QStringLiteral("turned off in your system settings")),
+                     QStringLiteral("Camera permission was denied")),
                  qPrintable(failed.at(0).at(0).toString()));
 
         call.setCameraRouteForTest(true, true, true);
@@ -9295,7 +9295,7 @@ false);
         QCOMPARE(call.state(), SfuCallController::State::Reconnecting);
         QSignalSpy failed(&call, &SfuCallController::callFailed);
 
-        Q_EMIT portal.ready(7, -1);
+        Q_EMIT portal.ready(7, -1, std::nullopt);
         QCOMPARE(failed.count(), 1);
         QCOMPARE(failed.first().first().toString(),
                  QStringLiteral("You can share your screen once the call has "

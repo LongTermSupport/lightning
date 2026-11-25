@@ -1,5 +1,6 @@
 
 #include "app/GuiStallTracer.h"
+#include "app/LogExport.h"
 #include "matrix/MatrixClient.h"
 #include "media/ImageFormatSupport.h"
 #include "media/ImageMetadata.h"
@@ -27,6 +28,7 @@
 #ifdef Q_OS_UNIX
 #include <csignal>
 #include <sys/resource.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #endif
 
@@ -623,6 +625,149 @@ class AttachmentQueueTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
+    void archiveContainsOnlyReviewedSnapshots()
+    {
+        QTemporaryDir dir;
+        QTemporaryDir outside;
+        const QString keep = writeFile(dir, QStringLiteral("keep.txt"), "reviewed bytes");
+        writeFile(dir, QStringLiteral("omit.txt"), "not selected");
+        writeFile(dir, QStringLiteral(".hidden"), "hidden");
+        writeFile(dir, QStringLiteral("private.pem"), "excluded");
+#ifdef Q_OS_UNIX
+        const auto link = QFile::encodeName(dir.filePath(QStringLiteral("linked")));
+        QVERIFY(::symlink(QFile::encodeName(outside.path()).constData(), link.constData()) == 0);
+        QVERIFY(::mkfifo(QFile::encodeName(dir.filePath(QStringLiteral("pipe"))).constData(), 0600) == 0);
+#endif
+        FakeClient client;
+        AttachmentQueueModel model;
+        model.setClient(&client);
+        QSignalSpy reviewed(&model, SIGNAL(folderReviewed(QVariantList,QStringList,QString)));
+        QVERIFY(reviewed.isValid());
+        QSignalSpy created(&model, SIGNAL(archiveCreated(QString)));
+        QVERIFY(QMetaObject::invokeMethod(&model, "reviewFolder",
+                    Q_ARG(QUrl, QUrl::fromLocalFile(dir.path()))));
+        QTRY_COMPARE(reviewed.size(), 1);
+        QVERIFY(reviewed.first()[2].toString().isEmpty());
+        QCOMPARE(reviewed.first()[0].toList().size(), 2);
+        const auto excluded = reviewed.first()[1].toStringList();
+        QVERIFY(excluded.contains(QStringLiteral(".hidden")));
+        QVERIFY(excluded.contains(QStringLiteral("private.pem")));
+#ifdef Q_OS_UNIX
+        QVERIFY(excluded.contains(QStringLiteral("linked")));
+        QVERIFY(excluded.contains(QStringLiteral("pipe")));
+#endif
+        writeFile(dir, QStringLiteral("keep.txt"), "changed bytes");
+        QVERIFY(QMetaObject::invokeMethod(&model, "createFolderArchive",
+                    Q_ARG(QStringList, QStringList{QStringLiteral("keep.txt")})));
+        QTRY_COMPARE(created.size(), 1);
+        QCOMPARE(model.rowCount(), 1);
+        bool ok = false;
+        const auto files = lightning::logexport::readZip(model.entries().first().data, &ok);
+        QVERIFY(ok);
+        QCOMPARE(files.size(), 1);
+        QCOMPARE(files.first().name, QStringLiteral("keep.txt"));
+        QCOMPARE(files.first().data, QByteArray("reviewed bytes"));
+        model.clearAll();
+        QCOMPARE(readAll(keep), QByteArray("changed bytes"));
+    }
+
+    void archiveLimitIncludesZipHeadersAndCancelInvalidatesReview()
+    {
+        QTemporaryDir dir;
+        writeFile(dir, QStringLiteral("one"), "1");
+        AttachmentQueueModel model;
+        FakeClient client;
+        client.serverLimit = 1;
+        model.setClient(&client);
+        QSignalSpy reviewed(&model, SIGNAL(folderReviewed(QVariantList,QStringList,QString)));
+        QVERIFY(reviewed.isValid());
+        QSignalSpy created(&model, SIGNAL(archiveCreated(QString)));
+        QVERIFY(QMetaObject::invokeMethod(&model, "reviewFolder",
+                    Q_ARG(QUrl, QUrl::fromLocalFile(dir.path()))));
+        QTRY_COMPARE(reviewed.size(), 1);
+        QVERIFY(QMetaObject::invokeMethod(&model, "createFolderArchive",
+                    Q_ARG(QStringList, QStringList{QStringLiteral("one")})));
+        QTRY_COMPARE(created.size(), 1);
+        QVERIFY(!created.first().first().toString().isEmpty());
+        QCOMPARE(model.rowCount(), 0);
+        client.serverLimit = 1024;
+        QVERIFY(QMetaObject::invokeMethod(&model, "reviewFolder",
+                    Q_ARG(QUrl, QUrl::fromLocalFile(dir.path()))));
+        QTRY_COMPARE(reviewed.size(), 2);
+        QVERIFY(QMetaObject::invokeMethod(&model, "createFolderArchive",
+                    Q_ARG(QStringList, QStringList{QStringLiteral("one")})));
+        QVERIFY(QMetaObject::invokeMethod(&model, "cancelFolderReview"));
+        QThreadPool::globalInstance()->waitForDone();
+        QCoreApplication::processEvents();
+        QCOMPARE(created.size(), 1);
+        QCOMPARE(model.rowCount(), 0);
+    }
+
+
+    void inspectedPhotoSendsTheReportedExifBytes_data()
+    {
+        QTest::addColumn<QString>("mode");
+        QTest::newRow("location") << QStringLiteral("location");
+        QTest::newRow("all") << QStringLiteral("all");
+        QTest::newRow("keep") << QStringLiteral("keep");
+    }
+
+    void inspectedPhotoSendsTheReportedExifBytes()
+    {
+        QFETCH(QString, mode);
+        const QByteArray timestamp("2020:01:02 03:04:05", 20);
+        QByteArray tiff = QByteArray::fromHex(
+            "4d4d002a000000080004"
+            "011200030000000100060000"
+            "88250004000000010000003e"
+            "013200020000001400000068"
+            "011000020000000443616d00"
+            "00000000"
+            "000100020005000000030000005000000000");
+        tiff += kGpsMarker;
+        tiff += timestamp;
+        QByteArray segment = QByteArray::fromHex("ffe1");
+        const quint16 length = tiff.size() + 8;
+        segment += char(length >> 8);
+        segment += char(length);
+        segment += QByteArray("Exif\0\0", 6) + tiff;
+        QByteArray original = rotatedJpeg(6);
+        original.insert(2, segment);
+
+        FakeClient client;
+        MessageComposer composer;
+        composer.setClient(&client);
+        composer.setRoomId(QStringLiteral("!room:example.org"));
+        composer.setImageMetadataMode(mode);
+        QTemporaryDir dir;
+        const QString path = writeFile(dir, QStringLiteral("camera.jpg"), original);
+        composer.addAttachment(QUrl::fromLocalFile(path));
+        QSignalSpy inspected(composer.attachments(), SIGNAL(photoInspected(quint64,QVariantMap)));
+        QVERIFY(inspected.isValid());
+        quint64 request = 0;
+        QVERIFY(QMetaObject::invokeMethod(composer.attachments(), "inspectPhoto",
+                    Q_RETURN_ARG(quint64, request), Q_ARG(int, 0), Q_ARG(QString, mode)));
+        QVERIFY(request);
+        QTRY_COMPARE(inspected.size(), 1);
+        const auto summary = inspected.first()[1].toMap();
+        const bool keepGps = mode == QStringLiteral("keep");
+        const bool keepDevice = mode != QStringLiteral("all");
+        QCOMPARE(summary.value("location").toString(), keepGps ? QString("Retained") : QString("Removed"));
+        QCOMPARE(summary.value("timestamp").toString(), keepDevice ? QString("Retained") : QString("Removed"));
+        QCOMPARE(summary.value("device").toString(), summary.value("timestamp").toString());
+        QCOMPARE(summary.value("orientation").toString(), QStringLiteral("Retained"));
+
+        writeFile(dir, QStringLiteral("camera.jpg"), tinyPng());
+        composer.send();
+        QCOMPARE(client.fileSends, 1);
+        const auto sent = readAll(client.lastFilePath);
+        QCOMPARE(sent.contains(kGpsMarker), keepGps);
+        QCOMPARE(sent.contains(timestamp), keepDevice);
+        QCOMPARE(sent.contains(QByteArray("Cam\0", 4)), keepDevice);
+        QCOMPARE(imagemeta::exifOrientation(sent), 6);
+        QCOMPARE(sent, imagemeta::strip(original, imagemeta::modeFromString(mode)).bytes);
+    }
+
     void imageEditUsesSessionScratchWriter()
     {
         const QString sourcePath = QFileInfo(QString::fromUtf8(__FILE__)).dir()

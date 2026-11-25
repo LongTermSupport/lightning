@@ -92,7 +92,13 @@ Item {
             (root.isVideo ? "thumb:" : "full:") + root.mediaKey)
     }
     // A pooled delegate may hand this card another link.
+    onRowOnScreenChanged: {
+        if (!rowOnScreen) app.mediaBridge.releaseVideoPoster(root)
+        else if (isVideo && !coverSource && !needsConsent)
+            coverSource = app.mediaBridge.ownedVideoPoster(root, mediaKey, 0)
+    }
     onMediaKeyChanged: {
+        app.mediaBridge.releaseVideoPoster(root)
         root.playerActive = false
         root.fetchTooLarge = false
         root.refreshCover()
@@ -125,10 +131,10 @@ Item {
             }
         }
         function onPlayableMediaReady(cacheKey) {
-            if (root.isVideo && cacheKey === "full:" + root.mediaKey
+            if (root.isVideo && root.rowOnScreen && cacheKey === "full:" + root.mediaKey
                 && root.coverSource.length === 0)
                 root.coverSource =
-                    app.mediaBridge.videoPosterSource(root.mediaKey, 0)
+                    app.mediaBridge.ownedVideoPoster(root, root.mediaKey, 0)
         }
         function onMediaCached(cacheKey) {
             if (cacheKey === (root.isVideo ? "thumb:" : "full:") + root.mediaKey)

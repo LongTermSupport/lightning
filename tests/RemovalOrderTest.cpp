@@ -80,7 +80,8 @@ QStringList accountFilesUnder(const QString &root)
 {
     return { matrix::app_data::bridgeLabelsFile(root),
              matrix::app_data::starredGifsDir(root) + QStringLiteral("/marker"),
-             matrix::app_data::scrollPositionsFile(root) };
+             matrix::app_data::scrollPositionsFile(root),
+             matrix::app_data::remindersFile(root) };
 }
 
 void signInAliceAt(AppController &app, const QString &storeSlug)
@@ -315,6 +316,31 @@ private Q_SLOTS:
         QVERIFY(alice.accountRoot != matrix::app_data::accountRoot(kAlice));
         QTRY_COMPARE(app.gif()->starredStore()->currentDirectory(),
                      matrix::app_data::starredGifsDir(alice.accountRoot));
+        QCOMPARE(app.reminders()->filePath(),
+                 matrix::app_data::remindersFile(alice.accountRoot));
+    }
+
+    void signOutDeletesRemindersAndSnoozesTheSessionWrote()
+    {
+        ScriptedLabsBridge bridge;
+        BridgeScope bridgeScope(&bridge);
+        LabsEnvScope env(true);
+        AppController app(AppController::MockBackend, false, inMemoryKeyring());
+        signInAliceAt(app, QStringLiteral("Alice_remind"));
+        const auto alice = identityOf(app, kAlice);
+        const QString file = matrix::app_data::remindersFile(alice.accountRoot);
+        const qint64 later = QDateTime::currentMSecsSinceEpoch() + 3600 * 1000;
+        app.reminders()->snooze(QStringLiteral("!r:one.example"), later);
+        app.reminders()->remind(QStringLiteral("!r:one.example"),
+                                QStringLiteral("$e"), QString(), later);
+        QVERIFY(QFile::exists(file));
+
+        app.auth()->logout();
+
+        QTRY_VERIFY2_WITH_TIMEOUT(!QFile::exists(file),
+            "sign-out left reminders under the recorded root", 5000);
+        QVERIFY(!app.reminders()->isSnoozed(QStringLiteral("!r:one.example")));
+        QCOMPARE(app.reminders()->filePath(), QString());
     }
 
     void signOutDeletesAccountFilesUnderTheRecordedRootOnceTheRecordIsGone()

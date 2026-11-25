@@ -49,6 +49,7 @@
 #include "models/TimelineScrollController.h"
 #include "notifications/NotificationManager.h"
 #include "notifications/NotificationContextBuilder.h"
+#include "notifications/QuietHours.h"
 #include "app/SwitchTrace.h"
 #include "accounts/RustBridgeApi.h"
 #include "accounts/SessionPool.h"
@@ -122,6 +123,20 @@
 #endif
 
 Q_LOGGING_CATEGORY(lcApp, "matrix.app")
+
+namespace {
+quiethours::Schedule quietScheduleOf(const SettingsManager &settings)
+{
+    quiethours::Schedule s;
+    s.enabled = settings.quietHoursEnabled();
+    s.startMinute = settings.quietHoursStart();
+    s.endMinute = settings.quietHoursEnd();
+    s.allowMentions = settings.quietHoursAllowMentions();
+    s.allowDirect = settings.quietHoursAllowDirect();
+    s.allowedRooms = settings.quietHoursRooms();
+    return s;
+}
+}
 
 namespace {
 #ifdef LIGHTNING_UPDATER_ENABLED
@@ -594,6 +609,16 @@ AppController::AppController(Backend backend, bool screenshotDemo,
                     m_pushRules->loaded(), direct, m_pushRules->dmAll(),
                     m_pushRules->roomsAll());
             }
+            in.roomIsDirect =
+                !roomId.isEmpty() && m_client && m_client->roomInfo(roomId).isDirect;
+            in.roomSnoozed = m_reminders && m_reminders->isSnoozed(roomId);
+            in.quietNow = m_quietHoursActive;
+            in.quietAllowsMentions = m_settings->quietHoursAllowMentions();
+            in.quietAllowsDirect = m_settings->quietHoursAllowDirect();
+            in.quietAllowsRoom = !roomId.isEmpty()
+                && m_settings->quietHoursRooms().contains(roomId);
+            in.desktopInhibited =
+                m_notifications && m_notifications->desktopInhibited();
             return in;
         });
     m_notificationTroubleshooter->setTestSender([this] {
@@ -701,6 +726,37 @@ AppController::AppController(Backend backend, bool screenshotDemo,
     m_notifications->setSoundAllowedCheck([this] {
         return !m_callSounds || m_callSounds->policy().allowsNotificationSound();
     });
+    m_reminders = std::make_unique<RemindersController>(this);
+    m_reminders->setPreviewPolicy(
+        [this](const QString &roomId) { return noticePreviewFor(roomId); });
+    connect(m_reminders.get(), &RemindersController::notify, this,
+            [this](const QString &title, const QString &body,
+                   const QString &roomId, const QString &eventId,
+                   const QString &threadRootId) {
+        m_notifications->showGeneric(title, body, roomId, {}, true, {}, {},
+                                     eventId, threadRootId);
+    });
+    connect(m_reminders.get(), &RemindersController::snoozeEnded, this,
+            [this](const QString &roomId) {
+        m_notifications->releaseHeld(QStringLiteral("snooze:") + roomId);
+    });
+    m_notifications->setHoldCheck(
+        [this](const QString &roomId, bool direct, bool mention,
+               const QString &accountUserId) -> QString {
+        if (accountUserId.isEmpty() && m_reminders->isSnoozed(roomId))
+            return QStringLiteral("snooze:") + roomId;
+        if (m_quietHoursActive
+            && !quiethours::lets(quietScheduleOf(*m_settings), roomId, direct,
+                                 mention))
+            return QStringLiteral("quiet:") + accountUserId;
+        return {};
+    });
+    m_quietHoursTimer.setInterval(30 * 1000);
+    connect(&m_quietHoursTimer, &QTimer::timeout, this,
+            &AppController::refreshQuietHours);
+    connect(m_settings.get(), &SettingsManager::quietHoursChanged, this,
+            &AppController::refreshQuietHours);
+    refreshQuietHours();
     connect(m_notifications.get(), &NotificationManager::messageDelivered,
             this, [this](const QString &, bool) { alertMainWindow(); });
     m_notifications->setAvatarProvider(
@@ -1136,6 +1192,7 @@ AppController::AppController(Backend backend, bool screenshotDemo,
                 // account's rows until the next login. Deletion is separate
                 // (onLoggedOut() and removeAccount()).
                 m_gif->closeStarredStore();
+                m_reminders->close();
                 m_notifications->clearPendingFor(QString());
                 m_inviteNotices.clear();
                 m_inviteNoticeTimer.stop();
@@ -1795,6 +1852,8 @@ true, ringSeconds, acceptOffered,
             });
     m_pinned->setClient(m_client.get());
     m_savedMessages->setClient(m_client.get());
+    m_reminders->setClient(m_client.get());
+    m_notificationTroubleshooter->setClient(m_client.get());
     m_roomUpgrade->setClient(m_client.get());
     m_openRoomPermissions->setClient(m_client.get());
     m_backup->setClient(m_client.get());
@@ -4125,12 +4184,12 @@ void AppController::enableCallMediaEngine()
             if (!m_settings->preferredMicrophoneId().isEmpty()) {
                 const auto mic = m_callDevices->microphoneSelection();
                 const SfuMediaEngine::MicrophoneCapture capture =
-                    SfuMediaEngine::resolveMicrophoneCapture(
-                        {mic.id, mic.description});
+                    SfuMediaEngine::resolveMicrophoneCapture(mic);
                 plan.microphoneFront =
                     SfuMediaEngine::microphoneFrontDescription(capture);
                 plan.microphoneBinding = capture.binding;
-                m_callDevices->noteMicrophoneBinding(mic.id, capture.fellBack);
+                m_callDevices->noteMicrophoneBinding(
+                    mic.id, capture.fellBack || capture.binding.refused);
             }
             if (!m_settings->preferredSpeakerId().isEmpty()) {
                 const auto speaker = m_callDevices->speakerSelection();
@@ -4242,7 +4301,7 @@ void AppController::enableCallMediaEngine()
             const auto speaker = m_callDevices->speakerSelection();
             sfu->setPreferredDevices({camera.id, camera.description,
                                       camera.preferredMissing},
-                                     {microphone.id, microphone.description},
+                                     microphone,
                                      {speaker.id, speaker.description});
         };
         applySfuDevices();
@@ -6753,6 +6812,7 @@ void AppController::onLoginSucceeded()
         matrix::app_data::starredGifsDir(m_sessionAccountRoot));
     m_bridgeLabels.openFor(
         matrix::app_data::bridgeLabelsFile(m_sessionAccountRoot));
+    m_reminders->openFor(matrix::app_data::remindersFile(m_sessionAccountRoot));
     if (m_roomList) {
         const auto remembered = m_bridgeLabels.positiveLabels();
         for (auto it = remembered.constBegin(); it != remembered.constEnd();
@@ -7658,6 +7718,23 @@ QString AppController::legacyAccountRoot(const QString &userId,
     return derived;
 }
 
+void AppController::refreshQuietHours()
+{
+    const auto schedule = quietScheduleOf(*m_settings);
+    if (schedule.enabled && !m_quietHoursTimer.isActive())
+        m_quietHoursTimer.start();
+    else if (!schedule.enabled)
+        m_quietHoursTimer.stop();
+    const bool active =
+        quiethours::activeAt(schedule, QDateTime::currentDateTime());
+    if (active == m_quietHoursActive)
+        return;
+    m_quietHoursActive = active;
+    Q_EMIT quietHoursActiveChanged();
+    if (!active)
+        m_notifications->releaseHeld(QStringLiteral("quiet"));
+}
+
 namespace {
 using AccountFileFn = QString (*)(const QString &);
 constexpr AccountFileFn kAccountFiles[] = {
@@ -7665,6 +7742,7 @@ constexpr AccountFileFn kAccountFiles[] = {
     &matrix::app_data::starredGifsDir,
     &matrix::app_data::scrollPositionsFile,
     &matrix::app_data::personalBackgroundsDir,
+    &matrix::app_data::remindersFile,
 };
 }
 
@@ -7688,6 +7766,7 @@ void AppController::adoptLegacyAccountFiles(const QString &userId,
 void AppController::removeSignedOutAccountFiles(const QString &userId)
 {
     m_gif->closeStarredStore(); // never delete a directory still "open"
+    m_reminders->close();
     const QString recorded = accountRootFor(userId);
     int deleted = 0;
     int failed = 0;
@@ -7790,6 +7869,9 @@ bool AppController::removeAccountLocalStateFiles(
         m_bridgeSaveTimer.stop();
         m_bridgeLabels.close();
     }
+    if (m_reminders->filePath()
+        == matrix::app_data::remindersFile(identity.accountRoot))
+        m_reminders->close();
     if (!BridgeLabelStore::removeStore(bridgeFile)) {
         qCWarning(lcApp) << "removing account bridge badge store FAILED"
                          << "slug=" << identity.slug;

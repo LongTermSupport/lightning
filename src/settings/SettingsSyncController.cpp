@@ -27,6 +27,7 @@ namespace {
 constexpr int kDebounceMs = 2000;
 constexpr int kChangedDebounceMs = 1500;
 constexpr int kRetryMs = 45 * 1000;
+constexpr int kMaxRemovalAttempts = 3;
 
 QString reasonText(const QString &code)
 {
@@ -250,6 +251,8 @@ void SettingsSyncController::resetForAccount()
     m_readOp = m_writeOp = m_switchOp = 0;
     m_force = Force::None;
     m_afterSwitch = AfterSwitch::None;
+    m_removal = Removal::None;
+    m_removalAttempts = 0;
     m_rereadWanted = false;
     m_started = false;
     m_enabled = false;
@@ -280,6 +283,41 @@ void SettingsSyncController::loadState()
         QJsonDocument::fromJson(m_store.value(base + QStringLiteral("state")).toString().toUtf8()).object());
     m_hasBaseline = m_store.value(base + QStringLiteral("baseline"), false).toBool();
     m_lastSyncedMs = m_store.value(base + QStringLiteral("lastSyncedMs"), 0).toLongLong();
+    if (m_store.value(QStringLiteral("settingsSyncRemoval/") + m_userKey, false).toBool())
+        m_removal = Removal::Pending;
+}
+
+QString SettingsSyncController::removal() const
+{
+    switch (m_removal) {
+    case Removal::None: break;
+    case Removal::Pending: return QStringLiteral("pending");
+    case Removal::Confirmed: return QStringLiteral("confirmed");
+    case Removal::Failed: return QStringLiteral("failed");
+    }
+    return {};
+}
+
+void SettingsSyncController::setRemoval(Removal removal)
+{
+    m_removal = removal;
+    if (m_userKey.isEmpty())
+        return;
+    const QString key = QStringLiteral("settingsSyncRemoval/") + m_userKey;
+    if (removal == Removal::Pending)
+        m_store.setValue(key, true);
+    else
+        m_store.remove(key);
+}
+
+// Waits for the read or write already in flight, so a blob it carries cannot
+// land after the removal was confirmed.
+void SettingsSyncController::tryRemove()
+{
+    if (!supported() || m_readOp != 0 || m_writeOp != 0 || m_switchOp != 0)
+        return;
+    ++m_removalAttempts;
+    sendSwitch(false, AfterSwitch::Clear);
 }
 
 void SettingsSyncController::persistState()
@@ -320,7 +358,10 @@ void SettingsSyncController::startSync()
         return;
     m_started = true;
     m_absorbLocal = true;
-    requestRead();
+    if (m_removal == Removal::Pending)
+        tryRemove();
+    else
+        requestRead();
 }
 
 void SettingsSyncController::requestRead(Force force)
@@ -351,6 +392,10 @@ void SettingsSyncController::retry()
 {
     m_error.clear();
     Q_EMIT changed();
+    if (m_removal == Removal::Pending) {
+        tryRemove();
+        return;
+    }
     if (m_readOp == 0 && m_writeOp == 0 && m_switchOp == 0)
         requestRead();
 }
@@ -403,6 +448,10 @@ void SettingsSyncController::onRead(quint64 opId, bool ok, const QString &catego
     m_readOp = 0;
     if (m_readGen != m_gen)
         return;
+    if (m_removal == Removal::Pending) {
+        tryRemove();
+        return;
+    }
     if (!ok) {
         failWith(category);
         return;
@@ -539,6 +588,10 @@ void SettingsSyncController::onWritten(quint64 opId, int kind, bool ok, const QS
         m_writeOp = 0;
         if (m_writeGen != m_gen)
             return;
+        if (m_removal == Removal::Pending) {
+            tryRemove();
+            return;
+        }
         if (!ok) {
             if (category == QLatin1String("sync_disabled")) {
                 m_enabled = false;
@@ -567,11 +620,15 @@ void SettingsSyncController::onWritten(quint64 opId, int kind, bool ok, const QS
         return;
     if (!ok) {
         m_afterSwitch = AfterSwitch::None;
+        if (m_removal == Removal::Pending && m_removalAttempts >= kMaxRemovalAttempts)
+            setRemoval(Removal::Failed);
         failWith(category);
         return;
     }
     if (kind == 2) {
         m_afterSwitch = AfterSwitch::None;
+        if (m_removal == Removal::Pending)
+            setRemoval(Removal::Confirmed);
         m_error.clear();
         Q_EMIT changed();
         return;
@@ -612,14 +669,18 @@ void SettingsSyncController::setSyncEnabled(bool on)
         return;
     if (on == m_enabled)
         return;
+    setRemoval(Removal::None);
     sendSwitch(on, AfterSwitch::Enable);
 }
 
 void SettingsSyncController::removeFromServer()
 {
-    if (!supported() || m_switchOp != 0)
+    if (!supported() || m_switchOp != 0 || m_removal == Removal::Pending)
         return;
-    sendSwitch(false, AfterSwitch::Clear);
+    m_removalAttempts = 0;
+    setRemoval(Removal::Pending);
+    Q_EMIT changed();
+    tryRemove();
 }
 
 void SettingsSyncController::chooseAdoptServer()
