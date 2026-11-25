@@ -1130,6 +1130,7 @@ if(HAVE_LIGHTNING_WEBRTC)
         src/calls/CaptureDeviceSelection.h
         src/calls/CaptureClock.h
         src/calls/ShareCaptureRetry.h
+        src/calls/ShareTargetFallback.h
         src/calls/CaptureDeviceSelection.cpp
         src/calls/RtpVp8Payloader.h
         src/calls/RtpVp8Payloader.cpp
@@ -1443,6 +1444,10 @@ endif()
 
 # Strip the "qml/" prefix so QML files sit at the module root and can be
 # resolved via QQmlApplicationEngine::loadFromModule("MatrixClient", "Main").
+list(APPEND APP_QML_FILES
+    qml/SpaceCommunityPanel.qml
+    qml/RoomLifecycleReview.qml)
+
 foreach(_qml_file IN LISTS APP_QML_FILES)
     get_filename_component(_qml_name ${_qml_file} NAME)
     set_source_files_properties(${_qml_file}
@@ -4957,7 +4962,8 @@ if(BUILD_TESTING)
             button-key-activation-qml:ButtonKeyActivationQmlTest
             control-label-ink-qml:ControlLabelInkQmlTest
             space-text-edit-row-qml:SpaceTextEditRowQmlTest
-            tooltip-plain-text-qml:ToolTipPlainTextQmlTest)
+            tooltip-plain-text-qml:ToolTipPlainTextQmlTest
+            space-community-panel-qml:SpaceCommunityPanelQmlTest)
         string(REPLACE ":" ";" _p "${_t}")
         list(GET _p 0 _name)
         list(GET _p 1 _src)
@@ -8451,4 +8457,19 @@ if(BUILD_TESTING)
                 ENVIRONMENT "LIGHTNING_DISABLE_MPRIS=1")
         endif()
     endforeach()
+endif()
+
+if(BUILD_TESTING)
+    qt_add_executable(space-community-test
+        tests/SpaceCommunityTest.cpp
+        src/spaces/SpaceManager.h
+        src/spaces/SpaceManager.cpp
+        src/matrix/MatrixClient.h
+        src/matrix/MatrixClient.cpp
+    )
+    target_include_directories(space-community-test PRIVATE src)
+    target_link_libraries(space-community-test PRIVATE Qt6::Core Qt6::Test)
+    target_compile_definitions(space-community-test PRIVATE
+        QML_DIR="${CMAKE_CURRENT_SOURCE_DIR}/qml")
+    add_test(NAME space-community COMMAND space-community-test)
 endif()

@@ -78,6 +78,8 @@ Rectangle {
                         if (s.outgoing) {
                             lines.push(qsTr("Encoder: %1 · Scaling: %2 · Capture: %3")
                                 .arg(s.encoder).arg(s.scaling).arg(s.source))
+                            if (s.screen)
+                                lines.push(s.encodedFrameObserved ? qsTr("Encoded frames observed") : qsTr("Waiting for an encoded frame"))
                             lines.push(qsTr("RTP packets sent: %1 · Lost on the way to the server: %2")
                                 .arg(root.count(s.packetsSent)).arg(root.count(s.lost)))
                             lines.push(qsTr("Keyframes encoded: %1 · Keyframe requests: %2 · Resend requests: %3")

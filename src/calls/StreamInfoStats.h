@@ -55,6 +55,8 @@ struct StreamInfoStats {
             {QStringLiteral("decrypted"), QVariant::fromValue(decrypted.load())},
             {QStringLiteral("dropped"), QVariant::fromValue(dropped.load())}
         };
+        if (outgoing && screen)
+            row.insert(QStringLiteral("encodedFrameObserved"), f > 0);
         if (tooSoon)
             return row;
         lastMs = now;

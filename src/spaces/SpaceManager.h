@@ -27,6 +27,11 @@ class SpaceManager : public QAbstractListModel
                NOTIFY spacePermissionsChanged)
     Q_PROPERTY(int count READ rowCount NOTIFY spacesChanged)
     Q_PROPERTY(bool hasSpaces READ hasSpaces NOTIFY spacesChanged)
+    Q_PROPERTY(QVariantMap communityState READ communityState NOTIFY communityChanged)
+    Q_PROPERTY(QVariantMap communityReview READ communityReview NOTIFY communityChanged)
+    Q_PROPERTY(QString communityRoomId READ communityRoomId NOTIFY communityChanged)
+    Q_PROPERTY(bool communityBusy READ communityBusy NOTIFY communityChanged)
+    Q_PROPERTY(QString communityMessage READ communityMessage NOTIFY communityChanged)
     Q_PROPERTY(int spaceCount READ spaceCount NOTIFY spacesChanged)
     Q_PROPERTY(bool directMessagesHaveOwnTile READ directMessagesHaveOwnTile
                    WRITE setDirectMessagesHaveOwnTile
@@ -99,6 +104,21 @@ public:
     { m_personalRoomOrder = std::move(resolver); Q_EMIT spacesChanged(); }
     Q_INVOKABLE QString spaceName(const QString &spaceId) const;
 
+    QVariantMap communityState() const { return m_communityState; }
+    QVariantMap communityReview() const { return m_communityReview; }
+    QString communityRoomId() const { return m_communityRoom; }
+    bool communityBusy() const { return m_communityOp != 0; }
+    QString communityMessage() const { return m_communityMessage; }
+    Q_INVOKABLE void loadCommunity(const QString &roomId);
+    Q_INVOKABLE void communityAction(const QString &action, const QVariantMap &payload);
+    Q_INVOKABLE void invalidateCommunityReview();
+    Q_INVOKABLE QVariantList guideRooms(const QVariantList &sections) const;
+    Q_INVOKABLE QVariantList roleCapabilityPreview(const QVariantMap &levels,
+        qlonglong before, qlonglong after) const;
+    Q_INVOKABLE QString audiencePreview(const QString &joinRule,
+        const QString &history, const QStringList &allowedRooms) const;
+    Q_INVOKABLE QVariantMap lifecycleReview(const QString &roomId) const;
+
     Q_INVOKABLE QVariantMap spaceInfo(const QString &spaceId) const;
     Q_INVOKABLE QVariantList childRoomsDetailed(const QString &spaceId) const;
     Q_INVOKABLE QVariantList childSpacesDetailed(const QString &spaceId) const;
@@ -166,6 +186,7 @@ public:
                                             bool suggested);
 
 Q_SIGNALS:
+    void communityChanged();
     void activeSpaceIdChanged();
     void spacePermissionsChanged();
     void settingsDialogOpened(const QString &spaceId);
@@ -190,6 +211,18 @@ private Q_SLOTS:
                                    const QStringList &absent);
 
 private:
+    void clearCommunity();
+    void onCommunityFinished(quint64 opId, const QString &roomId,
+        const QString &action, bool ok, const QVariantMap &result);
+    QVariantMap m_communityState;
+    QVariantMap m_communityReview;
+    QVariantMap m_communityReviewRequest;
+    QString m_communityRoom;
+    QString m_communityUser;
+    QString m_communityAction;
+    QString m_communityMessage;
+    quint64 m_communityOp = 0;
+    QTimer m_communityTimer;
     /// One rebuild per event-loop turn. rebuild() is a full model reset plus
     /// an O(all rooms) walk, and batch emitters of roomUpdated would
     /// otherwise trigger one reset per room.

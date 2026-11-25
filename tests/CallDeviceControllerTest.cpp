@@ -108,6 +108,41 @@ private Q_SLOTS:
             QStringLiteral("\"callDeviceCameraMissing\"")));
     }
 
+    void aPinnedMicrophoneNeverFallsBackToTheDefault()
+    {
+        SettingsManager settings;
+        CallDeviceController devices;
+        devices.setSettings(&settings);
+        const QString chosen = QStringLiteral("lightning-test-pinned-mic");
+        devices.selectMicrophone(chosen);
+        auto selection = devices.microphoneSelection();
+        QVERIFY(!selection.requireIdentity);
+        QVERIFY2(!selection.preferredMissing,
+                 "the permissive default stopped following the system input");
+
+        QSignalSpy active(&devices, &CallDeviceController::activeDevicesChanged);
+        devices.setMicrophonePinned(true);
+        QVERIFY(devices.microphonePinned());
+        QCOMPARE(active.count(), 1);
+        selection = devices.microphoneSelection();
+        QCOMPARE(selection.id, chosen);
+        QVERIFY(selection.requireIdentity);
+        QVERIFY(selection.preferredMissing);
+
+        devices.selectMicrophone(chosen);
+        QVERIFY2(devices.microphonePinned(),
+                 "re-picking the pinned microphone dropped the pin");
+        QCOMPARE(devices.microphoneSelection().id, chosen);
+
+        devices.selectMicrophone(QStringLiteral("lightning-test-other-mic"));
+        QVERIFY(!devices.microphonePinned());
+        QVERIFY(!devices.microphoneSelection().requireIdentity);
+        devices.selectMicrophone(chosen);
+        QVERIFY2(!devices.microphonePinned(),
+                 "a pin returned without being asked for");
+        devices.selectMicrophone(QString());
+    }
+
     void aChosenMicrophoneTheCallCouldNotOpenIsReported()
     {
         SettingsManager settings;

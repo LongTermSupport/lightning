@@ -57,13 +57,13 @@ public:
         : QObject(owner), m_path(requestPath)
     {
         QDBusConnection::sessionBus().connect(
-            QString(), m_path, kRequest, QStringLiteral("Response"), this,
+            QString::fromLatin1(kService), m_path, kRequest, QStringLiteral("Response"), this,
             SLOT(onResponse(uint, QVariantMap)));
     }
     ~CameraPortalStep() override
     {
         QDBusConnection::sessionBus().disconnect(
-            QString(), m_path, kRequest, QStringLiteral("Response"), this,
+            QString::fromLatin1(kService), m_path, kRequest, QStringLiteral("Response"), this,
             SLOT(onResponse(uint, QVariantMap)));
     }
 
@@ -94,14 +94,14 @@ CameraPortal::CameraPortal(QObject *parent)
             return;
         qCWarning(lcCameraPortal) << "camera portal request timed out; "
                                      "releasing";
-        cancel();
+        retire();
         Q_EMIT failed(QStringLiteral("timeout"));
     });
 }
 
 CameraPortal::~CameraPortal()
 {
-    cancel();
+    retire();
 }
 
 portal::Capability CameraPortal::capability()
@@ -135,23 +135,34 @@ void CameraPortal::refreshCapability()
 QString CameraPortal::failureCategory(const QString &errorName,
                                      bool openingRemote)
 {
-    if (errorName == QLatin1String("org.freedesktop.portal.Error.NotAllowed")
-        || errorName == QLatin1String("org.freedesktop.portal.Error.Cancelled")
-        || errorName == QLatin1String("org.freedesktop.DBus.Error.AccessDenied"))
-        return QStringLiteral("not_allowed");
-    if (errorName == QLatin1String("org.freedesktop.DBus.Error.ServiceUnknown")
-        || errorName == QLatin1String("org.freedesktop.DBus.Error.UnknownMethod")
-        || errorName
-            == QLatin1String("org.freedesktop.DBus.Error.UnknownInterface")
-        || errorName == QLatin1String("org.freedesktop.DBus.Error.UnknownObject")
-        || errorName
-            == QLatin1String("org.freedesktop.DBus.Error.NameHasNoOwner"))
-        return QStringLiteral("no_portal");
+    const QString category = portal::permissionError(errorName);
+    if (!category.isEmpty())
+        return category;
     return openingRemote ? QStringLiteral("no_pipewire_remote")
                          : QStringLiteral("portal_failed");
 }
 
 void CameraPortal::cancel()
+{
+    const bool pending = m_busy;
+    retire();
+    if (pending) {
+        m_cancelled = true;
+        Q_EMIT cancelled();
+    }
+}
+
+void CameraPortal::finishError(const QString &category)
+{
+    if (category == QLatin1String("cancelled")) {
+        cancel();
+        return;
+    }
+    retire();
+    Q_EMIT failed(category);
+}
+
+void CameraPortal::retire()
 {
     ++m_generation;
     m_busy = false;
@@ -160,11 +171,6 @@ void CameraPortal::cancel()
     closeRequest(m_requestPath);
 #endif
     m_requestPath.clear();
-}
-
-void CameraPortal::reset()
-{
-    m_busy = false;
 }
 
 #if !defined(HAVE_QT_DBUS) || defined(Q_OS_WIN) || defined(Q_OS_MACOS)
@@ -184,6 +190,7 @@ void CameraPortal::requestAccess()
         return;
     }
 
+    m_cancelled = false;
     m_busy = true;
     m_requestTimeout.start();
     const quint64 generation = ++m_generation;
@@ -197,8 +204,8 @@ void CameraPortal::requestAccess()
             return;
         m_requestPath.clear();
         if (response != 0) {
-            cancel();
-            Q_EMIT cancelled();
+            finishError(response == 1 ? QStringLiteral("cancelled")
+                                      : QStringLiteral("portal_failed"));
             return;
         }
         openRemote();
@@ -229,6 +236,8 @@ void CameraPortal::requestAccess()
                     portal::dropSubscription(subscription);
                     return;
                 }
+                if (m_requestPath != subscription.path)
+                    return;
                 if (reply.isError()) {
                     // Error text can name the desktop and paths; the error
                     // NAME decides between a refusal and no portal at all.
@@ -239,15 +248,12 @@ void CameraPortal::requestAccess()
                         << reply.error().name() << "category=" << category;
                     portal::dropSubscription(subscription);
                     m_requestPath.clear();
-                    reset();
-                    m_requestTimeout.stop();
-                    Q_EMIT failed(category);
+                    finishError(category);
                     return;
                 }
                 portal::reconcileRequestPath(this, subscription,
                                              reply.value().path(), onAnswer);
-                if (!m_requestPath.isEmpty())
-                    m_requestPath = subscription.path;
+                m_requestPath = subscription.path;
             });
 }
 
@@ -271,11 +277,9 @@ void CameraPortal::openRemote()
                         << "camera OpenPipeWireRemote failed error="
                         << (reply.isError() ? reply.error().name()
                                             : QStringLiteral("no_fd"));
-                    cancel();
-                    Q_EMIT failed(
+                    finishError(
                         reply.isError()
-                            ? failureCategory(reply.error().name(),
-true)
+                            ? failureCategory(reply.error().name(), true)
                             : QStringLiteral("no_pipewire_remote"));
                     return;
                 }
@@ -283,7 +287,7 @@ true)
                 // hand over a dup; the receiver owns it.
                 const int fd = ::dup(reply.value().fileDescriptor());
                 if (fd < 0) {
-                    cancel();
+                    retire();
                     Q_EMIT failed(QStringLiteral("no_pipewire_remote"));
                     return;
                 }

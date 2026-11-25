@@ -2603,12 +2603,27 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>(डिफ़ॉल्ट)</translation>
     </message>
     <message>
+        <location line="+10"/>
+        <source>Use only this microphone for this session</source>
+        <translation>इस सत्र के लिए केवल इसी माइक्रोफ़ोन का उपयोग करें</translation>
+    </message>
+    <message>
         <location line="+12"/>
+        <source>Waiting for your chosen microphone. Choose another input to speak.</source>
+        <translation>आपके चुने गए माइक्रोफ़ोन की प्रतीक्षा की जा रही है। बोलने के लिए कोई दूसरा इनपुट चुनें।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone isn&apos;t connected</source>
         <translation>आपका चुना हुआ माइक्रोफ़ोन कनेक्ट नहीं है</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
+        <source>Your chosen microphone could not be opened. Choose another input to speak.</source>
+        <translation>आपका चुना गया माइक्रोफ़ोन खोला नहीं जा सका। बोलने के लिए कोई दूसरा इनपुट चुनें।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone couldn&apos;t be opened. The call uses the system default.</source>
         <translation>आपका चुना हुआ माइक्रोफ़ोन नहीं खुल सका। कॉल सिस्टम का डिफ़ॉल्ट उपयोग कर रही है।</translation>
     </message>
@@ -2702,6 +2717,11 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>चुना हुआ कैमरा कनेक्ट नहीं है</translation>
     </message>
     <message>
+        <location line="+1"/>
+        <source>Chosen microphone not connected</source>
+        <translation>चुना गया माइक्रोफ़ोन कनेक्ट नहीं है</translation>
+    </message>
+    <message>
         <location line="+3"/>
         <source>System default</source>
         <translation>सिस्टम डिफ़ॉल्ट</translation>
@@ -2717,17 +2737,32 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>माइक्रोफ़ोन</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
         <source>No microphone was found. You can still join a call and listen.</source>
         <translation>कोई माइक्रोफ़ोन नहीं मिला. आप अभी भी कॉल में शामिल हो सकते हैं और सुन सकते हैं।</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+6"/>
+        <source>Use only this microphone for this session</source>
+        <translation>इस सत्र के लिए केवल इसी माइक्रोफ़ोन का उपयोग करें</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Waiting for your chosen microphone. Choose another input to speak.</source>
+        <translation>आपके चुने गए माइक्रोफ़ोन की प्रतीक्षा की जा रही है। बोलने के लिए कोई दूसरा इनपुट चुनें।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone isn&apos;t connected. Calls use the system default until it&apos;s back.</source>
         <translation>आपका चुना हुआ माइक्रोफ़ोन कनेक्ट नहीं है. कॉल वापस आने तक सिस्टम डिफ़ॉल्ट का उपयोग करते हैं।</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+16"/>
+        <source>Your chosen microphone could not be opened. Choose another input to speak.</source>
+        <translation>आपका चुना गया माइक्रोफ़ोन खोला नहीं जा सका। बोलने के लिए कोई दूसरा इनपुट चुनें।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone couldn&apos;t be opened, so the system default was used. Choose it again or reconnect it.</source>
         <translation>आपका चुना हुआ माइक्रोफ़ोन नहीं खुल सका, इसलिए सिस्टम का डिफ़ॉल्ट उपयोग किया गया। इसे फिर से चुनें या दोबारा कनेक्ट करें।</translation>
     </message>
@@ -3090,34 +3125,39 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+46"/>
-        <location line="+28"/>
+        <location line="+30"/>
         <source>Turn off camera</source>
         <translation>कैमरा बंद करें</translation>
     </message>
     <message>
-        <location line="-27"/>
-        <location line="+28"/>
+        <location line="-29"/>
+        <location line="+32"/>
         <source>Turn on camera</source>
         <translation>कैमरा चालू करें</translation>
     </message>
     <message>
-        <location line="-20"/>
-        <location line="+28"/>
+        <location line="-24"/>
+        <location line="+32"/>
         <source>Choose camera</source>
         <translation>कैमरा चुनें</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="-12"/>
+        <source>Waiting for desktop camera permission. Click to cancel.</source>
+        <translation>डेस्कटॉप से कैमरा अनुमति की प्रतीक्षा की जा रही है। रद्द करने के लिए क्लिक करें।</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Camera request cancelled. Click to try again.</source>
+        <translation>कैमरा अनुरोध रद्द किया गया। फिर से प्रयास करने के लिए क्लिक करें।</translation>
+    </message>
+    <message>
+        <location line="+30"/>
         <source>Stop sharing your screen</source>
         <translation>अपनी स्क्रीन साझा करना बंद करें</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Cancel screen sharing</source>
-        <translation>स्क्रीन शेयरिंग रद्द करें</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+5"/>
         <source>Share your screen</source>
         <translation>अपनी स्क्रीन साझा करें</translation>
     </message>
@@ -3193,7 +3233,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>कॉल को तैरती विंडो में निकालें</translation>
     </message>
     <message>
-        <location line="-393"/>
+        <location line="-399"/>
         <source>Unmute microphone</source>
         <translation>माइक्रोफ़ोन अनम्यूट करें</translation>
     </message>
@@ -3243,7 +3283,17 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>आउटपुट डिवाइस चुनें</translation>
     </message>
     <message>
-        <location line="+369"/>
+        <location line="+84"/>
+        <source>Waiting for desktop screen sharing permission. Click to cancel.</source>
+        <translation>डेस्कटॉप से स्क्रीन शेयरिंग अनुमति की प्रतीक्षा की जा रही है। रद्द करने के लिए क्लिक करें।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Screen sharing request cancelled. Click to try again.</source>
+        <translation>स्क्रीन शेयरिंग अनुरोध रद्द किया गया। फिर से प्रयास करने के लिए क्लिक करें।</translation>
+    </message>
+    <message>
+        <location line="+289"/>
         <source>Leave call</source>
         <translation>कॉल छोड़ें</translation>
     </message>
@@ -3936,7 +3986,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+349"/>
+        <location filename="../qml/SpaceLobby.qml" line="+359"/>
         <source>%1, collapsed</source>
         <translation>%1, ढह गया</translation>
     </message>
@@ -10636,7 +10686,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>रूम छोड़ें?</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+51"/>
         <source>You are the only administrator. If you leave, nobody will be able to change this room&apos;s settings or manage its members. Make someone else an administrator first.</source>
         <translation>आप एकमात्र एडमिनिस्ट्रेटर हैं। अगर आप छोड़ते हैं, तो कोई भी इस रूम की सेटिंग्स नहीं बदल पाएगा या इसके सदस्यों को प्रबंधित नहीं कर पाएगा। पहले किसी और को एडमिनिस्ट्रेटर बनाएँ।</translation>
     </message>
@@ -17866,7 +17916,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RoomCloseDialog</name>
     <message>
-        <location filename="../qml/RoomCloseDialog.qml" line="+75"/>
+        <location filename="../qml/RoomCloseDialog.qml" line="+81"/>
         <source>Leave once it is closed. If anything is left undone you stay, so you can run it again.</source>
         <translation>बंद होने के बाद छोड़ दें। यदि कुछ अधूरा रहता है तो आप रुके रहते हैं, ताकि इसे फिर चला सकें।</translation>
     </message>
@@ -19723,6 +19773,69 @@ Signing out and signing in again is the only fix.</source>
     </message>
 </context>
 <context>
+    <name>RoomLifecycleReview</name>
+    <message>
+        <location filename="../qml/RoomLifecycleReview.qml" line="+28"/>
+        <source>Hide lifecycle review</source>
+        <translation>लाइफ़साइकल समीक्षा छिपाएँ</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Review room activity and links</source>
+        <translation>रूम की गतिविधि और लिंक की समीक्षा करें</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Archive hides a room for your account; it does not close it for other members. Leaving removes only you. Closing changes server access and may remove other members. No rooms are cleaned up automatically.</source>
+        <translation>आर्काइव करने से रूम केवल आपके खाते के लिए छिपता है; अन्य सदस्यों के लिए यह बंद नहीं होता। छोड़ने पर केवल आप हटते हैं। बंद करने से सर्वर पर एक्सेस बदलता है और अन्य सदस्य हटाए जा सकते हैं। कोई भी रूम अपने-आप साफ़ नहीं किया जाता।</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Last known activity: %1. This device may not have all activity.</source>
+        <translation>अंतिम ज्ञात गतिविधि: %1। हो सकता है इस डिवाइस पर सारी गतिविधि न हो।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Last activity is not known. Missing history does not prove inactivity.</source>
+        <translation>अंतिम गतिविधि ज्ञात नहीं है। इतिहास न होना निष्क्रियता का प्रमाण नहीं है।</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Joined members: %1. Closure&apos;s room-by-room plan shows who can be removed and who stays. Roles and ownership are separate in every room.</source>
+        <translation>शामिल सदस्य: %1। बंद करने की रूम-दर-रूम योजना बताती है कि किसे हटाया जा सकता है और कौन रहेगा। हर रूम में भूमिकाएँ और स्वामित्व अलग-अलग हैं।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Membership and ownership are not known. Check them before continuing.</source>
+        <translation>सदस्यता और स्वामित्व ज्ञात नहीं हैं। आगे बढ़ने से पहले इन्हें जाँचें।</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>The plan below lists the exact selected rooms and their outcomes. A Space&apos;s child rooms are separate rooms; shared rooms may belong to other Spaces.</source>
+        <translation>नीचे की योजना ठीक वही रूम दिखाती है जो चुने गए हैं, और उनके परिणाम भी। किसी स्पेस के चाइल्ड रूम अलग रूम हैं; साझा रूम अन्य स्पेस के भी हो सकते हैं।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>This action affects only %1. Rooms inside a Space are not left or upgraded with it.</source>
+        <translation>यह कार्रवाई केवल %1 को प्रभावित करती है। स्पेस के अंदर के रूम इसके साथ न छोड़े जाते हैं, न अपग्रेड होते हैं।</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Predecessor: %1
+Successor: %2
+These links remain in room state. Open the successor from the room&apos;s replacement notice before leaving if you need to continue there.</source>
+        <translation>पूर्ववर्ती: %1
+उत्तरवर्ती: %2
+ये लिंक रूम की स्थिति में बने रहते हैं। अगर आपको वहाँ जारी रखना है, तो छोड़ने से पहले रूम की प्रतिस्थापन सूचना से उत्तरवर्ती रूम खोलें।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+1"/>
+        <source>None known</source>
+        <translation>कोई ज्ञात नहीं</translation>
+    </message>
+</context>
+<context>
     <name>RoomListAttentionLocator</name>
     <message>
         <location filename="../qml/RoomListAttentionLocator.qml" line="+93"/>
@@ -20078,7 +20191,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RoomUpgradeDialog</name>
     <message>
-        <location filename="../qml/RoomUpgradeDialog.qml" line="+71"/>
+        <location filename="../qml/RoomUpgradeDialog.qml" line="+77"/>
         <source>Upgrade this space</source>
         <translation>इस स्पेस को अपग्रेड करें</translation>
     </message>
@@ -27616,20 +27729,20 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SfuCallController</name>
     <message>
-        <location filename="../src/calls/SfuCallController.cpp" line="+637"/>
-        <location line="+396"/>
+        <location filename="../src/calls/SfuCallController.cpp" line="+645"/>
+        <location line="+406"/>
         <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
         <translation>इस डेस्कटॉप पर स्क्रीन शेयरिंग उपलब्ध नहीं है.</translation>
     </message>
     <message>
-        <location line="-559"/>
-        <location line="+933"/>
+        <location line="-569"/>
+        <location line="+945"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>स्क्रीन शेयरिंग प्रारंभ नहीं हो सकी.</translation>
     </message>
     <message>
-        <location line="-567"/>
+        <location line="-569"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>वेलैंड पर स्क्रीन शेयरिंग के लिए xdg-डेस्कटॉप-पोर्टल की आवश्यकता है, और यह प्रतिक्रिया नहीं दे रहा है। अपने डेस्कटॉप के लिए पोर्टल स्थापित करें या प्रारंभ करें - उदाहरण के लिए xdg-desktop-portal-kde या xdg-desktop-portal-gnome - फिर पुनः प्रयास करें।</translation>
     </message>
@@ -27675,22 +27788,32 @@ Note: importing keys does not verify this session.</source>
         <translation>इस कॉल की सेवा ने अपने किसी भी पते पर समय पर उत्तर नहीं दिया।</translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+47"/>
         <source>Lightning couldn&apos;t open the camera. It may be in use by another app, or unplugged.</source>
         <translation>Lightning कैमरा नहीं खोल सका। हो सकता है वह किसी दूसरे ऐप में उपयोग में हो, या निकाला हुआ हो।</translation>
     </message>
     <message>
-        <location line="+414"/>
+        <location line="+6"/>
+        <source>Camera permission was denied. Check your desktop’s camera privacy settings, then turn the camera on again.</source>
+        <translation>कैमरा अनुमति अस्वीकार कर दी गई। अपने डेस्कटॉप की कैमरा निजता सेटिंग जाँचें, फिर कैमरा दोबारा चालू करें।</translation>
+    </message>
+    <message>
+        <location line="+408"/>
         <source>Calling isn&apos;t available on this homeserver.</source>
         <translation>इस होमसर्वर पर कॉलिंग उपलब्ध नहीं है.</translation>
     </message>
     <message>
-        <location line="-494"/>
+        <location line="-496"/>
         <source>Too many attempts. Try again in a moment.</source>
         <translation>बहुत अधिक प्रयास. थोड़ी देर में पुनः प्रयास करें.</translation>
     </message>
     <message>
-        <location line="-734"/>
+        <location line="-881"/>
+        <source>Screen sharing permission was denied. Check your desktop’s privacy settings, then try sharing again.</source>
+        <translation>स्क्रीन शेयरिंग की अनुमति अस्वीकार कर दी गई। अपने डेस्कटॉप की निजता सेटिंग जाँचें, फिर दोबारा शेयर करने का प्रयास करें।</translation>
+    </message>
+    <message>
+        <location line="+147"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>आपके डेस्कटॉप के कैमरा पोर्टल ने Lightning को कोई कैमरा नहीं दिया। यदि कैमरा अन्य ऐप में काम करता है, तो Lightning को सभी डिवाइस इस्तेमाल करने दें (Flatseal में: &quot;All devices&quot;), फिर कैमरा दोबारा चालू करें।</translation>
     </message>
@@ -27796,13 +27919,13 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+8"/>
-        <location line="+451"/>
+        <location line="+453"/>
         <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>कॉल से कनेक्ट नहीं हो सका.</translation>
     </message>
     <message>
-        <location line="-811"/>
+        <location line="-813"/>
         <source>The calling service is having trouble.</source>
         <translation>कॉलिंग सेवा में दिक्कत आ रही है.</translation>
     </message>
@@ -27813,6 +27936,11 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+3"/>
+        <source>Your desktop ended screen sharing. Choose a source to share again.</source>
+        <translation>आपके डेस्कटॉप ने स्क्रीन शेयरिंग समाप्त कर दी। दोबारा शेयर करने के लिए कोई स्रोत चुनें।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The window you were sharing was closed.</source>
         <translation>जो विंडो आप साझा कर रहे थे वह बंद थी.</translation>
     </message>
@@ -27842,12 +27970,7 @@ Note: importing keys does not verify this session.</source>
         <translation>कैमरे ने कोई तस्वीर नहीं भेजी। यदि यह वर्चुअल कैमरा है, तो सुनिश्चित करें कि कुछ उसे फ़ीड कर रहा है।</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Camera access is turned off in your system settings.</source>
-        <translation>आपकी सिस्टम सेटिंग्स में कैमरा एक्सेस बंद है।</translation>
-    </message>
-    <message>
-        <location line="+8"/>
+        <location line="+11"/>
         <source>The camera you chose isn&apos;t available, so no camera was turned on. Choose a camera in Settings.</source>
         <translation>आपका चुना कैमरा उपलब्ध नहीं है, इसलिए कोई कैमरा चालू नहीं हुआ। सेटिंग्स में कोई कैमरा चुनें।</translation>
     </message>
@@ -27935,7 +28058,7 @@ Note: importing keys does not verify this session.</source>
         <translation>कॉल का ऑडियो रुक गया: इस कंप्यूटर का साउंड आउटपुट डिस्कनेक्ट हो गया। आउटपुट दोबारा उपलब्ध होने पर यह फिर शुरू होता है; न हो तो कॉल छोड़कर फिर शामिल हों।</translation>
     </message>
     <message>
-        <location line="+2177"/>
+        <location line="+2185"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>स्क्रीन शेयर की ध्वनि बंद है: इस पैकेज में आवश्यक ऑडियो कैप्चर प्लगइन नहीं हैं।</translation>
     </message>
@@ -28020,7 +28143,7 @@ Note: importing keys does not verify this session.</source>
         <translation>प्रतिभागी</translation>
     </message>
     <message>
-        <location line="-4612"/>
+        <location line="-4620"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>यह रूम एन्क्रिप्टेड है, और इस बिल्ड पर एन्क्रिप्टेड कॉल अभी तक उपलब्ध नहीं हैं।</translation>
     </message>
@@ -29115,6 +29238,218 @@ Note: importing keys does not verify this session.</source>
     </message>
 </context>
 <context>
+    <name>SpaceCommunityPanel</name>
+    <message>
+        <location filename="../qml/SpaceCommunityPanel.qml" line="+56"/>
+        <source>Start here</source>
+        <translation>यहाँ से शुरू करें</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Edit guide</source>
+        <translation>गाइड संपादित करें</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Announcements</source>
+        <translation>घोषणाएँ</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Refresh</source>
+        <translation>रीफ़्रेश करें</translation>
+    </message>
+    <message>
+        <location line="+53"/>
+        <source>Open</source>
+        <translation>खोलें</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Ask to join</source>
+        <translation>शामिल होने का अनुरोध</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Join</source>
+        <translation>शामिल हों</translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>Open link</source>
+        <translation>लिंक खोलें</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Room guide</source>
+        <translation>रूम गाइड</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>The guide is shared room state. Servers and people allowed to read this Space&apos;s state can read it.</source>
+        <translation>गाइड साझा रूम स्थिति है। इस स्पेस की स्थिति पढ़ने की अनुमति वाले सर्वर और लोग इसे पढ़ सकते हैं।</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Welcome (up to 4000 characters)</source>
+        <translation>स्वागत संदेश (अधिकतम 4000 अक्षर)</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Welcome</source>
+        <translation>स्वागत संदेश</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Rules (up to 4000 characters)</source>
+        <translation>नियम (अधिकतम 4000 अक्षर)</translation>
+    </message>
+    <message>
+        <location line="-102"/>
+        <location line="+106"/>
+        <source>Rules</source>
+        <translation>नियम</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Recommended room IDs in order (one per line, up to 12). Readers see only rooms already visible in their lobby.</source>
+        <translation>अनुशंसित रूम ID क्रम से (प्रति पंक्ति एक, अधिकतम 12)। पाठक केवल वही रूम देखते हैं जो उनकी लॉबी में पहले से दिखते हैं।</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Recommended rooms</source>
+        <translation>अनुशंसित रूम</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>HTTPS links (one per line, up to 8)</source>
+        <translation>HTTPS लिंक (प्रति पंक्ति एक, अधिकतम 8)</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Important links</source>
+        <translation>महत्वपूर्ण लिंक</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Save guide</source>
+        <translation>गाइड सहेजें</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Cancel</source>
+        <translation>रद्द करें</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Announcement review</source>
+        <translation>घोषणा समीक्षा</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Submitting shares your proposal as unencrypted Space state with the server and authorized readers. Only a reviewer can publish through this workflow, using their own identity. Keep private drafts out of shared state.</source>
+        <translation>सबमिट करने पर आपका प्रस्ताव सर्वर और अधिकृत पाठकों के साथ बिना एन्क्रिप्शन वाली स्पेस स्थिति के रूप में साझा होता है। इस प्रक्रिया से केवल समीक्षक ही अपनी पहचान से प्रकाशित कर सकता है। निजी ड्राफ़्ट साझा स्थिति से बाहर रखें।</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Enable member proposals…</source>
+        <translation>सदस्य प्रस्ताव सक्षम करें…</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>A room administrator must enable proposals for members first.</source>
+        <translation>पहले किसी रूम एडमिन को सदस्यों के लिए प्रस्ताव सक्षम करने होंगे।</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Destination room</source>
+        <translation>गंतव्य रूम</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Announcement proposal</source>
+        <translation>घोषणा प्रस्ताव</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Submit or replace my proposal</source>
+        <translation>मेरा प्रस्ताव सबमिट करें या बदलें</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Only the first 100 proposals are shown.</source>
+        <translation>केवल पहले 100 प्रस्ताव दिखाए गए हैं।</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Published proposal from %1</source>
+        <translation>%1 का प्रकाशित प्रस्ताव</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Proposal from %1 (author can no longer propose)</source>
+        <translation>%1 का प्रस्ताव (लेखक अब प्रस्ताव नहीं दे सकता)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Proposal from %1</source>
+        <translation>%1 का प्रस्ताव</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Review</source>
+        <translation>समीक्षा करें</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Final announcement text</source>
+        <translation>अंतिम घोषणा पाठ</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Preview exact text and audience</source>
+        <translation>सटीक पाठ और दर्शक देखें</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Publish as %1
+Proposed by %2
+Destination: %3 (%4)
+Current joined members: %5
+%6</source>
+        <translation>%1 के रूप में प्रकाशित करें
+प्रस्तावक: %2
+गंतव्य: %3 (%4)
+वर्तमान शामिल सदस्य: %5
+%6</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Approve and publish</source>
+        <translation>स्वीकृत करें और प्रकाशित करें</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Edit final text</source>
+        <translation>अंतिम पाठ संपादित करें</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Close</source>
+        <translation>बंद करें</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Enable member proposals?</source>
+        <translation>सदस्य प्रस्ताव सक्षम करें?</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>This sets the announcement proposal event permission to 0. Members at that level can submit shared proposals. The reviewer permission and ordinary message permissions stay as they are.</source>
+        <translation>इससे घोषणा प्रस्ताव इवेंट की अनुमति 0 पर सेट हो जाती है। उस स्तर के सदस्य साझा प्रस्ताव सबमिट कर सकते हैं। समीक्षक की अनुमति और सामान्य संदेश अनुमतियाँ जैसी हैं वैसी रहती हैं।</translation>
+    </message>
+</context>
+<context>
     <name>SpaceLobby</name>
     <message numerus="yes">
         <location filename="../qml/SpaceLobby.qml" line="-127"/>
@@ -29179,7 +29514,12 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SpaceManager</name>
     <message>
-        <location filename="../src/spaces/SpaceManager.cpp" line="+381"/>
+        <location filename="../src/spaces/SpaceManager.cpp" line="+23"/>
+        <source>The result is not known. Refresh before trying again; publishing the same reviewed text reuses its transaction.</source>
+        <translation>परिणाम ज्ञात नहीं है। दोबारा कोशिश करने से पहले रीफ़्रेश करें; समीक्षा किया गया वही पाठ प्रकाशित करने पर उसका ट्रांज़ैक्शन दोबारा उपयोग होता है।</translation>
+    </message>
+    <message>
+        <location line="+368"/>
         <source>All rooms</source>
         <translation>सभी रूम</translation>
     </message>
@@ -29192,6 +29532,176 @@ Note: importing keys does not verify this session.</source>
         <location line="+1"/>
         <source>Rooms not in any Space</source>
         <translation>वे रूम जो किसी स्पेस में नहीं हैं</translation>
+    </message>
+    <message>
+        <location line="+1264"/>
+        <source>This action is unavailable. Refresh and check your permissions.</source>
+        <translation>यह कार्रवाई उपलब्ध नहीं है। रीफ़्रेश करें और अपनी अनुमतियाँ जाँचें।</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>The proposal or audience changed. Refresh and review it again.</source>
+        <translation>प्रस्ताव या दर्शक बदल गए हैं। रीफ़्रेश करें और फिर से समीक्षा करें।</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The server refused this action. Refresh and check your permissions.</source>
+        <translation>सर्वर ने यह कार्रवाई अस्वीकार कर दी। रीफ़्रेश करें और अपनी अनुमतियाँ जाँचें।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This content was not accepted. Check the room IDs, that links use https, and the limits.</source>
+        <translation>यह सामग्री स्वीकार नहीं हुई। रूम ID, लिंक https का उपयोग करते हैं या नहीं, और सीमाएँ जाँचें।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Another reviewer is publishing this proposal. Refresh in a moment.</source>
+        <translation>कोई अन्य समीक्षक यह प्रस्ताव प्रकाशित कर रहा है। थोड़ी देर में रीफ़्रेश करें।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The action did not complete. A publish may already have arrived; retrying the same reviewed text will not send a second post.</source>
+        <translation>कार्रवाई पूरी नहीं हुई। हो सकता है प्रकाशन पहले ही पहुँच चुका हो; समीक्षा किए गए उसी पाठ से दोबारा कोशिश करने पर दूसरी पोस्ट नहीं भेजी जाएगी।</translation>
+    </message>
+    <message>
+        <location line="+47"/>
+        <source>Send other message events</source>
+        <translation>अन्य संदेश इवेंट भेजें</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Invite people</source>
+        <translation>लोगों को आमंत्रित करें</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Remove members below their level</source>
+        <translation>अपने से निचले स्तर के सदस्यों को हटाएँ</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Ban members below their level</source>
+        <translation>अपने से निचले स्तर के सदस्यों को प्रतिबंधित करें</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Remove other people&apos;s messages</source>
+        <translation>दूसरों के संदेश हटाएँ</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Notify the whole room</source>
+        <translation>पूरे रूम को सूचित करें</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change other room state</source>
+        <translation>रूम की अन्य स्थिति बदलें</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Manage rooms in this Space</source>
+        <translation>इस स्पेस में रूम प्रबंधित करें</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change the name</source>
+        <translation>नाम बदलें</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change the topic</source>
+        <translation>विषय बदलें</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change the avatar</source>
+        <translation>अवतार बदलें</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change who can join</source>
+        <translation>कौन शामिल हो सकता है, यह बदलें</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change who can read history</source>
+        <translation>कौन इतिहास पढ़ सकता है, यह बदलें</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Change roles below their level</source>
+        <translation>अपने से निचले स्तर की भूमिकाएँ बदलें</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Upgrade the room</source>
+        <translation>रूम अपग्रेड करें</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Anyone who is not banned can join without an invite.</source>
+        <translation>जो भी प्रतिबंधित नहीं है, वह बिना आमंत्रण के शामिल हो सकता है।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Only invited people can join.</source>
+        <translation>केवल आमंत्रित लोग शामिल हो सकते हैं।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>People can ask to join; a member with invite permission must admit them.</source>
+        <translation>लोग शामिल होने का अनुरोध कर सकते हैं; आमंत्रण अनुमति वाले किसी सदस्य को उन्हें स्वीकार करना होगा।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Invited people and eligible members of these rooms can join: %1. The server checks membership and authorization.</source>
+        <translation>आमंत्रित लोग और इन रूम के पात्र सदस्य शामिल हो सकते हैं: %1। सर्वर सदस्यता और प्राधिकरण की जाँच करता है।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>not known</source>
+        <translation>ज्ञात नहीं</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Who can join is not known.</source>
+        <translation>कौन शामिल हो सकता है, यह ज्ञात नहीं है।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Other people can ask to join.</source>
+        <translation>अन्य लोग शामिल होने का अनुरोध कर सकते हैं।</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Anyone can read the history, including people outside the room.</source>
+        <translation>कोई भी इतिहास पढ़ सकता है, रूम के बाहर के लोग भी।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Members can read history from when they joined.</source>
+        <translation>सदस्य शामिल होने के समय से इतिहास पढ़ सकते हैं।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Members can read history from when they were invited.</source>
+        <translation>सदस्य आमंत्रित किए जाने के समय से इतिहास पढ़ सकते हैं।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Members can read all history, including messages sent before they joined.</source>
+        <translation>सदस्य पूरा इतिहास पढ़ सकते हैं, शामिल होने से पहले भेजे गए संदेश भी।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>History access is not known.</source>
+        <translation>इतिहास तक पहुँच ज्ञात नहीं है।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This applies only to this room or Space. Child rooms keep their own rules. Servers enforce access and may have newer state.</source>
+        <translation>यह केवल इस रूम या स्पेस पर लागू होता है। चाइल्ड रूम अपने नियम बनाए रखते हैं। सर्वर एक्सेस लागू करते हैं और उनके पास नई स्थिति हो सकती है।</translation>
     </message>
 </context>
 <context>
@@ -29550,12 +30060,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="-40"/>
         <location line="+43"/>
-        <location line="+1049"/>
+        <location line="+1050"/>
         <source>Invite</source>
         <translation>आमंत्रित करें</translation>
     </message>
     <message>
-        <location line="-1091"/>
+        <location line="-1092"/>
         <location line="+43"/>
         <source>Kick</source>
         <translation>लात</translation>
@@ -29781,12 +30291,12 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+16"/>
-        <location line="+395"/>
+        <location line="+396"/>
         <source>Save</source>
         <translation>सहेजें</translation>
     </message>
     <message>
-        <location line="-382"/>
+        <location line="-383"/>
         <source>Banner</source>
         <translation>बैनर</translation>
     </message>
@@ -29886,7 +30396,7 @@ Note: importing keys does not verify this session.</source>
         <translation>जुड़ने का अनुरोध (नॉक)</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source>Members of another space can join. Lightning can&apos;t change space-restricted access yet.</source>
         <translation>किसी अन्य स्थान के सदस्य शामिल हो सकते हैं. Lightning अभी तक स्थान-प्रतिबंधित पहुंच को नहीं बदल सकता।</translation>
     </message>
@@ -30240,7 +30750,29 @@ Note: importing keys does not verify this session.</source>
         <translation>भूमिका बदलें?</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+38"/>
+        <source>Capabilities in this room or Space only. Moderation can target only members below the new level. Servers enforce permissions and may have newer state.</source>
+        <translation>क्षमताएँ केवल इस रूम या स्पेस में। मॉडरेशन केवल नए स्तर से नीचे के सदस्यों पर लागू हो सकता है। सर्वर अनुमतियाँ लागू करते हैं और उनके पास नई स्थिति हो सकती है।</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>%1: %2 → %3 (level %4)</source>
+        <translation>%1: %2 → %3 (स्तर %4)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+1"/>
+        <source>Allowed</source>
+        <translation>अनुमति है</translation>
+    </message>
+    <message>
+        <location line="-1"/>
+        <location line="+1"/>
+        <source>Not allowed</source>
+        <translation>अनुमति नहीं है</translation>
+    </message>
+    <message>
+        <location line="+12"/>
         <source>Set %1 to %2 in this room?</source>
         <translation>इस रूम में %1 को %2 बनाएँ?</translation>
     </message>
@@ -30268,6 +30800,39 @@ Note: importing keys does not verify this session.</source>
         <location line="+1"/>
         <source>You will also no longer be able to change roles or permissions in this space.</source>
         <translation>आप इस स्पेस में भूमिकाएँ या अनुमतियाँ भी नहीं बदल पाएँगे।</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>Review access change</source>
+        <translation>एक्सेस बदलाव की समीक्षा करें</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>Current audience
+%1
+
+Proposed audience
+%2</source>
+        <translation>वर्तमान दर्शक
+%1
+
+प्रस्तावित दर्शक
+%2</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Room state changed. Cancel and review again.</source>
+        <translation>रूम की स्थिति बदल गई है। रद्द करें और फिर से समीक्षा करें।</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Apply access change</source>
+        <translation>एक्सेस बदलाव लागू करें</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Cancel</source>
+        <translation>रद्द करें</translation>
     </message>
 </context>
 <context>
@@ -31713,7 +32278,17 @@ Note: importing keys does not verify this session.</source>
         <translation>एनकोडर: %1 · स्केलिंग: %2 · कैप्चर: %3</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
+        <source>Encoded frames observed</source>
+        <translation>एन्कोड किए गए फ़्रेम देखे गए</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Waiting for an encoded frame</source>
+        <translation>एन्कोड किए गए फ़्रेम की प्रतीक्षा</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>RTP packets sent: %1 · Lost on the way to the server: %2</source>
         <translation>भेजे गए RTP पैकेट: %1 · सर्वर तक पहुँचते हुए खोए: %2</translation>
     </message>
@@ -36138,7 +36713,7 @@ Note: importing keys does not verify this session.</source>
         <translation>रिकॉर्डिंग अंतिम रूप नहीं दी जा सकी।</translation>
     </message>
     <message>
-        <location line="+67"/>
+        <location line="+65"/>
         <source>Nothing was recorded.</source>
         <translation>कुछ भी रिकॉर्ड नहीं हुआ।</translation>
     </message>
@@ -36148,13 +36723,13 @@ Note: importing keys does not verify this session.</source>
         <translation>रिकॉर्डिंग विफल रही।</translation>
     </message>
     <message>
-        <location line="+95"/>
-        <location line="+156"/>
+        <location line="+91"/>
+        <location line="+166"/>
         <source>The sound server is not answering. Try recording again in a moment.</source>
         <translation>साउंड सर्वर जवाब नहीं दे रहा। थोड़ी देर बाद दोबारा रिकॉर्ड करने की कोशिश करें।</translation>
     </message>
     <message>
-        <location line="-141"/>
+        <location line="-150"/>
         <source>No microphone or audio encoder is available.</source>
         <translation>कोई माइक्रोफ़ोन या ऑडियो एन्कोडर उपलब्ध नहीं है।</translation>
     </message>
@@ -36164,12 +36739,12 @@ Note: importing keys does not verify this session.</source>
         <translation>रिकॉर्डिंग संग्रहण तैयार नहीं किया जा सका।</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+39"/>
         <source>Recording could not start.</source>
         <translation>रिकॉर्डिंग शुरू नहीं हो सकी।</translation>
     </message>
     <message>
-        <location line="+211"/>
+        <location line="+209"/>
         <source>The microphone was disconnected. The recording was discarded.</source>
         <translation>माइक्रोफ़ोन डिस्कनेक्ट हो गया। रिकॉर्डिंग रद्द कर दी गई।</translation>
     </message>
@@ -36415,7 +36990,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2462"/>
+        <location filename="../src/main.cpp" line="+2454"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>नेटिव Qt/QML Matrix क्लाइंट। बैकएंड: --backend={mock,http,rust}। डिफ़ॉल्ट: rust (Rust SDK रहित बिल्ड में http)।</translation>
     </message>
