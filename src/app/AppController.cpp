@@ -4184,12 +4184,12 @@ void AppController::enableCallMediaEngine()
             if (!m_settings->preferredMicrophoneId().isEmpty()) {
                 const auto mic = m_callDevices->microphoneSelection();
                 const SfuMediaEngine::MicrophoneCapture capture =
-                    SfuMediaEngine::resolveMicrophoneCapture(
-                        {mic.id, mic.description});
+                    SfuMediaEngine::resolveMicrophoneCapture(mic);
                 plan.microphoneFront =
                     SfuMediaEngine::microphoneFrontDescription(capture);
                 plan.microphoneBinding = capture.binding;
-                m_callDevices->noteMicrophoneBinding(mic.id, capture.fellBack);
+                m_callDevices->noteMicrophoneBinding(
+                    mic.id, capture.fellBack || capture.binding.refused);
             }
             if (!m_settings->preferredSpeakerId().isEmpty()) {
                 const auto speaker = m_callDevices->speakerSelection();
@@ -4301,7 +4301,7 @@ void AppController::enableCallMediaEngine()
             const auto speaker = m_callDevices->speakerSelection();
             sfu->setPreferredDevices({camera.id, camera.description,
                                       camera.preferredMissing},
-                                     {microphone.id, microphone.description},
+                                     microphone,
                                      {speaker.id, speaker.description});
         };
         applySfuDevices();
