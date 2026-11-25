@@ -4109,7 +4109,7 @@ EXIF orientacija: %4</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../qml/SpaceLobby.qml" line="+359"/>
+        <location filename="../qml/SpaceLobby.qml" line="+366"/>
         <source>%1, collapsed</source>
         <translation>%1, sutraukta</translation>
     </message>
@@ -11716,13 +11716,13 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+424"/>
+        <location line="+426"/>
         <location line="+3"/>
         <source>Dismiss</source>
         <translation>Paslėpti</translation>
     </message>
     <message>
-        <location line="-374"/>
+        <location line="-376"/>
         <source>This message&apos;s edits could not be read. Check your connection and try again.</source>
         <translation>Nepavyko perskaityti šios žinutės pakeitimų. Patikrinkite ryšį ir bandykite dar kartą.</translation>
     </message>
@@ -11742,7 +11742,12 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Pašalinti %1 pakeitimai. Liko daugiau – paleiskite dar kartą.</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
+        <source>Message saved. %1</source>
+        <translation>Pranešimas išsaugotas. %1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Message saved.</source>
         <translation>Žinutė įrašyta.</translation>
     </message>
@@ -11856,7 +11861,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
         <translation>Keisti kambarių sąrašo dydį</translation>
     </message>
     <message>
-        <location line="+217"/>
+        <location line="+218"/>
         <source>Signing out…</source>
         <translation>Atsijungiama…</translation>
     </message>
@@ -20359,6 +20364,111 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
 </context>
 <context>
+    <name>RoomSearchCoverage</name>
+    <message>
+        <location filename="../qml/RoomSearchCoverage.qml" line="+50"/>
+        <source>Type at least %1 characters.</source>
+        <translation>Įveskite bent tiek simbolių: %1.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Indexing another room.</source>
+        <translation>Indeksuojamas kitas kambarys.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>%n indexed message(s) in this room.</source>
+        <translation>
+            <numerusform>Šiame kambaryje suindeksuota %n žinutė.</numerusform>
+            <numerusform>Šiame kambaryje suindeksuotos %n žinutės.</numerusform>
+            <numerusform>Šiame kambaryje suindeksuota %n žinučių.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Scanning room history… %n page(s) indexed.</source>
+        <translation>
+            <numerusform>Skenuojama kambario istorija… Suindeksuotas %n puslapis.</numerusform>
+            <numerusform>Skenuojama kambario istorija… Suindeksuoti %n puslapiai.</numerusform>
+            <numerusform>Skenuojama kambario istorija… Suindeksuota %n puslapių.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The search index could not be updated. Retry this room after checking local storage.</source>
+        <translation>Nepavyko atnaujinti paieškos indekso. Patikrinkite vietinę saugyklą ir bandykite šį kambarį dar kartą.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The last scan reached the start of the room.</source>
+        <translation>Paskutinis skenavimas pasiekė kambario pradžią.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The last scan reached its page limit. Older messages may be missing.</source>
+        <translation>Paskutinis skenavimas pasiekė puslapių ribą. Senesnių žinučių gali trūkti.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Room history could not be read. Retry this room.</source>
+        <translation>Nepavyko nuskaityti kambario istorijos. Bandykite šį kambarį dar kartą.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The last room scan was interrupted.</source>
+        <translation>Paskutinis kambario skenavimas buvo nutrauktas.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Some messages are waiting for decryption keys.</source>
+        <translation>Kai kurios žinutės laukia iššifravimo raktų.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>No detailed room scan is available.</source>
+        <translation>Išsamaus kambario skenavimo duomenų nėra.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The scan also reached its page limit.</source>
+        <translation>Skenavimas taip pat pasiekė puslapių ribą.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>At least %n message(s) could not be decrypted.</source>
+        <translation>
+            <numerusform>Nepavyko iššifruoti bent %n žinutės.</numerusform>
+            <numerusform>Nepavyko iššifruoti bent %n žinučių.</numerusform>
+            <numerusform>Nepavyko iššifruoti bent %n žinučių.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Last scan: %1</source>
+        <translation>Paskutinis skenavimas: %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Oldest message scanned: %1</source>
+        <translation>Seniausia nuskenuota žinutė: %1</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Cancel indexing</source>
+        <translation>Atšaukti indeksavimą</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Retry this room</source>
+        <translation>Bandyti šį kambarį dar kartą</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Index this room</source>
+        <translation>Indeksuoti šį kambarį</translation>
+    </message>
+</context>
+<context>
     <name>RoomUpgradeController</name>
     <message>
         <location filename="../src/app/RoomUpgradeController.cpp" line="+195"/>
@@ -21267,7 +21377,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
 <context>
     <name>SavedMessagesController</name>
     <message>
-        <location filename="../src/app/SavedMessagesController.cpp" line="+251"/>
+        <location filename="../src/app/SavedMessagesController.cpp" line="+254"/>
         <source>Saved messages could not be loaded. Retry.</source>
         <translation>Nepavyko įkelti išsaugotų pranešimų. Bandykite dar kartą.</translation>
     </message>
@@ -21278,20 +21388,34 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Nepavyko atnaujinti išsaugotų pranešimų. Bandykite dar kartą.</translation>
     </message>
     <message>
-        <location line="-80"/>
-        <location line="+156"/>
+        <location line="-81"/>
+        <location line="+164"/>
         <source>Saved messages data is unavailable.</source>
         <translation>Išsaugotų pranešimų duomenys nepasiekiami.</translation>
     </message>
     <message>
-        <location line="-123"/>
-        <location line="+228"/>
+        <location line="-130"/>
+        <location line="+261"/>
         <location line="+15"/>
         <source>Saved messages are full. Remove an older item first.</source>
         <translation>Išsaugotų pranešimų pilna. Pirmiausia pašalinkite senesnį elementą.</translation>
     </message>
     <message>
-        <location line="+285"/>
+        <location line="-137"/>
+        <source>Another device restored a removed saved message. Review the list and remove it again if needed.</source>
+        <translation>Kitas įrenginys atkūrė pašalintą išsaugotą pranešimą. Peržiūrėkite sąrašą ir, jei reikia, pašalinkite jį dar kartą.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+112"/>
+        <source>Saved message capacity remaining: %n slot(s), %1 bytes.</source>
+        <translation>
+            <numerusform>Likusi išsaugotų pranešimų talpa: %n vieta, %1 baitų.</numerusform>
+            <numerusform>Likusi išsaugotų pranešimų talpa: %n vietos, %1 baitų.</numerusform>
+            <numerusform>Likusi išsaugotų pranešimų talpa: %n vietų, %1 baitų.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+310"/>
         <source>Sticker</source>
         <translation>Lipdukas</translation>
     </message>
@@ -21325,12 +21449,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
     <name>SavedMessagesPanel</name>
     <message>
         <location filename="../qml/SavedMessagesPanel.qml" line="+68"/>
-        <location line="+159"/>
+        <location line="+166"/>
         <source>Saved messages</source>
         <translation>Išsaugoti pranešimai</translation>
     </message>
     <message>
-        <location line="-142"/>
+        <location line="-149"/>
         <source>Undo remove</source>
         <translation>Anuliuoti pašalinimą</translation>
     </message>
@@ -21340,7 +21464,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Uždaryti</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+15"/>
         <source>Filter saved messages</source>
         <translation>Filtruoti išsaugotus pranešimus</translation>
     </message>
@@ -21777,8 +21901,8 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+8"/>
-        <source>No messages found</source>
-        <translation>Nerasta jokių žinučių</translation>
+        <source>No matches in indexed messages</source>
+        <translation>Indeksuotose žinutėse atitikmenų nėra</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -21929,12 +22053,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Rasti įkeltose žinutėse</translation>
     </message>
     <message>
-        <location line="+145"/>
+        <location line="+105"/>
         <source>Open message from %1</source>
         <translation>Atidaryti žinutę nuo %1</translation>
     </message>
     <message>
-        <location line="-239"/>
+        <location line="-199"/>
         <source>Search could not be completed.</source>
         <translation>Paieškos užbaigti nepavyko.</translation>
     </message>
@@ -21949,12 +22073,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Įveskite bent %1 simbolius.</translation>
     </message>
     <message>
-        <location line="+175"/>
-        <source>Nothing is indexed yet.</source>
-        <translation>Dar nieko neindeksuota.</translation>
-    </message>
-    <message>
-        <location line="-172"/>
+        <location line="+3"/>
         <source>No matching messages. Try a less common word, or search the local index.</source>
         <translation>Atitinkančių žinučių nėra. Pabandykite retesnį žodį arba ieškokite vietiniame indekse.</translation>
     </message>
@@ -21999,32 +22118,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Lipduko ir paminėjimų filtrai netaikomi indeksuotai paieškai. Norėdami jais naudotis, perjunkite į Serverį.</translation>
     </message>
     <message>
-        <location line="+24"/>
-        <source>Indexing this room&apos;s history…</source>
-        <translation>Indeksuojama šio kambario istorija…</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>The search index could not be updated. Index this room again to retry.</source>
-        <translation>Paieškos indekso atnaujinti nepavyko. Norėdami bandyti dar kartą, indeksuokite šį kambarį iš naujo.</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Searching %1 messages Lightning has indexed, including encrypted ones.</source>
-        <translation>Ieškoma tarp %1 Lightning suindeksuotų žinučių, įskaitant šifruotas.</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Index this room</source>
-        <translation>Indeksuoti šį kambarį</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Fetch this room&apos;s older messages so they can be searched</source>
-        <translation>Gauti senesnes šio kambario žinutes, kad būtų galima jose ieškoti</translation>
-    </message>
-    <message>
-        <location line="+155"/>
+        <location line="+164"/>
         <source>Load more</source>
         <translation>Įkelti daugiau</translation>
     </message>
@@ -29699,43 +29793,63 @@ Dabar prisijungusių narių: %5
 </context>
 <context>
     <name>SpaceLobby</name>
-    <message numerus="yes">
-        <location filename="../qml/SpaceLobby.qml" line="-127"/>
-        <source>Only the first %n room(s) of this Space are listed. A room that is not listed can still be opened by its address.</source>
-        <translation>
-            <numerusform>Rodomas tik pirmasis %n šios erdvės kambarys. Neparodytą kambarį vis tiek galima atidaryti pagal jo adresą.</numerusform>
-            <numerusform>Rodomi tik pirmieji %n šios erdvės kambariai. Neparodytą kambarį vis tiek galima atidaryti pagal jo adresą.</numerusform>
-            <numerusform>Rodoma tik pirmųjų %n šios erdvės kambarių. Neparodytą kambarį vis tiek galima atidaryti pagal jo adresą.</numerusform>
-        </translation>
-    </message>
     <message>
-        <location line="+3"/>
-        <source>This Space could not be refreshed. Showing the rooms loaded earlier.</source>
-        <translation>Šios erdvės atnaujinti nepavyko. Rodomi anksčiau įkelti kambariai.</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Loading stopped early, so some rooms of this Space may be missing.</source>
-        <translation>Įkėlimas sustojo per anksti, todėl kai kurių šios erdvės kambarių gali trūkti.</translation>
-    </message>
-    <message>
-        <location line="+12"/>
+        <location filename="../qml/SpaceLobby.qml" line="-116"/>
         <source>Retry</source>
         <translation>Bandyti dar kartą</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+13"/>
         <source>This Space has too many members to list, and Lightning could not confirm whether some of your direct-message contacts belong to it. Your room list may show direct messages with people outside it.</source>
         <translation>Šioje erdvėje per daug narių, kad būtų galima juos išvardyti, ir Lightning negalėjo patvirtinti, ar kai kurie jūsų tiesioginių žinučių kontaktai jai priklauso. Kambarių sąraše gali būti tiesioginių žinučių su žmonėmis už jos ribų.</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="-30"/>
+        <location line="+73"/>
         <location line="+264"/>
         <source>Loading rooms…</source>
         <translation>Įkeliami kambariai…</translation>
     </message>
     <message>
-        <location line="-226"/>
+        <location line="-336"/>
+        <source>The rooms of this Space could not be loaded.</source>
+        <translation>Nepavyko įkelti šios erdvės kambarių.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Only the first %n room(s) of a Space are listed. More rooms may be available.</source>
+        <translation>
+            <numerusform>Rodomas tik pirmasis %n erdvės kambarys. Gali būti daugiau kambarių.</numerusform>
+            <numerusform>Rodomi tik pirmieji %n erdvės kambariai. Gali būti daugiau kambarių.</numerusform>
+            <numerusform>Rodoma tik pirmųjų %n erdvės kambarių. Gali būti daugiau kambarių.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1"/>
+        <source>The Space listing is incomplete. Showing %n previously loaded room(s) for this Space.</source>
+        <translation>
+            <numerusform>Erdvės sąrašas nepilnas. Rodomas %n anksčiau įkeltas šios erdvės kambarys.</numerusform>
+            <numerusform>Erdvės sąrašas nepilnas. Rodomi %n anksčiau įkelti šios erdvės kambariai.</numerusform>
+            <numerusform>Erdvės sąrašas nepilnas. Rodoma %n anksčiau įkeltų šios erdvės kambarių.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Cancel</source>
+        <translation>Atšaukti</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Find by address</source>
+        <translation>Rasti pagal adresą</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>No loaded rooms or spaces match “%1”.</source>
+        <translation>Jokie įkelti kambariai ar erdvės neatitinka „%1“.</translation>
+    </message>
+    <message>
+        <location line="+64"/>
         <source>Rooms</source>
         <translation>Kambariai</translation>
     </message>
@@ -29745,7 +29859,12 @@ Dabar prisijungusių narių: %5
         <translation>Daugiau veiksmų: %1</translation>
     </message>
     <message>
-        <location line="+128"/>
+        <location line="+50"/>
+        <source>No rooms loaded</source>
+        <translation>Neįkelta jokių kambarių</translation>
+    </message>
+    <message>
+        <location line="+79"/>
         <source>%1, not joined</source>
         <translation>%1, neprisijungta</translation>
     </message>
@@ -34710,7 +34829,7 @@ Siūloma auditorija
 <context>
     <name>TimelinePane</name>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="+808"/>
+        <location filename="../qml/TimelinePane.qml" line="+809"/>
         <source>Seen by 1 person</source>
         <translation>Matė 1 žmogus</translation>
     </message>
@@ -34729,14 +34848,14 @@ Siūloma auditorija
         </translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-519"/>
+        <location filename="../qml/SpaceLobby.qml" line="-520"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5439"/>
+        <location line="+5408"/>
         <source>Space</source>
         <translation>Erdvė</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5438"/>
+        <location filename="../qml/TimelinePane.qml" line="-5407"/>
         <source>Home</source>
         <translation>Pradžia</translation>
     </message>
@@ -34838,12 +34957,12 @@ Siūloma auditorija
     <message>
         <location line="+16"/>
         <location line="+2"/>
-        <location line="+3898"/>
+        <location line="+3854"/>
         <source>Room information</source>
         <translation>Informacija apie kambarį</translation>
     </message>
     <message>
-        <location line="-3887"/>
+        <location line="-3843"/>
         <location line="+1"/>
         <source>More room actions</source>
         <translation>Daugiau kambario veiksmų</translation>
@@ -35015,41 +35134,6 @@ Siūloma auditorija
     </message>
     <message>
         <location line="+28"/>
-        <source>Indexing this room&apos;s history…</source>
-        <translation>Indeksuojama šio kambario istorija…</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>The search index could not be updated. Index this room again to retry.</source>
-        <translation>Paieškos indekso atnaujinti nepavyko. Norėdami bandyti dar kartą, indeksuokite šį kambarį iš naujo.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Type at least %1 characters.</source>
-        <translation>Įveskite bent %1 simbolius.</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Nothing is indexed yet.</source>
-        <translation>Dar nieko neindeksuota.</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Searching %1 messages Lightning has indexed, including encrypted ones.</source>
-        <translation>Ieškoma tarp %1 „Lightning“ suindeksuotų žinučių, įskaitant šifruotas.</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Index this room</source>
-        <translation>Indeksuoti šį kambarį</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Fetch this room&apos;s older messages so they can be searched</source>
-        <translation>Gauti senesnes šio kambario žinutes, kad būtų galima jose ieškoti</translation>
-    </message>
-    <message>
-        <location line="+16"/>
         <source>Indexed</source>
         <translation>Indeksuota</translation>
     </message>
@@ -35200,7 +35284,7 @@ Siūloma auditorija
         <translation>Persiųsti…</translation>
     </message>
     <message>
-        <location line="+442"/>
+        <location line="+455"/>
         <source>Room added — waiting for the server to confirm.</source>
         <translation>kambarys pridėtas – laukiama, kol serveris patvirtins.</translation>
     </message>
@@ -35265,7 +35349,7 @@ Siūloma auditorija
         <translation>Reklamjuostės išsaugoti nepavyko (%1).</translation>
     </message>
     <message numerus="yes">
-        <location line="+496"/>
+        <location line="+498"/>
         <source>Remove %n room(s) from %1?</source>
         <translation>
             <numerusform>Pašalinti %n kambarį iš %1?</numerusform>
@@ -35289,7 +35373,7 @@ Siūloma auditorija
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../qml/TimelinePane.qml" line="-519"/>
+        <location filename="../qml/TimelinePane.qml" line="-521"/>
         <source>%n joined room(s)</source>
         <comment>joined rooms inside a Space</comment>
         <translation>
@@ -35344,7 +35428,7 @@ Siūloma auditorija
         <translation>Rodyti reklamjuostę</translation>
     </message>
     <message>
-        <location line="+292"/>
+        <location line="+294"/>
         <source>People in this Space</source>
         <translation>Žmonės šioje erdvėje</translation>
     </message>
@@ -35359,7 +35443,7 @@ Siūloma auditorija
         <translation>Rodomi pirmieji 60 iš %1.</translation>
     </message>
     <message>
-        <location line="-301"/>
+        <location line="-303"/>
         <source>Choose Space avatar</source>
         <translation>Pasirinkti erdvės avatarą</translation>
     </message>
@@ -35420,17 +35504,17 @@ Siūloma auditorija
     </message>
     <message>
         <location line="+27"/>
-        <location line="+302"/>
+        <location line="+304"/>
         <source>Leave Space</source>
         <translation>Palikite erdvę</translation>
     </message>
     <message>
-        <location line="-296"/>
+        <location line="-298"/>
         <source>Leaving does not remove the rooms inside it.</source>
         <translation>Išėjus iš erdvės joje esantys kambariai nepašalinami.</translation>
     </message>
     <message>
-        <location filename="../qml/SpaceLobby.qml" line="-305"/>
+        <location filename="../qml/SpaceLobby.qml" line="-310"/>
         <source>ROOMS AND SPACES</source>
         <translation>KAMBARIAI IR ERDVĖS</translation>
     </message>
@@ -35445,24 +35529,24 @@ Siūloma auditorija
     </message>
     <message>
         <location line="+21"/>
-        <location filename="../qml/TimelinePane.qml" line="+219"/>
+        <location filename="../qml/TimelinePane.qml" line="+221"/>
         <source>Remove</source>
         <translation>Pašalinti</translation>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+645"/>
+        <location line="+651"/>
         <source>Mark as not suggested</source>
         <translation>Pažymėti kaip nesiūlomą</translation>
     </message>
     <message>
-        <location line="-644"/>
-        <location line="+645"/>
+        <location line="-650"/>
+        <location line="+651"/>
         <source>Mark as suggested</source>
         <translation>Pažymėti kaip siūlomą</translation>
     </message>
     <message>
-        <location line="-634"/>
+        <location line="-640"/>
         <source>Search names and descriptions</source>
         <translation>Ieškokite pavadinimų ir aprašymų</translation>
     </message>
@@ -35472,25 +35556,25 @@ Siūloma auditorija
         <translation>Ieškokite kambarių ir erdvių</translation>
     </message>
     <message>
-        <location line="+58"/>
+        <location line="+64"/>
         <source>No rooms or spaces match “%1”.</source>
         <translation>Nė vienas kambarys ar erdvė neatitinka „%1“.</translation>
     </message>
     <message>
-        <location line="+27"/>
-        <location line="+264"/>
+        <location line="+26"/>
+        <location line="+265"/>
         <source>No rooms yet</source>
         <translation>Kambarių dar nėra</translation>
     </message>
     <message>
-        <location line="-255"/>
+        <location line="-256"/>
         <source>Create a room here or add one of your existing rooms to organise it under this Space.</source>
         <translation>Sukurkite kambarį čia arba pridėkite vieną iš esamų kambarių, kad sutvarkytumėte jį šioje erdvėje.</translation>
     </message>
     <message>
-        <location line="+298"/>
-        <location filename="../qml/TimelinePane.qml" line="-6744"/>
-        <location line="+6921"/>
+        <location line="+299"/>
+        <location filename="../qml/TimelinePane.qml" line="-6715"/>
+        <location line="+6892"/>
         <source>Room</source>
         <translation>Kambarys</translation>
     </message>
@@ -35552,21 +35636,21 @@ Siūloma auditorija
         <translation>Kambariai išlieka, o jūs juose liekate – jie tiesiog palieka šios erdvės sąrašą.</translation>
     </message>
     <message>
-        <location line="-1455"/>
+        <location line="-1470"/>
         <location line="+209"/>
-        <location line="+1260"/>
+        <location line="+1275"/>
         <location line="+77"/>
         <source>Cancel</source>
         <translation>Atšaukti</translation>
     </message>
     <message>
-        <location line="-6036"/>
+        <location line="-6007"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation>Peržiūrėti profilį</translation>
     </message>
     <message>
-        <location line="+5258"/>
+        <location line="+5227"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation>Paveikslėliai (*.png *.jpg *.jpeg *.gif *.webp *.svg)</translation>
     </message>
@@ -35581,7 +35665,7 @@ Siūloma auditorija
         <translation>Tai keisti gali tik erdvės administratoriai.</translation>
     </message>
     <message>
-        <location line="+349"/>
+        <location line="+351"/>
         <source>Leave %1?</source>
         <translation>Išeiti iš %1?</translation>
     </message>
@@ -35643,7 +35727,7 @@ Siūloma auditorija
         <translation>Numeskite failus, kuriuos norite pridėti</translation>
     </message>
     <message>
-        <location line="-5484"/>
+        <location line="-5455"/>
         <source>Join space</source>
         <translation>Prisijungti prie erdvės</translation>
     </message>
