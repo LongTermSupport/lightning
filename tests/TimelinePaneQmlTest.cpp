@@ -13092,8 +13092,7 @@ private Q_SLOTS:
         controller.pagination()->requestNearTop();
         QTRY_COMPARE(controller.pagination()->presentationState(),
                      PaginationController::Loading);
-        root->setWidth(320);
-        QCoreApplication::processEvents();
+        window.resize(1500, 600);
 
         auto *bar = root->findChild<QQuickItem *>(
             QStringLiteral("paginationLoadingBar"));
@@ -13103,9 +13102,7 @@ private Q_SLOTS:
             QStringLiteral("firstUnreadFailedNote"));
         QVERIFY(bar && pill && note);
         QTRY_VERIFY(bar->isVisible());
-        QTRY_VERIFY(sceneRect(pill->parentItem()).width() > 0
-                    && sceneRect(pill->parentItem()).width() <= 320.0);
-        const QRectF area = sceneRect(pill->parentItem());
+        QRectF area;
 
         auto check = [&](QQuickItem *item, const QString &code) {
             const QRectF r = sceneRect(item);
@@ -13127,27 +13124,34 @@ private Q_SLOTS:
         };
 
         int checked = 0;
-        for (const QString &code : pillLocales()) {
-            QString why;
-            QVERIFY2(applyPillLocale(translator, engine, root, code, &why),
-                     qPrintable(why));
-            QVERIFY(root->setProperty("firstUnreadNoteShown", false));
-            QVERIFY(root->setProperty("firstUnreadHuntFailed", false));
-            QVERIFY(root->setProperty("openedWithUnread", true));
-            QTRY_VERIFY2(pill->isVisible(), qPrintable(code));
-            check(pill, code);
-            if (QTest::currentTestFailed())
-                return;
+        // The narrowest timeline, and a wide one as on a 1920 px window.
+        for (const qreal width : {320.0, 1470.0}) {
+            root->setWidth(width);
+            QTRY_VERIFY(sceneRect(pill->parentItem()).width() > width / 2
+                        && sceneRect(pill->parentItem()).width() <= width);
+            area = sceneRect(pill->parentItem());
+            for (const QString &code : pillLocales()) {
+                QString why;
+                QVERIFY2(applyPillLocale(translator, engine, root, code, &why),
+                         qPrintable(why));
+                QVERIFY(root->setProperty("firstUnreadNoteShown", false));
+                QVERIFY(root->setProperty("firstUnreadHuntFailed", false));
+                QVERIFY(root->setProperty("openedWithUnread", true));
+                QTRY_VERIFY2(pill->isVisible(), qPrintable(code));
+                check(pill, QStringLiteral("%1@%2").arg(code).arg(width));
+                if (QTest::currentTestFailed())
+                    return;
 
-            QVERIFY(root->setProperty("openedWithUnread", false));
-            QVERIFY(root->setProperty("firstUnreadNoteShown", true));
-            QTRY_VERIFY2(note->isVisible() && !pill->isVisible(), qPrintable(code));
-            check(note, code);
-            if (QTest::currentTestFailed())
-                return;
-            ++checked;
+                QVERIFY(root->setProperty("openedWithUnread", false));
+                QVERIFY(root->setProperty("firstUnreadNoteShown", true));
+                QTRY_VERIFY2(note->isVisible() && !pill->isVisible(), qPrintable(code));
+                check(note, QStringLiteral("%1@%2").arg(code).arg(width));
+                if (QTest::currentTestFailed())
+                    return;
+                ++checked;
+            }
         }
-        QCOMPARE(checked, pillLocales().size());
+        QCOMPARE(checked, 2 * pillLocales().size());
     }
 
     // At the room start the pills move to the trailing corner, which is the
