@@ -52,6 +52,7 @@ public:
 
     static QString failureCategory(const QString &errorName,
                                    bool openingRemote);
+    bool wasCancelled() const { return m_cancelled; }
     bool busy() const { return m_busy; }
     void setRequestTimeoutMsForTest(int ms) { m_requestTimeout.setInterval(ms); }
 
@@ -62,12 +63,14 @@ Q_SIGNALS:
     void capabilityChanged();
 
 private:
-    void reset();
+    void retire();
+    void finishError(const QString &category);
 #if defined(HAVE_QT_DBUS) && !defined(Q_OS_WIN) && !defined(Q_OS_MACOS)
     void openRemote();
 #endif
 
     bool m_busy = false;
+    bool m_cancelled = false;
     // The portal Request still awaiting its Response; closed on cancel.
     QString m_requestPath;
     QTimer m_requestTimeout;

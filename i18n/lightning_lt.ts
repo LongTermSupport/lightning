@@ -2624,12 +2624,27 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>(numatytasis)</translation>
     </message>
     <message>
+        <location line="+10"/>
+        <source>Use only this microphone for this session</source>
+        <translation>Šiai sesijai naudoti tik šį mikrofoną</translation>
+    </message>
+    <message>
         <location line="+12"/>
+        <source>Waiting for your chosen microphone. Choose another input to speak.</source>
+        <translation>Laukiama jūsų pasirinkto mikrofono. Norėdami kalbėti, pasirinkite kitą įvestį.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone isn&apos;t connected</source>
         <translation>Jūsų pasirinktas mikrofonas neprijungtas</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
+        <source>Your chosen microphone could not be opened. Choose another input to speak.</source>
+        <translation>Jūsų pasirinkto mikrofono atidaryti nepavyko. Norėdami kalbėti, pasirinkite kitą įvestį.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone couldn&apos;t be opened. The call uses the system default.</source>
         <translation>Jūsų pasirinkto mikrofono atidaryti nepavyko. Skambutis naudoja sistemos numatytąjį.</translation>
     </message>
@@ -2723,6 +2738,11 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Pasirinkta kamera neprijungta</translation>
     </message>
     <message>
+        <location line="+1"/>
+        <source>Chosen microphone not connected</source>
+        <translation>Pasirinktas mikrofonas neprijungtas</translation>
+    </message>
+    <message>
         <location line="+3"/>
         <source>System default</source>
         <translation>Numatytasis sistemos</translation>
@@ -2738,17 +2758,32 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Mikrofonas</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
         <source>No microphone was found. You can still join a call and listen.</source>
         <translation>Nerastas joks mikrofonas. Vis tiek galite prisijungti prie skambučio ir klausytis.</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+6"/>
+        <source>Use only this microphone for this session</source>
+        <translation>Šiai sesijai naudoti tik šį mikrofoną</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Waiting for your chosen microphone. Choose another input to speak.</source>
+        <translation>Laukiama jūsų pasirinkto mikrofono. Norėdami kalbėti, pasirinkite kitą įvestį.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone isn&apos;t connected. Calls use the system default until it&apos;s back.</source>
         <translation>Jūsų pasirinktas mikrofonas neprijungtas. Skambučiams naudojami numatytieji sistemos nustatymai, kol sugrįš.</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+16"/>
+        <source>Your chosen microphone could not be opened. Choose another input to speak.</source>
+        <translation>Jūsų pasirinkto mikrofono atidaryti nepavyko. Norėdami kalbėti, pasirinkite kitą įvestį.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone couldn&apos;t be opened, so the system default was used. Choose it again or reconnect it.</source>
         <translation>Jūsų pasirinkto mikrofono atidaryti nepavyko, todėl naudotas sistemos numatytasis. Pasirinkite jį dar kartą arba prijunkite iš naujo.</translation>
     </message>
@@ -3111,34 +3146,39 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
     </message>
     <message>
         <location line="+46"/>
-        <location line="+28"/>
+        <location line="+30"/>
         <source>Turn off camera</source>
         <translation>Išjunkite kamerą</translation>
     </message>
     <message>
-        <location line="-27"/>
-        <location line="+28"/>
+        <location line="-29"/>
+        <location line="+32"/>
         <source>Turn on camera</source>
         <translation>Įjunkite fotoaparatą</translation>
     </message>
     <message>
-        <location line="-20"/>
-        <location line="+28"/>
+        <location line="-24"/>
+        <location line="+32"/>
         <source>Choose camera</source>
         <translation>Pasirinkite fotoaparatą</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="-12"/>
+        <source>Waiting for desktop camera permission. Click to cancel.</source>
+        <translation>Laukiama darbalaukio leidimo naudoti kamerą. Spustelėkite, kad atšauktumėte.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Camera request cancelled. Click to try again.</source>
+        <translation>Kameros užklausa atšaukta. Spustelėkite, kad bandytumėte dar kartą.</translation>
+    </message>
+    <message>
+        <location line="+30"/>
         <source>Stop sharing your screen</source>
         <translation>Nustokite bendrinti ekraną</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Cancel screen sharing</source>
-        <translation>Atšaukti ekrano bendrinimą</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+5"/>
         <source>Share your screen</source>
         <translation>Bendrinkite savo ekraną</translation>
     </message>
@@ -3214,7 +3254,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Iškelti skambutį į plaukiojantį langą</translation>
     </message>
     <message>
-        <location line="-393"/>
+        <location line="-399"/>
         <source>Unmute microphone</source>
         <translation>Įjungti mikrofono garsą</translation>
     </message>
@@ -3264,7 +3304,17 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
         <translation>Pasirinkite išvesties įrenginį</translation>
     </message>
     <message>
-        <location line="+369"/>
+        <location line="+84"/>
+        <source>Waiting for desktop screen sharing permission. Click to cancel.</source>
+        <translation>Laukiama darbalaukio leidimo bendrinti ekraną. Spustelėkite, kad atšauktumėte.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Screen sharing request cancelled. Click to try again.</source>
+        <translation>Ekrano bendrinimo užklausa atšaukta. Spustelėkite, kad bandytumėte dar kartą.</translation>
+    </message>
+    <message>
+        <location line="+289"/>
         <source>Leave call</source>
         <translation>Palikite skambutį</translation>
     </message>
@@ -27793,20 +27843,20 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
 <context>
     <name>SfuCallController</name>
     <message>
-        <location filename="../src/calls/SfuCallController.cpp" line="+637"/>
-        <location line="+396"/>
+        <location filename="../src/calls/SfuCallController.cpp" line="+645"/>
+        <location line="+406"/>
         <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
         <translation>Ekrano bendrinimas šiame darbalaukyje negalimas.</translation>
     </message>
     <message>
-        <location line="-559"/>
-        <location line="+933"/>
+        <location line="-569"/>
+        <location line="+945"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>Nepavyko pradėti bendrinti ekrano.</translation>
     </message>
     <message>
-        <location line="-567"/>
+        <location line="-569"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>Ekrano bendrinimui „Wayland“ reikia xdg-desktop-portal, ir jis nereaguoja. Įdiekite arba paleiskite darbalaukio portalą, pvz., xdg-desktop-portal-kde arba xdg-desktop-portal-gnome, tada bandykite dar kartą.</translation>
     </message>
@@ -27852,22 +27902,32 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Šio skambučio tarnyba laiku neatsakė nė vienu savo adresu.</translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+47"/>
         <source>Lightning couldn&apos;t open the camera. It may be in use by another app, or unplugged.</source>
         <translation>Lightning nepavyko atidaryti kameros. Ją gali naudoti kita programa arba ji atjungta.</translation>
     </message>
     <message>
-        <location line="+414"/>
+        <location line="+6"/>
+        <source>Camera permission was denied. Check your desktop’s camera privacy settings, then turn the camera on again.</source>
+        <translation>Leidimas naudoti kamerą atmestas. Patikrinkite darbalaukio kameros privatumo nustatymus ir vėl įjunkite kamerą.</translation>
+    </message>
+    <message>
+        <location line="+408"/>
         <source>Calling isn&apos;t available on this homeserver.</source>
         <translation>Šiame namų serveryje skambinti negalima.</translation>
     </message>
     <message>
-        <location line="-494"/>
+        <location line="-496"/>
         <source>Too many attempts. Try again in a moment.</source>
         <translation>Per daug bandymų. Po akimirkos bandykite dar kartą.</translation>
     </message>
     <message>
-        <location line="-734"/>
+        <location line="-881"/>
+        <source>Screen sharing permission was denied. Check your desktop’s privacy settings, then try sharing again.</source>
+        <translation>Leidimas bendrinti ekraną atmestas. Patikrinkite darbalaukio privatumo nustatymus ir bandykite bendrinti dar kartą.</translation>
+    </message>
+    <message>
+        <location line="+147"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>Jūsų darbalaukio kameros portalas nesiūlė „Lightning“ jokios kameros. Jei kamera veikia kitose programose, leiskite „Lightning“ naudoti visus įrenginius („Flatseal“: „All devices“), tada vėl įjunkite kamerą.</translation>
     </message>
@@ -27973,13 +28033,13 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     </message>
     <message>
         <location line="+8"/>
-        <location line="+451"/>
+        <location line="+453"/>
         <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>Nepavyko prisijungti prie skambučio.</translation>
     </message>
     <message>
-        <location line="-811"/>
+        <location line="-813"/>
         <source>The calling service is having trouble.</source>
         <translation>Skambinimo tarnyba turi problemų.</translation>
     </message>
@@ -27990,6 +28050,11 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     </message>
     <message>
         <location line="+3"/>
+        <source>Your desktop ended screen sharing. Choose a source to share again.</source>
+        <translation>Jūsų darbalaukis nutraukė ekrano bendrinimą. Pasirinkite šaltinį, kad bendrintumėte dar kartą.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The window you were sharing was closed.</source>
         <translation>Langas, kurį bendrinote, buvo uždarytas.</translation>
     </message>
@@ -28019,12 +28084,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Kamera neatsiuntė vaizdo. Jei tai virtuali kamera, įsitikinkite, kad kažkas ją maitina.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Camera access is turned off in your system settings.</source>
-        <translation>Prieiga prie kameros išjungta jūsų sistemos nustatymuose.</translation>
-    </message>
-    <message>
-        <location line="+8"/>
+        <location line="+11"/>
         <source>The camera you chose isn&apos;t available, so no camera was turned on. Choose a camera in Settings.</source>
         <translation>Jūsų pasirinkta kamera nepasiekiama, todėl jokia kamera neįjungta. Nustatymuose pasirinkite kamerą.</translation>
     </message>
@@ -28112,7 +28172,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Skambučio garsas sustojo: šio kompiuterio garso išvestis atsijungė. Jis tęsis, kai išvestis vėl bus prieinama; jei ne, išeikite iš skambučio ir prisijunkite iš naujo.</translation>
     </message>
     <message>
-        <location line="+2177"/>
+        <location line="+2185"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>Bendrinant ekraną garsas išjungtas: šiame pakete nėra reikiamų garso fiksavimo papildinių.</translation>
     </message>
@@ -28197,7 +28257,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Dalyvis</translation>
     </message>
     <message>
-        <location line="-4612"/>
+        <location line="-4620"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>Šis kambarys yra užšifruotas, o šifruoti skambučiai šioje versijoje dar nepasiekiami.</translation>
     </message>
@@ -32358,7 +32418,17 @@ Siūloma auditorija
         <translation>Koduotuvas: %1 · Mastelis: %2 · Fiksavimas: %3</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
+        <source>Encoded frames observed</source>
+        <translation>Užfiksuota užkoduotų kadrų</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Waiting for an encoded frame</source>
+        <translation>Laukiama užkoduoto kadro</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>RTP packets sent: %1 · Lost on the way to the server: %2</source>
         <translation>Išsiųsta RTP paketų: %1 · Prarasta pakeliui į serverį: %2</translation>
     </message>
@@ -36821,7 +36891,7 @@ Siūloma auditorija
         <translation>Įrašymo nepavyko užbaigti.</translation>
     </message>
     <message>
-        <location line="+67"/>
+        <location line="+65"/>
         <source>Nothing was recorded.</source>
         <translation>Nieko nebuvo įrašyta.</translation>
     </message>
@@ -36831,13 +36901,13 @@ Siūloma auditorija
         <translation>Įrašyti nepavyko.</translation>
     </message>
     <message>
-        <location line="+95"/>
-        <location line="+156"/>
+        <location line="+91"/>
+        <location line="+166"/>
         <source>The sound server is not answering. Try recording again in a moment.</source>
         <translation>Garso serveris neatsako. Po akimirkos bandykite įrašyti dar kartą.</translation>
     </message>
     <message>
-        <location line="-141"/>
+        <location line="-150"/>
         <source>No microphone or audio encoder is available.</source>
         <translation>Nėra mikrofono ar garso kodavimo įrenginio.</translation>
     </message>
@@ -36847,12 +36917,12 @@ Siūloma auditorija
         <translation>Nepavyko paruošti įrašų saugyklos.</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+39"/>
         <source>Recording could not start.</source>
         <translation>Nepavyko pradėti įrašymo.</translation>
     </message>
     <message>
-        <location line="+211"/>
+        <location line="+209"/>
         <source>The microphone was disconnected. The recording was discarded.</source>
         <translation>Mikrofonas buvo atjungtas. Įrašas atmestas.</translation>
     </message>
@@ -37098,7 +37168,7 @@ Siūloma auditorija
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2462"/>
+        <location filename="../src/main.cpp" line="+2454"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>Vietinė Qt/QML Matrix programa. Posistemė: --backend={mock,http,rust}. Numatytoji: rust (versijose be Rust SDK – http).</translation>
     </message>

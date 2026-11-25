@@ -1404,6 +1404,23 @@ private slots:
         QVERIFY(!SfuMediaEngine::resolveMicrophoneCapture({}).fellBack);
     }
 
+    void aPinnedMicrophoneThatCannotBeBoundStaysSilent()
+    {
+        for (bool missing : {true, false}) {
+            const SfuMediaEngine::MicrophoneCapture pinned =
+                SfuMediaEngine::resolveMicrophoneCapture(
+                    {QStringLiteral("lightning-test-no-such-microphone"),
+                     QStringLiteral("Lightning Test Absent Microphone"), missing,
+                     true});
+            QVERIFY(pinned.binding.refused);
+            QVERIFY(pinned.binding.requireIdentity);
+            QVERIFY2(!pinned.source.contains(QStringLiteral("autoaudiosrc")),
+                     "a pinned microphone fell back to the system default");
+            QVERIFY(pinned.source.startsWith(QStringLiteral("audiotestsrc")));
+            QVERIFY(pinned.source.contains(QStringLiteral("wave=silence")));
+        }
+    }
+
     void anIceRestartIsReadFromTheOffersUfrag()
     {
         const QString offer = QStringLiteral(
@@ -2700,6 +2717,81 @@ true,-1);
         }
         QVERIFY2(checked >= 2, "expected the binding and the missing-camera "
                                "refusal conditions");
+    }
+
+    void aReusedPortalNodeCannotReplaceTheSelectedSerial()
+    {
+#ifdef Q_OS_LINUX
+        for (quint64 serial : {0xffffeeee12345678ULL, 0xffffeeee12345679ULL}) {
+            const QString source = SfuMediaEngine::screenShareSource(42, 7, 0, {}, serial);
+            QVERIFY(source.contains(QStringLiteral("fd=7 ")));
+            QVERIFY(source.contains(QStringLiteral("target-object=%1 ").arg(serial)));
+            QVERIFY(!source.contains(QStringLiteral("path=")));
+        }
+#else
+        QSKIP("PipeWire portal capture is Linux-only");
+#endif
+    }
+
+    void aSerialShareWithNoFirstFrameFallsBackToTheNodeOnce()
+    {
+        ShareTargetFallback target(true);
+        QCOMPARE(target.path(), ShareTargetFallback::Path::Serial);
+        QVERIFY(target.fallBack(false));
+        QCOMPARE(QByteArray(ShareTargetFallback::name(target.path())), QByteArray("node-id"));
+        QVERIFY2(!target.fallBack(false), "the node-id fallback ran twice");
+        QCOMPARE(target.path(), ShareTargetFallback::Path::NodeId);
+    }
+
+    void aSerialShareThatDeliversAFrameKeepsTheSerial()
+    {
+        ShareTargetFallback target(true);
+        QVERIFY(!target.fallBack(true));
+        QVERIFY(!target.fallBack(false));
+        QCOMPARE(QByteArray(ShareTargetFallback::name(target.path())), QByteArray("serial"));
+    }
+
+    void aLegacyGrantUsesTheNodeIdDirectly()
+    {
+        ShareTargetFallback target(false);
+        QCOMPARE(target.path(), ShareTargetFallback::Path::NodeId);
+        QVERIFY(target.settled());
+        QVERIFY(!target.fallBack(false));
+#ifdef Q_OS_LINUX
+        QVERIFY(SfuMediaEngine::screenShareSource(42, 7).contains(QStringLiteral("path=42 ")));
+#endif
+    }
+
+    void aSerialShareThatDoesNotBuildFallsBackOnceToTheNode()
+    {
+        ShareTargetFallback target(true);
+        QVERIFY(target.fallBack(false));
+        QCOMPARE(QByteArray(ShareTargetFallback::name(target.path())), QByteArray("node-id"));
+        QVERIFY2(!target.fallBack(false),
+                 "a build fallback left the first-frame fallback armed");
+    }
+
+    void aPathFallbackLeavesTheMemoryRetryAvailable()
+    {
+        ShareCaptureRetry retry;
+        QVERIFY(retry.beginPathFallback());
+        retry.publish();
+        const int afterPath = retry.stamp();
+        QCOMPARE(afterPath, 1);
+        QVERIFY2(retry.begin(), "the node-id fallback spent the memory retry");
+        QVERIFY(retry.isStale(afterPath));
+        retry.publish();
+        QCOMPARE(retry.stamp(), 2);
+        QVERIFY(!retry.begin());
+        QVERIFY(!retry.beginPathFallback());
+    }
+
+    void aStoppedShareCancelsItsPendingFallback()
+    {
+        ShareTargetFallback target(true);
+        target.cancel();
+        QVERIFY2(!target.fallBack(false), "a stopped share still fell back");
+        QCOMPARE(target.path(), ShareTargetFallback::Path::Serial);
     }
 
     void aScreenShareCaptureUsesThePortalsOwnPipeWireRemote()

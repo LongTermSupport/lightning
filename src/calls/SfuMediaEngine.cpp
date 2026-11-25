@@ -1325,6 +1325,7 @@ true);
     for (auto it = m_publishWatch.cbegin(); it != m_publishWatch.cend(); ++it)
         releaseKeepAlive(it->state);
     m_publishWatch.clear();
+    m_shareTargets.clear();
     m_shareEncoderCid.clear();
     m_shareEncoderInUse.clear();
     m_shareGlEncode = false;
@@ -2224,15 +2225,22 @@ SfuMediaEngine::MicrophoneCapture
 SfuMediaEngine::resolveMicrophoneCapture(const DeviceChoice &mic)
 {
     const lightning::calls::ElementChoice choice =
-        mic.id.isEmpty()
+        mic.id.isEmpty() || mic.preferredMissing
             ? lightning::calls::ElementChoice{}
             : lightning::calls::chooseCaptureElement(
-                  lightning::calls::CaptureKind::Microphone,
+                  mic.requireIdentity ? lightning::calls::CaptureKind::PinnedMicrophone
+                                      : lightning::calls::CaptureKind::Microphone,
                   microphoneElementPreference(),
                   availableElements(microphoneElementPreference()),
                   mic.id, mic.description,
                   monitorCandidates("Audio/Source"));
     MicrophoneCapture capture;
+    if (mic.requireIdentity && choice.isEmpty()) {
+        capture.source = QStringLiteral("audiotestsrc name=micsrc is-live=true wave=silence");
+        capture.binding.requireIdentity = true;
+        capture.binding.refused = true;
+        return capture;
+    }
     capture.source = choice.isEmpty()
         ? QStringLiteral("autoaudiosrc name=micsrc")
         : QStringLiteral("%1 name=micsrc").arg(choice.element);
@@ -2395,7 +2403,9 @@ void SfuMediaEngine::setPreferredDevices(const DeviceChoice &camera,
         speakerChanged = speaker.id != m_speakerChoice.id
             || speaker.description != m_speakerChoice.description;
         microphoneChanged = microphone.id != m_microphoneChoice.id
-            || microphone.description != m_microphoneChoice.description;
+            || microphone.description != m_microphoneChoice.description
+            || microphone.preferredMissing != m_microphoneChoice.preferredMissing
+            || microphone.requireIdentity != m_microphoneChoice.requireIdentity;
         m_cameraChoice = camera;
         m_microphoneChoice = microphone;
         m_speakerChoice = speaker;
@@ -4034,8 +4044,7 @@ void SfuMediaEngine::publishAudio(const QString &cid)
     MicrophoneCapture capture = m_testSources
         ? testMicrophoneCapture()
         : resolveMicrophoneCapture(micChoice);
-    if (!m_testSources)
-        Q_EMIT microphoneBound(micChoice.id, capture.fellBack);
+    m_waitingForPinnedMic = capture.binding.refused;
     if (m_testDeviceChannels > 0)
         capture.channels = m_testDeviceChannels;
     const calls::noise::Mode noiseMode = noiseSuppressionMode();
@@ -4073,9 +4082,8 @@ void SfuMediaEngine::publishAudio(const QString &cid)
             << qRound(20.0 * std::log10(1.0 / capture.channels)) << "dB";
     }
 
-    const QString description =
-        microphoneFrontDescription(capture)
-        + QStringLiteral(" ! valve name=micvalve drop=%1 "
+    const QString tail =
+        QStringLiteral(" ! valve name=micvalve drop=%1 "
                          "%4 "
                          "! volume name=micvol volume=%3 "
                          "%5 "
@@ -4091,7 +4099,7 @@ void SfuMediaEngine::publishAudio(const QString &cid)
                          "caps=\"application/x-rtp,media=audio,"
                          "encoding-name=OPUS,payload=111,clock-rate=(int)48000,"
                          "encoding-params=(string)2,ssrc=(uint)%2\"")
-              .arg(m_microphoneMuted ? QStringLiteral("true")
+              .arg((m_microphoneMuted || m_waitingForPinnedMic) ? QStringLiteral("true")
                                      : QStringLiteral("false"),
                    QString::number(nextPublishSsrc()),
                    QString::number(
@@ -4099,6 +4107,8 @@ void SfuMediaEngine::publishAudio(const QString &cid)
                        'f', 3),
                    captureLevelStage + gainStage, levelStage)
               .arg(lightning::rtp::kRtpPayloadMtu);
+
+    QString description = microphoneFrontDescription(capture) + tail;
 
     qCInfo(lcSfuMedia) << "publishing microphone: valve drop="
                        << m_microphoneMuted << "device-channels="
@@ -4124,6 +4134,19 @@ void SfuMediaEngine::publishAudio(const QString &cid)
     GstElement *bin =
         gst_parse_bin_from_description(description.toUtf8().constData(), TRUE,
                                        &error);
+    if (capture.binding.requireIdentity && !capture.binding.refused
+        && (error || !bin || !applyBindingTo(bin, "micsrc", capture.binding))) {
+        if (bin)
+            gst_object_unref(bin);
+        g_clear_error(&error);
+        capture = resolveMicrophoneCapture({micChoice.id, {}, true, true});
+        m_waitingForPinnedMic = true;
+        description = microphoneFrontDescription(capture) + tail;
+        m_lastAudioDescription = description;
+        bin = gst_parse_bin_from_description(description.toUtf8().constData(), TRUE, &error);
+    }
+    if (!m_testSources)
+        Q_EMIT microphoneBound(micChoice.id, capture.fellBack || capture.binding.refused);
     if (error) {
         qCWarning(lcSfuMedia) << "audio pipeline parse failed:"
                               << (error->message ? error->message : "?");
@@ -4139,7 +4162,8 @@ void SfuMediaEngine::publishAudio(const QString &cid)
         return;
     }
     m_publishedBins.insert(cid, bin);
-    applyBindingTo(bin, "micsrc", capture.binding);
+    if (!capture.binding.requireIdentity)
+        applyBindingTo(bin, "micsrc", capture.binding);
     resetMicLevelState();
     m_micCid = cid;
     m_micRestarts = 0;
@@ -5564,7 +5588,8 @@ bool SfuMediaEngine::elementAvailable(const char *name)
 
 QString SfuMediaEngine::screenShareSource(int nodeId, int pipewireFd,
                                          quint64 windowHandle,
-                                         const QRect &captureRect)
+                                         const QRect &captureRect,
+                                         std::optional<quint64> serial)
 {
     // pipewiresrc needs the portal's `fd`: without it `path` resolves against
     // our own default remote and never produces a buffer.
@@ -5576,6 +5601,7 @@ QString SfuMediaEngine::screenShareSource(int nodeId, int pipewireFd,
     // Windows and macOS have no portal; there `nodeId` is a monitor index.
 #if defined(Q_OS_WIN)
     Q_UNUSED(pipewireFd);
+    Q_UNUSED(serial);
     Q_UNUSED(captureRect);
     if (windowHandle != 0) {
         return QStringLiteral("%1 hwnd=%2")
@@ -5586,6 +5612,7 @@ QString SfuMediaEngine::screenShareSource(int nodeId, int pipewireFd,
         .arg(nodeId < 0 ? 0 : nodeId);
 #elif defined(Q_OS_MACOS)
     Q_UNUSED(pipewireFd);
+    Q_UNUSED(serial);
     Q_UNUSED(captureRect);
     return QStringLiteral("avfvideosrc capture-screen=true "
                           "capture-screen-cursor=true device-index=%1")
@@ -5611,6 +5638,9 @@ QString SfuMediaEngine::screenShareSource(int nodeId, int pipewireFd,
         // 1.4 and compositors offer at most ~4 buffers, which PipeWire 1.6
         // rejects with "error alloc buffers: Invalid argument". 1 intersects
         // any range, whatever plugin version is bundled.
+        if (serial)
+            return QStringLiteral("pipewiresrc fd=%1 target-object=%2 min-buffers=1 do-timestamp=true")
+                .arg(pipewireFd).arg(*serial);
         return QStringLiteral(
                    "pipewiresrc fd=%1 path=%2 min-buffers=1 do-timestamp=true")
             .arg(pipewireFd).arg(nodeId);
@@ -5672,8 +5702,11 @@ QString SfuMediaEngine::cameraSource(int pipewireFd)
 void SfuMediaEngine::publishVideo(const QString &cid, bool screenShare,
                                   int nodeId, int pipewireFd,
                                   quint64 windowHandle,
-                                  const QRect &captureRect)
+                                  const QRect &captureRect,
+                                  std::optional<quint64> serial)
 {
+    bool portalShare = false;
+    ShareTargetFallback shareTarget(serial.has_value());
     struct PortalFd {
         int fd;
         ~PortalFd()
@@ -5700,7 +5733,10 @@ void SfuMediaEngine::publishVideo(const QString &cid, bool screenShare,
             return;
         }
         source = screenShareSource(nodeId, pipewireFd, windowHandle,
-                                   captureRect);
+                                   captureRect, serial);
+#ifdef Q_OS_LINUX
+        portalShare = pipewireFd >= 0 && windowHandle == 0 && !captureRect.isValid();
+#endif
     } else {
         source = cameraSource(pipewireFd);
         qCInfo(lcSfuMedia) << "camera source="
@@ -5890,12 +5926,34 @@ void SfuMediaEngine::publishVideo(const QString &cid, bool screenShare,
         bin = gst_parse_bin_from_description(description.toUtf8().constData(),
                                              TRUE, &error);
     }
+    if (error && portalShare && shareTarget.fallBack(false)) {
+        qCWarning(lcSfuMedia) << "screen share serial path did not build; path="
+                              << ShareTargetFallback::name(shareTarget.path());
+        g_clear_error(&error);
+        if (bin) {
+            gst_object_unref(bin);
+            bin = nullptr;
+        }
+        source = screenShareSource(nodeId, pipewireFd, windowHandle, captureRect,
+                                   std::nullopt);
+        description = videoPipelineDescription(
+            source, videoRateStage(true), limits, encoder, selfView,
+            nextPublishSsrc(), scaleStageInUse, entryInUse, codec);
+        bin = gst_parse_bin_from_description(description.toUtf8().constData(),
+                                             TRUE, &error);
+    }
     if (error) {
         qCWarning(lcSfuMedia) << "video pipeline parse failed:"
                               << (error->message ? error->message : "?");
         g_error_free(error);
         if (bin)
             gst_object_unref(bin);
+        if (serial) {
+            QMetaObject::invokeMethod(this, [this, cid] {
+                Q_EMIT publishFailed(cid, QStringLiteral("screen_share_failed"));
+            }, Qt::QueuedConnection);
+            return;
+        }
         Q_EMIT failed(screenShare ? QStringLiteral("screen_share_failed")
                                   : QStringLiteral("camera_failed"));
         return;
@@ -6286,6 +6344,17 @@ void SfuMediaEngine::publishVideo(const QString &cid, bool screenShare,
     }
     m_publisherEverPublished = true;
     renegotiatePublisher();
+    if (portalShare) {
+        qCInfo(lcSfuMedia) << "screen share path=" << ShareTargetFallback::name(shareTarget.path());
+        if (!shareTarget.settled()) {
+            m_shareTargets.insert(cid, {shareTarget, nodeId});
+            const quint64 generation = m_generation.load();
+            QTimer::singleShot(m_shareSerialFirstFrameMs, this, [this, cid, generation] {
+                if (generation == m_generation.load())
+                    settleShareTarget(cid);
+            });
+        }
+    }
     if (!screenShare) {
         const quint64 generation = m_generation.load();
         QTimer::singleShot(asyncStart ? m_portalCameraFirstFrameTimeoutMs
@@ -6802,6 +6871,7 @@ void SfuMediaEngine::unpublish(const QString &cid)
 {
     if (const QString backup = m_shareBackups.take(cid); !backup.isEmpty())
         unpublish(backup);
+    m_shareTargets.remove(cid);
     GstElement *bin = m_publishedBins.take(cid);
     // Its teardown can outlive this engine; a late self-view sample must not reach it.
     if (bin)
@@ -7300,7 +7370,7 @@ void SfuMediaEngine::setMicrophoneMuted(bool muted)
          ++it) {
         if (GstElement *valve =
                 gst_bin_get_by_name(GST_BIN(it.value()), "micvalve")) {
-            g_object_set(valve, "drop", muted ? TRUE : FALSE, nullptr);
+            g_object_set(valve, "drop", (muted || m_waitingForPinnedMic) ? TRUE : FALSE, nullptr);
             gst_object_unref(valve);
         }
     }
@@ -9179,6 +9249,8 @@ void SfuMediaEngine::handlePublishError(const QString &cid,
         }
         return;
     }
+    if (screenShare && settleShareTarget(cid))
+        return;
     if (screenShare && captureFormatError
         && retryShareCaptureInOtherMemory(cid))
         return;
@@ -9228,6 +9300,75 @@ bool SfuMediaEngine::restartShareCapture(GstElement *bin,
     retry.publish();
     gst_element_sync_state_with_parent(source);
     gst_object_unref(entry);
+    gst_object_unref(source);
+    GST_STATE_UNLOCK(bin);
+    return true;
+}
+
+bool SfuMediaEngine::settleShareTarget(const QString &cid)
+{
+    const auto it = m_shareTargets.find(cid);
+    if (it == m_shareTargets.end())
+        return false;
+    ShareTarget target = it.value();
+    m_shareTargets.erase(it);
+    const auto watch = m_publishWatch.constFind(cid);
+    GstElement *bin = m_publishedBins.value(cid, nullptr);
+    if (!m_active || watch == m_publishWatch.cend() || !watch->state
+        || watch->reported || !bin)
+        return false;
+    const bool seen = watch->state->captured.load() > 0;
+    if (!target.fallback.fallBack(seen)) {
+        qCInfo(lcSfuMedia) << "screen share path="
+                           << ShareTargetFallback::name(target.fallback.path());
+        return false;
+    }
+    if (!watch->retry || !watch->retry->beginPathFallback())
+        return false;
+    qCWarning(lcSfuMedia) << "screen share serial path delivered nothing; path="
+                          << ShareTargetFallback::name(target.fallback.path());
+    struct NodeRestart {
+        std::shared_ptr<ShareCaptureRetry> retry;
+        int nodeId;
+    };
+    gst_element_call_async(
+        bin,
+        [](GstElement *element, gpointer data) {
+            auto *job = static_cast<NodeRestart *>(data);
+            if (!restartShareCaptureOnNode(element, *job->retry, job->nodeId))
+                qCInfo(lcSfuMedia) << "screen share node-id restart abandoned: "
+                                      "the share was torn down";
+        },
+        new NodeRestart{watch->retry, target.nodeId},
+        [](gpointer data) { delete static_cast<NodeRestart *>(data); });
+    return true;
+}
+
+bool SfuMediaEngine::restartShareCaptureOnNode(GstElement *bin,
+                                               ShareCaptureRetry &retry,
+                                               int nodeId)
+{
+    GST_STATE_LOCK(bin);
+    GstObject *parent = gst_object_get_parent(GST_OBJECT(bin));
+    const bool live = ShareCaptureRetry::mayRestart(
+        GST_STATE_TARGET(bin) == GST_STATE_PLAYING, parent != nullptr);
+    if (parent)
+        gst_object_unref(parent);
+    GstElement *source =
+        live ? gst_bin_get_by_name(GST_BIN(bin), "capsrc") : nullptr;
+    GObjectClass *klass = source ? G_OBJECT_GET_CLASS(source) : nullptr;
+    if (!klass || !g_object_class_find_property(klass, "path")
+        || !g_object_class_find_property(klass, "target-object")) {
+        if (source)
+            gst_object_unref(source);
+        GST_STATE_UNLOCK(bin);
+        return false;
+    }
+    gst_element_set_state(source, GST_STATE_NULL);
+    const QByteArray node = QByteArray::number(nodeId);
+    g_object_set(source, "target-object", nullptr, "path", node.constData(), nullptr);
+    retry.publish();
+    gst_element_sync_state_with_parent(source);
     gst_object_unref(source);
     GST_STATE_UNLOCK(bin);
     return true;
@@ -10766,6 +10907,16 @@ void SfuMediaEngine::refreshMicrophoneCapture()
     if (!m_active || m_micCid.isEmpty() || !m_publishedBins.contains(m_micCid))
         return;
     const quint64 seq = ++m_micResolveSeq;
+    const DeviceChoice choice = microphoneChoice();
+    if (choice.requireIdentity) {
+        m_waitingForPinnedMic = true;
+        m_micSwapDeferred.reset();
+        if (m_micSwap.front)
+            abandonMicrophoneSwap("the microphone selection changed");
+    } else {
+        m_waitingForPinnedMic = false;
+    }
+    setMicrophoneMuted(m_microphoneMuted);
     const int channels = m_testDeviceChannels;
     if (m_testSources) {
         MicrophoneCapture capture = testMicrophoneCapture();
@@ -10774,7 +10925,6 @@ void SfuMediaEngine::refreshMicrophoneCapture()
         swapMicrophoneFront(capture);
         return;
     }
-    const DeviceChoice choice = microphoneChoice();
     const quint64 generation = m_generation.load();
     const QString cid = m_micCid;
     QThreadPool::globalInstance()->start(
@@ -10786,7 +10936,7 @@ void SfuMediaEngine::refreshMicrophoneCapture()
                 if (seq != m_micResolveSeq || generation != m_generation.load()
                     || cid != m_micCid)
                     return;
-                Q_EMIT microphoneBound(choice.id, capture.fellBack);
+                Q_EMIT microphoneBound(choice.id, capture.fellBack || capture.binding.refused);
                 swapMicrophoneFront(capture);
             });
         });
@@ -10867,7 +11017,13 @@ void SfuMediaEngine::swapMicrophoneFront(const MicrophoneCapture &capture)
         }
         gst_caps_unref(carried);
     }
-    applyBindingTo(front, "micsrc", capture.binding);
+    if (!applyBindingTo(front, "micsrc", capture.binding) && capture.binding.requireIdentity) {
+        gst_object_unref(front);
+        const auto choice = microphoneChoice();
+        Q_EMIT microphoneBound(choice.id, true);
+        swapMicrophoneFront(resolveMicrophoneCapture({choice.id, {}, true, true}));
+        return;
+    }
     instrumentMicrophoneSource(front, m_micCaptured);
     GstPad *out = gst_element_get_static_pad(front, "src");
     if (!out) {
@@ -10898,6 +11054,7 @@ void SfuMediaEngine::swapMicrophoneFront(const MicrophoneCapture &capture)
     m_micSwap.blockProbe = probe;
     m_micSwap.serial = serial;
     m_micSwap.currentFailed = false;
+    m_micSwap.inputRefused = capture.binding.refused;
     qCInfo(lcSfuMedia) << "microphone switch: starting the new capture beside "
                           "the live one; chosen="
                        << !capture.binding.isEmpty()
@@ -10986,6 +11143,8 @@ void SfuMediaEngine::completeMicrophoneSwap(quint64 serial)
     m_micFailureReported = false;
     m_micCapturedAtRestart = m_micCaptured ? m_micCaptured->load() : 0;
     m_micLiveFront = m_micSwap.name;
+    m_waitingForPinnedMic = m_micSwap.inputRefused;
+    setMicrophoneMuted(m_microphoneMuted);
     gst_object_unref(m_micSwap.front);
     gst_object_unref(m_micSwap.bin);
     m_micSwap = PendingMicSwap{};

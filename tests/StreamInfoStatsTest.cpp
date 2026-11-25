@@ -44,9 +44,13 @@ private slots:
         stats.width = 1920;
         stats.height = 1080;
         stats.bytes = 4000;
+        QVERIFY(stats.sample(0).contains("encodedFrameObserved"));
+        QVERIFY(!stats.sample(0).value("encodedFrameObserved").toBool());
+        stats.lastMs = -1;
         stats.frames = 1;
         auto row = stats.sample(100);
         QCOMPARE(row.value("kbps").toDouble(), -1.0);
+        QVERIFY(row.value("encodedFrameObserved").toBool());
         QCOMPARE(row.value("width").toInt(), 1920);
         QCOMPARE(row.value("height").toInt(), 1080);
         QCOMPARE(row.value("encoder").toString(), QStringLiteral("vp8enc"));
@@ -66,7 +70,7 @@ private slots:
         row = stats.sample(1101);
         QCOMPARE(row.value("keyframes").toULongLong(), 4ULL);
         QCOMPARE(row.value("keyframeRequests").toULongLong(), 3ULL);
-        QCOMPARE(row.size(), 15);
+        QCOMPARE(row.size(), 16);
         stats.lastMs = -1;
         QCOMPARE(stats.sample(5000).value("fps").toDouble(), -1.0);
     }
