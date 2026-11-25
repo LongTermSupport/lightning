@@ -9974,6 +9974,159 @@ Signing out and signing in again is the only fix.</source>
     </message>
 </context>
 <context>
+    <name>Handoff</name>
+    <message>
+        <location filename="../src/privacy/Handoff.cpp" line="+103"/>
+        <source>[link removed]</source>
+        <translation>[লিংক সরানো হয়েছে]</translation>
+    </message>
+    <message>
+        <location line="+97"/>
+        <source>Only files on this computer can be shared.</source>
+        <translation>শুধু এই কম্পিউটারের ফাইল শেয়ার করা যায়।</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>That file cannot be read.</source>
+        <translation>ওই ফাইলটি পড়া যাচ্ছে না।</translation>
+    </message>
+</context>
+<context>
+    <name>HandoffDialog</name>
+    <message>
+        <location filename="../qml/HandoffDialog.qml" line="+65"/>
+        <source>Save calendar event</source>
+        <translation>ক্যালেন্ডার ইভেন্ট সংরক্ষণ করুন</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Save task</source>
+        <translation>টাস্ক সংরক্ষণ করুন</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Calendar file (*.ics)</source>
+        <translation>ক্যালেন্ডার ফাইল (*.ics)</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>All files (*)</source>
+        <translation>সব ফাইল (*)</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Saved. Open the file with your task or calendar app.</source>
+        <translation>সংরক্ষিত হয়েছে। ফাইলটি আপনার টাস্ক বা ক্যালেন্ডার অ্যাপে খুলুন।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The file could not be saved.</source>
+        <translation>ফাইলটি সংরক্ষণ করা যায়নি।</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Export message</source>
+        <translation>বার্তা এক্সপোর্ট করুন</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Task</source>
+        <translation>টাস্ক</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Calendar event</source>
+        <translation>ক্যালেন্ডার ইভেন্ট</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <location line="+1"/>
+        <source>Title</source>
+        <translation>শিরোনাম</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>yyyy-mm-dd</source>
+        <translation>yyyy-mm-dd</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Date</source>
+        <translation>তারিখ</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>hh:mm</source>
+        <translation>hh:mm</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Start time</source>
+        <translation>শুরুর সময়</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>30 min</source>
+        <translation>৩০ মিনিট</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>1 hour</source>
+        <translation>১ ঘণ্টা</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>2 hours</source>
+        <translation>২ ঘণ্টা</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Enter a valid date and time.</source>
+        <translation>একটি বৈধ তারিখ ও সময় লিখুন।</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <location line="+1"/>
+        <source>Notes</source>
+        <translation>নোট</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Include a link to this message</source>
+        <translation>এই বার্তার লিংক যুক্ত করুন</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Include a link to this message. Only people in the room can open it.</source>
+        <translation>এই বার্তার লিংক যুক্ত করুন। শুধু রুমের লোকেরাই এটি খুলতে পারবেন।</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Exactly this leaves Lightning. The app you hand it to is outside the room&apos;s encryption.</source>
+        <translation>ঠিক এটাই Lightning থেকে বেরিয়ে যায়। আপনি যে অ্যাপকে এটি দেন, সেটি রুমের এনক্রিপশনের বাইরে।</translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>Cancel</source>
+        <translation>বাতিল</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Copy as text</source>
+        <translation>টেক্সট হিসেবে কপি করুন</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Copied.</source>
+        <translation>কপি হয়েছে।</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Save .ics…</source>
+        <translation>.ics সংরক্ষণ করুন…</translation>
+    </message>
+</context>
+<context>
     <name>HomePane</name>
     <message>
         <location filename="../qml/HomePane.qml" line="+46"/>
@@ -12036,7 +12189,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MainScreen</name>
     <message>
-        <location filename="../qml/MainScreen.qml" line="+627"/>
+        <location filename="../qml/MainScreen.qml" line="+632"/>
         <source>Resize room list</source>
         <translation>রুমের তালিকার আকার বদলান</translation>
     </message>
@@ -13663,13 +13816,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2431"/>
+        <location line="+2455"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>আবার চেষ্টা করুন</translation>
     </message>
     <message>
-        <location line="-3447"/>
+        <location line="-3471"/>
         <location line="+1231"/>
         <source>Cancel</source>
         <translation>বাতিল</translation>
@@ -13681,12 +13834,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+190"/>
-        <location line="+1501"/>
+        <location line="+1509"/>
         <source>Hide image</source>
         <translation>ছবি লুকান</translation>
     </message>
     <message>
-        <location line="-1497"/>
+        <location line="-1505"/>
         <source>Hide</source>
         <translation>লুকান</translation>
     </message>
@@ -13805,12 +13958,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+241"/>
-        <location line="+1501"/>
+        <location line="+1509"/>
         <source>Hidden image limit reached</source>
         <translation>লুকানো ছবির সীমায় পৌঁছেছে</translation>
     </message>
     <message numerus="yes">
-        <location line="-1248"/>
+        <location line="-1256"/>
         <source>%1 and %n other(s)</source>
         <translation>
             <numerusform>%1 এবং আরও ১ জন</numerusform>
@@ -13889,6 +14042,11 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+8"/>
+        <source>Export as task or event…</source>
+        <translation>টাস্ক বা ইভেন্ট হিসেবে এক্সপোর্ট করুন…</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>Open image</source>
         <translation>ছবি খুলুন</translation>
     </message>
@@ -13919,12 +14077,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+10"/>
-        <location line="+647"/>
+        <location line="+663"/>
         <source>Show link preview</source>
         <translation>লিঙ্ক প্রিভিউ দেখান</translation>
     </message>
     <message>
-        <location line="-637"/>
+        <location line="-653"/>
         <source>Copy image</source>
         <translation>ছবি অনুলিপি করুন</translation>
     </message>
@@ -13959,7 +14117,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>উৎস দেখুন</translation>
     </message>
     <message>
-        <location line="+548"/>
+        <location line="+564"/>
         <source>Your server sees this URL — never direct</source>
         <translation>আপনার সার্ভার এই URL দেখে — কখনো সরাসরি নয়</translation>
     </message>
@@ -14090,7 +14248,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>এখনও কোনো অবস্থান পাওয়া যায়নি।</translation>
     </message>
     <message>
-        <location line="-4023"/>
+        <location line="-4047"/>
         <location line="+1139"/>
         <source>Edit</source>
         <translation>সম্পাদনা</translation>
@@ -14130,22 +14288,22 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="-570"/>
         <location line="+568"/>
-        <location line="+3777"/>
+        <location line="+3801"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5268"/>
+        <location line="-5292"/>
         <location line="+53"/>
         <location line="+514"/>
-        <location line="+4326"/>
+        <location line="+4350"/>
         <source>Image</source>
         <translation>ছবি</translation>
     </message>
     <message>
-        <location line="-4891"/>
+        <location line="-4915"/>
         <source>Attachment</source>
         <translation>সংযুক্তি</translation>
     </message>
@@ -14211,7 +14369,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>(সম্পাদিত)</translation>
     </message>
     <message>
-        <location line="+1719"/>
+        <location line="+1727"/>
         <source>Add :%1: to my emoji</source>
         <translation>আমার ইমোজিতে :%1: যোগ করুন</translation>
     </message>
@@ -14251,13 +14409,13 @@ Signing out and signing in again is the only fix.</source>
         <translation>বার্তার অভিযোগ করুন</translation>
     </message>
     <message>
-        <location line="-788"/>
-        <location line="+802"/>
+        <location line="-796"/>
+        <location line="+810"/>
         <source>Delete</source>
         <translation>মুছুন</translation>
     </message>
     <message>
-        <location line="-797"/>
+        <location line="-805"/>
         <source>Remove message?</source>
         <translation>বার্তা সরাবেন?</translation>
     </message>
@@ -14272,7 +14430,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>সরান</translation>
     </message>
     <message>
-        <location line="+835"/>
+        <location line="+859"/>
         <source>Message details</source>
         <translation>বার্তার বিস্তারিত</translation>
     </message>
@@ -14349,12 +14507,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>উত্তরের লক্ষ্য</translation>
     </message>
     <message>
-        <location line="-2088"/>
+        <location line="-2112"/>
         <source>Show preview</source>
         <translation>প্রাকদর্শন দেখান</translation>
     </message>
     <message>
-        <location line="+1944"/>
+        <location line="+1952"/>
         <source>Remove edits?</source>
         <translation>সম্পাদনা সরাবেন?</translation>
     </message>
@@ -14374,7 +14532,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>এতে ভোট বন্ধ হয় এবং ফলাফল প্রকাশিত হয়। ভোট আবার খোলা যায় না।</translation>
     </message>
     <message>
-        <location line="-744"/>
+        <location line="-752"/>
         <source>Delete message?</source>
         <translation>বার্তা মুছবেন?</translation>
     </message>
@@ -14384,7 +14542,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>এতে রুমের সবার জন্য বার্তাটি সরে যায়। এটি ফেরানো যায় না।</translation>
     </message>
     <message>
-        <location line="+1051"/>
+        <location line="+1075"/>
         <source>Open link in browser</source>
         <translation>লিঙ্কটি ব্রাউজারে খুলুন</translation>
     </message>
@@ -14466,10 +14624,10 @@ Signing out and signing in again is the only fix.</source>
         <translation>স্টিকার লোড হয়নি — আবার চেষ্টা করতে ক্লিক করুন</translation>
     </message>
     <message>
-        <location line="-5685"/>
+        <location line="-5709"/>
         <location line="+57"/>
         <location line="+517"/>
-        <location line="+4324"/>
+        <location line="+4348"/>
         <location line="+1066"/>
         <location line="+93"/>
         <source>Video</source>
@@ -14482,9 +14640,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>ভিডিও</translation>
     </message>
     <message>
-        <location line="-6068"/>
+        <location line="-6092"/>
         <location line="+570"/>
-        <location line="+4427"/>
+        <location line="+4451"/>
         <location line="+1270"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -28689,6 +28847,44 @@ Note: importing keys does not verify this session.</source>
     </message>
 </context>
 <context>
+    <name>ShareTargetDialog</name>
+    <message>
+        <location filename="../qml/ShareTargetDialog.qml" line="+56"/>
+        <source>Share to a room</source>
+        <translation>একটি রুমে শেয়ার করুন</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>As %1. The file is added to the room&apos;s message box and is not sent until you press Send.</source>
+        <translation>%1 হিসেবে। ফাইলটি রুমের বার্তা বাক্সে যুক্ত হয়, আপনি পাঠান চাপার আগে পাঠানো হয় না।</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Search rooms…</source>
+        <translation>রুম খুঁজুন…</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Search rooms</source>
+        <translation>রুম খুঁজুন</translation>
+    </message>
+    <message>
+        <location line="+48"/>
+        <source>Attach</source>
+        <translation>সংযুক্ত করুন</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Attach in %1</source>
+        <translation>%1 এ সংযুক্ত করুন</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Cancel</source>
+        <translation>বাতিল</translation>
+    </message>
+</context>
+<context>
     <name>ShortcutRegistry</name>
     <message>
         <location filename="../src/app/ShortcutRegistry.cpp" line="+360"/>
@@ -37443,7 +37639,7 @@ Proposed audience
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2454"/>
+        <location filename="../src/main.cpp" line="+2449"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>নেটিভ Qt/QML Matrix ক্লায়েন্ট। ব্যাকএন্ড: --backend={mock,http,rust}। ডিফল্ট: rust (Rust SDK ছাড়া বিল্ডে http)।</translation>
     </message>
