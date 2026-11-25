@@ -13,7 +13,6 @@ Rectangle {
     property string forumSort: "activity"
     property string forumFilter: "all"
     property string forumTag: ""
-    onPanelRoomIdChanged: { forumSort = "activity"; forumFilter = "all"; forumTag = "" }
     readonly property var forumThreads:
         app.thread.forumList(app.thread.threadList, forumSort, forumFilter, forumTag)
     readonly property var forumTagList: app.thread.forumTags(app.thread.threadList)
@@ -165,7 +164,12 @@ Rectangle {
         panelRoom = panelRoomId === "" ? ({})
                                        : app.roomList.findRoom(panelRoomId)
     }
-    onPanelRoomIdChanged: refreshPanelRoom()
+    onPanelRoomIdChanged: {
+        refreshPanelRoom()
+        forumSort = "activity"
+        forumFilter = "all"
+        forumTag = ""
+    }
     Connections {
         target: app.roomList
         function onDataChanged() { panel.refreshPanelRoom() }

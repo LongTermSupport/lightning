@@ -68,7 +68,7 @@ public:
 const QString room = QStringLiteral("!room:example.org");
 const QString root = QStringLiteral("$event");
 
-QVariantMap thread(const QString &id, const QString &preview, int replies, qint64 rootMs,
+QVariantMap threadRow(const QString &id, const QString &preview, int replies, qint64 rootMs,
                    bool unread = false)
 {
     return {{QStringLiteral("rootEventId"), id}, {QStringLiteral("rootPreview"), preview},
@@ -101,9 +101,9 @@ private Q_SLOTS:
     void forumRowsCarryTitleTagsAndKeepUntaggedThreads()
     {
         const QVariantList threads{
-            thread(QStringLiteral("$a"), QStringLiteral("Release plan #ops\nDetails #Ops #room:x.org"), 0, 30),
-            thread(QStringLiteral("$b"), QStringLiteral("Untagged question"), 5, 10, true),
-            thread(QStringLiteral("$c"), QStringLiteral("See https://x.org/#anchor #help"), 2, 20)};
+            threadRow(QStringLiteral("$a"), QStringLiteral("Release plan #ops\nDetails #Ops #room:x.org"), 0, 30),
+            threadRow(QStringLiteral("$b"), QStringLiteral("Untagged question"), 5, 10, true),
+            threadRow(QStringLiteral("$c"), QStringLiteral("See https://x.org/#anchor #help"), 2, 20)};
         const QVariantList all = forum::arrange(threads, QStringLiteral("activity"), QStringLiteral("all"), {});
         QCOMPARE(ids(all), (QStringList{QStringLiteral("$a"), QStringLiteral("$b"), QStringLiteral("$c")}));
         const QVariantMap first = all.first().toMap();
