@@ -51,7 +51,10 @@ QVariantMap eventFields(const QString &date, const QString &time, int minutes = 
 QStringList payloads(const QVariantMap &map)
 {
     const Fields f = fieldsFrom(map, QTimeZone::utc());
-    return {plainText(f), ics(f, QDateTime::currentDateTimeUtc())};
+    // Unfolded, or a fold could split a forbidden string and hide it.
+    QString file = ics(f, QDateTime::currentDateTimeUtc());
+    file.replace(QStringLiteral("\r\n "), QString());
+    return {plainText(f), file};
 }
 
 QString line(const QString &ics, const QString &name)
@@ -223,7 +226,7 @@ private Q_SLOTS:
     void icsTextIsEscapedAndFolded()
     {
         QVariantMap map = taskFields(QStringLiteral("a, b; c\\d\nnext ") + QString(120, QChar(0x017E)));
-        const QString out = payloads(map).at(1);
+        const QString out = ics(fieldsFrom(map, QTimeZone::utc()), QDateTime::currentDateTimeUtc());
         QVERIFY(out.contains(QStringLiteral("a\\, b\\; c\\\\d\\nnext")));
         QVERIFY(out.endsWith(QStringLiteral("END:VCALENDAR\r\n")));
         for (const QString &l : out.split(QStringLiteral("\r\n")))
