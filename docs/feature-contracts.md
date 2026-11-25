@@ -3907,6 +3907,19 @@ wall-clock number from one machine is never a threshold.
   is the harness; it adds about 60 wakeups/s itself, so measure idle power
   with it unset.
 
+- At the 4096-image local hiding limit, existing hides stay in effect.
+  Showing one image frees one slot for a new hide. This supersedes oldest-first eviction.
+- Create folder archive reviews a local snapshot before staging a ZIP in the
+  attachment tray. Review is bounded to 256 entries, eight directory levels and
+  16 MiB of file data. Hidden and sensitive names, links, special files and
+  unreadable entries are excluded. The final ZIP must fit the known upload limit.
+- Photo metadata inspection reports EXIF GPS, date/time, camera make/model
+  and orientation tags from the source and prepared copy. Unknown covers
+  unrecognized or undetected fields. A matching send policy uses that copy.
+- Cancelling a queued playable write releases its byte buffer before the
+  writer thread drains. The last visible poster owner can drop its decode
+  request while an explicit Play continues.
+
 ### Screen share diagnostics
 
 `--call-media-status` lists requested settings and installed encoder/GL

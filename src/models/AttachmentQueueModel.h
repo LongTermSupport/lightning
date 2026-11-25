@@ -10,6 +10,7 @@
 #include <QVariantList>
 
 #include "media/ImageSendPrep.h"
+#include "media/FolderArchive.h"
 
 #include <atomic>
 #include <functional>
@@ -90,6 +91,11 @@ public:
         ImageSendPrep::Prepared strip;
         // The render the edit dialog waits for; 0 when none is outstanding.
         int editRequest = 0;
+        quint64 inspection = 0;
+        QString reviewedMode;
+        QByteArray reviewedData;
+        std::shared_ptr<QTemporaryDir> reviewedFolder;
+        QString reviewedPath;
     };
 
     explicit AttachmentQueueModel(QObject *parent = nullptr);
@@ -103,6 +109,10 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
     Q_INVOKABLE QString addFile(const QUrl &fileUrl);
+    Q_INVOKABLE quint64 inspectPhoto(int row, const QString &mode);
+    Q_INVOKABLE void reviewFolder(const QUrl &folder);
+    Q_INVOKABLE void cancelFolderReview();
+    Q_INVOKABLE void createFolderArchive(const QStringList &selected);
     static QString detectMime(const QString &path);
 
     // --- Dropped and pasted files -------------------------------------------
@@ -179,6 +189,9 @@ public:
     void setTakenEntryLookup(TakenEntryLookup lookup) { m_takenLookup = std::move(lookup); }
 
 Q_SIGNALS:
+    void photoInspected(quint64 request, const QVariantMap &summary);
+    void folderReviewed(const QVariantList &files, const QStringList &omissions, const QString &error);
+    void archiveCreated(const QString &error);
     void countChanged();
     void entryPrepared(int row);
     void takenEntryPrepared();
@@ -218,5 +231,8 @@ private:
     std::unique_ptr<QTemporaryDir> m_convertedDir;
     quint64 m_nextConverted = 1;
     QHash<QString, std::shared_ptr<std::atomic<bool>>> m_stripJobs;
+    folderarchive::Review m_folderReview;
+    bool m_buildingArchive = false;
+    std::shared_ptr<std::atomic_bool> m_folderCancel;
     int m_nextEditRequest = 1;
 };
