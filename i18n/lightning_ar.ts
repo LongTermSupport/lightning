@@ -22903,34 +22903,34 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <location line="+3"/>
         <location line="+1505"/>
         <location line="+892"/>
-        <location line="+5427"/>
+        <location line="+5430"/>
         <source>Account</source>
         <translation>الحساب</translation>
     </message>
     <message>
-        <location line="-7840"/>
+        <location line="-7843"/>
         <source>account profile</source>
         <translation>الحساب الملف الشخصي</translation>
     </message>
     <message>
         <location line="+15"/>
-        <location line="+8874"/>
+        <location line="+8877"/>
         <source>Homeserver</source>
         <translation>الخادوم المنزلي</translation>
     </message>
     <message>
-        <location line="-8874"/>
+        <location line="-8877"/>
         <source>homeserver server url</source>
         <translation>الخادوم المنزلي عنوان</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+8909"/>
+        <location line="+8912"/>
         <source>Start minimized</source>
         <translation>البدء مصغّرًا</translation>
     </message>
     <message>
-        <location line="-8909"/>
+        <location line="-8912"/>
         <source>startup minimized</source>
         <translation>بدء التشغيل مصغّرًا</translation>
     </message>
@@ -23322,13 +23322,13 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+16"/>
-        <location line="+7250"/>
+        <location line="+7253"/>
         <location line="+10"/>
         <source>Album art</source>
         <translation>صورة الألبوم</translation>
     </message>
     <message>
-        <location line="-7255"/>
+        <location line="-7258"/>
         <location line="+550"/>
         <source>Camera</source>
         <translation>الكاميرا</translation>
@@ -23342,13 +23342,13 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <location line="+24"/>
         <location line="+507"/>
         <location line="+1282"/>
-        <location line="+4919"/>
+        <location line="+4922"/>
         <location line="+207"/>
         <source>Desktop notifications</source>
         <translation>إشعارات سطح المكتب</translation>
     </message>
     <message>
-        <location line="-6914"/>
+        <location line="-6917"/>
         <source>notifications desktop enable</source>
         <translation>الإشعارات سطح المكتب تفعيل</translation>
     </message>
@@ -23363,12 +23363,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <location line="+5"/>
         <location line="+1065"/>
         <location line="+941"/>
-        <location line="+4658"/>
+        <location line="+4661"/>
         <source>Notifications</source>
         <translation>الإشعارات</translation>
     </message>
     <message>
-        <location line="-6863"/>
+        <location line="-6866"/>
         <location line="+2054"/>
         <location line="+2309"/>
         <source>Keep the room list still while I use it</source>
@@ -23399,12 +23399,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+138"/>
-        <location line="+6698"/>
+        <location line="+6701"/>
         <source>Notification preview</source>
         <translation>معاينة الإشعار</translation>
     </message>
     <message>
-        <location line="-6697"/>
+        <location line="-6700"/>
         <source>notification preview privacy sender message</source>
         <translation>معاينة الإشعار الخصوصية المرسِل الرسالة</translation>
     </message>
@@ -23420,12 +23420,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+4"/>
-        <location line="+6754"/>
+        <location line="+6757"/>
         <source>Notification sound</source>
         <translation>صوت الإشعار</translation>
     </message>
     <message>
-        <location line="-6753"/>
+        <location line="-6756"/>
         <source>notification sound mute</source>
         <translation>صوت الإشعار كتم</translation>
     </message>
@@ -23447,12 +23447,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+3"/>
-        <location line="+6384"/>
+        <location line="+6387"/>
         <source>Keep downloaded media on this device</source>
         <translation>الاحتفاظ بالوسائط المنزّلة على هذا الجهاز</translation>
     </message>
     <message>
-        <location line="-6383"/>
+        <location line="-6386"/>
         <source>media cache video image picture file download offline storage disk keep clear</source>
         <translation>ذاكرة الوسائط المؤقتة فيديو صورة ملف تنزيل دون اتصال تخزين قرص احتفاظ مسح</translation>
     </message>
@@ -23555,13 +23555,13 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <location line="+5"/>
         <location line="+868"/>
         <location line="+896"/>
-        <location line="+6917"/>
+        <location line="+6920"/>
         <location line="+509"/>
         <source>Sessions</source>
         <translation>الجلسات</translation>
     </message>
     <message>
-        <location line="-9276"/>
+        <location line="-9279"/>
         <location line="+1634"/>
         <location line="+4298"/>
         <source>Automatically load previews in unencrypted rooms</source>
@@ -23641,12 +23641,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+3"/>
-        <location line="+8388"/>
+        <location line="+8391"/>
         <source>Security status</source>
         <translation>حالة الأمان</translation>
     </message>
     <message>
-        <location line="-8387"/>
+        <location line="-8390"/>
         <source>e2ee encryption status cross-signing backup</source>
         <translation>e2ee التعمية الحالة التوقيع المتقاطع النسخ الاحتياطي</translation>
     </message>
@@ -23660,12 +23660,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="-5178"/>
-        <location line="+9732"/>
+        <location line="+9735"/>
         <source>Recovery key or passphrase</source>
         <translation>مفتاح الاستعادة أو عبارة المرور</translation>
     </message>
     <message>
-        <location line="-9731"/>
+        <location line="-9734"/>
         <source>recovery key passphrase backup restore</source>
         <translation>مفتاح الاستعادة عبارة المرور النسخ الاحتياطي استعادة</translation>
     </message>
@@ -23679,23 +23679,23 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="-11"/>
-        <location line="+9742"/>
+        <location line="+9745"/>
         <source>Import room keys</source>
         <translation>استيراد مفاتيح الغرف</translation>
     </message>
     <message>
-        <location line="-9741"/>
+        <location line="-9744"/>
         <source>import room keys export</source>
         <translation>استيراد مفاتيح الغرف تصدير</translation>
     </message>
     <message>
         <location line="+8"/>
-        <location line="+9957"/>
+        <location line="+9960"/>
         <source>Danger Zone</source>
         <translation>منطقة الخطر</translation>
     </message>
     <message>
-        <location line="-9956"/>
+        <location line="-9959"/>
         <source>reset danger local session</source>
         <translation>إعادة ضبط خطر جلسة محلية</translation>
     </message>
@@ -23706,34 +23706,34 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+3"/>
-        <location line="+9510"/>
+        <location line="+9513"/>
         <source>Current session</source>
         <translation>الجلسة الحالية</translation>
     </message>
     <message>
-        <location line="-9509"/>
+        <location line="-9512"/>
         <source>device id session status</source>
         <translation>معرّف الجهاز حالة الجلسة</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+8712"/>
+        <location line="+8715"/>
         <source>Sign in another device</source>
         <translation>تسجيل الدخول على جهاز آخر</translation>
     </message>
     <message>
-        <location line="-8711"/>
+        <location line="-8714"/>
         <source>qr code scan sign in another device phone link msc4108 login</source>
         <translation>رمز QR مسح تسجيل الدخول على جهاز آخر هاتف ربط msc4108 دخول</translation>
     </message>
     <message>
         <location line="+5"/>
-        <location line="+9555"/>
+        <location line="+9558"/>
         <source>Verify this session</source>
         <translation>التحقّق من هذه الجلسة</translation>
     </message>
     <message>
-        <location line="-9554"/>
+        <location line="-9557"/>
         <source>verify verification sas cross-signing</source>
         <translation>تحقّق sas التوقيع المتقاطع</translation>
     </message>
@@ -23758,12 +23758,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <location line="+4"/>
         <location line="+837"/>
         <location line="+949"/>
-        <location line="+8214"/>
+        <location line="+8217"/>
         <source>Labs</source>
         <translation>Labs</translation>
     </message>
     <message>
-        <location line="-10008"/>
+        <location line="-10011"/>
         <source>Sync mode</source>
         <translation>وضع المزامنة</translation>
     </message>
@@ -23784,12 +23784,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+3"/>
-        <location line="+10122"/>
+        <location line="+10125"/>
         <source>Refresh current room</source>
         <translation>تحديث الغرفة الحالية</translation>
     </message>
     <message>
-        <location line="-10121"/>
+        <location line="-10124"/>
         <source>refresh reload timeline</source>
         <translation>تحديث إعادة تحميل المحادثة</translation>
     </message>
@@ -23799,12 +23799,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <location line="+826"/>
         <location line="+987"/>
         <location line="+11"/>
-        <location line="+8329"/>
+        <location line="+8332"/>
         <source>About</source>
         <translation>حول</translation>
     </message>
     <message>
-        <location line="-10154"/>
+        <location line="-10157"/>
         <source>about version license</source>
         <translation>حول الإصدار الرخصة</translation>
     </message>
@@ -23843,14 +23843,14 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+48"/>
-        <location line="+6882"/>
+        <location line="+6885"/>
         <location line="+183"/>
         <location line="+1388"/>
         <source>Cancel</source>
         <translation>إلغاء</translation>
     </message>
     <message>
-        <location line="-8191"/>
+        <location line="-8194"/>
         <source>Needs attention</source>
         <translation>يحتاج انتباهًا</translation>
     </message>
@@ -23882,14 +23882,14 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+1"/>
-        <location line="+6269"/>
+        <location line="+6272"/>
         <location line="+370"/>
         <location line="+1968"/>
         <source>Clear</source>
         <translation>مسح</translation>
     </message>
     <message>
-        <location line="-8597"/>
+        <location line="-8600"/>
         <source>Remove every provider GIF you&apos;ve saved on this device? GIFs you saved out of chats are unaffected. This cannot be undone.</source>
         <translation>إزالة كل صورة GIF من مزوّد حفظتها على هذا الجهاز؟ لا تتأثر صور GIF التي حفظتها من المحادثات. لا يمكن التراجع عن هذا.</translation>
     </message>
@@ -23971,12 +23971,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <location line="-2132"/>
         <location line="+2133"/>
         <location line="+67"/>
-        <location line="+3314"/>
+        <location line="+3317"/>
         <source>Compact</source>
         <translation>مضغوط</translation>
     </message>
     <message>
-        <location line="-5294"/>
+        <location line="-5297"/>
         <source>theme</source>
         <translation>السمة</translation>
     </message>
@@ -24194,7 +24194,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>إيقاف</translation>
     </message>
     <message>
-        <location line="+405"/>
+        <location line="+408"/>
         <source>Media kept on this device</source>
         <translation>الوسائط المحفوظة على هذا الجهاز</translation>
     </message>
@@ -24244,8 +24244,8 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>نمط صوت الإشعار</translation>
     </message>
     <message>
-        <location line="-3041"/>
-        <location line="+3053"/>
+        <location line="-3044"/>
+        <location line="+3056"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
@@ -24448,7 +24448,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>تحذف إعادة الضبط مخزن Rust SDK المحلي الخاص بـ Lightning لهذا الحساب فقط (متاحة أيضًا من الطرفية: lightning-matrix --reset-crypto-store). ولا تمس رسائل الخادوم ولا بيانات Element. ستحتاج إلى تسجيل الدخول مجددًا بعدها.</translation>
     </message>
     <message>
-        <location line="-7917"/>
+        <location line="-7920"/>
         <source>Moss Light</source>
         <translation>Moss Light</translation>
     </message>
@@ -24520,13 +24520,13 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+3"/>
-        <location line="+7216"/>
+        <location line="+7219"/>
         <location line="+20"/>
         <source>Media playback volume</source>
         <translation>مستوى صوت تشغيل الوسائط</translation>
     </message>
     <message>
-        <location line="-7235"/>
+        <location line="-7238"/>
         <source>volume sound audio video voice message playback level media loud</source>
         <translation>مستوى صوت صوتي فيديو رسالة صوتية تشغيل وسائط عالٍ</translation>
     </message>
@@ -24544,12 +24544,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
     <message>
         <location line="+3"/>
         <location line="+547"/>
-        <location line="+6725"/>
+        <location line="+6728"/>
         <source>Call sounds</source>
         <translation>أصوات المكالمة</translation>
     </message>
     <message>
-        <location line="-7271"/>
+        <location line="-7274"/>
         <source>call sounds join leave mute deafen unmute screen share hand chime beep effects</source>
         <translation>أصوات المكالمة انضمام مغادرة كتم إصمام إلغاء الكتم مشاركة الشاشة يد رنين صافرة مؤثرات</translation>
     </message>
@@ -24561,13 +24561,13 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="-3"/>
-        <location line="+7370"/>
+        <location line="+7373"/>
         <location line="+28"/>
         <source>Ringer volume</source>
         <translation>مستوى صوت الرنين</translation>
     </message>
     <message>
-        <location line="-7397"/>
+        <location line="-7400"/>
         <source>ringer ringtone ring volume incoming call loud</source>
         <translation>رنين نغمة مستوى صوت مكالمة واردة عالٍ</translation>
     </message>
@@ -24605,12 +24605,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
     <message>
         <location line="+932"/>
         <location line="+946"/>
-        <location line="+5033"/>
+        <location line="+5036"/>
         <source>Sound &amp; video</source>
         <translation>الصوت والفيديو</translation>
     </message>
     <message>
-        <location line="-5342"/>
+        <location line="-5345"/>
         <location line="+2375"/>
         <source>Regions</source>
         <translation>المناطق</translation>
@@ -24900,12 +24900,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+61"/>
-        <location line="+6561"/>
+        <location line="+6564"/>
         <source>Always ask where to save files</source>
         <translation>السؤال دائمًا عن مكان حفظ الملفات</translation>
     </message>
     <message>
-        <location line="-6560"/>
+        <location line="-6563"/>
         <source>download downloads save folder location directory ask where file</source>
         <translation>تنزيل تنزيلات حفظ مجلد موقع دليل سؤال أين ملف</translation>
     </message>
@@ -24917,13 +24917,13 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+140"/>
-        <location line="+6887"/>
+        <location line="+6890"/>
         <location line="+3158"/>
         <source>Microphone noise suppression</source>
         <translation>كتم ضوضاء الميكروفون</translation>
     </message>
     <message>
-        <location line="-10044"/>
+        <location line="-10047"/>
         <source>noise suppression cancellation microphone background webrtc rnnoise deepfilternet denoise</source>
         <translation>كتم ضوضاء إلغاء ميكروفون خلفية webrtc rnnoise deepfilternet إزالة الضوضاء</translation>
     </message>
@@ -25012,12 +25012,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+24"/>
-        <location line="+4947"/>
+        <location line="+4950"/>
         <source>Choose image…</source>
         <translation>اختيار صورة…</translation>
     </message>
     <message>
-        <location line="-4940"/>
+        <location line="-4943"/>
         <source>Reset to Lightning default</source>
         <translation>إعادة الضبط إلى أيقونة Lightning الافتراضية</translation>
     </message>
@@ -25357,7 +25357,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>%1الصور مخفية على هذا الجهاز لهذا الحساب.</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+16"/>
         <source>Show all hidden images</source>
         <translation>إظهار كافة الصور المخفية</translation>
     </message>
@@ -25446,8 +25446,8 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>خاص</translation>
     </message>
     <message>
-        <location line="-3209"/>
-        <location line="+3229"/>
+        <location line="-3212"/>
+        <location line="+3232"/>
         <location line="+209"/>
         <source>Off</source>
         <translation>مطفأ</translation>
@@ -25478,8 +25478,8 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>يزيل ضوضاء الخلفية من ميكروفونك في المكالمات. تعمل طريقة واحدة في كل مرة، ويسري التغيير على مكالمة جارية.</translation>
     </message>
     <message>
-        <location line="-10293"/>
-        <location line="+6905"/>
+        <location line="-10296"/>
+        <location line="+6908"/>
         <source>Ring for incoming voice calls</source>
         <translation>الرنين للمكالمات الصوتية الواردة</translation>
     </message>
@@ -25532,7 +25532,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>تحرير</translation>
     </message>
     <message>
-        <location line="-4818"/>
+        <location line="-4821"/>
         <source>When on, Lightning follows the system scheme: Moss Light in light mode, Indigo Night in dark mode.</source>
         <translation>عند تشغيله، يتبع Lightning نظام النظام: Moss Light في الوضع الفاتح، وIndigo Night في الوضع المظلم.</translation>
     </message>
@@ -25575,7 +25575,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>يقوم خادمك المنزلي بتحميل المعاينة، بحيث يرى الموقع المرتبط الخادم الخاص بك بدلاً منك. إذا لم يتمكن خادمك من ذلك — حيث تم إيقاف تشغيل المعاينات لدى العديد من الأشخاص — يقوم Lightning بتحميله مباشرة بدلاً من ذلك، مما قد يكشف عن عنوان IP الخاص بك ويطلب توقيتًا لموقع اختاره المرسل. إن سؤال الخادم المنزلي الخاص بك يخبره أيضًا بالرابط الذي تمت معاينته، والذي لن يعرفه في غرفة مشفرة. لم يتم تنفيذ جافا سكريبت. يتم إيقاف تشغيل كلا المفتاحين بشكل افتراضي؛ اتركها جانبًا واستخدم الزر &quot;إظهار&quot; الموجود على بطاقة رابط كل رسالة لتحديد رسالة واحدة في كل مرة.</translation>
     </message>
     <message>
-        <location line="+1467"/>
+        <location line="+1470"/>
         <source>Edit display name</source>
         <translation>تحرير الاسم الظاهر</translation>
     </message>
@@ -25628,9 +25628,9 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>اختر صورة الملف الشخصي</translation>
     </message>
     <message>
-        <location line="-8377"/>
+        <location line="-8380"/>
         <location line="+902"/>
-        <location line="+7500"/>
+        <location line="+7503"/>
         <source>About you</source>
         <translation>عنك</translation>
     </message>
@@ -25675,14 +25675,14 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>لا يوجد بانر</translation>
     </message>
     <message>
-        <location line="-5068"/>
-        <location line="+4646"/>
+        <location line="-5071"/>
+        <location line="+4649"/>
         <location line="+441"/>
         <source>Remove</source>
         <translation>إزالة</translation>
     </message>
     <message>
-        <location line="-8722"/>
+        <location line="-8725"/>
         <source>chat background wallpaper picture image photo backdrop room conversation own set custom others shared hide</source>
         <translation>خلفية المحادثة ورق جدران صورة لقطة خلفية غرفة محادثة خاصة تعيين مخصص الآخرون مشتركة إخفاء</translation>
     </message>
@@ -26168,23 +26168,23 @@ These links remain in room state. Open the successor from the room&apos;s replac
     <message>
         <location line="+32"/>
         <location line="+507"/>
-        <location line="+6434"/>
+        <location line="+6437"/>
         <source>Unread dot</source>
         <translation>نقطة غير المقروء</translation>
     </message>
     <message>
-        <location line="-6940"/>
+        <location line="-6943"/>
         <source>unread dot badge indicator room list bold muted mentions hide</source>
         <translation>نقطة غير مقروء شارة مؤشر قائمة الغرف عريض مكتوم إشارات إخفاء</translation>
     </message>
     <message>
         <location line="+4"/>
-        <location line="+6969"/>
+        <location line="+6972"/>
         <source>Mark all rooms read automatically</source>
         <translation>تعليم كل الغرف كمقروءة تلقائيًا</translation>
     </message>
     <message>
-        <location line="-6968"/>
+        <location line="-6971"/>
         <source>mark all read automatically auto timer interval minutes unread clear</source>
         <translation>تعليم الكل كمقروء تلقائيًا مؤقت فاصل دقائق غير مقروء مسح</translation>
     </message>
@@ -26292,12 +26292,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+8"/>
-        <location line="+10091"/>
+        <location line="+10094"/>
         <source>Music activity</source>
         <translation>نشاط الموسيقى</translation>
     </message>
     <message>
-        <location line="-10090"/>
+        <location line="-10093"/>
         <source>listening music spotify song status presence activity</source>
         <translation>استماع موسيقى spotify أغنية حالة حضور نشاط</translation>
     </message>
@@ -26459,12 +26459,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+2"/>
-        <location line="+9370"/>
+        <location line="+9373"/>
         <source>Recovery key</source>
         <translation>مفتاح الاستعادة</translation>
     </message>
     <message>
-        <location line="-8909"/>
+        <location line="-8912"/>
         <source>Collapse %1</source>
         <translation>طي %1</translation>
     </message>
@@ -26814,7 +26814,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>لا يصل إلى المزوّد إلا الكلمات التي تبحث عنها. معرّف Matrix الخاص بك وغرفك ورسائلك لا تصل إليه أبدًا.</translation>
     </message>
     <message>
-        <location line="+615"/>
+        <location line="+618"/>
         <source>Lightning does not register for push, so its notifications arrive only while it is running, in the window or the tray.</source>
         <translation>لا يسجّل Lightning للدفع، لذا لا تصل إشعاراته إلا أثناء تشغيله، في النافذة أو الشريط.</translation>
     </message>
@@ -26963,13 +26963,13 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>لا</translation>
     </message>
     <message>
-        <location line="-8373"/>
-        <location line="+8373"/>
+        <location line="-8376"/>
+        <location line="+8376"/>
         <source>Unknown</source>
         <translation>غير معروف</translation>
     </message>
     <message>
-        <location line="-8676"/>
+        <location line="-8679"/>
         <source>Mute all notifications</source>
         <translation>كتم جميع الإشعارات</translation>
     </message>
@@ -27045,12 +27045,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+180"/>
-        <location line="+10085"/>
+        <location line="+10088"/>
         <source>Game activity</source>
         <translation>نشاط الألعاب</translation>
     </message>
     <message>
-        <location line="-10084"/>
+        <location line="-10087"/>
         <source>playing game status steam presence activity</source>
         <translation>لعب لعبة حالة steam تواجد نشاط</translation>
     </message>
@@ -27338,7 +27338,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>شدة تمويه الحرق</translation>
     </message>
     <message>
-        <location line="+630"/>
+        <location line="+633"/>
         <source>Lightning plays its own chime, and mentions get a slightly more urgent one; the desktop&apos;s notification sound is turned off. It stays quiet during calls. Choose System default to let the desktop play its own, where the desktop can; on macOS it cannot, and Lightning&apos;s chime plays instead.</source>
         <translation>يشغّل Lightning نغمته الخاصة، وتحصل الإشارات على نغمة أكثر إلحاحًا قليلًا؛ ويُوقَف صوت إشعارات سطح المكتب. يبقى صامتًا أثناء المكالمات. اختر «افتراضي النظام» ليشغّل سطح المكتب صوته الخاص حيثما أمكن؛ وفي macOS لا يمكن ذلك، فتُشغَّل نغمة Lightning بدلًا منه.</translation>
     </message>
@@ -27348,8 +27348,8 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>كرّر صوت الرنين أثناء رنين مكالمة صوتية واردة. هذا مستقل عن صوت الإشعار: الرنين يتبع هذا الإعداد وحده. إيقافه يُبقي المكالمة ظاهرة — ويُسكت الرنين فقط.</translation>
     </message>
     <message>
-        <location line="-3024"/>
-        <location line="+3073"/>
+        <location line="-3027"/>
+        <location line="+3076"/>
         <source>All rooms</source>
         <translation>كل الغرف</translation>
     </message>
@@ -27359,13 +27359,13 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>الغرف التي إشعاراتها مفعّلة فقط</translation>
     </message>
     <message>
-        <location line="-1351"/>
-        <location line="+1352"/>
+        <location line="-1354"/>
+        <location line="+1355"/>
         <source>Never</source>
         <translation>أبدًا</translation>
     </message>
     <message>
-        <location line="-3078"/>
+        <location line="-3081"/>
         <source>Direct messages</source>
         <translation>الرسائل المباشرة</translation>
     </message>
@@ -27422,7 +27422,7 @@ Escape وبعض المفاتيح التي يستخدمها Lightning بنفسه 
         <translation>نقاط الاتصال والغياب وعدم الاتصال بجانب الأشخاص. بعض الخوادم، مثل matrix.org، لا تشارك حالة أحد أبدًا، فيبدو الجميع غير متصلين؛ لذا يُخفي الخيار «تلقائي» النقاط هناك. ويتوقف «أبدًا» أيضًا عن سؤال الخادوم.</translation>
     </message>
     <message>
-        <location line="+821"/>
+        <location line="+824"/>
         <source>You can hide up to %1 images. Show an image to free a slot.</source>
         <translation>يمكنك إخفاء ما يصل إلى %1 صورة. أظهر صورة لتحرير مكان.</translation>
     </message>
@@ -27889,15 +27889,15 @@ Escape وبعض المفاتيح التي يستخدمها Lightning بنفسه 
         <translation>هذه الجلسة</translation>
     </message>
     <message>
-        <location line="-9230"/>
-        <location line="+9136"/>
+        <location line="-9233"/>
+        <location line="+9139"/>
         <location line="+100"/>
         <source>Verified</source>
         <translation>موثّقة</translation>
     </message>
     <message>
-        <location line="-9235"/>
-        <location line="+9237"/>
+        <location line="-9238"/>
+        <location line="+9240"/>
         <source>Not verified</source>
         <translation>غير موثّقة</translation>
     </message>
@@ -28053,14 +28053,14 @@ Note: importing keys does not verify this session.</source>
         <translation>التحقّق يُنشئ الثقة بهذه الجلسة. أما النسخ الاحتياطي الآمن واستيراد مفاتيح الغرف فيوفران مفاتيح فك تعمية سجل الرسائل. وهي عمليات منفصلة.</translation>
     </message>
     <message>
-        <location line="-10575"/>
-        <location line="+10608"/>
+        <location line="-10578"/>
+        <location line="+10611"/>
         <source>Hide</source>
         <translation>إخفاء</translation>
     </message>
     <message>
-        <location line="-10610"/>
-        <location line="+10610"/>
+        <location line="-10613"/>
+        <location line="+10613"/>
         <source>Show</source>
         <translation>إظهار</translation>
     </message>
@@ -28140,7 +28140,7 @@ Note: importing keys does not verify this session.</source>
         <translation>الرخصة: GPL-3.0-or-later</translation>
     </message>
     <message>
-        <location line="-10689"/>
+        <location line="-10692"/>
         <location line="+3815"/>
         <source>Disable cursor blinking</source>
         <translation>تعطيل وميض المؤشر</translation>

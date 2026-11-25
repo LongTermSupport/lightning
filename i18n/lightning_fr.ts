@@ -22487,34 +22487,34 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <location line="+3"/>
         <location line="+1505"/>
         <location line="+892"/>
-        <location line="+5427"/>
+        <location line="+5430"/>
         <source>Account</source>
         <translation>Compte</translation>
     </message>
     <message>
-        <location line="-7840"/>
+        <location line="-7843"/>
         <source>account profile</source>
         <translation>compte profil</translation>
     </message>
     <message>
         <location line="+15"/>
-        <location line="+8874"/>
+        <location line="+8877"/>
         <source>Homeserver</source>
         <translation>Serveur d&apos;accueil</translation>
     </message>
     <message>
-        <location line="-8874"/>
+        <location line="-8877"/>
         <source>homeserver server url</source>
         <translation>serveur d&apos;accueil url serveur</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+8909"/>
+        <location line="+8912"/>
         <source>Start minimized</source>
         <translation>Démarrer réduit</translation>
     </message>
     <message>
-        <location line="-8909"/>
+        <location line="-8912"/>
         <source>startup minimized</source>
         <translation>démarrage réduit</translation>
     </message>
@@ -22906,13 +22906,13 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     </message>
     <message>
         <location line="+16"/>
-        <location line="+7250"/>
+        <location line="+7253"/>
         <location line="+10"/>
         <source>Album art</source>
         <translation>Pochette d&apos;album</translation>
     </message>
     <message>
-        <location line="-7255"/>
+        <location line="-7258"/>
         <location line="+550"/>
         <source>Camera</source>
         <translation>Appareil photo</translation>
@@ -22926,13 +22926,13 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <location line="+24"/>
         <location line="+507"/>
         <location line="+1282"/>
-        <location line="+4919"/>
+        <location line="+4922"/>
         <location line="+207"/>
         <source>Desktop notifications</source>
         <translation>Notifications du bureau</translation>
     </message>
     <message>
-        <location line="-6914"/>
+        <location line="-6917"/>
         <source>notifications desktop enable</source>
         <translation>notifications bureau activer</translation>
     </message>
@@ -22947,12 +22947,12 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <location line="+5"/>
         <location line="+1065"/>
         <location line="+941"/>
-        <location line="+4658"/>
+        <location line="+4661"/>
         <source>Notifications</source>
         <translation>Notifications</translation>
     </message>
     <message>
-        <location line="-6863"/>
+        <location line="-6866"/>
         <location line="+2054"/>
         <location line="+2309"/>
         <source>Keep the room list still while I use it</source>
@@ -22983,12 +22983,12 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     </message>
     <message>
         <location line="+138"/>
-        <location line="+6698"/>
+        <location line="+6701"/>
         <source>Notification preview</source>
         <translation>Aperçu des notifications</translation>
     </message>
     <message>
-        <location line="-6697"/>
+        <location line="-6700"/>
         <source>notification preview privacy sender message</source>
         <translation>aperçu notification confidentialité expéditeur message</translation>
     </message>
@@ -23004,12 +23004,12 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     </message>
     <message>
         <location line="+4"/>
-        <location line="+6754"/>
+        <location line="+6757"/>
         <source>Notification sound</source>
         <translation>Son de notification</translation>
     </message>
     <message>
-        <location line="-6753"/>
+        <location line="-6756"/>
         <source>notification sound mute</source>
         <translation>son notification muet</translation>
     </message>
@@ -23031,12 +23031,12 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     </message>
     <message>
         <location line="+3"/>
-        <location line="+6384"/>
+        <location line="+6387"/>
         <source>Keep downloaded media on this device</source>
         <translation>Conserver les médias téléchargés sur cet appareil</translation>
     </message>
     <message>
-        <location line="-6383"/>
+        <location line="-6386"/>
         <source>media cache video image picture file download offline storage disk keep clear</source>
         <translation>cache média vidéo image photo fichier téléchargement hors ligne stockage disque conserver vider</translation>
     </message>
@@ -23139,13 +23139,13 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <location line="+5"/>
         <location line="+868"/>
         <location line="+896"/>
-        <location line="+6917"/>
+        <location line="+6920"/>
         <location line="+509"/>
         <source>Sessions</source>
         <translation>Sessions</translation>
     </message>
     <message>
-        <location line="-9276"/>
+        <location line="-9279"/>
         <location line="+1634"/>
         <location line="+4298"/>
         <source>Automatically load previews in unencrypted rooms</source>
@@ -23225,12 +23225,12 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     </message>
     <message>
         <location line="+3"/>
-        <location line="+8388"/>
+        <location line="+8391"/>
         <source>Security status</source>
         <translation>État de la sécurité</translation>
     </message>
     <message>
-        <location line="-8387"/>
+        <location line="-8390"/>
         <source>e2ee encryption status cross-signing backup</source>
         <translation>e2ee chiffrement état signature croisée sauvegarde</translation>
     </message>
@@ -23244,12 +23244,12 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     </message>
     <message>
         <location line="-5178"/>
-        <location line="+9732"/>
+        <location line="+9735"/>
         <source>Recovery key or passphrase</source>
         <translation>Clé de récupération ou phrase secrète</translation>
     </message>
     <message>
-        <location line="-9731"/>
+        <location line="-9734"/>
         <source>recovery key passphrase backup restore</source>
         <translation>clé récupération phrase secrète sauvegarde restaurer</translation>
     </message>
@@ -23263,23 +23263,23 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     </message>
     <message>
         <location line="-11"/>
-        <location line="+9742"/>
+        <location line="+9745"/>
         <source>Import room keys</source>
         <translation>Importer des clés de salon</translation>
     </message>
     <message>
-        <location line="-9741"/>
+        <location line="-9744"/>
         <source>import room keys export</source>
         <translation>importer clés salon export</translation>
     </message>
     <message>
         <location line="+8"/>
-        <location line="+9957"/>
+        <location line="+9960"/>
         <source>Danger Zone</source>
         <translation>Zone de danger</translation>
     </message>
     <message>
-        <location line="-9956"/>
+        <location line="-9959"/>
         <source>reset danger local session</source>
         <translation>réinitialiser danger session locale</translation>
     </message>
@@ -23290,34 +23290,34 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     </message>
     <message>
         <location line="+3"/>
-        <location line="+9510"/>
+        <location line="+9513"/>
         <source>Current session</source>
         <translation>Session actuelle</translation>
     </message>
     <message>
-        <location line="-9509"/>
+        <location line="-9512"/>
         <source>device id session status</source>
         <translation>identifiant appareil état session</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+8712"/>
+        <location line="+8715"/>
         <source>Sign in another device</source>
         <translation>Connecter un autre appareil</translation>
     </message>
     <message>
-        <location line="-8711"/>
+        <location line="-8714"/>
         <source>qr code scan sign in another device phone link msc4108 login</source>
         <translation>code QR scanner connecter un autre appareil téléphone lien msc4108 connexion</translation>
     </message>
     <message>
         <location line="+5"/>
-        <location line="+9555"/>
+        <location line="+9558"/>
         <source>Verify this session</source>
         <translation>Vérifier cette session</translation>
     </message>
     <message>
-        <location line="-9554"/>
+        <location line="-9557"/>
         <source>verify verification sas cross-signing</source>
         <translation>vérifier vérification sas signature croisée</translation>
     </message>
@@ -23342,12 +23342,12 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <location line="+4"/>
         <location line="+837"/>
         <location line="+949"/>
-        <location line="+8214"/>
+        <location line="+8217"/>
         <source>Labs</source>
         <translation>Labs</translation>
     </message>
     <message>
-        <location line="-10008"/>
+        <location line="-10011"/>
         <source>Sync mode</source>
         <translation>Mode de synchronisation</translation>
     </message>
@@ -23368,12 +23368,12 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     </message>
     <message>
         <location line="+3"/>
-        <location line="+10122"/>
+        <location line="+10125"/>
         <source>Refresh current room</source>
         <translation>Actualiser le salon actuel</translation>
     </message>
     <message>
-        <location line="-10121"/>
+        <location line="-10124"/>
         <source>refresh reload timeline</source>
         <translation>actualiser recharger conversation</translation>
     </message>
@@ -23383,12 +23383,12 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <location line="+826"/>
         <location line="+987"/>
         <location line="+11"/>
-        <location line="+8329"/>
+        <location line="+8332"/>
         <source>About</source>
         <translation>À propos</translation>
     </message>
     <message>
-        <location line="-10154"/>
+        <location line="-10157"/>
         <source>about version license</source>
         <translation>à propos version licence</translation>
     </message>
@@ -23427,14 +23427,14 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     </message>
     <message>
         <location line="+48"/>
-        <location line="+6882"/>
+        <location line="+6885"/>
         <location line="+183"/>
         <location line="+1388"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location line="-8191"/>
+        <location line="-8194"/>
         <source>Needs attention</source>
         <translation>Attention requise</translation>
     </message>
@@ -23466,14 +23466,14 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     </message>
     <message>
         <location line="+1"/>
-        <location line="+6269"/>
+        <location line="+6272"/>
         <location line="+370"/>
         <location line="+1968"/>
         <source>Clear</source>
         <translation>Effacer</translation>
     </message>
     <message>
-        <location line="-8597"/>
+        <location line="-8600"/>
         <source>Remove every provider GIF you&apos;ve saved on this device? GIFs you saved out of chats are unaffected. This cannot be undone.</source>
         <translation>Supprimer de cet appareil tous les GIF de fournisseurs que vous avez enregistrés ? Les GIF enregistrés depuis des conversations ne sont pas affectés. Cette action est irréversible.</translation>
     </message>
@@ -23555,12 +23555,12 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <location line="-2132"/>
         <location line="+2133"/>
         <location line="+67"/>
-        <location line="+3314"/>
+        <location line="+3317"/>
         <source>Compact</source>
         <translation>Compact</translation>
     </message>
     <message>
-        <location line="-5294"/>
+        <location line="-5297"/>
         <source>theme</source>
         <translation>thème</translation>
     </message>
@@ -23758,7 +23758,7 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Arrêter</translation>
     </message>
     <message>
-        <location line="+405"/>
+        <location line="+408"/>
         <source>Media kept on this device</source>
         <translation>Médias conservés sur cet appareil</translation>
     </message>
@@ -23808,8 +23808,8 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Style du son de notification</translation>
     </message>
     <message>
-        <location line="-3041"/>
-        <location line="+3053"/>
+        <location line="-3044"/>
+        <location line="+3056"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
@@ -24012,7 +24012,7 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>La réinitialisation supprime uniquement le stockage local du SDK Rust de Lightning pour ce compte (également disponible depuis un terminal : lightning-matrix --reset-crypto-store). Elle ne touche ni aux messages du serveur ni aux données d&apos;Element. Vous devrez vous reconnecter ensuite.</translation>
     </message>
     <message>
-        <location line="-7917"/>
+        <location line="-7920"/>
         <source>Moss Light</source>
         <translation>Moss Light</translation>
     </message>
@@ -24084,13 +24084,13 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     </message>
     <message>
         <location line="+3"/>
-        <location line="+7216"/>
+        <location line="+7219"/>
         <location line="+20"/>
         <source>Media playback volume</source>
         <translation>Volume de lecture des médias</translation>
     </message>
     <message>
-        <location line="-7235"/>
+        <location line="-7238"/>
         <source>volume sound audio video voice message playback level media loud</source>
         <translation>volume son audio vidéo message vocal niveau de lecture médias fort</translation>
     </message>
@@ -24108,12 +24108,12 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     <message>
         <location line="+3"/>
         <location line="+547"/>
-        <location line="+6725"/>
+        <location line="+6728"/>
         <source>Call sounds</source>
         <translation>Sons d&apos;appel</translation>
     </message>
     <message>
-        <location line="-7271"/>
+        <location line="-7274"/>
         <source>call sounds join leave mute deafen unmute screen share hand chime beep effects</source>
         <translation>sons appel arrivée départ couper son micro sourdine réactiver partage d&apos;écran main levée carillon bip effets</translation>
     </message>
@@ -24125,13 +24125,13 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     </message>
     <message>
         <location line="-3"/>
-        <location line="+7370"/>
+        <location line="+7373"/>
         <location line="+28"/>
         <source>Ringer volume</source>
         <translation>Volume de la sonnerie</translation>
     </message>
     <message>
-        <location line="-7397"/>
+        <location line="-7400"/>
         <source>ringer ringtone ring volume incoming call loud</source>
         <translation>sonnerie son de sonnerie volume appel entrant fort</translation>
     </message>
@@ -24169,12 +24169,12 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     <message>
         <location line="+932"/>
         <location line="+946"/>
-        <location line="+5033"/>
+        <location line="+5036"/>
         <source>Sound &amp; video</source>
         <translation>Son et vidéo</translation>
     </message>
     <message>
-        <location line="-5342"/>
+        <location line="-5345"/>
         <location line="+2375"/>
         <source>Regions</source>
         <translation>Régions</translation>
@@ -24456,12 +24456,12 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     </message>
     <message>
         <location line="+61"/>
-        <location line="+6561"/>
+        <location line="+6564"/>
         <source>Always ask where to save files</source>
         <translation>Toujours demander où enregistrer les fichiers</translation>
     </message>
     <message>
-        <location line="-6560"/>
+        <location line="-6563"/>
         <source>download downloads save folder location directory ask where file</source>
         <translation>téléchargement téléchargements dossier enregistrer emplacement répertoire demander où fichier</translation>
     </message>
@@ -24473,13 +24473,13 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     </message>
     <message>
         <location line="+140"/>
-        <location line="+6887"/>
+        <location line="+6890"/>
         <location line="+3158"/>
         <source>Microphone noise suppression</source>
         <translation>Suppression du bruit du microphone</translation>
     </message>
     <message>
-        <location line="-10044"/>
+        <location line="-10047"/>
         <source>noise suppression cancellation microphone background webrtc rnnoise deepfilternet denoise</source>
         <translation>suppression du bruit annulation microphone arrière-plan webrtc rnnoise deepfilternet débruitage</translation>
     </message>
@@ -24568,12 +24568,12 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     </message>
     <message>
         <location line="+24"/>
-        <location line="+4947"/>
+        <location line="+4950"/>
         <source>Choose image…</source>
         <translation>Choisir une image…</translation>
     </message>
     <message>
-        <location line="-4940"/>
+        <location line="-4943"/>
         <source>Reset to Lightning default</source>
         <translation>Rétablir l&apos;icône Lightning par défaut</translation>
     </message>
@@ -24913,7 +24913,7 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Les images %1 sont masquées sur cet appareil pour ce compte.</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+16"/>
         <source>Show all hidden images</source>
         <translation>Afficher toutes les images cachées</translation>
     </message>
@@ -25002,8 +25002,8 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Privé</translation>
     </message>
     <message>
-        <location line="-3209"/>
-        <location line="+3229"/>
+        <location line="-3212"/>
+        <location line="+3232"/>
         <location line="+209"/>
         <source>Off</source>
         <translation>Désactivé</translation>
@@ -25034,8 +25034,8 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Filtre les bruits de fond de votre microphone pendant les appels. Une seule méthode fonctionne à la fois, et une modification s&apos;applique à un appel en cours.</translation>
     </message>
     <message>
-        <location line="-10293"/>
-        <location line="+6905"/>
+        <location line="-10296"/>
+        <location line="+6908"/>
         <source>Ring for incoming voice calls</source>
         <translation>Sonnerie pour les appels vocaux entrants</translation>
     </message>
@@ -25088,7 +25088,7 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Modifier</translation>
     </message>
     <message>
-        <location line="-4818"/>
+        <location line="-4821"/>
         <source>When on, Lightning follows the system scheme: Moss Light in light mode, Indigo Night in dark mode.</source>
         <translation>Lorsqu&apos;il est allumé, Lightning suit le schéma du système&#xa0;: Moss Light en mode clair, Indigo Night en mode sombre.</translation>
     </message>
@@ -25131,7 +25131,7 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Votre serveur domestique charge l&apos;aperçu, de sorte que le site lié voit votre serveur plutôt que vous. Si votre serveur ne le peut pas (beaucoup ont les aperçus désactivés), Lightning le charge directement à la place, ce qui peut révéler votre adresse IP et demander une synchronisation avec un site choisi par l&apos;expéditeur. Demander à votre serveur domestique lui indique également quel lien a été prévisualisé, ce qu&apos;il ne saurait autrement dans une pièce cryptée. Aucun JavaScript n&apos;est exécuté. Les deux commutateurs sont désactivés par défaut&#xa0;; laissez-les de côté et utilisez le bouton «&#xa0;Afficher&#xa0;» sur la carte de lien de chaque message pour en décider un à la fois.</translation>
     </message>
     <message>
-        <location line="+1467"/>
+        <location line="+1470"/>
         <source>Edit display name</source>
         <translation>Modifier le nom affiché</translation>
     </message>
@@ -25184,9 +25184,9 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Choisissez une photo de profil</translation>
     </message>
     <message>
-        <location line="-8377"/>
+        <location line="-8380"/>
         <location line="+902"/>
-        <location line="+7500"/>
+        <location line="+7503"/>
         <source>About you</source>
         <translation>À propos de vous</translation>
     </message>
@@ -25231,14 +25231,14 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Aucune bannière</translation>
     </message>
     <message>
-        <location line="-5068"/>
-        <location line="+4646"/>
+        <location line="-5071"/>
+        <location line="+4649"/>
         <location line="+441"/>
         <source>Remove</source>
         <translation>Supprimer</translation>
     </message>
     <message>
-        <location line="-8722"/>
+        <location line="-8725"/>
         <source>chat background wallpaper picture image photo backdrop room conversation own set custom others shared hide</source>
         <translation>arrière-plan de discussion fond d&apos;écran papier peint image photo toile de fond salon conversation propre personnalisé autres partagé masquer</translation>
     </message>
@@ -25724,23 +25724,23 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     <message>
         <location line="+32"/>
         <location line="+507"/>
-        <location line="+6434"/>
+        <location line="+6437"/>
         <source>Unread dot</source>
         <translation>Point non lu</translation>
     </message>
     <message>
-        <location line="-6940"/>
+        <location line="-6943"/>
         <source>unread dot badge indicator room list bold muted mentions hide</source>
         <translation>non lu point badge indicateur liste des salons gras en sourdine mentions masquer</translation>
     </message>
     <message>
         <location line="+4"/>
-        <location line="+6969"/>
+        <location line="+6972"/>
         <source>Mark all rooms read automatically</source>
         <translation>Marquer automatiquement tous les salons comme lus</translation>
     </message>
     <message>
-        <location line="-6968"/>
+        <location line="-6971"/>
         <source>mark all read automatically auto timer interval minutes unread clear</source>
         <translation>marquer tout lu automatiquement auto minuterie intervalle minutes non lus effacer</translation>
     </message>
@@ -25848,12 +25848,12 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     </message>
     <message>
         <location line="+8"/>
-        <location line="+10091"/>
+        <location line="+10094"/>
         <source>Music activity</source>
         <translation>Activité musicale</translation>
     </message>
     <message>
-        <location line="-10090"/>
+        <location line="-10093"/>
         <source>listening music spotify song status presence activity</source>
         <translation>écoute musique spotify titre chanson statut présence activité</translation>
     </message>
@@ -26015,12 +26015,12 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     </message>
     <message>
         <location line="+2"/>
-        <location line="+9370"/>
+        <location line="+9373"/>
         <source>Recovery key</source>
         <translation>Clé de récupération</translation>
     </message>
     <message>
-        <location line="-8909"/>
+        <location line="-8912"/>
         <source>Collapse %1</source>
         <translation>Replier %1</translation>
     </message>
@@ -26370,7 +26370,7 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Seuls les mots que vous recherchez sont envoyés au fournisseur. Votre identifiant Matrix, vos salons et vos messages ne le sont jamais.</translation>
     </message>
     <message>
-        <location line="+615"/>
+        <location line="+618"/>
         <source>Lightning does not register for push, so its notifications arrive only while it is running, in the window or the tray.</source>
         <translation>Lightning ne s&apos;enregistre pas pour les notifications push : ses notifications n&apos;arrivent que lorsqu&apos;il est lancé, dans la fenêtre ou dans la zone de notification.</translation>
     </message>
@@ -26519,13 +26519,13 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Non</translation>
     </message>
     <message>
-        <location line="-8373"/>
-        <location line="+8373"/>
+        <location line="-8376"/>
+        <location line="+8376"/>
         <source>Unknown</source>
         <translation>Inconnu</translation>
     </message>
     <message>
-        <location line="-8676"/>
+        <location line="-8679"/>
         <source>Mute all notifications</source>
         <translation>Couper toutes les notifications</translation>
     </message>
@@ -26601,12 +26601,12 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     </message>
     <message>
         <location line="+180"/>
-        <location line="+10085"/>
+        <location line="+10088"/>
         <source>Game activity</source>
         <translation>Activité de jeu</translation>
     </message>
     <message>
-        <location line="-10084"/>
+        <location line="-10087"/>
         <source>playing game status steam presence activity</source>
         <translation>jeu jouer statut steam présence activité</translation>
     </message>
@@ -26886,7 +26886,7 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Intensité du flou des spoilers</translation>
     </message>
     <message>
-        <location line="+630"/>
+        <location line="+633"/>
         <source>Lightning plays its own chime, and mentions get a slightly more urgent one; the desktop&apos;s notification sound is turned off. It stays quiet during calls. Choose System default to let the desktop play its own, where the desktop can; on macOS it cannot, and Lightning&apos;s chime plays instead.</source>
         <translation>Lightning joue son propre carillon, et les mentions en ont un légèrement plus pressant ; le son de notification du bureau est désactivé. Il reste silencieux pendant les appels. Choisissez Son par défaut du système pour laisser le bureau jouer le sien, lorsque c&apos;est possible ; sur macOS ce n&apos;est pas possible, et le carillon de Lightning est joué à la place.</translation>
     </message>
@@ -26896,8 +26896,8 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Répéter la sonnerie tant qu&apos;un appel vocal entrant sonne. Ce réglage est indépendant de Son de notification : la sonnerie ne suit que lui. Le désactiver affiche tout de même l&apos;appel — cela ne coupe que la sonnerie.</translation>
     </message>
     <message>
-        <location line="-3024"/>
-        <location line="+3073"/>
+        <location line="-3027"/>
+        <location line="+3076"/>
         <source>All rooms</source>
         <translation>Tous les salons</translation>
     </message>
@@ -26907,13 +26907,13 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Uniquement les salons avec notifications activées</translation>
     </message>
     <message>
-        <location line="-1351"/>
-        <location line="+1352"/>
+        <location line="-1354"/>
+        <location line="+1355"/>
         <source>Never</source>
         <translation>Jamais</translation>
     </message>
     <message>
-        <location line="-3078"/>
+        <location line="-3081"/>
         <source>Direct messages</source>
         <translation>Messages directs</translation>
     </message>
@@ -26970,7 +26970,7 @@ Les touches de mise en forme des messages ne s&apos;appliquent que lorsque la zo
         <translation>Points en ligne, absent et hors ligne à côté des personnes. Certains serveurs, comme matrix.org, ne partagent jamais le statut de quiconque, donc tout le monde paraîtrait hors ligne ; Automatique y masque les points. Jamais arrête aussi d&apos;interroger le serveur.</translation>
     </message>
     <message>
-        <location line="+821"/>
+        <location line="+824"/>
         <source>You can hide up to %1 images. Show an image to free a slot.</source>
         <translation>Vous pouvez masquer jusqu&apos;à %1 images. Affichez une image pour libérer un emplacement.</translation>
     </message>
@@ -27433,15 +27433,15 @@ Les touches de mise en forme des messages ne s&apos;appliquent que lorsque la zo
         <translation>Cette session</translation>
     </message>
     <message>
-        <location line="-9230"/>
-        <location line="+9136"/>
+        <location line="-9233"/>
+        <location line="+9139"/>
         <location line="+100"/>
         <source>Verified</source>
         <translation>Vérifiée</translation>
     </message>
     <message>
-        <location line="-9235"/>
-        <location line="+9237"/>
+        <location line="-9238"/>
+        <location line="+9240"/>
         <source>Not verified</source>
         <translation>Non vérifiée</translation>
     </message>
@@ -27597,14 +27597,14 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>La vérification établit la confiance dans cette session. La sauvegarde sécurisée et l&apos;import de clés de salon fournissent des clés de déchiffrement pour l&apos;historique des messages. Ce sont des opérations distinctes.</translation>
     </message>
     <message>
-        <location line="-10575"/>
-        <location line="+10608"/>
+        <location line="-10578"/>
+        <location line="+10611"/>
         <source>Hide</source>
         <translation>Masquer</translation>
     </message>
     <message>
-        <location line="-10610"/>
-        <location line="+10610"/>
+        <location line="-10613"/>
+        <location line="+10613"/>
         <source>Show</source>
         <translation>Afficher</translation>
     </message>
@@ -27684,7 +27684,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Licence : GPL-3.0-or-later</translation>
     </message>
     <message>
-        <location line="-10689"/>
+        <location line="-10692"/>
         <location line="+3815"/>
         <source>Disable cursor blinking</source>
         <translation>Désactiver le clignotement du curseur</translation>

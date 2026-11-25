@@ -22487,34 +22487,34 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <location line="+3"/>
         <location line="+1505"/>
         <location line="+892"/>
-        <location line="+5427"/>
+        <location line="+5430"/>
         <source>Account</source>
         <translation>Conta</translation>
     </message>
     <message>
-        <location line="-7840"/>
+        <location line="-7843"/>
         <source>account profile</source>
         <translation>conta perfil</translation>
     </message>
     <message>
         <location line="+15"/>
-        <location line="+8874"/>
+        <location line="+8877"/>
         <source>Homeserver</source>
         <translation>Servidor</translation>
     </message>
     <message>
-        <location line="-8874"/>
+        <location line="-8877"/>
         <source>homeserver server url</source>
         <translation>servidor url</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+8909"/>
+        <location line="+8912"/>
         <source>Start minimized</source>
         <translation>Iniciar minimizado</translation>
     </message>
     <message>
-        <location line="-8909"/>
+        <location line="-8912"/>
         <source>startup minimized</source>
         <translation>arranque minimizado</translation>
     </message>
@@ -22906,13 +22906,13 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     </message>
     <message>
         <location line="+16"/>
-        <location line="+7250"/>
+        <location line="+7253"/>
         <location line="+10"/>
         <source>Album art</source>
         <translation>Capa do álbum</translation>
     </message>
     <message>
-        <location line="-7255"/>
+        <location line="-7258"/>
         <location line="+550"/>
         <source>Camera</source>
         <translation>Câmera</translation>
@@ -22926,13 +22926,13 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <location line="+24"/>
         <location line="+507"/>
         <location line="+1282"/>
-        <location line="+4919"/>
+        <location line="+4922"/>
         <location line="+207"/>
         <source>Desktop notifications</source>
         <translation>Notificações do ambiente de trabalho</translation>
     </message>
     <message>
-        <location line="-6914"/>
+        <location line="-6917"/>
         <source>notifications desktop enable</source>
         <translation>notificações ambiente de trabalho ativar</translation>
     </message>
@@ -22947,12 +22947,12 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <location line="+5"/>
         <location line="+1065"/>
         <location line="+941"/>
-        <location line="+4658"/>
+        <location line="+4661"/>
         <source>Notifications</source>
         <translation>Notificações</translation>
     </message>
     <message>
-        <location line="-6863"/>
+        <location line="-6866"/>
         <location line="+2054"/>
         <location line="+2309"/>
         <source>Keep the room list still while I use it</source>
@@ -22983,12 +22983,12 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     </message>
     <message>
         <location line="+138"/>
-        <location line="+6698"/>
+        <location line="+6701"/>
         <source>Notification preview</source>
         <translation>Pré-visualização das notificações</translation>
     </message>
     <message>
-        <location line="-6697"/>
+        <location line="-6700"/>
         <source>notification preview privacy sender message</source>
         <translation>pré-visualização notificação privacidade remetente mensagem</translation>
     </message>
@@ -23004,12 +23004,12 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     </message>
     <message>
         <location line="+4"/>
-        <location line="+6754"/>
+        <location line="+6757"/>
         <source>Notification sound</source>
         <translation>Som das notificações</translation>
     </message>
     <message>
-        <location line="-6753"/>
+        <location line="-6756"/>
         <source>notification sound mute</source>
         <translation>som notificação silenciar</translation>
     </message>
@@ -23031,12 +23031,12 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     </message>
     <message>
         <location line="+3"/>
-        <location line="+6384"/>
+        <location line="+6387"/>
         <source>Keep downloaded media on this device</source>
         <translation>Manter a multimédia transferida neste dispositivo</translation>
     </message>
     <message>
-        <location line="-6383"/>
+        <location line="-6386"/>
         <source>media cache video image picture file download offline storage disk keep clear</source>
         <translation>cache multimédia vídeo imagem fotografia ficheiro transferir offline armazenamento disco manter limpar</translation>
     </message>
@@ -23139,13 +23139,13 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <location line="+5"/>
         <location line="+868"/>
         <location line="+896"/>
-        <location line="+6917"/>
+        <location line="+6920"/>
         <location line="+509"/>
         <source>Sessions</source>
         <translation>Sessões</translation>
     </message>
     <message>
-        <location line="-9276"/>
+        <location line="-9279"/>
         <location line="+1634"/>
         <location line="+4298"/>
         <source>Automatically load previews in unencrypted rooms</source>
@@ -23225,12 +23225,12 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     </message>
     <message>
         <location line="+3"/>
-        <location line="+8388"/>
+        <location line="+8391"/>
         <source>Security status</source>
         <translation>Estado da segurança</translation>
     </message>
     <message>
-        <location line="-8387"/>
+        <location line="-8390"/>
         <source>e2ee encryption status cross-signing backup</source>
         <translation>e2ee encriptação estado assinatura cruzada cópia de segurança</translation>
     </message>
@@ -23244,12 +23244,12 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     </message>
     <message>
         <location line="-5178"/>
-        <location line="+9732"/>
+        <location line="+9735"/>
         <source>Recovery key or passphrase</source>
         <translation>Chave de recuperação ou frase-passe</translation>
     </message>
     <message>
-        <location line="-9731"/>
+        <location line="-9734"/>
         <source>recovery key passphrase backup restore</source>
         <translation>chave recuperação frase-passe cópia de segurança restaurar</translation>
     </message>
@@ -23263,23 +23263,23 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     </message>
     <message>
         <location line="-11"/>
-        <location line="+9742"/>
+        <location line="+9745"/>
         <source>Import room keys</source>
         <translation>Importar chaves de sala</translation>
     </message>
     <message>
-        <location line="-9741"/>
+        <location line="-9744"/>
         <source>import room keys export</source>
         <translation>importar chaves sala exportação</translation>
     </message>
     <message>
         <location line="+8"/>
-        <location line="+9957"/>
+        <location line="+9960"/>
         <source>Danger Zone</source>
         <translation>Zona de perigo</translation>
     </message>
     <message>
-        <location line="-9956"/>
+        <location line="-9959"/>
         <source>reset danger local session</source>
         <translation>repor perigo sessão local</translation>
     </message>
@@ -23290,34 +23290,34 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     </message>
     <message>
         <location line="+3"/>
-        <location line="+9510"/>
+        <location line="+9513"/>
         <source>Current session</source>
         <translation>Sessão atual</translation>
     </message>
     <message>
-        <location line="-9509"/>
+        <location line="-9512"/>
         <source>device id session status</source>
         <translation>id dispositivo estado sessão</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+8712"/>
+        <location line="+8715"/>
         <source>Sign in another device</source>
         <translation>Iniciar sessão noutro dispositivo</translation>
     </message>
     <message>
-        <location line="-8711"/>
+        <location line="-8714"/>
         <source>qr code scan sign in another device phone link msc4108 login</source>
         <translation>código qr iniciar sessão noutro dispositivo ligação telefone msc4108 entrada</translation>
     </message>
     <message>
         <location line="+5"/>
-        <location line="+9555"/>
+        <location line="+9558"/>
         <source>Verify this session</source>
         <translation>Verificar esta sessão</translation>
     </message>
     <message>
-        <location line="-9554"/>
+        <location line="-9557"/>
         <source>verify verification sas cross-signing</source>
         <translation>verificar verificação sas assinatura cruzada</translation>
     </message>
@@ -23342,12 +23342,12 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <location line="+4"/>
         <location line="+837"/>
         <location line="+949"/>
-        <location line="+8214"/>
+        <location line="+8217"/>
         <source>Labs</source>
         <translation>Labs</translation>
     </message>
     <message>
-        <location line="-10008"/>
+        <location line="-10011"/>
         <source>Sync mode</source>
         <translation>Modo de sincronização</translation>
     </message>
@@ -23368,12 +23368,12 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     </message>
     <message>
         <location line="+3"/>
-        <location line="+10122"/>
+        <location line="+10125"/>
         <source>Refresh current room</source>
         <translation>Atualizar a sala atual</translation>
     </message>
     <message>
-        <location line="-10121"/>
+        <location line="-10124"/>
         <source>refresh reload timeline</source>
         <translation>atualizar recarregar conversa</translation>
     </message>
@@ -23383,12 +23383,12 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <location line="+826"/>
         <location line="+987"/>
         <location line="+11"/>
-        <location line="+8329"/>
+        <location line="+8332"/>
         <source>About</source>
         <translation>Sobre</translation>
     </message>
     <message>
-        <location line="-10154"/>
+        <location line="-10157"/>
         <source>about version license</source>
         <translation>sobre versão licença</translation>
     </message>
@@ -23427,14 +23427,14 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     </message>
     <message>
         <location line="+48"/>
-        <location line="+6882"/>
+        <location line="+6885"/>
         <location line="+183"/>
         <location line="+1388"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location line="-8191"/>
+        <location line="-8194"/>
         <source>Needs attention</source>
         <translation>Precisa de atenção</translation>
     </message>
@@ -23466,14 +23466,14 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     </message>
     <message>
         <location line="+1"/>
-        <location line="+6269"/>
+        <location line="+6272"/>
         <location line="+370"/>
         <location line="+1968"/>
         <source>Clear</source>
         <translation>Limpar</translation>
     </message>
     <message>
-        <location line="-8597"/>
+        <location line="-8600"/>
         <source>Remove every provider GIF you&apos;ve saved on this device? GIFs you saved out of chats are unaffected. This cannot be undone.</source>
         <translation>Remover deste dispositivo todos os GIF de fornecedores que guardou? Os GIF guardados a partir de conversas não são afetados. Esta ação não pode ser anulada.</translation>
     </message>
@@ -23555,12 +23555,12 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <location line="-2132"/>
         <location line="+2133"/>
         <location line="+67"/>
-        <location line="+3314"/>
+        <location line="+3317"/>
         <source>Compact</source>
         <translation>Compacto</translation>
     </message>
     <message>
-        <location line="-5294"/>
+        <location line="-5297"/>
         <source>theme</source>
         <translation>tema</translation>
     </message>
@@ -23758,7 +23758,7 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <translation>Parar</translation>
     </message>
     <message>
-        <location line="+405"/>
+        <location line="+408"/>
         <source>Media kept on this device</source>
         <translation>Multimédia guardada neste dispositivo</translation>
     </message>
@@ -23808,8 +23808,8 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <translation>Estilo do som de notificação</translation>
     </message>
     <message>
-        <location line="-3041"/>
-        <location line="+3053"/>
+        <location line="-3044"/>
+        <location line="+3056"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
@@ -24012,7 +24012,7 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <translation>Repor elimina apenas o armazenamento local do SDK Rust do Lightning para esta conta (também disponível num terminal: lightning-matrix --reset-crypto-store). Não toca em mensagens do servidor nem nos dados do Element. Terá de voltar a iniciar sessão depois.</translation>
     </message>
     <message>
-        <location line="-7917"/>
+        <location line="-7920"/>
         <source>Moss Light</source>
         <translation>Moss Light</translation>
     </message>
@@ -24084,13 +24084,13 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     </message>
     <message>
         <location line="+3"/>
-        <location line="+7216"/>
+        <location line="+7219"/>
         <location line="+20"/>
         <source>Media playback volume</source>
         <translation>Volume de reprodução multimédia</translation>
     </message>
     <message>
-        <location line="-7235"/>
+        <location line="-7238"/>
         <source>volume sound audio video voice message playback level media loud</source>
         <translation>volume som áudio vídeo mensagem de voz nível de reprodução multimédia alto</translation>
     </message>
@@ -24108,12 +24108,12 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     <message>
         <location line="+3"/>
         <location line="+547"/>
-        <location line="+6725"/>
+        <location line="+6728"/>
         <source>Call sounds</source>
         <translation>Sons de chamada</translation>
     </message>
     <message>
-        <location line="-7271"/>
+        <location line="-7274"/>
         <source>call sounds join leave mute deafen unmute screen share hand chime beep effects</source>
         <translation>sons de chamada entrar sair silenciar desativar som reativar partilha de ecrã mão sinal bipe efeitos</translation>
     </message>
@@ -24125,13 +24125,13 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     </message>
     <message>
         <location line="-3"/>
-        <location line="+7370"/>
+        <location line="+7373"/>
         <location line="+28"/>
         <source>Ringer volume</source>
         <translation>Volume do toque</translation>
     </message>
     <message>
-        <location line="-7397"/>
+        <location line="-7400"/>
         <source>ringer ringtone ring volume incoming call loud</source>
         <translation>toque campainha volume de toque chamada recebida alto</translation>
     </message>
@@ -24169,12 +24169,12 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     <message>
         <location line="+932"/>
         <location line="+946"/>
-        <location line="+5033"/>
+        <location line="+5036"/>
         <source>Sound &amp; video</source>
         <translation>Som e vídeo</translation>
     </message>
     <message>
-        <location line="-5342"/>
+        <location line="-5345"/>
         <location line="+2375"/>
         <source>Regions</source>
         <translation>Regiões</translation>
@@ -24456,12 +24456,12 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     </message>
     <message>
         <location line="+61"/>
-        <location line="+6561"/>
+        <location line="+6564"/>
         <source>Always ask where to save files</source>
         <translation>Perguntar sempre onde guardar os ficheiros</translation>
     </message>
     <message>
-        <location line="-6560"/>
+        <location line="-6563"/>
         <source>download downloads save folder location directory ask where file</source>
         <translation>transferir transferências pasta de guardar localização diretório perguntar onde ficheiro</translation>
     </message>
@@ -24473,13 +24473,13 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     </message>
     <message>
         <location line="+140"/>
-        <location line="+6887"/>
+        <location line="+6890"/>
         <location line="+3158"/>
         <source>Microphone noise suppression</source>
         <translation>Supressão de ruído do microfone</translation>
     </message>
     <message>
-        <location line="-10044"/>
+        <location line="-10047"/>
         <source>noise suppression cancellation microphone background webrtc rnnoise deepfilternet denoise</source>
         <translation>supressão de ruído cancelamento microfone fundo webrtc rnnoise deepfilternet remover ruído</translation>
     </message>
@@ -24568,12 +24568,12 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     </message>
     <message>
         <location line="+24"/>
-        <location line="+4947"/>
+        <location line="+4950"/>
         <source>Choose image…</source>
         <translation>Escolher uma imagem…</translation>
     </message>
     <message>
-        <location line="-4940"/>
+        <location line="-4943"/>
         <source>Reset to Lightning default</source>
         <translation>Repor o ícone predefinido do Lightning</translation>
     </message>
@@ -24913,7 +24913,7 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <translation>As imagens %1 estão ocultas neste dispositivo para esta conta.</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+16"/>
         <source>Show all hidden images</source>
         <translation>Mostrar todas as imagens ocultas</translation>
     </message>
@@ -25002,8 +25002,8 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <translation>Privado</translation>
     </message>
     <message>
-        <location line="-3209"/>
-        <location line="+3229"/>
+        <location line="-3212"/>
+        <location line="+3232"/>
         <location line="+209"/>
         <source>Off</source>
         <translation>Desligado</translation>
@@ -25034,8 +25034,8 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <translation>Filtra o ruído de fundo do seu microfone nas chamadas. Um método de cada vez, e uma alteração aplica-se a uma chamada em curso.</translation>
     </message>
     <message>
-        <location line="-10293"/>
-        <location line="+6905"/>
+        <location line="-10296"/>
+        <location line="+6908"/>
         <source>Ring for incoming voice calls</source>
         <translation>Tocar nas chamadas de voz recebidas</translation>
     </message>
@@ -25088,7 +25088,7 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <translation>Editar</translation>
     </message>
     <message>
-        <location line="-4818"/>
+        <location line="-4821"/>
         <source>When on, Lightning follows the system scheme: Moss Light in light mode, Indigo Night in dark mode.</source>
         <translation>Quando ativado, o Lightning segue o esquema do sistema: Moss Light no modo claro, Indigo Night no modo escuro.</translation>
     </message>
@@ -25131,7 +25131,7 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <translation>Seu servidor doméstico carrega a visualização, para que o site vinculado veja seu servidor e não você. Se o seu servidor não puder – muitos têm as visualizações desativadas – o Lightning carrega-o diretamente, o que pode revelar seu endereço IP e solicitar tempo para um site escolhido pelo remetente. Perguntar ao seu servidor doméstico também informa qual link foi visualizado, o que em uma sala criptografada ele não saberia de outra forma. Nenhum JavaScript é executado. Ambas as opções estão desativadas por padrão; deixe-os desativados e use o botão “Mostrar” no cartão de link de cada mensagem para decidir uma de cada vez.</translation>
     </message>
     <message>
-        <location line="+1467"/>
+        <location line="+1470"/>
         <source>Edit display name</source>
         <translation>Editar o nome de exibição</translation>
     </message>
@@ -25184,9 +25184,9 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <translation>Escolha uma foto de perfil</translation>
     </message>
     <message>
-        <location line="-8377"/>
+        <location line="-8380"/>
         <location line="+902"/>
-        <location line="+7500"/>
+        <location line="+7503"/>
         <source>About you</source>
         <translation>Sobre você</translation>
     </message>
@@ -25231,14 +25231,14 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <translation>Sem banner</translation>
     </message>
     <message>
-        <location line="-5068"/>
-        <location line="+4646"/>
+        <location line="-5071"/>
+        <location line="+4649"/>
         <location line="+441"/>
         <source>Remove</source>
         <translation>Remover</translation>
     </message>
     <message>
-        <location line="-8722"/>
+        <location line="-8725"/>
         <source>chat background wallpaper picture image photo backdrop room conversation own set custom others shared hide</source>
         <translation>fundo da conversa papel de parede imagem fotografia plano de fundo sala conversa próprio definido personalizado dos outros partilhado ocultar</translation>
     </message>
@@ -25724,23 +25724,23 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     <message>
         <location line="+32"/>
         <location line="+507"/>
-        <location line="+6434"/>
+        <location line="+6437"/>
         <source>Unread dot</source>
         <translation>Ponto de não lidas</translation>
     </message>
     <message>
-        <location line="-6940"/>
+        <location line="-6943"/>
         <source>unread dot badge indicator room list bold muted mentions hide</source>
         <translation>não lidas ponto distintivo indicador lista de salas negrito silenciadas menções ocultar</translation>
     </message>
     <message>
         <location line="+4"/>
-        <location line="+6969"/>
+        <location line="+6972"/>
         <source>Mark all rooms read automatically</source>
         <translation>Marcar todas as salas como lidas automaticamente</translation>
     </message>
     <message>
-        <location line="-6968"/>
+        <location line="-6971"/>
         <source>mark all read automatically auto timer interval minutes unread clear</source>
         <translation>marcar tudo lido automaticamente auto temporizador intervalo minutos não lidas limpar</translation>
     </message>
@@ -25848,12 +25848,12 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     </message>
     <message>
         <location line="+8"/>
-        <location line="+10091"/>
+        <location line="+10094"/>
         <source>Music activity</source>
         <translation>Atividade musical</translation>
     </message>
     <message>
-        <location line="-10090"/>
+        <location line="-10093"/>
         <source>listening music spotify song status presence activity</source>
         <translation>a ouvir música spotify canção estado presença atividade</translation>
     </message>
@@ -26015,12 +26015,12 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     </message>
     <message>
         <location line="+2"/>
-        <location line="+9370"/>
+        <location line="+9373"/>
         <source>Recovery key</source>
         <translation>Chave de recuperação</translation>
     </message>
     <message>
-        <location line="-8909"/>
+        <location line="-8912"/>
         <source>Collapse %1</source>
         <translation>Recolher %1</translation>
     </message>
@@ -26370,7 +26370,7 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <translation>Apenas as palavras que pesquisa são enviadas ao fornecedor. O seu ID Matrix, as salas e as mensagens nunca são.</translation>
     </message>
     <message>
-        <location line="+615"/>
+        <location line="+618"/>
         <source>Lightning does not register for push, so its notifications arrive only while it is running, in the window or the tray.</source>
         <translation>O Lightning não se regista para notificações push, por isso as suas notificações só chegam enquanto está em execução, na janela ou na bandeja.</translation>
     </message>
@@ -26519,13 +26519,13 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <translation>Não</translation>
     </message>
     <message>
-        <location line="-8373"/>
-        <location line="+8373"/>
+        <location line="-8376"/>
+        <location line="+8376"/>
         <source>Unknown</source>
         <translation>Desconhecido</translation>
     </message>
     <message>
-        <location line="-8676"/>
+        <location line="-8679"/>
         <source>Mute all notifications</source>
         <translation>Silenciar todas as notificações</translation>
     </message>
@@ -26601,12 +26601,12 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
     </message>
     <message>
         <location line="+180"/>
-        <location line="+10085"/>
+        <location line="+10088"/>
         <source>Game activity</source>
         <translation>Atividade de jogo</translation>
     </message>
     <message>
-        <location line="-10084"/>
+        <location line="-10087"/>
         <source>playing game status steam presence activity</source>
         <translation>jogar jogo estado steam presença atividade</translation>
     </message>
@@ -26886,7 +26886,7 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <translation>Intensidade da desfocagem de spoilers</translation>
     </message>
     <message>
-        <location line="+630"/>
+        <location line="+633"/>
         <source>Lightning plays its own chime, and mentions get a slightly more urgent one; the desktop&apos;s notification sound is turned off. It stays quiet during calls. Choose System default to let the desktop play its own, where the desktop can; on macOS it cannot, and Lightning&apos;s chime plays instead.</source>
         <translation>O Lightning toca o seu próprio som, e as menções têm um ligeiramente mais urgente; o som de notificação do ambiente de trabalho fica desligado. Fica em silêncio durante as chamadas. Escolha Predefinição do sistema para deixar o ambiente de trabalho tocar o seu, onde for possível; no macOS não é, e toca o som do Lightning.</translation>
     </message>
@@ -26896,8 +26896,8 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <translation>Repetir o som de chamada enquanto uma chamada de voz recebida estiver a tocar. Isto é independente do Som das notificações: o toque segue apenas esta definição. Desativá-lo continua a mostrar a chamada — só silencia o toque.</translation>
     </message>
     <message>
-        <location line="-3024"/>
-        <location line="+3073"/>
+        <location line="-3027"/>
+        <location line="+3076"/>
         <source>All rooms</source>
         <translation>Todas as salas</translation>
     </message>
@@ -26907,13 +26907,13 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <translation>Só salas com notificações ligadas</translation>
     </message>
     <message>
-        <location line="-1351"/>
-        <location line="+1352"/>
+        <location line="-1354"/>
+        <location line="+1355"/>
         <source>Never</source>
         <translation>Nunca</translation>
     </message>
     <message>
-        <location line="-3078"/>
+        <location line="-3081"/>
         <source>Direct messages</source>
         <translation>Mensagens diretas</translation>
     </message>
@@ -26970,7 +26970,7 @@ Escape e algumas teclas que o próprio Lightning usa estão reservadas. Uma tecl
         <translation>Pontos de online, ausente e offline ao lado das pessoas. Alguns servidores, como o matrix.org, nunca partilham o estado de ninguém, por isso todos pareceriam offline; Automático oculta os pontos nesses casos. Nunca deixa também de perguntar ao servidor.</translation>
     </message>
     <message>
-        <location line="+821"/>
+        <location line="+824"/>
         <source>You can hide up to %1 images. Show an image to free a slot.</source>
         <translation>Pode ocultar até %1 imagens. Mostre uma imagem para libertar um lugar.</translation>
     </message>
@@ -27433,15 +27433,15 @@ Escape e algumas teclas que o próprio Lightning usa estão reservadas. Uma tecl
         <translation>Esta sessão</translation>
     </message>
     <message>
-        <location line="-9230"/>
-        <location line="+9136"/>
+        <location line="-9233"/>
+        <location line="+9139"/>
         <location line="+100"/>
         <source>Verified</source>
         <translation>Verificada</translation>
     </message>
     <message>
-        <location line="-9235"/>
-        <location line="+9237"/>
+        <location line="-9238"/>
+        <location line="+9240"/>
         <source>Not verified</source>
         <translation>Não verificada</translation>
     </message>
@@ -27597,14 +27597,14 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>A verificação estabelece confiança nesta sessão. A cópia de segurança segura e as importações de chaves de sala fornecem chaves de desencriptação para o histórico de mensagens. São operações distintas.</translation>
     </message>
     <message>
-        <location line="-10575"/>
-        <location line="+10608"/>
+        <location line="-10578"/>
+        <location line="+10611"/>
         <source>Hide</source>
         <translation>Ocultar</translation>
     </message>
     <message>
-        <location line="-10610"/>
-        <location line="+10610"/>
+        <location line="-10613"/>
+        <location line="+10613"/>
         <source>Show</source>
         <translation>Mostrar</translation>
     </message>
@@ -27684,7 +27684,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Licença: GPL-3.0-or-later</translation>
     </message>
     <message>
-        <location line="-10689"/>
+        <location line="-10692"/>
         <location line="+3815"/>
         <source>Disable cursor blinking</source>
         <translation>Desativar o piscar do cursor</translation>
