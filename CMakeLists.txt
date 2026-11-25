@@ -637,6 +637,8 @@ set(APP_SOURCES
     src/app/NotificationTroubleshooter.cpp
     src/app/RemindersController.h
     src/app/RemindersController.cpp
+    src/app/FollowUpController.h
+    src/app/FollowUpController.cpp
     src/app/ForwardController.h
     src/app/ForwardController.cpp
     src/app/BulkRedactionController.h
@@ -1421,6 +1423,8 @@ set(APP_QML_FILES
     qml/AccountActivityBadge.qml
     qml/AccountActivityFeed.qml
     qml/UnifiedInboxSection.qml
+    qml/CatchUpCard.qml
+    qml/FollowUpsList.qml
     qml/LabsConcurrentAccountsCard.qml
     qml/TrustCard.qml
     qml/RecoveryKeyEntry.qml
@@ -3900,6 +3904,15 @@ if(BUILD_TESTING)
     target_include_directories(reminders-controller-test PRIVATE src)
     target_link_libraries(reminders-controller-test PRIVATE Qt6::Core Qt6::Test)
     add_test(NAME reminders-controller COMMAND reminders-controller-test)
+
+    qt_add_executable(follow-up-controller-test
+        tests/FollowUpControllerTest.cpp
+        src/app/FollowUpController.h
+        src/app/FollowUpController.cpp
+    )
+    target_include_directories(follow-up-controller-test PRIVATE src)
+    target_link_libraries(follow-up-controller-test PRIVATE Qt6::Core Qt6::Test)
+    add_test(NAME follow-up-controller COMMAND follow-up-controller-test)
 
     qt_add_executable(quiet-hours-test
         tests/QuietHoursTest.cpp

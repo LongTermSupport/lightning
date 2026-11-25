@@ -201,9 +201,11 @@ NOT TESTED**. Automated tests named in commits do not establish live behavior.
   catch-up floor) is kept only while its room is unread. `add()` refuses an
   account that is not Running, is removed or is the foreground one, and a host
   epoch other than `SessionPool::epochFor`. A click switches account and
-  opens the room through `claimCrossAccountOpen`. Without live accounts, a
-  user with two or more saved accounts sees one line pointing at Settings >
-  Labs. Live: NOT TESTED.
+  opens the room through `claimCrossAccountOpen`. Drafts are scoped to the
+  account, and the composer drops unsaved text when the session it belongs
+  to signs out, so a switch from an inbox row cannot carry text into another
+  account. Without live accounts, a user with two or more saved
+  accounts sees one line pointing at Settings > Labs. Live: NOT TESTED.
 - **Warm account adoption (2026-10-27, review-gated).** Switching to a pinned
   account whose host is Running, past its initial sync, not being removed and
   with custody settled (no keyring write of its sign-in or live token write
@@ -1134,6 +1136,36 @@ in the per-room SDK Threads list. The server's highlight notification feed is
 paged by `next_token` 60 at a time, with a retry that keeps the same cursor.
 If the server lacks `/notifications`, older discovery is explicitly unavailable.
 No participant fan-out or all-room polling is involved.
+
+The Threads area also filters by Mentioned (any mention in the thread, read
+or not) and To do: threads holding a message marked "Needs reply" or
+"Waiting", a saved message or a reminder (`ActivityModel::PersonalThread`,
+fed by real room and root ids only; composite ids are refused). Such a thread
+is listed even when no activity row names it, opening the marked message. An
+empty list says why when it cannot know: the server does not report followed
+threads, or older activity is unavailable.
+
+#### Follow-ups and catch-up
+
+"Needs reply" and "Waiting for reply" are personal marks on a message, set
+and cleared from its menu and listed under Activity › To do
+(`FollowUpController`). Nothing is inferred: no message gets a mark the user
+did not set, and only the user marks one done. Sending a reply to a marked
+message, or a message in its thread, shows "You replied" on that row as an
+offer. Marks are local to this device in `follow-ups.json` under the
+account's recorded root (`kAccountFiles`): room id, event id, thread root, the
+state and a time, at most 500, written atomically, never any text. Nothing
+here sends a receipt or touches the server. A due date is an ordinary
+reminder on the same message.
+
+Activity › All opens with a catch-up card while anything is unread
+(`ActivityModel::catchUp`): unread mentions and replies, threads with unread
+replies (grouped by real room and root), and polls received since sign-in in
+rooms still unread. Every item opens its exact event; muted rooms are left
+out. It counts messages it cannot decrypt yet and names its coverage gaps:
+older activity not loaded, not available from the server, or past the
+activity limit. It is computed from loaded activity and stores nothing.
+Pinned-message changes are not included (the sync signal carries no event).
 
 ### Saved messages (Q4)
 

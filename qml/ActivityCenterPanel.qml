@@ -20,6 +20,8 @@ Dialog {
     readonly property var activity: app.activity
     property string threadScope: "unread"
     readonly property bool showingThreads: !!activity && activity.filter === "threads"
+    readonly property bool showingFollowUps: !!activity && activity.filter === "todo"
+    readonly property var followUps: typeof app !== "undefined" ? app.followUps : null
     readonly property var threadRows: {
         if (!showingThreads || !activity || !activity.threadActivity)
             return []
@@ -27,7 +29,9 @@ Dialog {
         return activity.threadActivity(threadScope)
     }
     onOpened: {
-        if (showingThreads) {
+        if (showingFollowUps) {
+            followUpList.forceActiveFocus(Qt.PopupFocusReason)
+        } else if (showingThreads) {
             if (activity.refreshThreadFollowing)
                 activity.refreshThreadFollowing()
             threadList.forceActiveFocus(Qt.PopupFocusReason)
@@ -116,7 +120,8 @@ Dialog {
         if (action === "dialog.close") {
             root.close()
         } else if (action === "dialog.previousItem" || action === "dialog.nextItem") {
-            var activeList = root.showingThreads ? threadList : listView
+            var activeList = root.showingFollowUps ? followUpList
+                           : root.showingThreads ? threadList : listView
             if (activeList.count > 0) {
                 const delta = action === "dialog.previousItem" ? -1 : 1
                 activeList.currentIndex = Math.max(0, Math.min(activeList.count - 1,
@@ -356,6 +361,9 @@ Dialog {
                     { value: "replies", label: qsTr("Replies") },
                     { value: "threads", label: qsTr("Threads") }
                 ]
+                if (root.followUps)
+                    tabs.push({ value: "todo", label: qsTr("To do"),
+                                tip: qsTr("Messages you marked as needing a reply or waiting") })
                 if (!root.activity || root.activity.reactionsVisible !== false)
                     tabs.push({ value: "reactions", label: qsTr("Reactions") })
                 tabs.push({ value: "invites", label: qsTr("Invites") },
@@ -369,7 +377,8 @@ Dialog {
                 if (value === "threads" && root.activity.refreshThreadFollowing)
                     root.activity.refreshThreadFollowing()
                 Qt.callLater(function() {
-                    (value === "threads" ? threadList : listView)
+                    (value === "todo" ? followUpList
+                     : value === "threads" ? threadList : listView)
                         .forceActiveFocus(Qt.ShortcutFocusReason)
                 })
             }
@@ -385,8 +394,11 @@ Dialog {
             Layout.fillWidth: true
             model: [
                 { value: "unread", label: qsTr("Unread") },
+                { value: "mentioned", label: qsTr("Mentioned") },
                 { value: "participating", label: qsTr("Participating") },
                 { value: "following", label: qsTr("Following") },
+                { value: "todo", label: qsTr("To do"),
+                  tip: qsTr("Threads you marked, saved or set a reminder in") },
                 { value: "all", label: qsTr("All known") }
             ]
             current: root.threadScope
@@ -434,6 +446,7 @@ Dialog {
 
         RowLayout {
             objectName: "activitySearchRow"
+            visible: !root.showingFollowUps
             Layout.fillWidth: true
             spacing: AppTheme.spacing8
             TextField {
@@ -445,7 +458,8 @@ Dialog {
                 text: root.activity ? root.activity.searchQuery : ""
                 onTextEdited: if (root.activity) root.activity.searchQuery = text
                 Keys.onDownPressed: (event) => {
-                    var activeList = root.showingThreads ? threadList : listView
+                    var activeList = root.showingFollowUps ? followUpList
+                                   : root.showingThreads ? threadList : listView
                     if (activeList.count > 0)
                         activeList.forceActiveFocus(Qt.TabFocusReason)
                     event.accepted = true
@@ -501,6 +515,14 @@ Dialog {
             }
         }
 
+        CatchUpCard {
+            Layout.fillWidth: true
+            activity: root.activity
+            visible: hasContent && !!root.activity && root.activity.filter === "all"
+                     && root.activity.searchQuery.length === 0
+            onEntryOpened: root.close()
+        }
+
         UnifiedInboxSection {
             Layout.fillWidth: true
             visible: hasContent && !!root.activity && root.activity.filter === "all"
@@ -521,8 +543,9 @@ Dialog {
 
         Label {
             objectName: "activityEmptyState"
-            visible: root.showingThreads ? threadList.count === 0
-                                         : listView.count === 0
+            visible: root.showingFollowUps ? followUpList.count === 0
+                     : root.showingThreads ? threadList.count === 0
+                                           : listView.count === 0
             Layout.fillWidth: true
             Layout.topMargin: AppTheme.spacing24
             horizontalAlignment: Text.AlignHCenter
@@ -532,12 +555,27 @@ Dialog {
             text: {
                 if (!root.activity)
                     return ""
+                if (root.showingFollowUps)
+                    return qsTr("Nothing to do. Mark a message as needing a reply from its menu and it stays here until you mark it done.")
                 if (root.activity && root.activity.searchQuery.trim().length > 0)
                     return qsTr("No loaded activity matches your search.")
                 if (root.activity.unseenOnly && !root.showingThreads)
                     return qsTr("Nothing new.")
                 if (root.activity.favouritesOnly)
                     return qsTr("No activity from favourite rooms.")
+                if (root.showingThreads) {
+                    var revision = root.activity.threadActivityRevision
+                    var coverage = root.activity.threadCoverage
+                        ? root.activity.threadCoverage(root.threadScope) : ""
+                    if (coverage === "no_follow_support")
+                        return qsTr("This server does not say which threads you follow.")
+                    if (coverage === "history_unavailable")
+                        return qsTr("Older activity is not available from this server, so threads may be missing. New thread replies will show up here as they arrive.")
+                    if (root.threadScope === "todo")
+                        return qsTr("No threads with a reply mark, a saved message or a reminder.")
+                    if (root.threadScope === "mentioned")
+                        return qsTr("No threads that mention you found in recent activity.")
+                }
                 if (root.showingThreads)
                     return root.threadScope === "following"
                            ? qsTr("No followed threads found in recent activity.")
@@ -574,7 +612,7 @@ Dialog {
                 clip: true
                 spacing: AppTheme.spacing4
                 model: root.activity
-                visible: !root.showingThreads
+                visible: !root.showingThreads && !root.showingFollowUps
                 activeFocusOnTab: true
                 keyNavigationEnabled: true
                 currentIndex: 0
@@ -847,9 +885,11 @@ Dialog {
                             }
                             Label {
                                 Layout.fillWidth: true
-                                text: root.isolate(modelData.senderName) + ": "
-                                      + (modelData.encrypted ? qsTr("Encrypted message")
-                                                             : modelData.preview)
+                                text: !modelData.senderName
+                                      ? qsTr("No new replies in loaded activity")
+                                      : root.isolate(modelData.senderName) + ": "
+                                        + (modelData.encrypted ? qsTr("Encrypted message")
+                                                               : modelData.preview)
                                 textFormat: Text.PlainText
                                 color: AppTheme.stormTextMuted
                                 elide: Text.ElideRight
@@ -866,13 +906,25 @@ Dialog {
                                 elide: Text.ElideRight
                             }
                             Label {
+                                objectName: "threadActivityTags"
                                 Layout.fillWidth: true
-                                visible: modelData.following || modelData.mention
-                                text: (modelData.mention ? qsTr("Mention") : "")
-                                      + (modelData.mention && modelData.following ? " · " : "")
-                                      + (modelData.following ? qsTr("Following") : "")
+                                readonly property var tags: {
+                                    var t = []
+                                    if (modelData.mention) t.push(qsTr("Mention"))
+                                    if (modelData.following) t.push(qsTr("Following"))
+                                    if (modelData.needsReply) t.push(qsTr("Needs reply"))
+                                    if (modelData.waiting) t.push(qsTr("Waiting for reply"))
+                                    if (modelData.saved) t.push(qsTr("Saved"))
+                                    if (modelData.reminderMs > 0)
+                                        t.push(root.fill(qsTr("Reminder: %1"),
+                                                         [root.timeLabel(modelData.reminderMs)]))
+                                    return t
+                                }
+                                visible: tags.length > 0
+                                text: tags.join(" · ")
                                 color: AppTheme.stormTextMuted
                                 font.pixelSize: AppTheme.textMeta
+                                wrapMode: Text.WordWrap
                             }
                         }
                         Rectangle {
@@ -883,11 +935,19 @@ Dialog {
                     }
                 }
             }
+            FollowUpsList {
+                id: followUpList
+                anchors.fill: parent
+                visible: root.showingFollowUps
+                activity: root.activity
+                Keys.forwardTo: [dialogKeySink]
+                onEntryOpened: root.close()
+            }
             MiddleClickScroller {
                 objectName: "activityMiddleClickScroller"
                 anchors.fill: parent
                 z: 1
-                visible: !root.showingThreads
+                visible: !root.showingThreads && !root.showingFollowUps
                 view: listView
             }
         }

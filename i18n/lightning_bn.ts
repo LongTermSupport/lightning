@@ -531,7 +531,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>ActivityCenterPanel</name>
     <message>
-        <location filename="../qml/ActivityCenterPanel.qml" line="+166"/>
+        <location filename="../qml/ActivityCenterPanel.qml" line="+171"/>
         <source>custom emoji</source>
         <translation>কাস্টম ইমোজি</translation>
     </message>
@@ -592,12 +592,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+47"/>
-        <location line="+324"/>
+        <location line="+357"/>
         <source>Activity</source>
         <translation>কার্যকলাপ</translation>
     </message>
     <message numerus="yes">
-        <location line="-314"/>
+        <location line="-347"/>
         <source>%n new</source>
         <translation>
             <numerusform>%nটি নতুন</numerusform>
@@ -677,6 +677,17 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+3"/>
+        <location line="+35"/>
+        <source>To do</source>
+        <translation>করণীয়</translation>
+    </message>
+    <message>
+        <location line="-34"/>
+        <source>Messages you marked as needing a reply or waiting</source>
+        <translation>যে বার্তাগুলো আপনি উত্তর প্রয়োজন বা উত্তরের অপেক্ষায় হিসেবে চিহ্নিত করেছেন</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>Reactions</source>
         <translation>প্রতিক্রিয়া</translation>
     </message>
@@ -691,9 +702,14 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>কীওয়ার্ড</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+26"/>
         <source>Unread</source>
         <translation>অপঠিত</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Mentioned</source>
+        <translation>যেখানে উল্লেখ</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -702,12 +718,17 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+1"/>
-        <location line="+484"/>
+        <location line="+515"/>
         <source>Following</source>
         <translation>অনুসরণ করছে</translation>
     </message>
     <message>
-        <location line="-483"/>
+        <location line="-513"/>
+        <source>Threads you marked, saved or set a reminder in</source>
+        <translation>যে থ্রেডগুলোতে আপনি কিছু চিহ্নিত করেছেন, সংরক্ষণ করেছেন বা রিমাইন্ডার সেট করেছেন</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>All known</source>
         <translation>সব পরিচিত</translation>
     </message>
@@ -717,7 +738,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>এই অ্যাকাউন্টের কার্যকলাপে পাওয়া থ্রেড। পুরোনো ও সম্পর্কহীন থ্রেড নাও থাকতে পারে। নিঃশব্দ রুম লুকানো থাকে। এই তালিকা খুললে থ্রেড পড়া হয়েছে বলে চিহ্নিত হবে না।</translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+76"/>
         <source>Unseen only</source>
         <translation>শুধু না-দেখা</translation>
     </message>
@@ -747,12 +768,17 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>শুধু প্রিয় রুমের কার্যকলাপ দেখান</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+31"/>
         <source>Older activity is not available from this server.</source>
         <translation>এই সার্ভার থেকে পুরোনো কার্যকলাপ পাওয়া যাচ্ছে না।</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+18"/>
+        <source>Nothing to do. Mark a message as needing a reply from its menu and it stays here until you mark it done.</source>
+        <translation>করণীয় কিছু নেই। কোনো বার্তার মেনু থেকে সেটিকে উত্তর প্রয়োজন হিসেবে চিহ্নিত করুন, আর আপনি সম্পন্ন চিহ্নিত না করা পর্যন্ত সেটি এখানে থাকবে।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>No loaded activity matches your search.</source>
         <translation>লোড হওয়া কোনো কার্যকলাপ আপনার অনুসন্ধানের সাথে মেলে না।</translation>
     </message>
@@ -767,7 +793,27 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>প্রিয় রুম থেকে কোনো কার্যকলাপ নেই।</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+6"/>
+        <source>This server does not say which threads you follow.</source>
+        <translation>এই সার্ভার জানায় না আপনি কোন থ্রেডগুলো অনুসরণ করেন।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Older activity is not available from this server, so threads may be missing. New thread replies will show up here as they arrive.</source>
+        <translation>এই সার্ভার থেকে পুরোনো কার্যকলাপ পাওয়া যাচ্ছে না, তাই কিছু থ্রেড বাদ পড়তে পারে। নতুন থ্রেড উত্তর আসার সঙ্গে সঙ্গে এখানে দেখা যাবে।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>No threads with a reply mark, a saved message or a reminder.</source>
+        <translation>উত্তরের চিহ্ন, সংরক্ষিত বার্তা বা রিমাইন্ডার আছে এমন কোনো থ্রেড নেই।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>No threads that mention you found in recent activity.</source>
+        <translation>সাম্প্রতিক কার্যকলাপে আপনাকে উল্লেখ করা কোনো থ্রেড পাওয়া যায়নি।</translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>No followed threads found in recent activity.</source>
         <translation>সাম্প্রতিক কার্যকলাপে কোন অনুসরণ করা থ্রেড পাওয়া যায়নি।</translation>
     </message>
@@ -807,12 +853,32 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>এখানে এখনও কিছু নেই। আপনাকে করা উল্লেখ, উত্তর ও প্রতিক্রিয়া আসামাত্র এখানে দেখা যাবে।</translation>
     </message>
     <message>
-        <location line="-113"/>
+        <location line="+321"/>
+        <source>Needs reply</source>
+        <translation>উত্তর প্রয়োজন</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Waiting for reply</source>
+        <translation>উত্তরের অপেক্ষায়</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Saved</source>
+        <translation>সংরক্ষিত</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Reminder: %1</source>
+        <translation>রিমাইন্ডার: %1</translation>
+    </message>
+    <message>
+        <location line="-463"/>
         <source>Search loaded activity</source>
         <translation>লোড হওয়া কার্যকলাপে খুঁজুন</translation>
     </message>
     <message>
-        <location line="+326"/>
+        <location line="+351"/>
         <source>Threads activity</source>
         <translation>থ্রেড কার্যকলাপ</translation>
     </message>
@@ -840,7 +906,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>থ্রেড %1, %2: %3</translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+36"/>
+        <source>No new replies in loaded activity</source>
+        <translation>লোড করা কার্যকলাপে কোনো নতুন উত্তর নেই</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>Root: %1</source>
         <translation>রুট: %1</translation>
     </message>
@@ -850,17 +921,17 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>খোলা হলে রুট প্রসঙ্গ লোড হয়</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+11"/>
         <source>Mention</source>
         <translation>উল্লেখ</translation>
     </message>
     <message>
-        <location line="-695"/>
+        <location line="-732"/>
         <source>encrypted message</source>
         <translation>এনক্রিপ্টেড বার্তা</translation>
     </message>
     <message>
-        <location line="+237"/>
+        <location line="+244"/>
         <source>Keywords are managed in Settings, under Notifications.</source>
         <translation>কীওয়ার্ড সেটিংসের বিজ্ঞপ্তি অংশে পরিচালনা করা হয়।</translation>
     </message>
@@ -870,19 +941,19 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>কীওয়ার্ড সেটিংস খুলুন</translation>
     </message>
     <message>
-        <location line="+131"/>
+        <location line="+157"/>
         <source>No keywords are set. Add some in Settings, under Notifications.</source>
         <translation>কোনো কীওয়ার্ড সেট করা নেই। সেটিংসের বিজ্ঞপ্তি অংশে কিছু যোগ করুন।</translation>
     </message>
     <message>
         <location line="+183"/>
         <location line="+83"/>
-        <location line="+33"/>
+        <location line="+35"/>
         <source>Encrypted message</source>
         <translation>এনক্রিপ্টেড বার্তা</translation>
     </message>
     <message>
-        <location line="-114"/>
+        <location line="-116"/>
         <source>From %1</source>
         <translation>%1-এর কাছ থেকে</translation>
     </message>
@@ -890,8 +961,8 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>ActivityModel</name>
     <message>
-        <location filename="../src/models/ActivityModel.cpp" line="+836"/>
-        <location line="+140"/>
+        <location filename="../src/models/ActivityModel.cpp" line="+906"/>
+        <location line="+316"/>
         <source>Encrypted message</source>
         <translation>এনক্রিপ্টেড বার্তা</translation>
     </message>
@@ -1033,7 +1104,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7457"/>
+        <location filename="../src/app/AppController.cpp" line="+7506"/>
         <source>Room invitation</source>
         <translation>রুমের আমন্ত্রণ</translation>
     </message>
@@ -1154,7 +1225,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>আগত কল</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-5741"/>
+        <location filename="../src/app/AppController.cpp" line="-5747"/>
         <source>The sign-out was cancelled because the account changed. Nothing was reset.</source>
         <translation>অ্যাকাউন্ট বদলে যাওয়ায় সাইন আউট বাতিল হয়েছে। কিছুই রিসেট হয়নি।</translation>
     </message>
@@ -1206,13 +1277,13 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     <message>
         <location line="+1"/>
         <location line="+44"/>
-        <location line="+4293"/>
-        <location line="+942"/>
+        <location line="+4299"/>
+        <location line="+947"/>
         <source>Not connected</source>
         <translation>সংযুক্ত নয়</translation>
     </message>
     <message>
-        <location line="-5276"/>
+        <location line="-5287"/>
         <source>Connecting…</source>
         <translation>সংযোগ করা হচ্ছে…</translation>
     </message>
@@ -1273,24 +1344,24 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+4"/>
-        <location line="+3120"/>
+        <location line="+3125"/>
         <location line="+9"/>
         <source>Lightning could not read the selected file.</source>
         <translation>Lightning নির্বাচিত ফাইলটি পড়তে পারেনি।</translation>
     </message>
     <message>
-        <location line="-3126"/>
+        <location line="-3131"/>
         <source>A room-key import is already in progress.</source>
         <translation>একটি রুম-কী আমদানি ইতিমধ্যেই চলছে।</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+4088"/>
+        <location line="+4094"/>
         <source>Not signed in.</source>
         <translation>সাইন ইন করা নেই।</translation>
     </message>
     <message>
-        <location line="-4086"/>
+        <location line="-4092"/>
         <source>Room-key import failed.</source>
         <translation>রুম-কী আমদানি ব্যর্থ হয়েছে।</translation>
     </message>
@@ -1300,7 +1371,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>ছবিটি খুব বড় — সর্বোচ্চ %1×%1।</translation>
     </message>
     <message>
-        <location line="+670"/>
+        <location line="+675"/>
         <source>Enter a size limit from 1 to 2000 MB.</source>
         <translation>১ থেকে ২০০০ MB-এর মধ্যে আকারের সীমা দিন।</translation>
     </message>
@@ -1315,23 +1386,23 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>YYYY-MM-DD ফরম্যাটে প্রকৃত তারিখ দিন; “শুরু” তারিখ “শেষ” তারিখের পরে হতে পারবে না।</translation>
     </message>
     <message>
-        <location line="-4854"/>
-        <location line="+2760"/>
+        <location line="-4902"/>
+        <location line="+2803"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
     <message>
-        <location line="-2759"/>
+        <location line="-2802"/>
         <source>This is a test notification. If you can read it, desktop notifications work.</source>
         <translation>এটি একটি পরীক্ষামূলক বিজ্ঞপ্তি। এটি পড়তে পারলে ডেস্কটপ বিজ্ঞপ্তি কাজ করছে।</translation>
     </message>
     <message>
-        <location line="+385"/>
+        <location line="+427"/>
         <source>New mentions</source>
         <translation>নতুন উল্লেখ</translation>
     </message>
     <message>
-        <location line="+555"/>
+        <location line="+556"/>
         <source>Call started</source>
         <translation>কল শুরু হয়েছে</translation>
     </message>
@@ -1417,14 +1488,14 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+8"/>
-        <location line="+1856"/>
+        <location line="+1861"/>
         <location line="+41"/>
         <location line="+201"/>
         <source>This build has no Rust SDK backend.</source>
         <translation>এই বিল্ডে কোনো Rust SDK ব্যাকএন্ড নেই।</translation>
     </message>
     <message>
-        <location line="-1809"/>
+        <location line="-1814"/>
         <source>Choose a local image file.</source>
         <translation>একটি স্থানীয় ছবির ফাইল বেছে নিন।</translation>
     </message>
@@ -1463,7 +1534,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>আইকনটি সংরক্ষণ করা যায়নি।</translation>
     </message>
     <message>
-        <location line="+424"/>
+        <location line="+429"/>
         <source>You are no longer in that room, so it cannot be opened.</source>
         <translation>আপনি আর সেই রুমে নেই, তাই এটি খোলা যাবে না।</translation>
     </message>
@@ -1552,15 +1623,15 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>এই ডিভাইসের স্থানীয় ডেটা মুছলে এটি ঠিক হবে না, বরং আপনার এখনও প্রয়োজনীয় এনক্রিপশন কী নষ্ট হবে।</translation>
     </message>
     <message>
-        <location line="+500"/>
-        <location line="+932"/>
+        <location line="+501"/>
+        <location line="+937"/>
         <location line="+748"/>
         <location line="+15"/>
         <source>Removal did not finish: the account&apos;s data is still in use. Nothing was deleted.</source>
         <translation>অপসারণ সম্পন্ন হয়নি: অ্যাকাউন্টের ডেটা এখনও ব্যবহৃত হচ্ছে। কিছুই মোছা হয়নি।</translation>
     </message>
     <message>
-        <location line="-1498"/>
+        <location line="-1503"/>
         <source>This backend cannot change your display name.</source>
         <translation>এই ব্যাকএন্ড আপনার প্রদর্শিত নাম বদলাতে পারে না।</translation>
     </message>
@@ -1587,12 +1658,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+148"/>
-        <location line="+699"/>
+        <location line="+704"/>
         <source>That account is not signed in on this device.</source>
         <translation>ওই অ্যাকাউন্টটি এই ডিভাইসে সাইন ইন করা নেই।</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-681"/>
         <source>That account&apos;s sign-in has expired. Sign in to it again.</source>
         <translation>ওই অ্যাকাউন্টের সাইন-ইনের মেয়াদ শেষ হয়েছে। আবার সাইন ইন করুন।</translation>
     </message>
@@ -1602,7 +1673,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>আপনার সিস্টেম কীরিং আর ওই অ্যাকাউন্টের সংরক্ষিত সাইন-ইন ফেরত দিচ্ছে না। কিছুই মোছা হয়নি: এই ডিভাইসে চালিয়ে যেতে আবার সাইন ইন করুন।</translation>
     </message>
     <message>
-        <location line="+435"/>
+        <location line="+440"/>
         <location line="+731"/>
         <source>This account can&apos;t be removed while the system keyring can&apos;t be read: its saved sign-in is there and would be left behind. Unlock the keyring, or start it, and try again.</source>
         <translation>সিস্টেম কীরিং পড়া না গেলে এই অ্যাকাউন্ট সরানো যাবে না: এর সংরক্ষিত সাইন-ইন সেখানে আছে এবং পেছনে থেকে যাবে। কীরিং আনলক করুন বা চালু করুন, তারপর আবার চেষ্টা করুন।</translation>
@@ -1645,9 +1716,9 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location filename="../qml/LoginScreen.qml" line="+433"/>
-        <location filename="../src/app/AppController.cpp" line="-2274"/>
+        <location filename="../src/app/AppController.cpp" line="-2280"/>
         <location line="+25"/>
-        <location line="+531"/>
+        <location line="+532"/>
         <location line="+454"/>
         <source>Lightning can&apos;t read this device&apos;s saved sign-ins right now — the system keyring is locked or unavailable. Unlock it and try again.</source>
         <translation>Lightning এখন এই ডিভাইসের সংরক্ষিত সাইন-ইন পড়তে পারছে না — সিস্টেম কীরিং লক করা বা অনুপলব্ধ। এটি আনলক করে আবার চেষ্টা করুন।</translation>
@@ -3980,6 +4051,111 @@ EXIF ওরিয়েন্টেশন: %4</translation>
         <location line="+122"/>
         <source>Exit full screen (Esc)</source>
         <translation>পূর্ণ স্ক্রীন থেকে প্রস্থান করুন (Esc)</translation>
+    </message>
+</context>
+<context>
+    <name>CatchUpCard</name>
+    <message numerus="yes">
+        <location filename="../qml/CatchUpCard.qml" line="+42"/>
+        <source>%n mention(s)</source>
+        <translation>
+            <numerusform>%n টি উল্লেখ</numerusform>
+            <numerusform>%n টি উল্লেখ</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>%n reply(s)</source>
+        <translation>
+            <numerusform>%n উত্তর</numerusform>
+            <numerusform>%n উত্তর</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>%n thread(s) with new replies</source>
+        <translation>
+            <numerusform>নতুন উত্তরসহ %n টি থ্রেড</numerusform>
+            <numerusform>নতুন উত্তরসহ %n টি থ্রেড</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>%n poll(s)</source>
+        <translation>
+            <numerusform>%n টি জরিপ</numerusform>
+            <numerusform>%n টি জরিপ</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Older activity is not available from this server.</source>
+        <translation>এই সার্ভার থেকে পুরোনো কার্যকলাপ পাওয়া যাচ্ছে না।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Only loaded activity is counted. Older activity may be missing.</source>
+        <translation>শুধু লোড করা কার্যকলাপ গোনা হয়। পুরোনো কার্যকলাপ বাদ পড়তে পারে।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Activity is at its limit, so the oldest items are not counted.</source>
+        <translation>কার্যকলাপ সীমায় পৌঁছেছে, তাই সবচেয়ে পুরোনো আইটেমগুলো গোনা হয়নি।</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Mention</source>
+        <translation>উল্লেখ</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Reply</source>
+        <translation>উত্তর</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+1"/>
+        <source>%n new thread reply(s)</source>
+        <translation>
+            <numerusform>%n টি নতুন থ্রেড উত্তর</numerusform>
+            <numerusform>%n টি নতুন থ্রেড উত্তর</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Poll</source>
+        <translation>জরিপ</translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <location line="+46"/>
+        <source>Catch up</source>
+        <translation>যা বাদ পড়েছে</translation>
+    </message>
+    <message numerus="yes">
+        <location line="-27"/>
+        <source>%n message(s) could not be decrypted yet.</source>
+        <translation>
+            <numerusform>%n টি বার্তা এখনও ডিক্রিপ্ট করা যায়নি।</numerusform>
+            <numerusform>%n টি বার্তা এখনও ডিক্রিপ্ট করা যায়নি।</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>%1 in %2</source>
+        <translation>%2-এ %1</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>Encrypted</source>
+        <translation>এনক্রিপ্টেড</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+11"/>
+        <source>%n more not listed.</source>
+        <translation>
+            <numerusform>আরও %n টি তালিকায় নেই।</numerusform>
+            <numerusform>আরও %n টি তালিকায় নেই।</numerusform>
+        </translation>
     </message>
 </context>
 <context>
@@ -8867,6 +9043,55 @@ Signing out and signing in again is the only fix.</source>
     </message>
 </context>
 <context>
+    <name>FollowUpsList</name>
+    <message>
+        <location filename="../qml/FollowUpsList.qml" line="+31"/>
+        <source>Waiting for reply</source>
+        <translation>উত্তরের অপেক্ষায়</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <location line="+112"/>
+        <source>Needs reply</source>
+        <translation>উত্তর প্রয়োজন</translation>
+    </message>
+    <message>
+        <location line="-91"/>
+        <source>To do</source>
+        <translation>করণীয়</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>%1 in %2</source>
+        <translation>%2-এ %1</translation>
+    </message>
+    <message>
+        <location line="+40"/>
+        <source>In a thread</source>
+        <translation>একটি থ্রেডে</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>You replied. Mark it done if that settles it.</source>
+        <translation>আপনি উত্তর দিয়েছেন। এতে বিষয়টি মিটে গেলে এটিকে সম্পন্ন চিহ্নিত করুন।</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Reminder: %1</source>
+        <translation>রিমাইন্ডার: %1</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Waiting</source>
+        <translation>অপেক্ষমাণ</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Done</source>
+        <translation>সম্পন্ন</translation>
+    </message>
+</context>
+<context>
     <name>ForwardController</name>
     <message>
         <location filename="../src/app/ForwardController.cpp" line="+99"/>
@@ -13438,13 +13663,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2394"/>
+        <location line="+2431"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>আবার চেষ্টা করুন</translation>
     </message>
     <message>
-        <location line="-3410"/>
+        <location line="-3447"/>
         <location line="+1231"/>
         <source>Cancel</source>
         <translation>বাতিল</translation>
@@ -13456,12 +13681,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+190"/>
-        <location line="+1464"/>
+        <location line="+1501"/>
         <source>Hide image</source>
         <translation>ছবি লুকান</translation>
     </message>
     <message>
-        <location line="-1460"/>
+        <location line="-1497"/>
         <source>Hide</source>
         <translation>লুকান</translation>
     </message>
@@ -13580,12 +13805,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+241"/>
-        <location line="+1464"/>
+        <location line="+1501"/>
         <source>Hidden image limit reached</source>
         <translation>লুকানো ছবির সীমায় পৌঁছেছে</translation>
     </message>
     <message numerus="yes">
-        <location line="-1211"/>
+        <location line="-1248"/>
         <source>%1 and %n other(s)</source>
         <translation>
             <numerusform>%1 এবং আরও ১ জন</numerusform>
@@ -13633,7 +13858,22 @@ Signing out and signing in again is the only fix.</source>
         <translation>রিমাইন্ডার বাতিল করুন (%1)</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+22"/>
+        <source>Needs reply</source>
+        <translation>উত্তর প্রয়োজন</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Waiting for reply</source>
+        <translation>উত্তরের অপেক্ষায়</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Mark done</source>
+        <translation>সম্পন্ন চিহ্নিত করুন</translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>Copy text</source>
         <translation>লেখা অনুলিপি করুন</translation>
     </message>
@@ -13850,7 +14090,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>এখনও কোনো অবস্থান পাওয়া যায়নি।</translation>
     </message>
     <message>
-        <location line="-3986"/>
+        <location line="-4023"/>
         <location line="+1139"/>
         <source>Edit</source>
         <translation>সম্পাদনা</translation>
@@ -13890,22 +14130,22 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="-570"/>
         <location line="+568"/>
-        <location line="+3740"/>
+        <location line="+3777"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5231"/>
+        <location line="-5268"/>
         <location line="+53"/>
         <location line="+514"/>
-        <location line="+4289"/>
+        <location line="+4326"/>
         <source>Image</source>
         <translation>ছবি</translation>
     </message>
     <message>
-        <location line="-4854"/>
+        <location line="-4891"/>
         <source>Attachment</source>
         <translation>সংযুক্তি</translation>
     </message>
@@ -13971,7 +14211,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>(সম্পাদিত)</translation>
     </message>
     <message>
-        <location line="+1682"/>
+        <location line="+1719"/>
         <source>Add :%1: to my emoji</source>
         <translation>আমার ইমোজিতে :%1: যোগ করুন</translation>
     </message>
@@ -14011,13 +14251,13 @@ Signing out and signing in again is the only fix.</source>
         <translation>বার্তার অভিযোগ করুন</translation>
     </message>
     <message>
-        <location line="-751"/>
-        <location line="+765"/>
+        <location line="-788"/>
+        <location line="+802"/>
         <source>Delete</source>
         <translation>মুছুন</translation>
     </message>
     <message>
-        <location line="-760"/>
+        <location line="-797"/>
         <source>Remove message?</source>
         <translation>বার্তা সরাবেন?</translation>
     </message>
@@ -14032,7 +14272,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>সরান</translation>
     </message>
     <message>
-        <location line="+798"/>
+        <location line="+835"/>
         <source>Message details</source>
         <translation>বার্তার বিস্তারিত</translation>
     </message>
@@ -14109,12 +14349,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>উত্তরের লক্ষ্য</translation>
     </message>
     <message>
-        <location line="-2051"/>
+        <location line="-2088"/>
         <source>Show preview</source>
         <translation>প্রাকদর্শন দেখান</translation>
     </message>
     <message>
-        <location line="+1907"/>
+        <location line="+1944"/>
         <source>Remove edits?</source>
         <translation>সম্পাদনা সরাবেন?</translation>
     </message>
@@ -14134,7 +14374,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>এতে ভোট বন্ধ হয় এবং ফলাফল প্রকাশিত হয়। ভোট আবার খোলা যায় না।</translation>
     </message>
     <message>
-        <location line="-707"/>
+        <location line="-744"/>
         <source>Delete message?</source>
         <translation>বার্তা মুছবেন?</translation>
     </message>
@@ -14144,7 +14384,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>এতে রুমের সবার জন্য বার্তাটি সরে যায়। এটি ফেরানো যায় না।</translation>
     </message>
     <message>
-        <location line="+1014"/>
+        <location line="+1051"/>
         <source>Open link in browser</source>
         <translation>লিঙ্কটি ব্রাউজারে খুলুন</translation>
     </message>
@@ -14226,10 +14466,10 @@ Signing out and signing in again is the only fix.</source>
         <translation>স্টিকার লোড হয়নি — আবার চেষ্টা করতে ক্লিক করুন</translation>
     </message>
     <message>
-        <location line="-5648"/>
+        <location line="-5685"/>
         <location line="+57"/>
         <location line="+517"/>
-        <location line="+4287"/>
+        <location line="+4324"/>
         <location line="+1066"/>
         <location line="+93"/>
         <source>Video</source>
@@ -14242,9 +14482,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>ভিডিও</translation>
     </message>
     <message>
-        <location line="-6031"/>
+        <location line="-6068"/>
         <location line="+570"/>
-        <location line="+4390"/>
+        <location line="+4427"/>
         <location line="+1270"/>
         <location line="+2"/>
         <location line="+29"/>

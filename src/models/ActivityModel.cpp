@@ -345,6 +345,7 @@ void ActivityModel::clear()
     m_favouriteRoomIds.clear();
     m_heldSeenIds.clear();
     m_entries.clear();
+    m_polls.clear();
     m_visible.clear();
     m_ids.clear();
     m_ownEventIds.clear();
@@ -579,8 +580,15 @@ void ActivityModel::markRoomReadUpTo(const QString &rawRoomId, qint64 timestampM
         e.readMark = true;
         e.seenMark = true;
     }
-    if (!changed)
+    const qsizetype polls = m_polls.removeIf([&](const Poll &p) {
+        return p.roomId == roomId && p.timestampMs <= timestampMs
+            && (threadRootId.isEmpty() || p.threadRootId == threadRootId);
+    });
+    if (!changed) {
+        if (polls > 0)
+            bumpThreadActivity();
         return;
+    }
     rebuildVisible();
     Q_EMIT unseenCountChanged();
 }
@@ -809,6 +817,8 @@ QVariantList ActivityModel::threadActivity(const QString &scope) const
         row.insert(QStringLiteral("mention"),
                    row.value(QStringLiteral("mention")).toBool()
                        || (mention && !e.readMark));
+        row.insert(QStringLiteral("mentioned"),
+                   row.value(QStringLiteral("mentioned")).toBool() || mention);
         row.insert(QStringLiteral("relevant"), true);
         row.insert(QStringLiteral("participating"),
                    row.value(QStringLiteral("participating")).toBool()
@@ -816,11 +826,71 @@ QVariantList ActivityModel::threadActivity(const QString &scope) const
                        || e.kind == QLatin1String("reply"));
         rows[pos] = row;
     }
+    const QList<PersonalThread> personal =
+        m_personalThreads ? m_personalThreads() : QList<PersonalThread>();
+    for (const PersonalThread &p : personal) {
+        if (!p.roomId.startsWith(QLatin1Char('!')) || !p.rootId.startsWith(QLatin1Char('$'))
+            || MatrixClient::isThreadTimelineId(p.roomId))
+            continue;
+        Entry probe;
+        probe.roomId = p.roomId;
+        if (isMutedRoom(probe) || !passesFavourites(probe))
+            continue;
+        const QString key = p.roomId + QChar(0x1f) + p.rootId;
+        int pos = positions.value(key, -1);
+        if (pos < 0) {
+            const RoomInfo info = m_client ? m_client->roomInfo(p.roomId) : RoomInfo();
+            QString rootPreview;
+            if (m_client) {
+                for (const TimelineEvent &item : m_client->timeline(p.roomId))
+                    if (item.eventId == p.rootId)
+                        rootPreview = previewOf(item);
+            }
+            pos = rows.size();
+            positions.insert(key, pos);
+            rows.append(QVariantMap{
+                { QStringLiteral("roomId"), p.roomId },
+                { QStringLiteral("roomName"), info.name.isEmpty() ? p.roomId : info.name },
+                { QStringLiteral("rootEventId"), p.rootId },
+                { QStringLiteral("eventId"), p.eventId.isEmpty() ? p.rootId : p.eventId },
+                { QStringLiteral("senderName"), QString() },
+                { QStringLiteral("preview"), QString() },
+                { QStringLiteral("rootPreview"), rootPreview },
+                { QStringLiteral("encrypted"), false },
+                { QStringLiteral("timestampMs"), qint64(0) },
+                { QStringLiteral("unread"), false },
+                { QStringLiteral("mention"), false },
+                { QStringLiteral("mentioned"), false },
+                { QStringLiteral("relevant"), true },
+                { QStringLiteral("participating"), false },
+                { QStringLiteral("following"), m_threadFollowing.value(key, 0) == 3 },
+                { QStringLiteral("followSupported"), m_threadFollowing.value(key, 0) >= 2 },
+            });
+        }
+        QVariantMap row = rows.at(pos).toMap();
+        row.insert(QStringLiteral("needsReply"),
+                   row.value(QStringLiteral("needsReply")).toBool() || p.needsReply);
+        row.insert(QStringLiteral("waiting"),
+                   row.value(QStringLiteral("waiting")).toBool() || p.waiting);
+        row.insert(QStringLiteral("saved"),
+                   row.value(QStringLiteral("saved")).toBool() || p.saved);
+        const qint64 due = row.value(QStringLiteral("reminderMs")).toLongLong();
+        if (p.reminderMs > 0 && (due <= 0 || p.reminderMs < due))
+            row.insert(QStringLiteral("reminderMs"), p.reminderMs);
+        row.insert(QStringLiteral("todo"), true);
+        rows[pos] = row;
+    }
     QVariantList filtered;
     for (const QVariant &v : rows) {
         const QVariantMap row = v.toMap();
         if (scope == QLatin1String("unread")
             && !row.value(QStringLiteral("unread")).toBool())
+            continue;
+        if (scope == QLatin1String("mentioned")
+            && !row.value(QStringLiteral("mentioned")).toBool())
+            continue;
+        if (scope == QLatin1String("todo")
+            && !row.value(QStringLiteral("todo")).toBool())
             continue;
         if (scope == QLatin1String("following")
             && !row.value(QStringLiteral("following")).toBool())
@@ -853,7 +923,7 @@ void ActivityModel::refreshThreadFollowing()
         const QString key = roomId + QChar(0x1f) + rootId;
         if (m_threadFollowing.contains(key))
             continue;
-        m_threadFollowing.insert(key, 1);
+        m_threadFollowing.insert(key, -1);
         m_client->queryThreadSubscription(roomId, rootId);
         if (++asked >= 50)
             break;
@@ -881,6 +951,182 @@ void ActivityModel::openThreadActivity(const QString &roomId,
     Q_EMIT openRequested(roomId, eventId, rootEventId);
 }
 
+void ActivityModel::openEvent(const QString &roomId, const QString &eventId,
+                              const QString &threadRootId)
+{
+    if (!roomId.startsWith(QLatin1Char('!')) || !eventId.startsWith(QLatin1Char('$'))
+        || (!threadRootId.isEmpty() && !threadRootId.startsWith(QLatin1Char('$')))
+        || MatrixClient::isThreadTimelineId(roomId)
+        || MatrixClient::isContextTimelineId(roomId))
+        return;
+    markSeen(eventId);
+    Q_EMIT openRequested(roomId, eventId, threadRootId);
+}
+
+QString ActivityModel::threadCoverage(const QString &scope) const
+{
+    if (scope == QLatin1String("following")) {
+        bool asked = false;
+        bool supported = false;
+        for (auto it = m_threadFollowing.cbegin(); it != m_threadFollowing.cend(); ++it) {
+            asked = asked || it.value() == 1;
+            supported = supported || it.value() >= 2;
+        }
+        if (asked && !supported)
+            return QStringLiteral("no_follow_support");
+    }
+    if (m_historyUnavailable)
+        return QStringLiteral("history_unavailable");
+    return {};
+}
+
+QVariantMap ActivityModel::catchUp() const
+{
+    QVariantList items;
+    QHash<QString, int> threadAt;
+    int mentions = 0;
+    int replies = 0;
+    int threads = 0;
+    int polls = 0;
+    int undecryptable = 0;
+    for (const Entry &e : m_entries) {
+        if (e.readMark || e.eventId.isEmpty() || e.kind == QLatin1String("invite")
+            || e.kind == QLatin1String("reaction") || e.kind == QLatin1String("dm")
+            || isMutedRoom(e))
+            continue;
+        if (e.encrypted)
+            ++undecryptable;
+        if (!e.threadRootId.isEmpty()) {
+            const QString key = e.roomId + QChar(0x1f) + e.threadRootId;
+            const int at = threadAt.value(key, -1);
+            if (at >= 0) {
+                QVariantMap item = items.at(at).toMap();
+                item.insert(QStringLiteral("count"), item.value(QStringLiteral("count")).toInt() + 1);
+                if (e.timestampMs > item.value(QStringLiteral("timestampMs")).toLongLong()) {
+                    item.insert(QStringLiteral("eventId"), e.eventId);
+                    item.insert(QStringLiteral("timestampMs"), e.timestampMs);
+                }
+                items[at] = item;
+                continue;
+            }
+            ++threads;
+            threadAt.insert(key, int(items.size()));
+            items.append(QVariantMap{
+                { QStringLiteral("kind"), QStringLiteral("thread") },
+                { QStringLiteral("roomId"), e.roomId },
+                { QStringLiteral("roomName"), e.roomName },
+                { QStringLiteral("eventId"), e.eventId },
+                { QStringLiteral("threadRootId"), e.threadRootId },
+                { QStringLiteral("timestampMs"), e.timestampMs },
+                { QStringLiteral("encrypted"), e.encrypted },
+                { QStringLiteral("count"), 1 },
+                { QStringLiteral("following"), m_threadFollowing.value(key, 0) == 3 },
+            });
+            continue;
+        }
+        const bool reply = e.kind == QLatin1String("reply");
+        if (reply)
+            ++replies;
+        else
+            ++mentions;
+        items.append(QVariantMap{
+            { QStringLiteral("kind"), reply ? QStringLiteral("reply") : QStringLiteral("mention") },
+            { QStringLiteral("roomId"), e.roomId },
+            { QStringLiteral("roomName"), e.roomName },
+            { QStringLiteral("eventId"), e.eventId },
+            { QStringLiteral("threadRootId"), QString() },
+            { QStringLiteral("timestampMs"), e.timestampMs },
+            { QStringLiteral("encrypted"), e.encrypted },
+            { QStringLiteral("count"), 1 },
+        });
+    }
+    const bool tracksRead = m_client && m_client->tracksRoomReadState();
+    for (const Poll &p : m_polls) {
+        Entry probe;
+        probe.roomId = p.roomId;
+        if (isMutedRoom(probe))
+            continue;
+        if (tracksRead) {
+            const RoomInfo info = m_client->roomInfo(p.roomId);
+            if (info.unreadCount <= 0 && !info.markedUnread)
+                continue;
+        }
+        ++polls;
+        items.append(QVariantMap{
+            { QStringLiteral("kind"), QStringLiteral("poll") },
+            { QStringLiteral("roomId"), p.roomId },
+            { QStringLiteral("roomName"), p.roomName },
+            { QStringLiteral("eventId"), p.eventId },
+            { QStringLiteral("threadRootId"), p.threadRootId },
+            { QStringLiteral("timestampMs"), p.timestampMs },
+            { QStringLiteral("encrypted"), false },
+            { QStringLiteral("count"), 1 },
+        });
+    }
+    std::stable_sort(items.begin(), items.end(), [](const QVariant &a, const QVariant &b) {
+        return a.toMap().value(QStringLiteral("timestampMs")).toLongLong()
+            > b.toMap().value(QStringLiteral("timestampMs")).toLongLong();
+    });
+    const int total = int(items.size());
+    if (items.size() > kMaxDigestItems)
+        items.resize(kMaxDigestItems);
+    QStringList gaps;
+    if (m_historyUnavailable)
+        gaps << QStringLiteral("history_unavailable");
+    else if (activityHasMore())
+        gaps << QStringLiteral("older_not_loaded");
+    if (m_entries.size() >= kMaxEntries)
+        gaps << QStringLiteral("capped");
+    return {
+        { QStringLiteral("items"), items },
+        { QStringLiteral("total"), total },
+        { QStringLiteral("mentions"), mentions },
+        { QStringLiteral("replies"), replies },
+        { QStringLiteral("threads"), threads },
+        { QStringLiteral("polls"), polls },
+        { QStringLiteral("undecryptable"), undecryptable },
+        { QStringLiteral("gaps"), gaps },
+    };
+}
+
+void ActivityModel::setPersonalThreadSource(std::function<QList<PersonalThread>()> source)
+{
+    m_personalThreads = std::move(source);
+    bumpThreadActivity();
+}
+
+void ActivityModel::personalThreadsChanged()
+{
+    bumpThreadActivity();
+}
+
+void ActivityModel::bumpThreadActivity()
+{
+    ++m_threadActivityRevision;
+    Q_EMIT threadActivityChanged();
+}
+
+void ActivityModel::notePoll(const TimelineEvent &event, const QString &roomName)
+{
+    if (event.eventId.isEmpty() || event.roomId.isEmpty() || event.redacted
+        || event.isLocalEcho || event.isVirtual()
+        || m_redactedIds.contains(event.eventId))
+        return;
+    for (const Poll &p : std::as_const(m_polls))
+        if (p.eventId == event.eventId)
+            return;
+    Poll p;
+    p.roomId = event.roomId;
+    p.roomName = roomName.isEmpty() ? event.roomId : roomName;
+    p.eventId = event.eventId;
+    p.threadRootId = event.threadRootId;
+    p.timestampMs = event.timestamp.isValid() ? event.timestamp.toMSecsSinceEpoch() : now();
+    m_polls.prepend(p);
+    if (m_polls.size() > kMaxPolls)
+        m_polls.removeLast();
+    bumpThreadActivity();
+}
+
 void ActivityModel::setSearchQuery(const QString &query)
 {
     if (m_searchQuery == query)
@@ -895,7 +1141,7 @@ void ActivityModel::setFilter(const QString &filter)
     static const QStringList kFilters{
         QStringLiteral("all"), QStringLiteral("mentions"), QStringLiteral("replies"),
         QStringLiteral("threads"), QStringLiteral("reactions"),
-        QStringLiteral("invites"), QStringLiteral("keywords"),
+        QStringLiteral("invites"), QStringLiteral("keywords"), QStringLiteral("todo"),
     };
     const QString next = kFilters.contains(filter) ? filter : QStringLiteral("all");
     if (next == m_filter)
@@ -994,6 +1240,8 @@ bool ActivityModel::passesFilter(const Entry &e) const
         return e.kind == QLatin1String("invite");
     if (m_filter == QLatin1String("keywords"))
         return e.kind == QLatin1String("keyword");
+    if (m_filter == QLatin1String("todo"))
+        return false;
     return true;
 }
 
@@ -1157,6 +1405,8 @@ bool ActivityModel::ingest(const TimelineEvent &rawEvent, const QString &roomNam
     if (settleProvisional(event.eventId, event.sender, event.roomId))
         return false;
     const QString kind = classify(event, self, m_ownEventIds, m_ownThreadRoots, m_keywords);
+    if (kind.isEmpty() && event.type == TimelineEvent::Poll)
+        notePoll(event, roomName);
     if (kind.isEmpty() || event.eventId.isEmpty())
         return false;
     Entry e;
@@ -1364,6 +1614,8 @@ void ActivityModel::eventRedacted(const QString &rawRoomId, const QString &event
             return false;
         return e.id == eventId || e.eventId == eventId;
     });
+    if (m_polls.removeIf([&](const Poll &p) { return p.eventId == eventId; }) > 0)
+        bumpThreadActivity();
 }
 
 void ActivityModel::dropSender(const QString &userId)
