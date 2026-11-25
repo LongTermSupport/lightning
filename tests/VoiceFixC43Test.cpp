@@ -65,16 +65,17 @@ private Q_SLOTS:
         QVERIFY(anon.recording());
     }
 
-    void aRecordingOnTheDefaultFollowsItUnderANewId()
+    void aTakeOnTheDefaultDoesNotFollowAReplacementDefault()
     {
-        using Info = VoiceRecorder::InputInfo;
-        QVERIFY(VoiceRecorder::inputStillPresent(
-            "old-default", true, {Info{"usb", false}, Info{"new-default", true}}));
-        QVERIFY(!VoiceRecorder::inputStillPresent(
-            "usb", false, {Info{"new-default", true}}));
-        QVERIFY(!VoiceRecorder::inputStillPresent("old-default", true, {}));
-        QVERIFY(!VoiceRecorder::inputStillPresent(
-            "old-default", true, {Info{"usb", false}}));
+        VoiceRecorder rec;
+        rec.setRecordingForTest("old-default", QString(), 0, true);
+        QSignalSpy failed(&rec, &VoiceRecorder::failed);
+        QSignalSpy ready(&rec, &VoiceRecorder::ready);
+        rec.inputDevicesChanged({{"usb", false}, {"new-default", true}});
+        QVERIFY(rec.endedByDisconnect());
+        rec.finishForTest();
+        QCOMPARE(failed.size(), 1);
+        QVERIFY(ready.isEmpty());
     }
 
     void theDeviceWatchIsConnected()

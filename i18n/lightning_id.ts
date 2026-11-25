@@ -2682,12 +2682,27 @@ Orientasi EXIF: %4</translation>
         <translation>(standar)</translation>
     </message>
     <message>
+        <location line="+10"/>
+        <source>Use only this microphone for this session</source>
+        <translation>Gunakan hanya mikrofon ini untuk sesi ini</translation>
+    </message>
+    <message>
         <location line="+12"/>
+        <source>Waiting for your chosen microphone. Choose another input to speak.</source>
+        <translation>Menunggu mikrofon pilihan Anda. Pilih masukan lain untuk berbicara.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone isn&apos;t connected</source>
         <translation>Mikrofon pilihan Anda tidak tersambung</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
+        <source>Your chosen microphone could not be opened. Choose another input to speak.</source>
+        <translation>Mikrofon pilihan Anda tidak dapat dibuka. Pilih masukan lain untuk berbicara.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone couldn&apos;t be opened. The call uses the system default.</source>
         <translation>Mikrofon pilihan Anda tidak dapat dibuka. Panggilan memakai mikrofon bawaan sistem.</translation>
     </message>
@@ -2781,6 +2796,11 @@ Orientasi EXIF: %4</translation>
         <translation>Kamera yang dipilih tidak terhubung</translation>
     </message>
     <message>
+        <location line="+1"/>
+        <source>Chosen microphone not connected</source>
+        <translation>Mikrofon pilihan tidak terhubung</translation>
+    </message>
+    <message>
         <location line="+3"/>
         <source>System default</source>
         <translation>Bawaan sistem</translation>
@@ -2796,17 +2816,32 @@ Orientasi EXIF: %4</translation>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
         <source>No microphone was found. You can still join a call and listen.</source>
         <translation>Tidak ada mikrofon yang ditemukan. Anda masih dapat bergabung dalam panggilan dan mendengarkan.</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+6"/>
+        <source>Use only this microphone for this session</source>
+        <translation>Gunakan hanya mikrofon ini untuk sesi ini</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Waiting for your chosen microphone. Choose another input to speak.</source>
+        <translation>Menunggu mikrofon pilihan Anda. Pilih masukan lain untuk berbicara.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone isn&apos;t connected. Calls use the system default until it&apos;s back.</source>
         <translation>Mikrofon pilihan Anda tidak tersambung. Panggilan menggunakan default sistem hingga kembali.</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+16"/>
+        <source>Your chosen microphone could not be opened. Choose another input to speak.</source>
+        <translation>Mikrofon pilihan Anda tidak dapat dibuka. Pilih masukan lain untuk berbicara.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone couldn&apos;t be opened, so the system default was used. Choose it again or reconnect it.</source>
         <translation>Mikrofon pilihan Anda tidak dapat dibuka, jadi mikrofon bawaan sistem dipakai. Pilih lagi atau sambungkan ulang.</translation>
     </message>
@@ -3169,34 +3204,39 @@ Orientasi EXIF: %4</translation>
     </message>
     <message>
         <location line="+46"/>
-        <location line="+28"/>
+        <location line="+30"/>
         <source>Turn off camera</source>
         <translation>Matikan kamera</translation>
     </message>
     <message>
-        <location line="-27"/>
-        <location line="+28"/>
+        <location line="-29"/>
+        <location line="+32"/>
         <source>Turn on camera</source>
         <translation>Nyalakan kamera</translation>
     </message>
     <message>
-        <location line="-20"/>
-        <location line="+28"/>
+        <location line="-24"/>
+        <location line="+32"/>
         <source>Choose camera</source>
         <translation>Pilih kamera</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="-12"/>
+        <source>Waiting for desktop camera permission. Click to cancel.</source>
+        <translation>Menunggu izin kamera dari desktop. Klik untuk membatalkan.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Camera request cancelled. Click to try again.</source>
+        <translation>Permintaan kamera dibatalkan. Klik untuk mencoba lagi.</translation>
+    </message>
+    <message>
+        <location line="+30"/>
         <source>Stop sharing your screen</source>
         <translation>Berhenti membagikan layar Anda</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Cancel screen sharing</source>
-        <translation>Batalkan berbagi layar</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+5"/>
         <source>Share your screen</source>
         <translation>Bagikan layar Anda</translation>
     </message>
@@ -3272,7 +3312,7 @@ Orientasi EXIF: %4</translation>
         <translation>Lepaskan panggilan ke jendela mengambang</translation>
     </message>
     <message>
-        <location line="-393"/>
+        <location line="-399"/>
         <source>Unmute microphone</source>
         <translation>Suarakan mikrofon</translation>
     </message>
@@ -3322,7 +3362,17 @@ Orientasi EXIF: %4</translation>
         <translation>Pilih perangkat keluaran</translation>
     </message>
     <message>
-        <location line="+369"/>
+        <location line="+84"/>
+        <source>Waiting for desktop screen sharing permission. Click to cancel.</source>
+        <translation>Menunggu izin berbagi layar dari desktop. Klik untuk membatalkan.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Screen sharing request cancelled. Click to try again.</source>
+        <translation>Permintaan berbagi layar dibatalkan. Klik untuk mencoba lagi.</translation>
+    </message>
+    <message>
+        <location line="+289"/>
         <source>Leave call</source>
         <translation>Tinggalkan panggilan</translation>
     </message>
@@ -27699,20 +27749,20 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
 <context>
     <name>SfuCallController</name>
     <message>
-        <location filename="../src/calls/SfuCallController.cpp" line="+637"/>
-        <location line="+396"/>
+        <location filename="../src/calls/SfuCallController.cpp" line="+645"/>
+        <location line="+406"/>
         <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
         <translation>Berbagi layar tidak tersedia di desktop ini.</translation>
     </message>
     <message>
-        <location line="-559"/>
-        <location line="+933"/>
+        <location line="-569"/>
+        <location line="+945"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>Berbagi layar tidak dapat dimulai.</translation>
     </message>
     <message>
-        <location line="-567"/>
+        <location line="-569"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>Berbagi layar di Wayland memerlukan xdg-desktop-portal, dan tidak merespons. Instal atau mulai portal untuk desktop Anda — misalnya xdg-desktop-portal-kde atau xdg-desktop-portal-gnome — lalu coba lagi.</translation>
     </message>
@@ -27758,22 +27808,32 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Layanan panggilan ini tidak menjawab tepat waktu di alamat mana pun.</translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+47"/>
         <source>Lightning couldn&apos;t open the camera. It may be in use by another app, or unplugged.</source>
         <translation>Lightning tidak dapat membuka kamera. Kamera mungkin sedang dipakai aplikasi lain, atau tidak terpasang.</translation>
     </message>
     <message>
-        <location line="+414"/>
+        <location line="+6"/>
+        <source>Camera permission was denied. Check your desktop’s camera privacy settings, then turn the camera on again.</source>
+        <translation>Izin kamera ditolak. Periksa pengaturan privasi kamera desktop Anda, lalu nyalakan kamera lagi.</translation>
+    </message>
+    <message>
+        <location line="+408"/>
         <source>Calling isn&apos;t available on this homeserver.</source>
         <translation>Panggilan tidak tersedia di server rumah ini.</translation>
     </message>
     <message>
-        <location line="-494"/>
+        <location line="-496"/>
         <source>Too many attempts. Try again in a moment.</source>
         <translation>Terlalu banyak upaya. Coba lagi sebentar lagi.</translation>
     </message>
     <message>
-        <location line="-734"/>
+        <location line="-881"/>
+        <source>Screen sharing permission was denied. Check your desktop’s privacy settings, then try sharing again.</source>
+        <translation>Izin berbagi layar ditolak. Periksa pengaturan privasi desktop Anda, lalu coba berbagi lagi.</translation>
+    </message>
+    <message>
+        <location line="+147"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>Portal kamera desktop Anda tidak memberi Lightning kamera. Jika kamera berfungsi di aplikasi lain, izinkan Lightning memakai semua perangkat (di Flatseal: &quot;All devices&quot;), lalu nyalakan kamera lagi.</translation>
     </message>
@@ -27879,13 +27939,13 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
     </message>
     <message>
         <location line="+8"/>
-        <location line="+451"/>
+        <location line="+453"/>
         <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>Tidak dapat tersambung ke panggilan.</translation>
     </message>
     <message>
-        <location line="-811"/>
+        <location line="-813"/>
         <source>The calling service is having trouble.</source>
         <translation>Layanan panggilan mengalami masalah.</translation>
     </message>
@@ -27896,6 +27956,11 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
     </message>
     <message>
         <location line="+3"/>
+        <source>Your desktop ended screen sharing. Choose a source to share again.</source>
+        <translation>Desktop Anda mengakhiri berbagi layar. Pilih sumber untuk berbagi lagi.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The window you were sharing was closed.</source>
         <translation>Jendela yang Anda bagikan telah ditutup.</translation>
     </message>
@@ -27925,12 +27990,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Kamera tidak mengirim gambar. Jika itu kamera virtual, pastikan ada yang memberinya masukan.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Camera access is turned off in your system settings.</source>
-        <translation>Akses kamera dimatikan di pengaturan sistem Anda.</translation>
-    </message>
-    <message>
-        <location line="+8"/>
+        <location line="+11"/>
         <source>The camera you chose isn&apos;t available, so no camera was turned on. Choose a camera in Settings.</source>
         <translation>Kamera yang Anda pilih tidak tersedia, sehingga tidak ada kamera yang dinyalakan. Pilih kamera di Pengaturan.</translation>
     </message>
@@ -28018,7 +28078,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Suara panggilan berhenti: keluaran suara komputer ini terputus. Suara berlanjut saat keluaran tersedia lagi; jika tidak, keluar lalu bergabung kembali ke panggilan.</translation>
     </message>
     <message>
-        <location line="+2177"/>
+        <location line="+2185"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>Suara berbagi layar dinonaktifkan: paket ini tidak memiliki plugin penangkapan audio yang diperlukan.</translation>
     </message>
@@ -28103,7 +28163,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Peserta</translation>
     </message>
     <message>
-        <location line="-4612"/>
+        <location line="-4620"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>Ruangan ini dienkripsi, dan panggilan terenkripsi belum tersedia di build ini.</translation>
     </message>
@@ -32212,7 +32272,17 @@ Audiens yang diusulkan
         <translation>Encoder: %1 · Penskalaan: %2 · Tangkapan: %3</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
+        <source>Encoded frames observed</source>
+        <translation>Frame terenkode terdeteksi</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Waiting for an encoded frame</source>
+        <translation>Menunggu frame terenkode</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>RTP packets sent: %1 · Lost on the way to the server: %2</source>
         <translation>Paket RTP terkirim: %1 · Hilang dalam perjalanan ke server: %2</translation>
     </message>
@@ -36599,7 +36669,7 @@ Audiens yang diusulkan
         <translation>Rekaman tidak dapat difinalisasi.</translation>
     </message>
     <message>
-        <location line="+67"/>
+        <location line="+65"/>
         <source>Nothing was recorded.</source>
         <translation>Tidak ada yang direkam.</translation>
     </message>
@@ -36609,13 +36679,13 @@ Audiens yang diusulkan
         <translation>Perekaman gagal.</translation>
     </message>
     <message>
-        <location line="+95"/>
-        <location line="+156"/>
+        <location line="+91"/>
+        <location line="+166"/>
         <source>The sound server is not answering. Try recording again in a moment.</source>
         <translation>Server suara tidak merespons. Coba rekam lagi sebentar lagi.</translation>
     </message>
     <message>
-        <location line="-141"/>
+        <location line="-150"/>
         <source>No microphone or audio encoder is available.</source>
         <translation>Tidak ada mikrofon atau enkoder audio yang tersedia.</translation>
     </message>
@@ -36625,12 +36695,12 @@ Audiens yang diusulkan
         <translation>Penyimpanan rekaman tidak dapat disiapkan.</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+39"/>
         <source>Recording could not start.</source>
         <translation>Perekaman tidak dapat dimulai.</translation>
     </message>
     <message>
-        <location line="+211"/>
+        <location line="+209"/>
         <source>The microphone was disconnected. The recording was discarded.</source>
         <translation>Mikrofon terputus. Rekaman dibuang.</translation>
     </message>
@@ -36876,7 +36946,7 @@ Audiens yang diusulkan
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2462"/>
+        <location filename="../src/main.cpp" line="+2454"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>Klien Matrix Qt/QML asli. Backend: --backend={mock,http,rust}. Bawaan: rust (http pada build tanpa Rust SDK).</translation>
     </message>

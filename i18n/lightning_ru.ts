@@ -2724,12 +2724,27 @@ EXIF orientation: %4</source>
         <translation>(по умолчанию)</translation>
     </message>
     <message>
+        <location line="+10"/>
+        <source>Use only this microphone for this session</source>
+        <translation>Использовать только этот микрофон в этом сеансе</translation>
+    </message>
+    <message>
         <location line="+12"/>
+        <source>Waiting for your chosen microphone. Choose another input to speak.</source>
+        <translation>Ожидание выбранного микрофона. Чтобы говорить, выберите другой вход.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone isn&apos;t connected</source>
         <translation>Выбранный вами микрофон не подключен</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
+        <source>Your chosen microphone could not be opened. Choose another input to speak.</source>
+        <translation>Не удалось открыть выбранный микрофон. Чтобы говорить, выберите другой вход.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone couldn&apos;t be opened. The call uses the system default.</source>
         <translation>Не удалось открыть выбранный микрофон. В звонке используется системный по умолчанию.</translation>
     </message>
@@ -2823,6 +2838,11 @@ EXIF orientation: %4</source>
         <translation>Выбранная камера не подключена</translation>
     </message>
     <message>
+        <location line="+1"/>
+        <source>Chosen microphone not connected</source>
+        <translation>Выбранный микрофон не подключён</translation>
+    </message>
+    <message>
         <location line="+3"/>
         <source>System default</source>
         <translation>Системная по умолчанию</translation>
@@ -2838,17 +2858,32 @@ EXIF orientation: %4</source>
         <translation>Микрофон</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
         <source>No microphone was found. You can still join a call and listen.</source>
         <translation>Микрофон не найден. Вы по-прежнему можете присоединиться к вызову и прослушать его.</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+6"/>
+        <source>Use only this microphone for this session</source>
+        <translation>Использовать только этот микрофон в этом сеансе</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Waiting for your chosen microphone. Choose another input to speak.</source>
+        <translation>Ожидание выбранного микрофона. Чтобы говорить, выберите другой вход.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone isn&apos;t connected. Calls use the system default until it&apos;s back.</source>
         <translation>Выбранный вами микрофон не подключен. Для вызовов используются системные настройки по умолчанию, пока они не вернутся.</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+16"/>
+        <source>Your chosen microphone could not be opened. Choose another input to speak.</source>
+        <translation>Не удалось открыть выбранный микрофон. Чтобы говорить, выберите другой вход.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Your chosen microphone couldn&apos;t be opened, so the system default was used. Choose it again or reconnect it.</source>
         <translation>Не удалось открыть выбранный микрофон, поэтому использован системный по умолчанию. Выберите его снова или переподключите.</translation>
     </message>
@@ -3211,34 +3246,39 @@ EXIF orientation: %4</source>
     </message>
     <message>
         <location line="+46"/>
-        <location line="+28"/>
+        <location line="+30"/>
         <source>Turn off camera</source>
         <translation>Выключить камеру</translation>
     </message>
     <message>
-        <location line="-27"/>
-        <location line="+28"/>
+        <location line="-29"/>
+        <location line="+32"/>
         <source>Turn on camera</source>
         <translation>Включите камеру</translation>
     </message>
     <message>
-        <location line="-20"/>
-        <location line="+28"/>
+        <location line="-24"/>
+        <location line="+32"/>
         <source>Choose camera</source>
         <translation>Выберите камеру</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="-12"/>
+        <source>Waiting for desktop camera permission. Click to cancel.</source>
+        <translation>Ожидание разрешения рабочего стола на камеру. Нажмите, чтобы отменить.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Camera request cancelled. Click to try again.</source>
+        <translation>Запрос камеры отменён. Нажмите, чтобы повторить.</translation>
+    </message>
+    <message>
+        <location line="+30"/>
         <source>Stop sharing your screen</source>
         <translation>Прекратите делиться своим экраном</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Cancel screen sharing</source>
-        <translation>Отменить демонстрацию экрана</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="+5"/>
         <source>Share your screen</source>
         <translation>Поделитесь своим экраном</translation>
     </message>
@@ -3314,7 +3354,7 @@ EXIF orientation: %4</source>
         <translation>Вынести звонок в плавающее окно</translation>
     </message>
     <message>
-        <location line="-393"/>
+        <location line="-399"/>
         <source>Unmute microphone</source>
         <translation>Включить микрофон</translation>
     </message>
@@ -3364,7 +3404,17 @@ EXIF orientation: %4</source>
         <translation>Выберите устройство вывода</translation>
     </message>
     <message>
-        <location line="+369"/>
+        <location line="+84"/>
+        <source>Waiting for desktop screen sharing permission. Click to cancel.</source>
+        <translation>Ожидание разрешения рабочего стола на демонстрацию экрана. Нажмите, чтобы отменить.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Screen sharing request cancelled. Click to try again.</source>
+        <translation>Запрос демонстрации экрана отменён. Нажмите, чтобы повторить.</translation>
+    </message>
+    <message>
+        <location line="+289"/>
         <source>Leave call</source>
         <translation>Оставить вызов</translation>
     </message>
@@ -27927,20 +27977,20 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>SfuCallController</name>
     <message>
-        <location filename="../src/calls/SfuCallController.cpp" line="+637"/>
-        <location line="+396"/>
+        <location filename="../src/calls/SfuCallController.cpp" line="+645"/>
+        <location line="+406"/>
         <location line="+165"/>
         <source>Screen sharing isn&apos;t available on this desktop.</source>
         <translation>Совместное использование экрана недоступно на этом рабочем столе.</translation>
     </message>
     <message>
-        <location line="-559"/>
-        <location line="+933"/>
+        <location line="-569"/>
+        <location line="+945"/>
         <source>Screen sharing couldn&apos;t start.</source>
         <translation>Не удалось запустить демонстрацию экрана.</translation>
     </message>
     <message>
-        <location line="-567"/>
+        <location line="-569"/>
         <source>Screen sharing on Wayland needs xdg-desktop-portal, and it isn&apos;t responding. Install or start the portal for your desktop — for example xdg-desktop-portal-kde or xdg-desktop-portal-gnome — then try again.</source>
         <translation>Для совместного использования экрана на Wayland требуется xdg-desktop-portal, и он не отвечает. Установите или запустите портал для рабочего стола — например, xdg-desktop-portal-kde или xdg-desktop-portal-gnome — затем повторите попытку.</translation>
     </message>
@@ -27986,22 +28036,32 @@ Note: importing keys does not verify this session.</source>
         <translation>Служба этого звонка не ответила вовремя ни по одному из своих адресов.</translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+47"/>
         <source>Lightning couldn&apos;t open the camera. It may be in use by another app, or unplugged.</source>
         <translation>Lightning не удалось открыть камеру. Возможно, её использует другое приложение или она отключена.</translation>
     </message>
     <message>
-        <location line="+414"/>
+        <location line="+6"/>
+        <source>Camera permission was denied. Check your desktop’s camera privacy settings, then turn the camera on again.</source>
+        <translation>В разрешении на камеру отказано. Проверьте настройки конфиденциальности камеры рабочего стола и снова включите камеру.</translation>
+    </message>
+    <message>
+        <location line="+408"/>
         <source>Calling isn&apos;t available on this homeserver.</source>
         <translation>Вызовы недоступны на этом домашнем сервере.</translation>
     </message>
     <message>
-        <location line="-494"/>
+        <location line="-496"/>
         <source>Too many attempts. Try again in a moment.</source>
         <translation>Слишком много попыток. Повторите попытку через минуту.</translation>
     </message>
     <message>
-        <location line="-734"/>
+        <location line="-881"/>
+        <source>Screen sharing permission was denied. Check your desktop’s privacy settings, then try sharing again.</source>
+        <translation>В разрешении на демонстрацию экрана отказано. Проверьте настройки конфиденциальности рабочего стола и попробуйте снова.</translation>
+    </message>
+    <message>
+        <location line="+147"/>
         <source>Your desktop&apos;s camera portal offered Lightning no camera. If the camera works in other apps, allow Lightning to use all devices (in Flatseal: &quot;All devices&quot;), then turn the camera on again.</source>
         <translation>Портал камеры вашего рабочего стола не предоставил Lightning камеру. Если камера работает в других приложениях, разрешите Lightning использовать все устройства (во Flatseal: &quot;All devices&quot;), затем снова включите камеру.</translation>
     </message>
@@ -28107,13 +28167,13 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+8"/>
-        <location line="+451"/>
+        <location line="+453"/>
         <location line="+362"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>Не удалось подключиться к звонку.</translation>
     </message>
     <message>
-        <location line="-811"/>
+        <location line="-813"/>
         <source>The calling service is having trouble.</source>
         <translation>У службы вызовов возникли проблемы.</translation>
     </message>
@@ -28124,6 +28184,11 @@ Note: importing keys does not verify this session.</source>
     </message>
     <message>
         <location line="+3"/>
+        <source>Your desktop ended screen sharing. Choose a source to share again.</source>
+        <translation>Рабочий стол завершил демонстрацию экрана. Выберите источник, чтобы показать снова.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The window you were sharing was closed.</source>
         <translation>Окно, которым вы поделились, было закрыто.</translation>
     </message>
@@ -28153,12 +28218,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Камера не передаёт изображение. Если это виртуальная камера, убедитесь, что что-то её подаёт.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Camera access is turned off in your system settings.</source>
-        <translation>Доступ к камере выключен в настройках системы.</translation>
-    </message>
-    <message>
-        <location line="+8"/>
+        <location line="+11"/>
         <source>The camera you chose isn&apos;t available, so no camera was turned on. Choose a camera in Settings.</source>
         <translation>Выбранная камера недоступна, поэтому ни одна камера не включена. Выберите камеру в настройках.</translation>
     </message>
@@ -28246,7 +28306,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Звук звонка остановлен: вывод звука на этом компьютере отключился. Он возобновится, когда вывод снова станет доступен; если нет — выйдите из звонка и присоединитесь снова.</translation>
     </message>
     <message>
-        <location line="+2177"/>
+        <location line="+2185"/>
         <source>Screen-share sound is off: this package lacks the audio capture plugins it needs.</source>
         <translation>Звук демонстрации экрана отключён: в этом пакете отсутствуют необходимые плагины захвата звука.</translation>
     </message>
@@ -28331,7 +28391,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Участник</translation>
     </message>
     <message>
-        <location line="-4612"/>
+        <location line="-4620"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>Эта комната зашифрована, и зашифрованные звонки в этой сборке пока недоступны.</translation>
     </message>
@@ -32492,7 +32552,17 @@ Proposed audience
         <translation>Кодировщик: %1 · Масштабирование: %2 · Захват: %3</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
+        <source>Encoded frames observed</source>
+        <translation>Обнаружены закодированные кадры</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Waiting for an encoded frame</source>
+        <translation>Ожидание закодированного кадра</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>RTP packets sent: %1 · Lost on the way to the server: %2</source>
         <translation>Отправлено RTP-пакетов: %1 · Потеряно по пути на сервер: %2</translation>
     </message>
@@ -36955,7 +37025,7 @@ Proposed audience
         <translation>Не удалось завершить запись.</translation>
     </message>
     <message>
-        <location line="+67"/>
+        <location line="+65"/>
         <source>Nothing was recorded.</source>
         <translation>Ничего не записано.</translation>
     </message>
@@ -36965,13 +37035,13 @@ Proposed audience
         <translation>Не удалось выполнить запись.</translation>
     </message>
     <message>
-        <location line="+95"/>
-        <location line="+156"/>
+        <location line="+91"/>
+        <location line="+166"/>
         <source>The sound server is not answering. Try recording again in a moment.</source>
         <translation>Звуковой сервер не отвечает. Попробуйте записать ещё раз через мгновение.</translation>
     </message>
     <message>
-        <location line="-141"/>
+        <location line="-150"/>
         <source>No microphone or audio encoder is available.</source>
         <translation>Нет доступного микрофона или аудиокодировщика.</translation>
     </message>
@@ -36981,12 +37051,12 @@ Proposed audience
         <translation>Не удалось подготовить хранилище для записи.</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+39"/>
         <source>Recording could not start.</source>
         <translation>Не удалось начать запись.</translation>
     </message>
     <message>
-        <location line="+211"/>
+        <location line="+209"/>
         <source>The microphone was disconnected. The recording was discarded.</source>
         <translation>Микрофон отключён. Запись удалена.</translation>
     </message>
@@ -37232,7 +37302,7 @@ Proposed audience
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/main.cpp" line="+2462"/>
+        <location filename="../src/main.cpp" line="+2454"/>
         <source>Native Qt/QML Matrix client. Backend: --backend={mock,http,rust}. Default: rust (http in builds without the Rust SDK).</source>
         <translation>Нативный клиент Matrix на Qt/QML. Бэкенд: --backend={mock,http,rust}. По умолчанию: rust (http в сборках без Rust SDK).</translation>
     </message>

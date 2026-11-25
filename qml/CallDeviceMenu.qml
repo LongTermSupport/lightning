@@ -51,7 +51,7 @@ AppMenu {
             if (root.kind === "camera")
                 return app.callDevices.activeCameraId === ""
                        && !app.callDevices.preferredCameraMissing
-            return app.callDevices.activeMicrophoneId === ""
+            return app.callDevices.activeMicrophoneId === "" && !app.callDevices.microphonePinned
         }
         onTriggered: root.selectDevice("")
     }
@@ -70,12 +70,23 @@ AppMenu {
         }
     }
 
+    AppMenuItem {
+        visible: root.isMicrophone && (app.callDevices.activeMicrophoneId !== ""
+                                       || app.callDevices.preferredMicrophoneMissing)
+        text: qsTr("Use only this microphone for this session")
+        radio: true
+        radioSelected: app.callDevices.microphonePinned
+        onTriggered: app.callDevices.microphonePinned = !app.callDevices.microphonePinned
+    }
+
     Loader {
         active: root.isMicrophone
                 && app.callDevices.preferredMicrophoneMissing
         visible: active
         sourceComponent: AppMenuItem {
-            text: qsTr("Your chosen microphone isn't connected")
+            text: app.callDevices.microphonePinned
+                  ? qsTr("Waiting for your chosen microphone. Choose another input to speak.")
+                  : qsTr("Your chosen microphone isn't connected")
             enabled: false
         }
     }
@@ -86,7 +97,9 @@ AppMenu {
                 && !app.callDevices.preferredMicrophoneMissing
         visible: active
         sourceComponent: AppMenuItem {
-            text: qsTr("Your chosen microphone couldn't be opened. The call "
+            text: app.callDevices.microphonePinned
+                  ? qsTr("Your chosen microphone could not be opened. Choose another input to speak.")
+                  : qsTr("Your chosen microphone couldn't be opened. The call "
                        + "uses the system default.")
             enabled: false
         }
