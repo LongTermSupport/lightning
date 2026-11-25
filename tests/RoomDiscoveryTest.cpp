@@ -30,6 +30,8 @@ class HierarchyClient final : public MockMatrixClient
 {
 public:
     quint64 lastOp = 0;
+    quint64 cancelled = 0;
+    void cancelSpaceChildren(quint64 op) override { cancelled = op; }
     quint64 requestSpaceChildren(const QString &) override { return ++lastOp; }
     void answer(bool ok, int rows, bool truncated, const QString &category)
     {
@@ -463,13 +465,13 @@ private Q_SLOTS:
 
         controller.refreshSpaceChildren(space);
         client.answer(true, 7, true, QStringLiteral("network"));
-        QCOMPARE(controller.spaceChildren(space).size(), 7);
+        QCOMPARE(controller.spaceChildren(space).size(), 200);
         QCOMPARE(coverageOf(controller), QStringLiteral("network"));
 
         controller.refreshSpaceChildren(space);
         client.answer(false, 0, false, QStringLiteral("network"));
         QCOMPARE(controller.spaceChildrenState(space), QStringLiteral("ready"));
-        QCOMPARE(controller.spaceChildren(space).size(), 7);
+        QCOMPARE(controller.spaceChildren(space).size(), 200);
         QCOMPARE(coverageOf(controller), QStringLiteral("stale"));
 
         controller.refreshSpaceChildren(space);
@@ -481,6 +483,27 @@ private Q_SLOTS:
         QCOMPARE(controller.spaceChildrenState(space), QStringLiteral("ready"));
         QCOMPARE(controller.spaceChildren(space).size(), 0);
         QCOMPARE(coverageOf(controller), QString());
+    }
+
+    void cancellingARefreshKeepsRowsAndIgnoresItsLateAnswer()
+    {
+        HierarchyClient client;
+        QVERIFY(login(client));
+        RoomDiscoveryController controller;
+        controller.setClient(&client);
+        const QString space = QStringLiteral("!s:mock.local");
+        controller.refreshSpaceChildren(space);
+        client.answer(true, 2, true, QStringLiteral("network"));
+        controller.refreshSpaceChildren(space);
+        controller.cancelSpaceChildren(space);
+        QCOMPARE(client.cancelled, client.lastOp);
+        client.answer(true, 0, false, {});
+        QCOMPARE(controller.spaceChildren(space).size(), 2);
+        QCOMPARE(coverageOf(controller), QStringLiteral("cancelled"));
+        controller.refreshSpaceChildren(space);
+        client.answer(true, 0, false, {});
+        QVERIFY(controller.spaceChildren(space).isEmpty());
+        QVERIFY(coverageOf(controller).isEmpty());
     }
 
     void aHierarchyThatFailsWithNoRowsIsFailedNotPartial()

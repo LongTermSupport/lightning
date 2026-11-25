@@ -13,6 +13,8 @@ class MediaVisibilityStore : public QObject
 
     Q_PROPERTY(int hiddenCount READ hiddenCount NOTIFY hiddenCountChanged)
 
+    Q_PROPERTY(int capacity READ capacity CONSTANT)
+
 public:
     explicit MediaVisibilityStore(QObject *parent = nullptr);
 
@@ -28,6 +30,7 @@ public:
     void resetForSession();
     void reloadForAccount();
 
+    int capacity() const { return kMaxHidden; }
     int hiddenCount() const { return int(m_hidden.size()); }
 
     static constexpr int kMaxHidden = 4096;

@@ -526,6 +526,8 @@ public:
     QString mediaKeepState() const override { return m_mediaKeepState; }
     quint64 searchIndexStats() override;
     quint64 sweepSearchIndex() override;
+    quint64 requestRoomSearchCoverage(const QString &roomId) override;
+    void cancelRoomSearchIndex(quint64 opId) override;
     quint64 deepenSearchIndex(const QString &roomId) override;
     void forgetIndexedEvent(const QString &eventId) override;
     void forgetIndexedRoom(const QString &roomId) override;
@@ -601,6 +603,7 @@ public:
     quint64 knockRoom(const QString &target, const QStringList &via,
                       const QString &reason) override;
     quint64 cancelKnock(const QString &roomId) override;
+    void cancelSpaceChildren(quint64 opId) override;
     quint64 requestSpaceChildren(const QString &spaceId) override;
     bool supportsMessageSearch() const override { return true; }
     quint64 searchMessages(const QString &term, const QString &roomId,

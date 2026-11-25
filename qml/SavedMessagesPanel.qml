@@ -94,6 +94,13 @@ Dialog {
                 onClicked: root.close()
             }
         }
+        Label {
+            Layout.fillWidth: true
+            text: root.saved ? root.saved.capacityNotice : ""
+            visible: text.length > 0
+            wrapMode: Text.Wrap
+            color: AppTheme.stormTextMuted
+        }
         TextField {
             id: searchField
             objectName: "savedMessagesSearch"

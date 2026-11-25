@@ -574,7 +574,14 @@ NOT TESTED**. Automated tests named in commits do not establish live behavior.
   `children` list is an answer, never a reason to fall back to the SDK's
   `descendants`. A JOINED room or subspace the parent's synced state no
   longer lists is never drawn from a cached `/hierarchy` answer. While `/hierarchy` has not
-  answered, a section says "Loading rooms…", not "No rooms yet". The **"Joined" chip is gone** from rows: beside every room it
+  answered, a section says "Loading rooms…", not "No rooms yet".
+  A listing stopped by the 10-page / 200-row bound says more rooms may be
+  available and offers Find by address; a filter miss on an incomplete
+  listing says no LOADED room matched. A refresh is bounded (45 s overall,
+  15 s per page) and can be cancelled; cancelling, a failed refresh or a
+  partial one keeps the rows already shown (up to 200), and a late answer to
+  a cancelled refresh is discarded. Retry refreshes only the incomplete
+  section. The **"Joined" chip is gone** from rows: beside every room it
   read as the user's ROLE (Portuguese renders it "Membro"), and the row's
   action — Join, or the open arrow — already says it; the accessible name
   carries "not joined".
@@ -1156,6 +1163,15 @@ restores the prior local list. Account data has no compare-and-swap, so
 simultaneous edits from two devices to this one event can overwrite each
 other; a server read after writes converges to its accepted state. This
 limitation needs live multi-device validation before a stronger merge claim.
+
+Capacity: with ten or fewer slots or under 10% of the 16 KiB left, the hub
+and the "Message saved" notice state both remaining limits. A save that would
+exceed either limit is refused and the server's list is kept as read, never
+trimmed. A record over either limit or with an unknown version is shown as
+unavailable and never overwritten, so a newer schema written by another
+device survives; version 1 needs no migration. If, within the session, a
+reread brings back one of the last 100 references this device removed (same
+save time), the hub says another device restored it instead of hiding it.
 
 ### E2EE
 
@@ -2296,14 +2312,29 @@ above. The event cache this index duplicates is unchanged.)
   `finished_ms` (wall clock of the last run that left nothing to walk; reset by
   "Clear index"; no message content), shown in the empty search state.
 * **Empty local search** (the global search dialog and the room search panel)
-  says "No messages found", when older messages were last indexed (from
+  says "No matches in indexed messages", when older messages were last indexed (from
   `finished_ms`, refreshed every minute), and offers "Index older messages"
   (or "Resume indexing"), replaced by progress while a pass runs. The room
   panel offers it only in an encrypted room, since index-all walks only those.
 * The find bar prefers local and offers server as an explicit CHOICE where the
   server can read the room — they answer different questions, and switching
   silently would make "no results" mean two things on consecutive keystrokes.
-  The coverage line says how many messages are being searched.
+  The coverage line (`RoomSearchCoverage.qml`, both the find bar and the room
+  search panel) is per room: the room's row count in the index, and the last
+  scan's receipt — outcome (covered to the room start, capped at the page
+  bound, waiting for keys, history fetch failed, index write failed,
+  interrupted, or never scanned), pages committed, oldest message time,
+  undecryptable count and scan time. Receipts live in
+  `lightning-index-all.json` (record version 3: room ids, counts and times
+  only, never a body; capped at 20,000 rooms; dropped by "Clear index" and
+  when the room is forgotten). A version 2 record migrates in place with no
+  receipts and its queue, position and completion set intact; a receipt
+  written in a shape this build does not know is dropped alone. A receipt is
+  written as "interrupted" before the first page, so a crash or a refused
+  final write never reads as covered. "Retry this room" after a fetch or
+  index-write failure walks only that room; "Cancel indexing" stops the
+  walk at the next page and survives switching rooms. An index-all walk that
+  ends capped is not marked done and is not re-queued.
 
 Live-validated against a real homeserver, including a Megolm-encrypted message
 this client sent and then found.
@@ -3906,6 +3937,19 @@ wall-clock number from one machine is never a threshold.
   idle 1 wakeup/s with tracing off (3 runs). `LIGHTNING_GUI_STALL_TRACE=<ms>`
   is the harness; it adds about 60 wakeups/s itself, so measure idle power
   with it unset.
+
+- At the 4096-image local hiding limit, existing hides stay in effect.
+  Showing one image frees one slot for a new hide. This supersedes oldest-first eviction.
+- Create folder archive reviews a local snapshot before staging a ZIP in the
+  attachment tray. Review is bounded to 256 entries, eight directory levels and
+  16 MiB of file data. Hidden and sensitive names, links, special files and
+  unreadable entries are excluded. The final ZIP must fit the known upload limit.
+- Photo metadata inspection reports EXIF GPS, date/time, camera make/model
+  and orientation tags from the source and prepared copy. Unknown covers
+  unrecognized or undetected fields. A matching send policy uses that copy.
+- Cancelling a queued playable write releases its byte buffer before the
+  writer thread drains. The last visible poster owner can drop its decode
+  request while an explicit Play continues.
 
 ### Screen share diagnostics
 

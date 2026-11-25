@@ -45,6 +45,7 @@ public:
                            const QString &reason);
     Q_INVOKABLE void cancelKnock(const QString &roomId);
 
+    Q_INVOKABLE void cancelSpaceChildren(const QString &spaceId);
     Q_INVOKABLE void refreshSpaceChildren(const QString &spaceId);
     Q_INVOKABLE QVariantList spaceChildren(const QString &spaceId) const;
     Q_INVOKABLE QString spaceChildrenState(const QString &spaceId) const;

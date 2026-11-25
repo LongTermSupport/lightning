@@ -99,6 +99,9 @@ public:
     Q_INVOKABLE QString videoPosterSource(const QString &mediaKey,
                                           double sizeBytes,
                                           double capBytes = 0);
+    Q_INVOKABLE QString ownedVideoPoster(QObject *owner, const QString &key,
+                                         double size, double cap = 0);
+    Q_INVOKABLE void releaseVideoPoster(QObject *owner);
     Q_INVOKABLE QString audioArtworkSource(const QString &mediaKey,
                                            const QVariant &artwork);
     Q_INVOKABLE void cancelPlayable(const QString &mediaKey);
@@ -385,7 +388,15 @@ private:
     QHash<QString, int> m_playableWanted;
     QSet<QString> m_prefetchWanted;
     QSet<QString> m_posterWanted;
-    QSet<QString> m_posterExtracting;
+    struct PosterOwner {
+        QString key;
+        QMetaObject::Connection destroyed;
+    };
+    QHash<QObject *, PosterOwner> m_posterOwners;
+    QHash<QString, QString> m_posterExtracting;
+    quint64 m_nextPosterJob = 0;
+    QString requestVideoPoster(const QString &key, double size, double cap);
+    bool hasPosterOwner(const QString &key) const;
     VideoPosterExtractor *m_posterExtractor = nullptr;
     bool m_multimediaWarmed = false;
     QHash<QString, int> m_pinnedPlayables;
