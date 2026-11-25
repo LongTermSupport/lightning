@@ -1,5 +1,9 @@
 # Open items and the NOT TESTED inventory
 
+## 2026-11-25 — KNOWN LIMIT: the catch-up card leaves out pin changes
+
+A pinned-message change carries no event id the card could open, so it is not listed.
+
 ## 2026-11-24 — KNOWN LIMITS: attachment review copies and poster prefetch
 
 Discarding attachments while one is dispatching deletes that attachment's reviewed copy at once, as converted renditions already do; releasing the last on-screen owner of a video poster cancels its decode but not a speculative network prefetch already running.
