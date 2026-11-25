@@ -22,6 +22,7 @@ bool isQueryChar(QChar c)
     case u'+':
     case u'-':
     case u' ':
+    case u':':
         return true;
     default:
         return false;
@@ -190,10 +191,51 @@ QList<MentionRef> shiftRefs(const QList<MentionRef> &refs, const QString &oldTex
     return out;
 }
 
-Expansion expand(const QString &text, const QList<MentionRef> &refs)
+namespace {
+
+QList<MentionRef> typedUserIds(const QString &text,
+                               const QList<MentionRef> &refs)
+{
+    static const QRegularExpression mxid(QStringLiteral(
+        "@[a-z0-9._=/+-]{1,128}:[A-Za-z0-9](?:[A-Za-z0-9.-]{0,251}[A-Za-z0-9])?"
+        "(?::[0-9]{1,5})?"));
+    QList<MentionRef> out;
+    auto it = mxid.globalMatch(text);
+    while (it.hasNext()) {
+        const QRegularExpressionMatch m = it.next();
+        const int start = static_cast<int>(m.capturedStart());
+        const int len = static_cast<int>(m.capturedLength());
+        if (start > 0 && !isBoundaryBefore(text.at(start - 1)))
+            continue;
+        const int end = start + len;
+        if (end < text.length() && text.at(end).isLetterOrNumber())
+            continue;
+        if (insideCode(text, start))
+            continue;
+        bool overlaps = false;
+        for (const MentionRef &r : refs) {
+            if (start < r.start + r.length && r.start < end)
+                overlaps = true;
+        }
+        if (overlaps)
+            continue;
+        MentionRef ref;
+        ref.userId = m.captured(0);
+        ref.displayText = ref.userId;
+        ref.start = start;
+        ref.length = len;
+        out.append(ref);
+    }
+    return out;
+}
+
+}
+
+Expansion expand(const QString &text, const QList<MentionRef> &pickedRefs)
 {
     Expansion result;
 
+    const QList<MentionRef> refs = pickedRefs + typedUserIds(text, pickedRefs);
     QList<MentionRef> valid;
     valid.reserve(refs.size());
     for (const MentionRef &ref : refs) {

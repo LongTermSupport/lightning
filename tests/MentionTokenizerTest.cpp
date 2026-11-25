@@ -65,6 +65,29 @@ private slots:
         QVERIFY(activeToken(maxQuery, maxQuery.length()).active);
     }
 
+    void tokenStaysActiveThroughTheServerPart()
+    {
+        for (const QString &t : { QStringLiteral("hi @juzeppeverdi:"),
+                                  QStringLiteral("hi @juzeppeverdi:shynkent.ovh") }) {
+            const Token tok = activeToken(t, t.length());
+            QVERIFY(tok.active);
+            QCOMPARE(tok.start, 3);
+            QCOMPARE(tok.query, t.mid(4));
+        }
+    }
+
+    void aCompleteTypedUserIdBecomesAMention()
+    {
+        const Expansion e = expand(QStringLiteral("hi @juz:shynkent.ovh, ok"), {});
+        QCOMPARE(e.userIds, QStringList{ QStringLiteral("@juz:shynkent.ovh") });
+        QVERIFY(e.body.contains(
+            QStringLiteral("](https://matrix.to/#/%40juz%3Ashynkent.ovh), ok")));
+
+        QVERIFY(expand(QStringLiteral("mail a@b:c.d"), {}).userIds.isEmpty());
+        QVERIFY(expand(QStringLiteral("`@juz:shynkent.ovh`"), {}).userIds.isEmpty());
+        QVERIFY(expand(QStringLiteral("@juz:"), {}).userIds.isEmpty());
+    }
+
     void cursorOutsideTokenIsInactive()
     {
         QVERIFY(!activeToken(QStringLiteral("@bob, hi"), 8).active);
