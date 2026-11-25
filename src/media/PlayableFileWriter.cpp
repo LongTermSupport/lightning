@@ -38,6 +38,11 @@ PlayableFileWriter::~PlayableFileWriter()
     delete m_thread;
 }
 
+QObject *PlayableFileWriter::workerForTest() const
+{
+    return m_worker;
+}
+
 quint64 PlayableFileWriter::write(const QString &cacheKey, const QString &path,
                                   const QByteArray &bytes, quint64 generation)
 {
@@ -50,10 +55,11 @@ quint64 PlayableFileWriter::write(const QString &cacheKey, const QString &path,
             return 0;
         serial = m_control->nextSerial++;
         m_control->live.insert(cacheKey, serial);
+        m_control->waiting.insert(serial, bytes);
     }
     QMetaObject::invokeMethod(m_worker, [worker = m_worker, cacheKey, path,
-                                         bytes, generation, serial] {
-        worker->enqueue(cacheKey, path, bytes, generation, serial);
+                                         generation, serial] {
+        worker->enqueue(cacheKey, path, generation, serial);
     });
     return serial;
 }
@@ -64,7 +70,8 @@ void PlayableFileWriter::cancel(const QString &cacheKey)
     const auto it = m_control->live.find(cacheKey);
     if (it == m_control->live.end())
         return;
-    m_control->cancelled.insert(it.value());
+    if (!m_control->waiting.remove(it.value()))
+        m_control->cancelled.insert(it.value());
     m_control->live.erase(it);
 }
 
@@ -72,8 +79,11 @@ void PlayableFileWriter::cancelAll()
 {
     QMutexLocker locker(&m_control->mutex);
     for (auto it = m_control->live.cbegin(), end = m_control->live.cend();
-         it != end; ++it)
-        m_control->cancelled.insert(it.value());
+         it != end; ++it) {
+        if (!m_control->waiting.contains(it.value()))
+            m_control->cancelled.insert(it.value());
+    }
+    m_control->waiting.clear();
     m_control->live.clear();
 }
 
@@ -85,13 +95,15 @@ PlayableWriteWorker::PlayableWriteWorker(
 }
 
 void PlayableWriteWorker::enqueue(const QString &cacheKey, const QString &path,
-                                  const QByteArray &bytes, quint64 generation,
-                                  quint64 serial)
+                                  quint64 generation, quint64 serial)
 {
-    if (cancelled(serial)) {
-        retire(cacheKey, serial);
-        return;
+    QByteArray bytes;
+    {
+        QMutexLocker locker(&m_control->mutex);
+        bytes = m_control->waiting.take(serial);
     }
+    if (bytes.isEmpty())
+        return;
 
     bool ok = false;
     bool abandoned = false;

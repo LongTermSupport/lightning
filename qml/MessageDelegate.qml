@@ -2922,11 +2922,13 @@ Item {
                         id: threadHideMediaButton
                         objectName: "messageHideMediaButton"
                         visible: root.mediaHideable && !root.mediaHidden
+                        enabled: !app.mediaVisibility
+                                 || app.mediaVisibility.hiddenCount < app.mediaVisibility.capacity
                         implicitWidth: 28; implicitHeight: 28
                         radius: AppTheme.radiusControl
                         iconName: "visibility_off"
                         iconSize: 18
-                        Accessible.name: qsTr("Hide image")
+                        Accessible.name: enabled ? qsTr("Hide image") : qsTr("Hidden image limit reached")
                         ToolTip {
                             visible: threadHideMediaButton.hovered
                             delay: 500
@@ -4424,10 +4426,12 @@ Item {
             AppMenuItem {
                 objectName: "hideMediaMenuItem"
                 iconName: root.mediaHidden ? "visibility" : "visibility_off"
+                readonly property bool full: !!app.mediaVisibility
+                    && app.mediaVisibility.hiddenCount >= app.mediaVisibility.capacity
                 text: root.mediaHidden ? qsTr("Show image")
-                                       : qsTr("Hide image")
+                    : full ? qsTr("Hidden image limit reached") : qsTr("Hide image")
                 visible: root.mediaHideable
-                enabled: visible
+                enabled: visible && (root.mediaHidden || !full)
                 onTriggered: root.setMediaHidden(!root.mediaHidden)
             }
 
@@ -6252,8 +6256,8 @@ Item {
                     bridgeSource = app.mediaBridge.mediaSource(model.mediaKey,
                                                                "thumb")
                 } else if (root.speculativeMediaAllowed) {
-                    bridgeSource = app.mediaBridge.videoPosterSource(
-                        model.mediaKey, prefetchSize, prefetchCap)
+                    bridgeSource = app.mediaBridge.ownedVideoPoster(
+                        videoBox, model.mediaKey, prefetchSize, prefetchCap)
                 } else {
                     bridgeSource = ""
                 }
@@ -6264,6 +6268,7 @@ Item {
             }
             readonly property bool coverOnScreen: root.speculativeMediaAllowed
             onCoverOnScreenChanged: {
+                if (!coverOnScreen) app.mediaBridge.releaseVideoPoster(videoBox)
                 if (coverOnScreen && bridgeSource.length === 0
                     && !bridgeFailed)
                     videoSourceRefresh.restart()
@@ -6277,6 +6282,7 @@ Item {
                 refreshBridgeSource()
             }
             function resetForMedia() {
+                app.mediaBridge.releaseVideoPoster(videoBox)
                 playerActive = false
                 bridgeSource = ""
                 bridgeFailed = false
@@ -6320,13 +6326,13 @@ Item {
                         videoBox.refreshBridgeSource()
                 }
                 function onPlayableMediaReady(cacheKey) {
-                    if (cacheKey === "full:" + (model.mediaKey || "")
+                    if (videoBox.coverOnScreen && cacheKey === "full:" + (model.mediaKey || "")
                         && model.mediaThumbAvailable !== true
                         && videoBox.bridgeSource.length === 0
                         && !videoBox.bridgeFailed)
                         videoBox.bridgeSource =
-                            app.mediaBridge.videoPosterSource(
-                                model.mediaKey, 0)
+                            app.mediaBridge.ownedVideoPoster(
+                                videoBox, model.mediaKey, 0)
                 }
             }
 

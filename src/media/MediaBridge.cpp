@@ -30,6 +30,7 @@
 #include <QThreadPool>
 #include <QUuid>
 
+#include <algorithm>
 #include <cstring>
 #include <utility>
 
@@ -945,6 +946,60 @@ void MediaBridge::prefetchPlayable(const QString &mediaKey, double sizeBytes,
 QString MediaBridge::videoPosterSource(const QString &mediaKey,
                                        double sizeBytes, double capBytes)
 {
+    // A request without a lifetime keeps the shared job alive until completion.
+    for (auto it = m_posterOwners.begin(); it != m_posterOwners.end();) {
+        if (it->key == mediaKey) {
+            disconnect(it->destroyed);
+            it = m_posterOwners.erase(it);
+        } else {
+            ++it;
+        }
+    }
+    return requestVideoPoster(mediaKey, sizeBytes, capBytes);
+}
+
+bool MediaBridge::hasPosterOwner(const QString &key) const
+{
+    return std::any_of(m_posterOwners.cbegin(), m_posterOwners.cend(),
+                       [&](const PosterOwner &owner) { return owner.key == key; });
+}
+
+QString MediaBridge::ownedVideoPoster(QObject *owner, const QString &key, double size, double cap)
+{
+    if (!owner)
+        return {};
+    if (m_posterOwners.value(owner).key != key)
+        releaseVideoPoster(owner);
+    const QString full = mediaCacheKey(key, 0);
+    const bool shared = m_posterWanted.contains(full) || m_posterExtracting.contains(key);
+    const bool owned = hasPosterOwner(key);
+    const QString result = requestVideoPoster(key, size, cap);
+    if (!m_posterOwners.contains(owner) && (!shared || owned)
+        && (m_posterWanted.contains(full) || m_posterExtracting.contains(key))) {
+        m_posterOwners.insert(owner, {key, connect(owner, &QObject::destroyed, this,
+            [this, owner] { releaseVideoPoster(owner); })});
+    }
+    return result;
+}
+
+void MediaBridge::releaseVideoPoster(QObject *owner)
+{
+    const auto it = m_posterOwners.find(owner);
+    if (it == m_posterOwners.end())
+        return;
+    const QString key = it->key;
+    disconnect(it->destroyed);
+    m_posterOwners.erase(it);
+    if (hasPosterOwner(key))
+        return;
+    m_posterWanted.remove(mediaCacheKey(key, 0));
+    const QString job = m_posterExtracting.take(key);
+    if (!job.isEmpty() && m_posterExtractor)
+        m_posterExtractor->cancel(job);
+}
+
+QString MediaBridge::requestVideoPoster(const QString &mediaKey, double sizeBytes, double capBytes)
+{
     if (mediaKey.isEmpty()
         || mediaKey.contains(QLatin1String("send-queue.localhost"))
         || !supported())
@@ -1049,8 +1104,9 @@ void MediaBridge::startPosterExtraction(const QString &mediaKey,
 {
     if (m_posterExtracting.contains(mediaKey))
         return;
-    m_posterExtracting.insert(mediaKey);
-    ensurePosterExtractor()->requestPoster(mediaKey, filePath);
+    const QString job = QString::number(++m_nextPosterJob);
+    m_posterExtracting.insert(mediaKey, job);
+    ensurePosterExtractor()->requestPoster(job, filePath);
 }
 
 void MediaBridge::warmMultimediaBackend()
@@ -1064,10 +1120,11 @@ void MediaBridge::warmMultimediaBackend()
     ensurePosterExtractor()->warmUp();
 }
 
-void MediaBridge::onPosterReady(const QString &mediaKey,
+void MediaBridge::onPosterReady(const QString &job,
                                 const QByteArray &jpeg)
 {
-    if (!m_posterExtracting.remove(mediaKey))
+    const QString mediaKey = m_posterExtracting.key(job);
+    if (mediaKey.isEmpty() || !m_posterExtracting.remove(mediaKey))
         return;
     const QString posterKey = mediaCacheKey(mediaKey, 1);
     if (jpeg.isEmpty()) {
@@ -1580,6 +1637,7 @@ QVariantMap MediaBridge::healthSnapshot() const
     out.insert(QStringLiteral("failed"), m_statFailed);
     out.insert(QStringLiteral("timedOut"), m_statTimedOut);
     out.insert(QStringLiteral("droppedStale"), m_statDroppedStale);
+    out.insert(QStringLiteral("wantedPosters"), m_posterWanted.size() + m_posterExtracting.size());
     out.insert(QStringLiteral("cancelled"), m_statCancelled);
     out.insert(QStringLiteral("cacheHits"), m_statCacheHit);
     out.insert(QStringLiteral("cacheMisses"), m_statCacheMiss);
@@ -2533,6 +2591,9 @@ void MediaBridge::clear()
     m_playableWanted.clear();
     m_prefetchWanted.clear();
     m_posterWanted.clear();
+    for (const auto &owner : std::as_const(m_posterOwners))
+        disconnect(owner.destroyed);
+    m_posterOwners.clear();
     m_posterExtracting.clear();
     if (m_posterExtractor) {
         disconnect(m_posterExtractor, nullptr, this, nullptr);
