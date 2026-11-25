@@ -1144,7 +1144,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7506"/>
+        <location filename="../src/app/AppController.cpp" line="+7511"/>
         <source>Room invitation</source>
         <translation>دعوة إلى غرفة</translation>
     </message>
@@ -1430,23 +1430,23 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>استخدم تواريخ حقيقية بصيغة YYYY-MM-DD، على ألا يكون «من» بعد «إلى».</translation>
     </message>
     <message>
-        <location line="-4902"/>
-        <location line="+2803"/>
+        <location line="-4905"/>
+        <location line="+2806"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
     <message>
-        <location line="-2802"/>
+        <location line="-2805"/>
         <source>This is a test notification. If you can read it, desktop notifications work.</source>
         <translation>هذا إشعار تجريبي. إن استطعت قراءته فإشعارات سطح المكتب تعمل.</translation>
     </message>
     <message>
-        <location line="+427"/>
+        <location line="+428"/>
         <source>New mentions</source>
         <translation>إشارات جديدة</translation>
     </message>
     <message>
-        <location line="+556"/>
+        <location line="+558"/>
         <source>Call started</source>
         <translation>بدأت المكالمة</translation>
     </message>
@@ -5450,6 +5450,119 @@ EXIF orientation: %4</source>
     </message>
 </context>
 <context>
+    <name>CreateCardDialog</name>
+    <message>
+        <location filename="../qml/CreateCardDialog.qml" line="+121"/>
+        <source>This could not be sent. Try again.</source>
+        <translation>تعذّر إرسال هذا. حاول مرة أخرى.</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Edit checklist</source>
+        <translation>تحرير قائمة المراجعة</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>New checklist</source>
+        <translation>قائمة مراجعة جديدة</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Edit event</source>
+        <translation>تحرير الحدث</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>New event</source>
+        <translation>حدث جديد</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Title (optional)</source>
+        <translation>العنوان (اختياري)</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Title</source>
+        <translation>العنوان</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Items, one per line</source>
+        <translation>العناصر، عنصر في كل سطر</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Anyone in the room can tick and add items</source>
+        <translation>يمكن لأي شخص في الغرفة تحديد العناصر وإضافتها</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Date</source>
+        <translation>التاريخ</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Starts</source>
+        <translation>يبدأ</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Ends (optional)</source>
+        <translation>ينتهي (اختياري)</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Time zone</source>
+        <translation>المنطقة الزمنية</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Search time zones</source>
+        <translation>ابحث في المناطق الزمنية</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Where</source>
+        <translation>أين</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Place or room (optional)</source>
+        <translation>مكان أو غرفة (اختياري)</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Link</source>
+        <translation>رابط</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>https:// call or page (optional)</source>
+        <translation>مكالمة أو صفحة https:// (اختياري)</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Enter a date and a time that exists in this time zone.</source>
+        <translation>أدخل تاريخًا ووقتًا موجودين في هذه المنطقة الزمنية.</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Cancel</source>
+        <translation>إلغاء</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Save</source>
+        <translation>حفظ</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Send</source>
+        <translation>إرسال</translation>
+    </message>
+</context>
+<context>
     <name>CreatePollDialog</name>
     <message>
         <location filename="../qml/CreatePollDialog.qml" line="+124"/>
@@ -8597,7 +8710,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+4"/>
-        <location filename="../src/models/TimelineModel.cpp" line="+2874"/>
+        <location filename="../src/models/TimelineModel.cpp" line="+2876"/>
         <source>Voice message</source>
         <translation>رسالة صوتية</translation>
     </message>
@@ -13286,24 +13399,24 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+6"/>
-        <location line="+42"/>
+        <location line="+56"/>
         <source>Emoji…</source>
         <translation>رمز تعبيري…</translation>
     </message>
     <message>
-        <location line="-35"/>
-        <location line="+42"/>
+        <location line="-49"/>
+        <location line="+56"/>
         <source>GIFs and stickers…</source>
         <translation>صور GIF والملصقات…</translation>
     </message>
     <message>
-        <location line="-41"/>
-        <location line="+42"/>
+        <location line="-55"/>
+        <location line="+56"/>
         <source>GIF…</source>
         <translation>GIF…</translation>
     </message>
     <message>
-        <location line="-26"/>
+        <location line="-40"/>
         <source>Attach files…</source>
         <translation>إرفاق ملفات…</translation>
     </message>
@@ -13318,7 +13431,17 @@ Signing out and signing in again is the only fix.</source>
         <translation>إنشاء استطلاع…</translation>
     </message>
     <message>
-        <location line="+198"/>
+        <location line="+7"/>
+        <source>Create checklist…</source>
+        <translation>إنشاء قائمة مراجعة…</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Create event…</source>
+        <translation>إنشاء حدث…</translation>
+    </message>
+    <message>
+        <location line="+201"/>
         <source>Continue in new room</source>
         <translation>المتابعة في غرفة جديدة</translation>
     </message>
@@ -13600,7 +13723,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>تسجيل رسالة صوتية</translation>
     </message>
     <message>
-        <location line="-3202"/>
+        <location line="-3219"/>
         <source>A recording is already in progress.</source>
         <translation>هناك تسجيل قيد التنفيذ بالفعل.</translation>
     </message>
@@ -13620,7 +13743,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>التسجيل الصوتي غير متاح.</translation>
     </message>
     <message>
-        <location line="+2919"/>
+        <location line="+2936"/>
         <location line="+1"/>
         <source>More</source>
         <translation>المزيد</translation>
@@ -13780,18 +13903,18 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+91"/>
-        <location line="+928"/>
+        <location line="+949"/>
         <location line="+1152"/>
         <source>Reply</source>
         <translation>رد</translation>
     </message>
     <message>
-        <location line="-2065"/>
+        <location line="-2086"/>
         <source>(original message not loaded)</source>
         <translation>(الرسالة الأصلية غير محمّلة)</translation>
     </message>
     <message numerus="yes">
-        <location line="+109"/>
+        <location line="+129"/>
         <source>%n message(s) deleted</source>
         <comment>collapsed run of redactions</comment>
         <translation>
@@ -13804,7 +13927,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message>
-        <location line="+117"/>
+        <location line="+118"/>
         <source>Missing room key. Restore your recovery key in Settings, or wait for another verified device to share the key.</source>
         <translation>مفتاح الغرفة مفقود. استعد مفتاح الاستعادة من الإعدادات، أو انتظر أن يشارك جهاز موثّق آخر المفتاح.</translation>
     </message>
@@ -13834,8 +13957,8 @@ Signing out and signing in again is the only fix.</source>
         <translation>في انتظار المفاتيح…</translation>
     </message>
     <message>
-        <location line="-1062"/>
-        <location line="+1071"/>
+        <location line="-1083"/>
+        <location line="+1092"/>
         <source>Retry decryption</source>
         <translation>إعادة محاولة فك التعمية</translation>
     </message>
@@ -13845,7 +13968,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>إعدادات الأمان</translation>
     </message>
     <message>
-        <location line="-1991"/>
+        <location line="-2012"/>
         <source>Link</source>
         <translation>رابط</translation>
     </message>
@@ -13855,7 +13978,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>فتح هذا الخيط</translation>
     </message>
     <message>
-        <location line="+699"/>
+        <location line="+720"/>
         <source>Show the link preview again</source>
         <translation>إظهار معاينة الرابط مرة أخرى</translation>
     </message>
@@ -14017,12 +14140,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>الرد في خيط</translation>
     </message>
     <message>
-        <location line="-2080"/>
+        <location line="-2101"/>
         <source>Original message removed</source>
         <translation>تمت إزالة الرسالة الأصلية</translation>
     </message>
     <message>
-        <location line="+607"/>
+        <location line="+628"/>
         <source>%1 • not sent: you&apos;re no longer in this room</source>
         <translation>%1 • لم تُرسل: لم تعد في هذه الغرفة</translation>
     </message>
@@ -14328,7 +14451,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>تحرير</translation>
     </message>
     <message>
-        <location line="-3710"/>
+        <location line="-3731"/>
         <source>%1 B</source>
         <translation>%1 ب</translation>
     </message>
@@ -14362,22 +14485,22 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="-570"/>
         <location line="+568"/>
-        <location line="+3777"/>
+        <location line="+3798"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5268"/>
+        <location line="-5289"/>
         <location line="+53"/>
         <location line="+514"/>
-        <location line="+4326"/>
+        <location line="+4347"/>
         <source>Image</source>
         <translation>صورة</translation>
     </message>
     <message>
-        <location line="-4891"/>
+        <location line="-4912"/>
         <source>Attachment</source>
         <translation>مرفق</translation>
     </message>
@@ -14431,12 +14554,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>خيط</translation>
     </message>
     <message>
-        <location line="+259"/>
+        <location line="+279"/>
         <source>Message deleted</source>
         <translation>حُذفت الرسالة</translation>
     </message>
     <message>
-        <location line="+487"/>
+        <location line="+488"/>
         <source>%1 • not sent: connection problem</source>
         <translation>%1 • لم تُرسل: مشكلة في الاتصال</translation>
     </message>
@@ -14710,10 +14833,10 @@ Signing out and signing in again is the only fix.</source>
         <translation>فشل تحميل الملصق — انقر لإعادة المحاولة</translation>
     </message>
     <message>
-        <location line="-5685"/>
+        <location line="-5706"/>
         <location line="+57"/>
         <location line="+517"/>
-        <location line="+4324"/>
+        <location line="+4345"/>
         <location line="+1066"/>
         <location line="+93"/>
         <source>Video</source>
@@ -14726,9 +14849,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>فيديو</translation>
     </message>
     <message>
-        <location line="-6068"/>
+        <location line="-6089"/>
         <location line="+570"/>
-        <location line="+4427"/>
+        <location line="+4448"/>
         <location line="+1270"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -15042,6 +15165,184 @@ Signing out and signing in again is the only fix.</source>
         <location line="+4"/>
         <source>Could not reach the server. Try again.</source>
         <translation>تعذّر الوصول إلى الخادوم. أعد المحاولة.</translation>
+    </message>
+</context>
+<context>
+    <name>ModerationQueueController</name>
+    <message>
+        <location filename="../src/app/ModerationQueueController.cpp" line="+54"/>
+        <source>The moderation queue is unavailable for this room.</source>
+        <translation>طابور الإشراف غير متاح لهذه الغرفة.</translation>
+    </message>
+    <message>
+        <location line="+81"/>
+        <source>Not banned: no followed list covers this person any more.</source>
+        <translation>لم يُحظر: لا توجد قائمة متابَعة تشمل هذا الشخص بعد الآن.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Not banned: you no longer have permission to ban here.</source>
+        <translation>لم يُحظر: لم تعد لديك صلاحية الحظر هنا.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Not banned: this person&apos;s power level is not below yours.</source>
+        <translation>لم يُحظر: مستوى صلاحيات هذا الشخص ليس أدنى من مستواك.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Already banned.</source>
+        <translation>محظور بالفعل.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Not banned: this person is no longer in the room.</source>
+        <translation>لم يُحظر: هذا الشخص لم يعد في الغرفة.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Not banned: the server is rate limiting. Try again shortly.</source>
+        <translation>لم يُحظر: الخادم يحدّ من معدل الطلبات. حاول مرة أخرى بعد قليل.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Not banned: the action failed. Try again.</source>
+        <translation>لم يُحظر: فشل الإجراء. حاول مرة أخرى.</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>The moderation queue could not be loaded.</source>
+        <translation>تعذّر تحميل طابور الإشراف.</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Banned.</source>
+        <translation>تم الحظر.</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Banned. The decision could not be saved.</source>
+        <translation>تم الحظر. تعذّر حفظ القرار.</translation>
+    </message>
+</context>
+<context>
+    <name>ModerationQueueDialog</name>
+    <message>
+        <location filename="../qml/ModerationQueueDialog.qml" line="+55"/>
+        <source>Moderation queue for %1</source>
+        <translation>طابور الإشراف لـ %1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Moderation queue</source>
+        <translation>طابور الإشراف</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>People in this room who are covered by a moderation list you follow. A match is someone else&apos;s judgement: nothing is done until you confirm a ban for one person.</source>
+        <translation>الأشخاص في هذه الغرفة الذين تشملهم قائمة إشراف تتابعها. التطابق هو حكم شخص آخر: لا يُتخذ أي إجراء حتى تؤكد حظر شخص واحد.</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Open cases</source>
+        <translation>الحالات المفتوحة</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+67"/>
+        <source>Dismissed</source>
+        <translation>المستبعدة</translation>
+    </message>
+    <message>
+        <location line="-66"/>
+        <location line="+67"/>
+        <source>Banned</source>
+        <translation>المحظورون</translation>
+    </message>
+    <message>
+        <location line="-66"/>
+        <source>All cases</source>
+        <translation>كل الحالات</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Checking members…</source>
+        <translation>جارٍ فحص الأعضاء…</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>You do not follow any moderation list.</source>
+        <translation>أنت لا تتابع أي قائمة إشراف.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Only part of the room or the lists could be checked.</source>
+        <translation>لم يمكن فحص سوى جزء من الغرفة أو القوائم.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Refresh</source>
+        <translation>تحديث</translation>
+    </message>
+    <message>
+        <location line="+46"/>
+        <source>Open</source>
+        <translation>فتح</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>List %1: %2 rule &quot;%3&quot;%4</source>
+        <translation>القائمة %1: قاعدة %2 «%3»%4</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Ban…</source>
+        <translation>حظر…</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Reopen</source>
+        <translation>إعادة الفتح</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Dismiss</source>
+        <translation>استبعاد</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>No cases to show.</source>
+        <translation>لا توجد حالات للعرض.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Close</source>
+        <translation>إغلاق</translation>
+    </message>
+    <message>
+        <location line="+33"/>
+        <source>Ban %1 from this room?</source>
+        <translation>حظر %1 من هذه الغرفة؟</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>They are removed and cannot rejoin this room until unbanned. Other rooms are not affected. The lists and your permission are checked again before the ban is sent.</source>
+        <translation>تتم إزالته ولا يمكنه الانضمام إلى هذه الغرفة مجددًا حتى يُرفع الحظر. الغرف الأخرى لا تتأثر. يُعاد فحص القوائم وصلاحيتك قبل إرسال الحظر.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Reason (optional, visible to the room)</source>
+        <translation>السبب (اختياري، ظاهر للغرفة)</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Cancel</source>
+        <translation>إلغاء</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Ban</source>
+        <translation>حظر</translation>
     </message>
 </context>
 <context>
@@ -18570,6 +18871,144 @@ Signing out and signing in again is the only fix.</source>
     </message>
 </context>
 <context>
+    <name>RoomCard</name>
+    <message>
+        <location filename="../qml/RoomCard.qml" line="+68"/>
+        <source>Checklist</source>
+        <translation>قائمة مراجعة</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Cancelled</source>
+        <translation>أُلغي</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Edit</source>
+        <translation>تحرير</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+14"/>
+        <source>%1 of %n done</source>
+        <translation>
+            <numerusform>أُنجز %1 من %n</numerusform>
+            <numerusform>أُنجز %1 من %n</numerusform>
+            <numerusform>أُنجز %1 من %n</numerusform>
+            <numerusform>أُنجز %1 من %n</numerusform>
+            <numerusform>أُنجز %1 من %n</numerusform>
+            <numerusform>أُنجز %1 من %n</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>Done by %1</source>
+        <translation>أنجزه %1</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Remove item</source>
+        <translation>إزالة العنصر</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Add an item</source>
+        <translation>إضافة عنصر</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Add</source>
+        <translation>إضافة</translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Where: %1</source>
+        <translation>أين: %1</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Open link</source>
+        <translation>فتح الرابط</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>%1 going · %2 maybe · %3 can&apos;t go</source>
+        <translation>%1 سيحضرون · %2 ربما · %3 لا يستطيعون</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Going</source>
+        <translation>سأحضر</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Maybe</source>
+        <translation>ربما</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Can&apos;t go</source>
+        <translation>لا أستطيع</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Save to calendar…</source>
+        <translation>حفظ في التقويم…</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Cancel event</source>
+        <translation>إلغاء الحدث</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>Save calendar entry</source>
+        <translation>حفظ إدخال التقويم</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Calendar (*.ics)</source>
+        <translation>تقويم (*.ics)</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>All files (*)</source>
+        <translation>كل الملفات (*)</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The calendar file could not be saved.</source>
+        <translation>تعذّر حفظ ملف التقويم.</translation>
+    </message>
+</context>
+<context>
+    <name>RoomCardsController</name>
+    <message>
+        <location filename="../src/app/RoomCardsController.cpp" line="+208"/>
+        <source>You cannot change this here. Your permissions may have changed.</source>
+        <translation>لا يمكنك تغيير هذا هنا. ربما تغيّرت صلاحياتك.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This item changed or was removed. The card has been refreshed.</source>
+        <translation>تغيّر هذا العنصر أو أُزيل. تم تحديث البطاقة.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This was not accepted. Check the fields and their limits.</source>
+        <translation>لم يُقبل هذا. تحقق من الحقول وحدودها.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The server did not accept this. Try again.</source>
+        <translation>لم يقبل الخادم هذا. حاول مرة أخرى.</translation>
+    </message>
+    <message>
+        <location line="+91"/>
+        <source>Your time: %1</source>
+        <translation>وقتك: %1</translation>
+    </message>
+</context>
+<context>
     <name>RoomChannelsPresenter</name>
     <message>
         <location filename="../qml/RoomChannelsPresenter.qml" line="+74"/>
@@ -19704,7 +20143,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>الودجات</translation>
     </message>
     <message>
-        <location line="+2113"/>
+        <location line="+2123"/>
         <source>Open</source>
         <translation>فتح</translation>
     </message>
@@ -19714,7 +20153,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>تصدير الغرفة…</translation>
     </message>
     <message>
-        <location line="-541"/>
+        <location line="-551"/>
         <source>Anyone can read this room&apos;s history without joining, even though not everyone can join it.</source>
         <translation>يمكن لأي شخص قراءة سجل هذه الغرفة دون الانضمام إليها، رغم أن الانضمام إليها ليس متاحًا للجميع.</translation>
     </message>
@@ -19822,6 +20261,16 @@ Signing out and signing in again is the only fix.</source>
         <location line="+3"/>
         <source>Ban lists this room publishes</source>
         <translation>قوائم الحظر التي تنشرها هذه الغرفة</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Moderation queue…</source>
+        <translation>طابور الإشراف…</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Members covered by moderation lists you follow</source>
+        <translation>الأعضاء الذين تشملهم قوائم الإشراف التي تتابعها</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -21906,7 +22355,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
 <context>
     <name>RustTimeline</name>
     <message>
-        <location filename="../src/matrix/RustTimelineIngest.cpp" line="+487"/>
+        <location filename="../src/matrix/RustTimelineIngest.cpp" line="+488"/>
         <source>[unable to decrypt yet]</source>
         <translation>[تعذّر فك التعمية بعد]</translation>
     </message>
@@ -34889,7 +35338,7 @@ Proposed audience
 <context>
     <name>ThreadController</name>
     <message>
-        <location filename="../src/threads/ThreadController.cpp" line="+770"/>
+        <location filename="../src/threads/ThreadController.cpp" line="+771"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>المرفقات غير مدعومة على هذه الخلفية.</translation>
@@ -34936,13 +35385,13 @@ Proposed audience
 <context>
     <name>ThreadPanel</name>
     <message>
-        <location filename="../qml/ThreadPanel.qml" line="+433"/>
+        <location filename="../qml/ThreadPanel.qml" line="+446"/>
         <location line="+48"/>
         <source>Mark this thread read</source>
         <translation>تعليم هذا الخيط كمقروء</translation>
     </message>
     <message>
-        <location line="+1305"/>
+        <location line="+1391"/>
         <source>Jump to the newest reply</source>
         <translation>الانتقال إلى أحدث رد</translation>
     </message>
@@ -34959,7 +35408,7 @@ Proposed audience
         </translation>
     </message>
     <message>
-        <location line="-1755"/>
+        <location line="-1846"/>
         <source>This room has been replaced.</source>
         <translation>تم استبدال هذه الغرفة.</translation>
     </message>
@@ -34969,7 +35418,7 @@ Proposed audience
         <translation>ليس لديك إذن بالنشر في هذه الغرفة.</translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+160"/>
         <source>Yesterday</source>
         <translation>أمس</translation>
     </message>
@@ -35040,7 +35489,7 @@ Proposed audience
         <translation>تعذّر تحميل الخيوط.</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>No threads in this room yet.</source>
         <translation>لا خيوط في هذه الغرفة بعد.</translation>
     </message>
@@ -35050,8 +35499,8 @@ Proposed audience
         <translation>رد داخل خيط من قائمة رسالة لتبدأ خيطًا.</translation>
     </message>
     <message numerus="yes">
-        <location line="+41"/>
-        <location line="+92"/>
+        <location line="+95"/>
+        <location line="+122"/>
         <source>%n reply(s)</source>
         <translation>
             <numerusform>لا ردود</numerusform>
@@ -35063,19 +35512,20 @@ Proposed audience
         </translation>
     </message>
     <message>
-        <location line="-90"/>
-        <location line="+92"/>
+        <location line="-120"/>
+        <location line="+122"/>
         <location line="+376"/>
         <source>Replies</source>
         <translation>الردود</translation>
     </message>
     <message>
-        <location line="-466"/>
+        <location line="-550"/>
+        <location line="+54"/>
         <source>Unread</source>
         <translation>غير مقروء</translation>
     </message>
     <message>
-        <location line="+115"/>
+        <location line="+145"/>
         <source>Loading…</source>
         <translation>جارٍ التحميل…</translation>
     </message>
@@ -35093,7 +35543,7 @@ Proposed audience
         <translation>فتح في الغرفة</translation>
     </message>
     <message>
-        <location line="-707"/>
+        <location line="-798"/>
         <source>Message deleted</source>
         <translation>حُذفت الرسالة</translation>
     </message>
@@ -35103,12 +35553,68 @@ Proposed audience
         <translation>تعذّر فك تعمية هذه الرسالة</translation>
     </message>
     <message>
-        <location line="+347"/>
+        <location line="+352"/>
         <source>More actions</source>
         <translation>إجراءات أخرى</translation>
     </message>
     <message>
-        <location line="+371"/>
+        <location line="+72"/>
+        <source>No threads match this filter.</source>
+        <translation>لا توجد سلاسل تطابق هذا المرشّح.</translation>
+    </message>
+    <message>
+        <location line="+42"/>
+        <source>Latest activity</source>
+        <translation>آخر نشاط</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Newest</source>
+        <translation>الأحدث</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Most replies</source>
+        <translation>الأكثر ردودًا</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Sort threads</source>
+        <translation>ترتيب السلاسل</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>All threads</source>
+        <translation>كل السلاسل</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <location line="+159"/>
+        <source>No replies yet</source>
+        <translation>لا توجد ردود بعد</translation>
+    </message>
+    <message>
+        <location line="-155"/>
+        <source>Filter threads</source>
+        <translation>تصفية السلاسل</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Stop filtering by #%1</source>
+        <translation>إيقاف التصفية حسب #%1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Show threads tagged #%1</source>
+        <translation>عرض السلاسل الموسومة بـ #%1</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Show all</source>
+        <translation>عرض الكل</translation>
+    </message>
+    <message>
+        <location line="+305"/>
         <location line="+1"/>
         <source>Collapse thread root</source>
         <translation>طي جذر الخيط</translation>
@@ -35545,7 +36051,7 @@ Proposed audience
 <context>
     <name>TimelineModel</name>
     <message>
-        <location filename="../src/models/TimelineModel.cpp" line="-1702"/>
+        <location filename="../src/models/TimelineModel.cpp" line="-1704"/>
         <source>%1 changed their display name from “%2” to “%3” and changed their avatar.</source>
         <translation>غيّر %1 اسمه الظاهر من «%2» إلى «%3» وغيّر صورته الرمزية.</translation>
     </message>
@@ -35595,7 +36101,7 @@ Proposed audience
         <translation>بدأ %1مكالمة.</translation>
     </message>
     <message>
-        <location line="+1354"/>
+        <location line="+1356"/>
         <source>%1 is typing…</source>
         <translation>%1 يكتب…</translation>
     </message>

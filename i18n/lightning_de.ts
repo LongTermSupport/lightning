@@ -1105,7 +1105,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
     <name>AppController</name>
     <message>
         <location filename="../qml/LoginScreen.qml" line="+433"/>
-        <location filename="../src/app/AppController.cpp" line="+6573"/>
+        <location filename="../src/app/AppController.cpp" line="+6578"/>
         <location line="+25"/>
         <location line="+532"/>
         <location line="+454"/>
@@ -1113,23 +1113,23 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
         <translation>Lightning kann die gespeicherten Anmeldungen dieses Geräts gerade nicht lesen – der System-Schlüsselbund ist gesperrt oder nicht verfügbar. Entsperre ihn und versuche es erneut.</translation>
     </message>
     <message>
-        <location filename="../src/app/AppController.cpp" line="-6954"/>
-        <location line="+2803"/>
+        <location filename="../src/app/AppController.cpp" line="-6957"/>
+        <location line="+2806"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
     <message>
-        <location line="-2802"/>
+        <location line="-2805"/>
         <source>This is a test notification. If you can read it, desktop notifications work.</source>
         <translation>Dies ist eine Testbenachrichtigung. Wenn du sie lesen kannst, funktionieren Desktop-Benachrichtigungen.</translation>
     </message>
     <message>
-        <location line="+427"/>
+        <location line="+428"/>
         <source>New mentions</source>
         <translation>Neue Erwähnungen</translation>
     </message>
     <message>
-        <location line="+556"/>
+        <location line="+558"/>
         <source>Call started</source>
         <translation>Anruf gestartet</translation>
     </message>
@@ -5314,6 +5314,119 @@ EXIF-Ausrichtung: %4</translation>
     </message>
 </context>
 <context>
+    <name>CreateCardDialog</name>
+    <message>
+        <location filename="../qml/CreateCardDialog.qml" line="+121"/>
+        <source>This could not be sent. Try again.</source>
+        <translation>Das konnte nicht gesendet werden. Versuche es erneut.</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Edit checklist</source>
+        <translation>Checkliste bearbeiten</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>New checklist</source>
+        <translation>Neue Checkliste</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Edit event</source>
+        <translation>Termin bearbeiten</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>New event</source>
+        <translation>Neuer Termin</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Title (optional)</source>
+        <translation>Titel (optional)</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Title</source>
+        <translation>Titel</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Items, one per line</source>
+        <translation>Einträge, einer pro Zeile</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Anyone in the room can tick and add items</source>
+        <translation>Alle im Raum können Einträge abhaken und hinzufügen</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Date</source>
+        <translation>Datum</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Starts</source>
+        <translation>Beginnt</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Ends (optional)</source>
+        <translation>Endet (optional)</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Time zone</source>
+        <translation>Zeitzone</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Search time zones</source>
+        <translation>Zeitzonen suchen</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Where</source>
+        <translation>Wo</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Place or room (optional)</source>
+        <translation>Ort oder Raum (optional)</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Link</source>
+        <translation>Link</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>https:// call or page (optional)</source>
+        <translation>https://-Anruf oder -Seite (optional)</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Enter a date and a time that exists in this time zone.</source>
+        <translation>Gib ein Datum und eine Uhrzeit ein, die es in dieser Zeitzone gibt.</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Save</source>
+        <translation>Speichern</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Send</source>
+        <translation>Senden</translation>
+    </message>
+</context>
+<context>
     <name>CreatePollDialog</name>
     <message>
         <location filename="../qml/CreatePollDialog.qml" line="+124"/>
@@ -8429,7 +8542,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+4"/>
-        <location filename="../src/models/TimelineModel.cpp" line="+2874"/>
+        <location filename="../src/models/TimelineModel.cpp" line="+2876"/>
         <source>Voice message</source>
         <translation>Sprachnachricht</translation>
     </message>
@@ -13082,24 +13195,24 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+6"/>
-        <location line="+42"/>
+        <location line="+56"/>
         <source>Emoji…</source>
         <translation>Emoji …</translation>
     </message>
     <message>
-        <location line="-35"/>
-        <location line="+42"/>
+        <location line="-49"/>
+        <location line="+56"/>
         <source>GIFs and stickers…</source>
         <translation>GIFs und Sticker …</translation>
     </message>
     <message>
-        <location line="-41"/>
-        <location line="+42"/>
+        <location line="-55"/>
+        <location line="+56"/>
         <source>GIF…</source>
         <translation>GIF …</translation>
     </message>
     <message>
-        <location line="-26"/>
+        <location line="-40"/>
         <source>Attach files…</source>
         <translation>Dateien anhängen …</translation>
     </message>
@@ -13114,7 +13227,17 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Umfrage erstellen …</translation>
     </message>
     <message>
-        <location line="+198"/>
+        <location line="+7"/>
+        <source>Create checklist…</source>
+        <translation>Checkliste erstellen …</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Create event…</source>
+        <translation>Termin erstellen …</translation>
+    </message>
+    <message>
+        <location line="+201"/>
         <source>Continue in new room</source>
         <translation>In neuem Raum fortfahren</translation>
     </message>
@@ -13532,14 +13655,14 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="-577"/>
         <location line="+57"/>
         <location line="+517"/>
-        <location line="+4324"/>
+        <location line="+4345"/>
         <location line="+1066"/>
         <location line="+93"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location line="-6055"/>
+        <location line="-6076"/>
         <source>Voice message</source>
         <translation>Sprachnachricht</translation>
     </message>
@@ -13552,24 +13675,24 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="-570"/>
         <location line="+568"/>
-        <location line="+3777"/>
+        <location line="+3798"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5268"/>
+        <location line="-5289"/>
         <location line="+53"/>
         <location line="+514"/>
-        <location line="+4326"/>
+        <location line="+4347"/>
         <source>Image</source>
         <translation>Bild</translation>
     </message>
     <message>
-        <location line="-4892"/>
+        <location line="-4913"/>
         <location line="+570"/>
-        <location line="+4427"/>
+        <location line="+4448"/>
         <location line="+1270"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -13577,7 +13700,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Datei</translation>
     </message>
     <message>
-        <location line="-6297"/>
+        <location line="-6318"/>
         <source>Attachment</source>
         <translation>Anhang</translation>
     </message>
@@ -13634,12 +13757,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+1071"/>
+        <location line="+1092"/>
         <source>Retry decryption</source>
         <translation>Entschlüsselung erneut versuchen</translation>
     </message>
     <message>
-        <location line="-871"/>
+        <location line="-892"/>
         <location line="+158"/>
         <source>Avatar for %1</source>
         <translation>Avatar von %1</translation>
@@ -13682,13 +13805,13 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+91"/>
-        <location line="+928"/>
+        <location line="+949"/>
         <location line="+1152"/>
         <source>Reply</source>
         <translation>Antworten</translation>
     </message>
     <message>
-        <location line="-2067"/>
+        <location line="-2088"/>
         <source>Original message removed</source>
         <translation>Ursprüngliche Nachricht entfernt</translation>
     </message>
@@ -13698,7 +13821,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>(ursprüngliche Nachricht nicht geladen)</translation>
     </message>
     <message numerus="yes">
-        <location line="+109"/>
+        <location line="+129"/>
         <source>%n message(s) deleted</source>
         <comment>collapsed run of redactions</comment>
         <translation>
@@ -13712,7 +13835,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Nachricht gelöscht</translation>
     </message>
     <message>
-        <location line="+114"/>
+        <location line="+115"/>
         <source>Missing room key. Restore your recovery key in Settings, or wait for another verified device to share the key.</source>
         <translation>Raumschlüssel fehlt. Stelle deinen Wiederherstellungsschlüssel in den Einstellungen wieder her oder warte, bis ein anderes verifiziertes Gerät den Schlüssel teilt.</translation>
     </message>
@@ -14203,12 +14326,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-2720"/>
+        <location line="-2741"/>
         <source>Open this thread</source>
         <translation>Diesen Thread öffnen</translation>
     </message>
     <message numerus="yes">
-        <location line="+1284"/>
+        <location line="+1305"/>
         <source>%1 and %n other(s)</source>
         <translation>
             <numerusform>%1 und %n weitere Person</numerusform>
@@ -14778,6 +14901,184 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="+4"/>
         <source>Could not reach the server. Try again.</source>
         <translation>Der Server konnte nicht erreicht werden. Versuche es erneut.</translation>
+    </message>
+</context>
+<context>
+    <name>ModerationQueueController</name>
+    <message>
+        <location filename="../src/app/ModerationQueueController.cpp" line="+54"/>
+        <source>The moderation queue is unavailable for this room.</source>
+        <translation>Die Moderationswarteschlange ist für diesen Raum nicht verfügbar.</translation>
+    </message>
+    <message>
+        <location line="+81"/>
+        <source>Not banned: no followed list covers this person any more.</source>
+        <translation>Nicht gebannt: Keine abonnierte Liste erfasst diese Person mehr.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Not banned: you no longer have permission to ban here.</source>
+        <translation>Nicht gebannt: Du hast hier keine Berechtigung mehr zum Bannen.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Not banned: this person&apos;s power level is not below yours.</source>
+        <translation>Nicht gebannt: Das Berechtigungslevel dieser Person liegt nicht unter deinem.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Already banned.</source>
+        <translation>Bereits gebannt.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Not banned: this person is no longer in the room.</source>
+        <translation>Nicht gebannt: Diese Person ist nicht mehr im Raum.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Not banned: the server is rate limiting. Try again shortly.</source>
+        <translation>Nicht gebannt: Der Server begrenzt die Rate. Versuche es gleich noch einmal.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Not banned: the action failed. Try again.</source>
+        <translation>Nicht gebannt: Die Aktion ist fehlgeschlagen. Versuche es erneut.</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>The moderation queue could not be loaded.</source>
+        <translation>Die Moderationswarteschlange konnte nicht geladen werden.</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Banned.</source>
+        <translation>Gebannt.</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Banned. The decision could not be saved.</source>
+        <translation>Gebannt. Die Entscheidung konnte nicht gespeichert werden.</translation>
+    </message>
+</context>
+<context>
+    <name>ModerationQueueDialog</name>
+    <message>
+        <location filename="../qml/ModerationQueueDialog.qml" line="+55"/>
+        <source>Moderation queue for %1</source>
+        <translation>Moderationswarteschlange für %1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Moderation queue</source>
+        <translation>Moderationswarteschlange</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>People in this room who are covered by a moderation list you follow. A match is someone else&apos;s judgement: nothing is done until you confirm a ban for one person.</source>
+        <translation>Personen in diesem Raum, die von einer Moderationsliste erfasst sind, der du folgst. Ein Treffer ist die Einschätzung eines anderen: Es passiert nichts, bis du den Bann für eine einzelne Person bestätigst.</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Open cases</source>
+        <translation>Offene Fälle</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+67"/>
+        <source>Dismissed</source>
+        <translation>Verworfen</translation>
+    </message>
+    <message>
+        <location line="-66"/>
+        <location line="+67"/>
+        <source>Banned</source>
+        <translation>Gebannt</translation>
+    </message>
+    <message>
+        <location line="-66"/>
+        <source>All cases</source>
+        <translation>Alle Fälle</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Checking members…</source>
+        <translation>Mitglieder werden geprüft …</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>You do not follow any moderation list.</source>
+        <translation>Du folgst keiner Moderationsliste.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Only part of the room or the lists could be checked.</source>
+        <translation>Nur ein Teil des Raums oder der Listen konnte geprüft werden.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Refresh</source>
+        <translation>Aktualisieren</translation>
+    </message>
+    <message>
+        <location line="+46"/>
+        <source>Open</source>
+        <translation>Offen</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>List %1: %2 rule &quot;%3&quot;%4</source>
+        <translation>Liste %1: %2-Regel „%3“%4</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Ban…</source>
+        <translation>Bannen …</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Reopen</source>
+        <translation>Wieder öffnen</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Dismiss</source>
+        <translation>Verwerfen</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>No cases to show.</source>
+        <translation>Keine Fälle anzuzeigen.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Close</source>
+        <translation>Schließen</translation>
+    </message>
+    <message>
+        <location line="+33"/>
+        <source>Ban %1 from this room?</source>
+        <translation>%1 aus diesem Raum bannen?</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>They are removed and cannot rejoin this room until unbanned. Other rooms are not affected. The lists and your permission are checked again before the ban is sent.</source>
+        <translation>Die Person wird entfernt und kann diesem Raum erst nach Aufhebung des Banns wieder beitreten. Andere Räume sind nicht betroffen. Die Listen und deine Berechtigung werden vor dem Senden des Banns erneut geprüft.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Reason (optional, visible to the room)</source>
+        <translation>Grund (optional, für den Raum sichtbar)</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Ban</source>
+        <translation>Bannen</translation>
     </message>
 </context>
 <context>
@@ -18250,6 +18551,140 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
 </context>
 <context>
+    <name>RoomCard</name>
+    <message>
+        <location filename="../qml/RoomCard.qml" line="+68"/>
+        <source>Checklist</source>
+        <translation>Checkliste</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Cancelled</source>
+        <translation>Abgesagt</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Edit</source>
+        <translation>Bearbeiten</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+14"/>
+        <source>%1 of %n done</source>
+        <translation>
+            <numerusform>%1 von %n erledigt</numerusform>
+            <numerusform>%1 von %n erledigt</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>Done by %1</source>
+        <translation>Erledigt von %1</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Remove item</source>
+        <translation>Eintrag entfernen</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Add an item</source>
+        <translation>Eintrag hinzufügen</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Add</source>
+        <translation>Hinzufügen</translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Where: %1</source>
+        <translation>Wo: %1</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Open link</source>
+        <translation>Link öffnen</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>%1 going · %2 maybe · %3 can&apos;t go</source>
+        <translation>%1 dabei · %2 vielleicht · %3 kann nicht</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Going</source>
+        <translation>Dabei</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Maybe</source>
+        <translation>Vielleicht</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Can&apos;t go</source>
+        <translation>Kann nicht</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Save to calendar…</source>
+        <translation>Im Kalender speichern …</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Cancel event</source>
+        <translation>Termin absagen</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>Save calendar entry</source>
+        <translation>Kalendereintrag speichern</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Calendar (*.ics)</source>
+        <translation>Kalender (*.ics)</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>All files (*)</source>
+        <translation>Alle Dateien (*)</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The calendar file could not be saved.</source>
+        <translation>Die Kalenderdatei konnte nicht gespeichert werden.</translation>
+    </message>
+</context>
+<context>
+    <name>RoomCardsController</name>
+    <message>
+        <location filename="../src/app/RoomCardsController.cpp" line="+208"/>
+        <source>You cannot change this here. Your permissions may have changed.</source>
+        <translation>Du kannst das hier nicht ändern. Möglicherweise haben sich deine Berechtigungen geändert.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This item changed or was removed. The card has been refreshed.</source>
+        <translation>Dieser Eintrag wurde geändert oder entfernt. Die Karte wurde aktualisiert.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This was not accepted. Check the fields and their limits.</source>
+        <translation>Das wurde nicht akzeptiert. Prüfe die Felder und ihre Grenzen.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The server did not accept this. Try again.</source>
+        <translation>Der Server hat das nicht akzeptiert. Versuche es erneut.</translation>
+    </message>
+    <message>
+        <location line="+91"/>
+        <source>Your time: %1</source>
+        <translation>Deine Zeit: %1</translation>
+    </message>
+</context>
+<context>
     <name>RoomChannelsPresenter</name>
     <message>
         <location filename="../qml/RoomChannelsPresenter.qml" line="+74"/>
@@ -19456,6 +19891,16 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="+3"/>
         <source>Ban lists this room publishes</source>
         <translation>Bannlisten, die dieser Raum veröffentlicht</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Moderation queue…</source>
+        <translation>Moderationswarteschlange …</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Members covered by moderation lists you follow</source>
+        <translation>Mitglieder, die von Moderationslisten erfasst sind, denen du folgst</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -21502,7 +21947,7 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
 <context>
     <name>RustTimeline</name>
     <message>
-        <location filename="../src/matrix/RustTimelineIngest.cpp" line="+487"/>
+        <location filename="../src/matrix/RustTimelineIngest.cpp" line="+488"/>
         <source>[unable to decrypt yet]</source>
         <translation>[noch nicht entschlüsselbar]</translation>
     </message>
@@ -34193,7 +34638,7 @@ Vorgeschlagene Zielgruppe
 <context>
     <name>ThreadController</name>
     <message>
-        <location filename="../src/threads/ThreadController.cpp" line="+770"/>
+        <location filename="../src/threads/ThreadController.cpp" line="+771"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>Anhänge werden von diesem Backend nicht unterstützt.</translation>
@@ -34240,13 +34685,13 @@ Vorgeschlagene Zielgruppe
 <context>
     <name>ThreadPanel</name>
     <message>
-        <location filename="../qml/ThreadPanel.qml" line="+433"/>
+        <location filename="../qml/ThreadPanel.qml" line="+446"/>
         <location line="+48"/>
         <source>Mark this thread read</source>
         <translation>Diesen Thread als gelesen markieren</translation>
     </message>
     <message>
-        <location line="+1305"/>
+        <location line="+1391"/>
         <source>Jump to the newest reply</source>
         <translation>Zur neuesten Antwort springen</translation>
     </message>
@@ -34259,7 +34704,7 @@ Vorgeschlagene Zielgruppe
         </translation>
     </message>
     <message>
-        <location line="-1755"/>
+        <location line="-1846"/>
         <source>This room has been replaced.</source>
         <translation>Dieser Raum wurde ersetzt.</translation>
     </message>
@@ -34269,7 +34714,7 @@ Vorgeschlagene Zielgruppe
         <translation>Du hast keine Berechtigung, in diesem Raum zu schreiben.</translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+160"/>
         <source>Yesterday</source>
         <translation>Gestern</translation>
     </message>
@@ -34340,7 +34785,7 @@ Vorgeschlagene Zielgruppe
         <translation>Threads konnten nicht geladen werden.</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>No threads in this room yet.</source>
         <translation>In diesem Raum gibt es noch keine Threads.</translation>
     </message>
@@ -34350,8 +34795,8 @@ Vorgeschlagene Zielgruppe
         <translation>Antworte im Nachrichtenmenü „Im Thread antworten“, um einen zu beginnen.</translation>
     </message>
     <message numerus="yes">
-        <location line="+41"/>
-        <location line="+92"/>
+        <location line="+95"/>
+        <location line="+122"/>
         <source>%n reply(s)</source>
         <translation>
             <numerusform>%n Antwort</numerusform>
@@ -34359,19 +34804,20 @@ Vorgeschlagene Zielgruppe
         </translation>
     </message>
     <message>
-        <location line="-90"/>
-        <location line="+92"/>
+        <location line="-120"/>
+        <location line="+122"/>
         <location line="+376"/>
         <source>Replies</source>
         <translation>Antworten</translation>
     </message>
     <message>
-        <location line="-466"/>
+        <location line="-550"/>
+        <location line="+54"/>
         <source>Unread</source>
         <translation>Ungelesen</translation>
     </message>
     <message>
-        <location line="+115"/>
+        <location line="+145"/>
         <source>Loading…</source>
         <translation>Wird geladen …</translation>
     </message>
@@ -34389,7 +34835,7 @@ Vorgeschlagene Zielgruppe
         <translation>Im Raum öffnen</translation>
     </message>
     <message>
-        <location line="-707"/>
+        <location line="-798"/>
         <source>Message deleted</source>
         <translation>Nachricht gelöscht</translation>
     </message>
@@ -34399,12 +34845,68 @@ Vorgeschlagene Zielgruppe
         <translation>Diese Nachricht kann nicht entschlüsselt werden</translation>
     </message>
     <message>
-        <location line="+347"/>
+        <location line="+352"/>
         <source>More actions</source>
         <translation>Weitere Aktionen</translation>
     </message>
     <message>
-        <location line="+371"/>
+        <location line="+72"/>
+        <source>No threads match this filter.</source>
+        <translation>Keine Threads passen zu diesem Filter.</translation>
+    </message>
+    <message>
+        <location line="+42"/>
+        <source>Latest activity</source>
+        <translation>Letzte Aktivität</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Newest</source>
+        <translation>Neueste</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Most replies</source>
+        <translation>Meiste Antworten</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Sort threads</source>
+        <translation>Threads sortieren</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>All threads</source>
+        <translation>Alle Threads</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <location line="+159"/>
+        <source>No replies yet</source>
+        <translation>Noch keine Antworten</translation>
+    </message>
+    <message>
+        <location line="-155"/>
+        <source>Filter threads</source>
+        <translation>Threads filtern</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Stop filtering by #%1</source>
+        <translation>Nicht mehr nach #%1 filtern</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Show threads tagged #%1</source>
+        <translation>Threads mit #%1 anzeigen</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Show all</source>
+        <translation>Alle anzeigen</translation>
+    </message>
+    <message>
+        <location line="+305"/>
         <location line="+1"/>
         <source>Collapse thread root</source>
         <translation>Thread-Ursprung einklappen</translation>
@@ -34829,7 +35331,7 @@ Vorgeschlagene Zielgruppe
 <context>
     <name>TimelineModel</name>
     <message>
-        <location filename="../src/models/TimelineModel.cpp" line="-1702"/>
+        <location filename="../src/models/TimelineModel.cpp" line="-1704"/>
         <source>%1 changed their display name from “%2” to “%3” and changed their avatar.</source>
         <translation>%1 hat den Anzeigenamen von „%2“ in „%3“ geändert und den Avatar geändert.</translation>
     </message>
@@ -34879,7 +35381,7 @@ Vorgeschlagene Zielgruppe
         <translation>%1 hat einen Anruf gestartet.</translation>
     </message>
     <message>
-        <location line="+1354"/>
+        <location line="+1356"/>
         <source>%1 is typing…</source>
         <translation>%1 schreibt …</translation>
     </message>

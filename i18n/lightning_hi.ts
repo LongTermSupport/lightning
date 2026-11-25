@@ -1104,7 +1104,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppController</name>
     <message>
-        <location filename="../src/app/AppController.cpp" line="+7506"/>
+        <location filename="../src/app/AppController.cpp" line="+7511"/>
         <source>Room invitation</source>
         <translation>रूम का आमंत्रण</translation>
     </message>
@@ -1386,23 +1386,23 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>YYYY-MM-DD प्रारूप में वास्तविक तिथियाँ दें, जहाँ “से” तिथि “तक” तिथि के बाद की न हो।</translation>
     </message>
     <message>
-        <location line="-4902"/>
-        <location line="+2803"/>
+        <location line="-4905"/>
+        <location line="+2806"/>
         <source>Lightning</source>
         <translation>Lightning</translation>
     </message>
     <message>
-        <location line="-2802"/>
+        <location line="-2805"/>
         <source>This is a test notification. If you can read it, desktop notifications work.</source>
         <translation>यह एक टेस्ट सूचना है। यदि आप इसे पढ़ पा रहे हैं, तो डेस्कटॉप सूचनाएँ काम कर रही हैं।</translation>
     </message>
     <message>
-        <location line="+427"/>
+        <location line="+428"/>
         <source>New mentions</source>
         <translation>नए मेंशन</translation>
     </message>
     <message>
-        <location line="+556"/>
+        <location line="+558"/>
         <source>Call started</source>
         <translation>कॉल शुरू हुई</translation>
     </message>
@@ -5314,6 +5314,119 @@ EXIF ओरिएंटेशन: %4</translation>
     </message>
 </context>
 <context>
+    <name>CreateCardDialog</name>
+    <message>
+        <location filename="../qml/CreateCardDialog.qml" line="+121"/>
+        <source>This could not be sent. Try again.</source>
+        <translation>यह भेजा नहीं जा सका। फिर से कोशिश करें।</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Edit checklist</source>
+        <translation>चेकलिस्ट संपादित करें</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>New checklist</source>
+        <translation>नई चेकलिस्ट</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Edit event</source>
+        <translation>इवेंट संपादित करें</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>New event</source>
+        <translation>नया इवेंट</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Title (optional)</source>
+        <translation>शीर्षक (वैकल्पिक)</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Title</source>
+        <translation>शीर्षक</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Items, one per line</source>
+        <translation>आइटम, प्रति पंक्ति एक</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Anyone in the room can tick and add items</source>
+        <translation>रूम में कोई भी आइटम टिक कर सकता है और जोड़ सकता है</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Date</source>
+        <translation>तारीख</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Starts</source>
+        <translation>शुरू</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Ends (optional)</source>
+        <translation>समाप्त (वैकल्पिक)</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Time zone</source>
+        <translation>समय क्षेत्र</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Search time zones</source>
+        <translation>समय क्षेत्र खोजें</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Where</source>
+        <translation>कहाँ</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Place or room (optional)</source>
+        <translation>जगह या रूम (वैकल्पिक)</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Link</source>
+        <translation>लिंक</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>https:// call or page (optional)</source>
+        <translation>https:// कॉल या पेज (वैकल्पिक)</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Enter a date and a time that exists in this time zone.</source>
+        <translation>ऐसी तारीख और समय दर्ज करें जो इस समय क्षेत्र में मौजूद हो।</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Cancel</source>
+        <translation>रद्द करें</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Save</source>
+        <translation>सहेजें</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Send</source>
+        <translation>भेजें</translation>
+    </message>
+</context>
+<context>
     <name>CreatePollDialog</name>
     <message>
         <location filename="../qml/CreatePollDialog.qml" line="+124"/>
@@ -8429,7 +8542,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+4"/>
-        <location filename="../src/models/TimelineModel.cpp" line="+2874"/>
+        <location filename="../src/models/TimelineModel.cpp" line="+2876"/>
         <source>Voice message</source>
         <translation>वॉइस संदेश</translation>
     </message>
@@ -13062,24 +13175,24 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+6"/>
-        <location line="+42"/>
+        <location line="+56"/>
         <source>Emoji…</source>
         <translation>इमोजी…</translation>
     </message>
     <message>
-        <location line="-35"/>
-        <location line="+42"/>
+        <location line="-49"/>
+        <location line="+56"/>
         <source>GIFs and stickers…</source>
         <translation>GIF और स्टिकर…</translation>
     </message>
     <message>
-        <location line="-41"/>
-        <location line="+42"/>
+        <location line="-55"/>
+        <location line="+56"/>
         <source>GIF…</source>
         <translation>GIF…</translation>
     </message>
     <message>
-        <location line="-26"/>
+        <location line="-40"/>
         <source>Attach files…</source>
         <translation>फ़ाइलें अटैच करें…</translation>
     </message>
@@ -13094,7 +13207,17 @@ Signing out and signing in again is the only fix.</source>
         <translation>पोल बनाएं…</translation>
     </message>
     <message>
-        <location line="+198"/>
+        <location line="+7"/>
+        <source>Create checklist…</source>
+        <translation>चेकलिस्ट बनाएँ…</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Create event…</source>
+        <translation>इवेंट बनाएँ…</translation>
+    </message>
+    <message>
+        <location line="+201"/>
         <source>Continue in new room</source>
         <translation>नए रूम में जारी रखें</translation>
     </message>
@@ -13376,7 +13499,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>वॉइस संदेश रिकॉर्ड करें</translation>
     </message>
     <message>
-        <location line="-3202"/>
+        <location line="-3219"/>
         <source>A recording is already in progress.</source>
         <translation>एक रिकॉर्डिंग पहले से चल रही है।</translation>
     </message>
@@ -13396,7 +13519,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>वॉइस रिकॉर्डिंग उपलब्ध नहीं है।</translation>
     </message>
     <message>
-        <location line="+2919"/>
+        <location line="+2936"/>
         <location line="+1"/>
         <source>More</source>
         <translation>और</translation>
@@ -13556,18 +13679,18 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+91"/>
-        <location line="+928"/>
+        <location line="+949"/>
         <location line="+1152"/>
         <source>Reply</source>
         <translation>जवाब दें</translation>
     </message>
     <message>
-        <location line="-2065"/>
+        <location line="-2086"/>
         <source>(original message not loaded)</source>
         <translation>(मूल संदेश लोड नहीं हुआ)</translation>
     </message>
     <message numerus="yes">
-        <location line="+109"/>
+        <location line="+129"/>
         <source>%n message(s) deleted</source>
         <comment>collapsed run of redactions</comment>
         <translation>
@@ -13576,7 +13699,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message>
-        <location line="+117"/>
+        <location line="+118"/>
         <source>Missing room key. Restore your recovery key in Settings, or wait for another verified device to share the key.</source>
         <translation>रूम कुंजी नहीं मिली। सेटिंग्स में अपनी रिकवरी कुंजी बहाल करें, या किसी दूसरे सत्यापित डिवाइस के कुंजी साझा करने का इंतज़ार करें।</translation>
     </message>
@@ -13606,8 +13729,8 @@ Signing out and signing in again is the only fix.</source>
         <translation>कुंजियों की प्रतीक्षा है…</translation>
     </message>
     <message>
-        <location line="-1062"/>
-        <location line="+1071"/>
+        <location line="-1083"/>
+        <location line="+1092"/>
         <source>Retry decryption</source>
         <translation>डिक्रिप्शन फिर से आज़माएं</translation>
     </message>
@@ -13617,7 +13740,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>सुरक्षा सेटिंग्स</translation>
     </message>
     <message>
-        <location line="-1991"/>
+        <location line="-2012"/>
         <source>Link</source>
         <translation>लिंक</translation>
     </message>
@@ -13627,7 +13750,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>यह थ्रेड खोलें</translation>
     </message>
     <message>
-        <location line="+699"/>
+        <location line="+720"/>
         <source>Show the link preview again</source>
         <translation>लिंक पूर्वावलोकन दोबारा दिखाएँ</translation>
     </message>
@@ -13789,12 +13912,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>थ्रेड में जवाब दें</translation>
     </message>
     <message>
-        <location line="-2080"/>
+        <location line="-2101"/>
         <source>Original message removed</source>
         <translation>मूल संदेश हटा दिया गया</translation>
     </message>
     <message>
-        <location line="+607"/>
+        <location line="+628"/>
         <source>%1 • not sent: you&apos;re no longer in this room</source>
         <translation>%1 • नहीं भेजा गया: आप अब इस रूम में नहीं हैं</translation>
     </message>
@@ -14096,7 +14219,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>संपादित करें</translation>
     </message>
     <message>
-        <location line="-3710"/>
+        <location line="-3731"/>
         <source>%1 B</source>
         <translation>%1 B</translation>
     </message>
@@ -14130,22 +14253,22 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="-570"/>
         <location line="+568"/>
-        <location line="+3777"/>
+        <location line="+3798"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5268"/>
+        <location line="-5289"/>
         <location line="+53"/>
         <location line="+514"/>
-        <location line="+4326"/>
+        <location line="+4347"/>
         <source>Image</source>
         <translation>तस्वीर</translation>
     </message>
     <message>
-        <location line="-4891"/>
+        <location line="-4912"/>
         <source>Attachment</source>
         <translation>अटैचमेंट</translation>
     </message>
@@ -14191,12 +14314,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>थ्रेड</translation>
     </message>
     <message>
-        <location line="+259"/>
+        <location line="+279"/>
         <source>Message deleted</source>
         <translation>संदेश हटाया गया</translation>
     </message>
     <message>
-        <location line="+487"/>
+        <location line="+488"/>
         <source>%1 • not sent: connection problem</source>
         <translation>%1 • भेजा नहीं गया: कनेक्शन की समस्या</translation>
     </message>
@@ -14466,10 +14589,10 @@ Signing out and signing in again is the only fix.</source>
         <translation>स्टिकर लोड नहीं हो सका — फिर कोशिश करने के लिए क्लिक करें</translation>
     </message>
     <message>
-        <location line="-5685"/>
+        <location line="-5706"/>
         <location line="+57"/>
         <location line="+517"/>
-        <location line="+4324"/>
+        <location line="+4345"/>
         <location line="+1066"/>
         <location line="+93"/>
         <source>Video</source>
@@ -14482,9 +14605,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>वीडियो</translation>
     </message>
     <message>
-        <location line="-6068"/>
+        <location line="-6089"/>
         <location line="+570"/>
-        <location line="+4427"/>
+        <location line="+4448"/>
         <location line="+1270"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -14778,6 +14901,184 @@ Signing out and signing in again is the only fix.</source>
         <location line="+4"/>
         <source>Could not reach the server. Try again.</source>
         <translation>सर्वर तक नहीं पहुँच सके। फिर कोशिश करें।</translation>
+    </message>
+</context>
+<context>
+    <name>ModerationQueueController</name>
+    <message>
+        <location filename="../src/app/ModerationQueueController.cpp" line="+54"/>
+        <source>The moderation queue is unavailable for this room.</source>
+        <translation>इस रूम के लिए मॉडरेशन कतार उपलब्ध नहीं है।</translation>
+    </message>
+    <message>
+        <location line="+81"/>
+        <source>Not banned: no followed list covers this person any more.</source>
+        <translation>प्रतिबंधित नहीं किया गया: अब कोई फ़ॉलो की गई सूची इस व्यक्ति को कवर नहीं करती।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Not banned: you no longer have permission to ban here.</source>
+        <translation>प्रतिबंधित नहीं किया गया: अब आपके पास यहाँ प्रतिबंध लगाने की अनुमति नहीं है।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Not banned: this person&apos;s power level is not below yours.</source>
+        <translation>प्रतिबंधित नहीं किया गया: इस व्यक्ति का पावर लेवल आपके से कम नहीं है।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Already banned.</source>
+        <translation>पहले से प्रतिबंधित है।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Not banned: this person is no longer in the room.</source>
+        <translation>प्रतिबंधित नहीं किया गया: यह व्यक्ति अब रूम में नहीं है।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Not banned: the server is rate limiting. Try again shortly.</source>
+        <translation>प्रतिबंधित नहीं किया गया: सर्वर रेट लिमिट कर रहा है। थोड़ी देर में फिर कोशिश करें।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Not banned: the action failed. Try again.</source>
+        <translation>प्रतिबंधित नहीं किया गया: कार्रवाई विफल रही। फिर से कोशिश करें।</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>The moderation queue could not be loaded.</source>
+        <translation>मॉडरेशन कतार लोड नहीं हो सकी।</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Banned.</source>
+        <translation>प्रतिबंधित किया गया।</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Banned. The decision could not be saved.</source>
+        <translation>प्रतिबंधित किया गया। निर्णय सहेजा नहीं जा सका।</translation>
+    </message>
+</context>
+<context>
+    <name>ModerationQueueDialog</name>
+    <message>
+        <location filename="../qml/ModerationQueueDialog.qml" line="+55"/>
+        <source>Moderation queue for %1</source>
+        <translation>%1 की मॉडरेशन कतार</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Moderation queue</source>
+        <translation>मॉडरेशन कतार</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>People in this room who are covered by a moderation list you follow. A match is someone else&apos;s judgement: nothing is done until you confirm a ban for one person.</source>
+        <translation>इस रूम के वे लोग जो आपकी फ़ॉलो की गई मॉडरेशन सूची में आते हैं। मिलान किसी और का निर्णय है: जब तक आप किसी एक व्यक्ति के प्रतिबंध की पुष्टि नहीं करते, कुछ नहीं किया जाता।</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Open cases</source>
+        <translation>खुले मामले</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+67"/>
+        <source>Dismissed</source>
+        <translation>खारिज किए गए</translation>
+    </message>
+    <message>
+        <location line="-66"/>
+        <location line="+67"/>
+        <source>Banned</source>
+        <translation>प्रतिबंधित</translation>
+    </message>
+    <message>
+        <location line="-66"/>
+        <source>All cases</source>
+        <translation>सभी मामले</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Checking members…</source>
+        <translation>सदस्यों की जाँच हो रही है…</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>You do not follow any moderation list.</source>
+        <translation>आप किसी मॉडरेशन सूची को फ़ॉलो नहीं करते।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Only part of the room or the lists could be checked.</source>
+        <translation>रूम या सूचियों का केवल एक हिस्सा जाँचा जा सका।</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Refresh</source>
+        <translation>रीफ़्रेश करें</translation>
+    </message>
+    <message>
+        <location line="+46"/>
+        <source>Open</source>
+        <translation>खोलें</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>List %1: %2 rule &quot;%3&quot;%4</source>
+        <translation>सूची %1: %2 नियम &quot;%3&quot;%4</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Ban…</source>
+        <translation>प्रतिबंधित करें…</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Reopen</source>
+        <translation>फिर से खोलें</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Dismiss</source>
+        <translation>खारिज करें</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>No cases to show.</source>
+        <translation>दिखाने के लिए कोई मामला नहीं।</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Close</source>
+        <translation>बंद करें</translation>
+    </message>
+    <message>
+        <location line="+33"/>
+        <source>Ban %1 from this room?</source>
+        <translation>%1 को इस रूम से प्रतिबंधित करें?</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>They are removed and cannot rejoin this room until unbanned. Other rooms are not affected. The lists and your permission are checked again before the ban is sent.</source>
+        <translation>उन्हें हटा दिया जाता है और प्रतिबंध हटने तक वे इस रूम में दोबारा शामिल नहीं हो सकते। अन्य रूम प्रभावित नहीं होते। प्रतिबंध भेजने से पहले सूचियों और आपकी अनुमति की फिर से जाँच की जाती है।</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Reason (optional, visible to the room)</source>
+        <translation>कारण (वैकल्पिक, रूम को दिखाई देता है)</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Cancel</source>
+        <translation>रद्द करें</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Ban</source>
+        <translation>प्रतिबंधित करें</translation>
     </message>
 </context>
 <context>
@@ -18250,6 +18551,140 @@ Signing out and signing in again is the only fix.</source>
     </message>
 </context>
 <context>
+    <name>RoomCard</name>
+    <message>
+        <location filename="../qml/RoomCard.qml" line="+68"/>
+        <source>Checklist</source>
+        <translation>चेकलिस्ट</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Cancelled</source>
+        <translation>रद्द किया गया</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Edit</source>
+        <translation>संपादित करें</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+14"/>
+        <source>%1 of %n done</source>
+        <translation>
+            <numerusform>%n में से %1 पूरे</numerusform>
+            <numerusform>%n में से %1 पूरे</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>Done by %1</source>
+        <translation>%1 द्वारा पूरा किया गया</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Remove item</source>
+        <translation>आइटम हटाएँ</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Add an item</source>
+        <translation>आइटम जोड़ें</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Add</source>
+        <translation>जोड़ें</translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Where: %1</source>
+        <translation>कहाँ: %1</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Open link</source>
+        <translation>लिंक खोलें</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>%1 going · %2 maybe · %3 can&apos;t go</source>
+        <translation>%1 आ रहे हैं · %2 शायद · %3 नहीं आ सकते</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Going</source>
+        <translation>आ रहे हैं</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Maybe</source>
+        <translation>शायद</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Can&apos;t go</source>
+        <translation>नहीं आ सकते</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Save to calendar…</source>
+        <translation>कैलेंडर में सहेजें…</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Cancel event</source>
+        <translation>इवेंट रद्द करें</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>Save calendar entry</source>
+        <translation>कैलेंडर प्रविष्टि सहेजें</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Calendar (*.ics)</source>
+        <translation>कैलेंडर (*.ics)</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>All files (*)</source>
+        <translation>सभी फ़ाइलें (*)</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The calendar file could not be saved.</source>
+        <translation>कैलेंडर फ़ाइल सहेजी नहीं जा सकी।</translation>
+    </message>
+</context>
+<context>
+    <name>RoomCardsController</name>
+    <message>
+        <location filename="../src/app/RoomCardsController.cpp" line="+208"/>
+        <source>You cannot change this here. Your permissions may have changed.</source>
+        <translation>आप इसे यहाँ नहीं बदल सकते। हो सकता है आपकी अनुमतियाँ बदल गई हों।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This item changed or was removed. The card has been refreshed.</source>
+        <translation>यह आइटम बदल गया या हटा दिया गया। कार्ड रीफ़्रेश कर दिया गया है।</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This was not accepted. Check the fields and their limits.</source>
+        <translation>इसे स्वीकार नहीं किया गया। फ़ील्ड और उनकी सीमाएँ जाँचें।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The server did not accept this. Try again.</source>
+        <translation>सर्वर ने इसे स्वीकार नहीं किया। फिर से कोशिश करें।</translation>
+    </message>
+    <message>
+        <location line="+91"/>
+        <source>Your time: %1</source>
+        <translation>आपका समय: %1</translation>
+    </message>
+</context>
+<context>
     <name>RoomChannelsPresenter</name>
     <message>
         <location filename="../qml/RoomChannelsPresenter.qml" line="+74"/>
@@ -19356,7 +19791,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>विजेट</translation>
     </message>
     <message>
-        <location line="+2113"/>
+        <location line="+2123"/>
         <source>Open</source>
         <translation>खोलें</translation>
     </message>
@@ -19366,7 +19801,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>रूम निर्यात करें…</translation>
     </message>
     <message>
-        <location line="-541"/>
+        <location line="-551"/>
         <source>Anyone can read this room&apos;s history without joining, even though not everyone can join it.</source>
         <translation>कोई भी इस रूम में शामिल हुए बिना इसका इतिहास पढ़ सकता है, हालाँकि हर कोई इसमें शामिल नहीं हो सकता।</translation>
     </message>
@@ -19466,6 +19901,16 @@ Signing out and signing in again is the only fix.</source>
         <location line="+3"/>
         <source>Ban lists this room publishes</source>
         <translation>इस रूम द्वारा प्रकाशित प्रतिबंध सूचियाँ</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Moderation queue…</source>
+        <translation>मॉडरेशन कतार…</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Members covered by moderation lists you follow</source>
+        <translation>आपकी फ़ॉलो की गई मॉडरेशन सूचियों में आने वाले सदस्य</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -21502,7 +21947,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
 <context>
     <name>RustTimeline</name>
     <message>
-        <location filename="../src/matrix/RustTimelineIngest.cpp" line="+487"/>
+        <location filename="../src/matrix/RustTimelineIngest.cpp" line="+488"/>
         <source>[unable to decrypt yet]</source>
         <translation>[अभी डिक्रिप्ट नहीं हो सका]</translation>
     </message>
@@ -34193,7 +34638,7 @@ Proposed audience
 <context>
     <name>ThreadController</name>
     <message>
-        <location filename="../src/threads/ThreadController.cpp" line="+770"/>
+        <location filename="../src/threads/ThreadController.cpp" line="+771"/>
         <location line="+13"/>
         <source>Attachments are not supported on this backend.</source>
         <translation>इस बैकएंड पर अटैचमेंट समर्थित नहीं हैं।</translation>
@@ -34240,13 +34685,13 @@ Proposed audience
 <context>
     <name>ThreadPanel</name>
     <message>
-        <location filename="../qml/ThreadPanel.qml" line="+433"/>
+        <location filename="../qml/ThreadPanel.qml" line="+446"/>
         <location line="+48"/>
         <source>Mark this thread read</source>
         <translation>इस थ्रेड को पढ़ा हुआ चिह्नित करें</translation>
     </message>
     <message>
-        <location line="+1305"/>
+        <location line="+1391"/>
         <source>Jump to the newest reply</source>
         <translation>सबसे नए जवाब पर जाएँ</translation>
     </message>
@@ -34259,7 +34704,7 @@ Proposed audience
         </translation>
     </message>
     <message>
-        <location line="-1755"/>
+        <location line="-1846"/>
         <source>This room has been replaced.</source>
         <translation>यह रूम बदल दिया गया है।</translation>
     </message>
@@ -34269,7 +34714,7 @@ Proposed audience
         <translation>आपको इस रूम में पोस्ट करने की अनुमति नहीं है।</translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+160"/>
         <source>Yesterday</source>
         <translation>कल</translation>
     </message>
@@ -34340,7 +34785,7 @@ Proposed audience
         <translation>थ्रेड लोड नहीं हो सके।</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>No threads in this room yet.</source>
         <translation>इस रूम में अभी कोई थ्रेड नहीं है।</translation>
     </message>
@@ -34350,8 +34795,8 @@ Proposed audience
         <translation>नया थ्रेड शुरू करने के लिए किसी संदेश के मेनू से &quot;थ्रेड में जवाब दें&quot; चुनें।</translation>
     </message>
     <message numerus="yes">
-        <location line="+41"/>
-        <location line="+92"/>
+        <location line="+95"/>
+        <location line="+122"/>
         <source>%n reply(s)</source>
         <translation>
             <numerusform>%n जवाब</numerusform>
@@ -34359,19 +34804,20 @@ Proposed audience
         </translation>
     </message>
     <message>
-        <location line="-90"/>
-        <location line="+92"/>
+        <location line="-120"/>
+        <location line="+122"/>
         <location line="+376"/>
         <source>Replies</source>
         <translation>उत्तर</translation>
     </message>
     <message>
-        <location line="-466"/>
+        <location line="-550"/>
+        <location line="+54"/>
         <source>Unread</source>
         <translation>अपठित</translation>
     </message>
     <message>
-        <location line="+115"/>
+        <location line="+145"/>
         <source>Loading…</source>
         <translation>लोड हो रहा है…</translation>
     </message>
@@ -34389,7 +34835,7 @@ Proposed audience
         <translation>रूम में खोलें</translation>
     </message>
     <message>
-        <location line="-707"/>
+        <location line="-798"/>
         <source>Message deleted</source>
         <translation>संदेश हटाया गया</translation>
     </message>
@@ -34399,12 +34845,68 @@ Proposed audience
         <translation>इस संदेश को डिक्रिप्ट नहीं किया जा सका</translation>
     </message>
     <message>
-        <location line="+347"/>
+        <location line="+352"/>
         <source>More actions</source>
         <translation>और कार्रवाइयाँ</translation>
     </message>
     <message>
-        <location line="+371"/>
+        <location line="+72"/>
+        <source>No threads match this filter.</source>
+        <translation>कोई थ्रेड इस फ़िल्टर से मेल नहीं खाता।</translation>
+    </message>
+    <message>
+        <location line="+42"/>
+        <source>Latest activity</source>
+        <translation>हाल की गतिविधि</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Newest</source>
+        <translation>सबसे नए</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Most replies</source>
+        <translation>सबसे ज़्यादा जवाब</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Sort threads</source>
+        <translation>थ्रेड क्रमबद्ध करें</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>All threads</source>
+        <translation>सभी थ्रेड</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <location line="+159"/>
+        <source>No replies yet</source>
+        <translation>अभी तक कोई जवाब नहीं</translation>
+    </message>
+    <message>
+        <location line="-155"/>
+        <source>Filter threads</source>
+        <translation>थ्रेड फ़िल्टर करें</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Stop filtering by #%1</source>
+        <translation>#%1 से फ़िल्टर करना बंद करें</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Show threads tagged #%1</source>
+        <translation>#%1 टैग वाले थ्रेड दिखाएँ</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Show all</source>
+        <translation>सभी दिखाएँ</translation>
+    </message>
+    <message>
+        <location line="+305"/>
         <location line="+1"/>
         <source>Collapse thread root</source>
         <translation>थ्रेड रूट समेटें</translation>
@@ -34829,7 +35331,7 @@ Proposed audience
 <context>
     <name>TimelineModel</name>
     <message>
-        <location filename="../src/models/TimelineModel.cpp" line="-1702"/>
+        <location filename="../src/models/TimelineModel.cpp" line="-1704"/>
         <source>%1 changed their display name from “%2” to “%3” and changed their avatar.</source>
         <translation>%1 ने अपना प्रदर्शित नाम “%2” से बदलकर “%3” किया और अवतार बदला।</translation>
     </message>
@@ -34879,7 +35381,7 @@ Proposed audience
         <translation>%1 ने कॉल प्रारंभ की.</translation>
     </message>
     <message>
-        <location line="+1354"/>
+        <location line="+1356"/>
         <source>%1 is typing…</source>
         <translation>%1 लिख रहे हैं…</translation>
     </message>
