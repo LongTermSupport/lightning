@@ -751,6 +751,7 @@ const CLASSES: &[(&str, EventClass)] = {
         ("url_preview_result", UiOnly),
         ("user_clients", UiOnly),
         ("user_profile_result", UiOnly),
+        ("user_recent_events", UiOnly),
         ("user_search_result", UiOnly),
         ("verification_done", UiOnly),
         ("verification_failed", UiOnly),

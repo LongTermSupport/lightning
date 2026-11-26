@@ -1330,6 +1330,7 @@ set(APP_QML_FILES
     qml/EmojiCompletionPopup.qml
     qml/ForwardSelectionDialog.qml
     qml/BulkRedactionBar.qml
+    qml/RemoveRecentMessagesDialog.qml
     qml/MediaBrowserTile.qml
     qml/MediaBrowserRow.qml
     qml/JumpToDateDialog.qml
@@ -7716,6 +7717,20 @@ if(BUILD_TESTING)
     add_test(NAME member-profile-copy-qml
         COMMAND member-profile-copy-qml-test)
     set_tests_properties(member-profile-copy-qml PROPERTIES
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
+    # Remove recent messages: profile card and member list menus, mock backend.
+    qt_add_executable(remove-recent-messages-qml-test
+        tests/RemoveRecentMessagesQmlTest.cpp
+        ${APP_LIB_SOURCES}
+    )
+    lightning_configure_qml_test(remove-recent-messages-qml-test)
+    target_compile_definitions(remove-recent-messages-qml-test PRIVATE
+        QML_DIR="${CMAKE_CURRENT_SOURCE_DIR}/qml")
+    target_link_libraries(remove-recent-messages-qml-test PRIVATE Qt6::Test)
+    add_test(NAME remove-recent-messages-qml
+        COMMAND remove-recent-messages-qml-test)
+    set_tests_properties(remove-recent-messages-qml PROPERTIES
         ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
     # Quick switcher: mode transitions, command actions, live theme execution,

@@ -109,6 +109,7 @@ mod oauth;
 mod pagewalk;
 mod optprobe;
 mod pinned;
+mod purge;
 mod search;
 mod sso;
 mod stablepoll;
@@ -6245,7 +6246,49 @@ pub unsafe extern "C" fn mx_rust_timeline_redact(
             .ok_or_else(|| "no active Matrix session".to_owned())?;
         bridge
             .timelines
-            .redact(&bridge.runtime, client, room_id, target, reason)
+            .redact(&bridge.runtime, client, room_id, target, reason, false)
+            .map(|_| String::new())
+    })
+}
+
+/// Redacts another member's event, re-checking our redact-others power right
+/// before sending; refused as `forbidden` without a request when it is gone.
+#[no_mangle]
+pub unsafe extern "C" fn mx_rust_timeline_redact_other(
+    ptr: *mut c_void,
+    room_id: *const c_char,
+    target_event_id: *const c_char,
+    reason: *const c_char,
+) -> *mut c_char {
+    ffi_string(|| {
+        let bridge = unsafe { bridge(ptr)? };
+        let room_id = unsafe { cstr_arg(room_id) }?;
+        let target = unsafe { cstr_arg(target_event_id) }?;
+        let reason = unsafe { cstr_arg(reason) }?;
+        let client = bridge.client.lock().ok().and_then(|guard| guard.clone())
+            .ok_or_else(|| "no active Matrix session".to_owned())?;
+        bridge
+            .timelines
+            .redact(&bridge.runtime, client, room_id, target, reason, true)
+            .map(|_| String::new())
+    })
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn mx_rust_room_user_recent_events(
+    ptr: *mut c_void,
+    room_id: *const c_char,
+    user_id: *const c_char,
+    from: *const c_char,
+    max_requests: u32,
+    op_id: u64,
+) -> *mut c_char {
+    ffi_string(|| {
+        let bridge = unsafe { bridge(ptr)? };
+        let room_id = unsafe { cstr_arg(room_id) }?;
+        let user_id = unsafe { cstr_arg(user_id) }?;
+        let from = unsafe { cstr_arg(from) }?;
+        purge::user_recent_events(bridge, room_id, user_id, from, max_requests, op_id)
             .map(|_| String::new())
     })
 }

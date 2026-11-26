@@ -228,6 +228,12 @@ public:
     void redactEvent(const QString &roomId,
                      const QString &eventId,
                      const QString &reason = QString()) override;
+    void redactOthersEvent(const QString &roomId, const QString &eventId,
+                           const QString &reason) override;
+    quint64 requestUserRecentEvents(const QString &roomId,
+                                    const QString &userId,
+                                    const QString &from,
+                                    int maxRequests) override;
     void toggleReaction(const QString &roomId,
                         const QString &targetEventId,
                         const QString &key) override;
@@ -899,6 +905,8 @@ Q_SIGNALS:
     void localSessionCleanupFinished(bool ok, const QString &message);
 
 private:
+    void redactEventVia(bool others, const QString &roomId,
+                        const QString &eventId, const QString &reason);
     quint64 startIndexAll(unsigned mode);
     QString tokenOwnerForRunningSession() const;
     bool settleRetiringSignIn(const QString &userId);

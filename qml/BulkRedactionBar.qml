@@ -25,10 +25,27 @@ Rectangle {
         anchors.margins: AppTheme.spacing8
         spacing: AppTheme.spacing8
         Label {
+            objectName: "bulkRedactionStatus"
             Layout.fillWidth: true
             wrapMode: Text.WordWrap
             textFormat: Text.PlainText
-            text: app.bulkRedaction.running
+            readonly property int removed:
+                app.bulkRedaction.completed - app.bulkRedaction.failed
+            text: app.bulkRedaction.purge
+                  ? (app.bulkRedaction.running
+                     ? qsTr("Removed %1 of %2").arg(removed)
+                           .arg(app.bulkRedaction.total)
+                     : app.bulkRedaction.failed > 0
+                       ? (app.bulkRedaction.cancelled
+                          ? qsTr("Stopped. Removed %1 of %2; %3 couldn't be removed.")
+                          : qsTr("Removed %1 of %2; %3 couldn't be removed."))
+                             .arg(removed).arg(app.bulkRedaction.total)
+                             .arg(app.bulkRedaction.failed)
+                       : (app.bulkRedaction.cancelled
+                          ? qsTr("Stopped. Removed %1 of %2.")
+                          : qsTr("Removed %1 of %2."))
+                             .arg(removed).arg(app.bulkRedaction.total))
+                  : app.bulkRedaction.running
                   ? qsTr("Deleting %1 of %n message(s)…", "", app.bulkRedaction.total)
                         .arg(app.bulkRedaction.completed)
                   : app.bulkRedaction.selecting
@@ -51,6 +68,15 @@ Rectangle {
                         : qsTr("Deleted %n message(s).", "",
                                app.bulkRedaction.completed)
             color: AppTheme.textPrimary
+        }
+        AppButton {
+            objectName: "bulkRedactionLookFurther"
+            visible: app.bulkRedaction.purge
+                     && app.bulkRedaction.purgeCanLookFurther
+            text: qsTr("Look further back")
+            kind: "secondary"
+            size: "sm"
+            onClicked: furtherDialog.openFurther()
         }
         AppButton {
             objectName: "bulkRedactionCancel"
@@ -87,6 +113,9 @@ Rectangle {
         enabled: root.visible && (app.bulkRedaction.selecting
                                   || app.bulkRedaction.running)
         onActivated: app.bulkRedaction.cancel()
+    }
+    RemoveRecentMessagesDialog {
+        id: furtherDialog
     }
     AppDialog {
         id: confirmation

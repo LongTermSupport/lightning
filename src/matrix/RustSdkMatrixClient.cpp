@@ -3578,7 +3578,7 @@ void RustSdkMatrixClient::editMessage(const QString &roomId,
     }
 }
 
-void RustSdkMatrixClient::redactEvent(const QString &roomId,
+void RustSdkMatrixClient::redactEventVia(bool others, const QString &roomId,
                                       const QString &eventId,
                                       const QString &reason)
 {
@@ -3593,9 +3593,13 @@ void RustSdkMatrixClient::redactEvent(const QString &roomId,
     const QByteArray roomBytes = realRoom.toUtf8();
     const QByteArray targetBytes = eventId.toUtf8();
     const QByteArray reasonBytes = reason.toUtf8();
-    const QString result = takeRustString(mx_rust_timeline_redact(
-        m_rustHandle, roomBytes.constData(), targetBytes.constData(),
-        reasonBytes.constData()));
+    const QString result = takeRustString(
+        others ? mx_rust_timeline_redact_other(
+                     m_rustHandle, roomBytes.constData(),
+                     targetBytes.constData(), reasonBytes.constData())
+               : mx_rust_timeline_redact(
+                     m_rustHandle, roomBytes.constData(),
+                     targetBytes.constData(), reasonBytes.constData()));
     if (!result.isEmpty()) {
         qCWarning(lcRust) << "redaction refused before sending:" << result;
         const QString category = QStringLiteral("rejected");
@@ -3603,6 +3607,42 @@ void RustSdkMatrixClient::redactEvent(const QString &roomId,
         Q_EMIT redactionFinished(realRoom, eventId, false, category);
     }
 }
+
+void RustSdkMatrixClient::redactEvent(const QString &roomId,
+                                      const QString &eventId,
+                                      const QString &reason)
+{
+    redactEventVia(false, roomId, eventId, reason);
+}
+
+void RustSdkMatrixClient::redactOthersEvent(const QString &roomId,
+                                            const QString &eventId,
+                                            const QString &reason)
+{
+    redactEventVia(true, roomId, eventId, reason);
+}
+
+quint64 RustSdkMatrixClient::requestUserRecentEvents(const QString &roomId,
+                                                     const QString &userId,
+                                                     const QString &from,
+                                                     int maxRequests)
+{
+    if (!m_rustHandle || roomId.isEmpty() || userId.isEmpty())
+        return 0;
+    const quint64 opId = nextOpId();
+    const QByteArray room = roomId.toUtf8();
+    const QByteArray user = userId.toUtf8();
+    const QByteArray token = from.toUtf8();
+    const QString result = takeRustString(mx_rust_room_user_recent_events(
+        m_rustHandle, room.constData(), user.constData(), token.constData(),
+        static_cast<unsigned int>(qMax(1, maxRequests)), opId));
+    if (!result.isEmpty()) {
+        qCWarning(lcRust) << "recent-events walk rejected";
+        return 0;
+    }
+    return opId;
+}
+
 
 void RustSdkMatrixClient::toggleReaction(const QString &roomId,
                                          const QString &targetEventId,
@@ -7015,6 +7055,10 @@ void RustSdkMatrixClient::handleRustEvent(const QJsonObject &event,
             qCWarning(lcRust) << "redaction failed category=" << category;
             Q_EMIT errorOccurred(redactionFailureText(category));
         }
+        if (category == QLatin1String("rate_limited"))
+            Q_EMIT redactionRateLimited(
+                roomId, eventId,
+                qint64(event.value(QStringLiteral("retry_after_ms")).toDouble()));
         Q_EMIT redactionFinished(roomId, eventId, ok, category);
         return;
     }
@@ -11823,6 +11867,22 @@ bool RustSdkMatrixClient::handleRoomCommandEvent(const QString &type,
                                   results,
                                   event.value(QStringLiteral("limited")).toBool(),
                                   event.value(QStringLiteral("category")).toString());
+        return true;
+    }
+
+    if (type == QLatin1String("user_recent_events")) {
+        const auto ids = [&event](const char *key) {
+            QStringList out;
+            const QJsonArray rows = event.value(QLatin1String(key)).toArray();
+            for (const QJsonValue &value : rows)
+                out.append(value.toString());
+            return out;
+        };
+        Q_EMIT userRecentEventsReceived(
+            opId(), event.value(QStringLiteral("room_id")).toString(),
+            event.value(QStringLiteral("user_id")).toString(),
+            event.value(QStringLiteral("ok")).toBool(), ids("messages"),
+            ids("state"), event.value(QStringLiteral("next_from")).toString());
         return true;
     }
 

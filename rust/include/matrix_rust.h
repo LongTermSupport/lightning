@@ -729,6 +729,16 @@ char *mx_rust_timeline_redact(void *client,
                               const char *room_id,
                               const char *target_event_id,
                               const char *reason);
+char *mx_rust_timeline_redact_other(void *client,
+                                    const char *room_id,
+                                    const char *target_event_id,
+                                    const char *reason);
+char *mx_rust_room_user_recent_events(void *client,
+                                      const char *room_id,
+                                      const char *user_id,
+                                      const char *from,
+                                      unsigned int max_requests,
+                                      unsigned long long op_id);
 char *mx_rust_timeline_retry_send(void *client,
                                   const char *room_id,
                                   const char *transaction_id);

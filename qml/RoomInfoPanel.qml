@@ -156,6 +156,7 @@ Rectangle {
         memberMenu.canKick = app.roomInfo.canModerate(member.userId, "kick")
         memberMenu.canBan = app.roomInfo.canModerate(member.userId, "ban")
         memberMenu.canUnban = app.roomInfo.canModerate(member.userId, "unban")
+        memberMenu.canRemoveRecent = memberProfile.canRemoveRecentFor(member.userId)
         memberMenu.popup(anchor, x, y)
     }
 
@@ -168,6 +169,7 @@ Rectangle {
         property bool canKick: false
         property bool canBan: false
         property bool canUnban: false
+        property bool canRemoveRecent: false
         contextLabel: member && member.userId
                       ? (member.displayName || member.userId) : ""
 
@@ -179,7 +181,7 @@ Rectangle {
         }
         AppMenuSeparator {
             visible: memberMenu.canKick || memberMenu.canBan
-                     || memberMenu.canUnban
+                     || memberMenu.canUnban || memberMenu.canRemoveRecent
         }
         AppMenuItem {
             objectName: "roomMemberMenuKick"
@@ -203,6 +205,14 @@ Rectangle {
             iconName: "undo"
             text: qsTr("Unban…")
             onTriggered: memberProfile.openForAction(memberMenu.member, "unban")
+        }
+        AppMenuItem {
+            objectName: "roomMemberMenuRemoveRecent"
+            visible: memberMenu.canRemoveRecent
+            danger: true
+            iconName: "delete"
+            text: qsTr("Remove recent messages…")
+            onTriggered: memberProfile.openRemoveRecent(memberMenu.member)
         }
     }
 

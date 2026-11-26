@@ -308,6 +308,29 @@ public:
     virtual void toggleReaction(const QString &roomId,
                                 const QString &targetEventId,
                                 const QString &key) = 0;
+    /// A redaction of another member's event: the backend re-checks the
+    /// redact-others grant right before sending and refuses with `forbidden`.
+    virtual void redactOthersEvent(const QString &roomId,
+                                   const QString &eventId,
+                                   const QString &reason)
+    {
+        redactEvent(roomId, eventId, reason);
+    }
+    /// One bounded backward walk of `userId`'s unredacted events from `from`
+    /// (the live end when empty); 0 when the backend cannot walk history.
+    /// Answers with userRecentEventsReceived, whose `nextFrom` is empty once
+    /// the room's start was reached.
+    virtual quint64 requestUserRecentEvents(const QString &roomId,
+                                            const QString &userId,
+                                            const QString &from,
+                                            int maxRequests)
+    {
+        Q_UNUSED(roomId);
+        Q_UNUSED(userId);
+        Q_UNUSED(from);
+        Q_UNUSED(maxRequests);
+        return 0;
+    }
 
     virtual bool supportsRemovingEdits() const { return false; }
     virtual void removeMessageEdits(const QString &roomId,
@@ -1535,6 +1558,13 @@ Q_SIGNALS:
     void eventRedacted(const QString &roomId, const QString &eventId);
     void redactionFinished(const QString &roomId, const QString &eventId,
                            bool ok, const QString &category);
+    void redactionRateLimited(const QString &roomId, const QString &eventId,
+                              qint64 retryAfterMs);
+    void userRecentEventsReceived(quint64 opId, const QString &roomId,
+                                  const QString &userId, bool ok,
+                                  const QStringList &messageIds,
+                                  const QStringList &stateIds,
+                                  const QString &nextFrom);
     void reactionsChanged(const QString &roomId, const QString &eventId);
     void eventsPrepended(const QString &roomId, const QList<TimelineEvent> &events);
     void paginationStateChanged(const QString &roomId);

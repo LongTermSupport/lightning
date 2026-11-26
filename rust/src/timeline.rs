@@ -2742,6 +2742,7 @@ impl TimelineRegistry {
         room_id: String,
         target_event_id: String,
         reason: String,
+        require_redact_other: bool,
     ) -> Result<(), String> {
         let room = crate::rooms::joined_room(&client, &room_id)?;
         let (room_gen, lifecycle) = match self.timeline_for(&room_id) {
@@ -2756,22 +2757,38 @@ impl TimelineRegistry {
         let registry = Arc::clone(self);
         let events = Arc::clone(&self.events);
         runtime.spawn(async move {
+            if require_redact_other && !own_can_redact_other(&room).await {
+                if registry.lifecycle_current(lifecycle) {
+                    enqueue(
+                        &events,
+                        redaction_finished_payload(
+                            &room_id,
+                            event_id.as_str(),
+                            room_gen,
+                            lifecycle,
+                            Some("forbidden"),
+                        ),
+                    );
+                }
+                return;
+            }
             let reason = if reason.is_empty() { None } else { Some(reason.as_str()) };
             let result = room.redact(&event_id, reason, None).await;
             if registry.lifecycle_current(lifecycle) {
                 let category = result.as_ref().err().map(|err| {
                     redaction_error_category(err.client_api_error_kind(), &err.to_string())
                 });
-                enqueue(
-                    &events,
-                    redaction_finished_payload(
-                        &room_id,
-                        event_id.as_str(),
-                        room_gen,
-                        lifecycle,
-                        category,
-                    ),
+                let mut payload = redaction_finished_payload(
+                    &room_id,
+                    event_id.as_str(),
+                    room_gen,
+                    lifecycle,
+                    category,
                 );
+                if let Some(ms) = result.as_ref().err().and_then(redaction_retry_after_ms) {
+                    payload["retry_after_ms"] = ms.into();
+                }
+                enqueue(&events, payload);
             }
         });
         Ok(())
@@ -7474,6 +7491,24 @@ pub(crate) fn redaction_error_category(
         Some(ErrorKind::NotFound) => "not_found",
         _ => crate::rooms::classify_room_error(text),
     }
+}
+
+async fn own_can_redact_other(room: &matrix_sdk::Room) -> bool {
+    let own = room.own_user_id().to_owned();
+    room.power_levels()
+        .await
+        .map(|levels| levels.user_can_redact_event_of_other(&own))
+        .unwrap_or(false)
+}
+
+fn redaction_retry_after_ms(err: &matrix_sdk::HttpError) -> Option<u64> {
+    use matrix_sdk::ruma::api::error::{ErrorKind, LimitExceededErrorData};
+    let ErrorKind::LimitExceeded(LimitExceededErrorData { retry_after, .. }) =
+        err.client_api_error_kind()?
+    else {
+        return None;
+    };
+    crate::presence::retry_after_to_ms(retry_after.as_ref()?)
 }
 
 pub(crate) fn redaction_finished_payload(

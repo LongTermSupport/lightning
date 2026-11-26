@@ -287,6 +287,21 @@ public:
     void redactEvent(const QString &roomId,
                      const QString &eventId,
                      const QString &reason) override;
+    void redactOthersEvent(const QString &roomId, const QString &eventId,
+                           const QString &reason) override;
+    quint64 requestUserRecentEvents(const QString &roomId,
+                                    const QString &userId,
+                                    const QString &from,
+                                    int maxRequests) override;
+    void failRedactionForTest(const QString &eventId, const QString &category)
+    { m_failRedactionsForTest.insert(eventId, category); }
+    void setUserWalkPageSizeForTest(int size) { m_userWalkPageSize = size; }
+    QString lastUserWalkFromForTest() const { return m_lastUserWalkFrom; }
+    int userWalksForTest() const { return m_userWalks; }
+    void setHoldRedactionsForTest(bool on) { m_holdRedactionsForTest = on; }
+    void releaseHeldRedactionForTest();
+    int redactionCallsForTest() const { return m_redactionCallsForTest; }
+    QString lastRedactionReasonForTest() const { return m_lastRedactionReason; }
     void toggleReaction(const QString &roomId,
                         const QString &targetEventId,
                         const QString &key) override;
@@ -424,6 +439,14 @@ private:
 
     QList<RoomInfo> m_rooms;
     QHash<QString, QList<TimelineEvent>> m_timelines;
+    QHash<QString, QString> m_failRedactionsForTest;
+    QList<QPair<QString, QString>> m_heldRedactions;
+    int m_userWalkPageSize = 100;
+    int m_userWalks = 0;
+    QString m_lastUserWalkFrom;
+    bool m_holdRedactionsForTest = false;
+    int m_redactionCallsForTest = 0;
+    QString m_lastRedactionReason;
     QHash<QString, int> m_paginationRemaining; // roomId → mock pages left
     QSet<QString> m_paginating;
     QSet<QString> m_paginationFailed;

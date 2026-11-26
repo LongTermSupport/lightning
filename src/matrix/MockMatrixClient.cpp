@@ -1055,7 +1055,17 @@ void MockMatrixClient::redactEvent(const QString &roomId,
                                     const QString &eventId,
                                     const QString &reason)
 {
-    Q_UNUSED(reason);
+    ++m_redactionCallsForTest;
+    m_lastRedactionReason = reason;
+    if (m_holdRedactionsForTest) {
+        m_heldRedactions.append({roomId, eventId});
+        return;
+    }
+    if (const auto failure = m_failRedactionsForTest.constFind(eventId);
+        failure != m_failRedactionsForTest.cend()) {
+        Q_EMIT redactionFinished(roomId, eventId, false, failure.value());
+        return;
+    }
     auto *ev = findEvent(roomId, eventId);
     if (!ev) {
         Q_EMIT redactionFinished(roomId, eventId, false,
@@ -1068,6 +1078,71 @@ void MockMatrixClient::redactEvent(const QString &roomId,
     // id.
     Q_EMIT eventRedacted(roomId, eventId);
     Q_EMIT redactionFinished(roomId, eventId, true, {});
+}
+
+void MockMatrixClient::releaseHeldRedactionForTest()
+{
+    if (m_heldRedactions.isEmpty())
+        return;
+    const auto [roomId, eventId] = m_heldRedactions.takeFirst();
+    const bool hold = m_holdRedactionsForTest;
+    m_holdRedactionsForTest = false;
+    --m_redactionCallsForTest;
+    redactEvent(roomId, eventId, m_lastRedactionReason);
+    m_holdRedactionsForTest = hold;
+}
+
+void MockMatrixClient::redactOthersEvent(const QString &roomId,
+                                         const QString &eventId,
+                                         const QString &reason)
+{
+    const QVariantMap facts = m_ownPermissionsForTest.value(roomId);
+    if (facts.contains(QStringLiteral("canRedactOthers"))
+        && !facts.value(QStringLiteral("canRedactOthers")).toBool()) {
+        Q_EMIT redactionFinished(roomId, eventId, false,
+                                 QStringLiteral("forbidden"));
+        return;
+    }
+    redactEvent(roomId, eventId, reason);
+}
+
+quint64 MockMatrixClient::requestUserRecentEvents(const QString &roomId,
+                                                  const QString &userId,
+                                                  const QString &from,
+                                                  int maxRequests)
+{
+    if (roomId.isEmpty() || userId.isEmpty())
+        return 0;
+    const quint64 op = ++m_opCounter;
+    ++m_userWalks;
+    m_lastUserWalkFrom = from;
+    const QList<TimelineEvent> events = m_timelines.value(roomId);
+    int end = events.size();
+    if (from.startsWith(QLatin1String("mock:")))
+        end = qBound(0, from.mid(5).toInt(), int(events.size()));
+    const int budget = qMax(1, maxRequests) * qMax(1, m_userWalkPageSize);
+    const int start = qMax(0, end - budget);
+    QStringList messages;
+    QStringList state;
+    for (int i = end - 1; i >= start; --i) {
+        const TimelineEvent &e = events.at(i);
+        if (e.sender != userId || e.redacted
+            || !e.eventId.startsWith(QLatin1Char('$')))
+            continue;
+        if (e.type == TimelineEvent::StateChange
+            || e.type == TimelineEvent::CallEvent)
+            state.append(e.eventId);
+        else
+            messages.append(e.eventId);
+    }
+    const QString nextFrom =
+        start > 0 ? QStringLiteral("mock:%1").arg(start) : QString();
+    QTimer::singleShot(0, this, [this, op, roomId, userId, messages, state,
+                                 nextFrom] {
+        Q_EMIT userRecentEventsReceived(op, roomId, userId, true, messages,
+                                        state, nextFrom);
+    });
+    return op;
 }
 
 void MockMatrixClient::toggleReaction(const QString &roomId,

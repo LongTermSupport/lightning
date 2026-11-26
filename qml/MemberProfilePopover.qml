@@ -90,6 +90,26 @@ Popup {
     property string liveRole: ""
     readonly property string badgeRole: liveRole.length > 0 ? liveRole : role
 
+    readonly property bool canRedactOthers:
+        !!app.openRoomPermissions
+        && app.openRoomPermissions.roomId === app.currentRoomId
+        && app.openRoomPermissions.redactKnown === true
+            ? app.openRoomPermissions.canRedactOthers === true
+            : (!!app.roomInfo && app.roomInfo.roomId === app.currentRoomId
+               && app.roomInfo.canRedactOthers === true)
+    function canRemoveRecentFor(uid) {
+        return !!uid && uid.length > 0 && root.canRedactOthers
+            && !!app.timeline && app.timeline.roomId === app.currentRoomId
+            && uid !== app.timeline.ownUserId()
+            && !app.bulkRedaction.running
+    }
+    function openRemoveRecent(member) {
+        return removeRecentDialog.openFor(member)
+    }
+    RemoveRecentMessagesDialog {
+        id: removeRecentDialog
+    }
+
     function _refreshModeration() {
         var scoped = root.roomScoped && app.roomInfo
                      && app.roomInfo.roomId === app.currentRoomId
@@ -1222,6 +1242,20 @@ Popup {
                                     return
                                 }
                                 ignoreConfirm.open()
+                            }
+                        }
+                        AppMenuItem {
+                            objectName: "profileRemoveRecentButton"
+                            visible: root.roomScoped && !root.isOwn
+                                     && root.canRemoveRecentFor(root.userId)
+                            danger: true
+                            text: qsTr("Remove recent messages…")
+                            iconName: "delete"
+                            onTriggered: {
+                                const member = { userId: root.userId,
+                                                 displayName: root.visibleName }
+                                root.close()
+                                root.openRemoveRecent(member)
                             }
                         }
                     }
