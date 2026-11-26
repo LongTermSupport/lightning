@@ -1447,6 +1447,13 @@ private slots:
         }
     }
 
+    void theKeyboardShortcutsRowShowsAKeyboard()
+    {
+        auto *row = item("settingsNavRow_shortcuts");
+        QVERIFY(row);
+        QCOMPARE(row->property("iconName").toString(), QStringLiteral("keyboard"));
+    }
+
     void theQuickSwitcherOffersEverySettingsSectionTheNavHas()
     {
         const QString qmlDir = QStringLiteral(QML_DIR);

@@ -2521,7 +2521,7 @@ Item {
                     SettingsNavOutlineFor { sectionKey: "chat" }
                     SettingsNavRow {
                         sectionKey: "shortcuts"
-                        iconName: "keyboard_return"
+                        iconName: "keyboard"
                         navLabel: qsTr("Keyboard shortcuts")
                     }
 

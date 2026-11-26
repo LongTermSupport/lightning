@@ -241,7 +241,7 @@ Popup {
             { key: "appearance", title: qsTr("Appearance"), icon: "palette" },
             { key: "layout", title: qsTr("Layout"), icon: "grid_view" },
             { key: "chat", title: qsTr("Chat"), icon: "forum" },
-            { key: "shortcuts", title: qsTr("Keyboard shortcuts"), icon: "keyboard_return" },
+            { key: "shortcuts", title: qsTr("Keyboard shortcuts"), icon: "keyboard" },
             { key: "notifications", title: qsTr("Notifications"), icon: "notifications" },
             { key: "sound", title: qsTr("Sound & video"), icon: "volume_up" },
             { key: "privacy", title: qsTr("Privacy & security"), icon: "verified_user" },

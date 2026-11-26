@@ -130,4 +130,5 @@ var codepoints = {
     "manage_search": "\uf02f",
     "archive": "\ue149",
     "unarchive": "\ue169",
+    "keyboard": "\ue312",
 }
