@@ -59,6 +59,35 @@ class ShortcutRegistryTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
+    void roomListCompactIsRegisteredAndRebindable()
+    {
+        SettingsManager settings;
+        const QString id = QStringLiteral("shell.toggleRoomListCompact");
+        {
+            ShortcutRegistry registry(&settings);
+            QCOMPARE(registry.defaultSequenceFor(id), QStringLiteral("Ctrl+Alt+B"));
+            QCOMPARE(registry.sequenceFor(id), QStringLiteral("Ctrl+Alt+B"));
+            QCOMPARE(roleFor(registry, id, ShortcutRegistry::CategoryRole),
+                     roleFor(registry, QStringLiteral("shell.toggleRoomList"),
+                             ShortcutRegistry::CategoryRole));
+            QCOMPARE(roleFor(registry, id, ShortcutRegistry::ContextRole),
+                     QString::number(int(ShortcutRegistry::GlobalContext)));
+            QCOMPARE(registry.conflictCount(), 0);
+            const int revision = registry.bindingRevision();
+            QCOMPARE(registry.setBinding(id, QStringLiteral("Ctrl+Alt+Shift+B")), QString());
+            QVERIFY(registry.bindingRevision() > revision);
+            QCOMPARE(registry.sequenceFor(id), QStringLiteral("Ctrl+Alt+Shift+B"));
+            QVERIFY(!registry.validationError(QStringLiteral("app.quit"),
+                                               QStringLiteral("Ctrl+Alt+Shift+B")).isEmpty());
+        }
+        ShortcutRegistry reopened(&settings);
+        QCOMPARE(reopened.sequenceFor(id), QStringLiteral("Ctrl+Alt+Shift+B"));
+        QCOMPARE(reopened.resetToDefault(id), QString());
+        QCOMPARE(reopened.sequenceFor(id), QStringLiteral("Ctrl+Alt+B"));
+        QCOMPARE(reopened.sequenceFor(QStringLiteral("shell.toggleRoomList")),
+                 QStringLiteral("Ctrl+B"));
+    }
+
     void streamInfoCanBeRebound()
     {
         SettingsManager settings;
@@ -1377,10 +1406,10 @@ private Q_SLOTS:
         const QString back = QStringLiteral("nav.historyBack");
         const QString fwd = QStringLiteral("nav.historyForward");
         const QString def = registry.sequenceFor(back);
-        QCOMPARE(registry.setBinding(back, QStringLiteral("Ctrl+Alt+B")), QString());
+        QCOMPARE(registry.setBinding(back, QStringLiteral("Ctrl+Alt+Shift+B")), QString());
         QCOMPARE(registry.setBinding(fwd, def), QString());
         QVERIFY(!registry.resetToDefault(back).isEmpty());
-        QCOMPARE(registry.sequenceFor(back), QStringLiteral("Ctrl+Alt+B"));
+        QCOMPARE(registry.sequenceFor(back), QStringLiteral("Ctrl+Alt+Shift+B"));
         QCOMPARE(registry.conflictCount(), 0);
     }
 

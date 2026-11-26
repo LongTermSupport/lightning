@@ -3164,6 +3164,16 @@ if(BUILD_TESTING)
     set_tests_properties(collapsed-embeds-qml PROPERTIES
         ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
+    qt_add_executable(message-copy-selection-qml-test
+        tests/MessageCopySelectionQmlTest.cpp
+        ${APP_LIB_SOURCES}
+    )
+    lightning_configure_qml_test(message-copy-selection-qml-test)
+    target_link_libraries(message-copy-selection-qml-test PRIVATE Qt6::Test)
+    add_test(NAME message-copy-selection-qml COMMAND message-copy-selection-qml-test)
+    set_tests_properties(message-copy-selection-qml PROPERTIES
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
     qt_add_executable(link-preview-qml-test
         tests/LinkPreviewQmlTest.cpp
         ${APP_LIB_SOURCES}

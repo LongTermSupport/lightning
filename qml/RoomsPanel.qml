@@ -7,6 +7,11 @@ Rectangle {
     id: root
     color: AppTheme.roomList
     readonly property bool compact: width < app.settings.roomListExpandedMinWidth
+    readonly property string compactShortcutHint: {
+        var _rev = app.shortcuts.bindingRevision
+        var sequence = app.shortcuts.sequenceFor("shell.toggleRoomListCompact")
+        return sequence.length > 0 ? " (" + app.shortcuts.displayText(sequence) + ")" : ""
+    }
     function focusNavigation() {
         if (compact)
             compactRoomSearch.forceActiveFocus()
@@ -189,10 +194,8 @@ Rectangle {
                     Layout.maximumWidth: Math.max(0, root.width
                         - AppTheme.spacing12 * 2 - headerRow.spacing
                         - wordmarkBolt.implicitWidth
-                        - (railHiddenActions.visible
-                           ? railHiddenActions.implicitWidth + AppTheme.spacing8
-                             + AppTheme.headerActionGutter - AppTheme.spacing12
-                           : 0))
+                        - collapseRoomListButton.width - (railHiddenActions.visible ? railHiddenActions.implicitWidth + AppTheme.headerActionSpacing : 0) - AppTheme.spacing8
+                        - AppTheme.headerActionGutter + AppTheme.spacing12)
                     readonly property bool channelsLayout:
                         app.settings && app.settings.roomNavigationLayout === 1
                     property int spacesRevision: 0
@@ -247,6 +250,24 @@ Rectangle {
                     color: AppTheme.wordmarkBolt
                     Accessible.ignored: true
                 }
+            }
+
+            IconButton {
+                id: collapseRoomListButton
+                objectName: "collapseRoomListButton"
+                anchors {
+                    right: railHiddenActions.visible ? railHiddenActions.left : parent.right
+                    verticalCenter: parent.verticalCenter
+                    rightMargin: railHiddenActions.visible ? AppTheme.headerActionSpacing
+                                                           : AppTheme.headerActionGutter
+                }
+                iconSize: 18
+                iconName: "chevron_left"
+                Accessible.name: qsTr("Collapse room list")
+                ToolTip.text: Accessible.name + root.compactShortcutHint
+                ToolTip.visible: hovered
+                ToolTip.delay: 500
+                onClicked: root.collapse()
             }
 
             RailHiddenActions {
@@ -1083,9 +1104,14 @@ Rectangle {
             Layout.topMargin: AppTheme.spacing8
             iconName: app.spaces && app.spaces.activeSpaceId ? "workspaces" : "home"
             Accessible.name: qsTr("Expand %1 room list").arg(workspaceLabel.text)
-            ToolTip.text: workspaceLabel.text
+            ToolTip.text: qsTr("Expand room list") + root.compactShortcutHint
             ToolTip.visible: hovered
             onClicked: root.expand()
+        }
+        RailHiddenActions {
+            objectName: "compactRailHiddenActions"
+            Layout.alignment: Qt.AlignHCenter
+            vertical: true
         }
         IconButton {
             id: compactRoomSearch

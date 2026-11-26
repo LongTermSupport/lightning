@@ -137,6 +137,7 @@ mod spoiler;
 mod storeclose;
 mod syncnotify;
 mod timeline;
+mod sendorder;
 
 pub(crate) const USER_AGENT: &str = concat!("Lightning/", env!("CARGO_PKG_VERSION"));
 
