@@ -319,7 +319,14 @@ private slots:
         QVERIFY2(listItem->property("visible").toBool(),
                  "the member list hides it from a moderator");
         QVERIFY(QMetaObject::invokeMethod(listItem, "triggered"));
-        QTRY_VERIFY_WITH_TIMEOUT(dialog() != nullptr, kTimeoutMs);
+        QVERIFY2(bulk()->property("purge").toBool(),
+                 "the member list's item did not start a count");
+        QTRY_VERIFY2_WITH_TIMEOUT(dialog() != nullptr,
+                                  qPrintable(QStringLiteral("dialogs: %1, in panel: %2")
+                                      .arg(m_root->findChildren<QObject *>(
+                                               QStringLiteral("removeRecentDialog")).size())
+                                      .arg(inPanel(QStringLiteral("removeRecentDialog")) != nullptr)),
+                                  kTimeoutMs);
         QVERIFY2(inPanel(QStringLiteral("removeRecentDialog"))->property("visible").toBool(),
                  "the member list opened some other dialog");
         QMetaObject::invokeMethod(dialog(), "close");

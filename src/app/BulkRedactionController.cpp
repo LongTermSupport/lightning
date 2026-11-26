@@ -160,7 +160,7 @@ bool BulkRedactionController::preparePurge(TimelineModel *model,
     return true;
 }
 
-void BulkRedactionController::requestWalk(const QString &from)
+void BulkRedactionController::requestWalk(QString from)
 {
     m_purgeFrom = from;
     m_purgeNextFrom.clear();

@@ -99,7 +99,7 @@ private:
                             const QStringList &messageIds,
                             const QStringList &stateIds,
                             const QString &nextFrom);
-    void requestWalk(const QString &from);
+    void requestWalk(QString from);
     void onRateLimited(const QString &roomId, const QString &eventId,
                        qint64 retryAfterMs);
     void resetPurge();
