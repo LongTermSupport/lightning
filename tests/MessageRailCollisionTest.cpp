@@ -136,7 +136,7 @@ class MessageRailCollisionTest : public QObject
 
     bool build(AppController &controller, const QVariantMap &fixture,
                Delegate &out, qreal rowWidth = kRowWidth,
-               bool direct = false)
+               bool direct = false, bool mirrored = false)
     {
         out.engine = std::make_unique<QQmlApplicationEngine>();
         out.engine->rootContext()->setContextProperty("app", &controller);
@@ -153,7 +153,19 @@ class MessageRailCollisionTest : public QObject
             return false;
         out.window = std::make_unique<QQuickWindow>();
         out.window->resize(800, 480);
-        out.root->setParentItem(out.window->contentItem());
+        QQuickItem *host = out.window->contentItem();
+        if (mirrored) {
+            QQmlComponent hostComponent(out.engine.get());
+            hostComponent.setData("import QtQuick\nItem { LayoutMirroring.enabled: true;"
+                                  " LayoutMirroring.childrenInherit: true }",
+                                  QUrl());
+            host = qobject_cast<QQuickItem *>(hostComponent.create());
+            if (!host)
+                return false;
+            host->setParentItem(out.window->contentItem());
+            host->setSize(QSizeF(800, 480));
+        }
+        out.root->setParentItem(host);
         out.root->setWidth(rowWidth);
         if (direct)
             QQmlProperty::write(out.root, QStringLiteral("isDirectRoom"), true);
@@ -295,6 +307,50 @@ private Q_SLOTS:
         QVERIFY(content);
         QVERIFY2(bubbleLayout->width() >= content->implicitWidth() + 28 - 0.5,
                  "the mention bar's inset ate the bubble's trailing padding");
+    }
+
+    void bubblesMirrorUnderRightToLeft_data()
+    {
+        QTest::addColumn<bool>("rtl");
+        QTest::newRow("en") << false;
+        QTest::newRow("ar") << true;
+    }
+    void bubblesMirrorUnderRightToLeft()
+    {
+        QFETCH(bool, rtl);
+        AppController app(AppController::MockBackend);
+        app.settings()->setMessageLayout(1);
+        const auto restore = qScopeGuard([&app] { app.settings()->setMessageLayout(0); });
+        for (const bool own : {true, false}) {
+            QVariantMap f = baseFixture();
+            f.insert(QStringLiteral("isOwn"), own);
+            f.insert(QStringLiteral("body"), QStringLiteral("hi"));
+            Delegate d;
+            QVERIFY(build(app, f, d, kRowWidth, true, rtl));
+            auto *bubble = findVisual(d.root, QStringLiteral("messageContentColumn"));
+            QVERIFY(bubble);
+            const qreal left = leftEdgeIn(bubble, d.root);
+            const qreal right = rightEdgeIn(bubble, d.root);
+            const bool onRight = (left + right) / 2 > kRowWidth / 2;
+            const QByteArray who = own ? "own" : "other";
+            QVERIFY2(onRight == (own != rtl),
+                     who + " bubble is on the wrong side: " + QByteArray::number(left)
+                         + ".." + QByteArray::number(right));
+            auto *body = findVisual(d.root, QStringLiteral("messageBody"));
+            QVERIFY(body);
+            const qreal bl = leftEdgeIn(body, d.root);
+            const qreal br = rightEdgeIn(body, d.root);
+            QVERIFY2(bl >= left - 0.5 && br <= right + 0.5,
+                     who + " body leaves its bubble");
+            if (!own) {
+                auto *avatar = findVisual(d.root, QStringLiteral("senderAvatarSlot"));
+                QVERIFY(avatar);
+                const qreal ac = (leftEdgeIn(avatar, d.root)
+                                  + rightEdgeIn(avatar, d.root)) / 2;
+                QVERIFY2((ac > kRowWidth / 2) == rtl && (ac > (left + right) / 2) == rtl,
+                         "the avatar is not on the bubble's leading side");
+            }
+        }
     }
 
     void bubbleScopeDecidesWhichRoomsGetBubbles_data()
