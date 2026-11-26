@@ -93,6 +93,7 @@ Item {
         && root.eventIdForActions() !== ""
         && !root.isGallery
     readonly property real selectionGutterWidth: 26
+    readonly property bool rtl: LayoutMirroring.enabled
     readonly property var messageRangeIds:
         root.timelineView && root.timelineView.messageRangeIds
         ? root.timelineView.messageRangeIds : []
@@ -1408,7 +1409,7 @@ Item {
         active: root.isThreadKeyWait
         visible: active
         y: AppTheme.spacingS
-        x: LayoutMirroring.enabled ? 0 : root.avatarGutterWidth
+        x: root.rtl ? 0 : root.avatarGutterWidth
         width: parent.width - root.avatarGutterWidth
         sourceComponent: RowLayout {
             id: keyWaitLine
@@ -1486,8 +1487,7 @@ Item {
     }
     Loader {
         active: root.selectionMode && root.rowSelectable
-        anchors.left: parent.left
-        anchors.leftMargin: 2
+        x: 2
         anchors.verticalCenter: parent.verticalCenter
         z: 20
         sourceComponent: Rectangle {
@@ -1598,10 +1598,8 @@ Item {
         visible: !root.isVirtualRow && !root.isStateActivity && !root.isCallEvent
                  && !root.isThreadKeyWait
         y: root.messageTopSpacing
-        x: root.selectionMode && root.rowSelectable && !LayoutMirroring.enabled
-           ? root.selectionGutterWidth : 0
-        width: parent.width - (root.selectionMode && root.rowSelectable
-                               ? root.selectionGutterWidth : 0)
+        x: root.selectionMode && root.rowSelectable ? root.selectionGutterWidth : 0
+        width: parent.width - x
         spacing: 2
         z: 1
 
@@ -1618,7 +1616,7 @@ Item {
             Item {
                 id: avatarSlot
                 objectName: "senderAvatarSlot"
-                x: LayoutMirroring.enabled ? parent.width - width : 0
+                x: root.rtl ? parent.width - width : 0
                 width: root.avatarGutterWidth
                 height: parent.height
                 implicitHeight: root.showsIdentity && !root.smallAvatarMode
@@ -1689,7 +1687,7 @@ Item {
                    ? Math.max(root.avatarGutterWidth,
                               parent.width - width - root.bubbleReceiptInset)
                    : root.avatarGutterWidth
-                x: LayoutMirroring.enabled ? parent.width - logicalX - width : logicalX
+                x: root.rtl ? parent.width - logicalX - width : logicalX
                 width: root.bubbleMode
                        ? Math.min(bubbleContent.implicitWidth + root.bubblePad * 2
                                   + (mentionBarVisible ? 8 : 0),
@@ -3477,9 +3475,9 @@ Item {
                 id: receiptRow
                 objectName: "readReceiptRow"
                 x: root.ownBubbleReceiptFooter
-                   ? (readReceiptStrip.LayoutMirroring.enabled
+                   ? (root.rtl
                       ? bubble.x : bubble.x + bubble.width - width)
-                   : readReceiptStrip.LayoutMirroring.enabled
+                   : root.rtl
                      ? Math.min(0, readReceiptStrip.width - root.avatarGutterWidth - width)
                      : Math.max(root.avatarGutterWidth,
                                 readReceiptStrip.width - width)
