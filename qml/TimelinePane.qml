@@ -5439,7 +5439,6 @@ Rectangle {
                 hoverEnabled: true
                 implicitHeight: 30
                 implicitWidth: firstUnreadPillRow.implicitWidth + 24
-                width: implicitWidth
                 Accessible.role: Accessible.Button
                 Accessible.name: qsTr("Jump to first unread message")
                 ToolTip.text: qsTr("Go to where you stopped reading")
