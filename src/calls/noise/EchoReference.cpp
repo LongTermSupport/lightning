@@ -13,6 +13,8 @@ namespace {
 constexpr GstClockTime kLead = 40 * GST_MSECOND;
 constexpr GstClockTime kMixerWait = 20 * GST_MSECOND;
 constexpr const char *kTapKey = "lightning-echo-tap";
+constexpr const char *kMixFormat =
+    "audio/x-raw,format=S16LE,layout=interleaved,rate=48000,channels=2";
 
 struct Input {
     GstElement *pipeline;
@@ -108,9 +110,8 @@ bool factoryExists(const char *name)
 
 QString EchoReference::probeStage()
 {
-    return QStringLiteral("! audio/x-raw,format=S16LE,layout=interleaved,"
-                          "rate=48000,channels=2 ! webrtcechoprobe name=%1 ")
-        .arg(QLatin1String(kProbeName));
+    return QStringLiteral("! %1 ! webrtcechoprobe name=%2 ")
+        .arg(QLatin1String(kMixFormat), QLatin1String(kProbeName));
 }
 
 bool EchoReference::available()
@@ -159,8 +160,10 @@ bool EchoReference::start()
     if (!mixer)
         return false;
     gst_util_set_object_arg(G_OBJECT(mixer), "start-time-selection", "first");
-    const QString tail = probeStage().mid(2)
-        + QStringLiteral("! fakesink sync=false async=false enable-last-sample=false");
+    const QString tail = QStringLiteral("capsfilter caps=\"%1\" ! webrtcechoprobe name=%2 "
+                                        "! fakesink sync=false async=false "
+                                        "enable-last-sample=false")
+                             .arg(QLatin1String(kMixFormat), QLatin1String(kProbeName));
     GError *error = nullptr;
     GstElement *sink = gst_parse_bin_from_description(tail.toUtf8().constData(),
                                                       TRUE, &error);
@@ -201,8 +204,7 @@ bool EchoReference::attach(GstElement *receiveBin, GstElement *volume)
     GstElement *branch = gst_parse_bin_from_description(
         "appsrc name=src format=time is-live=true max-buffers=0 max-bytes=0 "
         "max-time=1000000000 leaky-type=downstream "
-        "! audioconvert ! audioresample "
-        "! audio/x-raw,format=S16LE,layout=interleaved,rate=48000,channels=2",
+        "! audioconvert ! audioresample ! capsfilter name=format",
         TRUE, &error);
     if (error || !branch) {
         g_clear_error(&error);
@@ -211,6 +213,12 @@ bool EchoReference::attach(GstElement *receiveBin, GstElement *volume)
         return false;
     }
     gst_object_ref_sink(branch);
+    if (GstElement *format = gst_bin_get_by_name(GST_BIN(branch), "format")) {
+        GstCaps *caps = gst_caps_from_string(kMixFormat);
+        g_object_set(format, "caps", caps, nullptr);
+        gst_caps_unref(caps);
+        gst_object_unref(format);
+    }
     GstElement *source = gst_bin_get_by_name(GST_BIN(branch), "src");
     GstPad *mixerPad = nullptr;
     bool linked = false;

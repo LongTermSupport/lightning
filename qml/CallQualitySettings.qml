@@ -160,7 +160,8 @@ ColumnLayout {
     Hint {
         text: qsTr("Removes your callers' voices from your microphone when "
                    + "you use speakers. Headphones do not need it. It needs "
-                   + "the WebRTC audio component. Both settings apply to "
+                   + "the WebRTC audio component and is new: with several people "
+                   + "in a call it may cancel only some of them. Both apply to "
                    + "your next call.")
     }
 }
