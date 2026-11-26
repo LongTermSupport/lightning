@@ -1778,7 +1778,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+610"/>
+        <location filename="../qml/AppTheme.qml" line="+623"/>
         <source>Storm</source>
         <translation>स्टॉर्म</translation>
     </message>
@@ -3777,8 +3777,8 @@ EXIF ओरिएंटेशन: %4</translation>
     </message>
     <message>
         <location line="+5"/>
-        <source>Removes your callers&apos; voices from your microphone when you use speakers. Headphones do not need it. It needs the WebRTC audio component and is new: with several people in a call it may cancel only some of them. Both apply to your next call.</source>
-        <translation>स्पीकर इस्तेमाल करने पर आपके माइक्रोफ़ोन से कॉल में शामिल लोगों की आवाज़ हटाता है। हेडफ़ोन में इसकी ज़रूरत नहीं होती। इसके लिए WebRTC ऑडियो घटक चाहिए और यह नया है: कॉल में कई लोग होने पर यह उनमें से कुछ को ही हटा सकता है। दोनों आपकी अगली कॉल पर लागू होते हैं।</translation>
+        <source>Removes your callers&apos; voices from your microphone when you use speakers. Headphones do not need it. It needs the WebRTC audio component. Both apply to your next call.</source>
+        <translation>स्पीकर इस्तेमाल करने पर आपके माइक्रोफ़ोन से कॉल में शामिल लोगों की आवाज़ हटाता है। हेडफ़ोन में इसकी ज़रूरत नहीं होती। इसके लिए WebRTC ऑडियो घटक चाहिए। दोनों आपकी अगली कॉल पर लागू होते हैं।</translation>
     </message>
 </context>
 <context>
@@ -21518,12 +21518,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>स्पेस का अवलोकन खोलें</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+26"/>
         <source>Collapse room list</source>
         <translation>रूम सूची समेटें</translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+78"/>
         <source>Search</source>
         <translation>खोजें</translation>
     </message>
@@ -29144,12 +29144,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="+8"/>
         <location line="+453"/>
-        <location line="+362"/>
+        <location line="+366"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>कॉल से कनेक्ट नहीं हो सका.</translation>
     </message>
     <message>
-        <location line="-813"/>
+        <location line="-817"/>
         <source>The calling service is having trouble.</source>
         <translation>कॉलिंग सेवा में दिक्कत आ रही है.</translation>
     </message>
@@ -29272,7 +29272,7 @@ Note: importing keys does not verify this session.</source>
         <translation>कॉलिंग अभी तैयार नहीं है.</translation>
     </message>
     <message>
-        <location line="+653"/>
+        <location line="+657"/>
         <source>You can share your screen once the call has reconnected.</source>
         <translation>कॉल के दोबारा कनेक्ट होने के बाद आप अपनी स्क्रीन साझा कर सकते हैं।</translation>
     </message>
@@ -29367,7 +29367,7 @@ Note: importing keys does not verify this session.</source>
         <translation>प्रतिभागी</translation>
     </message>
     <message>
-        <location line="-4620"/>
+        <location line="-4624"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>यह रूम एन्क्रिप्टेड है, और इस बिल्ड पर एन्क्रिप्टेड कॉल अभी तक उपलब्ध नहीं हैं।</translation>
     </message>
@@ -29377,7 +29377,7 @@ Note: importing keys does not verify this session.</source>
         <translation>कॉल में आपकी घोषणा नहीं की जा सकी.</translation>
     </message>
     <message>
-        <location line="+524"/>
+        <location line="+528"/>
         <source>The call ended because the connection was lost.</source>
         <translation>कनेक्शन टूट जाने के कारण कॉल समाप्त हो गई.</translation>
     </message>
@@ -29489,7 +29489,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ShortcutRegistry</name>
     <message>
-        <location filename="../src/app/ShortcutRegistry.cpp" line="+360"/>
+        <location filename="../src/app/ShortcutRegistry.cpp" line="+480"/>
         <source>Dialogs</source>
         <translation>संवाद</translation>
     </message>

@@ -1778,7 +1778,7 @@ Não toca nas suas chaves de encriptação, na sua sessão nem em qualquer mensa
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+610"/>
+        <location filename="../qml/AppTheme.qml" line="+623"/>
         <source>Storm</source>
         <translation>Storm</translation>
     </message>
@@ -3777,8 +3777,8 @@ Orientação EXIF: %4</translation>
     </message>
     <message>
         <location line="+5"/>
-        <source>Removes your callers&apos; voices from your microphone when you use speakers. Headphones do not need it. It needs the WebRTC audio component and is new: with several people in a call it may cancel only some of them. Both apply to your next call.</source>
-        <translation>Remove as vozes dos seus interlocutores do microfone quando usa altifalantes. Com auscultadores não é necessário. Requer o componente de áudio WebRTC e é novo: com várias pessoas numa chamada pode cancelar apenas algumas delas. Ambas se aplicam à sua próxima chamada.</translation>
+        <source>Removes your callers&apos; voices from your microphone when you use speakers. Headphones do not need it. It needs the WebRTC audio component. Both apply to your next call.</source>
+        <translation>Remove as vozes dos seus interlocutores do microfone quando usa altifalantes. Com auscultadores não é necessário. Requer o componente de áudio WebRTC. Ambas se aplicam à sua próxima chamada.</translation>
     </message>
 </context>
 <context>
@@ -21518,12 +21518,12 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <translation>Abrir a visão geral do espaço</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+26"/>
         <source>Collapse room list</source>
         <translation>Recolher a lista de salas</translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+78"/>
         <source>Search</source>
         <translation>Procurar</translation>
     </message>
@@ -29144,12 +29144,12 @@ Nota: importar chaves não verifica esta sessão.</translation>
     <message>
         <location line="+8"/>
         <location line="+453"/>
-        <location line="+362"/>
+        <location line="+366"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>Não foi possível conectar-se à chamada.</translation>
     </message>
     <message>
-        <location line="-813"/>
+        <location line="-817"/>
         <source>The calling service is having trouble.</source>
         <translation>O serviço de chamada está com problemas.</translation>
     </message>
@@ -29272,7 +29272,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>A chamada ainda não está pronta.</translation>
     </message>
     <message>
-        <location line="+653"/>
+        <location line="+657"/>
         <source>You can share your screen once the call has reconnected.</source>
         <translation>Pode partilhar o seu ecrã quando a chamada se voltar a ligar.</translation>
     </message>
@@ -29367,7 +29367,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Participante</translation>
     </message>
     <message>
-        <location line="-4620"/>
+        <location line="-4624"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>Esta sala está criptografada e as chamadas criptografadas ainda não estão disponíveis nesta versão.</translation>
     </message>
@@ -29377,7 +29377,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
         <translation>Não foi possível anunciar você na chamada.</translation>
     </message>
     <message>
-        <location line="+524"/>
+        <location line="+528"/>
         <source>The call ended because the connection was lost.</source>
         <translation>A chamada foi encerrada porque a conexão foi perdida.</translation>
     </message>
@@ -29489,7 +29489,7 @@ Nota: importar chaves não verifica esta sessão.</translation>
 <context>
     <name>ShortcutRegistry</name>
     <message>
-        <location filename="../src/app/ShortcutRegistry.cpp" line="+360"/>
+        <location filename="../src/app/ShortcutRegistry.cpp" line="+480"/>
         <source>Dialogs</source>
         <translation>Diálogos</translation>
     </message>

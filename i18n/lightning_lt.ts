@@ -1789,7 +1789,7 @@ Jūsų šifravimo raktai, prisijungimas ir serveryje esančios žinutės nebus p
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+610"/>
+        <location filename="../qml/AppTheme.qml" line="+623"/>
         <source>Storm</source>
         <translation>Audra</translation>
     </message>
@@ -3799,8 +3799,8 @@ EXIF orientacija: %4</translation>
     </message>
     <message>
         <location line="+5"/>
-        <source>Removes your callers&apos; voices from your microphone when you use speakers. Headphones do not need it. It needs the WebRTC audio component and is new: with several people in a call it may cancel only some of them. Both apply to your next call.</source>
-        <translation>Pašalina pašnekovų balsus iš mikrofono garso, kai naudojate garsiakalbius. Ausinėms jo nereikia. Jam reikalingas WebRTC garso komponentas, o pati funkcija nauja: kai skambutyje daug žmonių, ji gali užslopinti tik kai kuriuos. Abu nustatymai taikomi kitam skambučiui.</translation>
+        <source>Removes your callers&apos; voices from your microphone when you use speakers. Headphones do not need it. It needs the WebRTC audio component. Both apply to your next call.</source>
+        <translation>Pašalina pašnekovų balsus iš mikrofono garso, kai naudojate garsiakalbius. Ausinėms jo nereikia. Jam reikalingas WebRTC garso komponentas. Abu nustatymai taikomi kitam skambučiui.</translation>
     </message>
 </context>
 <context>
@@ -21617,7 +21617,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Atidaryti erdvės apžvalgą</translation>
     </message>
     <message>
-        <location line="+99"/>
+        <location line="+104"/>
         <source>Search</source>
         <translation>Ieškoti</translation>
     </message>
@@ -21721,12 +21721,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Mėgstamiausi</translation>
     </message>
     <message>
-        <location line="-403"/>
+        <location line="-411"/>
         <source>Collapse room list</source>
         <translation>Suskleisti kambarių sąrašą</translation>
     </message>
     <message>
-        <location line="+374"/>
+        <location line="+382"/>
         <source>Archived (%1)</source>
         <translation>Archyvuoti (%1)</translation>
     </message>
@@ -29272,12 +29272,12 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
     <message>
         <location line="+8"/>
         <location line="+453"/>
-        <location line="+362"/>
+        <location line="+366"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>Nepavyko prisijungti prie skambučio.</translation>
     </message>
     <message>
-        <location line="-813"/>
+        <location line="-817"/>
         <source>The calling service is having trouble.</source>
         <translation>Skambinimo tarnyba turi problemų.</translation>
     </message>
@@ -29400,7 +29400,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Skambinti dar neparengta.</translation>
     </message>
     <message>
-        <location line="+653"/>
+        <location line="+657"/>
         <source>You can share your screen once the call has reconnected.</source>
         <translation>Ekraną galėsite bendrinti, kai skambutis vėl prisijungs.</translation>
     </message>
@@ -29495,7 +29495,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Dalyvis</translation>
     </message>
     <message>
-        <location line="-4620"/>
+        <location line="-4624"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>Šis kambarys yra užšifruotas, o šifruoti skambučiai šioje versijoje dar nepasiekiami.</translation>
     </message>
@@ -29505,7 +29505,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Nepavyko jūsų paskelbti skambučio metu.</translation>
     </message>
     <message>
-        <location line="+524"/>
+        <location line="+528"/>
         <source>The call ended because the connection was lost.</source>
         <translation>Skambutis nutrūko, nes nutrūko ryšys.</translation>
     </message>
@@ -29617,7 +29617,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
 <context>
     <name>ShortcutRegistry</name>
     <message>
-        <location filename="../src/app/ShortcutRegistry.cpp" line="+360"/>
+        <location filename="../src/app/ShortcutRegistry.cpp" line="+480"/>
         <source>Dialogs</source>
         <translation>Dialogai</translation>
     </message>

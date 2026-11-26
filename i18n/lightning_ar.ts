@@ -1822,7 +1822,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+610"/>
+        <location filename="../qml/AppTheme.qml" line="+623"/>
         <source>Storm</source>
         <translation>Storm</translation>
     </message>
@@ -3865,8 +3865,8 @@ EXIF orientation: %4</source>
     </message>
     <message>
         <location line="+5"/>
-        <source>Removes your callers&apos; voices from your microphone when you use speakers. Headphones do not need it. It needs the WebRTC audio component and is new: with several people in a call it may cancel only some of them. Both apply to your next call.</source>
-        <translation>يزيل أصوات المتصلين من ميكروفونك عند استخدام مكبرات الصوت. لا تحتاج إليه عند استخدام سماعات الرأس. يتطلب مكوّن الصوت WebRTC وهو جديد: ففي مكالمة بين عدة أشخاص قد يلغي أصوات بعضهم فقط. يسري كلاهما على مكالمتك التالية.</translation>
+        <source>Removes your callers&apos; voices from your microphone when you use speakers. Headphones do not need it. It needs the WebRTC audio component. Both apply to your next call.</source>
+        <translation>يزيل أصوات المتصلين من ميكروفونك عند استخدام مكبرات الصوت. لا تحتاج إليه عند استخدام سماعات الرأس. يتطلب مكوّن الصوت WebRTC. يسري كلاهما على مكالمتك التالية.</translation>
     </message>
 </context>
 <context>
@@ -21914,12 +21914,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>فتح نظرة عامة على الفضاء</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+26"/>
         <source>Collapse room list</source>
         <translation>طي قائمة الغرف</translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+78"/>
         <source>Search</source>
         <translation>بحث</translation>
     </message>
@@ -29656,12 +29656,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="+8"/>
         <location line="+453"/>
-        <location line="+362"/>
+        <location line="+366"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>تعذر الاتصال بالمكالمة.</translation>
     </message>
     <message>
-        <location line="-813"/>
+        <location line="-817"/>
         <source>The calling service is having trouble.</source>
         <translation>تواجه خدمة الاتصال مشكلة.</translation>
     </message>
@@ -29784,7 +29784,7 @@ Note: importing keys does not verify this session.</source>
         <translation>المكالمة ليست جاهزة بعد.</translation>
     </message>
     <message>
-        <location line="+653"/>
+        <location line="+657"/>
         <source>You can share your screen once the call has reconnected.</source>
         <translation>يمكنك مشاركة شاشتك بعد أن تعيد المكالمة اتصالها.</translation>
     </message>
@@ -29879,7 +29879,7 @@ Note: importing keys does not verify this session.</source>
         <translation>مشارك</translation>
     </message>
     <message>
-        <location line="-4620"/>
+        <location line="-4624"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>هذه الغرفة مشفرة، والمكالمات المشفرة غير متاحة بعد في هذا الإصدار.</translation>
     </message>
@@ -29889,7 +29889,7 @@ Note: importing keys does not verify this session.</source>
         <translation>تعذر الإعلان عنك في المكالمة.</translation>
     </message>
     <message>
-        <location line="+524"/>
+        <location line="+528"/>
         <source>The call ended because the connection was lost.</source>
         <translation>انتهت المكالمة بسبب فقدان الاتصال.</translation>
     </message>
@@ -30001,7 +30001,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ShortcutRegistry</name>
     <message>
-        <location filename="../src/app/ShortcutRegistry.cpp" line="+360"/>
+        <location filename="../src/app/ShortcutRegistry.cpp" line="+480"/>
         <source>Dialogs</source>
         <translation>مربعات الحوار</translation>
     </message>

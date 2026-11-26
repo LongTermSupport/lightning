@@ -1767,7 +1767,7 @@ Tindakan ini tidak menyentuh kunci enkripsi, sesi masuk, atau pesan apa pun di s
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+610"/>
+        <location filename="../qml/AppTheme.qml" line="+623"/>
         <source>Storm</source>
         <translation>Storm</translation>
     </message>
@@ -3755,8 +3755,8 @@ Orientasi EXIF: %4</translation>
     </message>
     <message>
         <location line="+5"/>
-        <source>Removes your callers&apos; voices from your microphone when you use speakers. Headphones do not need it. It needs the WebRTC audio component and is new: with several people in a call it may cancel only some of them. Both apply to your next call.</source>
-        <translation>Menghapus suara lawan bicara Anda dari mikrofon saat Anda memakai speaker. Headphone tidak memerlukannya. Fitur ini memerlukan komponen audio WebRTC dan masih baru: dengan beberapa orang dalam panggilan, mungkin hanya membatalkan sebagian dari mereka. Keduanya berlaku untuk panggilan berikutnya.</translation>
+        <source>Removes your callers&apos; voices from your microphone when you use speakers. Headphones do not need it. It needs the WebRTC audio component. Both apply to your next call.</source>
+        <translation>Menghapus suara lawan bicara Anda dari mikrofon saat Anda memakai speaker. Headphone tidak memerlukannya. Fitur ini memerlukan komponen audio WebRTC. Keduanya berlaku untuk panggilan berikutnya.</translation>
     </message>
 </context>
 <context>
@@ -21419,12 +21419,12 @@ Tautan ini tetap ada di status ruang. Buka penerus dari pemberitahuan penggantia
         <translation>Buka ikhtisar Space</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+26"/>
         <source>Collapse room list</source>
         <translation>Ciutkan daftar ruangan</translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+78"/>
         <source>Search</source>
         <translation>Cari</translation>
     </message>
@@ -29016,12 +29016,12 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
     <message>
         <location line="+8"/>
         <location line="+453"/>
-        <location line="+362"/>
+        <location line="+366"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>Tidak dapat tersambung ke panggilan.</translation>
     </message>
     <message>
-        <location line="-813"/>
+        <location line="-817"/>
         <source>The calling service is having trouble.</source>
         <translation>Layanan panggilan mengalami masalah.</translation>
     </message>
@@ -29144,7 +29144,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Panggilan belum siap.</translation>
     </message>
     <message>
-        <location line="+653"/>
+        <location line="+657"/>
         <source>You can share your screen once the call has reconnected.</source>
         <translation>Anda dapat berbagi layar setelah panggilan tersambung kembali.</translation>
     </message>
@@ -29239,7 +29239,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Peserta</translation>
     </message>
     <message>
-        <location line="-4620"/>
+        <location line="-4624"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>Ruangan ini dienkripsi, dan panggilan terenkripsi belum tersedia di build ini.</translation>
     </message>
@@ -29249,7 +29249,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
         <translation>Tidak dapat mengumumkan Anda dalam panggilan.</translation>
     </message>
     <message>
-        <location line="+524"/>
+        <location line="+528"/>
         <source>The call ended because the connection was lost.</source>
         <translation>Panggilan berakhir karena koneksi terputus.</translation>
     </message>
@@ -29361,7 +29361,7 @@ Catatan: mengimpor kunci tidak memverifikasi sesi ini.</translation>
 <context>
     <name>ShortcutRegistry</name>
     <message>
-        <location filename="../src/app/ShortcutRegistry.cpp" line="+360"/>
+        <location filename="../src/app/ShortcutRegistry.cpp" line="+480"/>
         <source>Dialogs</source>
         <translation>Dialog</translation>
     </message>

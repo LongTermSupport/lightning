@@ -1776,7 +1776,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+610"/>
+        <location filename="../qml/AppTheme.qml" line="+623"/>
         <source>Storm</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3772,7 +3772,7 @@ EXIF orientation: %4</source>
     </message>
     <message>
         <location line="+5"/>
-        <source>Removes your callers&apos; voices from your microphone when you use speakers. Headphones do not need it. It needs the WebRTC audio component and is new: with several people in a call it may cancel only some of them. Both apply to your next call.</source>
+        <source>Removes your callers&apos; voices from your microphone when you use speakers. Headphones do not need it. It needs the WebRTC audio component. Both apply to your next call.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -21482,7 +21482,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location line="+765"/>
+        <location line="+770"/>
         <source>%n room(s) updated</source>
         <translation>
             <numerusform>%n room updated</numerusform>
@@ -21490,7 +21490,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         </translation>
     </message>
     <message>
-        <location line="-770"/>
+        <location line="-775"/>
         <source>Home</source>
         <translation type="unfinished"></translation>
     </message>
@@ -21510,12 +21510,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+26"/>
         <source>Collapse room list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+78"/>
         <source>Search</source>
         <translation type="unfinished"></translation>
     </message>
@@ -29119,12 +29119,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="+8"/>
         <location line="+453"/>
-        <location line="+362"/>
+        <location line="+366"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-813"/>
+        <location line="-817"/>
         <source>The calling service is having trouble.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -29247,7 +29247,7 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+653"/>
+        <location line="+657"/>
         <source>You can share your screen once the call has reconnected.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -29342,7 +29342,7 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4620"/>
+        <location line="-4624"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -29352,7 +29352,7 @@ Note: importing keys does not verify this session.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+524"/>
+        <location line="+528"/>
         <source>The call ended because the connection was lost.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -29464,7 +29464,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ShortcutRegistry</name>
     <message>
-        <location filename="../src/app/ShortcutRegistry.cpp" line="+360"/>
+        <location filename="../src/app/ShortcutRegistry.cpp" line="+480"/>
         <source>Dialogs</source>
         <translation type="unfinished"></translation>
     </message>

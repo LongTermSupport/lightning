@@ -1767,7 +1767,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+610"/>
+        <location filename="../qml/AppTheme.qml" line="+623"/>
         <source>Storm</source>
         <translation>风暴</translation>
     </message>
@@ -3755,8 +3755,8 @@ EXIF 方向：%4</translation>
     </message>
     <message>
         <location line="+5"/>
-        <source>Removes your callers&apos; voices from your microphone when you use speakers. Headphones do not need it. It needs the WebRTC audio component and is new: with several people in a call it may cancel only some of them. Both apply to your next call.</source>
-        <translation>使用扬声器时，从你的麦克风中去除其他通话者的声音。使用耳机时不需要此项。它需要 WebRTC 音频组件，且为新功能：在多人通话中，它可能只能消除部分人的声音。两项设置均将应用于你的下一次通话。</translation>
+        <source>Removes your callers&apos; voices from your microphone when you use speakers. Headphones do not need it. It needs the WebRTC audio component. Both apply to your next call.</source>
+        <translation>使用扬声器时，从你的麦克风中去除其他通话者的声音。使用耳机时不需要此项。它需要 WebRTC 音频组件。两项设置均将应用于你的下一次通话。</translation>
     </message>
 </context>
 <context>
@@ -21419,12 +21419,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>打开空间概览</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+26"/>
         <source>Collapse room list</source>
         <translation>收起房间列表</translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+78"/>
         <source>Search</source>
         <translation>搜索</translation>
     </message>
@@ -29016,12 +29016,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="+8"/>
         <location line="+453"/>
-        <location line="+362"/>
+        <location line="+366"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>无法接通通话。</translation>
     </message>
     <message>
-        <location line="-813"/>
+        <location line="-817"/>
         <source>The calling service is having trouble.</source>
         <translation>呼叫服务出现问题。</translation>
     </message>
@@ -29144,7 +29144,7 @@ Note: importing keys does not verify this session.</source>
         <translation>呼叫尚未准备好。</translation>
     </message>
     <message>
-        <location line="+653"/>
+        <location line="+657"/>
         <source>You can share your screen once the call has reconnected.</source>
         <translation>通话重新连接后，你即可共享屏幕。</translation>
     </message>
@@ -29239,7 +29239,7 @@ Note: importing keys does not verify this session.</source>
         <translation>参与者</translation>
     </message>
     <message>
-        <location line="-4620"/>
+        <location line="-4624"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>该房间已加密，并且在此版本中尚不支持加密呼叫。</translation>
     </message>
@@ -29249,7 +29249,7 @@ Note: importing keys does not verify this session.</source>
         <translation>无法在通话中通知您。</translation>
     </message>
     <message>
-        <location line="+524"/>
+        <location line="+528"/>
         <source>The call ended because the connection was lost.</source>
         <translation>由于连接丢失，通话结束。</translation>
     </message>
@@ -29361,7 +29361,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ShortcutRegistry</name>
     <message>
-        <location filename="../src/app/ShortcutRegistry.cpp" line="+360"/>
+        <location filename="../src/app/ShortcutRegistry.cpp" line="+480"/>
         <source>Dialogs</source>
         <translation>对话框</translation>
     </message>
