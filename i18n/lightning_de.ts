@@ -13858,52 +13858,52 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+19"/>
-        <location line="+578"/>
+        <location line="+580"/>
         <source>Sticker</source>
         <translation>Sticker</translation>
     </message>
     <message>
-        <location line="-577"/>
+        <location line="-579"/>
         <location line="+57"/>
-        <location line="+517"/>
-        <location line="+4369"/>
+        <location line="+519"/>
+        <location line="+4385"/>
         <location line="+1066"/>
         <location line="+93"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location line="-6100"/>
+        <location line="-6118"/>
         <source>Voice message</source>
         <translation>Sprachnachricht</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+572"/>
+        <location line="+574"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
     <message>
-        <location line="-570"/>
-        <location line="+568"/>
-        <location line="+3822"/>
+        <location line="-572"/>
+        <location line="+570"/>
+        <location line="+3838"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5313"/>
+        <location line="-5331"/>
         <location line="+53"/>
-        <location line="+514"/>
-        <location line="+4371"/>
+        <location line="+516"/>
+        <location line="+4387"/>
         <source>Image</source>
         <translation>Bild</translation>
     </message>
     <message>
-        <location line="-4937"/>
-        <location line="+570"/>
-        <location line="+4472"/>
+        <location line="-4955"/>
+        <location line="+572"/>
+        <location line="+4488"/>
         <location line="+1270"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -13911,7 +13911,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Datei</translation>
     </message>
     <message>
-        <location line="-6342"/>
+        <location line="-6360"/>
         <source>Attachment</source>
         <translation>Anhang</translation>
     </message>
@@ -13921,7 +13921,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Link</translation>
     </message>
     <message numerus="yes">
-        <location line="+500"/>
+        <location line="+502"/>
         <source>%n image(s)</source>
         <translation>
             <numerusform>%n Bild</numerusform>
@@ -14017,12 +14017,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="+91"/>
         <location line="+949"/>
-        <location line="+1152"/>
+        <location line="+1168"/>
         <source>Reply</source>
         <translation>Antworten</translation>
     </message>
     <message>
-        <location line="-2088"/>
+        <location line="-2104"/>
         <source>Original message removed</source>
         <translation>Ursprüngliche Nachricht entfernt</translation>
     </message>
@@ -14147,13 +14147,13 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2455"/>
+        <location line="+2471"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>Wiederholen</translation>
     </message>
     <message>
-        <location line="-3471"/>
+        <location line="-3487"/>
         <location line="+1231"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
@@ -14165,18 +14165,18 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+190"/>
-        <location line="+1509"/>
+        <location line="+1525"/>
         <source>Hide image</source>
         <translation>Bild ausblenden</translation>
     </message>
     <message>
-        <location line="-1509"/>
-        <location line="+1509"/>
+        <location line="-1525"/>
+        <location line="+1525"/>
         <source>Hidden image limit reached</source>
         <translation>Limit für ausgeblendete Bilder erreicht</translation>
     </message>
     <message>
-        <location line="-1505"/>
+        <location line="-1521"/>
         <source>Hide</source>
         <translation>Ausblenden</translation>
     </message>
@@ -14198,23 +14198,23 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="+25"/>
         <location line="+4"/>
-        <location line="+1140"/>
+        <location line="+1156"/>
         <source>Reply in thread</source>
         <translation>Im Thread antworten</translation>
     </message>
     <message>
-        <location line="-1123"/>
+        <location line="-1139"/>
         <source>Edit message</source>
         <translation>Nachricht bearbeiten</translation>
     </message>
     <message>
         <location line="+4"/>
-        <location line="+1139"/>
+        <location line="+1155"/>
         <source>Edit</source>
         <translation>Bearbeiten</translation>
     </message>
     <message>
-        <location line="-1118"/>
+        <location line="-1134"/>
         <source>More message actions</source>
         <translation>Weitere Nachrichtenaktionen</translation>
     </message>
@@ -14285,7 +14285,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Nachricht · %1 · %2</translation>
     </message>
     <message>
-        <location line="+157"/>
+        <location line="+136"/>
+        <source>Copy selection</source>
+        <translation>Auswahl kopieren</translation>
+    </message>
+    <message>
+        <location line="+37"/>
         <source>Open in room</source>
         <translation>Im Raum öffnen</translation>
     </message>
@@ -14536,13 +14541,13 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Noch keine Position empfangen.</translation>
     </message>
     <message>
-        <location line="-3257"/>
-        <location line="+810"/>
+        <location line="-3273"/>
+        <location line="+826"/>
         <source>Delete</source>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-2749"/>
+        <location line="-2765"/>
         <source>Open this thread</source>
         <translation>Diesen Thread öffnen</translation>
     </message>
@@ -14580,7 +14585,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Entfernen</translation>
     </message>
     <message>
-        <location line="+859"/>
+        <location line="+875"/>
         <source>Message details</source>
         <translation>Nachrichtendetails</translation>
     </message>
