@@ -5421,10 +5421,9 @@ Rectangle {
                 anchors.topMargin: AppTheme.spacingM
                 readonly property bool atStart:
                     !!app.pagination && app.pagination.reachedStart
-                anchors.right: atStart ? parent.right : undefined
-                anchors.rightMargin: AppTheme.spacingM
-                anchors.horizontalCenter: atStart ? undefined
-                                                  : parent.horizontalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.horizontalCenterOffset: atStart
+                    ? (parent.width - width) / 2 - AppTheme.spacingM : 0
                 visible: app.currentRoomId !== "" && app.timeline
                          && (timeline.firstUnreadLoaded
                              ? !timeline.firstUnreadOnScreen
@@ -5504,10 +5503,9 @@ Rectangle {
                 anchors.topMargin: AppTheme.spacingM
                 readonly property bool atStart:
                     !!app.pagination && app.pagination.reachedStart
-                anchors.right: atStart ? parent.right : undefined
-                anchors.rightMargin: AppTheme.spacingM
-                anchors.horizontalCenter: atStart ? undefined
-                                                  : parent.horizontalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.horizontalCenterOffset: atStart
+                    ? (parent.width - width) / 2 - AppTheme.spacingM : 0
                 visible: root.firstUnreadNoteShown
                 z: 20
                 implicitHeight: 30
