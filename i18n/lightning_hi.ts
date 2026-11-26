@@ -31163,7 +31163,7 @@ Current joined members: %5
         <translation>डेवलपर उपकरण</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+44"/>
         <source>Users</source>
         <translation>उपयोगकर्ता</translation>
     </message>
@@ -31173,8 +31173,8 @@ Current joined members: %5
         <translation>प्रत्येक सदस्य जिस स्तर से प्रारंभ करता है। इसे बढ़ाने से अंतरिक्ष में हर किसी को उस स्तर पर सब कुछ मिलता है।</translation>
     </message>
     <message>
-        <location line="-33"/>
-        <location line="+36"/>
+        <location line="-34"/>
+        <location line="+37"/>
         <source>Default power</source>
         <translation>डिफ़ॉल्ट शक्ति</translation>
     </message>
@@ -31195,32 +31195,33 @@ Current joined members: %5
     </message>
     <message>
         <location line="-38"/>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>Moderation</source>
-        <translation>संयम</translation>
+        <extracomment>room moderation</extracomment>
+        <translation>मॉडरेशन</translation>
     </message>
     <message>
-        <location line="-40"/>
-        <location line="+43"/>
+        <location line="-41"/>
+        <location line="+44"/>
         <location line="+1050"/>
         <source>Invite</source>
         <translation>आमंत्रित करें</translation>
     </message>
     <message>
-        <location line="-1092"/>
-        <location line="+43"/>
+        <location line="-1093"/>
+        <location line="+44"/>
         <source>Kick</source>
         <translation>लात</translation>
     </message>
     <message>
-        <location line="-42"/>
-        <location line="+43"/>
+        <location line="-43"/>
+        <location line="+44"/>
         <source>Ban</source>
         <translation>प्रतिबंधित करें</translation>
     </message>
     <message>
-        <location line="-42"/>
-        <location line="+43"/>
+        <location line="-43"/>
+        <location line="+44"/>
         <source>Remove messages</source>
         <translation>संदेश हटाएँ</translation>
     </message>
@@ -31247,14 +31248,14 @@ Current joined members: %5
         <translation>स्पेस का विषय</translation>
     </message>
     <message>
-        <location line="-412"/>
-        <location line="+48"/>
+        <location line="-413"/>
+        <location line="+49"/>
         <source>Settings</source>
         <translation>सेटिंग्स</translation>
     </message>
     <message>
-        <location line="-47"/>
-        <location line="+48"/>
+        <location line="-48"/>
+        <location line="+49"/>
         <source>Set &quot;Edit power levels&quot; above your own level and you can never lower it again.</source>
         <translation>&quot;शक्ति स्तर संपादित करें&quot; को अपने स्तर से ऊपर सेट करें और आप इसे फिर कभी कम नहीं कर सकते।</translation>
     </message>
@@ -31264,14 +31265,14 @@ Current joined members: %5
         <translation>स्थान पहुंच बदलें</translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+51"/>
+        <location line="-50"/>
+        <location line="+52"/>
         <source>Publish address</source>
         <translation>पता प्रकाशित करें</translation>
     </message>
     <message>
-        <location line="-50"/>
-        <location line="+52"/>
+        <location line="-51"/>
+        <location line="+53"/>
         <source>Edit power levels</source>
         <translation>शक्ति स्तर संपादित करें</translation>
     </message>
@@ -31281,8 +31282,8 @@ Current joined members: %5
         <translation>स्थान अपग्रेड करें</translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+50"/>
+        <location line="-50"/>
+        <location line="+51"/>
         <source>Other settings</source>
         <translation>अन्य सेटिंग्स</translation>
     </message>
@@ -31317,7 +31318,7 @@ Current joined members: %5
         <translation>तस्वीरें (*.png *.jpg *.jpeg *.gif *.webp *.bmp *.svg)</translation>
     </message>
     <message>
-        <location line="-422"/>
+        <location line="-424"/>
         <source>Default order saved. Your personal room order still takes precedence.</source>
         <translation>डिफ़ॉल्ट क्रम सहेजा गया। आपका निजी रूम क्रम फिर भी प्राथमिक रहता है।</translation>
     </message>
@@ -31347,7 +31348,7 @@ Current joined members: %5
         <translation>सभी को सूचित करें (@room)</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Room profile</source>
         <translation>रूम प्रोफ़ाइल</translation>
     </message>
@@ -31387,7 +31388,7 @@ Current joined members: %5
         <translation>रूम अपग्रेड करें</translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+77"/>
         <source>Room</source>
         <translation>रूम</translation>
     </message>

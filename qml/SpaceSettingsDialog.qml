@@ -169,6 +169,7 @@ AppDialog {
               { key: "events_default", label: qsTr("Send messages") },
               { key: "notifications.room", label: qsTr("Notify everyone (@room)") }
           ] },
+        //: room moderation
         { title: qsTr("Moderation"), note: "",
           rows: [
               { key: "invite", label: qsTr("Invite") },
@@ -211,6 +212,7 @@ AppDialog {
             ]
         },
         {
+            //: room moderation
             title: qsTr("Moderation"),
             note: "",
             rows: [

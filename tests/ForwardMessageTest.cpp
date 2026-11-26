@@ -280,6 +280,40 @@ class ForwardMessageTest : public QObject
 
 private Q_SLOTS:
 
+    void aBridgedMessageKeepsItsLinksWhenForwarded()
+    {
+        FakeClient client;
+        ForwardController fwd;
+        fwd.setClient(&client);
+        QVariantMap bridged = selectedText(
+            QStringLiteral("$a"), QStringLiteral("Check this repo and https://example.org/docs"));
+        bridged.insert(QStringLiteral("formattedBody"), QStringLiteral(
+            "Check <a href=\"https://github.com/x/y?a=1&amp;b=2\" style=\"color:#123456\">this repo</a>"
+            " and <a href=\"https://example.org/docs\">https://example.org/docs</a>"
+            " <a href=\"mention:@bob:example.org\">@bob</a>"));
+        fwd.beginSelection(QStringLiteral("!src:example.org"), { bridged });
+        fwd.sendSelection({ QVariantMap{
+            { QStringLiteral("roomId"), QStringLiteral("!x:e.org") } } });
+        QCOMPARE(client.roomSends.size(), 1);
+        QCOMPARE(client.roomSends.at(0).body, QStringLiteral(
+            "Check [this repo](https://github.com/x/y?a=1&b=2) and https://example.org/docs"));
+    }
+
+    void aSingleBridgedForwardKeepsItsLinks()
+    {
+        FakeClient client;
+        ForwardController fwd;
+        fwd.setClient(&client);
+        QVariantMap bridged = textSnapshot(QStringLiteral("see the repo"));
+        bridged.insert(QStringLiteral("formattedBody"), QStringLiteral(
+            "see the <a href=\"https://github.com/x/y\">repo</a>"));
+        fwd.begin(QStringLiteral("!a:e.org"), QStringLiteral("$e"), bridged);
+        fwd.forwardTo(QStringLiteral("!b:e.org"));
+        QCOMPARE(client.roomSends.size(), 1);
+        QCOMPARE(client.roomSends.at(0).body,
+                 QStringLiteral("see the [repo](https://github.com/x/y)"));
+    }
+
     void everyMessageReachesEveryDestination()
     {
         FakeClient client;

@@ -31163,7 +31163,7 @@ Aktuell beigetretene Mitglieder: %5
         <translation>Entwicklerwerkzeuge</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+44"/>
         <source>Users</source>
         <translation>Benutzer</translation>
     </message>
@@ -31173,8 +31173,8 @@ Aktuell beigetretene Mitglieder: %5
         <translation>Die Stufe, auf der jedes Mitglied beginnt. Wenn du sie erhöhst, erhält JEDER im Space alles, was auf dieser Stufe möglich ist.</translation>
     </message>
     <message>
-        <location line="-33"/>
-        <location line="+36"/>
+        <location line="-34"/>
+        <location line="+37"/>
         <source>Default power</source>
         <translation>Standardberechtigung</translation>
     </message>
@@ -31195,32 +31195,33 @@ Aktuell beigetretene Mitglieder: %5
     </message>
     <message>
         <location line="-38"/>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>Moderation</source>
+        <extracomment>room moderation</extracomment>
         <translation>Moderation</translation>
     </message>
     <message>
-        <location line="-40"/>
-        <location line="+43"/>
+        <location line="-41"/>
+        <location line="+44"/>
         <location line="+1050"/>
         <source>Invite</source>
         <translation>Einladen</translation>
     </message>
     <message>
-        <location line="-1092"/>
-        <location line="+43"/>
+        <location line="-1093"/>
+        <location line="+44"/>
         <source>Kick</source>
         <translation>Rauswerfen</translation>
     </message>
     <message>
-        <location line="-42"/>
-        <location line="+43"/>
+        <location line="-43"/>
+        <location line="+44"/>
         <source>Ban</source>
         <translation>Bannen</translation>
     </message>
     <message>
-        <location line="-42"/>
-        <location line="+43"/>
+        <location line="-43"/>
+        <location line="+44"/>
         <source>Remove messages</source>
         <translation>Nachrichten entfernen</translation>
     </message>
@@ -31247,14 +31248,14 @@ Aktuell beigetretene Mitglieder: %5
         <translation>Space-Thema</translation>
     </message>
     <message>
-        <location line="-412"/>
-        <location line="+48"/>
+        <location line="-413"/>
+        <location line="+49"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location line="-47"/>
-        <location line="+48"/>
+        <location line="-48"/>
+        <location line="+49"/>
         <source>Set &quot;Edit power levels&quot; above your own level and you can never lower it again.</source>
         <translation>Wenn du „Berechtigungsstufen bearbeiten“ über deine eigene Stufe setzt, kannst du sie nie wieder senken.</translation>
     </message>
@@ -31264,14 +31265,14 @@ Aktuell beigetretene Mitglieder: %5
         <translation>Space-Zugriff ändern</translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+51"/>
+        <location line="-50"/>
+        <location line="+52"/>
         <source>Publish address</source>
         <translation>Adresse veröffentlichen</translation>
     </message>
     <message>
-        <location line="-50"/>
-        <location line="+52"/>
+        <location line="-51"/>
+        <location line="+53"/>
         <source>Edit power levels</source>
         <translation>Berechtigungsstufen bearbeiten</translation>
     </message>
@@ -31281,13 +31282,13 @@ Aktuell beigetretene Mitglieder: %5
         <translation>Space aktualisieren</translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+50"/>
+        <location line="-50"/>
+        <location line="+51"/>
         <source>Other settings</source>
         <translation>Weitere Einstellungen</translation>
     </message>
     <message>
-        <location line="-200"/>
+        <location line="-202"/>
         <source>Default order saved. Your personal room order still takes precedence.</source>
         <translation>Standardreihenfolge gespeichert. Deine persönliche Raumreihenfolge hat weiterhin Vorrang.</translation>
     </message>
@@ -31317,7 +31318,7 @@ Aktuell beigetretene Mitglieder: %5
         <translation>Alle benachrichtigen (@room)</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Room profile</source>
         <translation>Raumprofil</translation>
     </message>
@@ -31357,7 +31358,7 @@ Aktuell beigetretene Mitglieder: %5
         <translation>Raum aktualisieren</translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+77"/>
         <source>Room</source>
         <translation>Raum</translation>
     </message>

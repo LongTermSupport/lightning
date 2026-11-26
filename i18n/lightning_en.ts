@@ -31113,7 +31113,7 @@ Current joined members: %5
 <context>
     <name>SpaceSettingsDialog</name>
     <message>
-        <location filename="../qml/SpaceSettingsDialog.qml" line="+1091"/>
+        <location filename="../qml/SpaceSettingsDialog.qml" line="+1093"/>
         <source>Leave Space</source>
         <translation>Leave Space</translation>
     </message>
@@ -31123,7 +31123,7 @@ Current joined members: %5
         <translation>Leaving does not remove the rooms inside it.</translation>
     </message>
     <message>
-        <location line="-954"/>
+        <location line="-956"/>
         <source>General</source>
         <translation type="unfinished"></translation>
     </message>
@@ -31144,7 +31144,7 @@ Current joined members: %5
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+44"/>
         <source>Users</source>
         <translation type="unfinished"></translation>
     </message>
@@ -31154,8 +31154,8 @@ Current joined members: %5
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-33"/>
-        <location line="+36"/>
+        <location line="-34"/>
+        <location line="+37"/>
         <source>Default power</source>
         <translation type="unfinished"></translation>
     </message>
@@ -31176,32 +31176,33 @@ Current joined members: %5
     </message>
     <message>
         <location line="-38"/>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>Moderation</source>
+        <extracomment>room moderation</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-40"/>
-        <location line="+43"/>
+        <location line="-41"/>
+        <location line="+44"/>
         <location line="+1050"/>
         <source>Invite</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1092"/>
-        <location line="+43"/>
+        <location line="-1093"/>
+        <location line="+44"/>
         <source>Kick</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-42"/>
-        <location line="+43"/>
+        <location line="-43"/>
+        <location line="+44"/>
         <source>Ban</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-42"/>
-        <location line="+43"/>
+        <location line="-43"/>
+        <location line="+44"/>
         <source>Remove messages</source>
         <translation type="unfinished"></translation>
     </message>
@@ -31228,14 +31229,14 @@ Current joined members: %5
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-412"/>
-        <location line="+48"/>
+        <location line="-413"/>
+        <location line="+49"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-47"/>
-        <location line="+48"/>
+        <location line="-48"/>
+        <location line="+49"/>
         <source>Set &quot;Edit power levels&quot; above your own level and you can never lower it again.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -31245,14 +31246,14 @@ Current joined members: %5
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+51"/>
+        <location line="-50"/>
+        <location line="+52"/>
         <source>Publish address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-50"/>
-        <location line="+52"/>
+        <location line="-51"/>
+        <location line="+53"/>
         <source>Edit power levels</source>
         <translation type="unfinished"></translation>
     </message>
@@ -31262,8 +31263,8 @@ Current joined members: %5
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+50"/>
+        <location line="-50"/>
+        <location line="+51"/>
         <source>Other settings</source>
         <translation type="unfinished"></translation>
     </message>
@@ -31298,7 +31299,7 @@ Current joined members: %5
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-422"/>
+        <location line="-424"/>
         <source>Default order saved. Your personal room order still takes precedence.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -31328,7 +31329,7 @@ Current joined members: %5
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Room profile</source>
         <translation type="unfinished"></translation>
     </message>
@@ -31368,7 +31369,7 @@ Current joined members: %5
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+77"/>
         <source>Room</source>
         <translation type="unfinished"></translation>
     </message>
