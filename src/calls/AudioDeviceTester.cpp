@@ -412,6 +412,11 @@ void AudioDeviceTester::setSettings(SettingsManager *settings)
         disconnect(m_settings, nullptr, this, nullptr);
     m_settings = settings;
     if (m_settings) {
+        connect(m_settings, &SettingsManager::microphoneTestPlaybackChanged,
+                this, [this] {
+                    if (microphoneTestRunning())
+                        startMicrophoneTest(m_settings->microphoneTestPlayback());
+                });
         connect(m_settings, &SettingsManager::microphoneGainChanged, this,
                 &AudioDeviceTester::applyGain);
         connect(m_settings, &SettingsManager::noiseSuppressionModeChanged,

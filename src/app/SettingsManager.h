@@ -498,6 +498,8 @@ public:
                                                  bool encryptionKnown) const;
     bool callPictureInPicture() const;
     void setCallPictureInPicture(bool v);
+    bool microphoneTestPlayback() const;
+    void setMicrophoneTestPlayback(bool enabled);
     QString noiseSuppressionMode() const;
     void setNoiseSuppressionMode(const QString &mode);
     int callShareAudioMode() const;
@@ -859,6 +861,8 @@ public:
     Q_PROPERTY(bool callPictureInPicture READ callPictureInPicture
                    WRITE setCallPictureInPicture
                    NOTIFY callPictureInPictureChanged)
+    Q_PROPERTY(bool microphoneTestPlayback READ microphoneTestPlayback
+                   WRITE setMicrophoneTestPlayback NOTIFY microphoneTestPlaybackChanged)
     Q_PROPERTY(int microphoneGain READ microphoneGain WRITE setMicrophoneGain
                    NOTIFY microphoneGainChanged)
     Q_PROPERTY(QString noiseSuppressionMode READ noiseSuppressionMode
@@ -1084,6 +1088,7 @@ Q_SIGNALS:
     void notificationPreviewChanged();
     void notificationPreviewEncryptedChanged();
     void callPictureInPictureChanged();
+    void microphoneTestPlaybackChanged();
     void noiseSuppressionModeChanged();
     void strictDeviceTrustChanged();
     void activityReadHorizonDaysChanged();
