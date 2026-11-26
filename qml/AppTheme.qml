@@ -988,7 +988,9 @@ QtObject {
     readonly property color embedText:           _p.embedText !== undefined
                                                  ? _p.embedText : textPrimary
 
-    readonly property color reactionBackground:  surface
+    // Built-in themes draw a chip you have not reacted with on the plain surface.
+    readonly property color reactionBackground:  _p === _custom && customOverrides.reaction !== undefined
+                                                 ? _p.reaction : surface
     readonly property color reactionBorder:      _p.reactionBorder !== undefined
                                                  ? _p.reactionBorder
                                                  : (dark ? border : borderStrong)
