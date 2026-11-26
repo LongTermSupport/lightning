@@ -304,7 +304,7 @@ ColumnLayout {
         readonly property bool running: app.audioTester.microphoneTestRunning
         readonly property bool usable: app.audioTester.available
                                        && !app.audioTester.blockedByCall
-        property bool playBack: true
+        readonly property bool playBack: app.settings.microphoneTestPlayback
 
         readonly property string notice: {
             if (!app.audioTester.built)
@@ -385,8 +385,8 @@ ColumnLayout {
                 palette.windowText: AppTheme.stormText
                 text: qsTr("Hear yourself")
                 checked: micTest.playBack
-                enabled: micTest.usable && !micTest.running
-                onToggled: micTest.playBack = checked
+                enabled: app.audioTester.available
+                onToggled: app.settings.microphoneTestPlayback = checked
             }
             Item {
                 Layout.fillWidth: true
