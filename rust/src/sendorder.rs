@@ -365,7 +365,8 @@ mod sdk_tests {
 
     const OWN: &str = "@example:localhost";
 
-    fn message(id: &str, sender: &str, body: &str, ts: u64) -> serde_json::Value {
+    fn message(id: &str, sender: &str, body: &str) -> serde_json::Value {
+        let ts = matrix_sdk::ruma::MilliSecondsSinceUnixEpoch::now().get();
         json!({"type": "m.room.message", "event_id": id, "sender": sender,
             "origin_server_ts": ts, "content": {"msgtype": "m.text", "body": body}})
     }
@@ -447,7 +448,7 @@ mod sdk_tests {
         client.event_cache().subscribe().unwrap();
         let room = server.sync_joined_room(&client, room_id!("!order:localhost")).await;
         server.mock_room_state_encryption().plain().mount().await;
-        sync(&client, vec![message("$seed", "@alice:localhost", "seed", 1000)], "1").await;
+        sync(&client, vec![message("$seed", "@alice:localhost", "seed")], "1").await;
 
         let timeline = TimelineBuilder::new(&room)
             .event_filter(lightning_event_filter)
@@ -465,11 +466,11 @@ mod sdk_tests {
         timeline.send(RoomMessageEventContent::text_plain("two").into()).await.unwrap();
         until(&mut view, &mut stream, &["one", "two"]).await;
 
-        sync(&client, vec![message("$one", OWN, "one", 2000)], "2").await;
+        sync(&client, vec![message("$one", OWN, "one")], "2").await;
         until(&mut view, &mut stream, &["two", "one"]).await;
         assert_eq!(own_bodies(&view.shown), ["one", "two"], "display order after the first echo");
 
-        sync(&client, vec![message("$two", OWN, "two", 2001)], "3").await;
+        sync(&client, vec![message("$two", OWN, "two")], "3").await;
         until(&mut view, &mut stream, &["one", "two"]).await;
         assert_eq!(own_bodies(&view.shown), ["one", "two"], "display order after both echoes");
         assert_eq!(ids(&view.shown), ids(&view.sdk));
