@@ -4091,9 +4091,9 @@ Item {
                 sequence: moreMenu.menuKeys.copyText
                 enabled: moreMenu.opened
                 context: Qt.ApplicationShortcut
-                onActivated: moreMenu.runItem(copySelectionMenuItem.visible
-                                              ? copySelectionMenuItem
-                                              : copyTextMenuItem)
+                onActivated: copySelectionMenuItem.visible
+                             ? moreMenu.runItem(copySelectionMenuItem)
+                             : moreMenu.runItem(copyTextMenuItem)
             }
             Shortcut {
                 sequence: moreMenu.menuKeys.copyMessages

@@ -494,7 +494,7 @@ private Q_SLOTS:
         QVERIFY2(block.mid(item, 300).contains(
                      QStringLiteral("enabled: root.copyableText")),
                  "Copy text is not gated on root.copyableText");
-        QVERIFY2(block.contains(QStringLiteral(": copyTextMenuItem)"))
+        QVERIFY2(block.contains(QStringLiteral("runItem(copyTextMenuItem)"))
                      && block.contains(QStringLiteral("if (item.visible && item.enabled) {")),
                  "the Ctrl+C shortcut does not share Copy text's gate");
 
