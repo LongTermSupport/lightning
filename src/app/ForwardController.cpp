@@ -2,6 +2,7 @@
 
 #include <QDateTime>
 #include <QLocale>
+#include <QRegularExpression>
 
 #include <QBuffer>
 
@@ -86,6 +87,68 @@ QString ForwardController::mediaCaption(const QVariantMap &snapshot)
     if (body.isEmpty() || name.isEmpty()
         || body.compare(name, Qt::CaseInsensitive) == 0)
         return {};
+    return body;
+}
+
+// The plain body drops the address of a link whose text is not the address,
+// which is how bridges relay links; the shared send path renders Markdown.
+QString ForwardController::bodyWithLinks(const QVariantMap &snapshot)
+{
+    QString body = snapshot.value(QStringLiteral("body")).toString();
+    const QString html =
+        snapshot.value(QStringLiteral("formattedBody")).toString();
+    if (html.isEmpty())
+        return body;
+
+    static const QRegularExpression anchor(
+        QStringLiteral("<a\\s[^>]*?href=\"([^\"]*)\"[^>]*>(.*?)</a>"),
+        QRegularExpression::DotMatchesEverythingOption
+            | QRegularExpression::CaseInsensitiveOption);
+    static const QRegularExpression tag(QStringLiteral("<[^>]*>"));
+    const auto unescape = [](QString t) {
+        t.replace(QLatin1String("&lt;"), QLatin1String("<"));
+        t.replace(QLatin1String("&gt;"), QLatin1String(">"));
+        t.replace(QLatin1String("&quot;"), QLatin1String("\""));
+        t.replace(QLatin1String("&#39;"), QLatin1String("'"));
+        t.replace(QLatin1String("&amp;"), QLatin1String("&"));
+        return t;
+    };
+
+    qsizetype cursor = 0;
+    QStringList unplaced;
+    auto it = anchor.globalMatch(html);
+    while (it.hasNext()) {
+        const auto m = it.next();
+        const QString href = unescape(m.captured(1));
+        if (!href.startsWith(QLatin1String("https://"), Qt::CaseInsensitive)
+            && !href.startsWith(QLatin1String("http://"), Qt::CaseInsensitive))
+            continue;
+        if (body.contains(href))
+            continue;
+        QString text = unescape(QString(m.captured(2)).remove(tag)).trimmed();
+        QString target = href;
+        target.replace(QLatin1Char(' '), QLatin1String("%20"));
+        target.replace(QLatin1Char('('), QLatin1String("%28"));
+        target.replace(QLatin1Char(')'), QLatin1String("%29"));
+        if (text.isEmpty()) {
+            unplaced << target;
+            continue;
+        }
+        const qsizetype at = body.indexOf(text, cursor);
+        QString label = text;
+        label.replace(QLatin1Char('['), QLatin1String("\\["));
+        label.replace(QLatin1Char(']'), QLatin1String("\\]"));
+        const QString link =
+            QStringLiteral("[%1](%2)").arg(label, target);
+        if (at < 0) {
+            unplaced << link;
+            continue;
+        }
+        body.replace(at, text.size(), link);
+        cursor = at + link.size();
+    }
+    if (!unplaced.isEmpty())
+        body += QLatin1Char('\n') + unplaced.join(QLatin1Char('\n'));
     return body;
 }
 
@@ -412,7 +475,7 @@ void ForwardController::pumpQueue()
                               "time — use Forward on the message itself."));
             continue;
         }
-        QString body = pair.snapshot.value(QStringLiteral("body")).toString();
+        QString body = bodyWithLinks(pair.snapshot);
         if (body.isEmpty()) {
             notePairResult(pair, false, tr("Nothing to send."));
             continue;
@@ -454,11 +517,11 @@ void ForwardController::forwardTo(const QString &targetRoomId)
     Q_EMIT changed();
 
     if (!snapshotIsMedia(m_snapshot)) {
-        // formatted_body is never read: its pills point into the source
-        // room. The shared send path renders Markdown, so the copy is not
-        // byte-faithful; do not "fix" that by reusing formatted_body.
+        // formatted_body is not reused: its pills point into the source
+        // room. Only its http(s) link targets are folded into the Markdown
+        // body, so the copy is not byte-faithful.
         // Neither send path attaches a relation.
-        const QString body = m_snapshot.value(QStringLiteral("body")).toString();
+        const QString body = bodyWithLinks(m_snapshot);
         if (m_client->supportsAcknowledgedTextSend()) {
             const quint64 op = m_client->sendRoomTextAcked(targetRoomId, body);
             if (op == 0) {

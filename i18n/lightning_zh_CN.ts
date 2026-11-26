@@ -31035,7 +31035,7 @@ Current joined members: %5
         <translation>开发者工具</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+44"/>
         <source>Users</source>
         <translation>用户</translation>
     </message>
@@ -31045,8 +31045,8 @@ Current joined members: %5
         <translation>每个成员的起始级别。提升它可以为空间中的每个人提供该级别的一切。</translation>
     </message>
     <message>
-        <location line="-33"/>
-        <location line="+36"/>
+        <location line="-34"/>
+        <location line="+37"/>
         <source>Default power</source>
         <translation>默认功率</translation>
     </message>
@@ -31067,32 +31067,33 @@ Current joined members: %5
     </message>
     <message>
         <location line="-38"/>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>Moderation</source>
-        <translation>适度</translation>
+        <extracomment>room moderation</extracomment>
+        <translation>管理</translation>
     </message>
     <message>
-        <location line="-40"/>
-        <location line="+43"/>
+        <location line="-41"/>
+        <location line="+44"/>
         <location line="+1050"/>
         <source>Invite</source>
         <translation>邀请</translation>
     </message>
     <message>
-        <location line="-1092"/>
-        <location line="+43"/>
+        <location line="-1093"/>
+        <location line="+44"/>
         <source>Kick</source>
         <translation>踢</translation>
     </message>
     <message>
-        <location line="-42"/>
-        <location line="+43"/>
+        <location line="-43"/>
+        <location line="+44"/>
         <source>Ban</source>
         <translation>封禁</translation>
     </message>
     <message>
-        <location line="-42"/>
-        <location line="+43"/>
+        <location line="-43"/>
+        <location line="+44"/>
         <source>Remove messages</source>
         <translation>删除消息</translation>
     </message>
@@ -31119,14 +31120,14 @@ Current joined members: %5
         <translation>空间主题</translation>
     </message>
     <message>
-        <location line="-412"/>
-        <location line="+48"/>
+        <location line="-413"/>
+        <location line="+49"/>
         <source>Settings</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location line="-47"/>
-        <location line="+48"/>
+        <location line="-48"/>
+        <location line="+49"/>
         <source>Set &quot;Edit power levels&quot; above your own level and you can never lower it again.</source>
         <translation>将“编辑功率级别”设置为高于您自己的级别，您将永远无法再降低它。</translation>
     </message>
@@ -31136,14 +31137,14 @@ Current joined members: %5
         <translation>更改空间访问权限</translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+51"/>
+        <location line="-50"/>
+        <location line="+52"/>
         <source>Publish address</source>
         <translation>发布地址</translation>
     </message>
     <message>
-        <location line="-50"/>
-        <location line="+52"/>
+        <location line="-51"/>
+        <location line="+53"/>
         <source>Edit power levels</source>
         <translation>编辑功率级别</translation>
     </message>
@@ -31153,8 +31154,8 @@ Current joined members: %5
         <translation>升级空间</translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+50"/>
+        <location line="-50"/>
+        <location line="+51"/>
         <source>Other settings</source>
         <translation>其他设置</translation>
     </message>
@@ -31189,7 +31190,7 @@ Current joined members: %5
         <translation>图片 (*.png *.jpg *.jpeg *.gif *.webp *.bmp *.svg)</translation>
     </message>
     <message>
-        <location line="-422"/>
+        <location line="-424"/>
         <source>Default order saved. Your personal room order still takes precedence.</source>
         <translation>默认顺序已保存。你的个人房间顺序仍优先。</translation>
     </message>
@@ -31219,7 +31220,7 @@ Current joined members: %5
         <translation>通知所有人（@room）</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Room profile</source>
         <translation>房间资料</translation>
     </message>
@@ -31259,7 +31260,7 @@ Current joined members: %5
         <translation>升级房间</translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+77"/>
         <source>Room</source>
         <translation>房间</translation>
     </message>

@@ -31291,7 +31291,7 @@ Dabar prisijungusių narių: %5
         <translation>Kūrėjo įrankiai</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+44"/>
         <source>Users</source>
         <translation>Vartotojai</translation>
     </message>
@@ -31301,8 +31301,8 @@ Dabar prisijungusių narių: %5
         <translation>Lygis, nuo kurio prasideda kiekvienas narys. Jos pakėlimas suteikia VISIEMS erdvėje viską, kas yra tame lygyje.</translation>
     </message>
     <message>
-        <location line="-33"/>
-        <location line="+36"/>
+        <location line="-34"/>
+        <location line="+37"/>
         <source>Default power</source>
         <translation>Numatytoji galia</translation>
     </message>
@@ -31323,32 +31323,33 @@ Dabar prisijungusių narių: %5
     </message>
     <message>
         <location line="-38"/>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>Moderation</source>
+        <extracomment>room moderation</extracomment>
         <translation>Moderavimas</translation>
     </message>
     <message>
-        <location line="-40"/>
-        <location line="+43"/>
+        <location line="-41"/>
+        <location line="+44"/>
         <location line="+1050"/>
         <source>Invite</source>
         <translation>Pakviesti</translation>
     </message>
     <message>
-        <location line="-1092"/>
-        <location line="+43"/>
+        <location line="-1093"/>
+        <location line="+44"/>
         <source>Kick</source>
         <translation>Pašalinti</translation>
     </message>
     <message>
-        <location line="-42"/>
-        <location line="+43"/>
+        <location line="-43"/>
+        <location line="+44"/>
         <source>Ban</source>
         <translation>Uždrausti</translation>
     </message>
     <message>
-        <location line="-42"/>
-        <location line="+43"/>
+        <location line="-43"/>
+        <location line="+44"/>
         <source>Remove messages</source>
         <translation>Pašalinti žinutes</translation>
     </message>
@@ -31375,14 +31376,14 @@ Dabar prisijungusių narių: %5
         <translation>Erdvės tema</translation>
     </message>
     <message>
-        <location line="-412"/>
-        <location line="+48"/>
+        <location line="-413"/>
+        <location line="+49"/>
         <source>Settings</source>
         <translation>Nustatymai</translation>
     </message>
     <message>
-        <location line="-47"/>
-        <location line="+48"/>
+        <location line="-48"/>
+        <location line="+49"/>
         <source>Set &quot;Edit power levels&quot; above your own level and you can never lower it again.</source>
         <translation>Nustatykite „Redaguoti galios lygius“ aukščiau savo lygio ir daugiau niekada jo nebegalėsite sumažinti.</translation>
     </message>
@@ -31392,14 +31393,14 @@ Dabar prisijungusių narių: %5
         <translation>Pakeiskite prieigą prie erdvės</translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+51"/>
+        <location line="-50"/>
+        <location line="+52"/>
         <source>Publish address</source>
         <translation>Paskelbti adresą</translation>
     </message>
     <message>
-        <location line="-50"/>
-        <location line="+52"/>
+        <location line="-51"/>
+        <location line="+53"/>
         <source>Edit power levels</source>
         <translation>Redaguoti galios lygius</translation>
     </message>
@@ -31409,8 +31410,8 @@ Dabar prisijungusių narių: %5
         <translation>Atnaujinkite erdvę</translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+50"/>
+        <location line="-50"/>
+        <location line="+51"/>
         <source>Other settings</source>
         <translation>Kiti nustatymai</translation>
     </message>
@@ -31445,7 +31446,7 @@ Dabar prisijungusių narių: %5
         <translation>Paveikslėliai (*.png *.jpg *.jpeg *.gif *.webp *.bmp *.svg)</translation>
     </message>
     <message>
-        <location line="-422"/>
+        <location line="-424"/>
         <source>Default order saved. Your personal room order still takes precedence.</source>
         <translation>Numatytoji tvarka įrašyta. Jūsų asmeninė kambarių tvarka vis tiek turi pirmenybę.</translation>
     </message>
@@ -31475,7 +31476,7 @@ Dabar prisijungusių narių: %5
         <translation>Pranešti visiems (@room)</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Room profile</source>
         <translation>Kambario profilis</translation>
     </message>
@@ -31515,7 +31516,7 @@ Dabar prisijungusių narių: %5
         <translation>Atnaujinti kambarį</translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+77"/>
         <source>Room</source>
         <translation>Kambarys</translation>
     </message>

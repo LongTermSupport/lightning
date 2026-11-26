@@ -31035,7 +31035,7 @@ Anggota yang bergabung saat ini: %5
         <translation>Alat pengembang</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+44"/>
         <source>Users</source>
         <translation>Pengguna</translation>
     </message>
@@ -31045,8 +31045,8 @@ Anggota yang bergabung saat ini: %5
         <translation>Level dimana setiap anggota memulai. Menaikkannya akan memberi SEMUA ORANG di ruang itu segalanya pada level itu.</translation>
     </message>
     <message>
-        <location line="-33"/>
-        <location line="+36"/>
+        <location line="-34"/>
+        <location line="+37"/>
         <source>Default power</source>
         <translation>Kekuatan bawaan</translation>
     </message>
@@ -31067,32 +31067,33 @@ Anggota yang bergabung saat ini: %5
     </message>
     <message>
         <location line="-38"/>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>Moderation</source>
+        <extracomment>room moderation</extracomment>
         <translation>Moderasi</translation>
     </message>
     <message>
-        <location line="-40"/>
-        <location line="+43"/>
+        <location line="-41"/>
+        <location line="+44"/>
         <location line="+1050"/>
         <source>Invite</source>
         <translation>Undang</translation>
     </message>
     <message>
-        <location line="-1092"/>
-        <location line="+43"/>
+        <location line="-1093"/>
+        <location line="+44"/>
         <source>Kick</source>
         <translation>Tendangan</translation>
     </message>
     <message>
-        <location line="-42"/>
-        <location line="+43"/>
+        <location line="-43"/>
+        <location line="+44"/>
         <source>Ban</source>
         <translation>Blokir</translation>
     </message>
     <message>
-        <location line="-42"/>
-        <location line="+43"/>
+        <location line="-43"/>
+        <location line="+44"/>
         <source>Remove messages</source>
         <translation>Hapus pesan</translation>
     </message>
@@ -31119,14 +31120,14 @@ Anggota yang bergabung saat ini: %5
         <translation>Topik Space</translation>
     </message>
     <message>
-        <location line="-412"/>
-        <location line="+48"/>
+        <location line="-413"/>
+        <location line="+49"/>
         <source>Settings</source>
         <translation>Pengaturan</translation>
     </message>
     <message>
-        <location line="-47"/>
-        <location line="+48"/>
+        <location line="-48"/>
+        <location line="+49"/>
         <source>Set &quot;Edit power levels&quot; above your own level and you can never lower it again.</source>
         <translation>Tetapkan &quot;Edit level daya&quot; di atas level Anda sendiri dan Anda tidak akan pernah bisa menurunkannya lagi.</translation>
     </message>
@@ -31136,14 +31137,14 @@ Anggota yang bergabung saat ini: %5
         <translation>Ubah akses ruang</translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+51"/>
+        <location line="-50"/>
+        <location line="+52"/>
         <source>Publish address</source>
         <translation>Alamat publikasi</translation>
     </message>
     <message>
-        <location line="-50"/>
-        <location line="+52"/>
+        <location line="-51"/>
+        <location line="+53"/>
         <source>Edit power levels</source>
         <translation>Edit tingkat daya</translation>
     </message>
@@ -31153,8 +31154,8 @@ Anggota yang bergabung saat ini: %5
         <translation>Tingkatkan ruang</translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+50"/>
+        <location line="-50"/>
+        <location line="+51"/>
         <source>Other settings</source>
         <translation>Pengaturan lainnya</translation>
     </message>
@@ -31189,7 +31190,7 @@ Anggota yang bergabung saat ini: %5
         <translation>Gambar (*.png *.jpg *.jpeg *.gif *.webp *.bmp *.svg)</translation>
     </message>
     <message>
-        <location line="-422"/>
+        <location line="-424"/>
         <source>Default order saved. Your personal room order still takes precedence.</source>
         <translation>Urutan bawaan disimpan. Urutan ruang pribadi Anda tetap didahulukan.</translation>
     </message>
@@ -31219,7 +31220,7 @@ Anggota yang bergabung saat ini: %5
         <translation>Beri tahu semua orang (@room)</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Room profile</source>
         <translation>Profil ruang</translation>
     </message>
@@ -31259,7 +31260,7 @@ Anggota yang bergabung saat ini: %5
         <translation>Tingkatkan ruang</translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+77"/>
         <source>Room</source>
         <translation>Ruang</translation>
     </message>

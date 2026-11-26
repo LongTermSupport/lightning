@@ -31291,7 +31291,7 @@ Current joined members: %5
         <translation>Инструменты разработчика</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+44"/>
         <source>Users</source>
         <translation>Пользователи</translation>
     </message>
@@ -31301,8 +31301,8 @@ Current joined members: %5
         <translation>Уровень, с которого начинает каждый участник. Подняв его, КАЖДЫЙ в пространстве получает все на этом уровне.</translation>
     </message>
     <message>
-        <location line="-33"/>
-        <location line="+36"/>
+        <location line="-34"/>
+        <location line="+37"/>
         <source>Default power</source>
         <translation>Мощность по умолчанию</translation>
     </message>
@@ -31323,32 +31323,33 @@ Current joined members: %5
     </message>
     <message>
         <location line="-38"/>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>Moderation</source>
+        <extracomment>room moderation</extracomment>
         <translation>Модерация</translation>
     </message>
     <message>
-        <location line="-40"/>
-        <location line="+43"/>
+        <location line="-41"/>
+        <location line="+44"/>
         <location line="+1050"/>
         <source>Invite</source>
         <translation>Пригласить</translation>
     </message>
     <message>
-        <location line="-1092"/>
-        <location line="+43"/>
+        <location line="-1093"/>
+        <location line="+44"/>
         <source>Kick</source>
         <translation>Удар</translation>
     </message>
     <message>
-        <location line="-42"/>
-        <location line="+43"/>
+        <location line="-43"/>
+        <location line="+44"/>
         <source>Ban</source>
         <translation>Заблокировать</translation>
     </message>
     <message>
-        <location line="-42"/>
-        <location line="+43"/>
+        <location line="-43"/>
+        <location line="+44"/>
         <source>Remove messages</source>
         <translation>Удалить сообщения</translation>
     </message>
@@ -31375,14 +31376,14 @@ Current joined members: %5
         <translation>Тема пространства</translation>
     </message>
     <message>
-        <location line="-412"/>
-        <location line="+48"/>
+        <location line="-413"/>
+        <location line="+49"/>
         <source>Settings</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location line="-47"/>
-        <location line="+48"/>
+        <location line="-48"/>
+        <location line="+49"/>
         <source>Set &quot;Edit power levels&quot; above your own level and you can never lower it again.</source>
         <translation>Установите «Редактировать уровни мощности» выше вашего собственного уровня, и вы больше никогда не сможете его понизить.</translation>
     </message>
@@ -31392,14 +31393,14 @@ Current joined members: %5
         <translation>Изменить доступ к пространству</translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+51"/>
+        <location line="-50"/>
+        <location line="+52"/>
         <source>Publish address</source>
         <translation>Опубликовать адрес</translation>
     </message>
     <message>
-        <location line="-50"/>
-        <location line="+52"/>
+        <location line="-51"/>
+        <location line="+53"/>
         <source>Edit power levels</source>
         <translation>Редактировать уровни мощности</translation>
     </message>
@@ -31409,8 +31410,8 @@ Current joined members: %5
         <translation>Обновление пространства</translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+50"/>
+        <location line="-50"/>
+        <location line="+51"/>
         <source>Other settings</source>
         <translation>Другие настройки</translation>
     </message>
@@ -31445,7 +31446,7 @@ Current joined members: %5
         <translation>Изображения (*.png *.jpg *.jpeg *.gif *.webp *.bmp *.svg)</translation>
     </message>
     <message>
-        <location line="-422"/>
+        <location line="-424"/>
         <source>Default order saved. Your personal room order still takes precedence.</source>
         <translation>Порядок по умолчанию сохранён. Ваш личный порядок комнат по-прежнему имеет приоритет.</translation>
     </message>
@@ -31475,7 +31476,7 @@ Current joined members: %5
         <translation>Уведомлять всех (@room)</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Room profile</source>
         <translation>Профиль комнаты</translation>
     </message>
@@ -31515,7 +31516,7 @@ Current joined members: %5
         <translation>Обновить комнату</translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+77"/>
         <source>Room</source>
         <translation>Комната</translation>
     </message>

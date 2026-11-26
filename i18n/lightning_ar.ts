@@ -31675,7 +31675,7 @@ Current joined members: %5
         <translation>أدوات المطور</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+44"/>
         <source>Users</source>
         <translation>المستخدمين</translation>
     </message>
@@ -31685,8 +31685,8 @@ Current joined members: %5
         <translation>المستوى الذي يبدأ به كل عضو. رفعه يمنح كل شخص في الفضاء كل شيء على هذا المستوى.</translation>
     </message>
     <message>
-        <location line="-33"/>
-        <location line="+36"/>
+        <location line="-34"/>
+        <location line="+37"/>
         <source>Default power</source>
         <translation>القوة الافتراضية</translation>
     </message>
@@ -31707,32 +31707,33 @@ Current joined members: %5
     </message>
     <message>
         <location line="-38"/>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>Moderation</source>
-        <translation>الاعتدال</translation>
+        <extracomment>room moderation</extracomment>
+        <translation>الإشراف</translation>
     </message>
     <message>
-        <location line="-40"/>
-        <location line="+43"/>
+        <location line="-41"/>
+        <location line="+44"/>
         <location line="+1050"/>
         <source>Invite</source>
         <translation>دعوة</translation>
     </message>
     <message>
-        <location line="-1092"/>
-        <location line="+43"/>
+        <location line="-1093"/>
+        <location line="+44"/>
         <source>Kick</source>
         <translation>ركلة</translation>
     </message>
     <message>
-        <location line="-42"/>
-        <location line="+43"/>
+        <location line="-43"/>
+        <location line="+44"/>
         <source>Ban</source>
         <translation>حظر</translation>
     </message>
     <message>
-        <location line="-42"/>
-        <location line="+43"/>
+        <location line="-43"/>
+        <location line="+44"/>
         <source>Remove messages</source>
         <translation>إزالة الرسائل</translation>
     </message>
@@ -31759,14 +31760,14 @@ Current joined members: %5
         <translation>موضوع الفضاء</translation>
     </message>
     <message>
-        <location line="-412"/>
-        <location line="+48"/>
+        <location line="-413"/>
+        <location line="+49"/>
         <source>Settings</source>
         <translation>الإعدادات</translation>
     </message>
     <message>
-        <location line="-47"/>
-        <location line="+48"/>
+        <location line="-48"/>
+        <location line="+49"/>
         <source>Set &quot;Edit power levels&quot; above your own level and you can never lower it again.</source>
         <translation>قم بتعيين &quot;تحرير مستويات الطاقة&quot; أعلى من مستواك ولن تتمكن أبدًا من خفضه مرة أخرى.</translation>
     </message>
@@ -31776,14 +31777,14 @@ Current joined members: %5
         <translation>تغيير الوصول إلى الفضاء</translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+51"/>
+        <location line="-50"/>
+        <location line="+52"/>
         <source>Publish address</source>
         <translation>نشر العنوان</translation>
     </message>
     <message>
-        <location line="-50"/>
-        <location line="+52"/>
+        <location line="-51"/>
+        <location line="+53"/>
         <source>Edit power levels</source>
         <translation>تحرير مستويات الطاقة</translation>
     </message>
@@ -31793,8 +31794,8 @@ Current joined members: %5
         <translation>ترقية المساحة</translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+50"/>
+        <location line="-50"/>
+        <location line="+51"/>
         <source>Other settings</source>
         <translation>إعدادات أخرى</translation>
     </message>
@@ -31829,7 +31830,7 @@ Current joined members: %5
         <translation>الصور (*.png *.jpg *.jpeg *.gif *.webp *.bmp *.svg)</translation>
     </message>
     <message>
-        <location line="-422"/>
+        <location line="-424"/>
         <source>Default order saved. Your personal room order still takes precedence.</source>
         <translation>حُفظ الترتيب الافتراضي. لا يزال ترتيبك الشخصي للغرف هو المقدَّم.</translation>
     </message>
@@ -31859,7 +31860,7 @@ Current joined members: %5
         <translation>إشعار الجميع (@room)</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Room profile</source>
         <translation>ملف الغرفة</translation>
     </message>
@@ -31899,7 +31900,7 @@ Current joined members: %5
         <translation>ترقية الغرفة</translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+77"/>
         <source>Room</source>
         <translation>الغرفة</translation>
     </message>
