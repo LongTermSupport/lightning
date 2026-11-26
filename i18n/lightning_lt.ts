@@ -12402,7 +12402,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>MainScreen</name>
     <message>
-        <location filename="../qml/MainScreen.qml" line="+632"/>
+        <location filename="../qml/MainScreen.qml" line="+640"/>
         <source>Resize room list</source>
         <translation>Keisti kambarių sąrašo dydį</translation>
     </message>
@@ -18331,7 +18331,7 @@ Vienintelis sprendimas – atsijungti ir prisijungti iš naujo.</translation>
 <context>
     <name>RailHiddenActions</name>
     <message>
-        <location filename="../qml/RailHiddenActions.qml" line="+18"/>
+        <location filename="../qml/RailHiddenActions.qml" line="+21"/>
         <source>Settings — this session is not verified</source>
         <translation>Nustatymai – šis seansas nepatvirtintas</translation>
     </message>
@@ -21585,7 +21585,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
 <context>
     <name>RoomsPanel</name>
     <message>
-        <location filename="../qml/RoomsPanel.qml" line="+208"/>
+        <location filename="../qml/RoomsPanel.qml" line="+211"/>
         <location line="+3"/>
         <location line="+5"/>
         <source>Lightning</source>
@@ -21612,26 +21612,26 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Atidaryti erdvės apžvalgą</translation>
     </message>
     <message>
-        <location line="+86"/>
+        <location line="+99"/>
         <source>Search</source>
         <translation>Ieškoti</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+771"/>
+        <location line="+776"/>
         <location line="+1"/>
         <source>Search rooms</source>
         <translation>Ieškokite kambarių</translation>
     </message>
     <message>
-        <location line="-714"/>
+        <location line="-719"/>
         <location line="+1"/>
         <source>Room list options</source>
         <translation>Kambarių sąrašo parinktys</translation>
     </message>
     <message numerus="yes">
         <location line="+126"/>
-        <location line="+638"/>
+        <location line="+643"/>
         <source>Activity, %n unseen</source>
         <translation>
             <numerusform>Veikla, %n nematytas</numerusform>
@@ -21640,14 +21640,14 @@ These links remain in room state. Open the successor from the room&apos;s replac
         </translation>
     </message>
     <message>
-        <location line="-637"/>
+        <location line="-642"/>
         <location line="+1"/>
-        <location line="+637"/>
+        <location line="+642"/>
         <source>Activity</source>
         <translation>Veikla</translation>
     </message>
     <message>
-        <location line="-720"/>
+        <location line="-725"/>
         <source>Start or join a conversation</source>
         <translation>Pradėti pokalbį arba prisijungti prie jo</translation>
     </message>
@@ -21716,7 +21716,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Mėgstamiausi</translation>
     </message>
     <message>
-        <location line="-29"/>
+        <location line="-403"/>
+        <source>Collapse room list</source>
+        <translation>Suskleisti kambarių sąrašą</translation>
+    </message>
+    <message>
+        <location line="+374"/>
         <source>Archived (%1)</source>
         <translation>Archyvuoti (%1)</translation>
     </message>
@@ -21893,7 +21898,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Išskleisti %1 kambarių sąrašą</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+1"/>
+        <source>Expand room list</source>
+        <translation>Išskleisti kambarių sąrašą</translation>
+    </message>
+    <message>
+        <location line="+27"/>
         <location line="+12"/>
         <source>Show all rooms</source>
         <translation>Rodyti visus kambarius</translation>
@@ -29622,7 +29632,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Užverti veiklos langą, spartųjį perjungiklį arba nustatymus</translation>
     </message>
     <message>
-        <location line="+518"/>
+        <location line="+521"/>
         <source>Use a single key combination for dialog navigation.</source>
         <translation>Naršymui dialoguose naudokite vieną klavišų derinį.</translation>
     </message>
@@ -29702,7 +29712,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Kol fokusas yra laiko juostoje, vietoj to vykdoma „%1“.</translation>
     </message>
     <message>
-        <location line="-804"/>
+        <location line="-807"/>
         <source>Application</source>
         <translation>Taikymas</translation>
     </message>
@@ -29860,6 +29870,11 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <location line="+27"/>
         <source>Show or hide the conversation list</source>
         <translation>Rodyti arba slėpti pokalbių sąrašą</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Collapse or expand the conversation list</source>
+        <translation>Suskleisti arba išskleisti pokalbių sąrašą</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -30318,7 +30333,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Kai %1, %2 naudojamas veiksmui „%3“.</translation>
     </message>
     <message>
-        <location line="-836"/>
+        <location line="-839"/>
         <source>Settings navigation</source>
         <translation>Naršymas nustatymuose</translation>
     </message>
@@ -30343,7 +30358,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Pereiti į kitą nustatymų poskyrį</translation>
     </message>
     <message>
-        <location line="+506"/>
+        <location line="+509"/>
         <source>Use a single key combination for Settings navigation.</source>
         <translation>Naršymui nustatymuose naudokite vieną klavišų derinį.</translation>
     </message>
@@ -30363,7 +30378,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Nustatymuose vietoj to vykdoma „%1“.</translation>
     </message>
     <message>
-        <location line="-682"/>
+        <location line="-685"/>
         <source>Scroll Settings up half a page</source>
         <translation>Slinkti nustatymus puse puslapio aukštyn</translation>
     </message>
@@ -30373,7 +30388,7 @@ Pastaba: importavus raktus šis seansas nepatvirtinamas.</translation>
         <translation>Slinkti nustatymus puse puslapio žemyn</translation>
     </message>
     <message>
-        <location line="+511"/>
+        <location line="+514"/>
         <source>%1 moves focus, navigates or edits text, so it cannot be a shortcut on its own.</source>
         <translation>%1 perkelia židinį, naršo arba redaguoja tekstą, todėl vienas negali būti spartusis klavišas.</translation>
     </message>

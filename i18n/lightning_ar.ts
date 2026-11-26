@@ -12558,7 +12558,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MainScreen</name>
     <message>
-        <location filename="../qml/MainScreen.qml" line="+632"/>
+        <location filename="../qml/MainScreen.qml" line="+640"/>
         <source>Resize room list</source>
         <translation>تغيير حجم قائمة الغرف</translation>
     </message>
@@ -18559,7 +18559,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RailHiddenActions</name>
     <message>
-        <location filename="../qml/RailHiddenActions.qml" line="+18"/>
+        <location filename="../qml/RailHiddenActions.qml" line="+21"/>
         <source>Settings — this session is not verified</source>
         <translation>الإعدادات — هذه الجلسة غير موثّقة</translation>
     </message>
@@ -21882,7 +21882,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
 <context>
     <name>RoomsPanel</name>
     <message>
-        <location filename="../qml/RoomsPanel.qml" line="+208"/>
+        <location filename="../qml/RoomsPanel.qml" line="+211"/>
         <location line="+3"/>
         <location line="+5"/>
         <source>Lightning</source>
@@ -21909,26 +21909,31 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>فتح نظرة عامة على الفضاء</translation>
     </message>
     <message>
-        <location line="+86"/>
+        <location line="+29"/>
+        <source>Collapse room list</source>
+        <translation>طي قائمة الغرف</translation>
+    </message>
+    <message>
+        <location line="+70"/>
         <source>Search</source>
         <translation>بحث</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+771"/>
+        <location line="+776"/>
         <location line="+1"/>
         <source>Search rooms</source>
         <translation>البحث في الغرف</translation>
     </message>
     <message>
-        <location line="-714"/>
+        <location line="-719"/>
         <location line="+1"/>
         <source>Room list options</source>
         <translation>خيارات قائمة الغرف</translation>
     </message>
     <message numerus="yes">
         <location line="+126"/>
-        <location line="+638"/>
+        <location line="+643"/>
         <source>Activity, %n unseen</source>
         <translation>
             <numerusform>النشاط، %n غير مرئية</numerusform>
@@ -21940,14 +21945,14 @@ These links remain in room state. Open the successor from the room&apos;s replac
         </translation>
     </message>
     <message>
-        <location line="-637"/>
+        <location line="-642"/>
         <location line="+1"/>
-        <location line="+637"/>
+        <location line="+642"/>
         <source>Activity</source>
         <translation>النشاط</translation>
     </message>
     <message>
-        <location line="-521"/>
+        <location line="-526"/>
         <source>Archived (%1)</source>
         <translation>المؤرشفة (%1)</translation>
     </message>
@@ -22144,7 +22149,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>توسيع قائمة غرف %1</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+1"/>
+        <source>Expand room list</source>
+        <translation>توسيع قائمة الغرف</translation>
+    </message>
+    <message>
+        <location line="+27"/>
         <location line="+12"/>
         <source>Show all rooms</source>
         <translation>إظهار كل الغرف</translation>
@@ -22155,7 +22165,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>إظهار الغرف غير المقروءة</translation>
     </message>
     <message>
-        <location line="-461"/>
+        <location line="-466"/>
         <location line="+4"/>
         <location line="+6"/>
         <source>Unreads</source>
@@ -30006,7 +30016,7 @@ Note: importing keys does not verify this session.</source>
         <translation>إغلاق النشاط أو المبدّل السريع أو الإعدادات</translation>
     </message>
     <message>
-        <location line="+518"/>
+        <location line="+521"/>
         <source>Use a single key combination for dialog navigation.</source>
         <translation>استخدم تركيبة مفاتيح واحدة للتنقل في مربعات الحوار.</translation>
     </message>
@@ -30086,7 +30096,7 @@ Note: importing keys does not verify this session.</source>
         <translation>عندما يكون التركيز على الخط الزمني، يُنفَّذ «%1» بدلًا من ذلك.</translation>
     </message>
     <message>
-        <location line="-804"/>
+        <location line="-807"/>
         <source>Application</source>
         <translation>التطبيق</translation>
     </message>
@@ -30244,6 +30254,11 @@ Note: importing keys does not verify this session.</source>
         <location line="+27"/>
         <source>Show or hide the conversation list</source>
         <translation>إظهار أو إخفاء قائمة المحادثات</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Collapse or expand the conversation list</source>
+        <translation>طي قائمة المحادثات أو توسيعها</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -30702,7 +30717,7 @@ Note: importing keys does not verify this session.</source>
         <translation>حين %1، يُستخدم %2 لـ %3 بدلًا من ذلك.</translation>
     </message>
     <message>
-        <location line="-836"/>
+        <location line="-839"/>
         <source>Settings navigation</source>
         <translation>التنقل في الإعدادات</translation>
     </message>
@@ -30727,7 +30742,7 @@ Note: importing keys does not verify this session.</source>
         <translation>الانتقال إلى القسم الفرعي التالي في الإعدادات</translation>
     </message>
     <message>
-        <location line="+506"/>
+        <location line="+509"/>
         <source>Use a single key combination for Settings navigation.</source>
         <translation>استخدم تركيبة مفاتيح واحدة للتنقل في الإعدادات.</translation>
     </message>
@@ -30747,7 +30762,7 @@ Note: importing keys does not verify this session.</source>
         <translation>في الإعدادات، يُنفَّذ «%1» بدلاً من ذلك.</translation>
     </message>
     <message>
-        <location line="-682"/>
+        <location line="-685"/>
         <source>Scroll Settings up half a page</source>
         <translation>تمرير الإعدادات نصف صفحة إلى الأعلى</translation>
     </message>
@@ -30757,7 +30772,7 @@ Note: importing keys does not verify this session.</source>
         <translation>تمرير الإعدادات نصف صفحة إلى الأسفل</translation>
     </message>
     <message>
-        <location line="+511"/>
+        <location line="+514"/>
         <source>%1 moves focus, navigates or edits text, so it cannot be a shortcut on its own.</source>
         <translation>%1 ينقل التركيز أو يتنقّل أو يحرّر النص، لذلك لا يمكن أن يكون اختصارًا بمفرده.</translation>
     </message>

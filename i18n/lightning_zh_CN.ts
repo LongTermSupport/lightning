@@ -12298,7 +12298,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MainScreen</name>
     <message>
-        <location filename="../qml/MainScreen.qml" line="+632"/>
+        <location filename="../qml/MainScreen.qml" line="+640"/>
         <source>Resize room list</source>
         <translation>调整房间列表大小</translation>
     </message>
@@ -18179,7 +18179,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RailHiddenActions</name>
     <message>
-        <location filename="../qml/RailHiddenActions.qml" line="+18"/>
+        <location filename="../qml/RailHiddenActions.qml" line="+21"/>
         <source>Settings — this session is not verified</source>
         <translation>设置 — 此会话未验证</translation>
     </message>
@@ -21387,7 +21387,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
 <context>
     <name>RoomsPanel</name>
     <message>
-        <location filename="../qml/RoomsPanel.qml" line="+208"/>
+        <location filename="../qml/RoomsPanel.qml" line="+211"/>
         <location line="+3"/>
         <location line="+5"/>
         <source>Lightning</source>
@@ -21414,40 +21414,45 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>打开空间概览</translation>
     </message>
     <message>
-        <location line="+86"/>
+        <location line="+29"/>
+        <source>Collapse room list</source>
+        <translation>收起房间列表</translation>
+    </message>
+    <message>
+        <location line="+70"/>
         <source>Search</source>
         <translation>搜索</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+771"/>
+        <location line="+776"/>
         <location line="+1"/>
         <source>Search rooms</source>
         <translation>搜索房间</translation>
     </message>
     <message>
-        <location line="-714"/>
+        <location line="-719"/>
         <location line="+1"/>
         <source>Room list options</source>
         <translation>房间列表选项</translation>
     </message>
     <message numerus="yes">
         <location line="+126"/>
-        <location line="+638"/>
+        <location line="+643"/>
         <source>Activity, %n unseen</source>
         <translation>
             <numerusform>活动，%n 条未查看</numerusform>
         </translation>
     </message>
     <message>
-        <location line="-637"/>
+        <location line="-642"/>
         <location line="+1"/>
-        <location line="+637"/>
+        <location line="+642"/>
         <source>Activity</source>
         <translation>活动</translation>
     </message>
     <message>
-        <location line="-521"/>
+        <location line="-526"/>
         <source>Archived (%1)</source>
         <translation>已归档（%1）</translation>
     </message>
@@ -21624,7 +21629,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>展开 %1 的房间列表</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+1"/>
+        <source>Expand room list</source>
+        <translation>展开房间列表</translation>
+    </message>
+    <message>
+        <location line="+27"/>
         <location line="+12"/>
         <source>Show all rooms</source>
         <translation>显示所有房间</translation>
@@ -21635,7 +21645,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>显示未读房间</translation>
     </message>
     <message>
-        <location line="-461"/>
+        <location line="-466"/>
         <location line="+4"/>
         <location line="+6"/>
         <source>Unreads</source>
@@ -29366,7 +29376,7 @@ Note: importing keys does not verify this session.</source>
         <translation>关闭动态、快速切换器或设置</translation>
     </message>
     <message>
-        <location line="+518"/>
+        <location line="+521"/>
         <source>Use a single key combination for dialog navigation.</source>
         <translation>请使用单个组合键导航对话框。</translation>
     </message>
@@ -29446,7 +29456,7 @@ Note: importing keys does not verify this session.</source>
         <translation>时间线拥有焦点时，将改为执行“%1”。</translation>
     </message>
     <message>
-        <location line="-804"/>
+        <location line="-807"/>
         <source>Application</source>
         <translation>应用</translation>
     </message>
@@ -29604,6 +29614,11 @@ Note: importing keys does not verify this session.</source>
         <location line="+27"/>
         <source>Show or hide the conversation list</source>
         <translation>显示或隐藏对话列表</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Collapse or expand the conversation list</source>
+        <translation>收起或展开会话列表</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -30062,7 +30077,7 @@ Note: importing keys does not verify this session.</source>
         <translation>当%1时，%2 改用于 %3。</translation>
     </message>
     <message>
-        <location line="-836"/>
+        <location line="-839"/>
         <source>Settings navigation</source>
         <translation>设置导航</translation>
     </message>
@@ -30087,7 +30102,7 @@ Note: importing keys does not verify this session.</source>
         <translation>跳转到下一个设置子分区</translation>
     </message>
     <message>
-        <location line="+506"/>
+        <location line="+509"/>
         <source>Use a single key combination for Settings navigation.</source>
         <translation>请使用单个组合键导航设置。</translation>
     </message>
@@ -30107,7 +30122,7 @@ Note: importing keys does not verify this session.</source>
         <translation>在设置中，将改为执行“%1”。</translation>
     </message>
     <message>
-        <location line="-682"/>
+        <location line="-685"/>
         <source>Scroll Settings up half a page</source>
         <translation>将设置向上滚动半页</translation>
     </message>
@@ -30117,7 +30132,7 @@ Note: importing keys does not verify this session.</source>
         <translation>将设置向下滚动半页</translation>
     </message>
     <message>
-        <location line="+511"/>
+        <location line="+514"/>
         <source>%1 moves focus, navigates or edits text, so it cannot be a shortcut on its own.</source>
         <translation>%1 用于移动焦点、导航或编辑文本，因此不能单独作为快捷键。</translation>
     </message>

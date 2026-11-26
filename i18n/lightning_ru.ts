@@ -12402,7 +12402,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MainScreen</name>
     <message>
-        <location filename="../qml/MainScreen.qml" line="+632"/>
+        <location filename="../qml/MainScreen.qml" line="+640"/>
         <source>Resize room list</source>
         <translation>Изменить размер списка комнат</translation>
     </message>
@@ -18331,7 +18331,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RailHiddenActions</name>
     <message>
-        <location filename="../qml/RailHiddenActions.qml" line="+18"/>
+        <location filename="../qml/RailHiddenActions.qml" line="+21"/>
         <source>Settings — this session is not verified</source>
         <translation>Настройки — этот сеанс не проверен</translation>
     </message>
@@ -21585,7 +21585,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
 <context>
     <name>RoomsPanel</name>
     <message>
-        <location filename="../qml/RoomsPanel.qml" line="+208"/>
+        <location filename="../qml/RoomsPanel.qml" line="+211"/>
         <location line="+3"/>
         <location line="+5"/>
         <source>Lightning</source>
@@ -21612,26 +21612,31 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Открыть обзор пространства</translation>
     </message>
     <message>
-        <location line="+86"/>
+        <location line="+29"/>
+        <source>Collapse room list</source>
+        <translation>Свернуть список комнат</translation>
+    </message>
+    <message>
+        <location line="+70"/>
         <source>Search</source>
         <translation>Поиск</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+771"/>
+        <location line="+776"/>
         <location line="+1"/>
         <source>Search rooms</source>
         <translation>Поиск комнат</translation>
     </message>
     <message>
-        <location line="-714"/>
+        <location line="-719"/>
         <location line="+1"/>
         <source>Room list options</source>
         <translation>Параметры списка комнат</translation>
     </message>
     <message numerus="yes">
         <location line="+126"/>
-        <location line="+638"/>
+        <location line="+643"/>
         <source>Activity, %n unseen</source>
         <translation>
             <numerusform>Активность: %n непросмотренное</numerusform>
@@ -21640,14 +21645,14 @@ These links remain in room state. Open the successor from the room&apos;s replac
         </translation>
     </message>
     <message>
-        <location line="-637"/>
+        <location line="-642"/>
         <location line="+1"/>
-        <location line="+637"/>
+        <location line="+642"/>
         <source>Activity</source>
         <translation>Активность</translation>
     </message>
     <message>
-        <location line="-521"/>
+        <location line="-526"/>
         <source>Archived (%1)</source>
         <translation>Архив (%1)</translation>
     </message>
@@ -21832,7 +21837,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Развернуть список комнат %1</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+1"/>
+        <source>Expand room list</source>
+        <translation>Развернуть список комнат</translation>
+    </message>
+    <message>
+        <location line="+27"/>
         <location line="+12"/>
         <source>Show all rooms</source>
         <translation>Показать все комнаты</translation>
@@ -21843,7 +21853,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Показать непрочитанные комнаты</translation>
     </message>
     <message>
-        <location line="-461"/>
+        <location line="-466"/>
         <location line="+4"/>
         <location line="+6"/>
         <source>Unreads</source>
@@ -29622,7 +29632,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Закрыть активность, быстрый переключатель или настройки</translation>
     </message>
     <message>
-        <location line="+518"/>
+        <location line="+521"/>
         <source>Use a single key combination for dialog navigation.</source>
         <translation>Используйте одно сочетание клавиш для навигации в диалогах.</translation>
     </message>
@@ -29702,7 +29712,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Пока фокус в ленте сообщений, вместо этого выполняется «%1».</translation>
     </message>
     <message>
-        <location line="-804"/>
+        <location line="-807"/>
         <source>Application</source>
         <translation>Приложение</translation>
     </message>
@@ -29860,6 +29870,11 @@ Note: importing keys does not verify this session.</source>
         <location line="+27"/>
         <source>Show or hide the conversation list</source>
         <translation>Показать или скрыть список разговоров</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Collapse or expand the conversation list</source>
+        <translation>Свернуть или развернуть список бесед</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -30318,7 +30333,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Пока %1, %2 используется вместо этого для %3.</translation>
     </message>
     <message>
-        <location line="-836"/>
+        <location line="-839"/>
         <source>Settings navigation</source>
         <translation>Навигация в настройках</translation>
     </message>
@@ -30343,7 +30358,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Перейти к следующему подразделу настроек</translation>
     </message>
     <message>
-        <location line="+506"/>
+        <location line="+509"/>
         <source>Use a single key combination for Settings navigation.</source>
         <translation>Используйте одно сочетание клавиш для навигации в настройках.</translation>
     </message>
@@ -30363,7 +30378,7 @@ Note: importing keys does not verify this session.</source>
         <translation>В настройках вместо этого выполняется «%1».</translation>
     </message>
     <message>
-        <location line="-682"/>
+        <location line="-685"/>
         <source>Scroll Settings up half a page</source>
         <translation>Прокрутить настройки на полстраницы вверх</translation>
     </message>
@@ -30373,7 +30388,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Прокрутить настройки на полстраницы вниз</translation>
     </message>
     <message>
-        <location line="+511"/>
+        <location line="+514"/>
         <source>%1 moves focus, navigates or edits text, so it cannot be a shortcut on its own.</source>
         <translation>%1 перемещает фокус, выполняет навигацию или редактирует текст, поэтому не может быть сочетанием сама по себе.</translation>
     </message>

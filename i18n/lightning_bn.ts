@@ -12350,7 +12350,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MainScreen</name>
     <message>
-        <location filename="../qml/MainScreen.qml" line="+632"/>
+        <location filename="../qml/MainScreen.qml" line="+640"/>
         <source>Resize room list</source>
         <translation>রুমের তালিকার আকার বদলান</translation>
     </message>
@@ -18255,7 +18255,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RailHiddenActions</name>
     <message>
-        <location filename="../qml/RailHiddenActions.qml" line="+18"/>
+        <location filename="../qml/RailHiddenActions.qml" line="+21"/>
         <source>Settings — this session is not verified</source>
         <translation>সেটিংস — এই সেশনটি যাচাই করা নেই</translation>
     </message>
@@ -21486,7 +21486,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
 <context>
     <name>RoomsPanel</name>
     <message>
-        <location filename="../qml/RoomsPanel.qml" line="+208"/>
+        <location filename="../qml/RoomsPanel.qml" line="+211"/>
         <location line="+3"/>
         <location line="+5"/>
         <source>Lightning</source>
@@ -21513,26 +21513,31 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>স্পেসের সংক্ষিপ্ত বিবরণ খুলুন</translation>
     </message>
     <message>
-        <location line="+86"/>
+        <location line="+29"/>
+        <source>Collapse room list</source>
+        <translation>রুমের তালিকা গুটিয়ে নিন</translation>
+    </message>
+    <message>
+        <location line="+70"/>
         <source>Search</source>
         <translation>খুঁজুন</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+771"/>
+        <location line="+776"/>
         <location line="+1"/>
         <source>Search rooms</source>
         <translation>রুম খুঁজুন</translation>
     </message>
     <message>
-        <location line="-714"/>
+        <location line="-719"/>
         <location line="+1"/>
         <source>Room list options</source>
         <translation>রুমের তালিকার বিকল্প</translation>
     </message>
     <message numerus="yes">
         <location line="+126"/>
-        <location line="+638"/>
+        <location line="+643"/>
         <source>Activity, %n unseen</source>
         <translation>
             <numerusform>কার্যকলাপ, %nটি না-দেখা</numerusform>
@@ -21540,14 +21545,14 @@ These links remain in room state. Open the successor from the room&apos;s replac
         </translation>
     </message>
     <message>
-        <location line="-637"/>
+        <location line="-642"/>
         <location line="+1"/>
-        <location line="+637"/>
+        <location line="+642"/>
         <source>Activity</source>
         <translation>কার্যকলাপ</translation>
     </message>
     <message>
-        <location line="-521"/>
+        <location line="-526"/>
         <source>Archived (%1)</source>
         <translation>আর্কাইভ করা (%1)</translation>
     </message>
@@ -21728,7 +21733,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>%1-এর রুমের তালিকা প্রসারিত করুন</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+1"/>
+        <source>Expand room list</source>
+        <translation>রুমের তালিকা প্রসারিত করুন</translation>
+    </message>
+    <message>
+        <location line="+27"/>
         <location line="+12"/>
         <source>Show all rooms</source>
         <translation>সব রুম দেখান</translation>
@@ -21739,7 +21749,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>অপঠিত রুম দেখান</translation>
     </message>
     <message>
-        <location line="-461"/>
+        <location line="-466"/>
         <location line="+4"/>
         <location line="+6"/>
         <source>Unreads</source>
@@ -29494,7 +29504,7 @@ Note: importing keys does not verify this session.</source>
         <translation>কার্যকলাপ, দ্রুত সুইচার বা সেটিংস বন্ধ করুন</translation>
     </message>
     <message>
-        <location line="+518"/>
+        <location line="+521"/>
         <source>Use a single key combination for dialog navigation.</source>
         <translation>ডায়ালগে নেভিগেশনের জন্য একটি কী সমন্বয় ব্যবহার করুন।</translation>
     </message>
@@ -29574,7 +29584,7 @@ Note: importing keys does not verify this session.</source>
         <translation>টাইমলাইনে ফোকাস থাকলে এর পরিবর্তে “%1” চলে।</translation>
     </message>
     <message>
-        <location line="-804"/>
+        <location line="-807"/>
         <source>Application</source>
         <translation>আবেদন</translation>
     </message>
@@ -29732,6 +29742,11 @@ Note: importing keys does not verify this session.</source>
         <location line="+27"/>
         <source>Show or hide the conversation list</source>
         <translation>কথোপকথনের তালিকা দেখান বা লুকান</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Collapse or expand the conversation list</source>
+        <translation>কথোপকথনের তালিকা গুটিয়ে নিন বা প্রসারিত করুন</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -30190,7 +30205,7 @@ Note: importing keys does not verify this session.</source>
         <translation>যখন %1, তখন %2 এর বদলে %3-এর জন্য ব্যবহৃত হয়।</translation>
     </message>
     <message>
-        <location line="-836"/>
+        <location line="-839"/>
         <source>Settings navigation</source>
         <translation>সেটিংস নেভিগেশন</translation>
     </message>
@@ -30215,7 +30230,7 @@ Note: importing keys does not verify this session.</source>
         <translation>পরের সেটিংস উপবিভাগে যান</translation>
     </message>
     <message>
-        <location line="+506"/>
+        <location line="+509"/>
         <source>Use a single key combination for Settings navigation.</source>
         <translation>সেটিংস নেভিগেশনের জন্য একটি কী সমন্বয় ব্যবহার করুন।</translation>
     </message>
@@ -30235,7 +30250,7 @@ Note: importing keys does not verify this session.</source>
         <translation>সেটিংসে এর বদলে “%1” চলে।</translation>
     </message>
     <message>
-        <location line="-682"/>
+        <location line="-685"/>
         <source>Scroll Settings up half a page</source>
         <translation>সেটিংস অর্ধেক পৃষ্ঠা উপরে স্ক্রল করুন</translation>
     </message>
@@ -30245,7 +30260,7 @@ Note: importing keys does not verify this session.</source>
         <translation>সেটিংস অর্ধেক পৃষ্ঠা নিচে স্ক্রল করুন</translation>
     </message>
     <message>
-        <location line="+511"/>
+        <location line="+514"/>
         <source>%1 moves focus, navigates or edits text, so it cannot be a shortcut on its own.</source>
         <translation>%1 ফোকাস সরায়, নেভিগেট করে বা টেক্সট সম্পাদনা করে, তাই এটি একা শর্টকাট হতে পারে না।</translation>
     </message>
