@@ -1,0 +1,259 @@
+# Builds Lightning as a Flatpak from this fork and, on the `lts` branch, publishes it as a signed
+# OSTree repository on this repository's GitHub Pages site, so a machine can install and update
+# from it with `flatpak remote-add --from <pages>/lightning-lts.flatpakrepo`.
+#
+# The build is the Flathub one: the root org.lightning_matrix.Lightning.yaml with its git source
+# swapped for this checkout, so the only difference from Flathub's build is the commit built.
+#
+# Publishing keeps history: the published repository is mirrored back first, so each new commit
+# has the last one as its parent and clients receive a static delta rather than a full download.
+#
+# Required secret for publishing: FLATPAK_GPG_PRIVATE_KEY, an ASCII-armoured secret key holding
+# exactly one signing key with no passphrase. Pull requests build and bundle, but never sign or
+# publish.
+name: lts flatpak
+
+on:
+  pull_request:
+    branches: [lts]
+  push:
+    branches: [lts]
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        description: The commit to build
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  APP_ID: org.lightning_matrix.Lightning
+  FLATPAK_BRANCH: stable
+  FLATHUB_REPO: https://dl.flathub.org/repo/flathub.flatpakrepo
+  # GitHub Pages refuses a site over 1 GB; stop below it with the measured size instead.
+  SITE_MAX_BYTES: "950000000"
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 330
+    outputs:
+      publish: ${{ steps.mode.outputs.publish }}
+    steps:
+      - name: Decide whether this run publishes
+        id: mode
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_EVENT_NAME}" != "pull_request" && "${GITHUB_REF}" == "refs/heads/lts" ]]; then
+            echo "publish=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "publish=false" >> "${GITHUB_OUTPUT}"
+          fi
+          pagesUrl="https://${GITHUB_REPOSITORY_OWNER,,}.github.io/${GITHUB_REPOSITORY#*/}"
+          echo "PAGES_URL=${pagesUrl}" >> "${GITHUB_ENV}"
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+          # flatpak-builder clones this checkout as a git source; a shallow clone cannot be cloned.
+          fetch-depth: 0
+
+      - name: The crate list matches Cargo.lock (the build is offline)
+        run: python3 packaging-ci/tests/test-cargo-sources-lock.py
+
+      - name: Free disk space for the SDK and the Rust build
+        run: |
+          set -euo pipefail
+          df -h /
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
+
+      - name: Install flatpak-builder
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          # elfutils: debuginfo stripping. librsvg2-common: appstream compose reads the SVG icon.
+          sudo apt-get install -y --no-install-recommends \
+            flatpak flatpak-builder ostree elfutils librsvg2-common appstream xz-utils
+          # Ubuntu 24.04 denies unprivileged user namespaces to unconfined binaries; bwrap needs them.
+          if [[ -e /proc/sys/kernel/apparmor_restrict_unprivileged_userns ]]; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+          flatpak remote-add --user --if-not-exists flathub "${FLATHUB_REPO}"
+          flatpak-builder --version
+
+      - name: Write the build manifest from the Flathub one
+        env:
+          BUILD_SHA: ${{ inputs.ref || github.sha }}
+        run: |
+          set -euo pipefail
+          # flatpak-builder mirrors this checkout by its refs; a pull request's merge commit is on
+          # none, so name it or its objects are not copied.
+          git update-ref refs/heads/lts-build "${BUILD_SHA}"
+          python3 - <<'PY'
+          import os, pathlib, sys, yaml
+          manifest = yaml.safe_load(pathlib.Path("org.lightning_matrix.Lightning.yaml").read_text())
+          modules = [m for m in manifest["modules"] if isinstance(m, dict) and m.get("name") == "lightning"]
+          if len(modules) != 1:
+              sys.exit("expected exactly one module named lightning")
+          sources = modules[0]["sources"]
+          git = [i for i, s in enumerate(sources) if isinstance(s, dict) and s.get("type") == "git"]
+          if len(git) != 1:
+              sys.exit("expected exactly one git source in the lightning module")
+          sha = os.environ["BUILD_SHA"]
+          if len(sha) != 40:
+              sys.exit(f"BUILD_SHA is not a full commit id: {sha!r}")
+          # The manifest sits beside the checkout's root, so "." is the checkout whichever
+          # directory flatpak-builder resolves a relative path against.
+          sources[git[0]] = {"type": "git", "path": ".", "commit": sha}
+          pathlib.Path("lts-build.yaml").write_text(yaml.safe_dump(manifest, sort_keys=False))
+          PY
+          grep -n -A3 'type: git' lts-build.yaml
+
+      - name: Import the signing key
+        if: steps.mode.outputs.publish == 'true'
+        env:
+          FLATPAK_GPG_PRIVATE_KEY: ${{ secrets.FLATPAK_GPG_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          [[ -n "${FLATPAK_GPG_PRIVATE_KEY}" ]] || { echo "::error::secret FLATPAK_GPG_PRIVATE_KEY is not set"; exit 1; }
+          export GNUPGHOME="${RUNNER_TEMP}/gnupg"
+          install -d -m 0700 "${GNUPGHOME}"
+          gpg --batch --import <<< "${FLATPAK_GPG_PRIVATE_KEY}"
+          listing="$(gpg --batch --list-secret-keys --with-colons)"
+          count="$(awk -F: '$1 == "sec"' <<< "${listing}" | wc -l)"
+          [[ "${count}" == "1" ]] || { echo "::error::expected one secret key, found ${count}"; exit 1; }
+          # The primary key's fingerprint is the first fpr record after its sec record.
+          keyId="$(awk -F: '$1 == "sec" { s = 1; next } s && $1 == "fpr" { print $10; exit }' <<< "${listing}")"
+          [[ "${keyId}" =~ ^[0-9A-F]{40}$ ]] || { echo "::error::could not read the key fingerprint"; exit 1; }
+          gpg --batch --export "${keyId}" > "${RUNNER_TEMP}/lightning-lts.gpg"
+          echo "GNUPGHOME=${GNUPGHOME}" >> "${GITHUB_ENV}"
+          echo "GPG_KEY_ID=${keyId}" >> "${GITHUB_ENV}"
+          echo "signing with ${keyId}"
+
+      - name: Mirror the published repository, so the new build continues its history
+        if: steps.mode.outputs.publish == 'true'
+        run: |
+          set -euo pipefail
+          ostree --repo=repo init --mode=archive-z2
+          status="$(curl -sS -o /dev/null -w '%{http_code}' "${PAGES_URL}/repo/summary")"
+          case "${status}" in
+            200)
+              ostree --repo=repo remote add --set=gpg-verify=true \
+                --gpg-import="${RUNNER_TEMP}/lightning-lts.gpg" published "${PAGES_URL}/repo"
+              ostree --repo=repo pull --mirror published
+              ostree --repo=repo remote delete published
+              ;;
+            404)
+              echo "::notice::nothing is published at ${PAGES_URL}/repo yet; this is the first publish"
+              ;;
+            *)
+              echo "::error::${PAGES_URL}/repo/summary answered HTTP ${status}"
+              exit 1
+              ;;
+          esac
+
+      - name: Build
+        run: |
+          set -euo pipefail
+          signArgs=()
+          if [[ -n "${GPG_KEY_ID:-}" ]]; then
+            signArgs=(--gpg-sign="${GPG_KEY_ID}" --gpg-homedir="${GNUPGHOME}")
+          fi
+          flatpak-builder --user --force-clean --disable-rofiles-fuse \
+            --install-deps-from=flathub \
+            --default-branch="${FLATPAK_BRANCH}" \
+            --jobs="$(nproc)" \
+            "${signArgs[@]}" \
+            --repo=repo build-dir lts-build.yaml
+
+      - name: Update the repository summary, deltas and pruning
+        run: |
+          set -euo pipefail
+          signArgs=()
+          if [[ -n "${GPG_KEY_ID:-}" ]]; then
+            signArgs=(--gpg-sign="${GPG_KEY_ID}" --gpg-homedir="${GNUPGHOME}")
+          fi
+          flatpak build-update-repo "${signArgs[@]}" \
+            --title="Lightning (LongTermSupport build)" \
+            --default-branch="${FLATPAK_BRANCH}" \
+            --generate-static-deltas --prune --prune-depth=1 repo
+          ostree --repo=repo refs
+          du -sh repo
+
+      - name: Bundle
+        run: |
+          set -euo pipefail
+          bundleArgs=(--runtime-repo="${FLATHUB_REPO}")
+          if [[ -n "${GPG_KEY_ID:-}" ]]; then
+            bundleArgs+=(--repo-url="${PAGES_URL}/repo" --gpg-sign="${GPG_KEY_ID}" --gpg-homedir="${GNUPGHOME}")
+          fi
+          flatpak build-bundle "${bundleArgs[@]}" repo lightning-lts.flatpak "${APP_ID}" "${FLATPAK_BRANCH}"
+          sha256sum lightning-lts.flatpak | tee lightning-lts.flatpak.sha256
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lightning-lts-flatpak
+          path: |
+            lightning-lts.flatpak
+            lightning-lts.flatpak.sha256
+          retention-days: 14
+
+      - name: Assemble the Pages site
+        if: steps.mode.outputs.publish == 'true'
+        run: |
+          set -euo pipefail
+          mkdir site
+          mv repo site/repo
+          cp "${RUNNER_TEMP}/lightning-lts.gpg" site/lightning-lts.gpg
+          key="$(base64 --wrap=0 < site/lightning-lts.gpg)"
+          cat > site/lightning-lts.flatpakrepo <<EOF
+          [Flatpak Repo]
+          Title=Lightning (LongTermSupport build)
+          Url=${PAGES_URL}/repo/
+          Homepage=https://github.com/${GITHUB_REPOSITORY}
+          Comment=Lightning built from the ${GITHUB_REPOSITORY} lts branch
+          DefaultBranch=${FLATPAK_BRANCH}
+          GPGKey=${key}
+          EOF
+          cat > "site/${APP_ID}.flatpakref" <<EOF
+          [Flatpak Ref]
+          Title=Lightning (LongTermSupport build)
+          Name=${APP_ID}
+          Branch=${FLATPAK_BRANCH}
+          Url=${PAGES_URL}/repo/
+          SuggestRemoteName=lightning-lts
+          RuntimeRepo=${FLATHUB_REPO}
+          IsRuntime=false
+          GPGKey=${key}
+          EOF
+          printf '%s\n' "built from ${GITHUB_REPOSITORY}@${{ inputs.ref || github.sha }}" \
+            "signing key ${GPG_KEY_ID}" > site/build-info.txt
+          size="$(du -sb site | awk '{ print $1 }')"
+          echo "site is ${size} bytes"
+          (( size <= SITE_MAX_BYTES )) || { echo "::error::site is ${size} bytes, over ${SITE_MAX_BYTES}"; exit 1; }
+
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.mode.outputs.publish == 'true'
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.publish == 'true'
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: lts-flatpak-pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
