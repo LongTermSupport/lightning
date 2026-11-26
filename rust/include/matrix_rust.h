@@ -813,6 +813,17 @@ char *mx_rust_mutual_rooms(void *client,
                            uint64_t op_id);
 
 /*
+ * When a joined member's current stay began, from their member event chain.
+ *
+ * Result: {"type":"member_join_date_result","op_id",…,"room_id","user_id",
+ *          "joined_at_ms": number or null}
+ */
+char *mx_rust_member_join_date(void *client,
+                               const char *room_id,
+                               const char *user_id,
+                               uint64_t op_id);
+
+/*
  * Upload and set the signed-in account's OWN avatar from a local file path.
  * The MIME type is sniffed from the bytes, never from the file name, and SVG
  * is refused. Bounded at the same ceiling as the room-avatar path.

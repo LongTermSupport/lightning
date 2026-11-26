@@ -28,6 +28,7 @@
 
 #include "app/AppController.h"
 #include "app/ConversationController.h"
+#include "app/RoomInfoController.h"
 #include "app/SettingsManager.h"
 #include "auth/AuthManager.h"
 #include "media/MediaBridge.h"
@@ -65,6 +66,21 @@ public:
         lastUser = userId;
         lastOp = opId;
     }
+    QString lastUser;
+    quint64 lastOp = 0;
+};
+
+class FakeJoinClient : public MockMatrixClient
+{
+public:
+    quint64 fetchMemberJoinDate(const QString &roomId,
+                                const QString &userId) override
+    {
+        lastRoom = roomId;
+        lastUser = userId;
+        return ++lastOp;
+    }
+    QString lastRoom;
     QString lastUser;
     quint64 lastOp = 0;
 };
@@ -311,29 +327,55 @@ private slots:
 
     void theOverflowMenuShowsWhenTheMemberJoinedOnlyWhenKnown()
     {
-        auto open = [&](qlonglong joinedAtMs) {
-            QVariantMap member;
-            member.insert(QStringLiteral("userId"),
-                          QStringLiteral("@bob:mock.local"));
-            member.insert(QStringLiteral("membership"),
-                          QStringLiteral("joined"));
-            if (joinedAtMs > 0)
-                member.insert(QStringLiteral("joinedAtMs"), joinedAtMs);
-            QVERIFY(QMetaObject::invokeMethod(
-                m_dialog, "openFor", Q_ARG(QVariant, QVariant(member)),
-                Q_ARG(QVariant, QVariant())));
-        };
-        open(1700000000000);
+        FakeJoinClient client;
+        auto *info = m_controller->roomInfo();
+        auto *original = m_controller->findChild<MockMatrixClient *>();
+        QVERIFY(original);
+        const QString originalRoom = info->roomId();
+        const auto restore = qScopeGuard([&] {
+            info->setClient(original);
+            info->setRoomId(originalRoom);
+        });
+        info->setClient(&client);
+        QVariantMap member;
+        member.insert(QStringLiteral("userId"),
+                      QStringLiteral("@bob:mock.local"));
+        member.insert(QStringLiteral("membership"), QStringLiteral("joined"));
+        QVERIFY(QMetaObject::invokeMethod(m_dialog, "openFor",
+                                          Q_ARG(QVariant, QVariant(member)),
+                                          Q_ARG(QVariant, QVariant())));
+        if (info->roomId().isEmpty())
+            info->setRoomId(QStringLiteral("!joined:mock.local"));
+        const QString room = info->roomId();
         auto *known = m_dialog->findChild<QObject *>(
             QStringLiteral("profileJoinedInfo"));
         QVERIFY(known);
+        QVERIFY(!known->property("visible").toBool());
+
+        auto *more = item("profileOverflowButton");
+        QVERIFY(more);
+        QVERIFY(QMetaObject::invokeMethod(more, "clicked"));
+        QCOMPARE(client.lastRoom, room);
+        QCOMPARE(client.lastUser, QStringLiteral("@bob:mock.local"));
+        QVERIFY(client.lastOp != 0);
+        QVERIFY(!known->property("visible").toBool());
+
+        Q_EMIT client.memberJoinDateReceived(
+            client.lastOp, room, QStringLiteral("@bob:mock.local"),
+            1700000000000);
+        QCoreApplication::processEvents();
         QVERIFY(known->property("visible").toBool());
         QVERIFY(!known->property("enabled").toBool());
         const QString text = known->property("text").toString();
         QVERIFY2(text.startsWith(QStringLiteral("Joined this room "))
                      && text.size() > 17,
                  qPrintable(text));
-        open(0);
+
+        QVERIFY(QMetaObject::invokeMethod(more, "clicked"));
+        QVERIFY(!known->property("visible").toBool());
+        Q_EMIT client.memberJoinDateReceived(
+            client.lastOp, room, QStringLiteral("@bob:mock.local"), 0);
+        QCoreApplication::processEvents();
         QVERIFY(!known->property("visible").toBool());
     }
 

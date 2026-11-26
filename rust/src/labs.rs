@@ -558,6 +558,7 @@ const CLASSES: &[(&str, EventClass)] = {
         ("message_edits_removed", UiOnly),
         ("message_search_result", UiOnly),
         ("moderation_plan", UiOnly),
+        ("member_join_date_result", UiOnly),
         ("mutual_rooms_result", UiOnly),
         ("member_profile_changed", UiOnly),
         ("name_color", UiOnly),

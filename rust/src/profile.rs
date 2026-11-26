@@ -451,3 +451,188 @@ pub(crate) fn mutual_rooms(
     });
     Ok(())
 }
+
+const MAX_JOIN_CHAIN_FETCHES: usize = 10;
+
+fn membership_of(event: &serde_json::Value) -> Option<&str> {
+    event.get("content")?.get("membership")?.as_str()
+}
+
+/// Walks `unsigned.replaces_state` back from the current member event to the
+/// event that started the current stay; `None` when it cannot be proven.
+fn join_started_at(
+    current: serde_json::Value,
+    mut fetch: impl FnMut(&str) -> Option<serde_json::Value>,
+) -> Option<u64> {
+    let mut cur = current;
+    let mut fetches = 0;
+    loop {
+        let ts = cur.get("origin_server_ts")?.as_u64()?;
+        let unsigned = cur.get("unsigned");
+        let Some(replaces) = unsigned
+            .and_then(|u| u.get("replaces_state"))
+            .and_then(|v| v.as_str())
+        else {
+            return Some(ts);
+        };
+        let prev_membership = unsigned
+            .and_then(|u| u.get("prev_content"))
+            .and_then(|c| c.get("membership"))
+            .and_then(|m| m.as_str());
+        if matches!(prev_membership, Some(m) if m != "join") {
+            return Some(ts);
+        }
+        if fetches >= MAX_JOIN_CHAIN_FETCHES {
+            return None;
+        }
+        fetches += 1;
+        let prev = fetch(replaces)?;
+        if membership_of(&prev)? != "join" {
+            return Some(ts);
+        }
+        cur = prev;
+    }
+}
+
+pub(crate) fn member_join_date(
+    bridge: &RustClient,
+    room_id: String,
+    user_id: String,
+    op_id: u64,
+) -> Result<(), String> {
+    let client = require_client(bridge)?;
+    let room_id_parsed = RoomId::parse(room_id.as_str())
+        .map_err(|_| "invalid room id".to_owned())?;
+    let user = matrix_sdk::ruma::UserId::parse(user_id.as_str())
+        .map_err(|_| "invalid user id".to_owned())?;
+    let room = client
+        .get_room(&room_id_parsed)
+        .ok_or_else(|| "unknown room".to_owned())?;
+    let events = Arc::clone(&bridge.events);
+    let timelines = Arc::clone(&bridge.timelines);
+    let lifecycle = timelines.lifecycle();
+    bridge.spawn_room_action(async move {
+        let mut joined_at: Option<u64> = None;
+        let raw = room
+            .get_state_event(
+                matrix_sdk::ruma::events::StateEventType::RoomMember,
+                user.as_str(),
+            )
+            .await
+            .ok()
+            .flatten();
+        if let Some(matrix_sdk::deserialized_responses::RawAnySyncOrStrippedState::Sync(
+            sync_raw,
+        )) = raw
+        {
+            let current = sync_raw
+                .deserialize_as_unchecked::<serde_json::Value>()
+                .ok();
+            if let Some(current) = current.filter(|c| membership_of(c) == Some("join")) {
+                let mut chain: Vec<(String, serde_json::Value)> = Vec::new();
+                let mut cursor = current.clone();
+                // Fetches are async, so resolve the chain ahead of the pure walk.
+                for _ in 0..=MAX_JOIN_CHAIN_FETCHES {
+                    let Some(next_id) = cursor
+                        .get("unsigned")
+                        .and_then(|u| u.get("replaces_state"))
+                        .and_then(|v| v.as_str())
+                        .map(str::to_owned)
+                    else {
+                        break;
+                    };
+                    let prev_known_non_join = cursor
+                        .get("unsigned")
+                        .and_then(|u| u.get("prev_content"))
+                        .and_then(|c| c.get("membership"))
+                        .and_then(|m| m.as_str())
+                        .is_some_and(|m| m != "join");
+                    if prev_known_non_join {
+                        break;
+                    }
+                    let Ok(id) = matrix_sdk::ruma::EventId::parse(next_id.as_str()) else {
+                        break;
+                    };
+                    let Ok(event) = room.event(&id, None).await else {
+                        break;
+                    };
+                    let Ok(value) = event
+                        .raw()
+                        .deserialize_as_unchecked::<serde_json::Value>()
+                    else {
+                        break;
+                    };
+                    if membership_of(&value) != Some("join") {
+                        chain.push((next_id, value));
+                        break;
+                    }
+                    chain.push((next_id, value.clone()));
+                    cursor = value;
+                }
+                joined_at = join_started_at(current, |id| {
+                    chain.iter().find(|(k, _)| k == id).map(|(_, v)| v.clone())
+                });
+            }
+        }
+        if !timelines.lifecycle_current(lifecycle) {
+            return;
+        }
+        enqueue(
+            &events,
+            json!({
+                "type": "member_join_date_result",
+                "op_id": op_id,
+                "lifecycle": lifecycle,
+                "room_id": room_id,
+                "user_id": user_id,
+                "joined_at_ms": joined_at,
+            }),
+        );
+    });
+    Ok(())
+}
+
+#[cfg(test)]
+mod join_date_tests {
+    use super::join_started_at;
+    use serde_json::{json, Value};
+
+    fn ev(ts: u64, membership: &str, replaces: Option<&str>, prev: Option<&str>) -> Value {
+        let mut unsigned = json!({});
+        if let Some(r) = replaces {
+            unsigned["replaces_state"] = json!(r);
+        }
+        if let Some(p) = prev {
+            unsigned["prev_content"] = json!({"membership": p});
+        }
+        json!({"origin_server_ts": ts, "content": {"membership": membership},
+               "unsigned": unsigned})
+    }
+
+    #[test]
+    fn a_name_change_still_reports_the_original_join() {
+        let current = ev(300, "join", Some("$b"), Some("join"));
+        let found = join_started_at(current, |id| match id {
+            "$b" => Some(ev(200, "join", Some("$a"), Some("join"))),
+            "$a" => Some(ev(100, "leave", None, None)),
+            _ => None,
+        });
+        assert_eq!(found, Some(200));
+    }
+
+    #[test]
+    fn a_first_event_is_the_join() {
+        assert_eq!(join_started_at(ev(50, "join", None, None), |_| None), Some(50));
+    }
+
+    #[test]
+    fn a_failed_fetch_or_the_cap_yields_nothing() {
+        let current = ev(300, "join", Some("$b"), Some("join"));
+        assert_eq!(join_started_at(current, |_| None), None);
+        let endless = |_: &str| Some(ev(1, "join", Some("$x"), Some("join")));
+        assert_eq!(
+            join_started_at(ev(2, "join", Some("$x"), Some("join")), endless),
+            None
+        );
+    }
+}

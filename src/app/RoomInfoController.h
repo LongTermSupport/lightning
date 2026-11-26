@@ -168,6 +168,13 @@ public:
     Q_INVOKABLE void leaveRoom(const QString &roomId);
     Q_INVOKABLE QVariantList filterMembers(const QString &needle) const;
     Q_INVOKABLE void requestMutualRooms(const QString &userId);
+    Q_INVOKABLE void requestMemberJoinDate(const QString &userId);
+    Q_PROPERTY(QString memberJoinedUser READ memberJoinedUser
+               NOTIFY memberJoinDateChanged)
+    Q_PROPERTY(double memberJoinedAtMs READ memberJoinedAtMs
+               NOTIFY memberJoinDateChanged)
+    QString memberJoinedUser() const { return m_memberJoinedUser; }
+    double memberJoinedAtMs() const { return m_memberJoinedAtMs; }
     Q_PROPERTY(QVariantList mutualRooms READ mutualRooms
                NOTIFY mutualRoomsChanged)
     QVariantList mutualRooms() const { return m_mutualRooms; }
@@ -240,6 +247,7 @@ public:
 
 Q_SIGNALS:
     void mutualRoomsChanged();
+    void memberJoinDateChanged();
     void mutualSummariesChanged();
     void roomIdChanged();
     void membersChanged();
@@ -289,6 +297,9 @@ private:
     QVariantList m_mutualRooms;
     QString m_mutualRoomsUser;
     quint64 m_mutualRoomsOp = 0;
+    QString m_memberJoinedUser;
+    double m_memberJoinedAtMs = 0;
+    quint64 m_memberJoinedOp = 0;
     QHash<QString, QVariantMap> m_mutualSummaries;
     QHash<quint64, QString> m_mutualSummaryOps;
     int m_mutualSummaryRevision = 0;

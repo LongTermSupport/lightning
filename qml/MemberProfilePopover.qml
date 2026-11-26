@@ -71,7 +71,9 @@ Popup {
     property string role: ""
     property string avatarMxc: ""
     property bool isOwn: false
-    property double joinedAtMs: 0
+    readonly property double joinedAtMs:
+        app.roomInfo.memberJoinedUser === userId
+        ? app.roomInfo.memberJoinedAtMs : 0
     // False when opened outside a joined room (an invite's inviter): no
     // roster, role or moderation for whichever room happens to be current.
     property bool roomScoped: true
@@ -169,8 +171,6 @@ Popup {
             avatarMxc = row.avatarUrl || ""
         if (membership.length === 0)
             membership = row.membership || ""
-        if (joinedAtMs <= 0)
-            joinedAtMs = row.joinedAtMs || 0
     }
 
     function _fillFromServer() {
@@ -208,7 +208,6 @@ Popup {
         liveRole = ""
         avatarMxc = member.avatarUrl || ""
         isOwn = member.isOwn === true
-        joinedAtMs = member.joinedAtMs || 0
         roomScoped = member.roomScoped !== false
         withholdMedia = member.withholdMedia === true
         if (roomScoped)
@@ -1156,6 +1155,8 @@ Popup {
                     accessibleName: qsTr("More actions")
                     onClicked: {
                         app.roomInfo.requestMutualRooms(root.userId)
+                        if (root.roomScoped && root.membership === "joined")
+                            app.roomInfo.requestMemberJoinDate(root.userId)
                         profileOverflowMenu.popup(0, height + 2)
                     }
                     AppMenu {
