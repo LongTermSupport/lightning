@@ -2580,7 +2580,7 @@ EXIF-Ausrichtung: %4</translation>
 <context>
     <name>BulkRedactionBar</name>
     <message numerus="yes">
-        <location filename="../qml/BulkRedactionBar.qml" line="+35"/>
+        <location filename="../qml/BulkRedactionBar.qml" line="+52"/>
         <source>%n message(s) selected</source>
         <translation>
             <numerusform>%n Nachricht ausgewählt</numerusform>
@@ -2595,8 +2595,33 @@ EXIF-Ausrichtung: %4</translation>
             <numerusform>%1 von %n Nachrichten werden gelöscht …</numerusform>
         </translation>
     </message>
+    <message>
+        <location line="-13"/>
+        <source>Removed %1 of %2</source>
+        <translation>%1 von %2 entfernt</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Stopped. Removed %1 of %2; %3 couldn&apos;t be removed.</source>
+        <translation>Angehalten. %1 von %2 entfernt; %3 konnten nicht entfernt werden.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Removed %1 of %2; %3 couldn&apos;t be removed.</source>
+        <translation>%1 von %2 entfernt; %3 konnten nicht entfernt werden.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Stopped. Removed %1 of %2.</source>
+        <translation>Angehalten. %1 von %2 entfernt.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Removed %1 of %2.</source>
+        <translation>%1 von %2 entfernt.</translation>
+    </message>
     <message numerus="yes">
-        <location line="+7"/>
+        <location line="+10"/>
         <source>Stopped after %1 of %n message(s); %2 failed.</source>
         <translation>
             <numerusform>Nach %1 von %n Nachricht angehalten; %2 fehlgeschlagen.</numerusform>
@@ -2628,13 +2653,18 @@ EXIF-Ausrichtung: %4</translation>
         </translation>
     </message>
     <message>
-        <location line="+7"/>
-        <location line="+61"/>
+        <location line="+8"/>
+        <source>Look further back</source>
+        <translation>Weiter zurückgehen</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <location line="+64"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location line="-61"/>
+        <location line="-64"/>
         <source>Dismiss</source>
         <translation>Schließen</translation>
     </message>
@@ -2647,7 +2677,7 @@ EXIF-Ausrichtung: %4</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+31"/>
+        <location line="+34"/>
         <source>Delete %n messages?</source>
         <translation>
             <numerusform>%n Nachricht löschen?</numerusform>
@@ -2681,7 +2711,7 @@ EXIF-Ausrichtung: %4</translation>
 <context>
     <name>BulkRedactionController</name>
     <message>
-        <location filename="../src/app/BulkRedactionController.cpp" line="+108"/>
+        <location filename="../src/app/BulkRedactionController.cpp" line="+270"/>
         <source>A previous deletion of this message is still in progress.</source>
         <translation>Ein früheres Löschen dieser Nachricht läuft noch.</translation>
     </message>
@@ -2705,12 +2735,17 @@ EXIF-Ausrichtung: %4</translation>
         </translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+68"/>
         <source>A deletion got no answer from the server; its result is unknown.</source>
         <translation>Eine Löschung hat keine Antwort vom Server erhalten; ihr Ergebnis ist unbekannt.</translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+37"/>
+        <source>The server asked to slow down; continuing shortly.</source>
+        <translation>Der Server hat darum gebeten, langsamer zu machen; es geht gleich weiter.</translation>
+    </message>
+    <message>
+        <location line="+46"/>
         <source>One redaction was already in progress; its result is unknown.</source>
         <translation>Eine Löschung lief bereits; ihr Ergebnis ist unbekannt.</translation>
     </message>
@@ -12840,7 +12875,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>MemberProfilePopover</name>
     <message>
-        <location filename="../qml/MemberProfilePopover.qml" line="+305"/>
+        <location filename="../qml/MemberProfilePopover.qml" line="+328"/>
         <source>Invited</source>
         <translation>Eingeladen</translation>
     </message>
@@ -13002,7 +13037,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>%1 in allen Räumen ignorieren</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+20"/>
+        <source>Remove recent messages…</source>
+        <translation>Letzte Nachrichten entfernen…</translation>
+    </message>
+    <message>
+        <location line="+22"/>
         <source>Role</source>
         <translation>Rolle</translation>
     </message>
@@ -13802,7 +13842,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>MessageDelegate</name>
     <message>
-        <location filename="../qml/MessageDelegate.qml" line="+458"/>
+        <location filename="../qml/MessageDelegate.qml" line="+459"/>
         <source>%1 B</source>
         <translation>%1 B</translation>
     </message>
@@ -13826,14 +13866,14 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="-577"/>
         <location line="+57"/>
         <location line="+517"/>
-        <location line="+4370"/>
+        <location line="+4369"/>
         <location line="+1066"/>
         <location line="+93"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location line="-6101"/>
+        <location line="-6100"/>
         <source>Voice message</source>
         <translation>Sprachnachricht</translation>
     </message>
@@ -13846,24 +13886,24 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="-570"/>
         <location line="+568"/>
-        <location line="+3823"/>
+        <location line="+3822"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5314"/>
+        <location line="-5313"/>
         <location line="+53"/>
         <location line="+514"/>
-        <location line="+4372"/>
+        <location line="+4371"/>
         <source>Image</source>
         <translation>Bild</translation>
     </message>
     <message>
-        <location line="-4938"/>
+        <location line="-4937"/>
         <location line="+570"/>
-        <location line="+4473"/>
+        <location line="+4472"/>
         <location line="+1270"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -13871,7 +13911,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Datei</translation>
     </message>
     <message>
-        <location line="-6343"/>
+        <location line="-6342"/>
         <source>Attachment</source>
         <translation>Anhang</translation>
     </message>
@@ -13933,14 +13973,14 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Entschlüsselung erneut versuchen</translation>
     </message>
     <message>
-        <location line="-892"/>
-        <location line="+158"/>
+        <location line="-893"/>
+        <location line="+159"/>
         <source>Avatar for %1</source>
         <translation>Avatar von %1</translation>
     </message>
     <message>
-        <location line="-127"/>
-        <location line="+193"/>
+        <location line="-128"/>
+        <location line="+194"/>
         <source>Sent at %1</source>
         <translation>Gesendet um %1</translation>
     </message>
@@ -13977,12 +14017,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="+91"/>
         <location line="+949"/>
-        <location line="+1153"/>
+        <location line="+1152"/>
         <source>Reply</source>
         <translation>Antworten</translation>
     </message>
     <message>
-        <location line="-2089"/>
+        <location line="-2088"/>
         <source>Original message removed</source>
         <translation>Ursprüngliche Nachricht entfernt</translation>
     </message>
@@ -14107,36 +14147,36 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2456"/>
+        <location line="+2455"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>Wiederholen</translation>
     </message>
     <message>
-        <location line="-3472"/>
-        <location line="+1232"/>
+        <location line="-3471"/>
+        <location line="+1231"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location line="-1227"/>
+        <location line="-1226"/>
         <source>Cancel sending this message</source>
         <translation>Senden dieser Nachricht abbrechen</translation>
     </message>
     <message>
         <location line="+190"/>
-        <location line="+1510"/>
+        <location line="+1509"/>
         <source>Hide image</source>
         <translation>Bild ausblenden</translation>
     </message>
     <message>
-        <location line="-1510"/>
-        <location line="+1510"/>
+        <location line="-1509"/>
+        <location line="+1509"/>
         <source>Hidden image limit reached</source>
         <translation>Limit für ausgeblendete Bilder erreicht</translation>
     </message>
     <message>
-        <location line="-1506"/>
+        <location line="-1505"/>
         <source>Hide</source>
         <translation>Ausblenden</translation>
     </message>
@@ -14158,23 +14198,23 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="+25"/>
         <location line="+4"/>
-        <location line="+1141"/>
+        <location line="+1140"/>
         <source>Reply in thread</source>
         <translation>Im Thread antworten</translation>
     </message>
     <message>
-        <location line="-1124"/>
+        <location line="-1123"/>
         <source>Edit message</source>
         <translation>Nachricht bearbeiten</translation>
     </message>
     <message>
         <location line="+4"/>
-        <location line="+1140"/>
+        <location line="+1139"/>
         <source>Edit</source>
         <translation>Bearbeiten</translation>
     </message>
     <message>
-        <location line="-1119"/>
+        <location line="-1118"/>
         <source>More message actions</source>
         <translation>Weitere Nachrichtenaktionen</translation>
     </message>
@@ -14240,7 +14280,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Gelesen von %1, %2 und %3 weiteren</translation>
     </message>
     <message>
-        <location line="+568"/>
+        <location line="+567"/>
         <source>Message · %1 · %2</source>
         <translation>Nachricht · %1 · %2</translation>
     </message>
@@ -14502,7 +14542,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-2750"/>
+        <location line="-2749"/>
         <source>Open this thread</source>
         <translation>Diesen Thread öffnen</translation>
     </message>
@@ -14515,7 +14555,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         </translation>
     </message>
     <message>
-        <location line="+632"/>
+        <location line="+631"/>
         <source>Delete message?</source>
         <translation>Nachricht löschen?</translation>
     </message>
@@ -15010,18 +15050,18 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="+33"/>
         <location line="+28"/>
         <location line="+46"/>
-        <location line="+668"/>
+        <location line="+743"/>
         <location line="+26"/>
         <source>Unknown room: %1</source>
         <translation>Unbekannter Raum: %1</translation>
     </message>
     <message>
-        <location line="-124"/>
+        <location line="-199"/>
         <source>Cannot edit: original message not found.</source>
         <translation>Bearbeiten nicht möglich: Die ursprüngliche Nachricht wurde nicht gefunden.</translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+182"/>
         <source>Image</source>
         <translation>Bild</translation>
     </message>
@@ -18357,6 +18397,80 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
 </context>
 <context>
+    <name>RemoveRecentMessagesDialog</name>
+    <message>
+        <location filename="../qml/RemoveRecentMessagesDialog.qml" line="+16"/>
+        <source>Remove recent messages</source>
+        <translation>Letzte Nachrichten entfernen</translation>
+    </message>
+    <message>
+        <location line="+58"/>
+        <source>Counting recent messages from %1…</source>
+        <translation>Letzte Nachrichten von %1 werden gezählt…</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>No messages from %1 in this part of the history.</source>
+        <translation>Keine Nachrichten von %1 in diesem Teil des Verlaufs.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>No recent messages from %1 to remove.</source>
+        <translation>Keine letzten Nachrichten von %1 zum Entfernen.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Remove at least %n recent message(s) from %1?</source>
+        <translation>
+            <numerusform>Mindestens %n letzte Nachricht von %1 entfernen?</numerusform>
+            <numerusform>Mindestens %n letzte Nachrichten von %1 entfernen?</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Remove %n recent message(s) from %1?</source>
+        <translation>
+            <numerusform>%n letzte Nachricht von %1 entfernen?</numerusform>
+            <numerusform>%n letzte Nachrichten von %1 entfernen?</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>They will be removed for everyone in this room. This cannot be undone.</source>
+        <translation>Sie werden für alle in diesem Raum entfernt. Das kann nicht rückgängig gemacht werden.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Reason (optional)</source>
+        <translation>Grund (optional)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Reason for removing messages</source>
+        <translation>Grund für das Entfernen der Nachrichten</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Keep state events (name/avatar changes, joins)</source>
+        <translation>Zustandsereignisse behalten (Namens-/Avatar-Änderungen, Beitritte)</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Look further back</source>
+        <translation>Weiter zurückgehen</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Remove</source>
+        <translation>Entfernen</translation>
+    </message>
+</context>
+<context>
     <name>ReportMessageDialog</name>
     <message>
         <location filename="../qml/ReportMessageDialog.qml" line="+48"/>
@@ -19884,7 +19998,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Dieser Raum ist im Raumverzeichnis aufgeführt, aber nur eingeladene Personen können beitreten.</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+53"/>
         <source>View profile</source>
         <translation>Profil ansehen</translation>
     </message>
@@ -19904,7 +20018,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Bann aufheben …</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+49"/>
         <source>Choose room avatar</source>
         <translation>Raumavatar auswählen</translation>
     </message>
@@ -19950,7 +20064,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Rauminformationen schließen</translation>
     </message>
     <message>
-        <location line="+112"/>
+        <location line="-93"/>
+        <source>Remove recent messages…</source>
+        <translation>Letzte Nachrichten entfernen…</translation>
+    </message>
+    <message>
+        <location line="+205"/>
         <source>Notifications</source>
         <translation>Benachrichtigungen</translation>
     </message>
@@ -21907,12 +22026,12 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <location line="+7"/>
         <location line="+10"/>
         <location line="+50"/>
-        <location line="+2793"/>
+        <location line="+2833"/>
         <source>Lightning could not completely reset the local session for this account. Check the application logs and filesystem permissions, then try again.</source>
         <translation>Lightning konnte die lokale Sitzung dieses Kontos nicht vollständig zurücksetzen. Prüfe die Anwendungsprotokolle und die Dateisystemberechtigungen und versuche es dann erneut.</translation>
     </message>
     <message>
-        <location line="-2807"/>
+        <location line="-2847"/>
         <source>Local Lightning session rebuilt. The previous encryption store was moved aside, not deleted, and is still in this account&apos;s data directory. You can sign in again.</source>
         <translation>Lokale Lightning-Sitzung neu aufgebaut. Der vorherige Verschlüsselungsspeicher wurde beiseitegelegt, nicht gelöscht, und liegt weiterhin im Datenverzeichnis dieses Kontos. Du kannst dich erneut anmelden.</translation>
     </message>
@@ -21925,7 +22044,7 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4763"/>
+        <location line="+4807"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -21934,29 +22053,29 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <translation>Nicht angemeldet.</translation>
     </message>
     <message>
-        <location line="-5119"/>
+        <location line="-5163"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4926"/>
+        <location line="+4970"/>
         <source>Unknown room: %1</source>
         <translation>Unbekannter Raum: %1</translation>
     </message>
     <message>
-        <location line="-5121"/>
+        <location line="-5165"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
         <translation>An verschlüsselte Räume kann noch nicht gesendet werden: Das verschlüsselte Senden des Rust-SDK ist nicht verifiziert.</translation>
     </message>
     <message>
-        <location line="+777"/>
+        <location line="+817"/>
         <location line="+2726"/>
-        <location line="+64"/>
+        <location line="+68"/>
         <source>The sticker could not be sent.</source>
         <translation>Der Sticker konnte nicht gesendet werden.</translation>
     </message>
     <message>
-        <location line="-1465"/>
+        <location line="-1469"/>
         <source>Lightning cannot send that yet.</source>
         <translation>Lightning kann das noch nicht senden.</translation>
     </message>
@@ -22007,23 +22126,23 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
     </message>
     <message>
         <location line="+317"/>
-        <location line="+41"/>
+        <location line="+45"/>
         <source>The reaction could not be applied.</source>
         <translation>Die Reaktion konnte nicht angewendet werden.</translation>
     </message>
     <message>
-        <location line="-33"/>
-        <location line="+64"/>
+        <location line="-37"/>
+        <location line="+68"/>
         <source>The poll action could not be completed.</source>
         <translation>Die Umfrageaktion konnte nicht abgeschlossen werden.</translation>
     </message>
     <message>
-        <location line="-61"/>
+        <location line="-65"/>
         <source>The thread reply could not be sent.</source>
         <translation>Die Thread-Antwort konnte nicht gesendet werden.</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+38"/>
         <source>The message could not be deleted.</source>
         <translation>Die Nachricht konnte nicht gelöscht werden.</translation>
     </message>

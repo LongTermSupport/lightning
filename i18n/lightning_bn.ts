@@ -2580,7 +2580,7 @@ EXIF ওরিয়েন্টেশন: %4</translation>
 <context>
     <name>BulkRedactionBar</name>
     <message numerus="yes">
-        <location filename="../qml/BulkRedactionBar.qml" line="+35"/>
+        <location filename="../qml/BulkRedactionBar.qml" line="+52"/>
         <source>%n message(s) selected</source>
         <translation>
             <numerusform>%nটি বার্তা নির্বাচিত</numerusform>
@@ -2595,8 +2595,33 @@ EXIF ওরিয়েন্টেশন: %4</translation>
             <numerusform>%n টির মধ্যে %1 টি বার্তা মোছা হচ্ছে…</numerusform>
         </translation>
     </message>
+    <message>
+        <location line="-13"/>
+        <source>Removed %1 of %2</source>
+        <translation>%2 এর মধ্যে %1 সরানো হয়েছে</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Stopped. Removed %1 of %2; %3 couldn&apos;t be removed.</source>
+        <translation>থামানো হয়েছে। %2 এর মধ্যে %1 সরানো হয়েছে; %3 সরানো যায়নি।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Removed %1 of %2; %3 couldn&apos;t be removed.</source>
+        <translation>%2 এর মধ্যে %1 সরানো হয়েছে; %3 সরানো যায়নি।</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Stopped. Removed %1 of %2.</source>
+        <translation>থামানো হয়েছে। %2 এর মধ্যে %1 সরানো হয়েছে।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Removed %1 of %2.</source>
+        <translation>%2 এর মধ্যে %1 সরানো হয়েছে।</translation>
+    </message>
     <message numerus="yes">
-        <location line="+7"/>
+        <location line="+10"/>
         <source>Stopped after %1 of %n message(s); %2 failed.</source>
         <translation>
             <numerusform>%n টির মধ্যে %1 টি বার্তার পরে থামানো হয়েছে; %2 টি ব্যর্থ হয়েছে।</numerusform>
@@ -2628,13 +2653,18 @@ EXIF ওরিয়েন্টেশন: %4</translation>
         </translation>
     </message>
     <message>
-        <location line="+7"/>
-        <location line="+61"/>
+        <location line="+8"/>
+        <source>Look further back</source>
+        <translation>আরও পেছনে দেখুন</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <location line="+64"/>
         <source>Cancel</source>
         <translation>বাতিল</translation>
     </message>
     <message>
-        <location line="-61"/>
+        <location line="-64"/>
         <source>Dismiss</source>
         <translation>বন্ধ করুন</translation>
     </message>
@@ -2647,7 +2677,7 @@ EXIF ওরিয়েন্টেশন: %4</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+31"/>
+        <location line="+34"/>
         <source>Delete %n messages?</source>
         <translation>
             <numerusform>%nটি বার্তা মুছবেন?</numerusform>
@@ -2681,7 +2711,7 @@ EXIF ওরিয়েন্টেশন: %4</translation>
 <context>
     <name>BulkRedactionController</name>
     <message>
-        <location filename="../src/app/BulkRedactionController.cpp" line="+108"/>
+        <location filename="../src/app/BulkRedactionController.cpp" line="+270"/>
         <source>A previous deletion of this message is still in progress.</source>
         <translation>এই বার্তার আগের একটি মোছা এখনও চলছে।</translation>
     </message>
@@ -2705,12 +2735,17 @@ EXIF ওরিয়েন্টেশন: %4</translation>
         </translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+68"/>
         <source>A deletion got no answer from the server; its result is unknown.</source>
         <translation>একটি মোছার কোনো উত্তর সার্ভার থেকে আসেনি; এর ফলাফল অজানা।</translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+37"/>
+        <source>The server asked to slow down; continuing shortly.</source>
+        <translation>সার্ভার ধীর হতে বলেছে; একটু পরে আবার চলবে।</translation>
+    </message>
+    <message>
+        <location line="+46"/>
         <source>One redaction was already in progress; its result is unknown.</source>
         <translation>একটি মোছা আগে থেকেই চলছিল; এর ফলাফল অজানা।</translation>
     </message>
@@ -12840,7 +12875,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MemberProfilePopover</name>
     <message>
-        <location filename="../qml/MemberProfilePopover.qml" line="+491"/>
+        <location filename="../qml/MemberProfilePopover.qml" line="+514"/>
         <source>Profile for %1</source>
         <translation>%1-এর প্রোফাইল</translation>
     </message>
@@ -12997,7 +13032,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>প্রতিটি রুমে %1উপেক্ষা করুন</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+20"/>
+        <source>Remove recent messages…</source>
+        <translation>সাম্প্রতিক বার্তা সরান…</translation>
+    </message>
+    <message>
+        <location line="+22"/>
         <source>Role</source>
         <translation>ভূমিকা</translation>
     </message>
@@ -13138,7 +13178,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>বাতিল</translation>
     </message>
     <message>
-        <location line="-1314"/>
+        <location line="-1328"/>
         <source>Matrix ID copied</source>
         <translation>Matrix আইডি অনুলিপি হয়েছে</translation>
     </message>
@@ -13802,7 +13842,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MessageDelegate</name>
     <message>
-        <location filename="../qml/MessageDelegate.qml" line="+1245"/>
+        <location filename="../qml/MessageDelegate.qml" line="+1246"/>
         <source>Today</source>
         <translation>আজ</translation>
     </message>
@@ -13822,14 +13862,14 @@ Signing out and signing in again is the only fix.</source>
         <translation>নতুন বার্তা</translation>
     </message>
     <message>
-        <location line="+280"/>
-        <location line="+158"/>
+        <location line="+279"/>
+        <location line="+159"/>
         <source>Avatar for %1</source>
         <translation>%1-এর অবতার</translation>
     </message>
     <message>
-        <location line="-127"/>
-        <location line="+193"/>
+        <location line="-128"/>
+        <location line="+194"/>
         <source>Sent at %1</source>
         <translation>%1-এ পাঠানো</translation>
     </message>
@@ -13851,12 +13891,12 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="+91"/>
         <location line="+949"/>
-        <location line="+1153"/>
+        <location line="+1152"/>
         <source>Reply</source>
         <translation>উত্তর</translation>
     </message>
     <message>
-        <location line="-2087"/>
+        <location line="-2086"/>
         <source>(original message not loaded)</source>
         <translation>(মূল বার্তা লোড হয়নি)</translation>
     </message>
@@ -13957,30 +13997,30 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2456"/>
+        <location line="+2455"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>আবার চেষ্টা করুন</translation>
     </message>
     <message>
-        <location line="-3472"/>
-        <location line="+1232"/>
+        <location line="-3471"/>
+        <location line="+1231"/>
         <source>Cancel</source>
         <translation>বাতিল</translation>
     </message>
     <message>
-        <location line="-1227"/>
+        <location line="-1226"/>
         <source>Cancel sending this message</source>
         <translation>এই বার্তা পাঠানো বাতিল করুন</translation>
     </message>
     <message>
         <location line="+190"/>
-        <location line="+1510"/>
+        <location line="+1509"/>
         <source>Hide image</source>
         <translation>ছবি লুকান</translation>
     </message>
     <message>
-        <location line="-1506"/>
+        <location line="-1505"/>
         <source>Hide</source>
         <translation>লুকান</translation>
     </message>
@@ -14071,19 +14111,19 @@ Signing out and signing in again is the only fix.</source>
         <translation>%1, %2 এবং আরও %3 জন পড়েছেন</translation>
     </message>
     <message>
-        <location line="+568"/>
+        <location line="+567"/>
         <source>Message · %1 · %2</source>
         <translation>বার্তা · %1 · %2</translation>
     </message>
     <message>
-        <location line="-998"/>
+        <location line="-997"/>
         <location line="+4"/>
-        <location line="+1141"/>
+        <location line="+1140"/>
         <source>Reply in thread</source>
         <translation>থ্রেডে উত্তর দিন</translation>
     </message>
     <message>
-        <location line="-2102"/>
+        <location line="-2101"/>
         <source>Original message removed</source>
         <translation>মূল বার্তা সরানো হয়েছে</translation>
     </message>
@@ -14099,12 +14139,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+241"/>
-        <location line="+1510"/>
+        <location line="+1509"/>
         <source>Hidden image limit reached</source>
         <translation>লুকানো ছবির সীমায় পৌঁছেছে</translation>
     </message>
     <message numerus="yes">
-        <location line="-1257"/>
+        <location line="-1256"/>
         <source>%1 and %n other(s)</source>
         <translation>
             <numerusform>%1 এবং আরও ১ জন</numerusform>
@@ -14112,7 +14152,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message>
-        <location line="+974"/>
+        <location line="+973"/>
         <source>Open in room</source>
         <translation>রুমে খুলুন</translation>
     </message>
@@ -14389,13 +14429,13 @@ Signing out and signing in again is the only fix.</source>
         <translation>এখনও কোনো অবস্থান পাওয়া যায়নি।</translation>
     </message>
     <message>
-        <location line="-4048"/>
-        <location line="+1140"/>
+        <location line="-4047"/>
+        <location line="+1139"/>
         <source>Edit</source>
         <translation>সম্পাদনা</translation>
     </message>
     <message>
-        <location line="-3732"/>
+        <location line="-3731"/>
         <source>%1 B</source>
         <translation>%1 B</translation>
     </message>
@@ -14429,22 +14469,22 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="-570"/>
         <location line="+568"/>
-        <location line="+3823"/>
+        <location line="+3822"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5314"/>
+        <location line="-5313"/>
         <location line="+53"/>
         <location line="+514"/>
-        <location line="+4372"/>
+        <location line="+4371"/>
         <source>Image</source>
         <translation>ছবি</translation>
     </message>
     <message>
-        <location line="-4937"/>
+        <location line="-4936"/>
         <source>Attachment</source>
         <translation>সংযুক্তি</translation>
     </message>
@@ -14510,7 +14550,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>(সম্পাদিত)</translation>
     </message>
     <message>
-        <location line="+1728"/>
+        <location line="+1727"/>
         <source>Add :%1: to my emoji</source>
         <translation>আমার ইমোজিতে :%1: যোগ করুন</translation>
     </message>
@@ -14648,12 +14688,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>উত্তরের লক্ষ্য</translation>
     </message>
     <message>
-        <location line="-2113"/>
+        <location line="-2112"/>
         <source>Show preview</source>
         <translation>প্রাকদর্শন দেখান</translation>
     </message>
     <message>
-        <location line="+1953"/>
+        <location line="+1952"/>
         <source>Remove edits?</source>
         <translation>সম্পাদনা সরাবেন?</translation>
     </message>
@@ -14765,10 +14805,10 @@ Signing out and signing in again is the only fix.</source>
         <translation>স্টিকার লোড হয়নি — আবার চেষ্টা করতে ক্লিক করুন</translation>
     </message>
     <message>
-        <location line="-5731"/>
+        <location line="-5730"/>
         <location line="+57"/>
         <location line="+517"/>
-        <location line="+4370"/>
+        <location line="+4369"/>
         <location line="+1066"/>
         <location line="+93"/>
         <source>Video</source>
@@ -14781,9 +14821,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>ভিডিও</translation>
     </message>
     <message>
-        <location line="-6114"/>
+        <location line="-6113"/>
         <location line="+570"/>
-        <location line="+4473"/>
+        <location line="+4472"/>
         <location line="+1270"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -15010,18 +15050,18 @@ Signing out and signing in again is the only fix.</source>
         <location line="+33"/>
         <location line="+28"/>
         <location line="+46"/>
-        <location line="+668"/>
+        <location line="+743"/>
         <location line="+26"/>
         <source>Unknown room: %1</source>
         <translation>অজানা রুম: %1</translation>
     </message>
     <message>
-        <location line="-124"/>
+        <location line="-199"/>
         <source>Cannot edit: original message not found.</source>
         <translation>সম্পাদনা করা যাচ্ছে না: মূল বার্তা পাওয়া যায়নি।</translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+182"/>
         <source>Image</source>
         <translation>ছবি</translation>
     </message>
@@ -18357,6 +18397,80 @@ Signing out and signing in again is the only fix.</source>
     </message>
 </context>
 <context>
+    <name>RemoveRecentMessagesDialog</name>
+    <message>
+        <location filename="../qml/RemoveRecentMessagesDialog.qml" line="+16"/>
+        <source>Remove recent messages</source>
+        <translation>সাম্প্রতিক বার্তা সরান</translation>
+    </message>
+    <message>
+        <location line="+58"/>
+        <source>Counting recent messages from %1…</source>
+        <translation>%1 এর সাম্প্রতিক বার্তা গোনা হচ্ছে…</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>No messages from %1 in this part of the history.</source>
+        <translation>ইতিহাসের এই অংশে %1 এর কোনো বার্তা নেই।</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>No recent messages from %1 to remove.</source>
+        <translation>সরানোর জন্য %1 এর কোনো সাম্প্রতিক বার্তা নেই।</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Remove at least %n recent message(s) from %1?</source>
+        <translation>
+            <numerusform>%1 এর অন্তত %n টি সাম্প্রতিক বার্তা সরাবেন?</numerusform>
+            <numerusform>%1 এর অন্তত %n টি সাম্প্রতিক বার্তা সরাবেন?</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Remove %n recent message(s) from %1?</source>
+        <translation>
+            <numerusform>%1 এর %n টি সাম্প্রতিক বার্তা সরাবেন?</numerusform>
+            <numerusform>%1 এর %n টি সাম্প্রতিক বার্তা সরাবেন?</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>They will be removed for everyone in this room. This cannot be undone.</source>
+        <translation>এগুলো এই রুমের সবার জন্য সরিয়ে ফেলা হবে। এটি ফেরানো যাবে না।</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Reason (optional)</source>
+        <translation>কারণ (ঐচ্ছিক)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Reason for removing messages</source>
+        <translation>বার্তা সরানোর কারণ</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Keep state events (name/avatar changes, joins)</source>
+        <translation>স্টেট ইভেন্ট রাখুন (নাম/অ্যাভাটার পরিবর্তন, যোগদান)</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Look further back</source>
+        <translation>আরও পেছনে দেখুন</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Cancel</source>
+        <translation>বাতিল</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Remove</source>
+        <translation>সরান</translation>
+    </message>
+</context>
+<context>
     <name>ReportMessageDialog</name>
     <message>
         <location filename="../qml/ReportMessageDialog.qml" line="+48"/>
@@ -19849,7 +19963,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RoomInfoPanel</name>
     <message>
-        <location filename="../qml/RoomInfoPanel.qml" line="+245"/>
+        <location filename="../qml/RoomInfoPanel.qml" line="+255"/>
         <source>Choose room avatar</source>
         <translation>রুমের অবতার বেছে নিন</translation>
     </message>
@@ -19879,7 +19993,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>রুমের তথ্য বন্ধ করুন</translation>
     </message>
     <message>
-        <location line="-267"/>
+        <location line="-277"/>
         <source>Overview</source>
         <translation>সংক্ষিপ্ত বিবরণ</translation>
     </message>
@@ -19899,7 +20013,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>মিডিয়া</translation>
     </message>
     <message>
-        <location line="+375"/>
+        <location line="+385"/>
         <source>Notifications</source>
         <translation>বিজ্ঞপ্তি</translation>
     </message>
@@ -19962,12 +20076,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>এনক্রিপ্টেড নয়</translation>
     </message>
     <message>
-        <location line="-554"/>
+        <location line="-564"/>
         <source>Widgets</source>
         <translation>উইজেট</translation>
     </message>
     <message>
-        <location line="+2145"/>
+        <location line="+2155"/>
         <source>Open</source>
         <translation>খুলুন</translation>
     </message>
@@ -19977,7 +20091,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>রুম এক্সপোর্ট করুন…</translation>
     </message>
     <message>
-        <location line="-573"/>
+        <location line="-583"/>
         <source>Anyone can read this room&apos;s history without joining, even though not everyone can join it.</source>
         <translation>এই রুমে সবাই যোগ দিতে না পারলেও, যে কেউ যোগ না দিয়েই এর ইতিহাস পড়তে পারেন।</translation>
     </message>
@@ -19987,7 +20101,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>এই রুমটি রুম ডিরেক্টরিতে তালিকাভুক্ত, তবে শুধু আমন্ত্রিত ব্যক্তিরাই এতে যোগ দিতে পারেন।</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+53"/>
         <source>View profile</source>
         <translation>প্রোফাইল দেখুন</translation>
     </message>
@@ -20005,6 +20119,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+7"/>
         <source>Unban…</source>
         <translation>নিষেধাজ্ঞা তুলুন…</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Remove recent messages…</source>
+        <translation>সাম্প্রতিক বার্তা সরান…</translation>
     </message>
     <message>
         <location line="+44"/>
@@ -21877,12 +21996,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <location line="+7"/>
         <location line="+10"/>
         <location line="+50"/>
-        <location line="+2793"/>
+        <location line="+2833"/>
         <source>Lightning could not completely reset the local session for this account. Check the application logs and filesystem permissions, then try again.</source>
         <translation>Lightning এই অ্যাকাউন্টের স্থানীয় সেশন পুরোপুরি রিসেট করতে পারেনি। অ্যাপ্লিকেশন লগ ও ফাইল সিস্টেমের অনুমতি দেখে আবার চেষ্টা করুন।</translation>
     </message>
     <message>
-        <location line="-2807"/>
+        <location line="-2847"/>
         <source>Local Lightning session rebuilt. The previous encryption store was moved aside, not deleted, and is still in this account&apos;s data directory. You can sign in again.</source>
         <translation>স্থানীয় Lightning সেশন নতুন করে গড়া হয়েছে। আগের এনক্রিপশন সংরক্ষণ সরিয়ে রাখা হয়েছে, মোছা হয়নি, এবং এখনও এই অ্যাকাউন্টের ডেটা ডিরেক্টরিতে আছে। আপনি আবার সাইন ইন করতে পারেন।</translation>
     </message>
@@ -21895,7 +22014,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4763"/>
+        <location line="+4807"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -21904,29 +22023,29 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>সাইন ইন করা নেই।</translation>
     </message>
     <message>
-        <location line="-5119"/>
+        <location line="-5163"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4926"/>
+        <location line="+4970"/>
         <source>Unknown room: %1</source>
         <translation>অজানা রুম: %1</translation>
     </message>
     <message>
-        <location line="-5121"/>
+        <location line="-5165"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
         <translation>এনক্রিপ্টেড রুমে এখনও পাঠানো যায় না: Rust SDK-এর এনক্রিপ্টেড পাঠানো যাচাই করা হয়নি।</translation>
     </message>
     <message>
-        <location line="+777"/>
+        <location line="+817"/>
         <location line="+2726"/>
-        <location line="+64"/>
+        <location line="+68"/>
         <source>The sticker could not be sent.</source>
         <translation>স্টিকার পাঠানো যায়নি।</translation>
     </message>
     <message>
-        <location line="-1465"/>
+        <location line="-1469"/>
         <source>Lightning cannot send that yet.</source>
         <translation>Lightning এখনও তা পাঠাতে পারে না।</translation>
     </message>
@@ -21977,17 +22096,17 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+317"/>
-        <location line="+41"/>
+        <location line="+45"/>
         <source>The reaction could not be applied.</source>
         <translation>প্রতিক্রিয়াটি প্রয়োগ করা যায়নি।</translation>
     </message>
     <message>
-        <location line="-30"/>
+        <location line="-34"/>
         <source>The thread reply could not be sent.</source>
         <translation>থ্রেড উত্তরটি পাঠানো যায়নি।</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+38"/>
         <source>The message could not be deleted.</source>
         <translation>বার্তাটি মোছা যায়নি।</translation>
     </message>
@@ -22012,13 +22131,13 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>সম্পাদনা প্রয়োগ করা যায়নি।</translation>
     </message>
     <message>
-        <location line="-56"/>
-        <location line="+64"/>
+        <location line="-60"/>
+        <location line="+68"/>
         <source>The poll action could not be completed.</source>
         <translation>ভোটের কাজ সম্পন্ন করা যায়নি।</translation>
     </message>
     <message>
-        <location line="-6645"/>
+        <location line="-6689"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>এই অ্যাকাউন্টের ডেটা এখনও একটি ব্যাকগ্রাউন্ড সেশনে ব্যবহৃত হচ্ছে। একটু অপেক্ষা করে আবার চেষ্টা করুন।</translation>
     </message>
@@ -22048,7 +22167,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>আপনার পাসওয়ার্ড দিন।</translation>
     </message>
     <message>
-        <location line="+5774"/>
+        <location line="+5818"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>বার্তাটি পাঠানো যায়নি। বার্তার “আবার চেষ্টা করুন” ক্রিয়া থেকে আবার চেষ্টা করতে পারেন।</translation>
     </message>

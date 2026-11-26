@@ -2624,7 +2624,7 @@ EXIF orientation: %4</source>
 <context>
     <name>BulkRedactionBar</name>
     <message numerus="yes">
-        <location filename="../qml/BulkRedactionBar.qml" line="+35"/>
+        <location filename="../qml/BulkRedactionBar.qml" line="+52"/>
         <source>%n message(s) selected</source>
         <translation>
             <numerusform>لم تُحدَّد رسائل</numerusform>
@@ -2647,8 +2647,33 @@ EXIF orientation: %4</source>
             <numerusform>جارٍ حذف %1 من %n رسالة…</numerusform>
         </translation>
     </message>
+    <message>
+        <location line="-13"/>
+        <source>Removed %1 of %2</source>
+        <translation>تمت إزالة %1 من %2</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Stopped. Removed %1 of %2; %3 couldn&apos;t be removed.</source>
+        <translation>تم الإيقاف. تمت إزالة %1 من %2؛ تعذّرت إزالة %3.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Removed %1 of %2; %3 couldn&apos;t be removed.</source>
+        <translation>تمت إزالة %1 من %2؛ تعذّرت إزالة %3.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Stopped. Removed %1 of %2.</source>
+        <translation>تم الإيقاف. تمت إزالة %1 من %2.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Removed %1 of %2.</source>
+        <translation>تمت إزالة %1 من %2.</translation>
+    </message>
     <message numerus="yes">
-        <location line="+7"/>
+        <location line="+10"/>
         <source>Stopped after %1 of %n message(s); %2 failed.</source>
         <translation>
             <numerusform>توقّف الحذف بعد %1 من %n رسالة؛ فشل %2.</numerusform>
@@ -2696,13 +2721,18 @@ EXIF orientation: %4</source>
         </translation>
     </message>
     <message>
-        <location line="+7"/>
-        <location line="+61"/>
+        <location line="+8"/>
+        <source>Look further back</source>
+        <translation>الرجوع أبعد في السجل</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <location line="+64"/>
         <source>Cancel</source>
         <translation>إلغاء</translation>
     </message>
     <message>
-        <location line="-61"/>
+        <location line="-64"/>
         <source>Dismiss</source>
         <translation>إخفاء</translation>
     </message>
@@ -2719,7 +2749,7 @@ EXIF orientation: %4</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+31"/>
+        <location line="+34"/>
         <source>Delete %n messages?</source>
         <translation>
             <numerusform>حذف %n رسالة؟</numerusform>
@@ -2761,7 +2791,7 @@ EXIF orientation: %4</source>
 <context>
     <name>BulkRedactionController</name>
     <message>
-        <location filename="../src/app/BulkRedactionController.cpp" line="+108"/>
+        <location filename="../src/app/BulkRedactionController.cpp" line="+270"/>
         <source>A previous deletion of this message is still in progress.</source>
         <translation>لا يزال حذف سابق لهذه الرسالة قيد التنفيذ.</translation>
     </message>
@@ -2789,12 +2819,17 @@ EXIF orientation: %4</source>
         </translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+68"/>
         <source>A deletion got no answer from the server; its result is unknown.</source>
         <translation>لم تتلقَّ عملية حذف أي رد من الخادم؛ نتيجتها غير معروفة.</translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+37"/>
+        <source>The server asked to slow down; continuing shortly.</source>
+        <translation>طلب الخادم التمهّل؛ سيتم الاستمرار بعد قليل.</translation>
+    </message>
+    <message>
+        <location line="+46"/>
         <source>One redaction was already in progress; its result is unknown.</source>
         <translation>كانت عملية حذف واحدة قيد التنفيذ بالفعل؛ نتيجتها غير معروفة.</translation>
     </message>
@@ -13064,7 +13099,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MemberProfilePopover</name>
     <message>
-        <location filename="../qml/MemberProfilePopover.qml" line="+491"/>
+        <location filename="../qml/MemberProfilePopover.qml" line="+514"/>
         <source>Profile for %1</source>
         <translation>ملف %1 الشخصي</translation>
     </message>
@@ -13221,7 +13256,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>تجاهل %1في كل غرفة</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+20"/>
+        <source>Remove recent messages…</source>
+        <translation>إزالة الرسائل الأخيرة…</translation>
+    </message>
+    <message>
+        <location line="+22"/>
         <source>Role</source>
         <translation>الدور</translation>
     </message>
@@ -13362,7 +13402,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>إلغاء</translation>
     </message>
     <message>
-        <location line="-1314"/>
+        <location line="-1328"/>
         <source>Matrix ID copied</source>
         <translation>نُسخ معرّف Matrix</translation>
     </message>
@@ -14026,7 +14066,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MessageDelegate</name>
     <message>
-        <location filename="../qml/MessageDelegate.qml" line="+1245"/>
+        <location filename="../qml/MessageDelegate.qml" line="+1246"/>
         <source>Today</source>
         <translation>اليوم</translation>
     </message>
@@ -14046,14 +14086,14 @@ Signing out and signing in again is the only fix.</source>
         <translation>رسائل جديدة</translation>
     </message>
     <message>
-        <location line="+280"/>
-        <location line="+158"/>
+        <location line="+279"/>
+        <location line="+159"/>
         <source>Avatar for %1</source>
         <translation>صورة %1 الرمزية</translation>
     </message>
     <message>
-        <location line="-127"/>
-        <location line="+193"/>
+        <location line="-128"/>
+        <location line="+194"/>
         <source>Sent at %1</source>
         <translation>أُرسلت في %1</translation>
     </message>
@@ -14075,12 +14115,12 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="+91"/>
         <location line="+949"/>
-        <location line="+1153"/>
+        <location line="+1152"/>
         <source>Reply</source>
         <translation>رد</translation>
     </message>
     <message>
-        <location line="-2087"/>
+        <location line="-2086"/>
         <source>(original message not loaded)</source>
         <translation>(الرسالة الأصلية غير محمّلة)</translation>
     </message>
@@ -14185,30 +14225,30 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2456"/>
+        <location line="+2455"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>إعادة المحاولة</translation>
     </message>
     <message>
-        <location line="-3472"/>
-        <location line="+1232"/>
+        <location line="-3471"/>
+        <location line="+1231"/>
         <source>Cancel</source>
         <translation>إلغاء</translation>
     </message>
     <message>
-        <location line="-1227"/>
+        <location line="-1226"/>
         <source>Cancel sending this message</source>
         <translation>إلغاء إرسال هذه الرسالة</translation>
     </message>
     <message>
         <location line="+190"/>
-        <location line="+1510"/>
+        <location line="+1509"/>
         <source>Hide image</source>
         <translation>إخفاء الصورة</translation>
     </message>
     <message>
-        <location line="-1506"/>
+        <location line="-1505"/>
         <source>Hide</source>
         <translation>إخفاء</translation>
     </message>
@@ -14299,19 +14339,19 @@ Signing out and signing in again is the only fix.</source>
         <translation>قرأها %1 و%2 و%3 آخرون</translation>
     </message>
     <message>
-        <location line="+568"/>
+        <location line="+567"/>
         <source>Message · %1 · %2</source>
         <translation>رسالة · %1 · %2</translation>
     </message>
     <message>
-        <location line="-998"/>
+        <location line="-997"/>
         <location line="+4"/>
-        <location line="+1141"/>
+        <location line="+1140"/>
         <source>Reply in thread</source>
         <translation>الرد في خيط</translation>
     </message>
     <message>
-        <location line="-2102"/>
+        <location line="-2101"/>
         <source>Original message removed</source>
         <translation>تمت إزالة الرسالة الأصلية</translation>
     </message>
@@ -14327,12 +14367,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+241"/>
-        <location line="+1510"/>
+        <location line="+1509"/>
         <source>Hidden image limit reached</source>
         <translation>تم بلوغ حد الصور المخفية</translation>
     </message>
     <message numerus="yes">
-        <location line="-1257"/>
+        <location line="-1256"/>
         <source>%1 and %n other(s)</source>
         <translation>
             <numerusform>%1 و%n آخرون</numerusform>
@@ -14344,7 +14384,7 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message>
-        <location line="+974"/>
+        <location line="+973"/>
         <source>Open in room</source>
         <translation>فتح في الغرفة</translation>
     </message>
@@ -14621,13 +14661,13 @@ Signing out and signing in again is the only fix.</source>
         <translation>لم يُستلم أي موقع بعد.</translation>
     </message>
     <message>
-        <location line="-4048"/>
-        <location line="+1140"/>
+        <location line="-4047"/>
+        <location line="+1139"/>
         <source>Edit</source>
         <translation>تحرير</translation>
     </message>
     <message>
-        <location line="-3732"/>
+        <location line="-3731"/>
         <source>%1 B</source>
         <translation>%1 ب</translation>
     </message>
@@ -14661,22 +14701,22 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="-570"/>
         <location line="+568"/>
-        <location line="+3823"/>
+        <location line="+3822"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5314"/>
+        <location line="-5313"/>
         <location line="+53"/>
         <location line="+514"/>
-        <location line="+4372"/>
+        <location line="+4371"/>
         <source>Image</source>
         <translation>صورة</translation>
     </message>
     <message>
-        <location line="-4937"/>
+        <location line="-4936"/>
         <source>Attachment</source>
         <translation>مرفق</translation>
     </message>
@@ -14750,7 +14790,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>(معدّلة)</translation>
     </message>
     <message>
-        <location line="+1728"/>
+        <location line="+1727"/>
         <source>Add :%1: to my emoji</source>
         <translation>إضافة :%1: إلى رموزي التعبيرية</translation>
     </message>
@@ -14892,12 +14932,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>هدف الرد</translation>
     </message>
     <message>
-        <location line="-2113"/>
+        <location line="-2112"/>
         <source>Show preview</source>
         <translation>إظهار المعاينة</translation>
     </message>
     <message>
-        <location line="+1953"/>
+        <location line="+1952"/>
         <source>Remove edits?</source>
         <translation>إزالة التعديلات؟</translation>
     </message>
@@ -15009,10 +15049,10 @@ Signing out and signing in again is the only fix.</source>
         <translation>فشل تحميل الملصق — انقر لإعادة المحاولة</translation>
     </message>
     <message>
-        <location line="-5731"/>
+        <location line="-5730"/>
         <location line="+57"/>
         <location line="+517"/>
-        <location line="+4370"/>
+        <location line="+4369"/>
         <location line="+1066"/>
         <location line="+93"/>
         <source>Video</source>
@@ -15025,9 +15065,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>فيديو</translation>
     </message>
     <message>
-        <location line="-6114"/>
+        <location line="-6113"/>
         <location line="+570"/>
-        <location line="+4473"/>
+        <location line="+4472"/>
         <location line="+1270"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -15274,18 +15314,18 @@ Signing out and signing in again is the only fix.</source>
         <location line="+33"/>
         <location line="+28"/>
         <location line="+46"/>
-        <location line="+668"/>
+        <location line="+743"/>
         <location line="+26"/>
         <source>Unknown room: %1</source>
         <translation>غرفة غير معروفة: %1</translation>
     </message>
     <message>
-        <location line="-124"/>
+        <location line="-199"/>
         <source>Cannot edit: original message not found.</source>
         <translation>تعذّر التحرير: لم يُعثر على الرسالة الأصلية.</translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+182"/>
         <source>Image</source>
         <translation>صورة</translation>
     </message>
@@ -18665,6 +18705,88 @@ Signing out and signing in again is the only fix.</source>
     </message>
 </context>
 <context>
+    <name>RemoveRecentMessagesDialog</name>
+    <message>
+        <location filename="../qml/RemoveRecentMessagesDialog.qml" line="+16"/>
+        <source>Remove recent messages</source>
+        <translation>إزالة الرسائل الأخيرة</translation>
+    </message>
+    <message>
+        <location line="+58"/>
+        <source>Counting recent messages from %1…</source>
+        <translation>جارٍ احتساب الرسائل الأخيرة من %1…</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>No messages from %1 in this part of the history.</source>
+        <translation>لا توجد رسائل من %1 في هذا الجزء من السجل.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>No recent messages from %1 to remove.</source>
+        <translation>لا توجد رسائل أخيرة من %1 لإزالتها.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Remove at least %n recent message(s) from %1?</source>
+        <translation>
+            <numerusform>هل تريد إزالة ما لا يقل عن %n رسالة حديثة من %1؟</numerusform>
+            <numerusform>هل تريد إزالة ما لا يقل عن رسالة واحدة حديثة من %1؟</numerusform>
+            <numerusform>هل تريد إزالة ما لا يقل عن رسالتين حديثتين من %1؟</numerusform>
+            <numerusform>هل تريد إزالة ما لا يقل عن %n رسائل حديثة من %1؟</numerusform>
+            <numerusform>هل تريد إزالة ما لا يقل عن %n رسالة حديثة من %1؟</numerusform>
+            <numerusform>هل تريد إزالة ما لا يقل عن %n رسالة حديثة من %1؟</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>Remove %n recent message(s) from %1?</source>
+        <translation>
+            <numerusform>هل تريد إزالة %n رسالة حديثة من %1؟</numerusform>
+            <numerusform>هل تريد إزالة رسالة واحدة حديثة من %1؟</numerusform>
+            <numerusform>هل تريد إزالة رسالتين حديثتين من %1؟</numerusform>
+            <numerusform>هل تريد إزالة %n رسائل حديثة من %1؟</numerusform>
+            <numerusform>هل تريد إزالة %n رسالة حديثة من %1؟</numerusform>
+            <numerusform>هل تريد إزالة %n رسالة حديثة من %1؟</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>They will be removed for everyone in this room. This cannot be undone.</source>
+        <translation>ستتم إزالتها للجميع في هذه الغرفة. لا يمكن التراجع عن ذلك.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Reason (optional)</source>
+        <translation>السبب (اختياري)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Reason for removing messages</source>
+        <translation>سبب إزالة الرسائل</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Keep state events (name/avatar changes, joins)</source>
+        <translation>الاحتفاظ بأحداث الحالة (تغييرات الاسم/الصورة الرمزية، الانضمام)</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Look further back</source>
+        <translation>الرجوع أبعد في السجل</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Cancel</source>
+        <translation>إلغاء</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Remove</source>
+        <translation>إزالة</translation>
+    </message>
+</context>
+<context>
     <name>ReportMessageDialog</name>
     <message>
         <location filename="../qml/ReportMessageDialog.qml" line="+48"/>
@@ -20201,7 +20323,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RoomInfoPanel</name>
     <message>
-        <location filename="../qml/RoomInfoPanel.qml" line="+245"/>
+        <location filename="../qml/RoomInfoPanel.qml" line="+255"/>
         <source>Choose room avatar</source>
         <translation>اختر صورة الغرفة الرمزية</translation>
     </message>
@@ -20231,7 +20353,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>إغلاق معلومات الغرفة</translation>
     </message>
     <message>
-        <location line="-267"/>
+        <location line="-277"/>
         <source>Overview</source>
         <translation>نظرة عامة</translation>
     </message>
@@ -20251,7 +20373,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>الوسائط</translation>
     </message>
     <message>
-        <location line="+375"/>
+        <location line="+385"/>
         <source>Notifications</source>
         <translation>الإشعارات</translation>
     </message>
@@ -20314,12 +20436,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>غير معمّاة</translation>
     </message>
     <message>
-        <location line="-554"/>
+        <location line="-564"/>
         <source>Widgets</source>
         <translation>الودجات</translation>
     </message>
     <message>
-        <location line="+2145"/>
+        <location line="+2155"/>
         <source>Open</source>
         <translation>فتح</translation>
     </message>
@@ -20329,7 +20451,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>تصدير الغرفة…</translation>
     </message>
     <message>
-        <location line="-573"/>
+        <location line="-583"/>
         <source>Anyone can read this room&apos;s history without joining, even though not everyone can join it.</source>
         <translation>يمكن لأي شخص قراءة سجل هذه الغرفة دون الانضمام إليها، رغم أن الانضمام إليها ليس متاحًا للجميع.</translation>
     </message>
@@ -20339,7 +20461,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>هذه الغرفة مدرجة في دليل الغرف، لكن لا يمكن الانضمام إليها إلا بدعوة.</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+53"/>
         <source>View profile</source>
         <translation>عرض الملف الشخصي</translation>
     </message>
@@ -20357,6 +20479,11 @@ Signing out and signing in again is the only fix.</source>
         <location line="+7"/>
         <source>Unban…</source>
         <translation>رفع الحظر…</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Remove recent messages…</source>
+        <translation>إزالة الرسائل الأخيرة…</translation>
     </message>
     <message>
         <location line="+44"/>
@@ -22285,12 +22412,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <location line="+7"/>
         <location line="+10"/>
         <location line="+50"/>
-        <location line="+2793"/>
+        <location line="+2833"/>
         <source>Lightning could not completely reset the local session for this account. Check the application logs and filesystem permissions, then try again.</source>
         <translation>تعذّر على Lightning إعادة ضبط الجلسة المحلية لهذا الحساب بالكامل. تحقّق من سجلات التطبيق وأذونات نظام الملفات ثم أعد المحاولة.</translation>
     </message>
     <message>
-        <location line="-2807"/>
+        <location line="-2847"/>
         <source>Local Lightning session rebuilt. The previous encryption store was moved aside, not deleted, and is still in this account&apos;s data directory. You can sign in again.</source>
         <translation>أُعيد بناء جلسة Lightning المحلية. نُحّي مخزن التعمية السابق جانبًا ولم يُحذف، وما زال في مجلد بيانات هذا الحساب. يمكنك تسجيل الدخول مجددًا.</translation>
     </message>
@@ -22303,7 +22430,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4763"/>
+        <location line="+4807"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -22312,29 +22439,29 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>لم تسجّل الدخول.</translation>
     </message>
     <message>
-        <location line="-5119"/>
+        <location line="-5163"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4926"/>
+        <location line="+4970"/>
         <source>Unknown room: %1</source>
         <translation>غرفة غير معروفة: %1</translation>
     </message>
     <message>
-        <location line="-5121"/>
+        <location line="-5165"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
         <translation>لا يمكن الإرسال إلى الغرف المعمّاة بعد: الإرسال المعمّى عبر Rust SDK غير مُتحقق منه.</translation>
     </message>
     <message>
-        <location line="+777"/>
+        <location line="+817"/>
         <location line="+2726"/>
-        <location line="+64"/>
+        <location line="+68"/>
         <source>The sticker could not be sent.</source>
         <translation>لا يمكن إرسال الملصق.</translation>
     </message>
     <message>
-        <location line="-1465"/>
+        <location line="-1469"/>
         <source>Lightning cannot send that yet.</source>
         <translation>لا يستطيع Lightning إرسال ذلك بعد.</translation>
     </message>
@@ -22385,17 +22512,17 @@ These links remain in room state. Open the successor from the room&apos;s replac
     </message>
     <message>
         <location line="+317"/>
-        <location line="+41"/>
+        <location line="+45"/>
         <source>The reaction could not be applied.</source>
         <translation>تعذّر تطبيق التفاعل.</translation>
     </message>
     <message>
-        <location line="-30"/>
+        <location line="-34"/>
         <source>The thread reply could not be sent.</source>
         <translation>تعذّر إرسال رد الخيط.</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+38"/>
         <source>The message could not be deleted.</source>
         <translation>تعذّر حذف الرسالة.</translation>
     </message>
@@ -22420,13 +22547,13 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>تعذّر تطبيق التعديل.</translation>
     </message>
     <message>
-        <location line="-56"/>
-        <location line="+64"/>
+        <location line="-60"/>
+        <location line="+68"/>
         <source>The poll action could not be completed.</source>
         <translation>تعذّر إكمال إجراء الاستطلاع.</translation>
     </message>
     <message>
-        <location line="-6645"/>
+        <location line="-6689"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>بيانات هذا الحساب ما زالت قيد الاستخدام من جلسة في الخلفية. انتظر قليلًا ثم حاول مرة أخرى.</translation>
     </message>
@@ -22456,7 +22583,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>أدخل كلمة المرور.</translation>
     </message>
     <message>
-        <location line="+5774"/>
+        <location line="+5818"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>تعذّر إرسال الرسالة. يمكنك إعادة المحاولة من إجراء «إعادة المحاولة» الخاص بالرسالة.</translation>
     </message>
