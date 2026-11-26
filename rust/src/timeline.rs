@@ -3287,6 +3287,7 @@ send queue owes nothing for them: {in_flight:?}"
     let mut stable_polls = crate::stablepoll::Watch::default();
     let polls_seen = stable_polls.observe(items.iter());
     let mut tail = LiveTail::new(items.clone());
+    let mut send_order = crate::sendorder::SendOrder::new(&items);
     enqueue(
         &events,
         json!({
@@ -3360,7 +3361,7 @@ send queue owes nothing for them: {in_flight:?}"
                 let mut push_context = None;
                 backlog.begin_batch();
                 let mut polls_seen = Vec::new();
-                for diff in diffs {
+                for diff in send_order.translate(diffs) {
                     let changed = diff_items(&diff);
                     polls_seen.extend(stable_polls.observe(changed.iter()));
                     fetch_missing_reply_details(
