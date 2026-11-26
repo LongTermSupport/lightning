@@ -7,6 +7,8 @@
 #include <QKeyCombination>
 #include <QKeyEvent>
 #include <QKeySequence>
+#include <QScopedValueRollback>
+#include <QWindow>
 
 #if defined(LIGHTNING_HAVE_QPA_KEYMAPPER)
 #include <QtGui/private/qguiapplication_p.h>
@@ -20,6 +22,11 @@ extern Q_GUI_EXPORT bool qt_sendShortcutOverrideEvent(QObject *o, ulong timestam
                                                       const QString &text = QString(),
                                                       bool autorep = false,
                                                       ushort count = 1);
+
+// QtGui delivers this press through the platform shortcut map before the focused item.
+extern Q_GUI_EXPORT void qt_handleKeyEvent(QWindow *window, QEvent::Type type, int key,
+                                           Qt::KeyboardModifiers modifiers, const QString &text,
+                                           bool autorepeat, ushort count);
 
 namespace {
 
@@ -96,6 +103,54 @@ bool isNavigationOrEditingKey(int key)
 bool isPrintableKey(int key)
 {
     return key > 0 && key < Qt::Key_Escape && key != Qt::Key_Space;
+}
+
+int nativeShortcutKey(ShortcutRegistry::KeyboardPlatform platform, const QKeyEvent &event)
+{
+    using Platform = ShortcutRegistry::KeyboardPlatform;
+    const quint32 vk = event.nativeVirtualKey();
+    if (platform == Platform::MacOS) {
+        // Carbon ANSI virtual key codes are positions, including zero for A.
+        static constexpr char keys[] = "ASDFHGZXCV BQWER"
+                                       "YT123465=97-80]O"
+                                       "U[IP LJ'K;\\,/NM."
+                                       "  `";
+        if (vk < sizeof(keys) - 1 && keys[vk] != ' '
+            && (vk || event.nativeModifiers() || (event.spontaneous() && event.key() > 127)))
+            return keys[vk];
+        return 0;
+    }
+
+    if (platform == Platform::Windows) {
+        if ((vk >= 'A' && vk <= 'Z') || (vk >= '0' && vk <= '9'))
+            return int(vk);
+        // VK_OEM_1..VK_OEM_3 and VK_OEM_4..VK_OEM_7 on the US keyboard.
+        if (!event.nativeScanCode() && vk >= 0xba && vk <= 0xc0)
+            return ";=,-./`"[vk - 0xba];
+        if (!event.nativeScanCode() && vk >= 0xdb && vk <= 0xde)
+            return "[\\]'"[vk - 0xdb];
+    }
+    if (platform == Platform::Xkb && vk >= '!' && vk <= '~') {
+        const int latin = QChar(ushort(vk)).toUpper().unicode();
+        if (latin != event.key())
+            return latin;
+    }
+
+    if (platform != Platform::Windows && platform != Platform::Xkb)
+        return 0;
+    // XKB evdev keycodes are PC make codes plus eight; the keysym can be Cyrillic.
+    const quint32 scan = event.nativeScanCode() - (platform == Platform::Xkb ? 8 : 0);
+    if (scan >= 0x02 && scan <= 0x0d)
+        return "1234567890-="[scan - 0x02];
+    if (scan >= 0x10 && scan <= 0x1b)
+        return "QWERTYUIOP[]"[scan - 0x10];
+    if (scan >= 0x1e && scan <= 0x29)
+        return "ASDFGHJKL;'`"[scan - 0x1e];
+    if (scan == 0x2b)
+        return Qt::Key_Backslash;
+    if (scan >= 0x2c && scan <= 0x35)
+        return "ZXCVBNM,./"[scan - 0x2c];
+    return 0;
 }
 
 QString withoutKeypad(const QString &portable)
@@ -279,12 +334,72 @@ int ShortcutRegistry::physicalDigitKey(KeyboardPlatform platform,
     return 0;
 }
 
+int ShortcutRegistry::layoutShortcutKey(const QKeyEvent &event) const
+{
+    const int key = event.key();
+    const auto mods = event.modifiers();
+    if (!isPrintableKey(key) || (mods & (Qt::GroupSwitchModifier | Qt::KeypadModifier)))
+        return 0;
+    if (!(mods & (Qt::ControlModifier | Qt::AltModifier | Qt::MetaModifier))
+        && !(QChar::isLetter(key) && QChar::script(key) != QChar::Script_Latin))
+        return 0;
+
+    if (m_keyMapper) {
+        const auto combos = m_keyMapper(&event);
+        for (const QKeyCombination combo : combos) {
+            if (combo.keyboardModifiers() == mods && combo.key() != key
+                && combo.key() >= Qt::Key_Exclam && combo.key() <= Qt::Key_AsciiTilde)
+                return combo.key();
+        }
+    }
+    const int native = nativeShortcutKey(m_keyboardPlatform, event);
+    return native == key ? 0 : native;
+}
+
+bool ShortcutRegistry::routeLayoutShortcut(QWindow *window, QKeyEvent *event, int layoutKey)
+{
+    QScopedValueRollback routing(m_routingLayoutShortcut, true);
+    QKeyEvent literal(QEvent::ShortcutOverride, event->key(), event->modifiers(),
+                      event->nativeScanCode(), event->nativeVirtualKey(), event->nativeModifiers(),
+                      event->text(), event->isAutoRepeat(), event->count(), event->device());
+    literal.setTimestamp(event->timestamp());
+    QCoreApplication::sendEvent(window, &literal);
+    if (literal.isAccepted()) {
+        if (event->type() == QEvent::KeyPress)
+            return false;
+        event->accept();
+        return true;
+    }
+
+    QKeyEvent mapped(QEvent::ShortcutOverride, layoutKey, event->modifiers(), event->text(),
+                     event->isAutoRepeat(), event->count());
+    mapped.setTimestamp(event->timestamp());
+    QCoreApplication::sendEvent(window, &mapped);
+    if (event->type() == QEvent::ShortcutOverride) {
+        event->setAccepted(mapped.isAccepted());
+        return true;
+    }
+    if (!mapped.isAccepted()) {
+        if (qt_sendShortcutOverrideEvent(window, event->timestamp(), layoutKey, event->modifiers(),
+                                        event->text(), event->isAutoRepeat(), event->count()))
+            return true;
+        // Keys.onPressed can handle the literal key without claiming ShortcutOverride.
+        QCoreApplication::instance()->notify(window, event);
+        if (event->isAccepted())
+            return true;
+    }
+    qt_handleKeyEvent(window, QEvent::KeyPress, layoutKey, event->modifiers(), event->text(),
+                      event->isAutoRepeat(), event->count());
+    event->accept();
+    return true;
+}
+
 bool ShortcutRegistry::eventFilter(QObject *watched, QEvent *event)
 {
     switch (event->type()) {
     case QEvent::ShortcutOverride:
     case QEvent::KeyPress: {
-        const auto *key = static_cast<const QKeyEvent *>(event);
+        auto *key = static_cast<QKeyEvent *>(event);
         m_pressedKey = key->key();
         m_pressedModifiers = int(key->modifiers());
         m_pressedDigit = physicalDigitKey(m_keyboardPlatform, key->nativeScanCode(),
@@ -300,6 +415,11 @@ bool ShortcutRegistry::eventFilter(QObject *watched, QEvent *event)
                 && isPrintableKey(combos.first().key())
                 && combos.first().keyboardModifiers().testFlag(Qt::ShiftModifier))
                 m_pressedBaseKey = combos.first().key();
+        }
+        if (watched->isWindowType() && !m_routingLayoutShortcut) {
+            const int layoutKey = layoutShortcutKey(*key);
+            if (layoutKey && routeLayoutShortcut(static_cast<QWindow *>(watched), key, layoutKey))
+                return true;
         }
         if (event->type() == QEvent::KeyPress && watched->isWindowType()
             && runKeypadGlobalShortcut(watched, key))
