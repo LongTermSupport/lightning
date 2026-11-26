@@ -108,7 +108,7 @@ inline bool countsAsUnread(const RoomInfo &r, int mode)
 
 inline bool listsAsUnread(const RoomInfo &r, int mode)
 {
-    return countsAsUnread(r, mode) || (r.markedUnread && baseMode(mode) == kModeMute);
+    return countsAsUnread(r, mode) || (baseMode(mode) == kModeMute && rawUnread(r));
 }
 
 struct Summary {
