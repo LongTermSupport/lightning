@@ -71,6 +71,9 @@ Popup {
     property string role: ""
     property string avatarMxc: ""
     property bool isOwn: false
+    readonly property double joinedAtMs:
+        app.roomInfo.memberJoinedUser === userId
+        ? app.roomInfo.memberJoinedAtMs : 0
     // False when opened outside a joined room (an invite's inviter): no
     // roster, role or moderation for whichever room happens to be current.
     property bool roomScoped: true
@@ -1152,6 +1155,8 @@ Popup {
                     accessibleName: qsTr("More actions")
                     onClicked: {
                         app.roomInfo.requestMutualRooms(root.userId)
+                        if (root.roomScoped && root.membership === "joined")
+                            app.roomInfo.requestMemberJoinDate(root.userId)
                         profileOverflowMenu.popup(0, height + 2)
                     }
                     AppMenu {
@@ -1191,6 +1196,16 @@ Popup {
                                      && app.roomInfo.mutualRooms.length > 0
                         }
 
+                        AppMenuItem {
+                            objectName: "profileJoinedInfo"
+                            visible: root.roomScoped && root.joinedAtMs > 0
+                            enabled: false
+                            iconName: "schedule"
+                            text: qsTr("Joined this room %1").arg(
+                                new Date(root.joinedAtMs).toLocaleDateString(
+                                    Qt.locale(AppLocale.name),
+                                    Locale.ShortFormat))
+                        }
                         AppMenuItem {
                             objectName: "profileCopyIdButton"
                             text: qsTr("Copy user ID")

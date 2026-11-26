@@ -5098,11 +5098,18 @@ Rectangle {
             Item {
                 objectName: "paginationHeader"
                 anchors.top: parent.top
-                anchors.topMargin: jumpToFirstUnreadButton.visible
-                                   ? jumpToFirstUnreadButton.y
-                                     + jumpToFirstUnreadButton.height
-                                     + AppTheme.spacing4
-                                   : 0
+                // The loading bar keeps the top band above the pills; only the
+                // status chip, centred where they are, moves below them.
+                anchors.topMargin: {
+                    if (app.pagination.presentationState
+                            === PaginationController.Loading)
+                        return 0
+                    const pill = jumpToFirstUnreadButton.visible
+                               ? jumpToFirstUnreadButton
+                               : firstUnreadFailedNote.visible
+                                 ? firstUnreadFailedNote : null
+                    return pill ? pill.y + pill.height + AppTheme.spacing4 : 0
+                }
                 anchors.left: parent.left
                 anchors.right: parent.right
                 z: 15
@@ -5412,9 +5419,11 @@ Rectangle {
                 objectName: "jumpToFirstUnreadButton"
                 anchors.top: parent.top
                 anchors.topMargin: AppTheme.spacingM
-                x: (app.pagination && app.pagination.reachedStart)
-                   ? parent.width - width - AppTheme.spacingM
-                   : (parent.width - width) / 2
+                readonly property bool atStart:
+                    !!app.pagination && app.pagination.reachedStart
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.horizontalCenterOffset: atStart
+                    ? (parent.width - width) / 2 - AppTheme.spacingM : 0
                 visible: app.currentRoomId !== "" && app.timeline
                          && (timeline.firstUnreadLoaded
                              ? !timeline.firstUnreadOnScreen
@@ -5492,9 +5501,10 @@ Rectangle {
                 anchors.top: parent.top
                 anchors.topMargin: AppTheme.spacingM
                 readonly property bool atStart:
-                    app.pagination && app.pagination.reachedStart
-                x: atStart ? parent.width - width - AppTheme.spacingM
-                           : (parent.width - width) / 2
+                    !!app.pagination && app.pagination.reachedStart
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.horizontalCenterOffset: atStart
+                    ? (parent.width - width) / 2 - AppTheme.spacingM : 0
                 visible: root.firstUnreadNoteShown
                 z: 20
                 implicitHeight: 30

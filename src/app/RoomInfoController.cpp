@@ -122,6 +122,16 @@ void RoomInfoController::setClient(MatrixClient *client)
             m_mutualRooms = rooms;
             Q_EMIT mutualRoomsChanged();
         });
+        connect(m_client, &MatrixClient::memberJoinDateReceived, this,
+                [this](quint64 opId, const QString &roomId,
+                       const QString &userId, qint64 joinedAtMs) {
+            if (opId == 0 || opId != m_memberJoinedOp
+                || roomId != m_roomId || userId != m_memberJoinedUser)
+                return;
+            m_memberJoinedOp = 0;
+            m_memberJoinedAtMs = joinedAtMs > 0 ? double(joinedAtMs) : 0;
+            Q_EMIT memberJoinDateChanged();
+        });
         connect(m_client, &MatrixClient::roomMemberEventSeen,
                 this, &RoomInfoController::onMembersChanged);
         const auto refreshMutualHints = [this] {
@@ -183,6 +193,9 @@ void RoomInfoController::setRoomId(const QString &roomId)
 void RoomInfoController::clearSnapshot()
 {
     m_members.clear();
+    m_memberJoinedOp = 0;
+    m_memberJoinedUser.clear();
+    m_memberJoinedAtMs = 0;
     m_joinedCount = 0;
     m_invitedCount = 0;
     m_truncated = false;
@@ -1152,6 +1165,17 @@ void RoomInfoController::requestMutualRooms(const QString &userId)
     if (!m_client || userId.isEmpty())
         return;
     m_mutualRoomsOp = m_client->fetchMutualRooms(userId);
+}
+
+void RoomInfoController::requestMemberJoinDate(const QString &userId)
+{
+    m_memberJoinedOp = 0;
+    m_memberJoinedUser = userId;
+    m_memberJoinedAtMs = 0;
+    Q_EMIT memberJoinDateChanged();
+    if (!m_client || userId.isEmpty() || m_roomId.isEmpty())
+        return;
+    m_memberJoinedOp = m_client->fetchMemberJoinDate(m_roomId, userId);
 }
 
 QVariantMap RoomInfoController::memberFor(const QString &userId) const
