@@ -12350,7 +12350,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
 <context>
     <name>MainScreen</name>
     <message>
-        <location filename="../qml/MainScreen.qml" line="+632"/>
+        <location filename="../qml/MainScreen.qml" line="+640"/>
         <source>Resize room list</source>
         <translation>Redimensionner la liste des salons</translation>
     </message>
@@ -18260,7 +18260,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
 <context>
     <name>RailHiddenActions</name>
     <message>
-        <location filename="../qml/RailHiddenActions.qml" line="+18"/>
+        <location filename="../qml/RailHiddenActions.qml" line="+21"/>
         <source>Settings — this session is not verified</source>
         <translation>Paramètres — cette session n&apos;est pas vérifiée</translation>
     </message>
@@ -21491,7 +21491,7 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
 <context>
     <name>RoomsPanel</name>
     <message>
-        <location filename="../qml/RoomsPanel.qml" line="+208"/>
+        <location filename="../qml/RoomsPanel.qml" line="+211"/>
         <location line="+3"/>
         <location line="+5"/>
         <source>Lightning</source>
@@ -21518,26 +21518,31 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Ouvrir l&apos;aperçu de l&apos;espace</translation>
     </message>
     <message>
-        <location line="+86"/>
+        <location line="+29"/>
+        <source>Collapse room list</source>
+        <translation>Réduire la liste des salons</translation>
+    </message>
+    <message>
+        <location line="+70"/>
         <source>Search</source>
         <translation>Rechercher</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+771"/>
+        <location line="+776"/>
         <location line="+1"/>
         <source>Search rooms</source>
         <translation>Rechercher des salons</translation>
     </message>
     <message>
-        <location line="-714"/>
+        <location line="-719"/>
         <location line="+1"/>
         <source>Room list options</source>
         <translation>Options de la liste des salons</translation>
     </message>
     <message numerus="yes">
         <location line="+126"/>
-        <location line="+638"/>
+        <location line="+643"/>
         <source>Activity, %n unseen</source>
         <translation>
             <numerusform>Activité, %n non vu</numerusform>
@@ -21545,14 +21550,14 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         </translation>
     </message>
     <message>
-        <location line="-637"/>
+        <location line="-642"/>
         <location line="+1"/>
-        <location line="+637"/>
+        <location line="+642"/>
         <source>Activity</source>
         <translation>Activité</translation>
     </message>
     <message>
-        <location line="-521"/>
+        <location line="-526"/>
         <source>Archived (%1)</source>
         <translation>Archivés (%1)</translation>
     </message>
@@ -21733,7 +21738,12 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Déplier la liste des salons de %1</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+1"/>
+        <source>Expand room list</source>
+        <translation>Développer la liste des salons</translation>
+    </message>
+    <message>
+        <location line="+27"/>
         <location line="+12"/>
         <source>Show all rooms</source>
         <translation>Afficher tous les salons</translation>
@@ -21744,7 +21754,7 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Afficher les salons non lus</translation>
     </message>
     <message>
-        <location line="-461"/>
+        <location line="-466"/>
         <location line="+4"/>
         <location line="+6"/>
         <source>Unreads</source>
@@ -29499,7 +29509,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Fermer Activité, le sélecteur rapide ou les paramètres</translation>
     </message>
     <message>
-        <location line="+518"/>
+        <location line="+521"/>
         <source>Use a single key combination for dialog navigation.</source>
         <translation>Utilisez une seule combinaison de touches pour naviguer dans les boîtes de dialogue.</translation>
     </message>
@@ -29579,7 +29589,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Tant que la chronologie a le focus, « %1 » s’exécute à la place.</translation>
     </message>
     <message>
-        <location line="-804"/>
+        <location line="-807"/>
         <source>Application</source>
         <translation>Demande</translation>
     </message>
@@ -29737,6 +29747,11 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <location line="+27"/>
         <source>Show or hide the conversation list</source>
         <translation>Afficher ou masquer la liste des conversations</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Collapse or expand the conversation list</source>
+        <translation>Réduire ou développer la liste des conversations</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -30195,7 +30210,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Lorsque %1, %2 sert plutôt à %3.</translation>
     </message>
     <message>
-        <location line="-836"/>
+        <location line="-839"/>
         <source>Settings navigation</source>
         <translation>Navigation dans les paramètres</translation>
     </message>
@@ -30220,7 +30235,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Aller à la sous-section suivante des paramètres</translation>
     </message>
     <message>
-        <location line="+506"/>
+        <location line="+509"/>
         <source>Use a single key combination for Settings navigation.</source>
         <translation>Utilisez une seule combinaison de touches pour naviguer dans les paramètres.</translation>
     </message>
@@ -30240,7 +30255,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Dans les paramètres, « %1 » est exécuté à la place.</translation>
     </message>
     <message>
-        <location line="-682"/>
+        <location line="-685"/>
         <source>Scroll Settings up half a page</source>
         <translation>Faire défiler les paramètres d’une demi-page vers le haut</translation>
     </message>
@@ -30250,7 +30265,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Faire défiler les paramètres d’une demi-page vers le bas</translation>
     </message>
     <message>
-        <location line="+511"/>
+        <location line="+514"/>
         <source>%1 moves focus, navigates or edits text, so it cannot be a shortcut on its own.</source>
         <translation>%1 déplace le focus, navigue ou modifie le texte, et ne peut donc pas être un raccourci à lui seul.</translation>
     </message>

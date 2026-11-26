@@ -119,6 +119,14 @@ Item {
     Shortcut {
         sequences: {
             var _rev = app.shortcuts.bindingRevision
+            return [app.shortcuts.sequenceFor("shell.toggleRoomListCompact")]
+        }
+        enabled: roomsPanel.visible
+        onActivated: roomsPanel.compact ? roomsPanel.expand() : roomsPanel.collapse()
+    }
+    Shortcut {
+        sequences: {
+            var _rev = app.shortcuts.bindingRevision
             return [app.shortcuts.sequenceFor("shell.toggleSpacesRail")]
         }
         onActivated:
