@@ -744,9 +744,9 @@ private Q_SLOTS:
             "baseFill:\\s*modelData\\.byMe\\s*\\?\\s*AppTheme\\.reactionSelectedBackground"
             "\\s*:\\s*AppTheme\\.reactionBackground"))));
         QVERIFY(m_theme.contains(QRegularExpression(QStringLiteral(
-            "property\\s+color\\s+reactionBackground:\\s*_p\\.reaction\\s*!==\\s*undefined\\s*\\?\\s*_p\\.reaction\\s*:\\s*surface\\b"))));
+            "property\\s+color\\s+reactionBackground:\\s*surface\\b"))));
         QVERIFY(m_theme.contains(QRegularExpression(QStringLiteral(
-            "reactionBackground:\\s*p\\.reaction\\s*!==\\s*undefined\\s*\\?\\s*p\\.reaction\\s*:\\s*p\\.surface\\b"))));
+            "reactionBackground:\\s*p\\.surface\\b"))));
         QVERIFY(delegate.contains(QStringLiteral("reactionHover.hovered ? hoverFill : baseFill")));
         QVERIFY(delegate.contains(QRegularExpression(QStringLiteral(
             "border\\.color:\\s*modelData\\.byMe\\s*\\?\\s*AppTheme\\.reactionSelectedBorder"))));

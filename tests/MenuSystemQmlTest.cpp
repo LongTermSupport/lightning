@@ -717,8 +717,8 @@ private slots:
                              token("tokStormSelection")) <= kTolerance);
         QCOMPARE(label(reply)->property("color").value<QColor>(),
                  token("tokStormText"));
-        QCOMPARE(leadingIcon(reply)->property("color").value<QColor>().rgba(),
-                 token("tokMenuHighlightIcon").rgba());
+        QCOMPARE(leadingIcon(reply)->property("color").value<QColor>(),
+                 token("tokMenuHighlightIcon"));
         menu->setProperty("currentIndex", -1);
         closeMenu();
     }
@@ -749,7 +749,7 @@ private slots:
             QVERIFY(ink.isValid());
             QCOMPARE(background->property("color").value<QColor>(), fill);
             for (auto *glyph : {icon, bolt}) {
-                QCOMPARE(glyph->property("color").value<QColor>().rgba(), ink.rgba());
+                QCOMPARE(glyph->property("color").value<QColor>(), ink);
                 const double ratio = contrastRatio(ink, fill);
                 QVERIFY2(ratio >= 3.0,
                          qPrintable(QStringLiteral("theme %1: %2 on %3 is %4:1")

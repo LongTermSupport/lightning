@@ -412,6 +412,7 @@ QtObject {
     readonly property color _stoSelection:     "#283097"
     readonly property color _stoCardElevated:  "#22397E"
     readonly property color _stoHover:         "#6469BF"
+    readonly property color _stoReaction:      "#24317B"
     readonly property color _stoBolt:          "#FFD447"
     readonly property color _stoBoltInk:       "#0A0F24"
     readonly property color _stoText:          "#F2F4FF"
@@ -442,6 +443,16 @@ QtObject {
     readonly property color _awayLight:        "#BA671B"
     readonly property color _awayDark:         "#F59349"
 
+    readonly property color _lightReaction:    "#DCE9F8"
+    readonly property color _dkReaction:       "#464C57"
+    readonly property color _graReaction:      "#38434C"
+    readonly property color _midReaction:      "#394A5E"
+    readonly property color _norReaction:      "#2F596A"
+    readonly property color _purReaction:      "#444058"
+    readonly property color _warReaction:      "#E4D5BD"
+    readonly property color _mosReaction:      "#D0E3D5"
+    readonly property color _indReaction:      "#1F3F52"
+    readonly property color _teaReaction:      "#275454"
 
     readonly property color _scrimBase:        "#111111"
 
@@ -456,6 +467,7 @@ QtObject {
         borderStrong: _borderStrongLight, accent: _accentBlue,
         accentHover: _accentBlueHover, accentPressed: _accentBluePressed,
         ownBubble: _outgoingBubbleBlue,
+        reaction: _lightReaction,
         link: _lightLink, rail: _railLight,
         otherBubble: _cardElevatedLight
     })
@@ -469,7 +481,8 @@ QtObject {
         textDisabled: _dkTextDisabled, border: _dkBorder,
         borderStrong: _dkBorderStrong, accent: _accentBlue,
         accentHover: _accentBlueHover, accentPressed: _accentBluePressed,
-        ownBubble: _outgoingBubbleBlue, otherBubble: _dkCard, link: _dkLink
+        ownBubble: _outgoingBubbleBlue, otherBubble: _dkCard,
+        reaction: _dkReaction, link: _dkLink
     })
     readonly property var _midnight: ({
         background: _bgDark, sidebar: _sidebarDark, surface: _cardDark,
@@ -482,6 +495,7 @@ QtObject {
         borderStrong: _borderStrongDark, accent: _accentBlue,
         accentHover: _accentBlueHover, accentPressed: _accentBluePressed,
         ownBubble: _outgoingBubbleBlue, otherBubble: _cardElevatedDark,
+        reaction: _midReaction,
         link: _midLink, rail: _bgDark
     })
     readonly property var _graphite: ({
@@ -495,6 +509,7 @@ QtObject {
         borderStrong: _graBorderStrong, accent: _graAccent,
         accentHover: _graAccentHover, accentPressed: _graAccentPressed,
         ownBubble: _graOwnBubble, otherBubble: _graOtherBubble,
+        reaction: _graReaction,
         link: _graLink
     })
     readonly property var _nord: ({
@@ -508,6 +523,7 @@ QtObject {
         borderStrong: _norBorderStrong, accent: _norAccent,
         accentHover: _norAccentHover, accentPressed: _norAccentPressed,
         ownBubble: _norOwnBubble, otherBubble: _norOtherBubble,
+        reaction: _norReaction,
         link: _norLink, rail: _norRail
     })
     readonly property var _purple: ({
@@ -521,7 +537,8 @@ QtObject {
         borderStrong: _purBorderStrong, accent: _purAccent,
         accentHover: _purAccentHover, accentPressed: _purAccentPressed,
         ownBubble: _purOwnBubble, otherBubble: _purOtherBubble,
-        rail: _purBg, link: _purLink
+        rail: _purBg,
+        reaction: _purReaction, link: _purLink
     })
     readonly property var _warm: ({
         background: _warBg, sidebar: _warSidebar, surface: _warCard,
@@ -534,6 +551,7 @@ QtObject {
         borderStrong: _warBorderStrong, accent: _warAccent,
         accentHover: _warAccentHover, accentPressed: _warAccentPressed,
         ownBubble: _warOwnBubble, otherBubble: _warOtherBubble,
+        reaction: _warReaction,
         link: _warLink, rail: _warRail
     })
     readonly property var _moss: ({
@@ -548,7 +566,7 @@ QtObject {
         accentHover: _mosAccentHover, accentPressed: _mosAccentPressed,
         accentSoft: _mosAccentSoft, accentBorder: _mosAccentBorder,
         ownBubble: _mosOwnBubble, otherBubble: _mosOtherBubble,
-        mention: _mosMention, online: _mosAccent,
+        mention: _mosMention, online: _mosAccent, reaction: _mosReaction,
         link: _mosLink
     })
     readonly property var _indigo: ({
@@ -563,7 +581,7 @@ QtObject {
         accentHover: _indAccentHover, accentPressed: _indAccentPressed,
         accentSoft: _indAccentSoft, accentBorder: _indAccentBorder,
         ownBubble: _indOwnBubble, otherBubble: _indOtherBubble,
-        mention: _indMention, online: _indOnline,
+        mention: _indMention, online: _indOnline, reaction: _indReaction,
         link: _indLink
     })
     readonly property var _teal: ({
@@ -579,7 +597,7 @@ QtObject {
         accentSoft: _teaAccentSoft, accentBorder: _teaAccentBorder,
         accentText: _teaAccentText,
         ownBubble: _teaOwnBubble, otherBubble: _teaOtherBubble,
-        mention: _teaMention, online: _teaAccent,
+        mention: _teaMention, online: _teaAccent, reaction: _teaReaction,
         link: _teaLink
     })
     readonly property var _storm: ({
@@ -597,6 +615,7 @@ QtObject {
         accentBorder: Qt.alpha(_stoBolt, 0.35),
         accentText: _stoBoltInk,
         ownBubble: _stoOwnBubble, otherBubble: _stoPanel,
+        reaction: _stoReaction,
         unreadBadge: _stoLink, mentionHighlight: _stoMention,
         mention: _stoMention, online: _stoSuccess, link: _stoLink
     })
@@ -701,8 +720,7 @@ QtObject {
             otherBubble:     p.otherBubble,
             embedSurface:    p.embedSurface !== undefined ? p.embedSurface
                              : (isStorm ? _stoPanel : cardElevated),
-            reactionBackground: p.reaction !== undefined ? p.reaction
-                                                         : p.surface,
+            reactionBackground: p.surface,
             reactionBorder:  p.reactionBorder !== undefined ? p.reactionBorder
                              : (isDark ? p.border : p.borderStrong),
             mentionBadgeText: mentionBadgeText,
@@ -970,8 +988,7 @@ QtObject {
     readonly property color embedText:           _p.embedText !== undefined
                                                  ? _p.embedText : textPrimary
 
-    readonly property color reactionBackground:  _p.reaction !== undefined
-                                                 ? _p.reaction : surface
+    readonly property color reactionBackground:  surface
     readonly property color reactionBorder:      _p.reactionBorder !== undefined
                                                  ? _p.reactionBorder
                                                  : (dark ? border : borderStrong)
