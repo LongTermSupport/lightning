@@ -29,11 +29,17 @@ Item {
     property var touched: []
     readonly property real edge: 40
 
+    // touched can hold rows the view has since destroyed; calling one throws.
+    function live(item) {
+        return !!item && typeof item.applyDragSelection === "function"
+    }
+
     function clear() {
-        for (var i = 0; i < touched.length; ++i)
-            if (touched[i])
-                touched[i].applyDragSelection("none", null, null)
+        var rows = touched
         touched = []
+        for (var i = 0; i < rows.length; ++i)
+            if (live(rows[i]))
+                rows[i].applyDragSelection("none", null, null)
         ids = []
         currentStable = ""
     }
@@ -80,7 +86,7 @@ Item {
             : null
         if (hit.row === origin) {
             for (var k = 0; k < touched.length; ++k)
-                if (touched[k])
+                if (live(touched[k]))
                     touched[k].applyDragSelection("none", null, originText)
             touched = originItem ? [originItem] : []
             ids = []
@@ -92,7 +98,7 @@ Item {
         var next = []
         for (var r = lo; r <= hi; ++r) {
             var item = r === hit.row ? hit.item : itemForRow(r)
-            if (!item || !item.applyDragSelection)
+            if (!live(item))
                 continue
             item.applyDragSelection(r === lo ? "tail" : r === hi ? "head" : "all",
                                     r === origin ? originScene
@@ -101,7 +107,7 @@ Item {
             next.push(item)
         }
         for (var i = 0; i < touched.length; ++i)
-            if (touched[i] && next.indexOf(touched[i]) < 0)
+            if (live(touched[i]) && next.indexOf(touched[i]) < 0)
                 touched[i].applyDragSelection("none", null, null)
         touched = next
         currentStable = model.stableIdAt(hit.row)
