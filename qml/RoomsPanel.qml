@@ -264,7 +264,7 @@ Rectangle {
                 RailHiddenActions {}
                 IconButton {
                     objectName: "collapseRoomListButton"
-                    size: "sm"
+                    iconSize: 18
                     iconName: "chevron_left"
                     Accessible.name: qsTr("Collapse room list")
                     ToolTip.text: Accessible.name + root.compactShortcutHint
@@ -1097,7 +1097,7 @@ Rectangle {
             objectName: "compactRoomListHeader"
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: AppTheme.spacing8
-            iconName: "chevron_right"
+            iconName: app.spaces && app.spaces.activeSpaceId ? "workspaces" : "home"
             Accessible.name: qsTr("Expand %1 room list").arg(workspaceLabel.text)
             ToolTip.text: qsTr("Expand room list") + root.compactShortcutHint
             ToolTip.visible: hovered
