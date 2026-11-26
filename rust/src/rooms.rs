@@ -3313,7 +3313,7 @@ pub(crate) fn moderation_plan(
     Ok(())
 }
 
-async fn moderation_plan_row(
+pub(crate) async fn moderation_plan_row(
     client: &matrix_sdk::Client,
     room_id: String,
     uid: &UserId,

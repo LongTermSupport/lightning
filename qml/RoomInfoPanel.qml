@@ -660,6 +660,16 @@ Rectangle {
                         ToolTip.delay: 500
                     }
                     AppButton {
+                        objectName: "roomInfoModerationQueueButton"
+                        visible: app.policy && app.policy.available
+                        text: qsTr("Moderation queue…")
+                        onClicked: moderationQueueDialog.openFor(
+                            app.roomInfo.roomId, root.roomData.name || "")
+                        ToolTip.text: qsTr("Members covered by moderation lists you follow")
+                        ToolTip.visible: hovered
+                        ToolTip.delay: 500
+                    }
+                    AppButton {
                         objectName: "roomInfoExportButton"
                         text: qsTr("Export room…")
                         onClicked: root.exportRoomRequested()
@@ -2249,6 +2259,9 @@ Rectangle {
 
     PolicyListDialog {
         id: policyListDialog
+    }
+    ModerationQueueDialog {
+        id: moderationQueueDialog
     }
     AddWidgetDialog {
         id: addWidgetDialog

@@ -2514,6 +2514,192 @@ private Q_SLOTS:
  true));
         QCOMPARE(h.model.count(), 1);
     }
+
+    void catchUpListsUnreadItemsWithExactTargetsAndCountsWhatItCannotRead()
+    {
+        Harness h;
+        auto entry = [](const QString &id, const QString &room, const QString &kind,
+                        const QString &root, qint64 time, bool encrypted = false) {
+            return QVariantMap{
+                { QStringLiteral("eventId"), id },
+                { QStringLiteral("roomId"), room },
+                { QStringLiteral("threadRootId"), root },
+                { QStringLiteral("senderId"), QStringLiteral("@bob:mock.local") },
+                { QStringLiteral("kind"), kind },
+                { QStringLiteral("preview"), encrypted ? QString() : QStringLiteral("hi") },
+                { QStringLiteral("encrypted"), encrypted },
+                { QStringLiteral("timestampMs"), time },
+            };
+        };
+        const QString pollRoom = QStringLiteral("!polls:mock.local");
+        h.model.seed({ entry(QStringLiteral("$m1"), kRoom, QStringLiteral("mention"), {}, 100),
+                       entry(QStringLiteral("$r1"), kRoom, QStringLiteral("reply"), {}, 110),
+                       entry(QStringLiteral("$t1"), kRoom, QStringLiteral("thread"),
+                             QStringLiteral("$root"), 120),
+                       entry(QStringLiteral("$t2"), kRoom, QStringLiteral("mention"),
+                             QStringLiteral("$root"), 130),
+                       entry(QStringLiteral("$e1"), kRoom, QStringLiteral("mention"), {},
+                             140, true) });
+        RoomInfo polls;
+        polls.id = pollRoom;
+        polls.name = QStringLiteral("Polls");
+        polls.unreadCount = 1;
+        h.client.roomSet = { polls };
+        TimelineEvent poll = text(QStringLiteral("$p1"), QStringLiteral("@carol:mock.local"),
+                                  QStringLiteral("Lunch?"), 150);
+        poll.roomId = pollRoom;
+        poll.type = TimelineEvent::Poll;
+        poll.pollQuestion = QStringLiteral("Lunch?");
+        h.model.ingest(poll, QStringLiteral("Polls"));
+
+        QVariantMap digest = h.model.catchUp();
+        QCOMPARE(digest.value(QStringLiteral("mentions")).toInt(), 2);
+        QCOMPARE(digest.value(QStringLiteral("replies")).toInt(), 1);
+        QCOMPARE(digest.value(QStringLiteral("threads")).toInt(), 1);
+        QCOMPARE(digest.value(QStringLiteral("polls")).toInt(), 1);
+        QCOMPARE(digest.value(QStringLiteral("undecryptable")).toInt(), 1);
+        const QVariantList items = digest.value(QStringLiteral("items")).toList();
+        QCOMPARE(items.size(), 5);
+        QCOMPARE(digest.value(QStringLiteral("total")).toInt(), 5);
+        for (const QVariant &v : items) {
+            const QVariantMap item = v.toMap();
+            QVERIFY(item.value(QStringLiteral("roomId")).toString().startsWith(QLatin1Char('!')));
+            QVERIFY(item.value(QStringLiteral("eventId")).toString().startsWith(QLatin1Char('$')));
+            QVERIFY(!MatrixClient::isThreadTimelineId(item.value(QStringLiteral("roomId")).toString()));
+        }
+        QCOMPARE(items.first().toMap().value(QStringLiteral("kind")).toString(), QStringLiteral("poll"));
+        const QVariantMap thread = items.at(2).toMap();
+        QCOMPARE(thread.value(QStringLiteral("kind")).toString(), QStringLiteral("thread"));
+        QCOMPARE(thread.value(QStringLiteral("threadRootId")).toString(), QStringLiteral("$root"));
+        QCOMPARE(thread.value(QStringLiteral("eventId")).toString(), QStringLiteral("$t2"));
+        QCOMPARE(thread.value(QStringLiteral("count")).toInt(), 2);
+
+        QSignalSpy opened(&h.model, &ActivityModel::openRequested);
+        h.model.openEvent(thread.value(QStringLiteral("roomId")).toString(),
+                          thread.value(QStringLiteral("eventId")).toString(),
+                          thread.value(QStringLiteral("threadRootId")).toString());
+        QCOMPARE(opened.size(), 1);
+        QCOMPARE(opened.first().at(2).toString(), QStringLiteral("$root"));
+        h.model.openEvent(MatrixClient::threadTimelineId(kRoom, QStringLiteral("$root")),
+                          QStringLiteral("$t2"), QStringLiteral("$root"));
+        QCOMPARE(opened.size(), 1);
+
+        h.model.markRoomReadUpTo(kRoom, 1000);
+        digest = h.model.catchUp();
+        QCOMPARE(digest.value(QStringLiteral("items")).toList().size(), 1);
+        QCOMPARE(digest.value(QStringLiteral("undecryptable")).toInt(), 0);
+        polls.unreadCount = 0;
+        h.client.roomSet = { polls };
+        QCOMPARE(h.model.catchUp().value(QStringLiteral("items")).toList().size(), 0);
+        polls.unreadCount = 1;
+        h.client.roomSet = { polls };
+        h.model.eventRedacted(pollRoom, QStringLiteral("$p1"));
+        QCOMPARE(h.model.catchUp().value(QStringLiteral("polls")).toInt(), 0);
+    }
+
+    void catchUpNamesItsCoverageGaps()
+    {
+        Harness h;
+        QVERIFY(h.model.catchUp().value(QStringLiteral("gaps")).toStringList().isEmpty());
+        Q_EMIT h.client.activitySeedCursorReceived(QStringLiteral("next"));
+        QCOMPARE(h.model.catchUp().value(QStringLiteral("gaps")).toStringList(),
+                 QStringList{ QStringLiteral("older_not_loaded") });
+        Q_EMIT h.client.activitySeedFailed(QStringLiteral("http_404_M_UNRECOGNIZED"));
+        QVERIFY(h.model.catchUp().value(QStringLiteral("gaps")).toStringList()
+                    .contains(QStringLiteral("history_unavailable")));
+        QCOMPARE(h.model.threadCoverage(QStringLiteral("all")),
+                 QStringLiteral("history_unavailable"));
+    }
+
+    void threadDashboardJoinsPersonalFlagsToRealThreads()
+    {
+        Harness h;
+        auto entry = [](const QString &id, const QString &root, const QString &kind,
+                        bool read) {
+            return QVariantMap{
+                { QStringLiteral("eventId"), id },
+                { QStringLiteral("roomId"), kRoom },
+                { QStringLiteral("threadRootId"), root },
+                { QStringLiteral("senderId"), QStringLiteral("@bob:mock.local") },
+                { QStringLiteral("kind"), kind },
+                { QStringLiteral("preview"), QStringLiteral("hi") },
+                { QStringLiteral("read"), read },
+                { QStringLiteral("timestampMs"), qint64(100) },
+            };
+        };
+        h.model.seed({ entry(QStringLiteral("$a1"), QStringLiteral("$rootA"),
+                             QStringLiteral("mention"), true),
+                       entry(QStringLiteral("$b1"), QStringLiteral("$rootB"),
+                             QStringLiteral("thread"), false) });
+        const QString muted = QStringLiteral("!muted:mock.local");
+        h.model.setNotificationModeSource([&](const QString &roomId) {
+            return roomId == muted ? 2 : 0;
+        });
+        QList<ActivityModel::PersonalThread> personal;
+        ActivityModel::PersonalThread flagged;
+        flagged.roomId = kRoom;
+        flagged.rootId = QStringLiteral("$rootB");
+        flagged.eventId = QStringLiteral("$b1");
+        flagged.needsReply = true;
+        ActivityModel::PersonalThread savedOnly;
+        savedOnly.roomId = kRoom;
+        savedOnly.rootId = QStringLiteral("$rootC");
+        savedOnly.eventId = QStringLiteral("$c9");
+        savedOnly.saved = true;
+        savedOnly.reminderMs = 5000;
+        ActivityModel::PersonalThread hidden = savedOnly;
+        hidden.roomId = muted;
+        ActivityModel::PersonalThread composite = savedOnly;
+        composite.roomId = MatrixClient::threadTimelineId(kRoom, QStringLiteral("$rootC"));
+        personal << flagged << savedOnly << hidden << composite;
+        h.model.setPersonalThreadSource([&] { return personal; });
+
+        QCOMPARE(h.model.threadActivity(QStringLiteral("all")).size(), 3);
+        QCOMPARE(h.model.threadActivity(QStringLiteral("unread")).size(), 1);
+        const QVariantList mentioned = h.model.threadActivity(QStringLiteral("mentioned"));
+        QCOMPARE(mentioned.size(), 1);
+        QCOMPARE(mentioned.first().toMap().value(QStringLiteral("rootEventId")).toString(),
+                 QStringLiteral("$rootA"));
+        const QVariantList todo = h.model.threadActivity(QStringLiteral("todo"));
+        QCOMPARE(todo.size(), 2);
+        const QVariantMap b = todo.at(0).toMap();
+        QCOMPARE(b.value(QStringLiteral("rootEventId")).toString(), QStringLiteral("$rootB"));
+        QVERIFY(b.value(QStringLiteral("needsReply")).toBool());
+        QVERIFY(b.value(QStringLiteral("unread")).toBool());
+        const QVariantMap c = todo.at(1).toMap();
+        QCOMPARE(c.value(QStringLiteral("roomId")).toString(), kRoom);
+        QCOMPARE(c.value(QStringLiteral("eventId")).toString(), QStringLiteral("$c9"));
+        QVERIFY(c.value(QStringLiteral("saved")).toBool());
+        QCOMPARE(c.value(QStringLiteral("reminderMs")).toLongLong(), qint64(5000));
+        QVERIFY(!c.value(QStringLiteral("unread")).toBool());
+
+        QSignalSpy changed(&h.model, &ActivityModel::threadActivityChanged);
+        personal.clear();
+        h.model.personalThreadsChanged();
+        QCOMPARE(changed.size(), 1);
+        QCOMPARE(h.model.threadActivity(QStringLiteral("todo")).size(), 0);
+    }
+
+    void anEmptyFollowingListSaysWhenTheServerCannotTell()
+    {
+        Harness h;
+        QCOMPARE(h.model.threadCoverage(QStringLiteral("following")), QString());
+        h.model.seed({ QVariantMap{
+            { QStringLiteral("eventId"), QStringLiteral("$x") },
+            { QStringLiteral("roomId"), kRoom },
+            { QStringLiteral("threadRootId"), QStringLiteral("$root") },
+            { QStringLiteral("senderId"), QStringLiteral("@bob:mock.local") },
+            { QStringLiteral("kind"), QStringLiteral("thread") },
+            { QStringLiteral("timestampMs"), qint64(100) } } });
+        Q_EMIT h.client.threadSubscriptionState(kRoom, QStringLiteral("$root"), false,
+                                                false, false);
+        QCOMPARE(h.model.threadCoverage(QStringLiteral("following")),
+                 QStringLiteral("no_follow_support"));
+        QCOMPARE(h.model.threadCoverage(QStringLiteral("unread")), QString());
+        Q_EMIT h.client.threadSubscriptionState(kRoom, QStringLiteral("$root"), true,
+                                                false, false);
+        QCOMPARE(h.model.threadCoverage(QStringLiteral("following")), QString());
+    }
 };
 
 QTEST_GUILESS_MAIN(ActivityModelTest)

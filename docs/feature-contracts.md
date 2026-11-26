@@ -201,9 +201,11 @@ NOT TESTED**. Automated tests named in commits do not establish live behavior.
   catch-up floor) is kept only while its room is unread. `add()` refuses an
   account that is not Running, is removed or is the foreground one, and a host
   epoch other than `SessionPool::epochFor`. A click switches account and
-  opens the room through `claimCrossAccountOpen`. Without live accounts, a
-  user with two or more saved accounts sees one line pointing at Settings >
-  Labs. Live: NOT TESTED.
+  opens the room through `claimCrossAccountOpen`. Drafts are scoped to the
+  account, and the composer drops unsaved text when the session it belongs
+  to signs out, so a switch from an inbox row cannot carry text into another
+  account. Without live accounts, a user with two or more saved
+  accounts sees one line pointing at Settings > Labs. Live: NOT TESTED.
 - **Warm account adoption (2026-10-27, review-gated).** Switching to a pinned
   account whose host is Running, past its initial sync, not being removed and
   with custody settled (no keyring write of its sign-in or live token write
@@ -1134,6 +1136,36 @@ in the per-room SDK Threads list. The server's highlight notification feed is
 paged by `next_token` 60 at a time, with a retry that keeps the same cursor.
 If the server lacks `/notifications`, older discovery is explicitly unavailable.
 No participant fan-out or all-room polling is involved.
+
+The Threads area also filters by Mentioned (any mention in the thread, read
+or not) and To do: threads holding a message marked "Needs reply" or
+"Waiting", a saved message or a reminder (`ActivityModel::PersonalThread`,
+fed by real room and root ids only; composite ids are refused). Such a thread
+is listed even when no activity row names it, opening the marked message. An
+empty list says why when it cannot know: the server does not report followed
+threads, or older activity is unavailable.
+
+#### Follow-ups and catch-up
+
+"Needs reply" and "Waiting for reply" are personal marks on a message, set
+and cleared from its menu and listed under Activity › To do
+(`FollowUpController`). Nothing is inferred: no message gets a mark the user
+did not set, and only the user marks one done. Sending a reply to a marked
+message, or a message in its thread, shows "You replied" on that row as an
+offer. Marks are local to this device in `follow-ups.json` under the
+account's recorded root (`kAccountFiles`): room id, event id, thread root, the
+state and a time, at most 500, written atomically, never any text. Nothing
+here sends a receipt or touches the server. A due date is an ordinary
+reminder on the same message.
+
+Activity › All opens with a catch-up card while anything is unread
+(`ActivityModel::catchUp`): unread mentions and replies, threads with unread
+replies (grouped by real room and root), and polls received since sign-in in
+rooms still unread. Every item opens its exact event; muted rooms are left
+out. It counts messages it cannot decrypt yet and names its coverage gaps:
+older activity not loaded, not available from the server, or past the
+activity limit. It is computed from loaded activity and stores nothing.
+Pinned-message changes are not included (the sync signal carries no event).
 
 ### Saved messages (Q4)
 
@@ -2860,6 +2892,27 @@ room history" forever; and the initial category never pushed to the model
 (`onCategoryChanged` fires only on a CHANGE), so the Media tab listed files
 and links.
 
+### Handing a message to another app, and sharing a file in
+
+One message's menu offers "Export as task or event…" (`HandoffDialog.qml`,
+`src/privacy/Handoff.*`): an editable title and notes, prefilled from that one
+message only, a preview that is exactly what leaves, then "Copy as text" or
+"Save .ics…" (a VTODO or a VEVENT in UTC) to a location the user picks,
+written owner-only. Nothing is written anywhere else. The output never
+carries a Matrix media URL, an `mxc:` URI, an `access_token` link or a
+reply's quoted parent; the message permalink only when the user switches it
+on. An event has no ORGANIZER or ATTENDEE, so no calendar app can send an
+invitation from it, and the UID is a hash of room and event, so exporting
+the same message again updates the entry.
+
+Sharing in: a file passed on the command line, which is how "Open with
+Lightning" and the desktop entry's `%u` deliver it, travels to the running
+instance as a `file:///` link. `ShareTargetDialog.qml` names the file and the
+active account; picking a room only stages the file in that room's composer
+through the normal attachment screen (MIME, size, the SVG rule). Nothing is
+sent until the user presses Send, and Cancel leaves nothing behind. Text from
+other apps is not accepted.
+
 ### Forwarding a selection
 
 Multi-select in the timeline, multi-destination picker
@@ -3367,6 +3420,51 @@ server name before deleting a server. Lightning offers the two honest pieces.
   from the local room list. It states that archiving is local, leaving
   affects only the viewer and closing changes server access. It sends
   nothing.
+
+### Forum view, shared checklists, community events, moderation queue
+
+- **Forum view** (Threads list). Each thread is its root's first line as a
+  title, the rest as a preview, and up to five `#tags` read from the root's
+  text (not inside a word or URL, never `#alias:server`). Sort (latest
+  activity, newest, most replies), filter (all, unread, no replies yet) and a
+  tag are view state of this panel only: never stored or sent, and cleared on
+  a room change. Tags need no permission beyond posting and nobody can tag
+  another member's thread. "All threads" hides nothing. Threads stay ordinary
+  `m.thread` threads opened by their real room and root ids (§8).
+- **Checklist / event cards.** An `m.room.message` with msgtype
+  `org.lightning_matrix.checklist` or `org.lightning_matrix.event`, a plain
+  `body` other clients show (the items, or title, zoned time, UTC time, place,
+  link), and the data under the msgtype key: checklist `{title, anyone_edits,
+  items: [{id, text}]}` (1-100 items, 300 chars, unique ids); event `{title,
+  start, end, tz, location, link, cancelled}` (UTC ms, end 0 or within a year,
+  IANA zone, `https` link only). Only the sender's `m.replace` edits count.
+  Updates are reference relations: `org.lightning_matrix.checklist.update`
+  `{op: add|done|undone|remove, item, text}` (an added item's id is its
+  event id) and `org.lightning_matrix.rsvp` `{status: yes|maybe|no}`, the
+  latest per member. Every reader folds them in (origin_server_ts, event_id)
+  order, so concurrent edits converge; a redacted update or root stops
+  counting. When the creator turns `anyone_edits` off, other members'
+  updates are ignored except from those who may redact others' events. All
+  of it is room events: encrypted in an encrypted room and visible only to
+  its members. Other clients do not see ticks, added items or RSVPs.
+- Times are entered as wall time in a chosen zone; a time skipped by a DST
+  change is refused. The card shows the event's zone and the reader's own
+  time. RSVP "going" or "maybe" sets a reminder 15 minutes before; when a
+  loaded card shows a moved time the reminder moves, and a cancellation or
+  "can't go" removes it. "Save to calendar" writes a UTC `.ics` file.
+- A visible card re-reads the local event cache every 15 s (updates are
+  hidden events); it fetches `/relations` from the server once when shown.
+- **Moderation queue** (Room information). Members (joined, invited,
+  knocking) covered by a ban rule in a followed policy list, one case per
+  member with every matching list and rule as evidence, at most 200. A match
+  enforces nothing. "Ban…" opens a confirmation for that one member; on
+  confirm Rust re-reads the lists (no longer covered: refused as stale) and
+  re-checks the member and the viewer's power with the Space-moderation
+  verdict before banning. One action at a time, no bulk path. Decisions
+  (open, dismissed, banned) are the moderator's own account data
+  `org.lightning_matrix.moderation_cases`: room id, user id, status, time,
+  newest 500 kept. Reports sent with "Report" go to the homeserver's admins
+  and do not reach this queue.
 
 ### SVG images (rasterised on send)
 

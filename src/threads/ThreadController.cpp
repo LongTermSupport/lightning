@@ -1,4 +1,5 @@
 #include "threads/ThreadController.h"
+#include "threads/ForumView.h"
 #include "matrix/EventPreview.h"
 
 #include "models/MessageHtml.h"
@@ -1463,6 +1464,17 @@ void ThreadController::closeList()
     m_listRoomId.clear();
     m_threadList.clear();
     Q_EMIT listStateChanged();
+}
+
+QVariantList ThreadController::forumList(const QVariantList &threads, const QString &sort,
+                                         const QString &filter, const QString &tag) const
+{
+    return forum::arrange(threads, sort, filter, tag);
+}
+
+QStringList ThreadController::forumTags(const QVariantList &threads) const
+{
+    return forum::allTags(threads);
 }
 
 void ThreadController::paginateList()

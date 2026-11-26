@@ -9,6 +9,7 @@
 #include <QLocalSocket>
 #include <QThread>
 #include <QTimer>
+#include <QUrl>
 
 #ifdef Q_OS_WIN
 #ifndef WIN32_LEAN_AND_MEAN
@@ -242,8 +243,31 @@ bool SingleInstanceGuard::isOpenableLink(const QString &link)
         if (c.unicode() < 0x21 || c.unicode() > 0x7e)
             return false;
     }
+    // file:/// is a file another app shared; the receiver re-checks it and
+    // stages it only after the user picks a room.
     return link.startsWith(QLatin1String("matrix:"))
-        || link.startsWith(QLatin1String("https://matrix.to/#/"));
+        || link.startsWith(QLatin1String("https://matrix.to/#/"))
+        || link.startsWith(QLatin1String("file:///"));
+}
+
+QString SingleInstanceGuard::linkFromArguments(const QStringList &args)
+{
+    QString previous;
+    for (const QString &arg : args) {
+        // A bare path is a shared file unless it is an option's value
+        // ("--log-file PATH"); "--backend=rust" carries its own.
+        const bool optionValue = previous.startsWith(QLatin1Char('-'))
+            && !previous.contains(QLatin1Char('='));
+        previous = arg;
+        if (isOpenableLink(arg))
+            return arg;
+        if (optionValue || !QDir::isAbsolutePath(arg) || !QFileInfo(arg).isFile())
+            continue;
+        const QString url = QUrl::fromLocalFile(arg).toString(QUrl::FullyEncoded);
+        if (isOpenableLink(url))
+            return url;
+    }
+    return {};
 }
 
 bool SingleInstanceGuard::parseRequest(const QByteArray &line,

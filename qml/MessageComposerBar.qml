@@ -1335,6 +1335,20 @@ Item {
             onTriggered: createPollDialog.openDialog()
         }
         AppMenuItem {
+            objectName: "createChecklistMenuItem"
+            iconName: "format_list_bulleted"
+            text: qsTr("Create checklist…")
+            visible: app.composer.pollsSupported()
+            onTriggered: createCardDialog.openCreate(app.currentRoomId, "checklist")
+        }
+        AppMenuItem {
+            objectName: "createEventMenuItem"
+            iconName: "schedule"
+            text: qsTr("Create event…")
+            visible: app.composer.pollsSupported()
+            onTriggered: createCardDialog.openCreate(app.currentRoomId, "event")
+        }
+        AppMenuItem {
             objectName: "composerEmojiMenuItem"
             iconName: "mood"
             text: qsTr("Emoji…")
@@ -1354,6 +1368,9 @@ Item {
     }
     CreatePollDialog {
         id: createPollDialog
+    }
+    CreateCardDialog {
+        id: createCardDialog
     }
 
     function openAttachFiles() {

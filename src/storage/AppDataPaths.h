@@ -76,6 +76,8 @@ QString scrollPositionsFile(const QString &accountRootDir);
 
 QString remindersFile(const QString &accountRootDir);
 
+QString followUpsFile(const QString &accountRootDir);
+
 enum class LegacyMove { Moved, Absent, Kept, Failed };
 
 // Moves an entry from the root derived from the user id to the recorded root

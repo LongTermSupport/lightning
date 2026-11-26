@@ -637,6 +637,8 @@ set(APP_SOURCES
     src/app/NotificationTroubleshooter.cpp
     src/app/RemindersController.h
     src/app/RemindersController.cpp
+    src/app/FollowUpController.h
+    src/app/FollowUpController.cpp
     src/app/ForwardController.h
     src/app/ForwardController.cpp
     src/app/BulkRedactionController.h
@@ -898,6 +900,8 @@ set(APP_SOURCES
     src/media/MediaManager.cpp
     src/app/UrlLauncher.h
     src/app/UrlLauncher.cpp
+    src/privacy/Handoff.h
+    src/privacy/Handoff.cpp
     src/app/SaveNaming.h
     src/app/SaveNaming.cpp
     src/app/FileChooser.h
@@ -1000,6 +1004,10 @@ set(APP_SOURCES
     src/app/AboutController.cpp
     src/app/PolicyListController.h
     src/app/PolicyListController.cpp
+    src/app/RoomCardsController.h
+    src/app/RoomCardsController.cpp
+    src/app/ModerationQueueController.h
+    src/app/ModerationQueueController.cpp
     src/spaces/SpaceManager.h
     src/spaces/SpaceManager.cpp
     src/spaces/SpaceModerationController.h
@@ -1010,6 +1018,8 @@ set(APP_SOURCES
     src/threads/ThreadManager.cpp
     src/threads/ThreadController.h
     src/threads/ThreadController.cpp
+    src/threads/ForumView.h
+    src/threads/ForumView.cpp
     src/models/ContextController.h
     src/models/ContextController.cpp
     src/presence/PresenceManager.h
@@ -1269,6 +1279,8 @@ set(APP_QML_FILES
     qml/EventSourceDialog.qml
     qml/StatusDialog.qml
     qml/SendLaterDialog.qml
+    qml/HandoffDialog.qml
+    qml/ShareTargetDialog.qml
     qml/ActivityCenterPanel.qml
     qml/SavedMessagesPanel.qml
     qml/AnchoredPopup.qml
@@ -1421,6 +1433,8 @@ set(APP_QML_FILES
     qml/AccountActivityBadge.qml
     qml/AccountActivityFeed.qml
     qml/UnifiedInboxSection.qml
+    qml/CatchUpCard.qml
+    qml/FollowUpsList.qml
     qml/LabsConcurrentAccountsCard.qml
     qml/TrustCard.qml
     qml/RecoveryKeyEntry.qml
@@ -1444,7 +1458,10 @@ endif()
 # resolved via QQmlApplicationEngine::loadFromModule("MatrixClient", "Main").
 list(APPEND APP_QML_FILES
     qml/SpaceCommunityPanel.qml
-    qml/RoomLifecycleReview.qml)
+    qml/RoomLifecycleReview.qml
+    qml/ModerationQueueDialog.qml
+    qml/RoomCard.qml
+    qml/CreateCardDialog.qml)
 
 foreach(_qml_file IN LISTS APP_QML_FILES)
     get_filename_component(_qml_name ${_qml_file} NAME)
@@ -3901,6 +3918,15 @@ if(BUILD_TESTING)
     target_link_libraries(reminders-controller-test PRIVATE Qt6::Core Qt6::Test)
     add_test(NAME reminders-controller COMMAND reminders-controller-test)
 
+    qt_add_executable(follow-up-controller-test
+        tests/FollowUpControllerTest.cpp
+        src/app/FollowUpController.h
+        src/app/FollowUpController.cpp
+    )
+    target_include_directories(follow-up-controller-test PRIVATE src)
+    target_link_libraries(follow-up-controller-test PRIVATE Qt6::Core Qt6::Test)
+    add_test(NAME follow-up-controller COMMAND follow-up-controller-test)
+
     qt_add_executable(quiet-hours-test
         tests/QuietHoursTest.cpp
         src/notifications/QuietHours.h
@@ -4406,6 +4432,7 @@ if(BUILD_TESTING)
         src/media/VideoPosterExtractor.cpp
         src/threads/ThreadController.h
         src/threads/ThreadController.cpp
+        src/threads/ForumView.cpp
         src/crypto/E2eeDiagnostics.h
         src/crypto/E2eeDiagnostics.cpp
         src/media/ImageMetadata.h
@@ -5262,6 +5289,7 @@ if(BUILD_TESTING)
         src/app/JoinErrorText.cpp
         src/threads/ThreadController.h
         src/threads/ThreadController.cpp
+        src/threads/ForumView.cpp
         src/crypto/E2eeDiagnostics.h
         src/crypto/E2eeDiagnostics.cpp
         src/media/ImageMetadata.h
@@ -7162,6 +7190,17 @@ if(BUILD_TESTING)
     target_link_libraries(url-launcher-test PRIVATE Qt6::Core Qt6::Gui Qt6::Test)
     add_test(NAME url-launcher COMMAND url-launcher-test)
 
+    # Handing a message to a task or calendar app, and a file shared in from
+    # another app: what may and may not cross either boundary.
+    qt_add_executable(handoff-test
+        tests/HandoffTest.cpp
+    )
+    lightning_configure_qml_test(handoff-test)
+    target_link_libraries(handoff-test PRIVATE Qt6::Test)
+    add_test(NAME handoff COMMAND handoff-test)
+    set_tests_properties(handoff PROPERTIES
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
     # The composer's emoji face, asserted on the document's applied format:
     # Qt's fallback differs by version, so emoji faces are applied per range by
     # the highlighter, and only the applied format shows which property the
@@ -8477,4 +8516,23 @@ if(BUILD_TESTING)
     target_compile_definitions(space-community-test PRIVATE
         QML_DIR="${CMAKE_CURRENT_SOURCE_DIR}/qml")
     add_test(NAME space-community COMMAND space-community-test)
+endif()
+
+if(BUILD_TESTING)
+    qt_add_executable(community-tools-test
+        tests/CommunityToolsTest.cpp
+        src/app/RoomCardsController.h
+        src/app/RoomCardsController.cpp
+        src/app/ModerationQueueController.h
+        src/app/ModerationQueueController.cpp
+        src/app/RemindersController.h
+        src/app/RemindersController.cpp
+        src/threads/ForumView.h
+        src/threads/ForumView.cpp
+        src/matrix/MatrixClient.h
+        src/matrix/MatrixClient.cpp
+    )
+    target_include_directories(community-tools-test PRIVATE src)
+    target_link_libraries(community-tools-test PRIVATE Qt6::Core Qt6::Test)
+    add_test(NAME community-tools COMMAND community-tools-test)
 endif()

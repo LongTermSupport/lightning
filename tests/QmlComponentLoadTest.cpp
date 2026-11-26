@@ -47,6 +47,9 @@ constexpr const char *kComponents[] = {
     "LogExportCard",
     "UpdatesSettingsSection",
     "PolicyListDialog",
+    "ModerationQueueDialog",
+    "RoomCard",
+    "CreateCardDialog",
     "AddWidgetDialog",
     "MemberProfilePopover",
     "CallPipWindow",
@@ -143,6 +146,8 @@ constexpr const char *kComponents[] = {
     "AccountActivityBadge",
     "AccountActivityFeed",
     "UnifiedInboxSection",
+    "CatchUpCard",
+    "FollowUpsList",
 };
 
 struct Excluded { const char *name; const char *why; };

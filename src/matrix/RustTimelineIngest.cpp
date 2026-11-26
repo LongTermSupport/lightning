@@ -256,6 +256,7 @@ TimelineEvent eventFromItemJson(const QJsonObject &item, const QString &roomId)
     if (!e.timestamp.isValid())
         e.timestamp = QDateTime::currentDateTimeUtc();
     e.type = rowTypeForMsgtype(item.value(QStringLiteral("msgtype")).toString());
+    e.cardKind = item.value(QStringLiteral("card_kind")).toString();
 
     e.edited = item.value(QStringLiteral("edited")).toBool(false);
     e.redacted = item.value(QStringLiteral("redacted")).toBool(false);

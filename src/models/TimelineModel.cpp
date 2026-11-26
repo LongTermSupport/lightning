@@ -1593,6 +1593,7 @@ QVariant TimelineModel::data(const QModelIndex &index, int role) const
     case LocationLiveActiveRole: return e.locationLiveActive;
     case LocationTsRole:         return e.locationTs;
     case LocationLiveUntilRole:  return e.locationLiveUntil;
+    case CardKindRole:           return e.cardKind;
     case CanEndPollRole:
         return e.type == TimelineEvent::Poll && !e.pollEnded
             && e.sender == m_selfUserId;
@@ -1866,6 +1867,7 @@ QHash<int, QByteArray> TimelineModel::roleNames() const
         { LocationLiveActiveRole,   "locationLiveActive" },
         { LocationTsRole,           "locationTs" },
         { LocationLiveUntilRole,    "locationLiveUntil" },
+        { CardKindRole,             "cardKind" },
         { CanEndPollRole,           "canEndPoll" },
         { ReadReceiptsRole,         "readReceipts" },
         { ReadReceiptsTotalRole,    "readReceiptsTotal" },

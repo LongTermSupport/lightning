@@ -317,6 +317,8 @@ AppController::AppController(Backend backend, bool screenshotDemo,
             &AppController::armIdleLiveTrim);
     m_composer     = std::make_unique<MessageComposer>(this);
     m_policy       = std::make_unique<PolicyListController>(this);
+    m_roomCards    = std::make_unique<RoomCardsController>(this);
+    m_moderationQueue = std::make_unique<ModerationQueueController>(this);
     m_about        = std::make_unique<AboutController>(this);
     connect(m_localization.get(), &LocalizationManager::languageChanged,
             m_about.get(), &AboutController::versionSummaryChanged);
@@ -727,6 +729,49 @@ AppController::AppController(Backend backend, bool screenshotDemo,
         return !m_callSounds || m_callSounds->policy().allowsNotificationSound();
     });
     m_reminders = std::make_unique<RemindersController>(this);
+    m_roomCards->setReminders(m_reminders.get());
+    m_followUps = std::make_unique<FollowUpController>(this);
+    m_followUps->setRoomNameSource([this](const QString &roomId) {
+        return m_client ? m_client->roomInfo(roomId).name : QString();
+    });
+    m_activity->setPersonalThreadSource([this] {
+        QHash<QString, ActivityModel::PersonalThread> byRoot;
+        const auto at = [&byRoot](const QString &room, const QString &root,
+                                  const QString &event) -> ActivityModel::PersonalThread & {
+            ActivityModel::PersonalThread &t = byRoot[room + QChar(0x1f) + root];
+            t.roomId = room;
+            t.rootId = root;
+            if (t.eventId.isEmpty())
+                t.eventId = event;
+            return t;
+        };
+        for (const FollowUpController::Item &item : m_followUps->entries()) {
+            if (item.rootId.isEmpty())
+                continue;
+            auto &t = at(item.roomId, item.rootId, item.eventId);
+            t.needsReply = t.needsReply || item.state == QLatin1String("reply");
+            t.waiting = t.waiting || item.state == QLatin1String("waiting");
+        }
+        for (const QVariant &v : m_savedMessages->entries()) {
+            const QVariantMap m = v.toMap();
+            const QString root = m.value(QStringLiteral("threadRootId")).toString();
+            if (!root.isEmpty())
+                at(m.value(QStringLiteral("roomId")).toString(), root,
+                   m.value(QStringLiteral("eventId")).toString()).saved = true;
+        }
+        for (const RemindersController::Reminder &r : m_reminders->reminders()) {
+            if (r.rootId.isEmpty())
+                continue;
+            auto &t = at(r.roomId, r.rootId, r.eventId);
+            if (t.reminderMs <= 0 || r.dueMs < t.reminderMs)
+                t.reminderMs = r.dueMs;
+        }
+        return byRoot.values();
+    });
+    const auto personalChanged = [this] { m_activity->personalThreadsChanged(); };
+    connect(m_followUps.get(), &FollowUpController::changed, this, personalChanged);
+    connect(m_savedMessages.get(), &SavedMessagesController::changed, this, personalChanged);
+    connect(m_reminders.get(), &RemindersController::changed, this, personalChanged);
     m_reminders->setPreviewPolicy(
         [this](const QString &roomId) { return noticePreviewFor(roomId); });
     connect(m_reminders.get(), &RemindersController::notify, this,
@@ -1193,6 +1238,7 @@ AppController::AppController(Backend backend, bool screenshotDemo,
                 // (onLoggedOut() and removeAccount()).
                 m_gif->closeStarredStore();
                 m_reminders->close();
+                m_followUps->close();
                 m_notifications->clearPendingFor(QString());
                 m_inviteNotices.clear();
                 m_inviteNoticeTimer.stop();
@@ -1346,6 +1392,8 @@ AppController::AppController(Backend backend, bool screenshotDemo,
     m_mediaHistory->setClient(m_client.get());
     m_qrLogin->setClient(m_client.get());
     m_policy->setClient(m_client.get());
+    m_roomCards->setClient(m_client.get());
+    m_moderationQueue->setClient(m_client.get());
     m_about->setClient(m_client.get());
     applyPrivacyPreferences();
     applyThreadStyle(false);
@@ -5000,6 +5048,11 @@ void AppController::handleLiveEvent(const QString &composedRoomId,
         return;
     if (m_presence && event.sender != m_client->currentUserId())
         m_presence->noteActivity(event.sender);
+    if (event.sender == m_client->currentUserId())
+        m_followUps->noteOwnMessage(roomId, event.replyToEventId,
+            event.threadRootId.isEmpty() && fromThread
+                ? MatrixClient::threadTimelineRootId(composedRoomId)
+                : event.threadRootId);
     NotificationManager::Context context =
         notificationContextFor(roomId, event, fromThread);
     if (m_sessionPool)
@@ -6813,6 +6866,7 @@ void AppController::onLoginSucceeded()
     m_bridgeLabels.openFor(
         matrix::app_data::bridgeLabelsFile(m_sessionAccountRoot));
     m_reminders->openFor(matrix::app_data::remindersFile(m_sessionAccountRoot));
+    m_followUps->openFor(matrix::app_data::followUpsFile(m_sessionAccountRoot));
     if (m_roomList) {
         const auto remembered = m_bridgeLabels.positiveLabels();
         for (auto it = remembered.constBegin(); it != remembered.constEnd();
@@ -7743,6 +7797,7 @@ constexpr AccountFileFn kAccountFiles[] = {
     &matrix::app_data::scrollPositionsFile,
     &matrix::app_data::personalBackgroundsDir,
     &matrix::app_data::remindersFile,
+    &matrix::app_data::followUpsFile,
 };
 }
 
@@ -7767,6 +7822,7 @@ void AppController::removeSignedOutAccountFiles(const QString &userId)
 {
     m_gif->closeStarredStore(); // never delete a directory still "open"
     m_reminders->close();
+    m_followUps->close();
     const QString recorded = accountRootFor(userId);
     int deleted = 0;
     int failed = 0;
@@ -7872,6 +7928,9 @@ bool AppController::removeAccountLocalStateFiles(
     if (m_reminders->filePath()
         == matrix::app_data::remindersFile(identity.accountRoot))
         m_reminders->close();
+    if (m_followUps->filePath()
+        == matrix::app_data::followUpsFile(identity.accountRoot))
+        m_followUps->close();
     if (!BridgeLabelStore::removeStore(bridgeFile)) {
         qCWarning(lcApp) << "removing account bridge badge store FAILED"
                          << "slug=" << identity.slug;

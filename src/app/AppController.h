@@ -35,6 +35,8 @@
 #include "crypto/QrImageProvider.h"
 #include "app/AboutController.h"
 #include "app/PolicyListController.h"
+#include "app/RoomCardsController.h"
+#include "app/ModerationQueueController.h"
 #include "crypto/QrLoginController.h"
 #include "crypto/OwnDeviceKeyWatch.h"
 #include "storage/AppDataPaths.h"
@@ -95,6 +97,7 @@
 #include "app/PinnedMessagesController.h"
 #include "app/SavedMessagesController.h"
 #include "app/RemindersController.h"
+#include "app/FollowUpController.h"
 #include "app/RoomUpgradeController.h"
 #include "app/OpenRoomPermissions.h"
 #include "models/TimelineScrollController.h"
@@ -331,6 +334,8 @@ class AppController : public QObject
     Q_PROPERTY(CryptoManager* crypto READ crypto CONSTANT)
     Q_PROPERTY(QrLoginController* qrLogin READ qrLogin CONSTANT)
     Q_PROPERTY(PolicyListController* policy READ policy CONSTANT)
+    Q_PROPERTY(RoomCardsController* roomCards READ roomCards CONSTANT)
+    Q_PROPERTY(ModerationQueueController* moderationQueue READ moderationQueue CONSTANT)
     Q_PROPERTY(AboutController* about READ about CONSTANT)
     Q_PROPERTY(CryptoHealthModel* cryptoHealth READ cryptoHealth CONSTANT)
     Q_PROPERTY(QObject* backup READ backup CONSTANT)
@@ -367,6 +372,7 @@ class AppController : public QObject
     Q_PROPERTY(PinnedMessagesController* pinned READ pinned CONSTANT)
     Q_PROPERTY(SavedMessagesController* savedMessages READ savedMessages CONSTANT)
     Q_PROPERTY(RemindersController* reminders READ reminders CONSTANT)
+    Q_PROPERTY(FollowUpController* followUps READ followUps CONSTANT)
     Q_PROPERTY(bool quietHoursActive READ quietHoursActive NOTIFY quietHoursActiveChanged)
     Q_PROPERTY(RoomUpgradeController* roomUpgrade READ roomUpgrade CONSTANT)
     Q_PROPERTY(OpenRoomPermissions* openRoomPermissions
@@ -584,6 +590,8 @@ public:
     CryptoManager *crypto() const;
     QrLoginController *qrLogin() const { return m_qrLogin.get(); }
     PolicyListController *policy() const { return m_policy.get(); }
+    RoomCardsController *roomCards() const { return m_roomCards.get(); }
+    ModerationQueueController *moderationQueue() const { return m_moderationQueue.get(); }
     AboutController *about() const { return m_about.get(); }
     CryptoHealthModel *cryptoHealth() const { return m_cryptoHealth.get(); }
     QObject *backup() const;
@@ -659,6 +667,7 @@ public:
     PinnedMessagesController *pinned() const { return m_pinned.get(); }
     SavedMessagesController *savedMessages() const { return m_savedMessages.get(); }
     RemindersController *reminders() const { return m_reminders.get(); }
+    FollowUpController *followUps() const { return m_followUps.get(); }
     bool quietHoursActive() const { return m_quietHoursActive; }
     RoomUpgradeController *roomUpgrade() const { return m_roomUpgrade.get(); }
     OpenRoomPermissions *openRoomPermissions() const
@@ -1400,6 +1409,7 @@ private:
     std::unique_ptr<PinnedMessagesController> m_pinned;
     std::unique_ptr<SavedMessagesController> m_savedMessages;
     std::unique_ptr<RemindersController> m_reminders;
+    std::unique_ptr<FollowUpController> m_followUps;
     QTimer m_quietHoursTimer;
     bool m_quietHoursActive = false;
     void refreshQuietHours();
@@ -1472,6 +1482,8 @@ private:
     QrCodeStore m_qrCodeStore;
     std::unique_ptr<QrLoginController> m_qrLogin;
     std::unique_ptr<PolicyListController> m_policy;
+    std::unique_ptr<RoomCardsController> m_roomCards;
+    std::unique_ptr<ModerationQueueController> m_moderationQueue;
     std::unique_ptr<AboutController> m_about;
     StagedImageStore m_stagedImages;
     ImageCropper m_imageCrop;

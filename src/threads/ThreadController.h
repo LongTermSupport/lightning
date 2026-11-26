@@ -184,6 +184,11 @@ public:
     Q_INVOKABLE void openList(const QString &roomId);
     Q_INVOKABLE void closeList();
     Q_INVOKABLE void paginateList();
+    // Forum view over a thread list (threads/ForumView.h); `threads` is passed
+    // in so a QML binding depends on threadList.
+    Q_INVOKABLE QVariantList forumList(const QVariantList &threads, const QString &sort,
+                                       const QString &filter, const QString &tag) const;
+    Q_INVOKABLE QStringList forumTags(const QVariantList &threads) const;
     Q_INVOKABLE QStringList participants() const;
     Q_INVOKABLE QVariantMap rootInfo() const;
     int replyCount() const;

@@ -9,6 +9,14 @@ Rectangle {
     id: panel
     AttachmentImageEditDialog { id: threadImageEditor }
     property bool composerExpanded: false
+    // Forum view state: this panel only, never stored or shared; a room change clears it.
+    property string forumSort: "activity"
+    property string forumFilter: "all"
+    property string forumTag: ""
+    readonly property var forumThreads:
+        app.thread.forumList(app.thread.threadList, forumSort, forumFilter, forumTag)
+    readonly property var forumTagList: app.thread.forumTags(app.thread.threadList)
+    readonly property bool forumNarrowed: forumFilter !== "all" || forumTag !== ""
     property string threadSearchQuery: ""
     readonly property bool openPostFactsAreOurs:
         !!app.openRoomPermissions
@@ -156,7 +164,12 @@ Rectangle {
         panelRoom = panelRoomId === "" ? ({})
                                        : app.roomList.findRoom(panelRoomId)
     }
-    onPanelRoomIdChanged: refreshPanelRoom()
+    onPanelRoomIdChanged: {
+        refreshPanelRoom()
+        forumSort = "activity"
+        forumFilter = "all"
+        forumTag = ""
+    }
     Connections {
         target: app.roomList
         function onDataChanged() { panel.refreshPanelRoom() }
@@ -529,7 +542,9 @@ Rectangle {
                     horizontalAlignment: Text.AlignHCenter
                     text: app.thread.listFailed
                           ? qsTr("Threads could not be loaded.")
-                          : qsTr("No threads in this room yet.")
+                          : panel.forumNarrowed && app.thread.threadList.length > 0
+                            ? qsTr("No threads match this filter.")
+                            : qsTr("No threads in this room yet.")
                     color: AppTheme.textSecondary
                     font.pixelSize: AppTheme.scaled(AppTheme.textSubtitle)
                     font.weight: AppTheme.weightStrong
@@ -554,10 +569,64 @@ Rectangle {
                 objectName: "threadListView"
                 anchors.fill: parent
                 clip: true
-                model: app.thread.threadList
+                model: panel.forumThreads
                 spacing: 1
                 onCountChanged: if (count > 0 && panel._focusListPending)
                     Qt.callLater(panel.focusFirstThreadRow)
+                header: Flow {
+                    objectName: "forumToolbar"
+                    width: threadListView.width
+                    padding: AppTheme.spacing8
+                    spacing: AppTheme.spacing6
+                    visible: app.thread.threadList.length > 0
+                    height: visible ? implicitHeight : 0
+                    AppComboBox {
+                        objectName: "forumSortBox"
+                        textRole: "label"
+                        valueRole: "value"
+                        model: [
+                            { label: qsTr("Latest activity"), value: "activity" },
+                            { label: qsTr("Newest"), value: "newest" },
+                            { label: qsTr("Most replies"), value: "replies" }
+                        ]
+                        currentIndex: Math.max(0, ["activity", "newest", "replies"].indexOf(panel.forumSort))
+                        onActivated: panel.forumSort = currentValue
+                        Accessible.name: qsTr("Sort threads")
+                    }
+                    AppComboBox {
+                        objectName: "forumFilterBox"
+                        textRole: "label"
+                        valueRole: "value"
+                        model: [
+                            { label: qsTr("All threads"), value: "all" },
+                            { label: qsTr("Unread"), value: "unread" },
+                            { label: qsTr("No replies yet"), value: "unanswered" }
+                        ]
+                        currentIndex: Math.max(0, ["all", "unread", "unanswered"].indexOf(panel.forumFilter))
+                        onActivated: panel.forumFilter = currentValue
+                        Accessible.name: qsTr("Filter threads")
+                    }
+                    Repeater {
+                        model: panel.forumTagList
+                        delegate: AppButton {
+                            required property string modelData
+                            size: "sm"
+                            kind: panel.forumTag === modelData ? "primary" : "ghost"
+                            text: "#" + modelData
+                            Accessible.name: panel.forumTag === modelData
+                                ? qsTr("Stop filtering by #%1").arg(modelData)
+                                : qsTr("Show threads tagged #%1").arg(modelData)
+                            onClicked: panel.forumTag = panel.forumTag === modelData ? "" : modelData
+                        }
+                    }
+                    AppButton {
+                        visible: panel.forumNarrowed
+                        size: "sm"
+                        kind: "ghost"
+                        text: qsTr("Show all")
+                        onClicked: { panel.forumFilter = "all"; panel.forumTag = "" }
+                    }
+                }
                 delegate: Item {
                     id: threadRow
                     width: threadListView.width
@@ -657,12 +726,42 @@ Rectangle {
                                 }
                             }
                             Label {
+                                objectName: "forumThreadTitle"
                                 textFormat: Text.PlainText
                                 Layout.fillWidth: true
-                                text: modelData.rootPreview || ""
+                                text: modelData.title || modelData.rootPreview || ""
                                 color: threadRow.rowUnread
                                        ? AppTheme.textPrimary
                                        : AppTheme.textSecondary
+                                font.pixelSize:
+                                    AppTheme.scaled(AppTheme.textBody)
+                                font.weight: threadRow.rowUnread
+                                             ? AppTheme.weightStrong : Font.Normal
+                                elide: Label.ElideRight
+                                maximumLineCount: 1
+                            }
+                            Label {
+                                textFormat: Text.PlainText
+                                Layout.fillWidth: true
+                                visible: text.length > 0
+                                text: modelData.preview || ""
+                                color: AppTheme.textMuted
+                                font.pixelSize:
+                                    AppTheme.scaled(AppTheme.textMeta)
+                                elide: Label.ElideRight
+                                maximumLineCount: 1
+                            }
+                            Label {
+                                objectName: "forumThreadTags"
+                                textFormat: Text.PlainText
+                                Layout.fillWidth: true
+                                visible: (modelData.tags || []).length > 0
+                                         || modelData.unanswered === true
+                                text: (modelData.tags || []).map(function(t) { return "#" + t })
+                                      .concat(modelData.unanswered === true
+                                              ? [qsTr("No replies yet")] : [])
+                                      .join(" · ")
+                                color: AppTheme.accent
                                 font.pixelSize:
                                     AppTheme.scaled(AppTheme.textMeta)
                                 elide: Label.ElideRight

@@ -2156,6 +2156,26 @@ Item {
                     }
 
                     Loader {
+                        id: roomCardLoader
+                        objectName: "roomCardLoader"
+                        active: (model.cardKind || "") !== "" && !model.redacted
+                                && String(model.eventId || "").charAt(0) === "$"
+                        readonly property bool cardShown: !!item && item.shown
+                        visible: cardShown
+                        Layout.alignment: Qt.AlignLeft
+                        Layout.preferredWidth: item ? item.implicitWidth : 0
+                        Layout.maximumWidth: root.contentInnerCap
+                        sourceComponent: Component {
+                            RoomCard {
+                                roomId: app.currentRoomId
+                                eventId: model.eventId || ""
+                                kind: model.cardKind || ""
+                                readOnly: root.readOnlyView
+                            }
+                        }
+                    }
+
+                    Loader {
                         id: bodyLoader
                         objectName: "messageBodyLoader"
                         readonly property bool isMediaRow: root.mediaRowBody
@@ -2182,6 +2202,7 @@ Item {
                             }
                             if (model.isPoll === true) return ""
                             if (model.isLocation === true) return ""
+                            if (roomCardLoader.cardShown) return ""
                             if (isMediaRow && !isMediaCaption) return ""
                             var fb = model.formattedBody
                             var html = (fb && fb.length > 0)
@@ -4257,6 +4278,43 @@ Item {
                                                           root.menuEventId)
             }
             AppMenuItem {
+                id: needsReplyMenuItem
+                objectName: "needsReplyMenuItem"
+                iconName: "flag"
+                readonly property string mark:
+                    app.followUps && app.followUps.revision >= 0
+                    ? app.followUps.stateOf(remindMenuItem.targetRoom, root.menuEventId) : ""
+                function markAs(state) {
+                    const details = root.timelineModel.messageDetails(root.menuEventId)
+                    const threadRootId = root.inThreadPanel
+                          ? app.thread.rootEventId : (details.threadRootId || "")
+                    app.followUps.setState(remindMenuItem.targetRoom, root.menuEventId,
+                                           threadRootId, state)
+                }
+                text: qsTr("Needs reply")
+                visible: !!app.followUps && remindMenuItem.remindable && mark !== "reply"
+                enabled: visible
+                onTriggered: markAs("reply")
+            }
+            AppMenuItem {
+                objectName: "waitingMenuItem"
+                iconName: "schedule"
+                text: qsTr("Waiting for reply")
+                visible: !!app.followUps && remindMenuItem.remindable
+                         && needsReplyMenuItem.mark !== "waiting"
+                enabled: visible
+                onTriggered: needsReplyMenuItem.markAs("waiting")
+            }
+            AppMenuItem {
+                objectName: "markDoneMenuItem"
+                iconName: "check"
+                text: qsTr("Mark done")
+                visible: !!app.followUps && needsReplyMenuItem.mark !== ""
+                enabled: visible
+                onTriggered: app.followUps.markDone(remindMenuItem.targetRoom,
+                                                    root.menuEventId)
+            }
+            AppMenuItem {
                 id: copyTextMenuItem
                 objectName: "copyTextMenuItem"
                 iconName: "content_copy"
@@ -4281,6 +4339,14 @@ Item {
                 enabled: root.timelineModel.messagePermalink(
                              root.menuEventId).length > 0
                 onTriggered: root.copyMessageLink()
+            }
+            AppMenuItem {
+                objectName: "exportMessageMenuItem"
+                iconName: "schedule"
+                text: qsTr("Export as task or event…")
+                visible: root.copyableText
+                enabled: visible
+                onTriggered: root.openHandoff()
             }
             AppMenuItem {
                 objectName: "openMediaMenuItem"
@@ -4612,6 +4678,22 @@ Item {
         if (!eventSourceDialogItem)
             eventSourceDialogItem = eventSourceDialogComponent.createObject(root)
         eventSourceDialogItem.openFor(root.timelineModel, eventId)
+    }
+    property var handoffDialogItem: null
+    function openHandoff() {
+        if (root.menuEventId === "" || !root.copyableText)
+            return
+        if (!handoffDialogItem)
+            handoffDialogItem = handoffDialogComponent.createObject(root)
+        handoffDialogItem.openFor(
+            root.timelineModel.copyTextForEvent(root.menuEventId),
+            root.timelineModel.messagePermalink(root.menuEventId),
+            root.timelineModel.realRoomIdForEvent(root.menuEventId) + "\n"
+                + root.menuEventId)
+    }
+    Component {
+        id: handoffDialogComponent
+        HandoffDialog {}
     }
     property var detailsDialogItem: null
     Component {
