@@ -13,6 +13,7 @@
 
 class QEvent;
 class QKeyEvent;
+class QWindow;
 class SettingsManager;
 
 /// Every rebindable keyboard shortcut in Lightning, in one place.
@@ -175,6 +176,8 @@ public:
     int bindingRevision() const { return m_revision; }
 
 private:
+    int layoutShortcutKey(const QKeyEvent &event) const;
+    bool routeLayoutShortcut(QWindow *window, QKeyEvent *event, int layoutKey);
     QString actionForKeyIn(ActionContext context, int key, int modifiers) const;
     QString baseSequenceFor(int key, int modifiers) const;
     static QString literalSequence(int key, int modifiers);
@@ -228,5 +231,6 @@ private:
     int m_pressedModifiers = 0;
     int m_pressedDigit = 0;
     int m_pressedBaseKey = 0;
+    bool m_routingLayoutShortcut = false;
     KeyMapper m_keyMapper;
 };

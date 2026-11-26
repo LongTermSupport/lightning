@@ -86,6 +86,7 @@ ApplicationWindow {
 
     property int themeMode: 9
     Binding { target: AppTheme; property: "mode"; value: win.themeMode }
+    readonly property int resolvedTheme: AppTheme.effectiveTheme
 
     // Owner-side radio state: the flyout rows bind to this, and the binding
     // must survive clicks (AppMenuItem never self-toggles radioSelected).
@@ -112,6 +113,11 @@ ApplicationWindow {
     Rectangle { objectName: "tokStormDanger"; visible: false; color: AppTheme.stormDanger }
     Rectangle { objectName: "tokBolt"; visible: false; color: AppTheme.bolt }
     Rectangle { objectName: "tokBoltInk"; visible: false; color: AppTheme.boltInk }
+    Rectangle { objectName: "tokMenuHighlight"; visible: false; color: AppTheme.menuHighlight }
+    Rectangle { objectName: "tokMenuHighlightIcon"; visible: false; color: AppTheme.menuHighlightIcon }
+    Rectangle { objectName: "tokReactionBackground"; visible: false; color: AppTheme.reactionBackground }
+    Rectangle { objectName: "tokReactionSelectedBackground"; visible: false; color: AppTheme.reactionSelectedBackground }
+    Rectangle { objectName: "tokReactionSelectedBorder"; visible: false; color: AppTheme.reactionSelectedBorder }
 
     AppMenu {
         id: menu
@@ -711,10 +717,77 @@ private slots:
                              token("tokStormSelection")) <= kTolerance);
         QCOMPARE(label(reply)->property("color").value<QColor>(),
                  token("tokStormText"));
-        QCOMPARE(leadingIcon(reply)->property("color").value<QColor>(),
-                 token("tokBolt"));
+        QCOMPARE(leadingIcon(reply)->property("color").value<QColor>().rgba(),
+                 token("tokMenuHighlightIcon").rgba());
         menu->setProperty("currentIndex", -1);
         closeMenu();
+    }
+
+    void highlightedMenuIconsClearEveryPalette()
+    {
+        openMenu();
+        auto *menu = m_root->findChild<QObject *>(QStringLiteral("menu"));
+        menu->setProperty("currentIndex", 0);
+        auto *reply = item("replyItem");
+        QVERIFY(reply);
+        QTRY_VERIFY(reply->property("highlighted").toBool());
+        auto *icon = rowChild(reply, "menuItemIcon");
+        auto *bolt = rowChild(reply, "menuItemBolt");
+        auto *background = reply->property("background").value<QQuickItem *>();
+        QVERIFY(icon);
+        QVERIFY(bolt);
+        QVERIFY(background);
+        QSet<QRgb> palettes;
+        int checked = 0;
+        for (int mode = 1; mode <= 11; ++mode) {
+            m_root->setProperty("themeMode", mode);
+            QTRY_COMPARE(m_root->property("resolvedTheme").toInt(), mode);
+            palettes.insert(token("tokSurface").rgb());
+            const QColor fill = token("tokMenuHighlight");
+            const QColor ink = token("tokMenuHighlightIcon");
+            QVERIFY(fill.isValid());
+            QVERIFY(ink.isValid());
+            QCOMPARE(background->property("color").value<QColor>(), fill);
+            for (auto *glyph : {icon, bolt}) {
+                QCOMPARE(glyph->property("color").value<QColor>().rgba(), ink.rgba());
+                const double ratio = contrastRatio(ink, fill);
+                QVERIFY2(ratio >= 3.0,
+                         qPrintable(QStringLiteral("theme %1: %2 on %3 is %4:1")
+                             .arg(mode).arg(ink.name(), fill.name())
+                             .arg(ratio, 0, 'f', 3)));
+            }
+            const QColor accent = token("tokBolt");
+            if (contrastRatio(accent, fill) >= 3.0)
+                QCOMPARE(ink, accent);
+            else
+                QVERIFY(ink.lightnessF() > accent.lightnessF());
+            ++checked;
+        }
+        QCOMPARE(checked, 11);
+        QCOMPARE(palettes.size(), 11);
+        menu->setProperty("currentIndex", -1);
+        closeMenu();
+        m_root->setProperty("themeMode", 9);
+    }
+
+    void onlyMineReactionsUseTheAccentFillOnEveryPalette()
+    {
+        QSet<QRgb> palettes;
+        int checked = 0;
+        for (int mode = 1; mode <= 11; ++mode) {
+            m_root->setProperty("themeMode", mode);
+            QTRY_COMPARE(m_root->property("resolvedTheme").toInt(), mode);
+            const QColor surface = token("tokSurface");
+            palettes.insert(surface.rgb());
+            QCOMPARE(token("tokReactionBackground"), surface);
+            QCOMPARE(token("tokReactionSelectedBackground"), token("tokAccentSoft"));
+            QVERIFY(token("tokReactionSelectedBackground") != surface);
+            QCOMPARE(token("tokReactionSelectedBorder"), token("tokAccent"));
+            ++checked;
+        }
+        QCOMPARE(checked, 11);
+        QCOMPARE(palettes.size(), 11);
+        m_root->setProperty("themeMode", 9);
     }
 
     void dangerRowReadsInDangerInk()
