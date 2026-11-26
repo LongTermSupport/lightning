@@ -3,10 +3,13 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import MatrixClient
 
-RowLayout {
+GridLayout {
     id: root
     objectName: "railHiddenActions"
-    spacing: AppTheme.headerActionSpacing
+    property bool vertical: false
+    columns: vertical ? 1 : 2
+    columnSpacing: AppTheme.headerActionSpacing
+    rowSpacing: AppTheme.headerActionSpacing
 
     visible: app.loggedIn && app.settings
              && !app.settings.spacesRailVisible

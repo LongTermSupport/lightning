@@ -60,6 +60,7 @@ constexpr auto kShareFps            = "calls/shareFps";
 constexpr auto kShareBitrateCap     = "calls/shareBitrateCapKbps";
 constexpr auto kCameraResolution    = "calls/cameraResolution";
 constexpr auto kEchoCancellation    = "calls/echoCancellation";
+constexpr auto kMicrophoneTestPlayback = "calls/microphoneTestPlayback";
 constexpr auto kAutoGainControl     = "calls/autoGainControl";
 constexpr auto kSharePresence = "presence/shareOwn";
 constexpr auto kPresenceDisplay = "presence/display";
@@ -2224,6 +2225,19 @@ void SettingsManager::setCallPictureInPicture(bool v)
         return;
     m_store->setValue(QStringLiteral("calls/pictureInPicture"), v);
     Q_EMIT callPictureInPictureChanged();
+}
+
+bool SettingsManager::microphoneTestPlayback() const
+{
+    return m_store->value(kMicrophoneTestPlayback, true).toBool();
+}
+
+void SettingsManager::setMicrophoneTestPlayback(bool enabled)
+{
+    if (microphoneTestPlayback() == enabled)
+        return;
+    m_store->setValue(kMicrophoneTestPlayback, enabled);
+    Q_EMIT microphoneTestPlaybackChanged();
 }
 
 QString SettingsManager::noiseSuppressionMode() const

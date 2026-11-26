@@ -30,6 +30,7 @@
 #include "calls/SfuMediaEngine.h"
 #include "matrix/CallSignal.h"
 #include "matrix/MockMatrixClient.h"
+#include "storage/InMemorySecretStore.h"
 #include "support/SettledClick.h"
 
 #ifdef HAVE_LIGHTNING_WEBRTC
@@ -4662,10 +4663,64 @@ Item {
     {
         QVERIFY(m_configHome.isValid());
         qputenv("XDG_CONFIG_HOME", m_configHome.path().toUtf8());
+        qputenv("XDG_DATA_HOME", m_configHome.filePath(QStringLiteral("data")).toUtf8());
         QCoreApplication::setOrganizationName(
             QStringLiteral("MatrixClientTests"));
         QCoreApplication::setApplicationName(
             QStringLiteral("call-ui-contract-test"));
+    }
+
+    void hearYourselfSurvivesReopeningSettingsAtGroupCallStart()
+    {
+        AppController app(AppController::MockBackend, false, [](QObject *parent) {
+            return std::make_unique<InMemorySecretStore>(parent);
+        });
+        auto *tester = app.audioTester();
+        if (!tester->built())
+            QSKIP("The microphone tester requires the call media engine");
+        tester->setTestSourceMode(true);
+        tester->setRuntimeAvailable(true);
+        QQmlEngine engine;
+        engine.rootContext()->setContextProperty(QStringLiteral("app"), &app);
+        QQmlComponent component(&engine);
+        component.loadFromModule(QStringLiteral("MatrixClient"),
+                                 QStringLiteral("CallDeviceSettings"));
+        std::unique_ptr<QObject> page(component.create());
+        QVERIFY2(page != nullptr, qPrintable(component.errorString()));
+        const auto checkbox = [&] {
+            return page->findChild<QObject *>(QStringLiteral("microphoneTestPlayBack"));
+        };
+        QVERIFY(checkbox());
+        QVERIFY(checkbox()->property("enabled").toBool());
+        QVERIFY(checkbox()->property("checked").toBool());
+        QVERIFY(checkbox()->setProperty("checked", false));
+        QVERIFY(QMetaObject::invokeMethod(checkbox(), "toggled"));
+        page.reset();
+
+        app.groupCall()->beginMembershipPublishForTest(
+            QStringLiteral("!call:mock.local"), QStringLiteral("https://focus.invalid"), false);
+        QVERIFY(tester->blockedByCall());
+        page.reset(component.create());
+        QVERIFY2(page != nullptr, qPrintable(component.errorString()));
+        QVERIFY(checkbox());
+        QVERIFY(!checkbox()->property("checked").toBool());
+        QCOMPARE(app.settings()->property("microphoneTestPlayback"), QVariant(false));
+        QCOMPARE(tester->mode(), AudioDeviceTester::Mode::Idle);
+        QVERIFY(!tester->pipelineRunningForTest());
+        app.settings()->flushPendingWrites();
+        SettingsManager reopened;
+        QCOMPARE(reopened.property("microphoneTestPlayback"), QVariant(false));
+
+        QVERIFY(checkbox()->property("enabled").toBool());
+        QVERIFY(checkbox()->setProperty("checked", true));
+        QVERIFY(QMetaObject::invokeMethod(checkbox(), "toggled"));
+        QVERIFY(!tester->startMicrophoneTest(true));
+        QCOMPARE(tester->error(), QStringLiteral("in_call"));
+        QCOMPARE(tester->mode(), AudioDeviceTester::Mode::Idle);
+        app.groupCall()->leave();
+        app.settings()->flushPendingWrites();
+        SettingsManager afterCall;
+        QCOMPARE(afterCall.property("microphoneTestPlayback"), QVariant(true));
     }
 
     void theRoomRowCallGlyphNeverAsksForARefresh()

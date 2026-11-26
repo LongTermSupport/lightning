@@ -105,6 +105,7 @@ private Q_SLOTS:
         QStandardPaths::setTestModeEnabled(true);
         QVERIFY(m_configHome.isValid());
         qputenv("XDG_CONFIG_HOME", m_configHome.path().toUtf8());
+        qputenv("XDG_DATA_HOME", m_configHome.filePath(QStringLiteral("data")).toUtf8());
         QCoreApplication::setOrganizationName(
             QStringLiteral("MatrixClientTests"));
         QCoreApplication::setApplicationName(
@@ -148,6 +149,31 @@ private Q_SLOTS:
     }
 
 #ifdef HAVE_LIGHTNING_WEBRTC
+    void changingHearYourselfUpdatesTheRunningMicrophoneTest()
+    {
+        if (!gstreamerWithMeter())
+            QSKIP("GStreamer or its `level` element is absent");
+        SettingsManager settings;
+        settings.setProperty("microphoneTestPlayback", false);
+        AudioDeviceTester tester;
+        tester.setSettings(&settings);
+        tester.setTestSourceMode(true);
+        tester.setRuntimeAvailable(true);
+        QVERIFY(tester.startMicrophoneTest(false));
+        QTRY_COMPARE_WITH_TIMEOUT(tester.startsReportedForTest(), 1, 8000);
+        QCOMPARE(tester.mode(), AudioDeviceTester::Mode::Meter);
+        QVERIFY(!tester.lastDescriptionForTest().contains(QStringLiteral("outsink")));
+
+        settings.setProperty("microphoneTestPlayback", true);
+        QCOMPARE(tester.mode(), AudioDeviceTester::Mode::Loopback);
+        QTRY_COMPARE_WITH_TIMEOUT(tester.startsReportedForTest(), 2, 8000);
+        QVERIFY(tester.lastDescriptionForTest().contains(QStringLiteral("name=outsink")));
+        settings.setProperty("microphoneTestPlayback", false);
+        QCOMPARE(tester.mode(), AudioDeviceTester::Mode::Meter);
+        QTRY_COMPARE_WITH_TIMEOUT(tester.startsReportedForTest(), 3, 8000);
+        QVERIFY(!tester.lastDescriptionForTest().contains(QStringLiteral("outsink")));
+    }
+
     void theLevelCheckRunsTheCallsOwnChainAndReportsALevel()
     {
         if (!gstreamerWithMeter())
