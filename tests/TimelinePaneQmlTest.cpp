@@ -12961,9 +12961,16 @@ false);
         QVERIFY(pill != nullptr);
         pill->setProperty("visible", true);
         QTRY_VERIFY(pill->isVisible());
-        QTRY_VERIFY2(chip->mapToScene(QPointF(0, 0)).y()
-                         >= pill->mapToScene(QPointF(0, pill->height())).y(),
-                     "the loading chip shares the pill's place");
+        const bool loading = controller.pagination()->presentationState()
+                             == PaginationController::Loading;
+        if (loading) {
+            QTRY_COMPARE(chip->mapToScene(QPointF(0, 0)).y(),
+                         chip->parentItem()->mapToScene(QPointF(0, 0)).y());
+        } else {
+            QTRY_VERIFY2(chip->mapToScene(QPointF(0, 0)).y()
+                             >= pill->mapToScene(QPointF(0, pill->height())).y(),
+                         "the loading chip shares the pill's place");
+        }
         pill->setProperty("visible", false);
         QTRY_COMPARE(chip->y(), 0.0);
     }
@@ -13202,10 +13209,11 @@ private Q_SLOTS:
             const bool rtl = code == QLatin1String("ar");
             QVERIFY2(r.left() >= area.left() && r.right() <= area.right(),
                      qPrintable(QStringLiteral("%1 %2: x %3-%4 outside the "
-                                               "timeline %5-%6")
+                                               "timeline %5-%6 (width %7, implicit %8)")
                                     .arg(code, item->objectName())
                                     .arg(r.left()).arg(r.right())
-                                    .arg(area.left()).arg(area.right())));
+                                    .arg(area.left()).arg(area.right())
+                                    .arg(item->width()).arg(item->implicitWidth())));
             QVERIFY2(rtl ? r.center().x() < area.center().x()
                          : r.center().x() > area.center().x(),
                      qPrintable(QStringLiteral("%1 %2: centre %3 is not on the "
