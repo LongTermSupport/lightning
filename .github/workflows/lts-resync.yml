@@ -1,0 +1,128 @@
+# Keeps this fork in step with lightning-matrix/lightning, then builds and publishes the Flatpak.
+#
+#   main  mirrors upstream main and is only ever fast-forwarded. A main holding a commit upstream
+#         does not have is reported, never overwritten.
+#   lts   is this fork's own line: upstream main plus whatever we carry (these workflows, and any
+#         fix not yet upstream). Upstream is merged into it; a conflict is reported and nothing is
+#         pushed.
+#
+# Nothing here force-pushes. A run that cannot proceed fails red and files (or comments on) one
+# open issue titled "lts resync blocked", so a stuck resync is visible without reading run logs.
+#
+# The workflow token cannot push a change under .github/workflows/, so an upstream change there is
+# reported for a human to merge rather than attempted.
+name: lts resync
+
+on:
+  schedule:
+    - cron: "23 */4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: lts-resync
+  cancel-in-progress: false
+
+env:
+  UPSTREAM_URL: https://github.com/lightning-matrix/lightning.git
+  UPSTREAM_BRANCH: main
+  MIRROR_BRANCH: main
+  LINE_BRANCH: lts
+  ISSUE_TITLE: lts resync blocked
+
+jobs:
+  resync:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    outputs:
+      changed: ${{ steps.sync.outputs.changed }}
+      sha: ${{ steps.sync.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.LINE_BRANCH }}
+          fetch-depth: 0
+
+      - name: Fast-forward main, merge upstream into lts
+        id: sync
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          runUrl="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+
+          report() {
+            local body="$1"
+            printf '%s\n' "${body}" >> "${GITHUB_STEP_SUMMARY}"
+            echo "::error::${body}"
+            local existing
+            existing="$(gh issue list --repo "${GITHUB_REPOSITORY}" --state open \
+              --search "in:title \"${ISSUE_TITLE}\"" --json number --jq '.[0].number // empty')"
+            if [[ -n "${existing}" ]]; then
+              gh issue comment "${existing}" --repo "${GITHUB_REPOSITORY}" --body "${body}"$'\n\n'"Run: ${runUrl}"
+            else
+              gh issue create --repo "${GITHUB_REPOSITORY}" --title "${ISSUE_TITLE}" \
+                --body "${body}"$'\n\n'"Run: ${runUrl}"
+            fi
+            exit 1
+          }
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add upstream "${UPSTREAM_URL}"
+          git fetch --no-tags upstream "${UPSTREAM_BRANCH}"
+          git fetch --no-tags origin "${MIRROR_BRANCH}" "${LINE_BRANCH}"
+          up="$(git rev-parse "upstream/${UPSTREAM_BRANCH}")"
+          mirror="$(git rev-parse "origin/${MIRROR_BRANCH}")"
+          line="$(git rev-parse "origin/${LINE_BRANCH}")"
+          echo "upstream ${up}, ${MIRROR_BRANCH} ${mirror}, ${LINE_BRANCH} ${line}"
+
+          if [[ "${mirror}" != "${up}" ]]; then
+            if git merge-base --is-ancestor "${mirror}" "${up}"; then
+              git push origin "${up}:refs/heads/${MIRROR_BRANCH}"
+              echo "fast-forwarded ${MIRROR_BRANCH} to ${up}"
+            else
+              report "\`${MIRROR_BRANCH}\` holds commits upstream \`${UPSTREAM_BRANCH}\` does not (${mirror} is not an ancestor of ${up}). It is a mirror: move those commits to \`${LINE_BRANCH}\` or a topic branch, then point \`${MIRROR_BRANCH}\` back at upstream."
+            fi
+          fi
+
+          if git merge-base --is-ancestor "${up}" "${line}"; then
+            echo "${LINE_BRANCH} already contains upstream ${up}"
+            echo "changed=false" >> "${GITHUB_OUTPUT}"
+            echo "sha=${line}" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          base="$(git merge-base "${line}" "${up}")"
+          workflowChanges="$(git diff --name-only "${base}" "${up}" -- .github/workflows)"
+          if [[ -n "${workflowChanges}" ]]; then
+            report "Upstream changed files under \`.github/workflows/\`, which the workflow token cannot push. Merge upstream \`${UPSTREAM_BRANCH}\` (${up}) into \`${LINE_BRANCH}\` by hand. Files: ${workflowChanges//$'\n'/, }"
+          fi
+
+          git checkout -B "${LINE_BRANCH}" "${line}"
+          if ! git merge --no-ff --no-edit -m "Merge upstream ${UPSTREAM_BRANCH} ${up} into ${LINE_BRANCH}" "${up}"; then
+            conflicts="$(git diff --name-only --diff-filter=U)"
+            git merge --abort
+            report "Merging upstream \`${UPSTREAM_BRANCH}\` (${up}) into \`${LINE_BRANCH}\` (${line}) conflicts. Nothing was pushed. Conflicting files: ${conflicts//$'\n'/, }"
+          fi
+          merged="$(git rev-parse HEAD)"
+          git push origin "${merged}:refs/heads/${LINE_BRANCH}"
+          echo "merged upstream ${up} into ${LINE_BRANCH} as ${merged}"
+          echo "changed=true" >> "${GITHUB_OUTPUT}"
+          echo "sha=${merged}" >> "${GITHUB_OUTPUT}"
+
+  # A push made with the workflow token starts no workflow, so the build is called from here.
+  flatpak:
+    needs: resync
+    if: needs.resync.outputs.changed == 'true'
+    uses: ./.github/workflows/lts-flatpak.yml
+    with:
+      ref: ${{ needs.resync.outputs.sha }}
+    secrets: inherit
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
