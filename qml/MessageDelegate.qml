@@ -216,6 +216,7 @@ Item {
             senderDisplayName: model.senderDisplayName || "",
             senderName: model.senderDisplayName || "",
             body: model.body || "",
+            formattedBody: model.formattedBody || "",
             mediaKey: model.mediaKey || "",
             mediaFilename: model.mediaFilename || "",
             timestampMs: (model.timestamp && model.timestamp.getTime()) || 0,
@@ -3816,6 +3817,7 @@ Item {
                 mediaIsVoice: model.mediaIsVoice === true,
                 senderDisplayName: model.senderDisplayName || "",
                 body: model.body || "",
+                formattedBody: model.formattedBody || "",
                 previewBody: root.timelineModel.replyPreviewForEvent(
                     root.menuEventId),
                 mediaKey: model.mediaKey || "",
