@@ -443,6 +443,8 @@ public:
     void setOwnAvatar(const QString &localPath, quint64 opId) override;
     void clearOwnAvatar(quint64 opId) override;
     quint64 fetchMutualRooms(const QString &userId) override;
+    quint64 fetchMemberJoinDate(const QString &roomId,
+                                const QString &userId) override;
     bool supportsUrlPreview() const override { return true; }
     quint64 fetchUrlPreview(const QString &url) override;
     quint64 fetchLinkMedia(const QString &url, const QString &linkKey,

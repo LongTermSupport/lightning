@@ -324,7 +324,7 @@ Rectangle {
             }
             IconButton {
                 objectName: "roomPermissionsButton"
-                iconName: "lock"
+                iconName: "key"
                 iconSize: 18
                 Accessible.name: qsTr("Room permissions")
                 onClicked: {
@@ -556,6 +556,28 @@ Rectangle {
                                                  && roomInfoNameHover.hovered
                                 ToolTip.delay: 500
                                 ToolTip.text: roomInfoName.text
+                            }
+                            RowLayout {
+                                objectName: "roomInfoAddressRow"
+                                Layout.fillWidth: true
+                                visible: app.roomInfo.canonicalAlias.length > 0
+                                spacing: 4
+                                Label {
+                                    objectName: "roomInfoAddress"
+                                    Layout.fillWidth: true
+                                    text: app.roomInfo.canonicalAlias
+                                    textFormat: Text.PlainText
+                                    color: AppTheme.textSecondary
+                                    font.pixelSize: AppTheme.textBody
+                                    elide: Text.ElideMiddle
+                                }
+                                IconButton {
+                                    objectName: "roomInfoAddressCopy"
+                                    iconName: "content_copy"
+                                    iconSize: 14
+                                    Accessible.name: qsTr("Copy room address")
+                                    onClicked: root.copyRoomAddress()
+                                }
                             }
                             RowLayout {
                                 visible: root.roomData.encrypted === true
@@ -2193,6 +2215,11 @@ Rectangle {
             onJumpToEventRequested: (eventId) =>
                 root.jumpToEventRequested(eventId)
         }
+    }
+    function copyRoomAddress() {
+        copyHelper.text = app.roomInfo.canonicalAlias
+        copyHelper.selectAll()
+        copyHelper.copy()
     }
     property var roomPermissionsDialog: null
     Component {

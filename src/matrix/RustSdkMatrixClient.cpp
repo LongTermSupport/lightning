@@ -8636,6 +8636,19 @@ quint64 RustSdkMatrixClient::fetchMutualRooms(const QString &userId)
     return op;
 }
 
+quint64 RustSdkMatrixClient::fetchMemberJoinDate(const QString &roomId,
+                                                 const QString &userId)
+{
+    if (!m_rustHandle || !m_loggedIn || roomId.isEmpty() || userId.isEmpty())
+        return 0;
+    const quint64 op = nextOpId();
+    const QByteArray room = roomId.toUtf8();
+    const QByteArray user = userId.toUtf8();
+    const QString result = takeRustString(mx_rust_member_join_date(
+        m_rustHandle, room.constData(), user.constData(), op));
+    return result.isEmpty() ? op : 0;
+}
+
 quint64 RustSdkMatrixClient::fetchUrlPreview(const QString &url)
 {
     const QString lowered = url.trimmed().toLower();
@@ -13856,6 +13869,15 @@ bool RustSdkMatrixClient::handleRoomCommandEvent(const QString &type,
         Q_EMIT mutualRoomsReceived(
             opId(), event.value(QStringLiteral("user_id")).toString(), rooms,
             event.value(QStringLiteral("complete")).toBool(false));
+        return true;
+    }
+
+    if (type == QLatin1String("member_join_date_result")) {
+        Q_EMIT memberJoinDateReceived(
+            opId(), event.value(QStringLiteral("room_id")).toString(),
+            event.value(QStringLiteral("user_id")).toString(),
+            static_cast<qint64>(
+                event.value(QStringLiteral("joined_at_ms")).toDouble()));
         return true;
     }
 

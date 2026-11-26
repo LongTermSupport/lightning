@@ -93,6 +93,7 @@ Item {
         && root.eventIdForActions() !== ""
         && !root.isGallery
     readonly property real selectionGutterWidth: 26
+    readonly property bool rtl: LayoutMirroring.enabled
     readonly property var messageRangeIds:
         root.timelineView && root.timelineView.messageRangeIds
         ? root.timelineView.messageRangeIds : []
@@ -1173,7 +1174,7 @@ Item {
 
     readonly property real receiptRailReserve:
         (!root.bubbleMode && receiptStripLoader.visible)
-        ? Math.max(0, (bubble.x + bubble.width)
+        ? Math.max(0, (bubble.logicalX + bubble.width)
                       - Math.max(root.avatarGutterWidth,
                                  receiptStripLoader.width
                                  - receiptStripLoader.rowWidth)
@@ -1408,8 +1409,8 @@ Item {
         active: root.isThreadKeyWait
         visible: active
         y: AppTheme.spacingS
-        x: root.avatarGutterWidth
-        width: parent.width - x
+        x: root.rtl ? 0 : root.avatarGutterWidth
+        width: parent.width - root.avatarGutterWidth
         sourceComponent: RowLayout {
             id: keyWaitLine
             spacing: AppTheme.spacingS
@@ -1486,8 +1487,7 @@ Item {
     }
     Loader {
         active: root.selectionMode && root.rowSelectable
-        anchors.left: parent.left
-        anchors.leftMargin: 2
+        x: 2
         anchors.verticalCenter: parent.verticalCenter
         z: 20
         sourceComponent: Rectangle {
@@ -1616,7 +1616,7 @@ Item {
             Item {
                 id: avatarSlot
                 objectName: "senderAvatarSlot"
-                x: 0
+                x: root.rtl ? parent.width - width : 0
                 width: root.avatarGutterWidth
                 height: parent.height
                 implicitHeight: root.showsIdentity && !root.smallAvatarMode
@@ -1683,10 +1683,11 @@ Item {
             Rectangle {
                 id: bubble
                 objectName: "messageContentColumn"
-                x: root.bubbleMode && model.isOwn === true
+                readonly property real logicalX: root.bubbleMode && model.isOwn === true
                    ? Math.max(root.avatarGutterWidth,
                               parent.width - width - root.bubbleReceiptInset)
                    : root.avatarGutterWidth
+                x: root.rtl ? parent.width - logicalX - width : logicalX
                 width: root.bubbleMode
                        ? Math.min(bubbleContent.implicitWidth + root.bubblePad * 2
                                   + (mentionBarVisible ? 8 : 0),
@@ -2895,10 +2896,10 @@ Item {
                     item ? item.implicitWidth : 200
                 readonly property bool leftOfOwnBubble:
                     root.bubbleMode && model.isOwn === true
-                    && bubble.x - barWidth - AppTheme.spacingXS
+                    && bubble.logicalX - barWidth - AppTheme.spacingXS
                        >= root.avatarGutterWidth
                 anchors.rightMargin: leftOfOwnBubble
-                    ? bubbleRow.width - bubble.x + AppTheme.spacingXS
+                    ? bubbleRow.width - bubble.logicalX + AppTheme.spacingXS
                     : AppTheme.scrollbarWidth + AppTheme.spacing2
                       + root.actionBarReceiptReserve
                 z: 3
@@ -3110,13 +3111,13 @@ Item {
                 ? receiptStripLoader.rowWidth + AppTheme.spacingXS : 0
             Layout.rightMargin: reactionsLoader.followsOwnBubble
                 ? Math.max(reactionsLoader.pileReserve,
-                           bubbleRow.width - (bubble.x + bubble.width))
+                           bubbleRow.width - (bubble.logicalX + bubble.width))
                 : reactionsLoader.pileReserve
             Layout.alignment: Qt.AlignLeft
             readonly property real ownBubbleChipRun: 220
             Layout.leftMargin: reactionsLoader.followsOwnBubble
                 ? Math.max(root.avatarGutterWidth,
-                           Math.min(bubble.x,
+                           Math.min(bubble.logicalX,
                                     bubbleRow.width
                                     - reactionsLoader.ownBubbleChipRun))
                 : root.avatarGutterWidth
@@ -3473,12 +3474,11 @@ Item {
             Row {
                 id: receiptRow
                 objectName: "readReceiptRow"
-                // Mirrored layouts move the body's receipt margin to its
-                // leading side, beside the avatar, so the pile goes there too.
                 x: root.ownBubbleReceiptFooter
-                   ? bubble.x + bubble.width - width
-                   : readReceiptStrip.LayoutMirroring.enabled
-                     ? root.avatarGutterWidth
+                   ? (root.rtl
+                      ? bubble.x : bubble.x + bubble.width - width)
+                   : root.rtl
+                     ? Math.min(0, readReceiptStrip.width - root.avatarGutterWidth - width)
                      : Math.max(root.avatarGutterWidth,
                                 readReceiptStrip.width - width)
                 y: root.ownBubbleReceiptFooter ? 0 : -height

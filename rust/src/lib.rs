@@ -6368,6 +6368,21 @@ pub unsafe extern "C" fn mx_rust_mutual_rooms(
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn mx_rust_member_join_date(
+    ptr: *mut c_void,
+    room_id: *const c_char,
+    user_id: *const c_char,
+    op_id: u64,
+) -> *mut c_char {
+    ffi_string(|| {
+        let bridge = unsafe { bridge(ptr)? };
+        let room = unsafe { cstr_arg(room_id) }?;
+        let user = unsafe { cstr_arg(user_id) }?;
+        profile::member_join_date(bridge, room, user, op_id).map(|_| String::new())
+    })
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn mx_rust_set_own_avatar(
     ptr: *mut c_void,
     local_path: *const c_char,

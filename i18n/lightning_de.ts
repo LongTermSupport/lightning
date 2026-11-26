@@ -9220,7 +9220,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>ForwardController</name>
     <message>
-        <location filename="../src/app/ForwardController.cpp" line="+99"/>
+        <location filename="../src/app/ForwardController.cpp" line="+162"/>
         <source>Photo</source>
         <translation>Foto</translation>
     </message>
@@ -12840,7 +12840,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>MemberProfilePopover</name>
     <message>
-        <location filename="../qml/MemberProfilePopover.qml" line="+302"/>
+        <location filename="../qml/MemberProfilePopover.qml" line="+305"/>
         <source>Invited</source>
         <translation>Eingeladen</translation>
     </message>
@@ -12962,12 +12962,17 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Weitere Aktionen</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+20"/>
         <source>Rooms in common</source>
         <translation>Gemeinsame Räume</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+29"/>
+        <source>Joined this room %1</source>
+        <translation>Diesem Raum beigetreten am %1</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>Copy user ID</source>
         <translation>Benutzer-ID kopieren</translation>
     </message>
@@ -13797,7 +13802,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
 <context>
     <name>MessageDelegate</name>
     <message>
-        <location filename="../qml/MessageDelegate.qml" line="+457"/>
+        <location filename="../qml/MessageDelegate.qml" line="+458"/>
         <source>%1 B</source>
         <translation>%1 B</translation>
     </message>
@@ -13821,14 +13826,14 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <location line="-577"/>
         <location line="+57"/>
         <location line="+517"/>
-        <location line="+4369"/>
+        <location line="+4370"/>
         <location line="+1066"/>
         <location line="+93"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location line="-6100"/>
+        <location line="-6101"/>
         <source>Voice message</source>
         <translation>Sprachnachricht</translation>
     </message>
@@ -13841,24 +13846,24 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="-570"/>
         <location line="+568"/>
-        <location line="+3822"/>
+        <location line="+3823"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5313"/>
+        <location line="-5314"/>
         <location line="+53"/>
         <location line="+514"/>
-        <location line="+4371"/>
+        <location line="+4372"/>
         <source>Image</source>
         <translation>Bild</translation>
     </message>
     <message>
-        <location line="-4937"/>
+        <location line="-4938"/>
         <location line="+570"/>
-        <location line="+4472"/>
+        <location line="+4473"/>
         <location line="+1270"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -13866,7 +13871,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Datei</translation>
     </message>
     <message>
-        <location line="-6342"/>
+        <location line="-6343"/>
         <source>Attachment</source>
         <translation>Anhang</translation>
     </message>
@@ -13972,12 +13977,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="+91"/>
         <location line="+949"/>
-        <location line="+1152"/>
+        <location line="+1153"/>
         <source>Reply</source>
         <translation>Antworten</translation>
     </message>
     <message>
-        <location line="-2088"/>
+        <location line="-2089"/>
         <source>Original message removed</source>
         <translation>Ursprüngliche Nachricht entfernt</translation>
     </message>
@@ -14102,36 +14107,36 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2455"/>
+        <location line="+2456"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>Wiederholen</translation>
     </message>
     <message>
-        <location line="-3471"/>
-        <location line="+1231"/>
+        <location line="-3472"/>
+        <location line="+1232"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location line="-1226"/>
+        <location line="-1227"/>
         <source>Cancel sending this message</source>
         <translation>Senden dieser Nachricht abbrechen</translation>
     </message>
     <message>
         <location line="+190"/>
-        <location line="+1509"/>
+        <location line="+1510"/>
         <source>Hide image</source>
         <translation>Bild ausblenden</translation>
     </message>
     <message>
-        <location line="-1509"/>
-        <location line="+1509"/>
+        <location line="-1510"/>
+        <location line="+1510"/>
         <source>Hidden image limit reached</source>
         <translation>Limit für ausgeblendete Bilder erreicht</translation>
     </message>
     <message>
-        <location line="-1505"/>
+        <location line="-1506"/>
         <source>Hide</source>
         <translation>Ausblenden</translation>
     </message>
@@ -14153,23 +14158,23 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="+25"/>
         <location line="+4"/>
-        <location line="+1140"/>
+        <location line="+1141"/>
         <source>Reply in thread</source>
         <translation>Im Thread antworten</translation>
     </message>
     <message>
-        <location line="-1123"/>
+        <location line="-1124"/>
         <source>Edit message</source>
         <translation>Nachricht bearbeiten</translation>
     </message>
     <message>
         <location line="+4"/>
-        <location line="+1139"/>
+        <location line="+1140"/>
         <source>Edit</source>
         <translation>Bearbeiten</translation>
     </message>
     <message>
-        <location line="-1118"/>
+        <location line="-1119"/>
         <source>More message actions</source>
         <translation>Weitere Nachrichtenaktionen</translation>
     </message>
@@ -14235,7 +14240,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Gelesen von %1, %2 und %3 weiteren</translation>
     </message>
     <message>
-        <location line="+567"/>
+        <location line="+568"/>
         <source>Message · %1 · %2</source>
         <translation>Nachricht · %1 · %2</translation>
     </message>
@@ -14497,7 +14502,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-2749"/>
+        <location line="-2750"/>
         <source>Open this thread</source>
         <translation>Diesen Thread öffnen</translation>
     </message>
@@ -14510,7 +14515,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         </translation>
     </message>
     <message>
-        <location line="+631"/>
+        <location line="+632"/>
         <source>Delete message?</source>
         <translation>Nachricht löschen?</translation>
     </message>
@@ -19684,7 +19689,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <name>RoomInfoController</name>
     <message>
         <location filename="../src/app/OpenRoomPermissions.cpp" line="+66"/>
-        <location filename="../src/app/RoomInfoController.cpp" line="+240"/>
+        <location filename="../src/app/RoomInfoController.cpp" line="+253"/>
         <source>You are not in this room.</source>
         <translation>Du bist nicht in diesem Raum.</translation>
     </message>
@@ -19695,12 +19700,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Du hast keine Berechtigung, in diesem Raum zu schreiben.</translation>
     </message>
     <message>
-        <location filename="../src/app/RoomInfoController.cpp" line="-166"/>
+        <location filename="../src/app/RoomInfoController.cpp" line="-179"/>
         <source>The server did not accept the change.</source>
         <translation>Der Server hat die Änderung nicht akzeptiert.</translation>
     </message>
     <message>
-        <location line="+396"/>
+        <location line="+409"/>
         <source>You do not have permission to change that.</source>
         <translation>Du hast keine Berechtigung, das zu ändern.</translation>
     </message>
@@ -20003,7 +20008,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>(unbenannter Raum)</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+35"/>
+        <source>Copy room address</source>
+        <translation>Raumadresse kopieren</translation>
+    </message>
+    <message>
+        <location line="+13"/>
         <source>End-to-end encrypted</source>
         <translation>Ende-zu-Ende-verschlüsselt</translation>
     </message>
@@ -20274,12 +20284,12 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
     <message>
         <location line="+21"/>
         <location line="+773"/>
-        <location line="+96"/>
+        <location line="+101"/>
         <source>Remove</source>
         <translation>Entfernen</translation>
     </message>
     <message>
-        <location line="-849"/>
+        <location line="-854"/>
         <source>#another-name</source>
         <translation>#anderer-name</translation>
     </message>
@@ -20558,7 +20568,7 @@ Abmelden und erneut Anmelden ist die einzige Lösung.</translation>
         <translation>Öffnen</translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+50"/>
         <source>Remove widget?</source>
         <translation>Widget entfernen?</translation>
     </message>
@@ -35623,7 +35633,7 @@ Vorgeschlagene Zielgruppe
     </message>
     <message>
         <location line="+21"/>
-        <location filename="../qml/TimelinePane.qml" line="+7117"/>
+        <location filename="../qml/TimelinePane.qml" line="+7127"/>
         <source>Remove</source>
         <translation>Entfernen</translation>
     </message>
@@ -35667,8 +35677,8 @@ Vorgeschlagene Zielgruppe
     </message>
     <message>
         <location line="+29"/>
-        <location filename="../qml/TimelinePane.qml" line="-5900"/>
-        <location line="+5408"/>
+        <location filename="../qml/TimelinePane.qml" line="-5910"/>
+        <location line="+5418"/>
         <source>Space</source>
         <translation>Space</translation>
     </message>
@@ -35692,8 +35702,8 @@ Vorgeschlagene Zielgruppe
     </message>
     <message>
         <location filename="../qml/SpaceLobby.qml" line="+142"/>
-        <location filename="../qml/TimelinePane.qml" line="-6248"/>
-        <location line="+6892"/>
+        <location filename="../qml/TimelinePane.qml" line="-6258"/>
+        <location line="+6902"/>
         <source>Room</source>
         <translation>Raum</translation>
     </message>
@@ -35747,7 +35757,7 @@ Vorgeschlagene Zielgruppe
         <translation>%1 auswählen</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-6485"/>
+        <location filename="../qml/TimelinePane.qml" line="-6495"/>
         <source>Seen by 1 person</source>
         <translation>Von 1 Person gesehen</translation>
     </message>
@@ -35873,12 +35883,12 @@ Vorgeschlagene Zielgruppe
     <message>
         <location line="+16"/>
         <location line="+2"/>
-        <location line="+3854"/>
+        <location line="+3861"/>
         <source>Room information</source>
         <translation>Rauminformationen</translation>
     </message>
     <message>
-        <location line="-3843"/>
+        <location line="-3850"/>
         <location line="+1"/>
         <source>More room actions</source>
         <translation>Weitere Raumaktionen</translation>
@@ -36094,14 +36104,14 @@ Vorgeschlagene Zielgruppe
         <translation>Die Suche konnte nicht abgeschlossen werden.</translation>
     </message>
     <message>
-        <location line="+2750"/>
+        <location line="+2757"/>
         <location line="+27"/>
-        <location line="+463"/>
+        <location line="+466"/>
         <source>Loading older messages…</source>
         <translation>Ältere Nachrichten werden geladen …</translation>
     </message>
     <message>
-        <location line="-462"/>
+        <location line="-465"/>
         <source>Could not load older messages —</source>
         <translation>Ältere Nachrichten konnten nicht geladen werden –</translation>
     </message>
@@ -36146,7 +36156,7 @@ Vorgeschlagene Zielgruppe
         <translation>Personen einladen</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+44"/>
         <source>Jump to first unread message</source>
         <translation>Zur ersten ungelesenen Nachricht springen</translation>
     </message>
@@ -36161,7 +36171,7 @@ Vorgeschlagene Zielgruppe
         <translation>Erste ungelesene</translation>
     </message>
     <message>
-        <location line="+49"/>
+        <location line="+50"/>
         <source>Couldn&apos;t find the first unread message</source>
         <translation>Die erste ungelesene Nachricht wurde nicht gefunden</translation>
     </message>
@@ -36498,7 +36508,7 @@ Vorgeschlagene Zielgruppe
         <translation>Dateien zum Anhängen hier ablegen</translation>
     </message>
     <message>
-        <location line="-5455"/>
+        <location line="-5465"/>
         <source>Join space</source>
         <translation>Space beitreten</translation>
     </message>

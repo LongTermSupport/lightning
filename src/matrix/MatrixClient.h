@@ -723,6 +723,9 @@ public:
     virtual void clearOwnAvatar(quint64 opId) { Q_UNUSED(opId); }
     virtual quint64 fetchMutualRooms(const QString &userId)
     { Q_UNUSED(userId); return 0; }
+    virtual quint64 fetchMemberJoinDate(const QString &roomId,
+                                        const QString &userId)
+    { Q_UNUSED(roomId); Q_UNUSED(userId); return 0; }
     virtual bool supportsUrlPreview() const { return false; }
     virtual quint64 fetchUrlPreview(const QString &url)
     { Q_UNUSED(url); return 0; }
@@ -1604,6 +1607,8 @@ Q_SIGNALS:
     void ownAvatarChanged(quint64 opId, bool ok, const QString &error);
     void mutualRoomsReceived(quint64 opId, const QString &userId,
                              const QVariantList &rooms, bool complete);
+    void memberJoinDateReceived(quint64 opId, const QString &roomId,
+                                const QString &userId, qint64 joinedAtMs);
     void urlPreviewFinished(quint64 opId, bool ok, const QVariantMap &fields,
                             const QString &category, int httpStatus = 0,
                             int redirectCount = 0);

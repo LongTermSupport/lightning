@@ -17,6 +17,7 @@
 
 #include <QFile>
 #include <QFontDatabase>
+#include <QClipboard>
 #include <QGuiApplication>
 #include <QJSValue>
 #include <QQmlApplicationEngine>
@@ -224,6 +225,46 @@ private Q_SLOTS:
         m_window.reset();
         m_engine.reset();
         m_controller.reset();
+    }
+
+    void aMemberWithoutAliasPermissionSeesAndCopiesTheRoomAddress()
+    {
+        RosterClient client;
+        auto *info = m_controller->roomInfo();
+        auto *original = m_controller->findChild<MockMatrixClient *>();
+        QVERIFY(original);
+        const QString originalRoom = info->roomId();
+        const auto restore = qScopeGuard([&] {
+            info->setClient(original);
+            info->setRoomId(originalRoom);
+        });
+        info->setClient(&client);
+        const QString room = QStringLiteral("!address:example.org");
+        info->setRoomId(room);
+        settle();
+        auto *row = itemNamed(QStringLiteral("roomInfoAddressRow"));
+        QVERIFY(row);
+        QVERIFY(!row->isVisible());
+        QVariantMap snapshot{{QStringLiteral("ok"), true},
+                             {QStringLiteral("partial"), false},
+                             {QStringLiteral("joinedCount"), 3},
+                             {QStringLiteral("canChangeAlias"), false},
+                             {QStringLiteral("canonicalAlias"),
+                              QStringLiteral("#lobby:example.org")}};
+        Q_EMIT client.roomMembersReceived(client.lastOp, room, snapshot);
+        settle();
+        QVERIFY(!info->canChangeAlias());
+        QVERIFY(row->isVisible());
+        auto *label = itemNamed(QStringLiteral("roomInfoAddress"));
+        QVERIFY(label);
+        QCOMPARE(label->property("text").toString(),
+                 QStringLiteral("#lobby:example.org"));
+        QVERIFY(!itemNamed(QStringLiteral("roomAliasField"))
+                || !itemNamed(QStringLiteral("roomAliasField"))->isVisible());
+        QGuiApplication::clipboard()->setText(QStringLiteral("untouched"));
+        QVERIFY(QMetaObject::invokeMethod(m_panel, "copyRoomAddress"));
+        QCOMPARE(QGuiApplication::clipboard()->text(),
+                 QStringLiteral("#lobby:example.org"));
     }
 
     void anUnknownMemberCountDoesNotFlashZeroDuringPartialHydration()
