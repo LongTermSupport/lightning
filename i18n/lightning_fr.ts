@@ -31163,7 +31163,7 @@ Membres présents actuellement : %5
         <translation>Outils de développement</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+44"/>
         <source>Users</source>
         <translation>Utilisateurs</translation>
     </message>
@@ -31173,8 +31173,8 @@ Membres présents actuellement : %5
         <translation>Le niveau auquel chaque membre commence. L&apos;élever accorde à TOUT LE MONDE dans l&apos;espace tout à ce niveau.</translation>
     </message>
     <message>
-        <location line="-33"/>
-        <location line="+36"/>
+        <location line="-34"/>
+        <location line="+37"/>
         <source>Default power</source>
         <translation>Puissance par défaut</translation>
     </message>
@@ -31195,32 +31195,33 @@ Membres présents actuellement : %5
     </message>
     <message>
         <location line="-38"/>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>Moderation</source>
+        <extracomment>room moderation</extracomment>
         <translation>Modération</translation>
     </message>
     <message>
-        <location line="-40"/>
-        <location line="+43"/>
+        <location line="-41"/>
+        <location line="+44"/>
         <location line="+1050"/>
         <source>Invite</source>
         <translation>Inviter</translation>
     </message>
     <message>
-        <location line="-1092"/>
-        <location line="+43"/>
+        <location line="-1093"/>
+        <location line="+44"/>
         <source>Kick</source>
         <translation>Coup de pied</translation>
     </message>
     <message>
-        <location line="-42"/>
-        <location line="+43"/>
+        <location line="-43"/>
+        <location line="+44"/>
         <source>Ban</source>
         <translation>Bannir</translation>
     </message>
     <message>
-        <location line="-42"/>
-        <location line="+43"/>
+        <location line="-43"/>
+        <location line="+44"/>
         <source>Remove messages</source>
         <translation>Supprimer des messages</translation>
     </message>
@@ -31247,14 +31248,14 @@ Membres présents actuellement : %5
         <translation>Sujet de l&apos;espace</translation>
     </message>
     <message>
-        <location line="-412"/>
-        <location line="+48"/>
+        <location line="-413"/>
+        <location line="+49"/>
         <source>Settings</source>
         <translation>Paramètres</translation>
     </message>
     <message>
-        <location line="-47"/>
-        <location line="+48"/>
+        <location line="-48"/>
+        <location line="+49"/>
         <source>Set &quot;Edit power levels&quot; above your own level and you can never lower it again.</source>
         <translation>Réglez « Modifier les niveaux de puissance » au-dessus de votre propre niveau et vous ne pourrez plus jamais le baisser.</translation>
     </message>
@@ -31264,14 +31265,14 @@ Membres présents actuellement : %5
         <translation>Modifier l&apos;accès à l&apos;espace</translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+51"/>
+        <location line="-50"/>
+        <location line="+52"/>
         <source>Publish address</source>
         <translation>Publier l&apos;adresse</translation>
     </message>
     <message>
-        <location line="-50"/>
-        <location line="+52"/>
+        <location line="-51"/>
+        <location line="+53"/>
         <source>Edit power levels</source>
         <translation>Modifier les niveaux de puissance</translation>
     </message>
@@ -31281,8 +31282,8 @@ Membres présents actuellement : %5
         <translation>Espace de mise à niveau</translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+50"/>
+        <location line="-50"/>
+        <location line="+51"/>
         <source>Other settings</source>
         <translation>Autres paramètres</translation>
     </message>
@@ -31317,7 +31318,7 @@ Membres présents actuellement : %5
         <translation>Images (*.png *.jpg *.jpeg *.gif *.webp *.bmp *.svg)</translation>
     </message>
     <message>
-        <location line="-422"/>
+        <location line="-424"/>
         <source>Default order saved. Your personal room order still takes precedence.</source>
         <translation>Ordre par défaut enregistré. Votre ordre personnel des salons reste prioritaire.</translation>
     </message>
@@ -31347,7 +31348,7 @@ Membres présents actuellement : %5
         <translation>Notifier tout le monde (@room)</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Room profile</source>
         <translation>Profil du salon</translation>
     </message>
@@ -31387,7 +31388,7 @@ Membres présents actuellement : %5
         <translation>Mettre à niveau le salon</translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+77"/>
         <source>Room</source>
         <translation>Salon</translation>
     </message>
