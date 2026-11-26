@@ -106,8 +106,11 @@ Popup {
     function openRemoveRecent(member) {
         return removeRecentDialog.openFor(member)
     }
+    // Opened while this card may never have been shown, when its own
+    // Overlay.overlay has no window yet: share the card's parent instead.
     RemoveRecentMessagesDialog {
         id: removeRecentDialog
+        parent: root.parent
     }
 
     function _refreshModeration() {
