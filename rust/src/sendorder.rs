@@ -444,7 +444,17 @@ mod sdk_tests {
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
     async fn sent_messages_stay_in_send_order_while_their_echoes_arrive() {
         let server = MatrixMockServer::new().await;
-        let client = server.client_builder().build().await;
+        let store = std::env::temp_dir().join(format!("lightning-send-order-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&store);
+        let client = server
+            .client_builder()
+            .on_builder(|b| {
+                b.sqlite_store(&store, None).with_threading_support(
+                    matrix_sdk::ThreadingSupport::Enabled { with_subscriptions: false },
+                )
+            })
+            .build()
+            .await;
         client.event_cache().subscribe().unwrap();
         let room = server.sync_joined_room(&client, room_id!("!order:localhost")).await;
         server.mock_room_state_encryption().plain().mount().await;
