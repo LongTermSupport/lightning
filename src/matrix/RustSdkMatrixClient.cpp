@@ -12726,6 +12726,10 @@ bool RustSdkMatrixClient::handleRoomCommandEvent(const QString &type,
                          row.value(QStringLiteral("ambiguous")).toBool());
             entry.insert(QStringLiteral("isOwn"),
                          row.value(QStringLiteral("is_own")).toBool());
+            entry.insert(QStringLiteral("joinedAtMs"),
+                         static_cast<qlonglong>(
+                             row.value(QStringLiteral("joined_at_ms"))
+                                 .toDouble()));
             members.append(entry);
         }
         snapshot.insert(QStringLiteral("members"), members);

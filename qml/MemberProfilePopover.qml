@@ -71,6 +71,7 @@ Popup {
     property string role: ""
     property string avatarMxc: ""
     property bool isOwn: false
+    property double joinedAtMs: 0
     // False when opened outside a joined room (an invite's inviter): no
     // roster, role or moderation for whichever room happens to be current.
     property bool roomScoped: true
@@ -168,6 +169,8 @@ Popup {
             avatarMxc = row.avatarUrl || ""
         if (membership.length === 0)
             membership = row.membership || ""
+        if (joinedAtMs <= 0)
+            joinedAtMs = row.joinedAtMs || 0
     }
 
     function _fillFromServer() {
@@ -205,6 +208,7 @@ Popup {
         liveRole = ""
         avatarMxc = member.avatarUrl || ""
         isOwn = member.isOwn === true
+        joinedAtMs = member.joinedAtMs || 0
         roomScoped = member.roomScoped !== false
         withholdMedia = member.withholdMedia === true
         if (roomScoped)
@@ -1191,6 +1195,16 @@ Popup {
                                      && app.roomInfo.mutualRooms.length > 0
                         }
 
+                        AppMenuItem {
+                            objectName: "profileJoinedInfo"
+                            visible: root.roomScoped && root.joinedAtMs > 0
+                            enabled: false
+                            iconName: "schedule"
+                            text: qsTr("Joined this room %1").arg(
+                                new Date(root.joinedAtMs).toLocaleDateString(
+                                    Qt.locale(AppLocale.name),
+                                    Locale.ShortFormat))
+                        }
                         AppMenuItem {
                             objectName: "profileCopyIdButton"
                             text: qsTr("Copy user ID")

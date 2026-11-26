@@ -2859,6 +2859,13 @@ async fn members_snapshot_json(
                     "power_level": power_level_int(member.power_level()),
                     "ambiguous": member.name_ambiguous(),
                     "is_own": Some(member.user_id()) == own_id,
+                    "joined_at_ms": match member.membership() {
+                        MembershipState::Join => member
+                            .event()
+                            .timestamp()
+                            .map(|t| u64::from(t)),
+                        _ => None,
+                    },
                 })
             })
             .collect();

@@ -309,6 +309,34 @@ private slots:
                  QStringLiteral("@bob:mock.local"));
     }
 
+    void theOverflowMenuShowsWhenTheMemberJoinedOnlyWhenKnown()
+    {
+        auto open = [&](qlonglong joinedAtMs) {
+            QVariantMap member;
+            member.insert(QStringLiteral("userId"),
+                          QStringLiteral("@bob:mock.local"));
+            member.insert(QStringLiteral("membership"),
+                          QStringLiteral("joined"));
+            if (joinedAtMs > 0)
+                member.insert(QStringLiteral("joinedAtMs"), joinedAtMs);
+            QVERIFY(QMetaObject::invokeMethod(
+                m_dialog, "openFor", Q_ARG(QVariant, QVariant(member)),
+                Q_ARG(QVariant, QVariant())));
+        };
+        open(1700000000000);
+        auto *known = m_dialog->findChild<QObject *>(
+            QStringLiteral("profileJoinedInfo"));
+        QVERIFY(known);
+        QVERIFY(known->property("visible").toBool());
+        QVERIFY(!known->property("enabled").toBool());
+        const QString text = known->property("text").toString();
+        QVERIFY2(text.startsWith(QStringLiteral("Joined this room "))
+                     && text.size() > 17,
+                 qPrintable(text));
+        open(0);
+        QVERIFY(!known->property("visible").toBool());
+    }
+
     void theBannerIsNotLayeredWhereNoEffectCanBeDrawn()
     {
         QVariantMap member;
