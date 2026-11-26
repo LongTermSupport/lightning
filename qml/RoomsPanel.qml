@@ -194,7 +194,7 @@ Rectangle {
                     Layout.maximumWidth: Math.max(0, root.width
                         - AppTheme.spacing12 * 2 - headerRow.spacing
                         - wordmarkBolt.implicitWidth
-                        - headerControls.implicitWidth - AppTheme.spacing8
+                        - collapseRoomListButton.width - (railHiddenActions.visible ? railHiddenActions.implicitWidth + AppTheme.headerActionSpacing : 0) - AppTheme.spacing8
                         - AppTheme.headerActionGutter + AppTheme.spacing12)
                     readonly property bool channelsLayout:
                         app.settings && app.settings.roomNavigationLayout === 1
@@ -252,25 +252,30 @@ Rectangle {
                 }
             }
 
-            RowLayout {
-                id: headerControls
+            IconButton {
+                id: collapseRoomListButton
+                objectName: "collapseRoomListButton"
+                anchors {
+                    right: railHiddenActions.visible ? railHiddenActions.left : parent.right
+                    verticalCenter: parent.verticalCenter
+                    rightMargin: railHiddenActions.visible ? AppTheme.headerActionSpacing
+                                                           : AppTheme.headerActionGutter
+                }
+                iconSize: 18
+                iconName: "chevron_left"
+                Accessible.name: qsTr("Collapse room list")
+                ToolTip.text: Accessible.name + root.compactShortcutHint
+                ToolTip.visible: hovered
+                ToolTip.delay: 500
+                onClicked: root.collapse()
+            }
+
+            RailHiddenActions {
+                id: railHiddenActions
                 anchors {
                     right: parent.right
                     verticalCenter: parent.verticalCenter
                     rightMargin: AppTheme.headerActionGutter
-                }
-                spacing: AppTheme.headerActionSpacing
-
-                RailHiddenActions {}
-                IconButton {
-                    objectName: "collapseRoomListButton"
-                    iconSize: 18
-                    iconName: "chevron_left"
-                    Accessible.name: qsTr("Collapse room list")
-                    ToolTip.text: Accessible.name + root.compactShortcutHint
-                    ToolTip.visible: hovered
-                    ToolTip.delay: 500
-                    onClicked: root.collapse()
                 }
             }
         }
