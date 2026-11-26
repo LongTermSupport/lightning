@@ -1353,8 +1353,11 @@ Rectangle {
                     var minY = wheelMinY()
                     return maxY < minY ? minY : maxY
                 }
-                function afterWheelSettled() {
-                    followLatest = atBottomEdge()
+                property bool wheelTowardsOlder: false
+                function afterWheelSettled(towardsOlder) {
+                    // An upward move that stops inside the follow slack has still left the end.
+                    followLatest = towardsOlder === true ? contentY >= wheelMaxY() - 0.5
+                                                         : atBottomEdge()
                     if (followLatest)
                         app.thread.markRead()
                     if (contentY - originY < height * 0.5)
@@ -1377,17 +1380,16 @@ Rectangle {
                         if (event.pixelDelta.y !== 0
                                 || (continuousSource && event.angleDelta.y !== 0)) {
                             app.threadScroll.cancel()
-                            if (event.pixelDelta.y > 0
-                                    || (continuousSource && event.angleDelta.y > 0))
+                            var upward = event.pixelDelta.y > 0
+                                    || (continuousSource && event.angleDelta.y > 0)
+                            if (upward)
                                 replyList.followLatest = false
                             replyList.contentY = app.threadScroll.pixelTargetY(
                                 event.pixelDelta.y, replyList.contentY,
                                 minY, maxY)
-                            replyList.afterWheelSettled()
-                            if (event.pixelDelta.y > 0
-                                    || (continuousSource && event.angleDelta.y > 0))
-                                replyList.followLatest = false
+                            replyList.afterWheelSettled(upward)
                         } else if (event.angleDelta.y !== 0) {
+                            replyList.wheelTowardsOlder = event.angleDelta.y > 0
                             if (event.angleDelta.y > 0)
                                 replyList.followLatest = false
                             app.threadScroll.wheelNotch(
@@ -1408,7 +1410,7 @@ Rectangle {
                             app.threadScroll.notifyBoundReached(clamped)
                     }
                     function onWheelMotionSettled() {
-                        replyList.afterWheelSettled()
+                        replyList.afterWheelSettled(replyList.wheelTowardsOlder)
                     }
                 }
                 Component.onDestruction: app.threadScroll.cancel()
@@ -1418,6 +1420,7 @@ Rectangle {
                     var hi = wheelMaxY()
                     var target = contentY + direction * height * 0.9
                     target = target < lo ? lo : (target > hi ? hi : target)
+                    wheelTowardsOlder = direction < 0
                     app.threadScroll.animateTo(target, contentY, lo, hi, height)
                     if (direction < 0) {
                         followLatest = false
