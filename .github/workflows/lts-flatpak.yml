@@ -90,6 +90,9 @@ jobs:
           BUILD_SHA: ${{ inputs.ref || github.sha }}
         run: |
           set -euo pipefail
+          # flatpak-builder mirrors this checkout by its refs; a pull request's merge commit is on
+          # none, so name it or its objects are not copied.
+          git update-ref refs/heads/lts-build "${BUILD_SHA}"
           python3 - <<'PY'
           import os, pathlib, sys, yaml
           manifest = yaml.safe_load(pathlib.Path("org.lightning_matrix.Lightning.yaml").read_text())
