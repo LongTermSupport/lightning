@@ -6721,20 +6721,24 @@ true,2147483,
         QVERIFY(!engine.autoGainControl());
     }
 
-    void mixedEchoReferenceFollowsPlayback_data()
+    void theEchoReferenceCarriesEveryRemoteTrack_data()
     {
         QTest::addColumn<bool>("secondFocus");
-        QTest::newRow("same subscriber") << false;
+        QTest::newRow("one subscriber") << false;
         QTest::newRow("two SFU connections") << true;
     }
 
-    void mixedEchoReferenceFollowsPlayback()
+    void theEchoReferenceCarriesEveryRemoteTrack()
     {
         QFETCH(bool, secondFocus);
         if (!gst_init_check(nullptr, nullptr, nullptr)
             || !calls::noise::webrtcDspAvailable()
             || !SfuMediaEngine::echoProbeElementAvailable())
             QSKIP("webrtcdsp / webrtcechoprobe not available");
+        GstElementFactory *mixer = gst_element_factory_find("audiomixer");
+        if (!mixer)
+            QSKIP("audiomixer not available");
+        gst_object_unref(mixer);
 
         SfuMediaEngine primary, secondary;
         secondary.shareEchoReferenceFrom(primary);
@@ -6742,10 +6746,12 @@ true,2147483,
             receiver->setTestSourceMode(true);
             receiver->setVoiceProcessing(true, true);
             receiver->m_subscriber.pipeline = gst_pipeline_new(nullptr);
-            QVERIFY(gst_element_set_state(receiver->m_subscriber.pipeline, GST_STATE_PLAYING)
+            QVERIFY(gst_element_set_state(receiver->m_subscriber.pipeline,
+                                          GST_STATE_PLAYING)
                     != GST_STATE_CHANGE_FAILURE);
         }
         QVERIFY(!primary.echoProbeLive());
+        QCOMPARE(primary.echoReferenceInputsForTest(), 0);
 
         QString why;
         const auto join = [&why](SfuMediaEngine &engine, const QString &sid, int hz) {
@@ -6753,79 +6759,102 @@ true,2147483,
             const QString tone = QStringLiteral(
                 "audiotestsrc is-live=true freq=%1 volume=0.2 samplesperbuffer=480 "
                 "! audio/x-raw,rate=48000,channels=1 ! opusenc ! rtpopuspay").arg(hz);
-            GstElement *source = gst_parse_bin_from_description(tone.toUtf8().constData(),
-                                                                TRUE, nullptr);
+            GstElement *source = gst_parse_bin_from_description(
+                tone.toUtf8().constData(), TRUE, nullptr);
             if (!source || !gst_bin_add(GST_BIN(pipeline), source))
                 return false;
             GstElement *bin = nullptr;
             GstPad *out = gst_element_get_static_pad(source, "src");
             const bool linked = engine.attachReceiveChain(
                 pipeline, out, sid, sid, QStringLiteral("audio"), &bin, &why);
-            if (linked)
+            if (linked) {
+                QMutexLocker lock(&engine.m_receiveBinMutex);
                 engine.m_receiveBins.insert(out, {bin, sid, QStringLiteral("audio"), sid, sid});
+            }
             gst_object_unref(out);
             return linked && gst_element_sync_state_with_parent(source);
         };
 
-        const QString low = QStringLiteral("low");
-        const QString high = QStringLiteral("high");
-        QVERIFY2(join(primary, low, 500), qPrintable(why));
-        GstElement *probe = primary.m_echoReference->probe();
+        const QString a = QStringLiteral("a"), b = QStringLiteral("b"),
+                      c = QStringLiteral("c");
+        SfuMediaEngine &third = secondFocus ? secondary : primary;
+        QVERIFY2(join(primary, a, 500), qPrintable(why));
+        QVERIFY2(join(primary, b, 1100), qPrintable(why));
+        QVERIFY2(join(third, c, 1700), qPrintable(why));
+        QCOMPARE(primary.echoReferenceInputsForTest(), 3);
+        QVERIFY(primary.echoProbeLive());
+
+        GstElement *probe = primary.echoProbeForTest();
         QVERIFY(probe);
         GstPad *pad = gst_element_get_static_pad(probe, "sink");
         gst_object_unref(probe);
-        struct Spectrum {
-            std::atomic<double> low{-1}, high{-1};
+        struct Heard {
+            std::atomic<double> level[3] = {-1, -1, -1};
+            std::atomic<int> buffers{0};
         };
-        auto *spectrum = new Spectrum;
+        auto *heard = new Heard;
         const gulong id = gst_pad_add_probe(pad, GST_PAD_PROBE_TYPE_BUFFER,
             [](GstPad *, GstPadProbeInfo *info, gpointer data) {
-                GstBuffer *buffer = GST_PAD_PROBE_INFO_BUFFER(info);
                 GstMapInfo map = GST_MAP_INFO_INIT;
-                if (!gst_buffer_map(buffer, &map, GST_MAP_READ))
+                if (!gst_buffer_map(GST_PAD_PROBE_INFO_BUFFER(info), &map, GST_MAP_READ))
                     return GST_PAD_PROBE_OK;
-                const auto amplitude = [&map](int hz) {
-                    const gsize frames = map.size / 4;
-                    double real = 0, imag = 0;
+                const gsize frames = map.size / 4;
+                auto *h = static_cast<Heard *>(data);
+                const int tones[3] = {500, 1100, 1700};
+                for (int t = 0; t < 3; ++t) {
+                    double re = 0, im = 0;
                     for (gsize i = 0; i < frames; ++i) {
-                        const auto sample = static_cast<qint16>(GST_READ_UINT16_LE(map.data + 4*i));
-                        const double phase = (2 * std::numbers::pi * hz / 48000) * i;
-                        real += sample * std::cos(phase);
-                        imag += sample * std::sin(phase);
+                        const double s = static_cast<qint16>(
+                            GST_READ_UINT16_LE(map.data + 4 * i));
+                        const double phase = 2 * std::numbers::pi * tones[t] * i / 48000;
+                        re += s * std::cos(phase);
+                        im += s * std::sin(phase);
                     }
-                    return frames ? 2 * std::hypot(real, imag) / (32768 * frames) : 0.0;
-                };
-                auto *s = static_cast<Spectrum *>(data);
-                s->low.store(amplitude(500));
-                s->high.store(amplitude(1500));
-                gst_buffer_unmap(buffer, &map);
+                    h->level[t].store(frames ? 2 * std::hypot(re, im) / (32768.0 * frames) : 0);
+                }
+                h->buffers.fetch_add(1);
+                gst_buffer_unmap(GST_PAD_PROBE_INFO_BUFFER(info), &map);
                 return GST_PAD_PROBE_OK;
-            }, spectrum, [](gpointer p) { delete static_cast<Spectrum *>(p); });
+            }, heard, [](gpointer p) { delete static_cast<Heard *>(p); });
         const auto cleanup = qScopeGuard([&] {
             gst_pad_remove_probe(pad, id);
             gst_object_unref(pad);
         });
-        QTRY_VERIFY(spectrum->low.load() > 0.12 && spectrum->high.load() < 0.015);
-        SfuMediaEngine &other = secondFocus ? secondary : primary;
-        QVERIFY2(join(other, high, 1500), qPrintable(why));
-        QTRY_VERIFY(spectrum->low.load() > 0.12 && spectrum->high.load() > 0.12);
+        const auto on = [heard](int t) { return heard->level[t].load() > 0.05; };
+        const auto off = [heard](int t) {
+            const double v = heard->level[t].load();
+            return v >= 0 && v < 0.02;
+        };
 
-        primary.setTrackVolume(low, low, 25);
-        QTRY_VERIFY(spectrum->low.load() > 0.025 && spectrum->low.load() < 0.075
-                    && spectrum->high.load() > 0.12);
-        primary.setTrackVolume(low, low, 0);
-        QTRY_VERIFY(spectrum->low.load() < 0.015 && spectrum->high.load() > 0.12);
-        primary.setTrackVolume(low, low, 100);
-        QTRY_VERIFY(spectrum->low.load() > 0.12 && spectrum->high.load() > 0.12);
+        QTRY_VERIFY(on(0) && on(1) && on(2));
 
-        QCOMPARE(primary.retireReceiveBins({low}, nullptr, "test leave"), 1);
+        primary.setTrackVolume(a, a, 0);
+        QTRY_VERIFY(off(0) && on(1) && on(2));
+        primary.setTrackVolume(a, a, 100);
+        QTRY_VERIFY(on(0) && on(1) && on(2));
+
+        primary.setOutputMuted(true);
+        QTRY_VERIFY(off(0) && off(1) && (secondFocus ? on(2) : off(2)));
+        primary.setOutputMuted(false);
+        QTRY_VERIFY(on(0) && on(1) && on(2));
+
+        QCOMPARE(primary.retireReceiveBins({a}, nullptr, "test leave"), 1);
         QTRY_COMPARE(primary.pendingTeardownsForTest(), 0);
-        QTRY_VERIFY(spectrum->low.load() < 0.015 && spectrum->high.load() > 0.12);
-        QCOMPARE(other.retireReceiveBins({high}, nullptr, "test leave"), 1);
-        QTRY_COMPARE(other.pendingTeardownsForTest(), 0);
-        QTRY_VERIFY(spectrum->low.load() < 0.015 && spectrum->high.load() < 0.015);
-        QVERIFY2(join(other, high, 1500), qPrintable(why));
-        QTRY_VERIFY(spectrum->low.load() < 0.015 && spectrum->high.load() > 0.12);
+        QTRY_COMPARE(primary.echoReferenceInputsForTest(), 2);
+        QTRY_VERIFY(off(0) && on(1) && on(2));
+
+        QCOMPARE(primary.retireReceiveBins({b}, nullptr, "test leave"), 1);
+        QCOMPARE(third.retireReceiveBins({c}, nullptr, "test leave"), 1);
+        QTRY_COMPARE(primary.pendingTeardownsForTest(), 0);
+        QTRY_COMPARE(third.pendingTeardownsForTest(), 0);
+        QTRY_COMPARE(primary.echoReferenceInputsForTest(), 0);
+        const int idle = heard->buffers.load();
+        QTRY_VERIFY(heard->buffers.load() > idle + 20);
+        QTRY_VERIFY(off(0) && off(1) && off(2));
+
+        QVERIFY2(join(third, a, 500), qPrintable(why));
+        QTRY_COMPARE(primary.echoReferenceInputsForTest(), 1);
+        QTRY_VERIFY(on(0) && off(1) && off(2));
     }
 
     void echoCancellationNeverStartsWithoutAPlaybackProbe()
@@ -7606,7 +7635,7 @@ true);
         QVERIFY2(pipeline && !error, error ? error->message : "no pipeline");
         QString why;
         GstElement *bin = SfuMediaEngine::buildReceiveBin(
-            true, QString(), true, &why, QString(), nullptr, false,
+            true, QString(), true, &why, QString(), nullptr,
             QStringLiteral("VP9"));
         QVERIFY2(bin, qPrintable(why));
         QVERIFY(gst_bin_add(GST_BIN(pipeline), bin));

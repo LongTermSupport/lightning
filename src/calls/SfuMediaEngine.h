@@ -324,7 +324,6 @@ public:
                                        bool testSink, QString *error,
                                        const QString &pulseClientName = QString(),
                                        const OutputSink *speaker = nullptr,
-                                       bool echoTap = false,
                                        const QString &videoCodec = QString());
     /// What this runtime can decode, VP8 first. VP9 is answered only on an
     /// encrypted call: livekit-client publishes a VP8 backup by default when
@@ -648,8 +647,10 @@ public:
     bool echoCancellation() const { return m_echoCancel; }
     bool autoGainControl() const { return m_autoGain; }
     bool echoProbeLive() const;
-    void shareEchoReferenceFrom(const SfuMediaEngine &publisher)
-    { m_echoReference = publisher.m_echoReference; }
+    GstElement *echoProbeForTest() const;
+    int echoReferenceInputsForTest() const;
+    /// Before either engine builds a receive chain.
+    void shareEchoReferenceFrom(const SfuMediaEngine &publisher);
     void engageEchoCancellation();
     void handleMicDspError(const QString &cid, const QString &reason);
     void handleMicDspErrorForTest(const QString &cid, const QString &reason)
@@ -895,6 +896,7 @@ private:
     bool m_shareGlEncode = false;
     QString m_shareEncoderInUse;
     QString m_shareEncoderCid;
+    std::shared_ptr<calls::noise::EchoReference> echoReference() const;
     std::shared_ptr<calls::noise::EchoReference> m_echoReference;
     std::atomic<bool> m_echoCancel{false};
     bool m_micEchoAfterStart = false;
