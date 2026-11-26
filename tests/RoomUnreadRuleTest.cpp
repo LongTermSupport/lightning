@@ -71,7 +71,7 @@ private Q_SLOTS:
         QCOMPARE(onlyMuted.total, 0);
     }
 
-    void aMutedMarkedUnreadRoomIsListedButNeverCounted()
+    void aMutedUnreadRoomIsListedButNeverCounted()
     {
         RoomInfo r = room(QStringLiteral("!m:x"), 0);
         r.markedUnread = true;
@@ -83,7 +83,8 @@ private Q_SLOTS:
         QVERIFY(!s.any);
 
         RoomInfo plain = room(QStringLiteral("!p:x"), 3, true);
-        QVERIFY(!roomunread::listsAsUnread(plain, roomunread::kModeMute));
+        QVERIFY(roomunread::listsAsUnread(plain, roomunread::kModeMute));
+        QVERIFY(!roomunread::countsAsUnread(plain, roomunread::kModeMute));
         QVERIFY(!roomunread::listsAsUnread(room(QStringLiteral("!r:x"), 0),
                                            roomunread::kModeAllMessages));
         QVERIFY(roomunread::listsAsUnread(plain, roomunread::kModeAllMessages));
