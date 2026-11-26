@@ -1131,6 +1131,7 @@ if(HAVE_LIGHTNING_WEBRTC)
         src/calls/GstCallMediaBackend.cpp
         src/calls/SfuMediaEngine.h
         src/calls/SfuMediaEngine.cpp
+        src/calls/noise/EchoReference.cpp
         # Stops a closed call's webrtcbin only once ICE gathering has ended
         # (GitHub #3); both engines above use it.
         src/calls/WebrtcRetirer.h
@@ -5184,6 +5185,7 @@ if(BUILD_TESTING)
             src/calls/GstBootstrap.cpp
             src/calls/SfuMediaEngine.h
             src/calls/SfuMediaEngine.cpp
+            src/calls/noise/EchoReference.cpp
             src/calls/WebrtcRetirer.h
             src/calls/WebrtcRetirer.cpp
             src/calls/CaptureDeviceSelection.h

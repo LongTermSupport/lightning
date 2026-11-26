@@ -2151,6 +2151,8 @@ quint64 SfuCallController::connectFocusPlan()
                                         m_engine->microphoneChoice(),
                                         m_engine->speakerChoice());
             engine->setTestSourceMode(m_engine->testSourceMode());
+            engine->shareEchoReferenceFrom(*m_engine);
+            engine->setVoiceProcessing(m_settings && m_settings->echoCancellation(), false);
         }
         engine->setOutputMuted(m_deafened);
         replayInboundKeys(engine);
@@ -2180,6 +2182,8 @@ quint64 SfuCallController::connectFocusPlan()
         connect(engine, &SfuMediaEngine::remoteTrackAdded, this,
                 [this, id](const QString &sid, const QString &mid, const QString &kind) {
                     logRemoteSubscription(id, sid, mid, kind);
+                    if (m_engine && kind == QLatin1String("audio"))
+                        m_engine->engageEchoCancellation();
                 });
         connect(engine, &SfuMediaEngine::failed, this,
                 [this, engine, id, callGeneration](const QString &category) {
