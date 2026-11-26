@@ -31,6 +31,7 @@
 
 #include "app/AppController.h"
 #include "app/SettingsManager.h"
+#include "app/ShortcutRegistry.h"
 #include "auth/AuthManager.h"
 #include "matrix/MockMatrixClient.h"
 #include "models/ActivityModel.h"
@@ -987,6 +988,50 @@ RoomsPanel { width: 64; height: 700 }
         f.controller->roomList()->setRoomArchived(roomId, false);
     }
 
+    void theCompactColumnKeepsSettingsAndAccountWhenTheRailIsHidden()
+    {
+        Fixture f;
+        QVERIFY(load(f, R"QML(
+import QtQuick
+import MatrixClient
+RoomsPanel { width: 64; height: 700 }
+)QML", 400, 700));
+        QVERIFY(f.item->property("compact").toBool());
+        auto *settings = f.controller->settings();
+        const bool railBefore = settings->spacesRailVisible();
+        const auto restore = qScopeGuard([&] { settings->setSpacesRailVisible(railBefore); });
+        settings->setSpacesRailVisible(false);
+        auto *actions = byName(f.item.get(), QStringLiteral("compactRailHiddenActions"));
+        QVERIFY(actions);
+        QTRY_VERIFY(actions->isVisible());
+        auto *cog = byName(actions, QStringLiteral("headerSettingsButton"));
+        auto *tile = byName(actions, QStringLiteral("headerAccountTile"));
+        QVERIFY(cog && tile);
+        QTRY_VERIFY(cog->isVisible() && tile->isVisible());
+        for (auto *button : {cog, tile}) {
+            QTRY_VERIFY(button->width() > 0 && button->height() > 0);
+            const QRectF bounds(button->mapToItem(f.item.get(), QPointF()), button->size());
+            QVERIFY(QRectF(0, 0, 64, 700).contains(bounds));
+        }
+        QVERIFY(cog->mapToScene(QPointF()).y() + cog->height()
+                <= tile->mapToScene(QPointF()).y());
+        QVERIFY(QMetaObject::invokeMethod(cog, "clicked"));
+        QTRY_COMPARE(f.controller->currentScreen(), AppController::SettingsScreen);
+        QVERIFY(QMetaObject::invokeMethod(cog, "clicked"));
+        QTRY_COMPARE(f.controller->currentScreen(), AppController::MainScreen);
+        auto *menu = tile->findChild<QObject *>(QStringLiteral("accountSwitcherPopover"));
+        QVERIFY(menu);
+        tile->forceActiveFocus(Qt::TabFocusReason);
+        QTRY_VERIFY(tile->hasActiveFocus());
+        QTest::keyClick(&f.window, Qt::Key_Return);
+        QTRY_VERIFY(menu->property("opened").toBool());
+        QVERIFY(QMetaObject::invokeMethod(menu, "close"));
+        QTRY_VERIFY(!menu->property("opened").toBool());
+        settings->setSpacesRailVisible(true);
+        QTRY_VERIFY(!actions->isVisible());
+        QVERIFY(!cog->isVisible() && !tile->isVisible());
+    }
+
     void theCompactColumnKeepsTheActivityButtonAndItsUnseenState()
     {
         Fixture f;
@@ -1276,6 +1321,51 @@ ApplicationWindow {
                                      QStringLiteral("roomListDivider"))),
             kTimeoutMs);
         QTRY_COMPARE_WITH_TIMEOUT(rooms->width(), 320.0, kTimeoutMs);
+        auto *registry = controller->shortcuts();
+        const QString compactAction = QStringLiteral("shell.toggleRoomListCompact");
+        const QString bindingBefore = registry->sequenceFor(compactAction);
+        const auto restoreBinding = qScopeGuard([&] {
+            registry->setBinding(compactAction, bindingBefore);
+        });
+        QCOMPARE(registry->setBinding(compactAction, QStringLiteral("Ctrl+Alt+B")), QString());
+        settings->setRoomListExpandedWidth(280);
+        QTest::keyClick(window, Qt::Key_B, Qt::ControlModifier | Qt::AltModifier);
+        QTRY_VERIFY(rooms->property("compact").toBool());
+        QTRY_COMPARE(rooms->width(), double(settings->roomListMinWidth()));
+        QCOMPARE(settings->roomListExpandedWidth(), 320);
+        QTest::keyClick(window, Qt::Key_B, Qt::ControlModifier | Qt::AltModifier);
+        QTRY_VERIFY(!rooms->property("compact").toBool());
+        QTRY_COMPARE(rooms->width(), 320.0);
+
+        QCOMPARE(registry->setBinding(compactAction, QStringLiteral("Ctrl+Alt+Shift+B")),
+                 QString());
+        QTRY_COMPARE(rooms->property("compactShortcutHint").toString(),
+                     QStringLiteral(" (") + ShortcutRegistry::displayText(
+                         QStringLiteral("Ctrl+Alt+Shift+B")) + QStringLiteral(")"));
+        QTest::keyClick(window, Qt::Key_B,
+                        Qt::ControlModifier | Qt::AltModifier | Qt::ShiftModifier);
+        QTRY_VERIFY(rooms->property("compact").toBool());
+        QTRY_COMPARE(rooms->width(), double(settings->roomListMinWidth()));
+        QTest::keyClick(window, Qt::Key_B, Qt::ControlModifier | Qt::AltModifier);
+        QVERIFY(rooms->property("compact").toBool());
+        QTest::keyClick(window, Qt::Key_B,
+                        Qt::ControlModifier | Qt::AltModifier | Qt::ShiftModifier);
+        QTRY_COMPARE(rooms->width(), 320.0);
+        QCOMPARE(settings->roomListExpandedWidth(), 320);
+
+        auto *collapseButton = byName(rooms, QStringLiteral("collapseRoomListButton"));
+        auto *expandButton = byName(rooms, QStringLiteral("compactRoomListHeader"));
+        QVERIFY(collapseButton && expandButton);
+        QVERIFY(collapseButton->isVisible());
+        QVERIFY(!expandButton->isVisible());
+        QVERIFY(QMetaObject::invokeMethod(collapseButton, "clicked"));
+        QTRY_VERIFY(rooms->property("compact").toBool());
+        QTRY_VERIFY(expandButton->isVisible());
+        QVERIFY(!collapseButton->isVisible());
+        QVERIFY(QMetaObject::invokeMethod(expandButton, "clicked"));
+        QTRY_COMPARE(rooms->width(), 320.0);
+        QCOMPARE(settings->roomListExpandedWidth(), 320);
+
         const int interval = QGuiApplication::styleHints()->mouseDoubleClickInterval();
         const auto at = [&] {
             return divider->mapToScene(QPointF(divider->width() / 2,

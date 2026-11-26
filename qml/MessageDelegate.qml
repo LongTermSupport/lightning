@@ -736,6 +736,7 @@ Item {
                     || (actionsPinned
                         && root.timelineView.hoveredActionsKey === ""))))
     property string menuEventId: ""
+    property string menuSelection: ""
     readonly property bool hasServerEventId: {
         var id = model.eventId || ""
         return id.length > 0 && id.indexOf("local:") !== 0
@@ -817,6 +818,7 @@ Item {
         if (root.timelineView && root.timelineView.closeTransientRowSurfaces)
             root.timelineView.closeTransientRowSurfaces()
         menuEventId = eventId
+        menuSelection = root.dragSelectedText()
         var p = alreadyInOverlaySpace
                 ? Qt.point(x, y)
                 : root.mapToItem(Overlay.overlay,
@@ -4031,6 +4033,7 @@ Item {
             }
             onClosed: {
                 root.menuEventId = ""
+                root.menuSelection = ""
                 if (root.timelineView
                         && root.timelineView.releaseTransientInteraction)
                     root.timelineView.releaseTransientInteraction("menu", "")
@@ -4088,7 +4091,9 @@ Item {
                 sequence: moreMenu.menuKeys.copyText
                 enabled: moreMenu.opened
                 context: Qt.ApplicationShortcut
-                onActivated: moreMenu.runItem(copyTextMenuItem)
+                onActivated: copySelectionMenuItem.visible
+                             ? moreMenu.runItem(copySelectionMenuItem)
+                             : moreMenu.runItem(copyTextMenuItem)
             }
             Shortcut {
                 sequence: moreMenu.menuKeys.copyMessages
@@ -4147,6 +4152,19 @@ Item {
                     root.openReactionPickerFor(root.menuEventId, bubbleRow,
                                                true)
                     moreMenu.close()
+                }
+            }
+            AppMenuItem {
+                id: copySelectionMenuItem
+                objectName: "copySelectionMenuItem"
+                iconName: "content_copy"
+                text: qsTr("Copy selection")
+                accel: moreMenu.menuKeys.copyText
+                visible: root.menuSelection !== ""
+                enabled: visible
+                onTriggered: {
+                    if (!root.copyDragSelection())
+                        root.copyToClipboard(root.menuSelection)
                 }
             }
             AppMenuItem {
@@ -4321,7 +4339,7 @@ Item {
                 objectName: "copyTextMenuItem"
                 iconName: "content_copy"
                 text: qsTr("Copy text")
-                accel: moreMenu.menuKeys.copyText
+                accel: copySelectionMenuItem.visible ? "" : moreMenu.menuKeys.copyText
                 enabled: root.copyableText
                 onTriggered: root.copyMessageText()
             }

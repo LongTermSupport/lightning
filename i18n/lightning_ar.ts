@@ -12558,7 +12558,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MainScreen</name>
     <message>
-        <location filename="../qml/MainScreen.qml" line="+632"/>
+        <location filename="../qml/MainScreen.qml" line="+640"/>
         <source>Resize room list</source>
         <translation>تغيير حجم قائمة الغرف</translation>
     </message>
@@ -14066,7 +14066,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>MessageDelegate</name>
     <message>
-        <location filename="../qml/MessageDelegate.qml" line="+1246"/>
+        <location filename="../qml/MessageDelegate.qml" line="+1248"/>
         <source>Today</source>
         <translation>اليوم</translation>
     </message>
@@ -14115,12 +14115,12 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="+91"/>
         <location line="+949"/>
-        <location line="+1152"/>
+        <location line="+1168"/>
         <source>Reply</source>
         <translation>رد</translation>
     </message>
     <message>
-        <location line="-2086"/>
+        <location line="-2102"/>
         <source>(original message not loaded)</source>
         <translation>(الرسالة الأصلية غير محمّلة)</translation>
     </message>
@@ -14179,12 +14179,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>إعدادات الأمان</translation>
     </message>
     <message>
-        <location line="-2012"/>
+        <location line="-2014"/>
         <source>Link</source>
         <translation>رابط</translation>
     </message>
     <message>
-        <location line="+1362"/>
+        <location line="+1364"/>
         <source>Open this thread</source>
         <translation>فتح هذا الخيط</translation>
     </message>
@@ -14225,13 +14225,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2455"/>
+        <location line="+2471"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>إعادة المحاولة</translation>
     </message>
     <message>
-        <location line="-3471"/>
+        <location line="-3487"/>
         <location line="+1231"/>
         <source>Cancel</source>
         <translation>إلغاء</translation>
@@ -14243,12 +14243,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+190"/>
-        <location line="+1509"/>
+        <location line="+1525"/>
         <source>Hide image</source>
         <translation>إخفاء الصورة</translation>
     </message>
     <message>
-        <location line="-1505"/>
+        <location line="-1521"/>
         <source>Hide</source>
         <translation>إخفاء</translation>
     </message>
@@ -14346,12 +14346,12 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="-997"/>
         <location line="+4"/>
-        <location line="+1140"/>
+        <location line="+1156"/>
         <source>Reply in thread</source>
         <translation>الرد في خيط</translation>
     </message>
     <message>
-        <location line="-2101"/>
+        <location line="-2117"/>
         <source>Original message removed</source>
         <translation>تمت إزالة الرسالة الأصلية</translation>
     </message>
@@ -14367,12 +14367,12 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+241"/>
-        <location line="+1509"/>
+        <location line="+1525"/>
         <source>Hidden image limit reached</source>
         <translation>تم بلوغ حد الصور المخفية</translation>
     </message>
     <message numerus="yes">
-        <location line="-1256"/>
+        <location line="-1272"/>
         <source>%1 and %n other(s)</source>
         <translation>
             <numerusform>%1 و%n آخرون</numerusform>
@@ -14384,7 +14384,12 @@ Signing out and signing in again is the only fix.</source>
         </translation>
     </message>
     <message>
-        <location line="+973"/>
+        <location line="+952"/>
+        <source>Copy selection</source>
+        <translation>نسخ التحديد</translation>
+    </message>
+    <message>
+        <location line="+37"/>
         <source>Open in room</source>
         <translation>فتح في الغرفة</translation>
     </message>
@@ -14661,13 +14666,13 @@ Signing out and signing in again is the only fix.</source>
         <translation>لم يُستلم أي موقع بعد.</translation>
     </message>
     <message>
-        <location line="-4047"/>
-        <location line="+1139"/>
+        <location line="-4063"/>
+        <location line="+1155"/>
         <source>Edit</source>
         <translation>تحرير</translation>
     </message>
     <message>
-        <location line="-3731"/>
+        <location line="-3749"/>
         <source>%1 B</source>
         <translation>%1 ب</translation>
     </message>
@@ -14683,45 +14688,45 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+19"/>
-        <location line="+578"/>
+        <location line="+580"/>
         <source>Sticker</source>
         <translation>ملصق</translation>
     </message>
     <message>
-        <location line="-575"/>
+        <location line="-577"/>
         <source>Voice message</source>
         <translation>رسالة صوتية</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+572"/>
+        <location line="+574"/>
         <source>Audio</source>
         <translation>صوت</translation>
     </message>
     <message>
-        <location line="-570"/>
-        <location line="+568"/>
-        <location line="+3822"/>
+        <location line="-572"/>
+        <location line="+570"/>
+        <location line="+3838"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5313"/>
+        <location line="-5331"/>
         <location line="+53"/>
-        <location line="+514"/>
-        <location line="+4371"/>
+        <location line="+516"/>
+        <location line="+4387"/>
         <source>Image</source>
         <translation>صورة</translation>
     </message>
     <message>
-        <location line="-4936"/>
+        <location line="-4954"/>
         <source>Attachment</source>
         <translation>مرفق</translation>
     </message>
     <message numerus="yes">
-        <location line="+551"/>
+        <location line="+553"/>
         <source>%n image(s)</source>
         <translation>
             <numerusform>لا صور</numerusform>
@@ -14790,7 +14795,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>(معدّلة)</translation>
     </message>
     <message>
-        <location line="+1727"/>
+        <location line="+1743"/>
         <source>Add :%1: to my emoji</source>
         <translation>إضافة :%1: إلى رموزي التعبيرية</translation>
     </message>
@@ -14834,13 +14839,13 @@ Signing out and signing in again is the only fix.</source>
         <translation>الإبلاغ عن الرسالة</translation>
     </message>
     <message>
-        <location line="-796"/>
-        <location line="+810"/>
+        <location line="-812"/>
+        <location line="+826"/>
         <source>Delete</source>
         <translation>حذف</translation>
     </message>
     <message>
-        <location line="-805"/>
+        <location line="-821"/>
         <source>Remove message?</source>
         <translation>إزالة الرسالة؟</translation>
     </message>
@@ -14855,7 +14860,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>إزالة</translation>
     </message>
     <message>
-        <location line="+859"/>
+        <location line="+875"/>
         <source>Message details</source>
         <translation>تفاصيل الرسالة</translation>
     </message>
@@ -14932,12 +14937,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>هدف الرد</translation>
     </message>
     <message>
-        <location line="-2112"/>
+        <location line="-2128"/>
         <source>Show preview</source>
         <translation>إظهار المعاينة</translation>
     </message>
     <message>
-        <location line="+1952"/>
+        <location line="+1968"/>
         <source>Remove edits?</source>
         <translation>إزالة التعديلات؟</translation>
     </message>
@@ -14957,7 +14962,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>يُغلق هذا التصويت وينشر النتيجة. لا يمكن إعادة فتح الاستطلاع.</translation>
     </message>
     <message>
-        <location line="-752"/>
+        <location line="-768"/>
         <source>Delete message?</source>
         <translation>حذف الرسالة؟</translation>
     </message>
@@ -14967,7 +14972,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>يزيل هذا الرسالة لدى كل من في الغرفة. لا يمكن التراجع عن ذلك.</translation>
     </message>
     <message>
-        <location line="+1075"/>
+        <location line="+1091"/>
         <source>Open link in browser</source>
         <translation>فتح الرابط في المتصفح</translation>
     </message>
@@ -15049,10 +15054,10 @@ Signing out and signing in again is the only fix.</source>
         <translation>فشل تحميل الملصق — انقر لإعادة المحاولة</translation>
     </message>
     <message>
-        <location line="-5730"/>
+        <location line="-5748"/>
         <location line="+57"/>
-        <location line="+517"/>
-        <location line="+4369"/>
+        <location line="+519"/>
+        <location line="+4385"/>
         <location line="+1066"/>
         <location line="+93"/>
         <source>Video</source>
@@ -15065,9 +15070,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>فيديو</translation>
     </message>
     <message>
-        <location line="-6113"/>
-        <location line="+570"/>
-        <location line="+4472"/>
+        <location line="-6131"/>
+        <location line="+572"/>
+        <location line="+4488"/>
         <location line="+1270"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -18559,7 +18564,7 @@ Signing out and signing in again is the only fix.</source>
 <context>
     <name>RailHiddenActions</name>
     <message>
-        <location filename="../qml/RailHiddenActions.qml" line="+18"/>
+        <location filename="../qml/RailHiddenActions.qml" line="+21"/>
         <source>Settings — this session is not verified</source>
         <translation>الإعدادات — هذه الجلسة غير موثّقة</translation>
     </message>
@@ -21882,7 +21887,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
 <context>
     <name>RoomsPanel</name>
     <message>
-        <location filename="../qml/RoomsPanel.qml" line="+208"/>
+        <location filename="../qml/RoomsPanel.qml" line="+211"/>
         <location line="+3"/>
         <location line="+5"/>
         <source>Lightning</source>
@@ -21909,26 +21914,31 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>فتح نظرة عامة على الفضاء</translation>
     </message>
     <message>
-        <location line="+86"/>
+        <location line="+29"/>
+        <source>Collapse room list</source>
+        <translation>طي قائمة الغرف</translation>
+    </message>
+    <message>
+        <location line="+70"/>
         <source>Search</source>
         <translation>بحث</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+771"/>
+        <location line="+776"/>
         <location line="+1"/>
         <source>Search rooms</source>
         <translation>البحث في الغرف</translation>
     </message>
     <message>
-        <location line="-714"/>
+        <location line="-719"/>
         <location line="+1"/>
         <source>Room list options</source>
         <translation>خيارات قائمة الغرف</translation>
     </message>
     <message numerus="yes">
         <location line="+126"/>
-        <location line="+638"/>
+        <location line="+643"/>
         <source>Activity, %n unseen</source>
         <translation>
             <numerusform>النشاط، %n غير مرئية</numerusform>
@@ -21940,14 +21950,14 @@ These links remain in room state. Open the successor from the room&apos;s replac
         </translation>
     </message>
     <message>
-        <location line="-637"/>
+        <location line="-642"/>
         <location line="+1"/>
-        <location line="+637"/>
+        <location line="+642"/>
         <source>Activity</source>
         <translation>النشاط</translation>
     </message>
     <message>
-        <location line="-521"/>
+        <location line="-526"/>
         <source>Archived (%1)</source>
         <translation>المؤرشفة (%1)</translation>
     </message>
@@ -22144,7 +22154,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>توسيع قائمة غرف %1</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+1"/>
+        <source>Expand room list</source>
+        <translation>توسيع قائمة الغرف</translation>
+    </message>
+    <message>
+        <location line="+27"/>
         <location line="+12"/>
         <source>Show all rooms</source>
         <translation>إظهار كل الغرف</translation>
@@ -22155,7 +22170,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>إظهار الغرف غير المقروءة</translation>
     </message>
     <message>
-        <location line="-461"/>
+        <location line="-466"/>
         <location line="+4"/>
         <location line="+6"/>
         <source>Unreads</source>
@@ -30006,7 +30021,7 @@ Note: importing keys does not verify this session.</source>
         <translation>إغلاق النشاط أو المبدّل السريع أو الإعدادات</translation>
     </message>
     <message>
-        <location line="+518"/>
+        <location line="+521"/>
         <source>Use a single key combination for dialog navigation.</source>
         <translation>استخدم تركيبة مفاتيح واحدة للتنقل في مربعات الحوار.</translation>
     </message>
@@ -30086,7 +30101,7 @@ Note: importing keys does not verify this session.</source>
         <translation>عندما يكون التركيز على الخط الزمني، يُنفَّذ «%1» بدلًا من ذلك.</translation>
     </message>
     <message>
-        <location line="-804"/>
+        <location line="-807"/>
         <source>Application</source>
         <translation>التطبيق</translation>
     </message>
@@ -30244,6 +30259,11 @@ Note: importing keys does not verify this session.</source>
         <location line="+27"/>
         <source>Show or hide the conversation list</source>
         <translation>إظهار أو إخفاء قائمة المحادثات</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Collapse or expand the conversation list</source>
+        <translation>طي قائمة المحادثات أو توسيعها</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -30702,7 +30722,7 @@ Note: importing keys does not verify this session.</source>
         <translation>حين %1، يُستخدم %2 لـ %3 بدلًا من ذلك.</translation>
     </message>
     <message>
-        <location line="-836"/>
+        <location line="-839"/>
         <source>Settings navigation</source>
         <translation>التنقل في الإعدادات</translation>
     </message>
@@ -30727,7 +30747,7 @@ Note: importing keys does not verify this session.</source>
         <translation>الانتقال إلى القسم الفرعي التالي في الإعدادات</translation>
     </message>
     <message>
-        <location line="+506"/>
+        <location line="+509"/>
         <source>Use a single key combination for Settings navigation.</source>
         <translation>استخدم تركيبة مفاتيح واحدة للتنقل في الإعدادات.</translation>
     </message>
@@ -30747,7 +30767,7 @@ Note: importing keys does not verify this session.</source>
         <translation>في الإعدادات، يُنفَّذ «%1» بدلاً من ذلك.</translation>
     </message>
     <message>
-        <location line="-682"/>
+        <location line="-685"/>
         <source>Scroll Settings up half a page</source>
         <translation>تمرير الإعدادات نصف صفحة إلى الأعلى</translation>
     </message>
@@ -30757,7 +30777,7 @@ Note: importing keys does not verify this session.</source>
         <translation>تمرير الإعدادات نصف صفحة إلى الأسفل</translation>
     </message>
     <message>
-        <location line="+511"/>
+        <location line="+514"/>
         <source>%1 moves focus, navigates or edits text, so it cannot be a shortcut on its own.</source>
         <translation>%1 ينقل التركيز أو يتنقّل أو يحرّر النص، لذلك لا يمكن أن يكون اختصارًا بمفرده.</translation>
     </message>
