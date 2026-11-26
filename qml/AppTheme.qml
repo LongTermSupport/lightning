@@ -128,6 +128,19 @@ QtObject {
     function inkSafeFill(fill, ink, minRatio) {
         return _lightnessFit(fill, [ink], minRatio).color
     }
+    function _liftForContrast(ink, background, minRatio) {
+        var c = _asColor(ink)
+        if (contrastRatio(c, background) >= minRatio)
+            return c
+        var hue = c.hslHue < 0 ? 0 : c.hslHue
+        for (var i = 1; i <= 200; ++i) {
+            var lifted = Qt.hsla(hue, c.hslSaturation,
+                                 Math.min(1, c.hslLightness + i * 0.005), c.a)
+            if (contrastRatio(lifted, background) >= minRatio)
+                return lifted
+        }
+        return lifted
+    }
     function badgeInk(fill, ink, minRatio) {
         var own = _lightnessFit(fill, [ink], _badgeInkChoiceRatio)
         if (own.ok && own.shift <= _badgeMaxShift)
@@ -707,8 +720,7 @@ QtObject {
             otherBubble:     p.otherBubble,
             embedSurface:    p.embedSurface !== undefined ? p.embedSurface
                              : (isStorm ? _stoPanel : cardElevated),
-            reactionBackground: p.reaction !== undefined ? p.reaction
-                                                         : cardElevated,
+            reactionBackground: p.surface,
             reactionBorder:  p.reactionBorder !== undefined ? p.reactionBorder
                              : (isDark ? p.border : p.borderStrong),
             mentionBadgeText: mentionBadgeText,
@@ -976,8 +988,7 @@ QtObject {
     readonly property color embedText:           _p.embedText !== undefined
                                                  ? _p.embedText : textPrimary
 
-    readonly property color reactionBackground:  _p.reaction !== undefined
-                                                 ? _p.reaction : cardElevated
+    readonly property color reactionBackground:  surface
     readonly property color reactionBorder:      _p.reactionBorder !== undefined
                                                  ? _p.reactionBorder
                                                  : (dark ? border : borderStrong)
@@ -1143,6 +1154,7 @@ QtObject {
     readonly property color menuHighlight:      _p.menuHighlight !== undefined
                                                 ? _p.menuHighlight
                                                 : stormSelection
+    readonly property color menuHighlightIcon:  _liftForContrast(bolt, menuHighlight, 3.0)
     readonly property color settingsPage:       _p.settingsPage !== undefined
                                                 ? _p.settingsPage : stormDeep
     readonly property color settingsNav:        _p.settingsNav !== undefined
