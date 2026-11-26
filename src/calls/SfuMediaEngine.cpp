@@ -40,6 +40,7 @@
 #include "calls/SerialSinkSwap.h"
 #include "calls/WindowCaptureSrc.h"
 #include "calls/noise/DenoiseElement.h"
+#include "calls/noise/EchoReference.h"
 #include "calls/noise/MicProcessing.h"
 #include "calls/SfuVideoRouter.h"
 
@@ -1215,6 +1216,7 @@ SfuMediaEngine::SfuMediaEngine(QObject *parent)
     : QObject(parent)
     , m_sendCryptor(std::make_unique<CallFrameCryptor>())
 {
+    m_echoReference = std::make_shared<calls::noise::EchoReference>();
     m_shareKeepAliveTimer.setInterval(200);
     m_shareKeepAliveTimer.setSingleShot(false);
     connect(&m_shareKeepAliveTimer, &QTimer::timeout, this,
@@ -1349,6 +1351,7 @@ true);
     resetShareAudioState();
     destroyPeer(m_publisher);
     destroyPeer(m_subscriber);
+    m_echoReference = std::make_shared<calls::noise::EchoReference>();
     {
         QMutexLocker lock(&m_receiveBinMutex);
         m_receiveBins.clear();
@@ -1885,6 +1888,8 @@ bool SfuMediaEngine::ensurePeer(Target target)
                      G_CALLBACK(onPeerStateNotify), this);
 
     applyIceTo(peer);
+    if (target == Target::Publisher && m_echoCancel.load())
+        m_echoReference->alignPublisherClock(pipeline);
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
     return true;
 }
@@ -2495,27 +2500,11 @@ void SfuMediaEngine::setCameraQuality(int maxHeight)
     m_cameraMaxHeight = snapCameraHeight(maxHeight);
 }
 
-QString SfuMediaEngine::echoProbeStage(bool echoCancel, bool probeAvailable)
-{
-    if (!echoCancel || !probeAvailable)
-        return {};
-    return QStringLiteral("! audioconvert "
-                          "! audio/x-raw,format=S16LE,rate=48000 "
-                          "! webrtcechoprobe name=%1 ")
-        .arg(QLatin1String(kEchoProbeName));
-}
-
 bool SfuMediaEngine::echoProbeLive() const
 {
-    QMutexLocker lock(&m_receiveBinMutex);
-    for (auto it = m_receiveBins.cbegin(); it != m_receiveBins.cend(); ++it) {
-        if (!it->bin)
-            continue;
-        if (GstElement *probe = gst_bin_get_by_name(GST_BIN(it->bin),
-                                                    kEchoProbeName)) {
-            gst_object_unref(probe);
-            return true;
-        }
+    if (GstElement *probe = m_echoReference->probe()) {
+        gst_object_unref(probe);
+        return true;
     }
     return false;
 }
@@ -6796,6 +6785,7 @@ void receiveTeardownFree(gpointer data)
 void receiveTeardownAsync(GstElement *bin, gpointer data)
 {
     auto *ctx = static_cast<ReceiveTeardown *>(data);
+    calls::noise::EchoReference::detach(bin);
     gst_bin_remove(GST_BIN(ctx->pipeline), bin);
     gst_element_set_state(bin, GST_STATE_NULL);
 }
@@ -10095,6 +10085,7 @@ QString sinkFactoryOf(GstElement *bin)
 
 void stopDetachedBin(GstElement *bin, GstPad *pad)
 {
+    calls::noise::EchoReference::detach(bin);
     if (pad) {
         if (GstPad *peer = gst_pad_get_peer(pad)) {
             gst_pad_unlink(pad, peer);
@@ -10478,7 +10469,7 @@ GstElement *SfuMediaEngine::buildReceiveBin(bool video,
                                             bool testSink, QString *error,
                                             const QString &pulseClientName,
                                             const OutputSink *speaker,
-                                            bool echoProbe,
+                                            bool echoTap,
                                             const QString &videoCodec)
 {
     const QString description = video
@@ -10492,26 +10483,16 @@ GstElement *SfuMediaEngine::buildReceiveBin(bool video,
                          "! appsink name=vidsink emit-signals=true "
                          "sync=false max-buffers=1 drop=true")
               .arg(receivableVideoCodec(videoCodec).chain)
-        : (testSink
-               ? QStringLiteral("queue name=recvqueue max-size-buffers=0 "
-                                "max-size-bytes=0 "
-                                "max-size-time=200000000 leaky=downstream "
-                                "! rtpopusdepay name=recvdepay "
-                                "! opusdec name=recvdec ! audioconvert "
-                                "! audioresample ! volume name=%1 "
-                                "! fakesink sync=false")
-                     .arg(volumeElementName)
-               : QStringLiteral("queue name=recvqueue max-size-buffers=0 "
-                                "max-size-bytes=0 "
-                                "max-size-time=200000000 leaky=downstream "
-                                "! rtpopusdepay name=recvdepay "
-                                "! opusdec name=recvdec ! audioconvert "
-                                "! audioresample ! volume name=%1 %3! %2")
-                     .arg(volumeElementName,
-                          receiveSinkDescription(pulseClientName, speaker),
-                          echoProbeStage(echoProbe,
-                                         calls::noise::webrtcDspAvailable()
-                                             && echoProbeElementAvailable())));
+        : QStringLiteral("queue name=recvqueue max-size-buffers=0 "
+                         "max-size-bytes=0 max-size-time=200000000 leaky=downstream "
+                         "! rtpopusdepay name=recvdepay ! opusdec name=recvdec "
+                         "! audioconvert ! audioresample %2! volume name=%1 ! %3")
+              .arg(volumeElementName,
+                   echoTap ? QStringLiteral(
+                       "! audio/x-raw,format=S16LE,layout=interleaved,rate=48000 ")
+                           : QString(),
+                   testSink ? QStringLiteral("fakesink sync=false")
+                            : receiveSinkDescription(pulseClientName, speaker));
 
     GError *parseError = nullptr;
     GstElement *bin = gst_parse_bin_from_description(
@@ -10606,15 +10587,18 @@ bool SfuMediaEngine::prepareReceiveChain(GstElement *pipeline,
         if (!speaker.binding.isEmpty())
             speakerPtr = &speaker;
     }
+    const bool echoTap = !video && m_echoCancel.load()
+        && calls::noise::webrtcDspAvailable() && echoProbeElementAvailable();
     QString buildError;
     GstElement *bin =
         buildReceiveBin(video, volumeName, testSourceMode(), &buildError,
-                        client, speakerPtr, m_echoCancel.load(), videoCodec);
+                        client, speakerPtr, echoTap, videoCodec);
     if (!bin) {
         *why = QStringLiteral("could not be BUILT: %1").arg(buildError);
         return false;
     }
     if (!gst_bin_add(GST_BIN(pipeline), bin)) {
+        gst_object_unref(bin);
         *why = QStringLiteral("could not be ADDED to the subscriber pipeline");
         return false;
     }
@@ -10676,6 +10660,8 @@ bool SfuMediaEngine::prepareReceiveChain(GstElement *pipeline,
             GST_BIN(bin), volumeName.toUtf8().constData())) {
         g_object_set(volume, "mute", m_outputMuted.load() ? TRUE : FALSE,
                      nullptr);
+        if (echoTap && !m_echoReference->attach(bin, volume))
+            qCWarning(lcSfuMedia) << "could not attach a playback track to the echo reference";
         gst_object_unref(volume);
     }
     return true;

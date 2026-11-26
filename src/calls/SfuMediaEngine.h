@@ -37,6 +37,7 @@ typedef struct _GstBuffer GstBuffer;
 typedef struct _GstCaps GstCaps;
 typedef struct _GstWebRTCRTPTransceiver GstWebRTCRTPTransceiver;
 
+namespace calls::noise { class EchoReference; }
 class CallFrameCryptor;
 class SfuVideoRouter;
 namespace lightning::calls {
@@ -323,7 +324,7 @@ public:
                                        bool testSink, QString *error,
                                        const QString &pulseClientName = QString(),
                                        const OutputSink *speaker = nullptr,
-                                       bool echoProbe = false,
+                                       bool echoTap = false,
                                        const QString &videoCodec = QString());
     /// What this runtime can decode, VP8 first. VP9 is answered only on an
     /// encrypted call: livekit-client publishes a VP8 backup by default when
@@ -646,12 +647,9 @@ public:
     }
     bool echoCancellation() const { return m_echoCancel; }
     bool autoGainControl() const { return m_autoGain; }
-    static QString echoProbeStage(bool echoCancel, bool probeAvailable);
-    static constexpr const char *kEchoProbeName = "webrtcechoprobe0";
     bool echoProbeLive() const;
-    /// GUI thread: the requested echo cancellation, once a playback probe
-    /// exists. webrtcdsp cancels against ONE probe, so only the first
-    /// participant it finds is cancelled.
+    void shareEchoReferenceFrom(const SfuMediaEngine &publisher)
+    { m_echoReference = publisher.m_echoReference; }
     void engageEchoCancellation();
     void handleMicDspError(const QString &cid, const QString &reason);
     void handleMicDspErrorForTest(const QString &cid, const QString &reason)
@@ -897,6 +895,7 @@ private:
     bool m_shareGlEncode = false;
     QString m_shareEncoderInUse;
     QString m_shareEncoderCid;
+    std::shared_ptr<calls::noise::EchoReference> m_echoReference;
     std::atomic<bool> m_echoCancel{false};
     bool m_micEchoAfterStart = false;
     bool m_echoGivenUp = false;
