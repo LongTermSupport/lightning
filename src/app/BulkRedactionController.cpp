@@ -4,6 +4,7 @@
 #include "models/TimelineModel.h"
 
 #include <QDateTime>
+#include <algorithm>
 #include <QTimer>
 #include <QGuiApplication>
 
@@ -472,8 +473,8 @@ void BulkRedactionController::onResult(const QString &roomId,
     if (!ok && rateLimited && m_purge && !m_cancelled
         && ++m_rateLimitRetries[eventId] <= kMaxRateLimitRetries) {
         const qint64 asked = m_retryAfterMs.take(eventId);
-        const int wait = int(qBound<qint64>(1000, asked > 0 ? asked : 5000,
-                                            120000));
+        const int wait = int(std::clamp<qint64>(asked > 0 ? asked : 5000,
+                                                1000, 120000));
         m_queue.prepend(eventId);
         m_error = tr("The server asked to slow down; continuing shortly.");
         Q_EMIT changed();
