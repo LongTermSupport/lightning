@@ -1562,7 +1562,12 @@ Rectangle {
                 }
                 function runNavigationAction(action) {
                     switch (action) {
-                    case "timeline.olderMessage": stepSelectedMessage(-1); break
+                    case "timeline.olderMessage":
+                        if (selectedEventId === "")
+                            enterMessageSelection(true)
+                        else
+                            stepSelectedMessage(-1)
+                        break
                     case "timeline.newerMessage": stepSelectedMessage(1); break
                     case "timeline.extendSelectionOlder":
                         setRangeEnd(function() { stepSelectedMessage(-1) })

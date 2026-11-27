@@ -1115,6 +1115,33 @@ ApplicationWindow {
         QVERIFY(pane->property("keyboardSelectedEventId").toString() != selected);
     }
 
+    void olderMessageWithNoSelectionSelectsTheLatest()
+    {
+        openJoinedRoom();
+        QTest::keyClick(m_window, Qt::Key_Space,
+                       Qt::ControlModifier | Qt::ShiftModifier);
+        auto *pane = item("timelinePane");
+        auto *view = item("timelineListView");
+        QTRY_VERIFY(view->hasActiveFocus());
+        QTRY_VERIFY(!view->property("enteringMessageNavigation").toBool());
+        const QString latest = pane->property("keyboardSelectedEventId").toString();
+        QVERIFY(!latest.isEmpty());
+        for (int step = 0; step < 5; ++step)
+            QTest::keyClick(m_window, Qt::Key_K);
+        QVERIFY(pane->property("keyboardSelectedEventId").toString() != latest);
+        QVERIFY(QMetaObject::invokeMethod(view, "goToEarliestLoaded"));
+        QTest::qWait(100);
+
+        QVERIFY(pane->setProperty("keyboardSelectedEventId", QString()));
+        QVERIFY(view->hasActiveFocus());
+        QTest::keyClick(m_window, Qt::Key_K);
+        QTRY_COMPARE(pane->property("keyboardSelectedEventId").toString(), latest);
+        QTRY_VERIFY(!view->property("enteringMessageNavigation").toBool());
+        QCOMPARE(pane->property("keyboardSelectedEventId").toString(), latest);
+        QTest::keyClick(m_window, Qt::Key_K);
+        QVERIFY(pane->property("keyboardSelectedEventId").toString() != latest);
+    }
+
     void halfPagingDoesNotToggleThePeoplePanel()
     {
         openJoinedRoom();
