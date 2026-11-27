@@ -217,13 +217,13 @@ RoomsPanel { width: 380; height: 700 }
 
         field->setProperty("text", QStringLiteral("x"));
         QTRY_VERIFY(clear->isVisible());
-        QCOMPARE(f.controller->roomList()->searchQuery(), QStringLiteral("x"));
+        QTRY_COMPARE(f.controller->roomList()->searchQuery(), QStringLiteral("x"));
 
         const QPoint point = clear->mapToScene(
             QPointF(clear->width() / 2, clear->height() / 2)).toPoint();
         QTest::mouseClick(&f.window, Qt::LeftButton, Qt::NoModifier, point);
         QTRY_VERIFY(field->property("text").toString().isEmpty());
-        QVERIFY(f.controller->roomList()->searchQuery().isEmpty());
+        QTRY_VERIFY(f.controller->roomList()->searchQuery().isEmpty());
         QVERIFY(!clear->isVisible());
         QVERIFY(field->hasActiveFocus());
     }
