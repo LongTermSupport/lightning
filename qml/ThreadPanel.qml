@@ -1261,10 +1261,7 @@ Rectangle {
                     // A banner opening below the list shrinks it from the
                     // bottom; a reader at the end stays at the end.
                     if (followLatest && count > 0 && !moving)
-                        Qt.callLater(function() {
-                            if (replyList.followLatest)
-                                replyList.pinToEnd()
-                        })
+                        queueEndPin()
                 }
                 anchors.top: threadSearchRow.bottom
                 anchors.left: parent.left
@@ -1758,7 +1755,12 @@ Rectangle {
                                    >= originY + previous - bottomFollowSlack
                     if (!followLatest || !wasAtEnd || count <= 0 || moving
                             || dragging || flicking
-                            || app.threadScroll.motionActive || endPinQueued)
+                            || app.threadScroll.motionActive)
+                        return
+                    queueEndPin()
+                }
+                function queueEndPin() {
+                    if (endPinQueued)
                         return
                     endPinQueued = true
                     Qt.callLater(function() {
@@ -1770,8 +1772,26 @@ Rectangle {
                 }
                 property int endSettleTries: 0
                 property int endStableTicks: 0
-                function pinToEnd() {
+                // Not positionViewAtEnd(): it rebuilds every delegate while the last is unbuilt,
+                // and rows that size themselves after creation then move the end on every re-pin.
+                function followEnd() {
+                    if (count <= 0)
+                        return
+                    if (itemAtIndex(count - 1)) {
+                        contentY = wheelMaxY()
+                        return
+                    }
+                    for (var i = count - 2; i >= 0; --i) {
+                        var built = itemAtIndex(i)
+                        if (built) {
+                            contentY = Math.max(contentY, built.y + built.height - height)
+                            return
+                        }
+                    }
                     positionViewAtEnd()
+                }
+                function pinToEnd() {
+                    followEnd()
                     endSettleTries = 0
                     endStableTicks = 0
                     endSettle.restart()
@@ -1795,9 +1815,7 @@ Rectangle {
                             return
                         }
                         replyList.endStableTicks = 0
-                        replyList.positionViewAtIndex(replyList.count - 1,
-                                                      ListView.End)
-                        replyList.positionViewAtEnd()
+                        replyList.followEnd()
                         replyList.endSettleTries += 1
                         if (replyList.endSettleTries >= 12)
                             stop()
