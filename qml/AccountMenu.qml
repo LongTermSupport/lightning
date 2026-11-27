@@ -297,6 +297,8 @@ Popup {
                     : Math.round((root.maxVisibleRows + 0.5) * root.rowH)
                 return Math.min(natural, root.listRoom)
             }
+            // At height 0 (before the layout runs) every row but the first is incubated late.
+            height: Layout.preferredHeight
             Keys.onPressed: (event) => {
                 var to = -1
                 var cur = root.focusedRow()
