@@ -359,7 +359,8 @@ Item {
              && threadSearchVisible
     readonly property real naturalImplicitHeight:
         (!roomActivityVisible || suppressedAsThreadRoot || dividerSuppressed
-         || deletedFollower || imageGridFollower || !threadSearchVisible) ? 0
+         || deletedFollower || !threadSearchVisible) ? 0
+        : imageGridFollower ? 0
         : !threadFilterVisible ? 0
         : isVirtualRow ? virtualRowLoader.implicitHeight
         : isCallEvent ? callEventRow.implicitHeight + AppTheme.spacingS * 2
