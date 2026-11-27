@@ -1047,6 +1047,40 @@ Window {
         QTRY_VERIFY(!menu->property("visible").toBool());
     }
 
+    void aProfileChangeWithTheSwitcherOpenKeepsItsEntries()
+    {
+        lightning::accounts::setRustBridgeApiForTest(&m_bridge);
+        auto *controller = labsqml::makeController(true, { kAlice, kBob, kCarol });
+        controller->switchToAccount(kAlice);
+        QTRY_VERIFY(!controller->accountSwitching());
+        controller->settings()->setLabsConcurrentAccounts(true);
+        QTRY_VERIFY(controller->liveAccountsActive());
+        auto s = makeSurfaces(controller);
+        QVERIFY(s);
+
+        auto *entry = switchEntry(*s, kBob);
+        QVERIFY(entry);
+        auto *switcher = s->find(QStringLiteral("switcher"));
+        auto *list = switcher->findChild<QQuickItem *>(
+            QStringLiteral("quickSwitcherCommandList"));
+        QVERIFY(list);
+        list->setProperty("currentIndex", 0);
+        const QPointer<QQuickItem> before = entry;
+        QQmlExpression label(qmlContext(entry), entry, QStringLiteral("model.label"));
+        QVERIFY(!label.evaluate().toString().contains(QStringLiteral("Robert")));
+
+        controller->settings()->updateAccountProfile(kBob, QStringLiteral("Robert"), QString());
+        QTRY_VERIFY(label.evaluate().toString().contains(QStringLiteral("Robert")));
+        QQuickItem *after = nullptr;
+        QMetaObject::invokeMethod(list, "itemAtIndex", Q_RETURN_ARG(QQuickItem *, after),
+                                  Q_ARG(int, 0));
+        QVERIFY2(before && after == before.data(),
+                 "a profile change rebuilt the open switcher's entries");
+        QCOMPARE(list->property("currentIndex").toInt(), 0);
+        QMetaObject::invokeMethod(switcher, "close");
+        QTRY_VERIFY(!switcher->property("visible").toBool());
+    }
+
     void badgeColoursMeetWcagOnEveryPalette()
     {
         QQmlEngine engine;
