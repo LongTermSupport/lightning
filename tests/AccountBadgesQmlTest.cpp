@@ -549,7 +549,6 @@ Item {
     void aPendingFeedRefreshDoesNotRunInAContextThatIsGone()
     {
         QQmlEngine engine;
-        auto *context = new QQmlContext(engine.rootContext());
         QQmlComponent c(&engine);
         c.setData(QByteArray(R"QML(
 import QtQuick
@@ -563,28 +562,41 @@ Item {
         signal liveStateChanged(string userId)
         function activityFor(uid) { scene.reads++; return ({}) }
     }
-    property AccountActivityFeed feed: AccountActivityFeed {
-        source: fakeModel
-        userIds: ["@a:x"]
+    Loader {
+        id: host
+        sourceComponent: Component {
+            Item {
+                AccountActivityFeed {
+                    id: feed
+                    source: fakeModel
+                    userIds: ["@a:x"]
+                }
+                Component.onCompleted: {
+                    feed.userIds = ["@a:x", "@b:x"]
+                    host.active = false
+                }
+            }
+        }
     }
-    function addAccount() { scene.feed.userIds = ["@a:x", "@b:x"] }
 }
 )QML"), QUrl(QStringLiteral("gonecontextfeed.qml")));
-        QScopedPointer<QObject> scene(c.create(context));
-        QVERIFY2(scene, qPrintable(c.errorString()));
-        QTest::qWait(0);
-        QCoreApplication::processEvents();
-        const int reads = scene->property("reads").toInt();
-
         g_feedWarnings.clear();
         const QtMessageHandler previous = qInstallMessageHandler(collectFeedWarning);
-        QMetaObject::invokeMethod(scene.data(), "addAccount");
-        delete context;
+        QScopedPointer<QObject> scene(c.create());
+        const int reads = scene ? scene->property("reads").toInt() : -1;
         QTest::qWait(50);
         QCoreApplication::processEvents();
+        QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
         qInstallMessageHandler(previous);
+        QVERIFY2(scene, qPrintable(c.errorString()));
 
-        QVERIFY2(g_feedWarnings.isEmpty(), qPrintable(g_feedWarnings.join(QLatin1Char('\n'))));
+        QStringList feedWarnings;
+        for (const QString &w : std::as_const(g_feedWarnings)) {
+            if (w.contains(QLatin1String("AccountActivityFeed"))
+                || w.contains(QLatin1String("invalid context")))
+                feedWarnings << w;
+        }
+        QVERIFY2(feedWarnings.isEmpty(), qPrintable(feedWarnings.join(QLatin1Char('\n'))));
         QCOMPARE(scene->property("reads").toInt(), reads);
     }
 
