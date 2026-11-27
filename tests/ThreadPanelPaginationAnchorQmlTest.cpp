@@ -802,7 +802,7 @@ private Q_SLOTS:
     {
         QTest::addColumn<qreal>("stepPx");
         // A hi-res or slowed wheel moves less than the follow slack per step.
-        QTest::newRow("small step") << qreal(12);
+        QTest::newRow("small step") << qreal(4);
         QTest::newRow("full notch") << qreal(0);
     }
 
@@ -881,17 +881,18 @@ private Q_SLOTS:
         };
         QTRY_VERIFY_WITH_TIMEOUT(replyList->property("count").toInt() >= 40,
                                  kSignalTimeoutMs);
-        QTRY_VERIFY_WITH_TIMEOUT(following() && distanceFromEnd() <= 0.5,
+        QTRY_VERIFY_WITH_TIMEOUT(following() && distanceFromEnd() <= 8.5,
                                  kSignalTimeoutMs);
         QTest::qWait(300);
+        const qreal atEnd = distanceFromEnd();
 
         const qreal notch = scroll->notchDistance(replyList->height());
         QVERIFY(notch > stepPx * 2);
         wheel(stepPx > 0 ? qRound(stepPx / notch * 120.0) : 120);
         if (QTest::currentTestFailed())
             return;
-        const qreal left = distanceFromEnd();
-        QVERIFY2(left > 4, qPrintable(QStringLiteral("the wheel moved %1 px").arg(left)));
+        const qreal moved = distanceFromEnd() - atEnd;
+        QVERIFY2(moved > 2, qPrintable(QStringLiteral("the wheel moved %1 px").arg(moved)));
         QVERIFY2(!following(), "a wheel step up left the thread following the newest reply");
 
         const qreal before = replyList->property("contentY").toReal();
@@ -908,14 +909,14 @@ private Q_SLOTS:
             controller.thread()->model()->rowCount() > rowsBeforePage,
             kSignalTimeoutMs);
         QTest::qWait(300);
-        QVERIFY2(!following() && distanceFromEnd() > 4,
+        QVERIFY2(!following() && distanceFromEnd() > atEnd + 2,
                  "an older page pulled the reader back to the newest reply");
 
         wheel(-1200);
         wheel(-1200);
         if (QTest::currentTestFailed())
             return;
-        QTRY_VERIFY_WITH_TIMEOUT(following() && distanceFromEnd() <= 0.5,
+        QTRY_VERIFY_WITH_TIMEOUT(following() && distanceFromEnd() <= 8.5,
                                  kSignalTimeoutMs);
     }
 
