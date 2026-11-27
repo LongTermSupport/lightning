@@ -232,9 +232,13 @@ QPalette TrayIcon::menuPalette(Qt::ColorScheme scheme)
 
 void TrayIcon::applyMenuPalette()
 {
+    applyMenuColorScheme(QGuiApplication::styleHints()->colorScheme());
+}
+
+void TrayIcon::applyMenuColorScheme(Qt::ColorScheme scheme)
+{
     if (!m_menu)
         return;
-    const Qt::ColorScheme scheme = QGuiApplication::styleHints()->colorScheme();
     if (scheme == Qt::ColorScheme::Unknown)
         m_menu->setPalette(QPalette());
     else

@@ -8,7 +8,6 @@
 #include <QPixmap>
 #include <QGuiApplication>
 #include <QSignalSpy>
-#include <QStyleHints>
 #include <QSystemTrayIcon>
 #include <QTest>
 
@@ -70,8 +69,7 @@ private slots:
         QMenu *menu = tray.contextMenu();
         for (const Qt::ColorScheme scheme :
              { Qt::ColorScheme::Dark, Qt::ColorScheme::Light }) {
-            QGuiApplication::styleHints()->setColorScheme(scheme);
-            QTRY_COMPARE(QGuiApplication::styleHints()->colorScheme(), scheme);
+            tray.applyMenuColorScheme(scheme);
             const QPalette pal = menu->palette();
             for (const QPalette::ColorRole ink :
                  { QPalette::WindowText, QPalette::Text, QPalette::ButtonText })
@@ -82,7 +80,6 @@ private slots:
             const bool darkWindow = lum(pal.color(QPalette::Window)) < 0.2;
             QCOMPARE(darkWindow, scheme == Qt::ColorScheme::Dark);
         }
-        QGuiApplication::styleHints()->unsetColorScheme();
     }
 
     void theTooltipSaysUnreadInTheDotOnlyState()

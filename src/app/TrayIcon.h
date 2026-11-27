@@ -61,6 +61,7 @@ public:
 
     QMenu *contextMenu();
     static QPalette menuPalette(Qt::ColorScheme scheme);
+    void applyMenuColorScheme(Qt::ColorScheme scheme);
     static bool activationShowsWindow(int reason);
     static bool activationOpensOwnMenu(int reason, bool nativeMenu);
     // The reason the activated handler acts on. On macOS a Control-click is
