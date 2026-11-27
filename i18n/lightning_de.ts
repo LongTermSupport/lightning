@@ -21531,13 +21531,13 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <translation>Space-Übersicht öffnen</translation>
     </message>
     <message>
-        <location line="+104"/>
+        <location line="+105"/>
         <source>Search</source>
         <translation>Suchen</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+776"/>
+        <location line="+791"/>
         <location line="+1"/>
         <source>Search rooms</source>
         <translation>Räume suchen</translation>
@@ -21634,12 +21634,18 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <translation>Favoriten</translation>
     </message>
     <message>
-        <location line="-411"/>
+        <location line="-427"/>
         <source>Collapse room list</source>
         <translation>Raumliste einklappen</translation>
     </message>
     <message>
-        <location line="+382"/>
+        <location line="+106"/>
+        <location line="+1"/>
+        <source>Clear search</source>
+        <translation>Suche löschen</translation>
+    </message>
+    <message>
+        <location line="+291"/>
         <source>Archived (%1)</source>
         <translation>Archiviert (%1)</translation>
     </message>

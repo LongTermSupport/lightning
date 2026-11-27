@@ -21536,19 +21536,25 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>रूम सूची समेटें</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+79"/>
         <source>Search</source>
         <translation>खोजें</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+776"/>
+        <location line="+791"/>
         <location line="+1"/>
         <source>Search rooms</source>
         <translation>रूम खोजें</translation>
     </message>
     <message>
-        <location line="-719"/>
+        <location line="-766"/>
+        <location line="+1"/>
+        <source>Clear search</source>
+        <translation>खोज साफ़ करें</translation>
+    </message>
+    <message>
+        <location line="+46"/>
         <location line="+1"/>
         <source>Room list options</source>
         <translation>रूम सूची के विकल्प</translation>

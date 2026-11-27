@@ -21536,19 +21536,25 @@ Estas ligações permanecem no estado da sala. Abra a sucessora a partir do avis
         <translation>Recolher a lista de salas</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+79"/>
         <source>Search</source>
         <translation>Procurar</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+776"/>
+        <location line="+791"/>
         <location line="+1"/>
         <source>Search rooms</source>
         <translation>Procurar salas</translation>
     </message>
     <message>
-        <location line="-719"/>
+        <location line="-766"/>
+        <location line="+1"/>
+        <source>Clear search</source>
+        <translation>Limpar a procura</translation>
+    </message>
+    <message>
+        <location line="+46"/>
         <location line="+1"/>
         <source>Room list options</source>
         <translation>Opções da lista de salas</translation>
