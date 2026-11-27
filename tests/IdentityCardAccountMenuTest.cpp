@@ -225,9 +225,10 @@ private slots:
         // Controls derive hoverEnabled from this hint, which offscreen may
         // leave off; without hover a hover-revealed control cannot be tested.
         QGuiApplication::styleHints()->setUseHoverEffects(true);
-        m_controller = new AppController(AppController::MockBackend);
-        auto *secrets = new FakeSecretStore(m_controller);
-        m_controller->settings()->setSecretStore(secrets);
+        m_controller = new AppController(
+            AppController::MockBackend, false, [](QObject *parent) {
+                return std::make_unique<FakeSecretStore>(parent);
+            });
         m_controller->settings()->saveSession(
             QStringLiteral("https://one.example"), kAlice,
             QStringLiteral("ALICEDEV"), QStringLiteral("alice-token-fixture"));

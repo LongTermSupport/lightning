@@ -13,6 +13,8 @@
 // thread's instance and never builds a second, real keyring backend.
 #pragma once
 
+#include <memory>
+#include <QSettings>
 #include <QString>
 #include <QStringList>
 #include <QtGlobal>
@@ -63,8 +65,8 @@ public:
     quint64 handleSerial(void *) override { return 0; }
 };
 
-// Read once, in AppController's constructor. Labs is offered by default
-// (2026-10-20); the variable only forces it off. `on` leaves the default
+// Read once, in AppController's constructor. Live accounts are on by default;
+// the variable only forces them off. `on` leaves the default
 // (unset); off sets "0", the test override.
 inline void setHiddenSwitch(bool on)
 {
@@ -74,15 +76,21 @@ inline void setHiddenSwitch(bool on)
         qputenv("LIGHTNING_LABS_LIVE_ACCOUNTS", "0");
 }
 
-// A mock-backend AppController with `userIds` saved (on homeservers
+// A mock-backend AppController with live accounts stored off (the caller turns
+// them on) and `userIds` saved (on homeservers
 // https://hs<N>.example), none of them active yet. The caller owns it. The
 // override (forced off, or the default) is set before construction, and stays
 // set until the next call.
-inline AppController *makeController(bool hiddenSwitch, const QStringList &userIds)
+inline AppController *makeController(bool hiddenSwitch, const QStringList &userIds,
+                                     bool storeOff = true)
 {
     setHiddenSwitch(hiddenSwitch);
-    auto *controller = new AppController(AppController::MockBackend);
-    controller->settings()->setSecretStore(new InMemorySecretStore(controller));
+    if (storeOff)
+        QSettings().setValue(QStringLiteral("labs/concurrentAccounts"), false);
+    auto *controller = new AppController(
+        AppController::MockBackend, false, [](QObject *parent) {
+            return std::make_unique<InMemorySecretStore>(parent);
+        });
     for (int i = 0; i < userIds.size(); ++i) {
         controller->settings()->saveSession(
             QStringLiteral("https://hs%1.example").arg(i + 1), userIds.at(i),

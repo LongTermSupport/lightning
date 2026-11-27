@@ -186,7 +186,7 @@ private slots:
         QSettings().clear();
     }
 
-    void theCardIsOfferedAndOffByDefault()
+    void theCardIsOfferedAndShowsTheSwitchOff()
     {
         load(true, 2);
         if (QTest::currentTestFailed())
@@ -203,6 +203,24 @@ private slots:
         QVERIFY(item(QStringLiteral("labsAlwaysSignedInHint"))->isVisible());
         QVERIFY(!item(QStringLiteral("labsAlwaysSignedInHeading"))->isVisible());
         QCOMPARE(rowCount(), 0);
+    }
+
+    void withNothingStoredLiveAccountsAreOn()
+    {
+        lightning::accounts::setRustBridgeApiForTest(&m_bridge);
+        m_controller = labsqml::makeController(true, kAccounts.mid(0, 2), false);
+        QVERIFY(!QSettings().contains(QStringLiteral("labs/concurrentAccounts")));
+        QVERIFY(m_controller->settings()->labsConcurrentAccounts());
+        QTRY_VERIFY(m_controller->liveAccountsActive());
+    }
+
+    void aStoredFalseKeepsLiveAccountsOff()
+    {
+        lightning::accounts::setRustBridgeApiForTest(&m_bridge);
+        QSettings().setValue(QStringLiteral("labs/concurrentAccounts"), false);
+        m_controller = labsqml::makeController(true, kAccounts.mid(0, 2), false);
+        QVERIFY(!m_controller->settings()->labsConcurrentAccounts());
+        QVERIFY(!m_controller->liveAccountsActive());
     }
 
     void theCardHidesOnlyWhenForcedOff()

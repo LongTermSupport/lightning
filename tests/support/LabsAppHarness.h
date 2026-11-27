@@ -495,6 +495,7 @@ inline void clearSettings()
 {
     QSettings settings;
     settings.clear();
+    settings.setValue(QStringLiteral("labs/concurrentAccounts"), false);
     settings.sync();
     lightning::accounts::StoreOwnershipRegistry::process().clearForTest();
     lightning::accounts::HostSignInRetirements::process().clearForTest();
