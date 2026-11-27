@@ -481,6 +481,73 @@ private Q_SLOTS:
                                          .toBool())));
     }
 
+    void aWheelStepUpInsideTheFollowSlackLeavesTheLatest_data()
+    {
+        QTest::addColumn<int>("kind");
+        QTest::addColumn<qreal>("stepPx");
+        QTest::newRow("small notch") << 0 << qreal(5);
+        QTest::newRow("small pixel step") << 1 << qreal(5);
+        QTest::newRow("full notch") << 0 << qreal(0);
+    }
+    void aWheelStepUpInsideTheFollowSlackLeavesTheLatest()
+    {
+        QFETCH(int, kind);
+        QFETCH(qreal, stepPx);
+        AppController controller(AppController::MockBackend);
+        const QString roomId = login(controller);
+        QVERIFY(!roomId.isEmpty());
+        auto *mock = controller.findChild<MockMatrixClient *>();
+        QVERIFY(mock != nullptr);
+        Pane pane;
+        QVERIFY(openPane(controller, pane, roomId,
+                         textEvents(roomId, 120, QStringLiteral("ws")), 0, 600));
+        QQuickItem *timeline = pane.timeline;
+        QTRY_VERIFY_WITH_TIMEOUT(!controller.pagination()->busy(),
+                                 kSignalTimeoutMs);
+        QTRY_VERIFY_WITH_TIMEOUT(
+            eval(timeline, QStringLiteral("app.timelineView.revealIdle()"))
+                .toBool(), 15000);
+        const auto fromLatest = [&] {
+            return timeline->property("contentY").toDouble()
+                - eval(timeline, QStringLiteral("wheelMinY()")).toDouble();
+        };
+        QTRY_VERIFY_WITH_TIMEOUT(timeline->property("stickToBottom").toBool()
+                                     && fromLatest() <= 0.5,
+                                 kSignalTimeoutMs);
+        QTest::qWait(300);
+
+        const qreal notch = eval(timeline,
+            QStringLiteral("app.timelineScroll.notchDistance(height)")).toDouble();
+        const qreal slack = timeline->property("bottomFollowSlack").toDouble();
+        QVERIFY(notch > slack * 2);
+        const QPointF pos(380, 300);
+        if (kind == 1) {
+            QWheelEvent ev(pos, pane.window.mapToGlobal(pos),
+                           QPoint(0, qRound(stepPx)), QPoint(0, qRound(stepPx)),
+                           Qt::NoButton, Qt::NoModifier, Qt::ScrollUpdate, false);
+            QCoreApplication::sendEvent(&pane.window, &ev);
+        } else {
+            wheel(pane, stepPx > 0 ? qMax(1, qRound(stepPx / notch * 120.0)) : 120);
+        }
+        QTest::qWait(700);
+        const double moved = fromLatest();
+        QVERIFY2(moved > 0.5, qPrintable(QStringLiteral("the wheel moved %1 px").arg(moved)));
+        if (stepPx > 0)
+            QVERIFY2(moved < slack, qPrintable(QStringLiteral(
+                "fixture: the step left %1 px, outside the slack").arg(moved)));
+        QVERIFY2(!timeline->property("stickToBottom").toBool(),
+                 "a wheel step up left the timeline following the latest");
+
+        const int rowsBefore = sourceRows(controller);
+        mock->appendEventForTest(
+            roomId, textEvents(roomId, 1, QStringLiteral("wslive"), 60).first());
+        QTRY_VERIFY_WITH_TIMEOUT(sourceRows(controller) > rowsBefore, 2000);
+        QTest::qWait(600);
+        QVERIFY2(!timeline->property("stickToBottom").toBool() && fromLatest() > 0.5,
+                 qPrintable(QStringLiteral("a live message pulled the reader to "
+                                           "the latest (%1 px left)").arg(fromLatest())));
+    }
+
     void aCaptureBetweenAnAppendAndItsCorrectionStillHoldsTheReader()
     {
         AppController controller(AppController::MockBackend);
