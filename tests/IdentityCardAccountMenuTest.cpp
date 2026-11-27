@@ -212,6 +212,7 @@ private slots:
         QCoreApplication::setApplicationName(
             QStringLiteral("identity-card-account-menu-test"));
         QSettings().clear();
+        QSettings().setValue(QStringLiteral("labs/concurrentAccounts"), false);
 
         // The widths asserted here are those of the bundled faces, not of
         // whatever the host substitutes for a family it lacks.
