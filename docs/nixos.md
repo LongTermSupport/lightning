@@ -25,7 +25,7 @@ the two placeholders with the full commit and its unpacked hash:
 let
   lightningRev = "<full-commit>";
   lightningSource = builtins.fetchTarball {
-    url = "https://github.com/Mizerd/lightning/archive/${lightningRev}.tar.gz";
+    url = "https://github.com/lightning-matrix/lightning/archive/${lightningRev}.tar.gz";
     sha256 = "<unpacked-sha256>";
   };
 in
@@ -38,7 +38,7 @@ in
 Obtain the unpacked hash for that same commit with:
 
 ```sh
-nix-prefetch-url --unpack 'https://github.com/Mizerd/lightning/archive/<full-commit>.tar.gz'
+nix-prefetch-url --unpack 'https://github.com/lightning-matrix/lightning/archive/<full-commit>.tar.gz'
 ```
 
 This pins the application source while evaluating its package recipe
@@ -59,7 +59,7 @@ nixpkgs input, host name, platform and modules:
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     lightning = {
-      url = "github:Mizerd/lightning";
+      url = "github:lightning-matrix/lightning";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -137,7 +137,7 @@ Keep a development or local packaging checkout under your home directory:
 
 ```sh
 mkdir -p ~/repos
-git clone https://github.com/Mizerd/lightning.git ~/repos/lightning
+git clone https://github.com/lightning-matrix/lightning.git ~/repos/lightning
 cd ~/repos/lightning
 ```
 
@@ -219,8 +219,8 @@ The shell supplies dependencies; the working directory's source is
 what CMake builds. Use a checkout compatible with that shell's pinned
 Lightning revision.
 
-The shell supplies `lightning-dev` and the Cargo/CMake job and debug
-settings. Run these commands manually inside it:
+The shell supplies `lightning-dev`, which sets its own Cargo/CMake job
+and debug settings. Run these commands manually inside it:
 
 ```sh
 lightning-dev configure
@@ -243,7 +243,7 @@ and restart the client.
 
 The default build directory is `build-nixos`; set `LIGHTNING_BUILD_DIR`
 to choose another tree. Set `CARGO_BUILD_JOBS` to a value from 1 to 8
-to limit both C++ and Rust work; the shell defaults to eight. Configure
+to limit both C++ and Rust work; the helper defaults to eight. Configure
 and build share a nonblocking `.developer-build.lock` inside that tree,
 so a second helper refuses to overlap. Manual builds/tests must use
 the same lock or wait until the tree is idle. See

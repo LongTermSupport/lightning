@@ -23,12 +23,6 @@
       devShells.default = pkgs.mkShell {
         name = "lightning-dev";
 
-        # Defaults for incremental local builds; entering the shell does no
-        # fetching, configuration or compilation. The helper starts that work.
-        CARGO_BUILD_JOBS = "8";
-        CMAKE_BUILD_PARALLEL_LEVEL = "8";
-        CARGO_PROFILE_DEV_DEBUG = "1";
-
         nativeBuildInputs = with pkgs; [
           developer
           cmake
