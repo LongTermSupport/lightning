@@ -565,38 +565,30 @@ Item {
     Loader {
         id: host
         sourceComponent: Component {
-            Item {
-                AccountActivityFeed {
-                    id: feed
-                    source: fakeModel
-                    userIds: ["@a:x"]
-                }
-                Component.onCompleted: {
-                    feed.userIds = ["@a:x", "@b:x"]
-                    host.active = false
-                }
-            }
+            AccountActivityFeed { source: fakeModel; userIds: ["@a:x"] }
         }
+    }
+    function addAccountAndUnload() {
+        host.item.userIds = ["@a:x", "@b:x"]
+        host.active = false
     }
 }
 )QML"), QUrl(QStringLiteral("gonecontextfeed.qml")));
+        QScopedPointer<QObject> scene(c.create());
+        QVERIFY2(scene, qPrintable(c.errorString()));
+        QTest::qWait(0);
+        QCoreApplication::processEvents();
+        const int reads = scene->property("reads").toInt();
+        QVERIFY(reads > 0);
+
         g_feedWarnings.clear();
         const QtMessageHandler previous = qInstallMessageHandler(collectFeedWarning);
-        QScopedPointer<QObject> scene(c.create());
-        const int reads = scene ? scene->property("reads").toInt() : -1;
+        QMetaObject::invokeMethod(scene.data(), "addAccountAndUnload");
         QTest::qWait(50);
         QCoreApplication::processEvents();
-        QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
         qInstallMessageHandler(previous);
-        QVERIFY2(scene, qPrintable(c.errorString()));
 
-        QStringList feedWarnings;
-        for (const QString &w : std::as_const(g_feedWarnings)) {
-            if (w.contains(QLatin1String("AccountActivityFeed"))
-                || w.contains(QLatin1String("invalid context")))
-                feedWarnings << w;
-        }
-        QVERIFY2(feedWarnings.isEmpty(), qPrintable(feedWarnings.join(QLatin1Char('\n'))));
+        QVERIFY2(g_feedWarnings.isEmpty(), qPrintable(g_feedWarnings.join(QLatin1Char('\n'))));
         QCOMPARE(scene->property("reads").toInt(), reads);
     }
 

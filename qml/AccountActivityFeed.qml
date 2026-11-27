@@ -85,7 +85,6 @@ QtObject {
     onSourceChanged: feed._refreshLater.restart()
     onUserIdsChanged: feed._refreshLater.restart()
     Component.onCompleted: feed.refreshAll()
-    Component.onDestruction: feed._refreshLater.stop()
 
     readonly property Connections _watch: Connections {
         target: feed.source
