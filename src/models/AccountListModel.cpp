@@ -189,6 +189,14 @@ void AccountListModel::setSignInProbe(SignInProbe probe)
     requestProbes();
 }
 
+void AccountListModel::setSignInProbesAllowed(bool allowed)
+{
+    if (m_probesAllowed == allowed)
+        return;
+    m_probesAllowed = allowed;
+    requestProbes();
+}
+
 void AccountListModel::forgetProbes()
 {
     ++m_probeGeneration;
@@ -198,7 +206,7 @@ void AccountListModel::forgetProbes()
 
 void AccountListModel::requestProbes()
 {
-    if (!m_signInProbe)
+    if (!m_signInProbe || !m_probesAllowed)
         return;
     QStringList ask;
     for (const Row &row : std::as_const(m_rows)) {

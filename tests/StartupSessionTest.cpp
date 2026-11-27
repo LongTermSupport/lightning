@@ -10,11 +10,18 @@
 #include <QQmlContext>
 #include <QQuickItem>
 #include <QQuickWindow>
+#include <QScopeGuard>
 #include <QSignalSpy>
 
+#include <atomic>
+
+#include "accounts/KeyringWorker.h"
+#include "accounts/SessionPool.h"
 #include "app/AppController.h"
 #include "app/SettingsManager.h"
 #include "auth/AuthManager.h"
+#include "models/AccountListModel.h"
+#include "support/LabsQmlFixture.h"
 #include "storage/InsecureFallbackSecretStore.h"
 #include "storage/SecretStore.h"
 
@@ -70,7 +77,7 @@ struct TestKeyring
     bool answering = true;
     QHash<QString, QString> items;
     int storesMade = 0;
-    int reads = 0;
+    std::atomic<int> reads = 0;
 };
 
 class TestKeyringStore final : public SecretStore
@@ -568,11 +575,79 @@ private Q_SLOTS:
         qputenv("LIGHTNING_MOCK_FAIL_RESTORE", "1");
         AppController app(AppController::MockBackend, false, keyringFactory(&keyring));
         qunsetenv("LIGHTNING_MOCK_FAIL_RESTORE");
-        QCOMPARE(keyring.reads, 1);
+        QCOMPARE(keyring.reads.load(), 1);
         QTRY_COMPARE(app.currentScreen(), AppController::LoginScreen);
         keyring.reads = 0;
         app.retryKeyring();
-        QVERIFY2(keyring.reads <= 2, qPrintable(QString::number(keyring.reads)));
+        QVERIFY2(keyring.reads <= 2, qPrintable(QString::number(keyring.reads.load())));
+    }
+
+    void withLiveAccountsOnTheOtherAccountsWaitForTheActiveOnesKeyring()
+    {
+        labsqml::InertRustBridge bridge;
+        lightning::accounts::setRustBridgeApiForTest(&bridge);
+        const auto unset = qScopeGuard([] {
+            lightning::accounts::setRustBridgeApiForTest(nullptr);
+        });
+        TestKeyring keyring;
+        seedKeyringAccount(&keyring, QStringLiteral("@bob:mock.local"));
+        seedKeyringAccount(&keyring, QStringLiteral("@carol:mock.local"));
+        seedKeyringAccount(&keyring);
+        SettingsManager().setLabsConcurrentAccounts(true);
+        keyring.items.clear();
+        keyring.reads = 0;
+        qputenv("LIGHTNING_MOCK_FAIL_RESTORE", "1");
+        AppController app(AppController::MockBackend, false, keyringFactory(&keyring));
+        qunsetenv("LIGHTNING_MOCK_FAIL_RESTORE");
+        QVERIFY(app.liveAccountsActive());
+        lightning::accounts::KeyringWorker *worker =
+            app.sessionPoolForTest()->keyringForTest();
+        QTRY_COMPARE(app.currentScreen(), AppController::LoginScreen);
+        QTest::qWait(200);
+        QTRY_COMPARE(worker->pendingJobs(), 0);
+        QCOMPARE(keyring.reads.load(), 1);
+
+        keyring.reads = 0;
+        app.retryKeyring();
+        QTest::qWait(200);
+        QTRY_COMPARE(worker->pendingJobs(), 0);
+        QVERIFY2(keyring.reads <= 2, qPrintable(QString::number(keyring.reads.load())));
+    }
+
+    void withLiveAccountsOnALostSignInIsFoundOnceTheActiveAccountIsIn()
+    {
+        labsqml::InertRustBridge bridge;
+        lightning::accounts::setRustBridgeApiForTest(&bridge);
+        const auto unset = qScopeGuard([] {
+            lightning::accounts::setRustBridgeApiForTest(nullptr);
+        });
+        const QString bob = QStringLiteral("@bob:mock.local");
+        TestKeyring keyring;
+        seedKeyringAccount(&keyring, bob);
+        seedKeyringAccount(&keyring);
+        SettingsManager().setLabsConcurrentAccounts(true);
+        keyring.items.remove(bob + QStringLiteral("/accessToken"));
+        keyring.items.remove(bob + QStringLiteral("/refreshToken"));
+        qputenv("LIGHTNING_MOCK_RESTORE_DELAY_MS", "500");
+        AppController app(AppController::MockBackend, false, keyringFactory(&keyring));
+        qunsetenv("LIGHTNING_MOCK_RESTORE_DELAY_MS");
+        QVERIFY(app.liveAccountsActive());
+        const int startupReads = keyring.reads.load();
+        QTest::qWait(150);
+        QVERIFY(!app.loggedIn());
+        QCOMPARE(keyring.reads.load(), startupReads);
+
+        QTRY_VERIFY(app.loggedIn());
+        const auto bobNeedsSignIn = [&app, &bob] {
+            const QVariantList rows = app.accountList()->rowsSnapshot();
+            for (const QVariant &row : rows) {
+                const QVariantMap map = row.toMap();
+                if (map.value(QStringLiteral("userId")).toString() == bob)
+                    return map.value(QStringLiteral("needsSignIn")).toBool();
+            }
+            return false;
+        };
+        QTRY_VERIFY(bobNeedsSignIn());
     }
 
     void anAccountIsNotRemovedWhileTheKeyringCannotBeRead()

@@ -8353,6 +8353,13 @@ void AppController::startLiveAccounts()
         [guard = QPointer<la::SessionPool>(pool)](const QString &uid) {
             return guard ? guard->epochFor(uid) : ~quint64(0);
         });
+    const auto allowSignInProbes = [this] {
+        if (m_accountList)
+            m_accountList->setSignInProbesAllowed(m_auth->isLoggedIn() && !m_keyringUnavailable);
+    };
+    allowSignInProbes();
+    connect(m_auth.get(), &AuthManager::isLoggedInChanged, pool, allowSignInProbes);
+    connect(this, &AppController::keyringUnavailableChanged, pool, allowSignInProbes);
     m_accountList->setSignInProbe(
         [guard = QPointer<la::SessionPool>(pool)](const QString &uid,
                                                   std::function<void(bool)> done) {
