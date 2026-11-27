@@ -259,12 +259,191 @@ bool TimelineModel::continuesSenderGroup(int row) const
     return gap >= 0 && gap < m_senderGroupWindowSeconds;
 }
 
+bool TimelineModel::imageGridEligible(const TimelineEvent &e) const
+{
+    if (e.type != TimelineEvent::Image || e.isVirtual() || e.redacted
+        || e.undecryptable || e.isLocalEcho || e.status != TimelineEvent::Sent
+        || e.eventId.isEmpty() || e.eventId.startsWith(QLatin1String("local:")))
+        return false;
+    if (e.mediaKey.isEmpty() && e.mediaMxcUrl.isEmpty())
+        return false;
+    const QString mime = e.mediaMimetype.toLower();
+    if (mime == QLatin1String("image/gif") || mime.startsWith(QLatin1String("image/svg")))
+        return false;
+    if (e.edited || e.mediaSpoiler || !e.galleryItems.isEmpty()
+        || !e.reactions.isEmpty() || !e.replyToEventId.isEmpty()
+        || e.isThreadRoot || e.threadReplyCount > 0
+        || m_threadReplyCounts.contains(e.eventId)
+        || !e.formattedBody.isEmpty())
+        return false;
+    const QString body = e.body.trimmed();
+    const QString name = e.mediaFilename.trimmed();
+    return body.isEmpty() || name.isEmpty()
+        || body.compare(name, Qt::CaseInsensitive) == 0;
+}
+
+bool TimelineModel::imageGridJoins(const TimelineEvent &previous,
+                                   const TimelineEvent &e) const
+{
+    if (previous.sender != e.sender || previous.roomId != e.roomId
+        || previous.threadRootId != e.threadRootId
+        || !previous.timestamp.isValid() || !e.timestamp.isValid()
+        || previous.timestamp.date() != e.timestamp.date())
+        return false;
+    const qint64 gap = previous.timestamp.secsTo(e.timestamp);
+    return gap >= 0 && gap < m_senderGroupWindowSeconds;
+}
+
+// Consecutive captionless images from one sender, chunked from the oldest
+// into groups of at most kImageGridMaxTiles; a group of one is no grid.
+const QList<TimelineModel::ImageGridSlot> &TimelineModel::imageGridSlots() const
+{
+    if (!m_imageGridDirty && m_imageGridSlots.size() == m_events.size())
+        return m_imageGridSlots;
+    const int n = static_cast<int>(m_events.size());
+    m_imageGridSlots = QList<ImageGridSlot>(n);
+    QList<int> group;
+    const auto flush = [this, &group]() {
+        if (group.size() >= 2) {
+            for (int i = 0; i < group.size(); ++i)
+                m_imageGridSlots[group.at(i)] = { group.first(), i,
+                                                  static_cast<int>(group.size()) };
+        }
+        group.clear();
+    };
+    int previous = -1;
+    for (int row = 0; row < n; ++row) {
+        const auto &e = m_events.at(row);
+        if (isThreadReplyAwaitingKeys(e) || isOmittedRedaction(e))
+            continue;
+        if (!imageGridEligible(e)) {
+            flush();
+            previous = -1;
+            continue;
+        }
+        if (previous < 0 || !imageGridJoins(m_events.at(previous), e)
+            || group.size() >= kImageGridMaxTiles)
+            flush();
+        group.append(row);
+        previous = row;
+    }
+    flush();
+    m_imageGridDirty = false;
+    return m_imageGridSlots;
+}
+
+bool TimelineModel::isImageGridFollower(int row) const
+{
+    const auto &grid = imageGridSlots();
+    return row >= 0 && row < grid.size() && grid.at(row).index > 0;
+}
+
+int TimelineModel::imageGridLeaderRow(int row) const
+{
+    const auto &grid = imageGridSlots();
+    if (row < 0 || row >= grid.size() || grid.at(row).leaderRow < 0)
+        return row;
+    return grid.at(row).leaderRow;
+}
+
+QVariantList TimelineModel::imageGridItemsFrom(int leaderRow) const
+{
+    const auto &grid = imageGridSlots();
+    QVariantList out;
+    if (leaderRow < 0 || leaderRow >= grid.size()
+        || grid.at(leaderRow).index != 0)
+        return out;
+    const int size = grid.at(leaderRow).size;
+    for (int row = leaderRow; row < grid.size() && out.size() < size; ++row) {
+        if (grid.at(row).leaderRow != leaderRow)
+            continue;
+        const auto &e = m_events.at(row);
+        const QString mxcThumb = e.mediaThumbnailMxcUrl.isEmpty()
+            ? e.mediaMxcUrl : e.mediaThumbnailMxcUrl;
+        QVariantMap item;
+        item.insert(QStringLiteral("stableId"),
+                    e.itemId.isEmpty() ? e.eventId : e.itemId);
+        item.insert(QStringLiteral("eventId"), e.eventId);
+        item.insert(QStringLiteral("mediaKey"), e.mediaKey);
+        item.insert(QStringLiteral("mediaUrl"), mediaHttp(e.mediaMxcUrl));
+        item.insert(QStringLiteral("mediaThumbUrl"), mediaThumbHttp(mxcThumb, 800, 600));
+        item.insert(QStringLiteral("mimetype"), e.mediaMimetype);
+        item.insert(QStringLiteral("filename"),
+                    e.mediaFilename.isEmpty() ? e.body : e.mediaFilename);
+        item.insert(QStringLiteral("width"), e.mediaWidth);
+        item.insert(QStringLiteral("height"), e.mediaHeight);
+        item.insert(QStringLiteral("sourceAvailable"), e.mediaSourceAvailable);
+        item.insert(QStringLiteral("thumbAvailable"), e.mediaThumbAvailable);
+        item.insert(QStringLiteral("timestamp"), e.timestamp);
+        out.append(item);
+    }
+    return out;
+}
+
+QString TimelineModel::imageGridSignature(int row) const
+{
+    const auto &grid = imageGridSlots();
+    if (row < 0 || row >= grid.size() || grid.at(row).leaderRow < 0)
+        return {};
+    const ImageGridSlot &slot = grid.at(row);
+    QString sig = QString::number(slot.index) + QLatin1Char('/')
+        + stableIdAt(slot.leaderRow);
+    if (slot.index != 0)
+        return sig;
+    for (int r = row, seen = 0; r < grid.size() && seen < slot.size; ++r) {
+        if (grid.at(r).leaderRow != row)
+            continue;
+        ++seen;
+        const auto &e = m_events.at(r);
+        sig += QLatin1Char('|') + stableIdAt(r) + QLatin1Char(' ') + e.mediaKey
+            + QLatin1Char(' ') + e.mediaMxcUrl
+            + (e.mediaThumbAvailable ? QLatin1Char('t') : QLatin1Char('-'))
+            + (e.mediaSourceAvailable ? QLatin1Char('s') : QLatin1Char('-'))
+            + QString::number(e.mediaWidth) + QLatin1Char('x')
+            + QString::number(e.mediaHeight);
+    }
+    return sig;
+}
+
+void TimelineModel::refreshImageGrid()
+{
+    m_imageGridDirty = true;
+    const int n = static_cast<int>(m_events.size());
+    QHash<QString, QString> now;
+    for (int row = 0; row < n; ++row) {
+        const QString key = stableIdAt(row);
+        const QString sig = imageGridSignature(row);
+        if (!sig.isEmpty())
+            now.insert(key, sig);
+        if (m_imageGridAnnounced.value(key) == sig)
+            continue;
+        const auto idx = index(row);
+        Q_EMIT dataChanged(idx, idx,
+                           { ImageGridIndexRole, ImageGridItemsRole,
+                             ReadReceiptsRole, ReadReceiptsTotalRole,
+                             SentReceiptRole });
+    }
+    m_imageGridAnnounced = now;
+}
+
+void TimelineModel::forgetImageGridAnnouncements()
+{
+    m_imageGridDirty = true;
+    m_imageGridAnnounced.clear();
+    for (int row = 0; row < m_events.size(); ++row) {
+        const QString sig = imageGridSignature(row);
+        if (!sig.isEmpty())
+            m_imageGridAnnounced.insert(stableIdAt(row), sig);
+    }
+}
+
 void TimelineModel::setSenderGroupWindowSeconds(int seconds)
 {
     seconds = qBound(60, seconds, 24 * 60 * 60);
     if (m_senderGroupWindowSeconds == seconds)
         return;
     m_senderGroupWindowSeconds = seconds;
+    refreshImageGrid();
     const int rows = rowCount();
     if (rows <= 0)
         return;
@@ -426,6 +605,7 @@ void TimelineModel::setThreadRepliesInline(bool on)
     if (!on)
         m_threadFilterRootId.clear();
     Q_EMIT threadPresentationChanged();
+    refreshImageGrid();
     if (!m_events.isEmpty())
         Q_EMIT dataChanged(index(0), index(rowCount() - 1));
 }
@@ -916,6 +1096,8 @@ bool TimelineModel::rowHostsReceipts(int row) const
         return false;
     if (isThreadReplyAwaitingKeys(e) || isOmittedRedaction(e))
         return false;
+    if (isImageGridFollower(row))
+        return false;
     if (isCallEventRow(e))
         return true;
     if (e.type != TimelineEvent::StateChange)
@@ -984,6 +1166,9 @@ void TimelineModel::refreshSentReceipt()
                 if (m_events.at(r).eventId != id)
                     continue;
                 Q_EMIT dataChanged(index(r), index(r), { SentReceiptRole });
+                const int host = imageGridLeaderRow(r);
+                if (host != r)
+                    Q_EMIT dataChanged(index(host), index(host), { SentReceiptRole });
                 break;
             }
         }
@@ -1307,6 +1492,7 @@ void TimelineModel::setShowRedactions(bool show)
     if (m_showRedactions == show)
         return;
     m_showRedactions = show;
+    refreshImageGrid();
     if (rowCount() > 0)
         Q_EMIT dataChanged(index(0), index(rowCount() - 1));
     Q_EMIT firstUnreadShownChanged();
@@ -1322,6 +1508,7 @@ void TimelineModel::refreshActivityPresentation()
 
 void TimelineModel::emitPresentationGroupingChanged(int first, int last)
 {
+    refreshImageGrid();
     const int exposed = rowCount();
     if (exposed == 0)
         return;
@@ -1734,9 +1921,27 @@ QVariant TimelineModel::data(const QModelIndex &index, int role) const
         const auto *target = eventForId(e.replyToEventId);
         return e.redacted || (target && target->redacted) ? 0 : e.replyToCount;
     }
-    case SentReceiptRole:
-        return !e.eventId.isEmpty() && e.eventId == m_sentReceiptEventId
-            && e.sender == m_selfUserId;
+    case SentReceiptRole: {
+        if (m_sentReceiptEventId.isEmpty() || isImageGridFollower(raw))
+            return false;
+        const auto &grid = imageGridSlots();
+        const int members = grid.at(raw).index == 0 ? grid.at(raw).size : 1;
+        for (int r = raw, seen = 0; r < m_events.size() && seen < members; ++r) {
+            if (r != raw && grid.at(r).leaderRow != raw)
+                continue;
+            ++seen;
+            const auto &member = m_events.at(r);
+            if (member.eventId == m_sentReceiptEventId
+                && member.sender == m_selfUserId)
+                return true;
+        }
+        return false;
+    }
+    case ImageGridIndexRole: {
+        const auto &grid = imageGridSlots();
+        return raw < grid.size() ? grid.at(raw).index : -1;
+    }
+    case ImageGridItemsRole: return imageGridItemsFrom(raw);
     case StateKindRole: return e.stateKind;
     case StateGroupIdRole: {
         const int leader = stateGroupLeaderRow(raw);
@@ -1886,6 +2091,8 @@ QHash<int, QByteArray> TimelineModel::roleNames() const
         { ReplyToKindRole,          "replyToKind" },
         { ReplyToCountRole,         "replyToCount" },
         { SentReceiptRole,          "sentReceipt" },
+        { ImageGridIndexRole,       "imageGridIndex" },
+        { ImageGridItemsRole,       "imageGridItems" },
     };
 }
 
@@ -2109,6 +2316,8 @@ void TimelineModel::onEventReplaced(const QString &roomId,
 false);
     if (groupingChanged)
         emitPresentationGroupingChanged(row - 1, row + 1);
+    else
+        refreshImageGrid();
 }
 
 void TimelineModel::onEventStatusChanged(const QString &roomId,
@@ -2121,8 +2330,10 @@ void TimelineModel::onEventStatusChanged(const QString &roomId,
     if (row < 0)
         return;
     m_events[row].status = status;
+    m_imageGridDirty = true;
     const auto idx = index(row);
     Q_EMIT dataChanged(idx, idx, { StatusRole });
+    refreshImageGrid();
 }
 
 void TimelineModel::onEventEdited(const QString &roomId, const QString &eventId)
@@ -2153,6 +2364,7 @@ void TimelineModel::onEventEdited(const QString &roomId, const QString &eventId)
     const auto idx = index(row);
     Q_EMIT dataChanged(idx, idx, { BodyRole, FormattedBodyRole,
                                    MessageSegmentsRole, EditedRole });
+    refreshImageGrid();
 }
 
 bool TimelineModel::isEventRedacted(const QString &roomId,
@@ -2238,6 +2450,7 @@ void TimelineModel::onEventRedacted(const QString &roomId, const QString &eventI
     if (row < 0) return;
     m_events[row].redacted = true;
     m_events[row].body.clear();
+    m_imageGridDirty = true;
     forgetRenderedHtml(eventId);
     const auto idx = index(row);
     Q_EMIT dataChanged(idx, idx, { BodyRole, RedactedRole, ReactionsRole });
@@ -2264,8 +2477,10 @@ void TimelineModel::onReactionsChanged(const QString &roomId, const QString &eve
     }
     if (fresh) {
         m_events[row].reactions = fresh->reactions;
+        m_imageGridDirty = true;
         const auto idx = index(row);
         Q_EMIT dataChanged(idx, idx, { ReactionsRole });
+        refreshImageGrid();
         return;
     }
 }
@@ -2405,6 +2620,8 @@ void TimelineModel::onEventChangedAt(const QString &roomId, int index,
 false);
     if (groupingChanged)
         emitPresentationGroupingChanged(index - 1, index + 1);
+    else
+        refreshImageGrid();
     if (virtualnessChanged)
         Q_EMIT countChanged();
     if (callnessChanged)
@@ -2481,6 +2698,7 @@ void TimelineModel::onLoggedOut()
     m_senderNameIndex.clear();
     m_cancelRequested.clear();
     m_tooLateToCancel.clear();
+    m_imageGridAnnounced.clear();
     m_roomId.clear();
     m_realRoomId.clear();
     endResetModel();
@@ -3199,6 +3417,7 @@ void TimelineModel::reload()
     clearRenderedHtml();
     rebuildThreadReplyIndex();
     rebuildSenderProfileIndex();
+    forgetImageGridAnnouncements();
     endResetModel();
     Q_EMIT countChanged();
 }

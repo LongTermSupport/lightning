@@ -140,6 +140,42 @@ private:
         return item;
     }
 
+    static QVariantMap gridItem(const QString &eventId, const QString &stableId)
+    {
+        QVariantMap item;
+        item.insert(QStringLiteral("eventId"), eventId);
+        item.insert(QStringLiteral("stableId"), stableId);
+        item.insert(QStringLiteral("mediaKey"), eventId);
+        item.insert(QStringLiteral("filename"), eventId.mid(1) + QStringLiteral(".jpg"));
+        item.insert(QStringLiteral("mimetype"), QStringLiteral("image/jpeg"));
+        item.insert(QStringLiteral("width"), 1600);
+        item.insert(QStringLiteral("height"), 900);
+        item.insert(QStringLiteral("sourceAvailable"), false);
+        item.insert(QStringLiteral("thumbAvailable"), false);
+        item.insert(QStringLiteral("mediaUrl"), QUrl{});
+        item.insert(QStringLiteral("mediaThumbUrl"), QUrl{});
+        return item;
+    }
+
+    static QVariantMap gridLeaderFixture(AppController &controller)
+    {
+        QVariantMap fixture = baseFixture(controller);
+        fixture.insert(QStringLiteral("isImage"), true);
+        fixture.insert(QStringLiteral("mediaWidth"), 1600);
+        fixture.insert(QStringLiteral("mediaHeight"), 900);
+        fixture.insert(QStringLiteral("mediaFilename"), QStringLiteral("fixture.jpg"));
+        fixture.insert(QStringLiteral("body"), QStringLiteral("fixture.jpg"));
+        fixture.insert(QStringLiteral("mediaMimetype"), QStringLiteral("image/jpeg"));
+        fixture.insert(QStringLiteral("mediaKey"), QStringLiteral("$fixture"));
+        fixture.insert(QStringLiteral("imageGridIndex"), 0);
+        fixture.insert(QStringLiteral("imageGridItems"), QVariantList{
+            gridItem(QStringLiteral("$fixture"), QStringLiteral("fixture-item")),
+            gridItem(QStringLiteral("$second"), QStringLiteral("second-item")),
+            gridItem(QStringLiteral("$third"), QStringLiteral("third-item")),
+        });
+        return fixture;
+    }
+
     bool createDelegate(AppController &controller, const QVariantMap &fixture,
                         Delegate &out, const QVariantMap &initial = {})
     {
@@ -2181,6 +2217,164 @@ QtObject {
         store.hide(QString());
         QCOMPARE(store.hiddenCount(), 0);
         QVERIFY(!store.isHidden(QString()));
+    }
+
+    void consecutiveImagesDrawAsATwoColumnGridInEveryLayout()
+    {
+        AppController controller(AppController::MockBackend);
+        const auto restore = qScopeGuard([&controller] {
+            controller.settings()->setMessageLayout(0);
+        });
+        for (int layout = 0; layout <= 3; ++layout) {
+            controller.settings()->setMessageLayout(layout);
+            Delegate d;
+            QVERIFY(createDelegate(controller, gridLeaderFixture(controller), d));
+            QTRY_VERIFY(d.root->height() > 0);
+            auto *grid = d.root->findChild<QQuickItem *>(QStringLiteral("imageGrid"));
+            QVERIFY2(grid, qPrintable(QStringLiteral("layout %1: no grid").arg(layout)));
+            QVERIFY(!d.root->findChild<QQuickItem *>(QStringLiteral("imageMedia")));
+            QList<QQuickItem *> tiles;
+            collectItems(grid, QStringLiteral("imageGridTile"), tiles);
+            QCOMPARE(tiles.size(), 3);
+
+            const QRectF gridInRow = grid->mapRectToItem(
+                d.root, QRectF(0, 0, grid->width(), grid->height()));
+            QVERIFY2(gridInRow.width() > 0 && gridInRow.height() > 0
+                         && gridInRow.left() >= 0 && gridInRow.top() >= 0
+                         && gridInRow.right() <= d.root->width() + 0.5
+                         && gridInRow.bottom() <= d.root->height() + 0.5,
+                     qPrintable(QStringLiteral("layout %1: grid %2,%3 %4x%5 outside "
+                                               "its row %6x%7")
+                                    .arg(layout).arg(gridInRow.left())
+                                    .arg(gridInRow.top()).arg(gridInRow.width())
+                                    .arg(gridInRow.height()).arg(d.root->width())
+                                    .arg(d.root->height())));
+            QList<QRectF> rects;
+            for (QQuickItem *tile : std::as_const(tiles)) {
+                const QRectF r = tile->mapRectToItem(
+                    grid, QRectF(0, 0, tile->width(), tile->height()));
+                QVERIFY(r.width() >= 48);
+                QCOMPARE(r.width(), r.height());
+                QVERIFY2(r.left() >= 0 && r.top() >= 0
+                             && r.right() <= grid->width() + 0.5
+                             && r.bottom() <= grid->height() + 0.5,
+                         qPrintable(QStringLiteral("layout %1: a tile outside its grid")
+                                        .arg(layout)));
+                for (const QRectF &other : std::as_const(rects))
+                    QVERIFY2(!r.intersects(other),
+                             qPrintable(QStringLiteral("layout %1: tiles overlap")
+                                            .arg(layout)));
+                rects << r;
+            }
+            std::sort(rects.begin(), rects.end(), [](const QRectF &a, const QRectF &b) {
+                return a.top() < b.top() || (a.top() == b.top() && a.left() < b.left());
+            });
+            QCOMPARE(rects.at(0).top(), rects.at(1).top());
+            QVERIFY(rects.at(1).left() > rects.at(0).right());
+            QVERIFY(rects.at(2).top() > rects.at(0).bottom());
+            QCOMPARE(rects.at(2).left(), rects.at(0).left());
+            QCOMPARE(d.warnings, QStringList{});
+        }
+    }
+
+    void aGridMembersRowCollapsesUnlessEmbedsCollapse()
+    {
+        AppController controller(AppController::MockBackend);
+        QVariantMap follower = gridLeaderFixture(controller);
+        follower.insert(QStringLiteral("imageGridIndex"), 1);
+        follower.insert(QStringLiteral("imageGridItems"), QVariantList{});
+        Delegate d;
+        QVERIFY(createDelegate(controller, follower, d));
+        QVERIFY(!d.root->isVisible());
+        QCOMPARE(d.root->implicitHeight(), 0.0);
+
+        controller.settings()->setCollapseEmbeds(true);
+        const auto restore = qScopeGuard([&controller] {
+            controller.settings()->setCollapseEmbeds(false);
+        });
+        Delegate shown;
+        QVERIFY(createDelegate(controller, follower, shown));
+        QVERIFY(shown.root->isVisible());
+        QVERIFY(shown.root->implicitHeight() > 0);
+        Delegate leader;
+        QVERIFY(createDelegate(controller, gridLeaderFixture(controller), leader));
+        QVERIFY(!leader.root->findChild<QQuickItem *>(QStringLiteral("imageGrid")));
+    }
+
+    void eachGridTileOpensItsOwnMessagesMenu()
+    {
+        AppController controller(AppController::MockBackend);
+        Delegate d;
+        QVERIFY(createDelegate(controller, gridLeaderFixture(controller), d));
+        QQmlComponent component(d.engine.get());
+        component.setData(R"QML(
+import QtQuick
+Item {
+    id: view
+    height: 10000
+    property real contentY: 0
+    property bool roomEncrypted: false
+    property bool isDirectRoom: false
+    property string askedId: ""
+    property int memberMenus: 0
+    property bool memberMenuInOverlay: false
+    property string transientInteractionOwner: ""
+    property string hoveredActionsKey: ""
+    property string pinnedActionsKey: ""
+    property bool threadContext: false
+    property Item member: Item {
+        function openContextMenu(x, y, inOverlay) {
+            view.memberMenus++
+            view.memberMenuInOverlay = inOverlay === true
+        }
+    }
+    function delegateForStableId(stableId) {
+        askedId = stableId
+        return member
+    }
+    function stateGroupExpanded(groupId) { return false }
+}
+)QML",
+                          QUrl());
+        QObject *view = component.create();
+        QVERIFY2(view, qPrintable(component.errorString()));
+        view->setParent(d.root);
+        d.root->setProperty("timelineView", QVariant::fromValue(view));
+        QCoreApplication::processEvents();
+
+        auto *grid = d.root->findChild<QQuickItem *>(QStringLiteral("imageGrid"));
+        QVERIFY(grid);
+        QList<QQuickItem *> tiles;
+        collectItems(grid, QStringLiteral("imageGridTile"), tiles);
+        QCOMPARE(tiles.size(), 3);
+        QQuickItem *third = nullptr;
+        QQuickItem *own = nullptr;
+        for (QQuickItem *tile : std::as_const(tiles)) {
+            const QString id = tile->property("stableId").toString();
+            if (id == QLatin1String("third-item"))
+                third = tile;
+            else if (id == QLatin1String("fixture-item"))
+                own = tile;
+        }
+        QVERIFY(third && own);
+
+        QVERIFY(testsupport::clickWhenSettled(d.window.get(), third, QPointF(0.5, 0.5),
+                                              Qt::RightButton));
+        QTRY_COMPARE(view->property("memberMenus").toInt(), 1);
+        QCOMPARE(view->property("askedId").toString(), QStringLiteral("third-item"));
+        QVERIFY(view->property("memberMenuInOverlay").toBool());
+        QVERIFY(!d.root->findChild<QObject *>(QStringLiteral("messageContextMenu")));
+
+        view->setProperty("askedId", QString());
+        QVERIFY(testsupport::clickWhenSettled(d.window.get(), own, QPointF(0.5, 0.5),
+                                              Qt::RightButton));
+        QObject *menu = nullptr;
+        QTRY_VERIFY((menu = d.root->findChild<QObject *>(
+                         QStringLiteral("messageContextMenu"))) != nullptr);
+        QTRY_VERIFY(menu->property("opened").toBool());
+        QCOMPARE(d.root->property("menuEventId").toString(), QStringLiteral("$fixture"));
+        QCOMPARE(view->property("memberMenus").toInt(), 1);
+        QVERIFY(view->property("askedId").toString().isEmpty());
     }
 
 private:

@@ -25,6 +25,24 @@ TimelineEvent makeEvent(const QString &eventId, const QString &body,
     return e;
 }
 
+TimelineEvent makeImage(const QString &eventId, const QString &sender,
+                        int secondsAfterBase)
+{
+    TimelineEvent e = makeEvent(eventId, eventId.mid(1) + QStringLiteral(".jpg"));
+    e.type = TimelineEvent::Image;
+    e.sender = sender;
+    e.mediaFilename = e.body;
+    e.mediaMimetype = QStringLiteral("image/jpeg");
+    e.mediaMxcUrl = QStringLiteral("mxc://example.org/") + eventId.mid(1);
+    e.mediaKey = eventId;
+    e.mediaSourceAvailable = true;
+    e.mediaWidth = 800;
+    e.mediaHeight = 600;
+    e.timestamp = QDateTime::fromMSecsSinceEpoch(1700000000000)
+                      .addSecs(secondsAfterBase);
+    return e;
+}
+
 class FakeClient : public MatrixClient
 {
     Q_OBJECT
@@ -142,6 +160,11 @@ class TimelineModelDiffTest : public QObject
 
 private Q_SLOTS:
     void consecutiveDeletionsCollapseIntoOneRow();
+    void consecutiveImagesFromOneSenderFormGridsOfAtMostFour();
+    void anImageGridBreaksOnSenderTextCaptionTimeAndThread();
+    void anImageGridLeavesOutReactedRedactedEditedAndPendingImages();
+    void anImageGridRegroupsWhenARowIsInsertedOrRemovedInTheMiddle();
+    void anImageGridRowHostsItsMembersReceipts();
     void removedMessagesLeaveNoRowWithThePlaceholderOff();
     void aRootRedactedInPlaceStaysAThreadEntry();
     void init();
@@ -3068,6 +3091,221 @@ void TimelineModelDiffTest::editHistorySanitizerKeepsSpoilersCovered()
     QVERIFY2(out.contains(QStringLiteral(
                  "background-color:#22262e;color:#22262e")),
              qPrintable(out));
+}
+
+
+namespace {
+const QString kAlice = QStringLiteral("@alice:example.org");
+const QString kBob = QStringLiteral("@bob:example.org");
+
+int gridRole(TimelineModel *model, const QByteArray &name)
+{
+    return model->roleNames().key(name, -1);
+}
+
+QList<int> gridIndices(TimelineModel *model)
+{
+    const int role = gridRole(model, "imageGridIndex");
+    QList<int> out;
+    for (int r = 0; r < model->rowCount(); ++r) {
+        const QVariant v = model->data(model->index(r), role);
+        out << (v.isValid() ? v.toInt() : -99);
+    }
+    return out;
+}
+
+int gridLeaderRow(TimelineModel *model, int row)
+{
+    int leader = -99;
+    QMetaObject::invokeMethod(model, "imageGridLeaderRow", Q_RETURN_ARG(int, leader),
+                              Q_ARG(int, row));
+    return leader;
+}
+
+QStringList gridMembers(TimelineModel *model, int row)
+{
+    QStringList out;
+    const QVariantList items = model->data(model->index(row),
+                                           gridRole(model, "imageGridItems")).toList();
+    for (const QVariant &v : items)
+        out << v.toMap().value(QStringLiteral("eventId")).toString();
+    return out;
+}
+}
+
+void TimelineModelDiffTest::consecutiveImagesFromOneSenderFormGridsOfAtMostFour()
+{
+    QList<TimelineEvent> rows;
+    for (int i = 0; i < 6; ++i)
+        rows << makeImage(QStringLiteral("$i%1").arg(i), kAlice, i * 10);
+    m_client->mirror = rows;
+    Q_EMIT m_client->timelineReset(kRoom);
+
+    QCOMPARE(gridIndices(m_model), (QList<int>{ 0, 1, 2, 3, 0, 1 }));
+    QCOMPARE(gridMembers(m_model, 0),
+             (QStringList{ QStringLiteral("$i0"), QStringLiteral("$i1"),
+                           QStringLiteral("$i2"), QStringLiteral("$i3") }));
+    QCOMPARE(gridMembers(m_model, 4),
+             (QStringList{ QStringLiteral("$i4"), QStringLiteral("$i5") }));
+    QCOMPARE(gridMembers(m_model, 1), QStringList{});
+    QCOMPARE(gridLeaderRow(m_model, 3), 0);
+    QCOMPARE(gridLeaderRow(m_model, 5), 4);
+    QCOMPARE(gridLeaderRow(m_model, 4), 4);
+    const QVariantMap first = m_model->data(m_model->index(0),
+        gridRole(m_model, "imageGridItems")).toList().value(0).toMap();
+    QCOMPARE(first.value(QStringLiteral("stableId")).toString(), QStringLiteral("uid-$i0"));
+    QCOMPARE(first.value(QStringLiteral("mediaKey")).toString(), QStringLiteral("$i0"));
+
+    m_client->mirror = { makeImage(QStringLiteral("$solo"), kAlice, 0) };
+    Q_EMIT m_client->timelineReset(kRoom);
+    QCOMPARE(gridIndices(m_model), QList<int>{ -1 });
+}
+
+void TimelineModelDiffTest::anImageGridBreaksOnSenderTextCaptionTimeAndThread()
+{
+    TimelineEvent captioned = makeImage(QStringLiteral("$c1"), kAlice, 60);
+    captioned.body = QStringLiteral("look at this");
+    TimelineEvent threaded1 = makeImage(QStringLiteral("$t1"), kAlice, 700);
+    threaded1.threadRootId = QStringLiteral("$root");
+    TimelineEvent threaded2 = makeImage(QStringLiteral("$t2"), kAlice, 710);
+    threaded2.threadRootId = QStringLiteral("$root");
+    TimelineEvent text = makeEvent(QStringLiteral("$text"), QStringLiteral("hi"));
+    text.timestamp = QDateTime::fromMSecsSinceEpoch(1700000000000).addSecs(25);
+    m_client->mirror = {
+        makeImage(QStringLiteral("$a1"), kAlice, 0),
+        makeImage(QStringLiteral("$a2"), kAlice, 10),
+        makeImage(QStringLiteral("$b1"), kBob, 15),
+        makeImage(QStringLiteral("$b2"), kBob, 20),
+        text,
+        makeImage(QStringLiteral("$a3"), kAlice, 30),
+        captioned,
+        makeImage(QStringLiteral("$a4"), kAlice, 70),
+        makeImage(QStringLiteral("$late"), kAlice, 70 + 6 * 60),
+        makeImage(QStringLiteral("$late2"), kAlice, 70 + 6 * 60 + 5),
+        threaded1,
+        threaded2,
+    };
+    Q_EMIT m_client->timelineReset(kRoom);
+
+    QCOMPARE(gridIndices(m_model),
+             (QList<int>{ 0, 1, 0, 1, -1, -1, -1, -1, 0, 1, 0, 1 }));
+    QCOMPARE(gridMembers(m_model, 10),
+             (QStringList{ QStringLiteral("$t1"), QStringLiteral("$t2") }));
+}
+
+void TimelineModelDiffTest::anImageGridLeavesOutReactedRedactedEditedAndPendingImages()
+{
+    TimelineEvent reacted = makeImage(QStringLiteral("$r"), kAlice, 10);
+    reacted.reactions = { { QStringLiteral("👍"), 1, false, QString() } };
+    TimelineEvent edited = makeImage(QStringLiteral("$e"), kAlice, 30);
+    edited.edited = true;
+    TimelineEvent pending = makeImage(QStringLiteral("$p"), kAlice, 50);
+    pending.status = TimelineEvent::Sending;
+    TimelineEvent gif = makeImage(QStringLiteral("$g"), kAlice, 70);
+    gif.mediaMimetype = QStringLiteral("image/gif");
+    TimelineEvent spoiler = makeImage(QStringLiteral("$s"), kAlice, 90);
+    spoiler.mediaSpoiler = true;
+    TimelineEvent reply = makeImage(QStringLiteral("$q"), kAlice, 110);
+    reply.replyToEventId = QStringLiteral("$elsewhere");
+    m_client->mirror = {
+        makeImage(QStringLiteral("$x0"), kAlice, 0), reacted,
+        makeImage(QStringLiteral("$x1"), kAlice, 20), edited,
+        makeImage(QStringLiteral("$x2"), kAlice, 40), pending,
+        makeImage(QStringLiteral("$x3"), kAlice, 60), gif,
+        makeImage(QStringLiteral("$x4"), kAlice, 80), spoiler,
+        makeImage(QStringLiteral("$x5"), kAlice, 100), reply,
+        makeImage(QStringLiteral("$x6"), kAlice, 120),
+        makeImage(QStringLiteral("$x7"), kAlice, 130),
+    };
+    Q_EMIT m_client->timelineReset(kRoom);
+    QCOMPARE(gridIndices(m_model),
+             (QList<int>{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 1 }));
+
+    // A reaction arriving on a member takes it out of the grid.
+    m_client->mirror[13].reactions = { { QStringLiteral("🎉"), 1, false, QString() } };
+    QSignalSpy changed(m_model, &QAbstractItemModel::dataChanged);
+    Q_EMIT m_client->reactionsChanged(kRoom, QStringLiteral("$x7"));
+    QCOMPARE(gridIndices(m_model).mid(12), (QList<int>{ -1, -1 }));
+    bool leaderAnnounced = false;
+    for (const auto &sig : changed) {
+        if (sig.at(0).toModelIndex().row() == 12
+            && sig.at(2).value<QList<int>>().contains(
+                gridRole(m_model, "imageGridItems")))
+            leaderAnnounced = true;
+    }
+    QVERIFY2(leaderAnnounced, "the grid that lost a member must be told");
+
+    // A redaction does too.
+    m_client->mirror = { makeImage(QStringLiteral("$y0"), kAlice, 0),
+                         makeImage(QStringLiteral("$y1"), kAlice, 5),
+                         makeImage(QStringLiteral("$y2"), kAlice, 10) };
+    Q_EMIT m_client->timelineReset(kRoom);
+    QCOMPARE(gridIndices(m_model), (QList<int>{ 0, 1, 2 }));
+    Q_EMIT m_client->eventRedacted(kRoom, QStringLiteral("$y1"));
+    QCOMPARE(gridIndices(m_model), (QList<int>{ -1, -1, -1 }));
+}
+
+void TimelineModelDiffTest::anImageGridRegroupsWhenARowIsInsertedOrRemovedInTheMiddle()
+{
+    m_client->mirror = { makeImage(QStringLiteral("$m0"), kAlice, 0),
+                         makeImage(QStringLiteral("$m1"), kAlice, 10),
+                         makeImage(QStringLiteral("$m2"), kAlice, 20) };
+    Q_EMIT m_client->timelineReset(kRoom);
+    QCOMPARE(gridIndices(m_model), (QList<int>{ 0, 1, 2 }));
+
+    TimelineEvent text = makeEvent(QStringLiteral("$between"), QStringLiteral("wait"));
+    text.timestamp = QDateTime::fromMSecsSinceEpoch(1700000000000).addSecs(5);
+    m_client->mirror.insert(1, text);
+    QSignalSpy changed(m_model, &QAbstractItemModel::dataChanged);
+    Q_EMIT m_client->eventInsertedAt(kRoom, 1, text);
+    QCOMPARE(gridIndices(m_model), (QList<int>{ -1, -1, 0, 1 }));
+    QCOMPARE(gridMembers(m_model, 2),
+             (QStringList{ QStringLiteral("$m1"), QStringLiteral("$m2") }));
+    QSet<int> announced;
+    for (const auto &sig : changed) {
+        if (sig.at(2).value<QList<int>>().contains(gridRole(m_model, "imageGridIndex")))
+            announced.insert(sig.at(0).toModelIndex().row());
+    }
+    QVERIFY2(announced.contains(0) && announced.contains(2) && announced.contains(3),
+             "every row whose place in a grid moved must be told");
+
+    m_client->mirror.removeAt(1);
+    Q_EMIT m_client->eventRemovedAt(kRoom, 1);
+    QCOMPARE(gridIndices(m_model), (QList<int>{ 0, 1, 2 }));
+    QCOMPARE(gridMembers(m_model, 0),
+             (QStringList{ QStringLiteral("$m0"), QStringLiteral("$m1"),
+                           QStringLiteral("$m2") }));
+
+    TimelineEvent older = makeImage(QStringLiteral("$older"), kAlice, -5);
+    m_client->mirror.prepend(older);
+    Q_EMIT m_client->eventsPrepended(kRoom, { older });
+    QCOMPARE(gridIndices(m_model), (QList<int>{ 0, 1, 2, 3 }));
+    QCOMPARE(gridMembers(m_model, 0).value(0), QStringLiteral("$older"));
+}
+
+void TimelineModelDiffTest::anImageGridRowHostsItsMembersReceipts()
+{
+    TimelineEvent last = makeImage(QStringLiteral("$h2"), kAlice, 20);
+    last.readBy = { { kBob, Q_INT64_C(1700000030000) } };
+    m_client->mirror = { makeImage(QStringLiteral("$h0"), kAlice, 0),
+                         makeImage(QStringLiteral("$h1"), kAlice, 10), last };
+    Q_EMIT m_client->timelineReset(kRoom);
+    auto readers = [this](int row) {
+        QStringList out;
+        const QVariantList list =
+            m_model->data(m_model->index(row), TimelineModel::ReadReceiptsRole).toList();
+        for (const QVariant &v : list)
+            out << v.toMap().value(QStringLiteral("userId")).toString();
+        return out;
+    };
+    QCOMPARE(readers(0), QStringList{ kBob });
+    QCOMPARE(readers(2), QStringList{});
+
+    m_client->mirror[1].reactions = { { QStringLiteral("👍"), 1, false, QString() } };
+    Q_EMIT m_client->reactionsChanged(kRoom, QStringLiteral("$h1"));
+    QCOMPARE(gridIndices(m_model), (QList<int>{ -1, -1, -1 }));
+    QCOMPARE(readers(2), QStringList{ kBob });
+    QCOMPARE(readers(0), QStringList{});
 }
 
 QTEST_GUILESS_MAIN(TimelineModelDiffTest)
