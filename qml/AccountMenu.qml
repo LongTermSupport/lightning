@@ -89,10 +89,13 @@ Popup {
                 return
         }
         root.rowIds = next
+        cardList.forceLayout()
     }
     Component.onCompleted: root.refreshLabsRows()
     onAboutToShow: {
         root.syncRowIds(true)
+        // Rows set while closed are otherwise built a frame after opening.
+        cardList.forceLayout()
         cardList.positionViewAtBeginning()
     }
     onClosed: root.syncRowIds(true)
