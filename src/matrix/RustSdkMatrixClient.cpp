@@ -7078,6 +7078,10 @@ void RustSdkMatrixClient::handleRustEvent(const QJsonObject &event,
         if (category == QLatin1String("cancel_too_late")) {
             Q_EMIT errorOccurred(tr("That message had already been sent, so it "
                                     "could not be cancelled."));
+            Q_EMIT sendCancelTooLate(
+                event.value(QStringLiteral("room_id")).toString(),
+                event.value(QStringLiteral("transaction_id")).toString(),
+                event.value(QStringLiteral("event_id")).toString());
             return;
         }
         if (category == QLatin1String("cancel_failed")

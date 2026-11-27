@@ -746,8 +746,9 @@ char *mx_rust_timeline_retry_send(void *client,
  * SendHandle::abort — which also aborts an in-flight media upload. A
  * successful abort emits nothing: the SDK's CancelledLocalEvent removes the
  * row through the ordinary timeline diff. A refusal answers
- * timeline_send_failed with category cancel_too_late (already on the
- * server), cancel_target_missing or cancel_failed. */
+ * timeline_send_failed with category cancel_too_late (already sent or in
+ * flight; never redacted automatically, carries transaction_id and the sent
+ * event_id when known), cancel_target_missing or cancel_failed. */
 char *mx_rust_timeline_cancel_send(void *client,
                                    const char *room_id,
                                    const char *transaction_id);

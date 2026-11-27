@@ -284,6 +284,7 @@ pub const SHUTDOWN_ABORTED_JOIN_MS: u64 = 250;
 type EventQueue = Arc<Mutex<VecDeque<String>>>;
 
 const SEND_STEP_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(30);
+const CANCEL_IN_FLIGHT_WAIT: std::time::Duration = std::time::Duration::from_secs(60);
 
 async fn bounded<T>(step: impl std::future::Future<Output = T>) -> Option<T> {
     tokio::time::timeout(SEND_STEP_TIMEOUT, step).await.ok()
@@ -2868,34 +2869,60 @@ impl TimelineRegistry {
             fn scan<'a, I: IntoIterator<Item = &'a Arc<TimelineItem>>>(
                 items: I,
                 txn: &str,
-            ) -> Option<matrix_sdk::send_queue::SendHandle>
+            ) -> Option<EventTimelineItem>
             where
                 I::IntoIter: DoubleEndedIterator,
             {
                 items.into_iter().rev().find_map(|item| {
                     let event = item.as_event()?;
-                    if event.transaction_id().map(|t| t.to_string())
-                        == Some(txn.to_owned())
-                    {
-                        event.local_echo_send_handle()
-                    } else {
-                        None
-                    }
+                    (event.transaction_id().map(|t| t.as_str()) == Some(txn))
+                        .then(|| event.clone())
                 })
             }
-            let mut handle = scan(&timeline.items().await, &transaction_id);
-            if handle.is_none() {
-                if let Some(thread) = thread_timeline.as_ref() {
-                    handle = scan(&thread.items().await, &transaction_id);
+            async fn find(
+                timeline: &Timeline,
+                thread: Option<&Arc<Timeline>>,
+                txn: &str,
+            ) -> Option<EventTimelineItem> {
+                match scan(&timeline.items().await, txn) {
+                    Some(item) => Some(item),
+                    None => match thread {
+                        Some(thread) => scan(&thread.items().await, txn),
+                        None => None,
+                    },
                 }
             }
-            let category = match handle {
+            let target = find(&timeline, thread_timeline.as_ref(), &transaction_id).await;
+            let outcome = match target.as_ref().and_then(|item| item.local_echo_send_handle()) {
+                None => None,
+                Some(handle) => {
+                    let txn = matrix_sdk::ruma::OwnedTransactionId::from(transaction_id.clone());
+                    Some(
+                        crate::sendrecovery::cancel_unsent(
+                            timeline.room(),
+                            handle,
+                            &txn,
+                            CANCEL_IN_FLIGHT_WAIT,
+                        )
+                        .await,
+                    )
+                }
+            };
+            let mut event_id = None;
+            let category = match outcome {
                 None => Some("cancel_target_missing"),
-                Some(handle) => match handle.abort().await {
-                    Ok(true) => None,
-                    Ok(false) => Some("cancel_too_late"),
-                    Err(_) => Some("cancel_failed"),
-                },
+                Some(crate::sendrecovery::CancelOutcome::Aborted) => None,
+                Some(crate::sendrecovery::CancelOutcome::Failed) => Some("cancel_failed"),
+                Some(crate::sendrecovery::CancelOutcome::TooLate(sent)) => {
+                    event_id = match sent {
+                        Some(id) => Some(id.to_string()),
+                        None => find(&timeline, thread_timeline.as_ref(), &transaction_id)
+                            .await
+                            .or(target)
+                            .and_then(|item| item.event_id().map(|id| id.to_string())),
+                    };
+                    Some("cancel_too_late")
+                }
             };
             if let Some(category) = category {
                 if registry.is_current(room_gen, lifecycle) {
@@ -2907,6 +2934,8 @@ impl TimelineRegistry {
                             "room_generation": room_gen,
                             "lifecycle": lifecycle,
                             "category": category,
+                            "transaction_id": transaction_id,
+                            "event_id": event_id,
                         }),
                     );
                 }

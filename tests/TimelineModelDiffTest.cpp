@@ -97,7 +97,12 @@ public:
     void sendTextMessage(const QString &, const QString &) override {}
     void sendReply(const QString &, const QString &, const QString &) override {}
     void editMessage(const QString &, const QString &, const QString &) override {}
-    void redactEvent(const QString &, const QString &, const QString &) override {}
+    QStringList redacted;
+    void redactEvent(const QString &, const QString &eventId,
+                     const QString &) override
+    {
+        redacted.append(eventId);
+    }
     void toggleReaction(const QString &, const QString &, const QString &) override {}
     void sendTyping(const QString &, bool, int) override {}
     QStringList profileFetches;
@@ -166,6 +171,7 @@ private Q_SLOTS:
     void retrySendIgnoresNonFailedRows();
     void cancelSendRoutesSendingAndFailedRowsOnly();
     void cancelSendNeverRemovesTheRowItself();
+    void aCancelTooLateOffersDeleteForEveryoneAndRedactsNothing();
     void uploadProgressIsMinusOneUntilTheSdkReportsATotal();
     void loggedOutClearsModel();
     void stableRoleData();
@@ -761,6 +767,50 @@ void TimelineModelDiffTest::cancelSendNeverRemovesTheRowItself()
     QCOMPARE(m_model->data(m_model->index(before - 1),
                            TimelineModel::StatusRole).toInt(),
              static_cast<int>(TimelineEvent::Sending));
+}
+
+void TimelineModelDiffTest::aCancelTooLateOffersDeleteForEveryoneAndRedactsNothing()
+{
+    TimelineEvent sending = makeEvent(QString(), QStringLiteral("oops"),
+                                      TimelineEvent::Sending);
+    sending.transactionId = QStringLiteral("txn-late");
+    m_client->mirror.append(sending);
+    Q_EMIT m_client->eventAppended(kRoom, sending);
+    const int row = m_model->rowCount() - 1;
+    m_model->cancelSend(row);
+
+    Q_EMIT m_client->sendCancelTooLate(kRoom, QStringLiteral("txn-other"),
+                                       QStringLiteral("$e1"));
+    QVERIFY2(!m_model->data(m_model->index(1),
+                            TimelineModel::TooLateToCancelRole).toBool(),
+             "a too-late answer to a cancel this model never asked for marked a row");
+
+    QSignalSpy changed(m_model, &QAbstractItemModel::dataChanged);
+    TimelineEvent sent = makeEvent(QStringLiteral("$late"), QStringLiteral("oops"));
+    m_client->mirror[row] = sent;
+    Q_EMIT m_client->eventChangedAt(kRoom, row, sent);
+    Q_EMIT m_client->sendCancelTooLate(kRoom, QStringLiteral("txn-late"),
+                                       QStringLiteral("$late"));
+    QVERIFY(m_model->data(m_model->index(row),
+                          TimelineModel::TooLateToCancelRole).toBool());
+    bool announced = false;
+    for (const QList<QVariant> &args : changed) {
+        const auto roles = args.at(2).value<QList<int>>();
+        announced = announced
+            || (args.at(0).toModelIndex().row() == row
+                && roles.contains(TimelineModel::TooLateToCancelRole));
+    }
+    QVERIFY2(announced, "the row was marked without telling the view");
+    QVERIFY2(m_client->redacted.isEmpty(),
+             "a cancel that came too late deleted the message by itself");
+    QVERIFY(m_model->roleNames().value(TimelineModel::TooLateToCancelRole)
+            == QByteArrayLiteral("tooLateToCancel"));
+
+    m_model->setRoomId(QStringLiteral("!elsewhere:example.org"));
+    m_model->setRoomId(kRoom);
+    QVERIFY2(!m_model->data(m_model->index(row),
+                            TimelineModel::TooLateToCancelRole).toBool(),
+             "the offer outlived leaving the room");
 }
 
 void TimelineModelDiffTest::uploadProgressIsMinusOneUntilTheSdkReportsATotal()
