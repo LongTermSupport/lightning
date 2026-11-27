@@ -28,6 +28,7 @@
 #include "auth/AccountManager.h"
 #include "models/AccountActivityModel.h"
 #include "models/AccountListModel.h"
+#include "storage/SecretStore.h"
 #include "support/LabsQmlFixture.h"
 
 namespace {
@@ -81,6 +82,52 @@ QStringList userIdsOf(const QVariantList &rows)
     for (const QVariant &row : rows)
         ids << row.toMap().value(QStringLiteral("userId")).toString();
     return ids;
+}
+
+class PlainSecretStore final : public SecretStore
+{
+public:
+    explicit PlainSecretStore(QObject *parent) : SecretStore(parent) {}
+    bool isSecure() const override { return true; }
+    bool isAvailable() const override { return true; }
+    QString backendName() const override { return QStringLiteral("test"); }
+    bool storeSecret(const QString &userId, const QString &key, const QString &value) override
+    {
+        m_values.insert(userId + QLatin1Char('/') + key, value);
+        return true;
+    }
+    QString readSecret(const QString &userId, const QString &key) const override
+    {
+        return m_values.value(userId + QLatin1Char('/') + key);
+    }
+    bool deleteSecret(const QString &userId, const QString &key) override
+    {
+        m_values.remove(userId + QLatin1Char('/') + key);
+        return true;
+    }
+    bool clearAccountSecrets(const QString &userId) override
+    {
+        const QString prefix = userId + QLatin1Char('/');
+        for (auto it = m_values.begin(); it != m_values.end();) {
+            if (it.key().startsWith(prefix))
+                it = m_values.erase(it);
+            else
+                ++it;
+        }
+        return true;
+    }
+    QString lastError() const override { return {}; }
+
+private:
+    QHash<QString, QString> m_values;
+};
+
+QStringList g_feedWarnings;
+
+void collectFeedWarning(QtMsgType type, const QMessageLogContext &, const QString &message)
+{
+    if (type == QtWarningMsg || type == QtCriticalMsg)
+        g_feedWarnings << message;
 }
 
 const char *kSurfaces = R"QML(
@@ -499,6 +546,106 @@ Item {
         QVERIFY(scene->property("activityIsNull").toBool());
     }
 
+    void aPendingFeedRefreshDoesNotRunInAContextThatIsGone()
+    {
+        QQmlEngine engine;
+        QQmlComponent c(&engine);
+        c.setData(QByteArray(R"QML(
+import QtQuick
+import MatrixClient
+Item {
+    id: scene
+    property int reads: 0
+    QtObject {
+        id: fakeModel
+        signal summaryChanged(string userId)
+        signal liveStateChanged(string userId)
+        function activityFor(uid) { scene.reads++; return ({}) }
+    }
+    Loader {
+        id: host
+        sourceComponent: Component {
+            AccountActivityFeed { source: fakeModel; userIds: ["@a:x"] }
+        }
+    }
+    function addAccountAndUnload() {
+        host.item.userIds = ["@a:x", "@b:x"]
+        host.active = false
+    }
+}
+)QML"), QUrl(QStringLiteral("gonecontextfeed.qml")));
+        QScopedPointer<QObject> scene(c.create());
+        QVERIFY2(scene, qPrintable(c.errorString()));
+        QTest::qWait(0);
+        QCoreApplication::processEvents();
+        const int reads = scene->property("reads").toInt();
+        QVERIFY(reads > 0);
+
+        g_feedWarnings.clear();
+        const QtMessageHandler previous = qInstallMessageHandler(collectFeedWarning);
+        QMetaObject::invokeMethod(scene.data(), "addAccountAndUnload");
+        QTest::qWait(50);
+        QCoreApplication::processEvents();
+        qInstallMessageHandler(previous);
+
+        QVERIFY2(g_feedWarnings.isEmpty(), qPrintable(g_feedWarnings.join(QLatin1Char('\n'))));
+        QCOMPARE(scene->property("reads").toInt(), reads);
+    }
+
+    void withLiveAccountsOnEveryCardIsBuiltWhenTheMenuOpens()
+    {
+        lightning::accounts::setRustBridgeApiForTest(&m_bridge);
+        labsqml::setHiddenSwitch(true);
+        QSettings().clear();
+        SettingsManager().setLabsConcurrentAccounts(true);
+        auto *controller = new AppController(AppController::MockBackend);
+        QVERIFY(controller->liveAccountsActive());
+        controller->settings()->setSecretStore(new PlainSecretStore(controller));
+        controller->settings()->saveSession(QStringLiteral("https://hs1.example"), kAlice,
+                                            QStringLiteral("DEV1"),
+                                            QStringLiteral("fixture-token-1"));
+        controller->settings()->saveSession(QStringLiteral("https://hs2.example"), kBob,
+                                            QStringLiteral("DEV2"),
+                                            QStringLiteral("fixture-token-2"));
+        controller->switchToAccount(kAlice);
+        QTRY_VERIFY(!controller->accountSwitching());
+
+        auto s = makeSurfaces(controller);
+        QVERIFY(s);
+        auto *menu = s->find(QStringLiteral("menu"));
+        QVERIFY(menu);
+        const auto describe = [&s, menu, controller](const char *when) {
+            QStringList rows;
+            for (const QVariant &row : controller->accountList()->rowsSnapshot()) {
+                const QVariantMap m = row.toMap();
+                rows << QStringLiteral("%1 active=%2 needsSignIn=%3 live=%4")
+                            .arg(m.value(QStringLiteral("userId")).toString())
+                            .arg(int(m.value(QStringLiteral("isActive")).toBool()))
+                            .arg(int(m.value(QStringLiteral("needsSignIn")).toBool()))
+                            .arg(m.value(QStringLiteral("liveState")).toInt());
+            }
+            QQuickItem *list = s->menuList();
+            return QStringLiteral("%1: model=[%2] labsRows=%3 shown=%4 held=%5 "
+                                  "count=%6 height=%7 alice=%8 bob=%9")
+                .arg(QLatin1String(when), rows.join(QStringLiteral("; ")),
+                     userIdsOf(toList(menu->property("labsRows"))).join(QLatin1Char(',')),
+                     userIdsOf(toList(menu->property("sortedAccounts"))).join(QLatin1Char(',')),
+                     menu->property("_labsRowsHeld").toString(),
+                     list ? list->property("count").toString() : QStringLiteral("-"),
+                     list ? QString::number(list->height()) : QStringLiteral("-"))
+                .arg(int(s->card(kAlice) != nullptr))
+                .arg(int(s->card(kBob) != nullptr));
+        };
+        for (int round = 0; round < 2; ++round) {
+            QMetaObject::invokeMethod(s->root, "openMenu");
+            QTRY_VERIFY(menu->property("opened").toBool());
+            QTRY_VERIFY(s->card(kAlice) != nullptr);
+            QVERIFY2(s->card(kBob), qPrintable(describe("opened")));
+            QMetaObject::invokeMethod(menu, "close");
+            QTRY_VERIFY(!menu->property("visible").toBool());
+        }
+    }
+
     void theRowBadgeSitsInsideItsRowClearOfTheText()
     {
         QQmlEngine engine;
@@ -898,6 +1045,40 @@ Window {
         }
         QMetaObject::invokeMethod(menu, "close");
         QTRY_VERIFY(!menu->property("visible").toBool());
+    }
+
+    void aProfileChangeWithTheSwitcherOpenKeepsItsEntries()
+    {
+        lightning::accounts::setRustBridgeApiForTest(&m_bridge);
+        auto *controller = labsqml::makeController(true, { kAlice, kBob, kCarol });
+        controller->switchToAccount(kAlice);
+        QTRY_VERIFY(!controller->accountSwitching());
+        controller->settings()->setLabsConcurrentAccounts(true);
+        QTRY_VERIFY(controller->liveAccountsActive());
+        auto s = makeSurfaces(controller);
+        QVERIFY(s);
+
+        auto *entry = switchEntry(*s, kBob);
+        QVERIFY(entry);
+        auto *switcher = s->find(QStringLiteral("switcher"));
+        auto *list = switcher->findChild<QQuickItem *>(
+            QStringLiteral("quickSwitcherCommandList"));
+        QVERIFY(list);
+        list->setProperty("currentIndex", 0);
+        const QPointer<QQuickItem> before = entry;
+        QQmlExpression label(qmlContext(entry), entry, QStringLiteral("model.label"));
+        QVERIFY(!label.evaluate().toString().contains(QStringLiteral("Robert")));
+
+        controller->settings()->updateAccountProfile(kBob, QStringLiteral("Robert"), QString());
+        QTRY_VERIFY(label.evaluate().toString().contains(QStringLiteral("Robert")));
+        QQuickItem *after = nullptr;
+        QMetaObject::invokeMethod(list, "itemAtIndex", Q_RETURN_ARG(QQuickItem *, after),
+                                  Q_ARG(int, 0));
+        QVERIFY2(before && after == before.data(),
+                 "a profile change rebuilt the open switcher's entries");
+        QCOMPARE(list->property("currentIndex").toInt(), 0);
+        QMetaObject::invokeMethod(switcher, "close");
+        QTRY_VERIFY(!switcher->property("visible").toBool());
     }
 
     void badgeColoursMeetWcagOnEveryPalette()

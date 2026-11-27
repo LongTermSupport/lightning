@@ -8,6 +8,7 @@
 #include <QtTest/QtTest>
 
 #include <QFile>
+#include <QPointer>
 #include <QFontDatabase>
 #include <QGuiApplication>
 #include <QStyleHints>
@@ -23,6 +24,7 @@
 #include <cmath>
 
 #include "app/AppController.h"
+#include "accounts/RustBridgeApi.h"
 #include "app/SettingsManager.h"
 #include "auth/AccountManager.h"
 #include "auth/AuthManager.h"
@@ -225,9 +227,10 @@ private slots:
         // Controls derive hoverEnabled from this hint, which offscreen may
         // leave off; without hover a hover-revealed control cannot be tested.
         QGuiApplication::styleHints()->setUseHoverEffects(true);
-        m_controller = new AppController(AppController::MockBackend);
-        auto *secrets = new FakeSecretStore(m_controller);
-        m_controller->settings()->setSecretStore(secrets);
+        m_controller = new AppController(
+            AppController::MockBackend, false, [](QObject *parent) {
+                return std::make_unique<FakeSecretStore>(parent);
+            });
         m_controller->settings()->saveSession(
             QStringLiteral("https://one.example"), kAlice,
             QStringLiteral("ALICEDEV"), QStringLiteral("alice-token-fixture"));
@@ -1603,6 +1606,66 @@ Item {
         auto *menu = find(QStringLiteral("menu"));
         QMetaObject::invokeMethod(menu, "close");
         QTRY_VERIFY(!menu->property("opened").toBool());
+    }
+    // A row's data changing while the switcher is open (a profile, a sign-in
+    // probe, keep-running) must update the row in place: rebuilding it drops
+    // the hover that reveals the X and the keyboard focus. Both list sources.
+    void aRowChangeWhileOpenKeepsTheHoveredAndFocusedCard()
+    {
+        const bool liveAvailable =
+            lightning::accounts::rustBridgeApi().available();
+        for (const bool live : { true, false }) {
+            m_controller->settings()->setLabsConcurrentAccounts(live);
+            QTRY_COMPARE(m_controller->liveAccountsActive(), live && liveAvailable);
+            m_controller->switchToAccount(kAlice);
+            QTRY_VERIFY(!m_controller->accountSwitching());
+            openMenu();
+            const QPointer<QQuickItem> bobCard =
+                qobject_cast<QQuickItem *>(findCard(kBob));
+            const QPointer<QQuickItem> aliceCard =
+                qobject_cast<QQuickItem *>(findCard(kAlice));
+            QVERIFY(bobCard && aliceCard);
+            auto *x = bobCard->findChild<QQuickItem *>(
+                QStringLiteral("identityCardRemoveButton"));
+            QVERIFY(x);
+            QTest::mouseMove(m_window, bobCard->mapToScene(QPointF(
+                bobCard->width() * 0.3, bobCard->height() * 0.5)).toPoint());
+            QTRY_VERIFY2(!qFuzzyIsNull(x->opacity()),
+                         "hovering the card must reveal the X");
+
+            const QString renamed = live ? QStringLiteral("Bob Live")
+                                         : QStringLiteral("Bob Plain");
+            m_controller->accounts()->updateProfile(kBob, renamed, QString());
+            QTRY_COMPARE(findCard(kBob) ? findCard(kBob)->property("displayName")
+                                              .toString()
+                                        : QString(),
+                         renamed);
+            QTest::qWait(50);
+            QVERIFY2(bobCard && findCard(kBob) == bobCard.data(),
+                     "a profile change rebuilt the hovered row");
+            QVERIFY2(!qFuzzyIsNull(x->opacity()) && x->isEnabled(),
+                     "a profile change hid the X under the pointer");
+
+            aliceCard->forceActiveFocus(Qt::TabFocusReason);
+            QTRY_VERIFY(aliceCard->property("focusWithin").toBool());
+            m_controller->accounts()->updateProfile(kBob, QString(), QString());
+            QTRY_COMPARE(findCard(kBob) ? findCard(kBob)->property("displayName")
+                                              .toString()
+                                        : QStringLiteral("-"),
+                         QString());
+            QTest::qWait(50);
+            QVERIFY2(aliceCard && findCard(kAlice) == aliceCard.data(),
+                     "a profile change rebuilt the focused row");
+            QVERIFY2(aliceCard->property("focusWithin").toBool(),
+                     "a profile change took keyboard focus off the row");
+
+            QTest::mouseMove(m_window, QPoint(1, 1));
+            auto *menu = find(QStringLiteral("menu"));
+            QMetaObject::invokeMethod(menu, "close");
+            QTRY_VERIFY(!menu->property("opened").toBool());
+        }
+        m_controller->settings()->setLabsConcurrentAccounts(true);
+        QTRY_COMPARE(m_controller->liveAccountsActive(), liveAvailable);
     }
 };
 

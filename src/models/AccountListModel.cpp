@@ -134,7 +134,7 @@ QVector<AccountListModel::Row> AccountListModel::buildRows() const
         row.needsSignIn = row.sessionRevoked
             || (m_hasRevocationProof && m_hasRevocationProof(uid))
             || row.liveState == AccountActivityModel::NeedsSignIn
-            || m_lostSignIn.value(uid, false);
+            || (!row.isActive && m_lostSignIn.value(uid, false));
         row.keepRunning = m_settings->keepRunningFor(uid);
         row.lastLiveAt = m_settings->lastLiveAtFor(uid);
         row.running = row.isActive || row.liveState == AccountActivityModel::Starting
@@ -157,6 +157,8 @@ QVector<AccountListModel::Row> AccountListModel::buildRows() const
 
 void AccountListModel::refresh()
 {
+    if (m_settings)
+        m_lostSignIn.remove(m_settings->activeAccountUserId());
     QVector<Row> next = buildRows();
     if (next == m_rows) {
         requestProbes();
@@ -189,6 +191,14 @@ void AccountListModel::setSignInProbe(SignInProbe probe)
     requestProbes();
 }
 
+void AccountListModel::setSignInProbesAllowed(bool allowed)
+{
+    if (m_probesAllowed == allowed)
+        return;
+    m_probesAllowed = allowed;
+    requestProbes();
+}
+
 void AccountListModel::forgetProbes()
 {
     ++m_probeGeneration;
@@ -198,7 +208,7 @@ void AccountListModel::forgetProbes()
 
 void AccountListModel::requestProbes()
 {
-    if (!m_signInProbe)
+    if (!m_signInProbe || !m_probesAllowed)
         return;
     QStringList ask;
     for (const Row &row : std::as_const(m_rows)) {
@@ -217,7 +227,8 @@ void AccountListModel::requestProbes()
             if (!self || generation != self->m_probeGeneration)
                 return;
             self->m_probing.remove(uid);
-            self->m_lostSignIn.insert(uid, lost);
+            if (!self->m_settings || self->m_settings->activeAccountUserId() != uid)
+                self->m_lostSignIn.insert(uid, lost);
             self->refresh();
         });
     }

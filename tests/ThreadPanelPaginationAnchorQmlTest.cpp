@@ -1,4 +1,10 @@
+#include <chrono>
+#include <condition_variable>
+#include <cstdio>
+#include <cstdlib>
 #include <functional>
+#include <mutex>
+#include <thread>
 #include <QMetaProperty>
 #include <QtTest/QtTest>
 
@@ -923,6 +929,150 @@ private Q_SLOTS:
             return;
         QTRY_VERIFY_WITH_TIMEOUT(following() && distanceFromEnd() <= 8.5,
                                  kSignalTimeoutMs);
+    }
+
+    void aFollowedThreadWhoseRowsGrowAfterCreationStaysPut()
+    {
+        // A runaway may never return to the event loop; abort instead of hanging.
+        std::mutex lock;
+        std::condition_variable finished;
+        bool done = false;
+        std::thread watchdog([&] {
+            std::unique_lock<std::mutex> guard(lock);
+            if (!finished.wait_for(guard, std::chrono::seconds(90), [&] { return done; })) {
+                std::fprintf(stderr, "thread panel runaway: the case did not finish\n");
+                std::abort();
+            }
+        });
+        const auto stopWatchdog = qScopeGuard([&] {
+            {
+                std::lock_guard<std::mutex> guard(lock);
+                done = true;
+            }
+            finished.notify_all();
+            watchdog.join();
+        });
+
+        AppController controller(AppController::MockBackend);
+        QVERIFY(login(controller));
+        auto *mock = controller.findChild<MockMatrixClient *>();
+        QVERIFY(mock != nullptr);
+        const QString rootA = firstThreadRootId(*mock, kGeneral);
+        QVERIFY(!rootA.isEmpty());
+        const auto roomEvents = mock->timeline(kGeneral);
+        QVERIFY(roomEvents.size() >= 2);
+        const QString rootB = roomEvents.at(roomEvents.size() - 2).eventId;
+        QVERIFY(!rootB.isEmpty() && rootB != rootA);
+        const QString timelineB = MatrixClient::threadTimelineId(kGeneral, rootB);
+
+        // Image rows are built one pixel wide and grow once laid out.
+        const auto row = [&rootB](int i) {
+            TimelineEvent e;
+            e.threadRootId = rootB;
+            e.sender = i % 2 ? QStringLiteral("@bob:mock.local")
+                             : QStringLiteral("@carol:mock.local");
+            e.senderDisplayName = i % 2 ? QStringLiteral("Bob")
+                                        : QStringLiteral("Carol");
+            e.timestamp = QDateTime::currentDateTimeUtc().addSecs(-(860 - i * 20));
+            e.type = TimelineEvent::TextMessage;
+            e.status = TimelineEvent::Sent;
+            const auto image = [&e, i](int w, int h) {
+                e.type = TimelineEvent::Image;
+                e.body = QStringLiteral("img%1.png").arg(i);
+                e.mediaMxcUrl = QStringLiteral("mxc://mock.local/i%1").arg(i);
+                e.mediaMimetype = QStringLiteral("image/png");
+                e.mediaWidth = w;
+                e.mediaHeight = h;
+            };
+            switch (i) {
+            case 0: image(1452, 2698); break;
+            case 1: e.body = QStringLiteral("reply 1008 xxxxxxxxxxxxxxxxxxxxx"); break;
+            case 2: image(867, 2637); break;
+            case 3: image(2670, 1188); break;
+            case 4: image(1831, 2098); break;
+            case 5: e.body = QStringLiteral("reply 1012 xxxxxxxxxxx"); break;
+            case 6: e.body = QStringLiteral("reply 1013 xxxxxxxxxxxxxxxxxxx"); break;
+            case 7:
+                e.type = TimelineEvent::StateChange;
+                e.stateKind = QStringLiteral("member");
+                e.stateSentence = QStringLiteral("Someone joined");
+                break;
+            case 8:
+                e.body = QStringLiteral("re 1015");
+                e.replyToEventId = QStringLiteral("$mock-1:mock.local");
+                e.replyToSender = QStringLiteral("Alice");
+                e.replyToPreview = QStringLiteral("earlier message ").repeated(5);
+                break;
+            default: e.body = QStringLiteral("reply 1016 xxxxxxxxxxxx"); break;
+            }
+            return e;
+        };
+        QList<TimelineEvent> rows;
+        for (int i = 0; i < 10; ++i)
+            rows.append(row(i));
+
+        QQmlApplicationEngine engine;
+        engine.rootContext()->setContextProperty("app", &controller);
+        QSignalSpy createdSpy(&engine, &QQmlApplicationEngine::objectCreated);
+        engine.loadFromModule(QStringLiteral("MatrixClient"),
+                              QStringLiteral("ThreadPanel"));
+        if (createdSpy.isEmpty())
+            QVERIFY(createdSpy.wait(kSignalTimeoutMs));
+        auto *root = qobject_cast<QQuickItem *>(
+            createdSpy.at(0).at(0).value<QObject *>());
+        QVERIFY(root != nullptr);
+        QQuickWindow window;
+        window.resize(420, 760);
+        root->setParentItem(window.contentItem());
+        root->setSize(QSizeF(window.width(), window.height()));
+        window.show();
+        auto *replyList = root->findChild<QQuickItem *>(
+            QStringLiteral("threadReplyList"));
+        QVERIFY(replyList != nullptr);
+
+        controller.thread()->openThread(kGeneral, rootA);
+        QTRY_COMPARE_WITH_TIMEOUT(controller.thread()->state(),
+                                  ThreadController::Ready, kSignalTimeoutMs);
+        QTest::qWait(500);
+        controller.thread()->close();
+        controller.thread()->openThread(kGeneral, rootB);
+        mock->resetTimelineForTest(timelineB, {}, 0);
+        QTRY_COMPARE_WITH_TIMEOUT(controller.thread()->state(),
+                                  ThreadController::Ready, kSignalTimeoutMs);
+        QCOMPARE(controller.thread()->model()->rowCount(), 0);
+        QTest::qWait(500);
+        mock->resetTimelineForTest(timelineB, rows.mid(0, 3), 0);
+        QTest::qWait(250);
+        mock->resetTimelineForTest(timelineB, rows, 0);
+        QTRY_COMPARE_WITH_TIMEOUT(replyList->property("count").toInt(), 10,
+                                  kSignalTimeoutMs);
+        QTest::qWait(800);
+
+        const auto y = [replyList] { return replyList->property("contentY").toReal(); };
+        const qreal first = y();
+        qreal lowest = first;
+        qreal highest = first;
+        for (int i = 0; i < 30; ++i) {
+            QTest::qWait(50);
+            const qreal now = y();
+            lowest = qMin(lowest, now);
+            highest = qMax(highest, now);
+            const qreal origin = replyList->property("originY").toReal();
+            const qreal content = replyList->property("contentHeight").toReal();
+            QVERIFY2(now >= origin - replyList->height() && now <= origin + content,
+                     qPrintable(QStringLiteral("the view left its content: contentY %1, "
+                                               "origin %2, content height %3")
+                                    .arg(now).arg(origin).arg(content)));
+        }
+        QVERIFY2(highest - lowest < 2,
+                 qPrintable(QStringLiteral("a followed thread kept moving by itself: "
+                                           "contentY %1 to %2 in 1.5 s")
+                                .arg(lowest).arg(highest)));
+        QVERIFY(replyList->property("followLatest").toBool());
+        QVariant atEnd;
+        QVERIFY(QMetaObject::invokeMethod(replyList, "atBottomEdge",
+                                          Q_RETURN_ARG(QVariant, atEnd)));
+        QVERIFY2(atEnd.toBool(), "a followed thread did not rest on its newest reply");
     }
 
     void theReplyBannerDoesNotHideTheNewestReply()

@@ -3,8 +3,8 @@
 //
 // T-OFF-1: no SessionPool, host, worker or model exists, the Rust bridge is
 // never asked anything (not even available()), and app.accountActivity /
-// app.accountList are null, for every way the flag can be "off": the shipped
-// default (Labs offered in Settings, the switch off), the setting stored true
+// app.accountList are null, for every way the flag can be "off": the switch
+// turned off in Settings (on is the default), the setting stored true
 // with LIGHTNING_LABS_LIVE_ACCOUNTS forcing Labs off (a test override), and
 // the switch on with the bridge unavailable.
 // T-OFF-2: an account switch emits the same signals, in the same order, on
@@ -173,6 +173,8 @@ private Q_SLOTS:
     {
         QSettings settings;
         settings.clear();
+        // Live accounts are on by default; "off" here is the switch turned off.
+        settings.setValue(QStringLiteral("labs/concurrentAccounts"), false);
         settings.sync();
         qunsetenv("LIGHTNING_LABS_LIVE_ACCOUNTS");
     }
@@ -219,7 +221,7 @@ private Q_SLOTS:
         QTest::addColumn<bool>("bridgeAvailable");
         QTest::addColumn<bool>("bridgeAsked");
         QTest::newRow("stored true, forced off") << false << true << true << false;
-        QTest::newRow("the default: offered, switch off") << true << false << true << false;
+        QTest::newRow("offered, switched off") << true << false << true << false;
         QTest::newRow("switch on, bridge unavailable") << true << true << false << true;
         QTest::newRow("forced off, switch off") << false << false << true << false;
     }
@@ -289,11 +291,12 @@ private Q_SLOTS:
         };
         const Shape shapes[] = {
             { "stored true, forced off", false, true, true },
-            { "the default: offered, switch off", true, false, true },
+            { "offered, switched off", true, false, true },
             { "switch on, bridge unavailable", true, true, false },
         };
         for (const Shape &shape : shapes) {
             QSettings().clear();
+            QSettings().setValue(QStringLiteral("labs/concurrentAccounts"), false);
             labstest::ScriptedLabsBridge bridge;
             bridge.setAvailable(shape.bridgeAvailable);
             labstest::BridgeScope scope(&bridge);

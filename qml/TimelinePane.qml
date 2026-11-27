@@ -2601,11 +2601,16 @@ Rectangle {
                 }
 
                 property bool stickToBottom: true
+                onStickToBottomChanged: if (stickToBottom) wheelLeftNewest = false
+                property bool wheelLeftNewest: false
 
                 readonly property real bottomFollowSlack: 8
                 function atBottomEdge() {
                     if (rowWindowSkip > 0)
                         return false
+                    // A wheel step up that stops inside the slack has still left the newest row.
+                    if (wheelLeftNewest)
+                        return atYBeginning || contentY <= wheelMinY() + 0.5
                     return atYBeginning
                            || contentY <= wheelMinY() + bottomFollowSlack
                 }
@@ -3360,6 +3365,7 @@ Rectangle {
                 property int resetEpoch: 0
                 function noteReaderTookControl() {
                     readerControlledSinceReset = true
+                    wheelLeftNewest = false
                     ++navigationEpoch
                     releaseRestoreHold()
                     if (app.pagination)
@@ -4528,6 +4534,7 @@ Rectangle {
                         var towardsOlder = event.pixelDelta.y !== 0
                                 ? event.pixelDelta.y > 0
                                 : event.angleDelta.y > 0
+                        timeline.wheelLeftNewest = towardsOlder
                         if (!towardsOlder && timeline.nearWindowNewEdge())
                             timeline.extendRowWindowAtNewEnd()
                         var canMove = timeline.wheelCanMove(towardsOlder)
@@ -4970,6 +4977,7 @@ Rectangle {
                         timeline.navigationPendingId = ""
                         navigationLandingTimer.stop()
                         timeline.readerControlledSinceReset = false
+                        timeline.wheelLeftNewest = false
                         timeline.presentationReady = false
                         timeline.presentationResetPending = true
                         timeline.presentationGeometryStale =

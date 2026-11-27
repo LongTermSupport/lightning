@@ -126,21 +126,19 @@ private Q_SLOTS:
         settings.sync();
     }
 
-    void onlyAStoredTrueTurnsTheSwitchOn()
+    void liveAccountsAreOnUntilTurnedOff()
     {
         SettingsManager s;
-        QCOMPARE(s.labsConcurrentAccounts(), false);
+        QCOMPARE(s.labsConcurrentAccounts(), true);
         QSettings raw;
-        const QList<QVariant> notTrue = { QStringLiteral("1"), 1, QStringLiteral("yes"),
-                                          QStringLiteral("on"), QStringLiteral("TRUE"),
-                                          QStringLiteral("True"), 2, 1.0, QStringLiteral(" true") };
-        for (const QVariant &v : notTrue) {
-            raw.setValue(QStringLiteral("labs/concurrentAccounts"), v);
-            QVERIFY2(!s.labsConcurrentAccounts(), qPrintable(v.toString()));
-        }
-        raw.setValue(QStringLiteral("labs/concurrentAccounts"), true);
+        QVERIFY(!raw.contains(QStringLiteral("labs/concurrentAccounts")));
+        raw.setValue(QStringLiteral("labs/concurrentAccounts"), QStringLiteral("garbage"));
         QVERIFY(s.labsConcurrentAccounts());
-        raw.setValue(QStringLiteral("labs/concurrentAccounts"), QStringLiteral("true"));
+        raw.setValue(QStringLiteral("labs/concurrentAccounts"), QStringLiteral("false"));
+        QVERIFY(!s.labsConcurrentAccounts());
+        raw.setValue(QStringLiteral("labs/concurrentAccounts"), false);
+        QVERIFY(!s.labsConcurrentAccounts());
+        raw.setValue(QStringLiteral("labs/concurrentAccounts"), true);
         QVERIFY(s.labsConcurrentAccounts());
     }
 
@@ -162,13 +160,13 @@ private Q_SLOTS:
         SettingsManager s;
         QSignalSpy on(&s, &SettingsManager::labsConcurrentAccountsChanged);
         QSignalSpy warm(&s, &SettingsManager::labsConcurrentAccountsWarmSlotChanged);
-        s.setLabsConcurrentAccounts(false);
+        s.setLabsConcurrentAccounts(true);
         QCOMPARE(on.count(), 0);
-        s.setLabsConcurrentAccounts(true);
-        s.setLabsConcurrentAccounts(true);
-        QCOMPARE(on.count(), 1);
-        QVERIFY(s.labsConcurrentAccounts());
         s.setLabsConcurrentAccounts(false);
+        s.setLabsConcurrentAccounts(false);
+        QCOMPARE(on.count(), 1);
+        QVERIFY(!s.labsConcurrentAccounts());
+        s.setLabsConcurrentAccounts(true);
         QCOMPARE(on.count(), 2);
         s.setLabsConcurrentAccountsWarmSlot(true);
         QCOMPARE(warm.count(), 0);
@@ -202,6 +200,7 @@ private Q_SLOTS:
         QVERIFY(!m.applyLocal.contains(QStringLiteral("labsConcurrentAccounts")));
 
         SettingsManager s;
+        s.setLabsConcurrentAccounts(false);
         s.setLabsConcurrentAccounts(true);
         s.setLabsConcurrentAccountsWarmSlot(false);
         Document d;
@@ -499,7 +498,7 @@ private Q_SLOTS:
             s.setActiveAccountUserId(uidN(1));
             s.updateAccountProfile(uidN(1), QStringLiteral("One"), QString());
             s.setRoomNotificationMode(QStringLiteral("!r:x"), 2);
-            QVERIFY(!s.labsConcurrentAccounts());
+            QVERIFY(s.labsConcurrentAccounts());
             QVERIFY(s.labsConcurrentAccountsWarmSlot());
             QVERIFY(!s.keepRunningFor(uidN(1)));
             QVERIFY(s.keepRunningUserIds().isEmpty());

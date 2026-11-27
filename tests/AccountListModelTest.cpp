@@ -336,6 +336,27 @@ private Q_SLOTS:
                                       QStringLiteral("revoked ") + kA }));
     }
 
+    void anInactiveProbeAnswerDoesNotOutliveTheAccountBecomingActive()
+    {
+        saveFive();
+        m_settings->setActiveAccountUserId(kA);
+        makeModel();
+        QHash<QString, std::function<void(bool)>> pending;
+        m_model->setSignInProbe([&](const QString &uid, std::function<void(bool)> done) {
+            pending.insert(uid, std::move(done));
+        });
+        pending.take(kB)(true);
+        pending.take(kD)(true);
+        QVERIFY(rowFor(m_model->rowsSnapshot(), kB).value("needsSignIn").toBool());
+        m_settings->setActiveAccountUserId(kB);
+        m_model->refresh();
+        QVERIFY(!rowFor(m_model->rowsSnapshot(), kB).value("needsSignIn").toBool());
+        QVERIFY(rowFor(m_model->rowsSnapshot(), kD).value("needsSignIn").toBool());
+        m_settings->setActiveAccountUserId(kA);
+        m_model->refresh();
+        QVERIFY(!rowFor(m_model->rowsSnapshot(), kB).value("needsSignIn").toBool());
+    }
+
     void todaysAccountRowsIgnoreTheLabsKeys()
     {
         saveFive();

@@ -76,9 +76,14 @@ QtObject {
 
     // Deferred: a change handler on a bound property can run inside another
     // binding's evaluation (the HomePane binding loop, §16), so the write
-    // happens on the next turn of the event loop instead.
-    onSourceChanged: Qt.callLater(feed.refreshAll)
-    onUserIdsChanged: Qt.callLater(feed.refreshAll)
+    // happens on the next turn of the event loop instead. A Timer, not
+    // Qt.callLater: that call still runs once the feed's context is gone.
+    readonly property Timer _refreshLater: Timer {
+        interval: 0
+        onTriggered: feed.refreshAll()
+    }
+    onSourceChanged: feed._refreshLater.restart()
+    onUserIdsChanged: feed._refreshLater.restart()
     Component.onCompleted: feed.refreshAll()
 
     readonly property Connections _watch: Connections {

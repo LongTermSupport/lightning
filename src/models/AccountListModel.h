@@ -60,6 +60,8 @@ public:
     using SignInProbe =
         std::function<void(const QString &uid, std::function<void(bool lost)> done)>;
     void setSignInProbe(SignInProbe probe);
+    // Probes wait for the active account's keyring read: on a locked keyring each would prompt.
+    void setSignInProbesAllowed(bool allowed);
 
 Q_SIGNALS:
     void rowsChanged();
@@ -97,6 +99,7 @@ private:
     QString m_filter;
     QVector<Row> m_rows;
     SignInProbe m_signInProbe;
+    bool m_probesAllowed = true;
     QHash<QString, bool> m_lostSignIn;
     QSet<QString> m_probing;
     quint64 m_probeGeneration = 0;

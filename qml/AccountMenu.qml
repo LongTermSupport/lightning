@@ -58,27 +58,47 @@ Popup {
     }
 
     property var labsRows: null
-    // A host starting, running or pausing also signals rowsChanged (its
-    // liveState and section move). While the popover is open that change is
-    // held, so it does not rebuild every delegate under the pointer (badges
-    // follow the feed anyway); it is applied on close. Any other change
-    // (an account added or removed, isActive, keepRunning, a profile) is
-    // applied at once.
-    property bool _labsRowsHeld: false
     function refreshLabsRows() {
-        const next = app.accountList ? app.accountList.rowsSnapshot() : null
-        if (root.opened && root.activityFeed
-                && root.activityFeed.sameAccountsIgnoringLiveState(root.labsRows,
-                                                                   next)) {
-            root._labsRowsHeld = true
-            return
+        root.labsRows = app.accountList ? app.accountList.rowsSnapshot() : null
+        root.syncRowIds(false)
+    }
+    // Keyed by user id so a row's data changes in place: reassigning a JS array model
+    // rebuilds every card, dropping hover and focus. While open the order is held too.
+    property var rowIds: []
+    readonly property var rowsById: {
+        const byId = {}
+        const list = root.sortedAccounts
+        for (let i = 0; i < list.length; i++)
+            byId[list[i].userId || ""] = list[i]
+        return byId
+    }
+    function syncRowIds(force) {
+        const next = root.sortedAccounts.map(a => a.userId || "")
+        const cur = root.rowIds
+        if (next.length === cur.length) {
+            let sameOrder = true
+            const held = {}
+            for (let i = 0; i < cur.length; i++) {
+                held[cur[i]] = true
+                if (cur[i] !== next[i])
+                    sameOrder = false
+            }
+            if (sameOrder)
+                return
+            if (!force && root.visible && next.every(u => held[u] === true))
+                return
         }
-        root._labsRowsHeld = false
-        root.labsRows = next
+        root.rowIds = next
+        cardList.forceLayout()
     }
     Component.onCompleted: root.refreshLabsRows()
-    onAboutToShow: cardList.positionViewAtBeginning()
-    onClosed: if (root._labsRowsHeld) root.refreshLabsRows()
+    onAboutToShow: {
+        root.syncRowIds(true)
+        // Rows set while closed are otherwise built a frame after opening.
+        cardList.forceLayout()
+        cardList.positionViewAtBeginning()
+    }
+    onClosed: root.syncRowIds(true)
     Connections {
         target: app
         // The signal only exists in builds that carry Labs.
@@ -88,6 +108,10 @@ Popup {
     Connections {
         target: app.accountList ? app.accountList : null
         function onRowsChanged() { root.refreshLabsRows() }
+    }
+    Connections {
+        target: app.accounts ? app.accounts : null
+        function onAccountsChanged() { root.syncRowIds(false) }
     }
 
     readonly property AccountActivityFeed activityFeed: AccountActivityFeed {
@@ -285,7 +309,7 @@ Popup {
             Layout.fillWidth: true
             clip: true
             spacing: 0
-            model: root.sortedAccounts
+            model: root.rowIds
             // From the count, not contentHeight (0 until delegates exist, and
             // delegates need a nonzero viewport). Rows are exactly `rowH`.
             Layout.preferredHeight: {
@@ -297,6 +321,8 @@ Popup {
                     : Math.round((root.maxVisibleRows + 0.5) * root.rowH)
                 return Math.min(natural, root.listRoom)
             }
+            // At height 0 (before the layout runs) every row but the first is incubated late.
+            height: Layout.preferredHeight
             Keys.onPressed: (event) => {
                 var to = -1
                 var cur = root.focusedRow()
@@ -316,25 +342,26 @@ Popup {
 
             delegate: IdentityCard {
                 id: card
-                required property var modelData
+                required property string modelData
                 required property int index
-                objectName: "identityCard_" + (modelData.userId || "")
+                readonly property var account: root.rowsById[card.modelData] || ({})
+                objectName: "identityCard_" + card.modelData
                 width: cardList.width
                 rowHeight: root.rowH
                 enabled: !app.accountSwitching && !(app.auth && app.auth.logoutPending)
 
-                active: modelData.isActive === true
-                displayName: modelData.displayName || ""
-                userId: modelData.userId || ""
+                active: card.account.isActive === true
+                displayName: card.account.displayName || ""
+                userId: card.modelData
                 // An inactive account's picture must not be fetched through the active session.
-                avatarMxc: modelData.isActive === true ? (modelData.avatarUrl || "") : ""
-                needsSignIn: modelData.needsSignIn === true
-                             || modelData.sessionRevoked === true
-                healthWarning: modelData.isActive === true
+                avatarMxc: card.account.isActive === true ? (card.account.avatarUrl || "") : ""
+                needsSignIn: card.account.needsSignIn === true
+                             || card.account.sessionRevoked === true
+                healthWarning: card.account.isActive === true
                                && root.activeHealthWarning
 
                 readonly property var activity:
-                    root.activityFeed.entryFor(modelData.userId || "")
+                    root.activityFeed.entryFor(card.modelData)
                 liveState: card.activity.liveState
                 mentionCount: card.activity.mentionCount
                 mentionsLowerBound: card.activity.mentionsLowerBound
@@ -344,14 +371,14 @@ Popup {
                     cardList.positionViewAtIndex(card.index, ListView.Contain)
 
                 onActivated: {
-                    if ((modelData.userId || "")
+                    if (card.modelData
                             === (app.accounts ? app.accounts.activeUserId : ""))
                         return
                     root.close()
-                    app.switchToAccount(modelData.userId)
+                    app.switchToAccount(card.modelData)
                 }
                 onRemoveRequested: {
-                    removeConfirm.targetUserId = modelData.userId
+                    removeConfirm.targetUserId = card.modelData
                     root.close()
                     removeConfirm.open()
                 }
