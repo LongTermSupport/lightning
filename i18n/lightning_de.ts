@@ -1778,7 +1778,7 @@ Deine Verschlüsselungsschlüssel, deine Anmeldung und alle Nachrichten auf dem 
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+610"/>
+        <location filename="../qml/AppTheme.qml" line="+623"/>
         <source>Storm</source>
         <translation>Storm</translation>
     </message>
@@ -3777,8 +3777,8 @@ EXIF-Ausrichtung: %4</translation>
     </message>
     <message>
         <location line="+5"/>
-        <source>Removes your callers&apos; voices from your microphone when you use speakers. Headphones do not need it. It needs the WebRTC audio component and is new: with several people in a call it may cancel only some of them. Both apply to your next call.</source>
-        <translation>Entfernt die Stimmen der anderen Anrufteilnehmer aus deinem Mikrofon, wenn du Lautsprecher verwendest. Mit Kopfhörern ist sie nicht nötig. Sie benötigt die WebRTC-Audiokomponente und ist neu: Bei mehreren Personen in einem Anruf unterdrückt sie möglicherweise nur einige. Beide gelten für deinen nächsten Anruf.</translation>
+        <source>Removes your callers&apos; voices from your microphone when you use speakers. Headphones do not need it. It needs the WebRTC audio component. Both apply to your next call.</source>
+        <translation>Entfernt die Stimmen der anderen Anrufteilnehmer aus deinem Mikrofon, wenn du Lautsprecher verwendest. Mit Kopfhörern ist sie nicht nötig. Sie benötigt die WebRTC-Audiokomponente. Beide gelten für deinen nächsten Anruf.</translation>
     </message>
 </context>
 <context>
@@ -21518,7 +21518,7 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <translation>Space-Übersicht öffnen</translation>
     </message>
     <message>
-        <location line="+99"/>
+        <location line="+104"/>
         <source>Search</source>
         <translation>Suchen</translation>
     </message>
@@ -21621,12 +21621,12 @@ Diese Verknüpfungen bleiben im Raumstatus erhalten. Öffne den Nachfolger über
         <translation>Favoriten</translation>
     </message>
     <message>
-        <location line="-403"/>
+        <location line="-411"/>
         <source>Collapse room list</source>
         <translation>Raumliste einklappen</translation>
     </message>
     <message>
-        <location line="+374"/>
+        <location line="+382"/>
         <source>Archived (%1)</source>
         <translation>Archiviert (%1)</translation>
     </message>
@@ -29129,12 +29129,12 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
     <message>
         <location line="+8"/>
         <location line="+453"/>
-        <location line="+362"/>
+        <location line="+366"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>Verbindung zum Anruf konnte nicht hergestellt werden.</translation>
     </message>
     <message>
-        <location line="-813"/>
+        <location line="-817"/>
         <source>The calling service is having trouble.</source>
         <translation>Der Anrufdienst hat Probleme.</translation>
     </message>
@@ -29282,7 +29282,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
         <translation>Anrufe sind auf diesem Homeserver nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="+371"/>
+        <location line="+375"/>
         <source>The call ended because the connection was lost.</source>
         <translation>Der Anruf wurde beendet, weil die Verbindung verloren ging.</translation>
     </message>
@@ -29489,7 +29489,7 @@ Hinweis: Der Import von Schlüsseln verifiziert diese Sitzung nicht.</translatio
 <context>
     <name>ShortcutRegistry</name>
     <message>
-        <location filename="../src/app/ShortcutRegistry.cpp" line="+360"/>
+        <location filename="../src/app/ShortcutRegistry.cpp" line="+480"/>
         <source>Dialogs</source>
         <translation>Dialoge</translation>
     </message>

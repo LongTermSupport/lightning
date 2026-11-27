@@ -821,13 +821,33 @@ private Q_SLOTS:
         c.model.setFilterMode(3);
         QCOMPARE(c.model.unreadRoomCount(), 0);
         QCOMPARE(c.model.highlightRoomCount(), 0);
-        QVERIFY(!idsOf(c.model).contains(kR1));
+        QVERIFY(idsOf(c.model).contains(kR1));
 
         mode = 1;
         c.model.notificationModeChanged();
         QCOMPARE(c.model.unreadRoomCount(), 1);
         QCOMPARE(c.model.highlightRoomCount(), 1);
         QVERIFY(idsOf(c.model).contains(kR1));
+    }
+
+    void unreadsFilterListsOnlyMutedRoomsThatHaveUnreadMessages()
+    {
+        QList<RoomInfo> rooms = rooms3();
+        rooms[0].unreadCount = 3;
+        rooms[0].hasUnreadMessages = true;
+        rooms[1].unreadCount = 0;
+        rooms[1].hasUnreadMessages = false;
+        rooms[2].unreadCount = 2;
+        rooms[2].hasUnreadMessages = true;
+        Classic c;
+        c.model.setNotificationModeSource([](const QString &id) { return id == kR3 ? 0 : 2; });
+        c.build(false, rooms);
+        c.model.setFilterMode(3);
+        const QStringList ids = idsOf(c.model);
+        QVERIFY(ids.contains(kR1));
+        QVERIFY(!ids.contains(kR2));
+        QVERIFY(ids.contains(kR3));
+        QCOMPARE(c.model.unreadRoomCount(), 1);
     }
 
     void classicUnreadDotSettingDecidesTheDotTheFilterAndTheLocator()

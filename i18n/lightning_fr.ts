@@ -1778,7 +1778,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+610"/>
+        <location filename="../qml/AppTheme.qml" line="+623"/>
         <source>Storm</source>
         <translation>Storm</translation>
     </message>
@@ -3777,8 +3777,8 @@ Orientation EXIF : %4</translation>
     </message>
     <message>
         <location line="+5"/>
-        <source>Removes your callers&apos; voices from your microphone when you use speakers. Headphones do not need it. It needs the WebRTC audio component and is new: with several people in a call it may cancel only some of them. Both apply to your next call.</source>
-        <translation>Supprime les voix de vos interlocuteurs de votre microphone lorsque vous utilisez des haut-parleurs. Un casque n&apos;en a pas besoin. Cela nécessite le composant audio WebRTC et c&apos;est une nouveauté : avec plusieurs personnes dans un appel, il peut n&apos;en annuler que certaines. Les deux options s&apos;appliquent à votre prochain appel.</translation>
+        <source>Removes your callers&apos; voices from your microphone when you use speakers. Headphones do not need it. It needs the WebRTC audio component. Both apply to your next call.</source>
+        <translation>Supprime les voix de vos interlocuteurs de votre microphone lorsque vous utilisez des haut-parleurs. Un casque n&apos;en a pas besoin. Cela nécessite le composant audio WebRTC. Les deux options s&apos;appliquent à votre prochain appel.</translation>
     </message>
 </context>
 <context>
@@ -21518,12 +21518,12 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Ouvrir l&apos;aperçu de l&apos;espace</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+26"/>
         <source>Collapse room list</source>
         <translation>Réduire la liste des salons</translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+78"/>
         <source>Search</source>
         <translation>Rechercher</translation>
     </message>
@@ -29144,12 +29144,12 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
     <message>
         <location line="+8"/>
         <location line="+453"/>
-        <location line="+362"/>
+        <location line="+366"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>Impossible de se connecter à l&apos;appel.</translation>
     </message>
     <message>
-        <location line="-813"/>
+        <location line="-817"/>
         <source>The calling service is having trouble.</source>
         <translation>Le service appelant rencontre des problèmes.</translation>
     </message>
@@ -29272,7 +29272,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>L&apos;appel n&apos;est pas encore prêt.</translation>
     </message>
     <message>
-        <location line="+653"/>
+        <location line="+657"/>
         <source>You can share your screen once the call has reconnected.</source>
         <translation>Vous pourrez partager votre écran une fois l&apos;appel reconnecté.</translation>
     </message>
@@ -29367,7 +29367,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Participant</translation>
     </message>
     <message>
-        <location line="-4620"/>
+        <location line="-4624"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>Cette salle est cryptée et les appels cryptés ne sont pas encore disponibles sur cette version.</translation>
     </message>
@@ -29377,7 +29377,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
         <translation>Je n&apos;ai pas pu vous annoncer lors de l&apos;appel.</translation>
     </message>
     <message>
-        <location line="+524"/>
+        <location line="+528"/>
         <source>The call ended because the connection was lost.</source>
         <translation>L&apos;appel a pris fin car la connexion a été perdue.</translation>
     </message>
@@ -29489,7 +29489,7 @@ Remarque : importer des clés ne vérifie pas cette session.</translation>
 <context>
     <name>ShortcutRegistry</name>
     <message>
-        <location filename="../src/app/ShortcutRegistry.cpp" line="+360"/>
+        <location filename="../src/app/ShortcutRegistry.cpp" line="+480"/>
         <source>Dialogs</source>
         <translation>Boîtes de dialogue</translation>
     </message>

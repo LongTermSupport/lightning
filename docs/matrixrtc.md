@@ -1421,12 +1421,12 @@ Settings -> Sound & video -> Quality / Microphone processing exposes
 `calls/echoCancellation` (default OFF) and `calls/autoGainControl` (default
 ON) -- the values every build ran before. They are read when a chain is built,
 so they apply to the NEXT call; a noise-mode swap copies both off the old
-`webrtcdsp` so it never resets them. With echo cancellation on, each receive
-bin gets `! audioconvert ! audio/x-raw,format=S16LE,rate=48000 !
-webrtcechoprobe` before its sink (`SfuMediaEngine::echoProbeStage`). The
-limit stated above still holds: `webrtcdsp` acquires ONE probe, and every
-received track has its own bin, so in a group call it can cancel only one
-remote speaker. A one-to-one `GstCallMediaBackend` call has no `webrtcdsp`
+`webrtcdsp` so it never resets them. With echo cancellation on, every received
+audio track of the call (all subscriber engines) is copied after its volume
+element into `calls::noise::EchoReference`: one pipeline, one bounded leaky
+`appsrc` per track into an `audiomixer` and the single `webrtcechoprobe` the
+DSP acquires. The publisher pipeline adopts that pipeline's base time so the
+probe's and the DSP's timestamps compare. A one-to-one `GstCallMediaBackend` call has no `webrtcdsp`
 and no video, so neither switch nor any quality choice reaches it. NOT live
 tested; the effect on a real echo needs speakers and a rig.
 

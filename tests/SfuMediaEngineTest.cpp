@@ -9,6 +9,7 @@
 #include "calls/SfuVideoRouter.h"
 #include "calls/WindowCaptureSrc.h"
 #include "calls/noise/DenoiseElement.h"
+#include "calls/noise/EchoReference.h"
 #include "calls/noise/MicProcessing.h"
 
 #include <QElapsedTimer>
@@ -43,6 +44,8 @@
 #endif
 
 #include <atomic>
+#include <cmath>
+#include <numbers>
 #include <cstring>
 #include <cerrno>
 #include <fcntl.h>
@@ -4896,7 +4899,7 @@ true,2147483,
     {
         struct Lane { const char *path; int expected; };
         const QList<Lane> lanes = {
-            { SOURCE_DIR "/src/calls/SfuMediaEngine.cpp", 10 },
+            { SOURCE_DIR "/src/calls/SfuMediaEngine.cpp", 9 },
             { SOURCE_DIR "/src/calls/ShareAudioSources.cpp", 2 },
             { SOURCE_DIR "/src/calls/GstCallMediaBackend.cpp", 6 },
             { SOURCE_DIR "/src/calls/AudioDeviceTester.cpp", 1 },
@@ -4955,8 +4958,8 @@ true,2147483,
         QFile file(QStringLiteral(SOURCE_DIR "/src/calls/SfuMediaEngine.cpp"));
         QVERIFY(file.open(QIODevice::ReadOnly));
         const QString code = QString::fromUtf8(file.readAll());
-        QCOMPARE(code.count(QStringLiteral("queue name=recvqueue")), 2);
-        QCOMPARE(code.count(QStringLiteral("opusdec name=recvdec")), 2);
+        QCOMPARE(code.count(QStringLiteral("queue name=recvqueue")), 1);
+        QCOMPARE(code.count(QStringLiteral("opusdec name=recvdec")), 1);
         QVERIFY(code.contains(QStringLiteral("\"overrun\"")));
         QVERIFY(code.contains(QStringLiteral("GstRTPPacketLost")));
         QVERIFY(code.contains(QStringLiteral("audio receive health stream=")));
@@ -6693,9 +6696,7 @@ true,2147483,
         QCOMPARE(noDsp, calls::noise::voiceProcessingDescription(
                             Mode::Off, false, false, false, true));
 
-        QVERIFY(SfuMediaEngine::echoProbeStage(false, true).isEmpty());
-        QVERIFY(SfuMediaEngine::echoProbeStage(true, false).isEmpty());
-        const QString probe = SfuMediaEngine::echoProbeStage(true, true);
+        const QString probe = calls::noise::EchoReference::probeStage();
         QVERIFY(probe.startsWith(QStringLiteral("! ")));
         QVERIFY(probe.endsWith(QLatin1Char(' ')));
         QVERIFY(probe.contains(QStringLiteral("webrtcechoprobe")));
@@ -6718,6 +6719,142 @@ true,2147483,
         engine.setVoiceProcessing(true, false);
         QVERIFY(engine.echoCancellation());
         QVERIFY(!engine.autoGainControl());
+    }
+
+    void theEchoReferenceCarriesEveryRemoteTrack_data()
+    {
+        QTest::addColumn<bool>("secondFocus");
+        QTest::newRow("one subscriber") << false;
+        QTest::newRow("two SFU connections") << true;
+    }
+
+    void theEchoReferenceCarriesEveryRemoteTrack()
+    {
+        QFETCH(bool, secondFocus);
+        if (!gst_init_check(nullptr, nullptr, nullptr)
+            || !calls::noise::webrtcDspAvailable()
+            || !SfuMediaEngine::echoProbeElementAvailable())
+            QSKIP("webrtcdsp / webrtcechoprobe not available");
+        GstElementFactory *mixer = gst_element_factory_find("audiomixer");
+        if (!mixer)
+            QSKIP("audiomixer not available");
+        gst_object_unref(mixer);
+
+        SfuMediaEngine primary, secondary;
+        secondary.shareEchoReferenceFrom(primary);
+        for (SfuMediaEngine *receiver : {&primary, &secondary}) {
+            receiver->setTestSourceMode(true);
+            receiver->setVoiceProcessing(true, true);
+            receiver->m_subscriber.pipeline = gst_pipeline_new(nullptr);
+            QVERIFY(gst_element_set_state(receiver->m_subscriber.pipeline,
+                                          GST_STATE_PLAYING)
+                    != GST_STATE_CHANGE_FAILURE);
+        }
+        QVERIFY(!primary.echoProbeLive());
+        QCOMPARE(primary.echoReferenceInputsForTest(), 0);
+
+        QString why;
+        const auto join = [&why](SfuMediaEngine &engine, const QString &sid, int hz) {
+            GstElement *pipeline = engine.m_subscriber.pipeline;
+            const QString tone = QStringLiteral(
+                "audiotestsrc is-live=true freq=%1 volume=0.2 samplesperbuffer=480 "
+                "! audio/x-raw,rate=48000,channels=1 ! opusenc ! rtpopuspay").arg(hz);
+            GstElement *source = gst_parse_bin_from_description(
+                tone.toUtf8().constData(), TRUE, nullptr);
+            if (!source || !gst_bin_add(GST_BIN(pipeline), source))
+                return false;
+            GstElement *bin = nullptr;
+            GstPad *out = gst_element_get_static_pad(source, "src");
+            const bool linked = engine.attachReceiveChain(
+                pipeline, out, sid, sid, QStringLiteral("audio"), &bin, &why);
+            if (linked) {
+                QMutexLocker lock(&engine.m_receiveBinMutex);
+                engine.m_receiveBins.insert(out, {bin, sid, QStringLiteral("audio"), sid, sid});
+            }
+            gst_object_unref(out);
+            return linked && gst_element_sync_state_with_parent(source);
+        };
+
+        const QString a = QStringLiteral("a"), b = QStringLiteral("b"),
+                      c = QStringLiteral("c");
+        SfuMediaEngine &third = secondFocus ? secondary : primary;
+        QVERIFY2(join(primary, a, 500), qPrintable(why));
+        QVERIFY2(join(primary, b, 1100), qPrintable(why));
+        QVERIFY2(join(third, c, 1700), qPrintable(why));
+        QCOMPARE(primary.echoReferenceInputsForTest(), 3);
+        QVERIFY(primary.echoProbeLive());
+
+        GstElement *probe = primary.echoProbeForTest();
+        QVERIFY(probe);
+        GstPad *pad = gst_element_get_static_pad(probe, "sink");
+        gst_object_unref(probe);
+        struct Heard {
+            std::atomic<double> level[3] = {-1, -1, -1};
+            std::atomic<int> buffers{0};
+        };
+        auto *heard = new Heard;
+        const gulong id = gst_pad_add_probe(pad, GST_PAD_PROBE_TYPE_BUFFER,
+            [](GstPad *, GstPadProbeInfo *info, gpointer data) {
+                GstMapInfo map = GST_MAP_INFO_INIT;
+                if (!gst_buffer_map(GST_PAD_PROBE_INFO_BUFFER(info), &map, GST_MAP_READ))
+                    return GST_PAD_PROBE_OK;
+                const gsize frames = map.size / 4;
+                auto *h = static_cast<Heard *>(data);
+                const int tones[3] = {500, 1100, 1700};
+                for (int t = 0; t < 3; ++t) {
+                    double re = 0, im = 0;
+                    for (gsize i = 0; i < frames; ++i) {
+                        const double s = static_cast<qint16>(
+                            GST_READ_UINT16_LE(map.data + 4 * i));
+                        const double phase = 2 * std::numbers::pi * tones[t] * i / 48000;
+                        re += s * std::cos(phase);
+                        im += s * std::sin(phase);
+                    }
+                    h->level[t].store(frames ? 2 * std::hypot(re, im) / (32768.0 * frames) : 0);
+                }
+                h->buffers.fetch_add(1);
+                gst_buffer_unmap(GST_PAD_PROBE_INFO_BUFFER(info), &map);
+                return GST_PAD_PROBE_OK;
+            }, heard, [](gpointer p) { delete static_cast<Heard *>(p); });
+        const auto cleanup = qScopeGuard([&] {
+            gst_pad_remove_probe(pad, id);
+            gst_object_unref(pad);
+        });
+        const auto on = [heard](int t) { return heard->level[t].load() > 0.05; };
+        const auto off = [heard](int t) {
+            const double v = heard->level[t].load();
+            return v >= 0 && v < 0.02;
+        };
+
+        QTRY_VERIFY(on(0) && on(1) && on(2));
+
+        primary.setTrackVolume(a, a, 0);
+        QTRY_VERIFY(off(0) && on(1) && on(2));
+        primary.setTrackVolume(a, a, 100);
+        QTRY_VERIFY(on(0) && on(1) && on(2));
+
+        primary.setOutputMuted(true);
+        QTRY_VERIFY(off(0) && off(1) && (secondFocus ? on(2) : off(2)));
+        primary.setOutputMuted(false);
+        QTRY_VERIFY(on(0) && on(1) && on(2));
+
+        QCOMPARE(primary.retireReceiveBins({a}, nullptr, "test leave"), 1);
+        QTRY_COMPARE(primary.pendingTeardownsForTest(), 0);
+        QTRY_COMPARE(primary.echoReferenceInputsForTest(), 2);
+        QTRY_VERIFY(off(0) && on(1) && on(2));
+
+        QCOMPARE(primary.retireReceiveBins({b}, nullptr, "test leave"), 1);
+        QCOMPARE(third.retireReceiveBins({c}, nullptr, "test leave"), 1);
+        QTRY_COMPARE(primary.pendingTeardownsForTest(), 0);
+        QTRY_COMPARE(third.pendingTeardownsForTest(), 0);
+        QTRY_COMPARE(primary.echoReferenceInputsForTest(), 0);
+        const int idle = heard->buffers.load();
+        QTRY_VERIFY(heard->buffers.load() > idle + 20);
+        QTRY_VERIFY(off(0) && off(1) && off(2));
+
+        QVERIFY2(join(third, a, 500), qPrintable(why));
+        QTRY_COMPARE(primary.echoReferenceInputsForTest(), 1);
+        QTRY_VERIFY(on(0) && off(1) && off(2));
     }
 
     void echoCancellationNeverStartsWithoutAPlaybackProbe()
@@ -6743,9 +6880,10 @@ true,2147483,
                  QStringLiteral("false"));
         engine.engageEchoCancellation();
         QCOMPARE(engine.echoEngageAttemptsForTest(), 0);
+        QTRY_VERIFY_WITH_TIMEOUT(engine.microphoneRtpOutForTest() > 0, 5000);
 
-        QVERIFY(SfuMediaEngine::echoProbeStage(true, true).contains(
-            QLatin1String(SfuMediaEngine::kEchoProbeName)));
+        QVERIFY(calls::noise::EchoReference::probeStage().contains(
+            QLatin1String(calls::noise::EchoReference::kProbeName)));
         GstElement *burn = gst_element_factory_make("webrtcechoprobe", nullptr);
         QVERIFY(burn);
         gst_object_unref(burn);
@@ -6790,7 +6928,7 @@ true,2147483,
         QVERIFY2(runDsp(QString()).contains(QLatin1String("No echo probe")),
                  "webrtcdsp no longer fails without a probe; revisit the guard");
         const QString withProbe =
-            runDsp(SfuMediaEngine::echoProbeStage(true, true));
+            runDsp(calls::noise::EchoReference::probeStage());
         QVERIFY2(!withProbe.contains(QLatin1String("No echo probe")),
                  qPrintable(withProbe));
     }
@@ -6814,7 +6952,7 @@ true,2147483,
         QVERIFY2(pipeline && !error, error ? error->message : "no pipeline");
         GstElement *playback = gst_parse_bin_from_description(
             ("audiotestsrc is-live=true ! audioconvert "
-             + SfuMediaEngine::echoProbeStage(true, true)
+             + calls::noise::EchoReference::probeStage()
              + QStringLiteral("! fakesink sync=false"))
                 .toUtf8()
                 .constData(),
@@ -6898,7 +7036,7 @@ true,2147483,
         if (heldByAnotherDsp) {
             holder = gst_parse_launch(
                 ("audiotestsrc is-live=true ! audioconvert "
-                 + SfuMediaEngine::echoProbeStage(true, true)
+                 + calls::noise::EchoReference::probeStage()
                  + QStringLiteral(
                      "! fakesink sync=false audiotestsrc is-live=true "
                      "! audioconvert "
@@ -6981,7 +7119,7 @@ true,2147483,
         GError *error = nullptr;
         GstElement *pipeline = gst_parse_launch(
             ("audiotestsrc is-live=true ! audioconvert "
-             + SfuMediaEngine::echoProbeStage(true, true)
+             + calls::noise::EchoReference::probeStage()
              + QStringLiteral(
                  "! fakesink sync=false audiotestsrc is-live=true "
                  "! audioconvert "
@@ -7497,7 +7635,7 @@ true);
         QVERIFY2(pipeline && !error, error ? error->message : "no pipeline");
         QString why;
         GstElement *bin = SfuMediaEngine::buildReceiveBin(
-            true, QString(), true, &why, QString(), nullptr, false,
+            true, QString(), true, &why, QString(), nullptr,
             QStringLiteral("VP9"));
         QVERIFY2(bin, qPrintable(why));
         QVERIFY(gst_bin_add(GST_BIN(pipeline), bin));

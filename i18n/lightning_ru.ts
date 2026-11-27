@@ -1789,7 +1789,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
 <context>
     <name>AppTheme</name>
     <message>
-        <location filename="../qml/AppTheme.qml" line="+610"/>
+        <location filename="../qml/AppTheme.qml" line="+623"/>
         <source>Storm</source>
         <translation>Storm</translation>
     </message>
@@ -3799,8 +3799,8 @@ EXIF orientation: %4</source>
     </message>
     <message>
         <location line="+5"/>
-        <source>Removes your callers&apos; voices from your microphone when you use speakers. Headphones do not need it. It needs the WebRTC audio component and is new: with several people in a call it may cancel only some of them. Both apply to your next call.</source>
-        <translation>Убирает голоса собеседников из вашего микрофона, когда вы используете динамики. Для наушников не нужно. Требует компонента аудио WebRTC и является новым: при нескольких участниках может подавить только часть из них. Оба параметра применяются к следующему звонку.</translation>
+        <source>Removes your callers&apos; voices from your microphone when you use speakers. Headphones do not need it. It needs the WebRTC audio component. Both apply to your next call.</source>
+        <translation>Убирает голоса собеседников из вашего микрофона, когда вы используете динамики. Для наушников не нужно. Требует компонента аудио WebRTC. Оба параметра применяются к следующему звонку.</translation>
     </message>
 </context>
 <context>
@@ -21617,12 +21617,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Открыть обзор пространства</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+26"/>
         <source>Collapse room list</source>
         <translation>Свернуть список комнат</translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+78"/>
         <source>Search</source>
         <translation>Поиск</translation>
     </message>
@@ -29272,12 +29272,12 @@ Note: importing keys does not verify this session.</source>
     <message>
         <location line="+8"/>
         <location line="+453"/>
-        <location line="+362"/>
+        <location line="+366"/>
         <source>Couldn&apos;t connect to the call.</source>
         <translation>Не удалось подключиться к звонку.</translation>
     </message>
     <message>
-        <location line="-813"/>
+        <location line="-817"/>
         <source>The calling service is having trouble.</source>
         <translation>У службы вызовов возникли проблемы.</translation>
     </message>
@@ -29400,7 +29400,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Звонок еще не готов.</translation>
     </message>
     <message>
-        <location line="+653"/>
+        <location line="+657"/>
         <source>You can share your screen once the call has reconnected.</source>
         <translation>Демонстрацию экрана можно начать, когда звонок переподключится.</translation>
     </message>
@@ -29495,7 +29495,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Участник</translation>
     </message>
     <message>
-        <location line="-4620"/>
+        <location line="-4624"/>
         <source>This room is encrypted, and encrypted calls aren&apos;t available yet on this build.</source>
         <translation>Эта комната зашифрована, и зашифрованные звонки в этой сборке пока недоступны.</translation>
     </message>
@@ -29505,7 +29505,7 @@ Note: importing keys does not verify this session.</source>
         <translation>Не удалось объявить вас во время звонка.</translation>
     </message>
     <message>
-        <location line="+524"/>
+        <location line="+528"/>
         <source>The call ended because the connection was lost.</source>
         <translation>Звонок прервался, поскольку связь была потеряна.</translation>
     </message>
@@ -29617,7 +29617,7 @@ Note: importing keys does not verify this session.</source>
 <context>
     <name>ShortcutRegistry</name>
     <message>
-        <location filename="../src/app/ShortcutRegistry.cpp" line="+360"/>
+        <location filename="../src/app/ShortcutRegistry.cpp" line="+480"/>
         <source>Dialogs</source>
         <translation>Диалоги</translation>
     </message>

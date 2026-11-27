@@ -798,6 +798,133 @@ private Q_SLOTS:
         QCOMPARE(replyList->property("contentY").toReal(), before);
     }
 
+    void wheelingUpStopsFollowingTheNewestReply_data()
+    {
+        QTest::addColumn<qreal>("stepPx");
+        // A hi-res or slowed wheel moves less than the follow slack per step.
+        QTest::newRow("small step") << qreal(4);
+        QTest::newRow("full notch") << qreal(0);
+    }
+
+    void wheelingUpStopsFollowingTheNewestReply()
+    {
+        QFETCH(qreal, stepPx);
+        AppController controller(AppController::MockBackend);
+        QVERIFY(login(controller));
+        auto *mock = controller.findChild<MockMatrixClient *>();
+        QVERIFY(mock != nullptr);
+        const QString rootId = firstThreadRootId(*mock, kGeneral);
+        QVERIFY(!rootId.isEmpty());
+        controller.thread()->openThread(kGeneral, rootId);
+        QTRY_COMPARE_WITH_TIMEOUT(controller.thread()->state(),
+                                  ThreadController::Ready, kSignalTimeoutMs);
+        const QString timelineId =
+            MatrixClient::threadTimelineId(kGeneral, rootId);
+        auto reply = [](int i) {
+            TimelineEvent e;
+            e.eventId = QStringLiteral("$wheel%1:mock.local").arg(i);
+            e.sender = QStringLiteral("@alice:mock.local");
+            e.senderDisplayName = QStringLiteral("Alice");
+            e.body = QStringLiteral("reply %1").arg(i);
+            e.timestamp =
+                QDateTime::currentDateTimeUtc().addSecs(-(100 - i) * 60);
+            e.type = TimelineEvent::TextMessage;
+            e.status = TimelineEvent::Sent;
+            return e;
+        };
+        QList<TimelineEvent> events;
+        for (int i = 0; i < 40; ++i)
+            events.append(reply(i));
+        mock->setPaginationDelayForTest(40);
+        // The open's history fill takes up to eight pages; leave some for the reader.
+        mock->resetTimelineForTest(timelineId, events, 12);
+        QTRY_VERIFY_WITH_TIMEOUT(
+            controller.thread()->model()->rowCount() >= 40, kSignalTimeoutMs);
+
+        QQmlApplicationEngine engine;
+        engine.rootContext()->setContextProperty("app", &controller);
+        QSignalSpy createdSpy(&engine, &QQmlApplicationEngine::objectCreated);
+        engine.loadFromModule(QStringLiteral("MatrixClient"),
+                              QStringLiteral("ThreadPanel"));
+        if (createdSpy.isEmpty())
+            QVERIFY(createdSpy.wait(kSignalTimeoutMs));
+        auto *root = qobject_cast<QQuickItem *>(
+            createdSpy.at(0).at(0).value<QObject *>());
+        QVERIFY(root != nullptr);
+        QQuickWindow window;
+        window.resize(400, 700);
+        root->setParentItem(window.contentItem());
+        root->setSize(QSizeF(window.width(), window.height()));
+        window.show();
+        QVERIFY(QTest::qWaitForWindowExposed(&window, kSignalTimeoutMs));
+        auto *replyList = root->findChild<QQuickItem *>(
+            QStringLiteral("threadReplyList"));
+        QVERIFY(replyList);
+        QTest::qWait(200);
+        QTRY_VERIFY_WITH_TIMEOUT(!controller.thread()->model()->paginating(),
+                                 5000);
+        QVERIFY(controller.thread()->model()->canPaginate());
+        TimelineScrollController *scroll = controller.threadScroll();
+        const auto distanceFromEnd = [replyList] {
+            QVariant maxY;
+            QMetaObject::invokeMethod(replyList, "wheelMaxY",
+                                      Q_RETURN_ARG(QVariant, maxY));
+            return maxY.toReal() - replyList->property("contentY").toReal();
+        };
+        const auto following = [replyList] {
+            return replyList->property("followLatest").toBool();
+        };
+        const QPoint centre = replyList->mapToScene(
+            QPointF(replyList->width() / 2, replyList->height() / 2)).toPoint();
+        const auto wheel = [&](int angle) {
+            QWheelEvent event(QPointF(centre),
+                              QPointF(window.mapToGlobal(centre)), QPoint(),
+                              QPoint(0, angle), Qt::NoButton, {},
+                              Qt::NoScrollPhase, false);
+            QCoreApplication::sendEvent(&window, &event);
+            QTRY_VERIFY_WITH_TIMEOUT(!scroll->motionActive(), kSignalTimeoutMs);
+        };
+        QTRY_VERIFY_WITH_TIMEOUT(replyList->property("count").toInt() >= 40,
+                                 kSignalTimeoutMs);
+        QTRY_VERIFY_WITH_TIMEOUT(following() && distanceFromEnd() <= 8.5,
+                                 kSignalTimeoutMs);
+        QTest::qWait(300);
+        const qreal atEnd = distanceFromEnd();
+
+        const qreal notch = scroll->notchDistance(replyList->height());
+        QVERIFY(notch > stepPx * 2);
+        wheel(stepPx > 0 ? qRound(stepPx / notch * 120.0) : 120);
+        if (QTest::currentTestFailed())
+            return;
+        const qreal moved = distanceFromEnd() - atEnd;
+        QVERIFY2(moved > 2, qPrintable(QStringLiteral("the wheel moved %1 px").arg(moved)));
+        QVERIFY2(!following(), "a wheel step up left the thread following the newest reply");
+
+        const qreal before = replyList->property("contentY").toReal();
+        mock->appendEventForTest(timelineId, reply(40));
+        QTRY_VERIFY_WITH_TIMEOUT(
+            controller.thread()->model()->rowCount() >= 41, kSignalTimeoutMs);
+        QTest::qWait(300);
+        QVERIFY2(qAbs(replyList->property("contentY").toReal() - before) < 0.5,
+                 "a new reply pulled the reader back to the newest reply");
+
+        const int rowsBeforePage = controller.thread()->model()->rowCount();
+        controller.thread()->model()->requestOlder();
+        QTRY_VERIFY_WITH_TIMEOUT(
+            controller.thread()->model()->rowCount() > rowsBeforePage,
+            kSignalTimeoutMs);
+        QTest::qWait(300);
+        QVERIFY2(!following() && distanceFromEnd() > atEnd + 2,
+                 "an older page pulled the reader back to the newest reply");
+
+        wheel(-1200);
+        wheel(-1200);
+        if (QTest::currentTestFailed())
+            return;
+        QTRY_VERIFY_WITH_TIMEOUT(following() && distanceFromEnd() <= 8.5,
+                                 kSignalTimeoutMs);
+    }
+
     void theReplyBannerDoesNotHideTheNewestReply()
     {
         AppController controller(AppController::MockBackend);

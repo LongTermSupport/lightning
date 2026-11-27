@@ -1,5 +1,6 @@
 #include <QtTest/QtTest>
 #include <QGuiApplication>
+#include <QKeyEvent>
 #include <QQmlComponent>
 #include <QQmlContext>
 #include <QQmlEngine>
@@ -296,6 +297,103 @@ ApplicationWindow {
         QTest::keyClick(m_window, Qt::Key_L, Qt::ControlModifier);
         QTRY_VERIFY_WITH_TIMEOUT(editor->hasActiveFocus(), 1500);
         QCOMPARE(m_controller->composer()->text(), draft);
+    }
+
+    void settingsShortcutWithACyrillicKey_data()
+    {
+        QTest::addColumn<int>("platform");
+        QTest::addColumn<quint32>("scan");
+        QTest::addColumn<quint32>("vk");
+        using Platform = ShortcutRegistry::KeyboardPlatform;
+        QTest::newRow("Latin keysym") << int(Platform::Xkb) << quint32(0) << quint32(',');
+        QTest::newRow("Russian XKB keysym") << int(Platform::Xkb) << quint32(59) << quint32(0x6c2);
+        QTest::newRow("Windows OEM comma") << int(Platform::Windows) << quint32(0x33) << quint32(0xbc);
+        QTest::newRow("Windows virtual key only") << int(Platform::Windows) << quint32(0) << quint32(0xbc);
+        QTest::newRow("macOS ANSI comma") << int(Platform::MacOS) << quint32(0) << quint32(0x2b);
+    }
+
+    void settingsShortcutWithACyrillicKey()
+    {
+        QFETCH(int, platform);
+        QFETCH(quint32, scan);
+        QFETCH(quint32, vk);
+        openJoinedRoom();
+        auto *registry = m_controller->shortcuts();
+        registry->setKeyboardPlatformForTesting(ShortcutRegistry::KeyboardPlatform(platform));
+        QCoreApplication::instance()->installEventFilter(registry);
+        QObject *shortcut = shortcutOn(registry->sequenceFor(QStringLiteral("app.openSettings")));
+        QVERIFY(shortcut);
+        QSignalSpy fired(shortcut, SIGNAL(activated()));
+        QKeyEvent press(QEvent::KeyPress, u'Б', Qt::ControlModifier, scan, vk, 0);
+        QCoreApplication::sendEvent(m_window, &press);
+        QCOMPARE(fired.count(), 1);
+        QCOMPARE(m_controller->currentScreen(), AppController::SettingsScreen);
+    }
+
+    void cyrillicEditorChordWinsOverTheWindowShortcut()
+    {
+        openJoinedRoom();
+        auto *registry = m_controller->shortcuts();
+        registry->setKeyboardPlatformForTesting(ShortcutRegistry::KeyboardPlatform::Windows);
+        QCoreApplication::instance()->installEventFilter(registry);
+        QObject *toggle = shortcutOn(registry->sequenceFor(QStringLiteral("shell.toggleRoomList")));
+        QVERIFY(toggle);
+        QSignalSpy fired(toggle, SIGNAL(activated()));
+        auto *editor = item("composerInput");
+        QVERIFY(editor->setProperty("text", QStringLiteral("hello")));
+        QVERIFY(QMetaObject::invokeMethod(editor, "selectAll"));
+        QKeyEvent claim(QEvent::ShortcutOverride, u'И', Qt::ControlModifier, 0, 'B', 0);
+        QCoreApplication::sendEvent(m_window, &claim);
+        QVERIFY(claim.isAccepted());
+        QKeyEvent chord(QEvent::KeyPress, u'И', Qt::ControlModifier, 0, 'B', 0);
+        QCoreApplication::sendEvent(m_window, &chord);
+        QCOMPARE(editor->property("text").toString(), QStringLiteral("**hello**"));
+        QCOMPARE(fired.count(), 0);
+    }
+
+    void cyrillicLetterTypesInComposerAndNavigatesOnTimeline()
+    {
+        openJoinedRoom();
+        auto *registry = m_controller->shortcuts();
+        registry->setKeyMapperForTesting([](const QKeyEvent *event) {
+            QList<QKeyCombination> keys{event->keyCombination()};
+            if (event->key() == u'Л')
+                keys.append(QKeyCombination(event->modifiers(), Qt::Key_K));
+            return keys;
+        });
+        QCoreApplication::instance()->installEventFilter(registry);
+
+        QObject *mute = shortcutOn(registry->sequenceFor(QStringLiteral("call.toggleMute")));
+        QVERIFY(mute);
+        QCOMPARE(registry->setBinding(QStringLiteral("call.toggleMute"), QStringLiteral("K")), QString());
+        QTRY_COMPARE(boundSequence(mute), QStringLiteral("K"));
+        QSignalSpy fired(mute, SIGNAL(activated()));
+        auto *composer = item("composerInput");
+        QVERIFY(composer->hasActiveFocus());
+        const QString before = composer->property("text").toString();
+        QKeyEvent typed(QEvent::KeyPress, u'Л', Qt::NoModifier, 45, 'k', 0, QStringLiteral("л"));
+        QCoreApplication::sendEvent(m_window, &typed);
+        QCOMPARE(composer->property("text").toString(), before + QStringLiteral("л"));
+        QCOMPARE(fired.count(), 0);
+
+        QTest::keyClick(m_window, Qt::Key_Space, Qt::ControlModifier | Qt::ShiftModifier);
+        QTRY_VERIFY(item("timelineListView")->hasActiveFocus());
+        auto *pane = item("timelinePane");
+        const QString latest = pane->property("keyboardSelectedEventId").toString();
+        QVERIFY(!latest.isEmpty());
+        QKeyEvent navigate(QEvent::KeyPress, u'Л', Qt::NoModifier, 45, 'k', 0, QStringLiteral("л"));
+        QCoreApplication::sendEvent(m_window, &navigate);
+        const QString older = pane->property("keyboardSelectedEventId").toString();
+        const int olderRow = m_controller->timeline()->rowForStableId(older);
+        QVERIFY(olderRow >= 0);
+        QVERIFY(olderRow < m_controller->timeline()->rowForStableId(latest));
+        QCOMPARE(registry->setBinding(QStringLiteral("timeline.newerMessage"), QStringLiteral("Л")),
+                 QString());
+        QKeyEvent literal(QEvent::KeyPress, u'Л', Qt::NoModifier, 45, 'k', 0, QStringLiteral("л"));
+        QCoreApplication::sendEvent(m_window, &literal);
+        QCOMPARE(pane->property("keyboardSelectedEventId").toString(), latest);
+        QCOMPARE(composer->property("text").toString(), before + QStringLiteral("л"));
+        QCOMPARE(fired.count(), 0);
     }
 
     void aLoneLetterMuteShortcutLeavesTypingAloneAndFiresElsewhere()

@@ -55,7 +55,7 @@ MenuItem {
             size: AppTheme.menuIconSize
             color: !root.enabled ? AppTheme.stormTextFaint
                    : root.danger ? AppTheme.stormDanger
-                   : root._active ? AppTheme.bolt
+                   : root._active ? AppTheme.menuHighlightIcon
                    : AppTheme.stormTextMuted
         }
         ControlLabel {
@@ -97,10 +97,11 @@ MenuItem {
                : "transparent"
 
         Icon {
+            objectName: "menuItemBolt"
             visible: root._active && root.enabled && !root.danger
             name: "bolt"
             size: 12
-            color: AppTheme.bolt
+            color: AppTheme.menuHighlightIcon
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             anchors.leftMargin: 0

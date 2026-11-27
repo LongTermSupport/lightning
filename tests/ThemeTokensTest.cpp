@@ -203,6 +203,7 @@ private Q_SLOTS:
             QStringLiteral("scrimSuccessInk"), QStringLiteral("scrimDangerInk"),
             QStringLiteral("focusRing"), QStringLiteral("overlayScrim"),
             QStringLiteral("bolt"), QStringLiteral("boltInk"),
+            QStringLiteral("menuHighlightIcon"),
             QStringLiteral("stormPanel"), QStringLiteral("stormText"),
         };
         for (const QString &token : required) {
@@ -732,6 +733,23 @@ private Q_SLOTS:
                  m_colors.value(QStringLiteral("_dangerInkDark")));
         QCOMPARE(m_colors.value(QStringLiteral("_stoSuccess")),
                  m_colors.value(QStringLiteral("_okInkDark")));
+    }
+
+    void reactionChipsUseSeparateNeutralAndSelectedFills()
+    {
+        const QString delegate = stripComments(
+            readAll(QStringLiteral(QML_DIR "/MessageDelegate.qml")));
+        QVERIFY(!delegate.isEmpty());
+        QVERIFY(delegate.contains(QRegularExpression(QStringLiteral(
+            "baseFill:\\s*modelData\\.byMe\\s*\\?\\s*AppTheme\\.reactionSelectedBackground"
+            "\\s*:\\s*AppTheme\\.reactionBackground"))));
+        QVERIFY(m_theme.contains(QRegularExpression(QStringLiteral(
+            "property\\s+color\\s+reactionBackground:[^\\n]*\\n\\s*\\?\\s*_p\\.reaction\\s*:\\s*surface\\b"))));
+        QVERIFY(m_theme.contains(QRegularExpression(QStringLiteral(
+            "reactionBackground:\\s*p\\.surface\\b"))));
+        QVERIFY(delegate.contains(QStringLiteral("reactionHover.hovered ? hoverFill : baseFill")));
+        QVERIFY(delegate.contains(QRegularExpression(QStringLiteral(
+            "border\\.color:\\s*modelData\\.byMe\\s*\\?\\s*AppTheme\\.reactionSelectedBorder"))));
     }
 
     void theTextSelectionIsVisibleOnEveryTheme()
