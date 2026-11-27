@@ -54,6 +54,13 @@ Rectangle {
     function vimKey(event, editor) {
         if (!panel.vimNormal)
             return false
+        var step = VimEditing.selectionStepAction(app.composer.threadVim, event)
+        if (step !== "") {
+            replyList.outlineWithoutFocus = true
+            replyList.runNavigationAction(step)
+            event.accepted = true
+            return true
+        }
         var r = VimEditing.handleKey(app.composer.threadVim, event, editor,
                                      editor === threadRichInput)
         if (!r)
@@ -1497,8 +1504,10 @@ Rectangle {
                     takeSelectionFocus()
                     setRangeEnd(function() { selectedEventId = eventId })
                 }
+                property bool outlineWithoutFocus: false
+                onActiveFocusChanged: outlineWithoutFocus = false
                 readonly property string keyboardSelectedEventId:
-                    activeFocus ? selectedEventId : ""
+                    activeFocus || outlineWithoutFocus ? selectedEventId : ""
                 function navigableEventAt(row) {
                     var item = row >= 0 ? itemAtIndex(row) : null
                     if (!item || item.height <= 0 || !item.replyEligible)
@@ -1563,9 +1572,10 @@ Rectangle {
                 function runNavigationAction(action) {
                     switch (action) {
                     case "timeline.olderMessage":
-                        if (selectedEventId === "")
-                            enterMessageSelection(true)
-                        else
+                        if (selectedEventId === "") {
+                            positionViewAtEnd()
+                            selectVisibleMessage(true)
+                        } else
                             stepSelectedMessage(-1)
                         break
                     case "timeline.newerMessage": stepSelectedMessage(1); break

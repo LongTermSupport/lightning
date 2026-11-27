@@ -4413,6 +4413,10 @@ Rectangle {
                     case "timeline.pageDown":    keyboardPage(1); return true
                     case "timeline.jumpToStart": goToEarliestLoaded(); return true
                     case "timeline.jumpToEnd":   goToLatest(); return true
+                    case "timeline.olderMessage":
+                    case "timeline.newerMessage":
+                        root.restoredSelectionOutline = true
+                        return runNavigationAction(actionId)
                     }
                     return false
                 }
