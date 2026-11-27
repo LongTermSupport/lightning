@@ -339,6 +339,7 @@ Rectangle {
                         }
                         TextField {
                             id: roomSearch
+                            objectName: "roomSearchField"
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                             placeholderText: qsTr("Search")
@@ -362,10 +363,25 @@ Rectangle {
                             rightPadding: 0
                             background: null
                         }
+                        IconButton {
+                            objectName: "roomSearchClear"
+                            visible: roomSearch.text.length > 0
+                            size: "sm"
+                            iconName: "close"
+                            iconSize: 14
+                            Accessible.name: qsTr("Clear search")
+                            ToolTip.text: qsTr("Clear search")
+                            ToolTip.visible: hovered
+                            onClicked: {
+                                roomSearch.clear()
+                                roomSearch.forceActiveFocus()
+                            }
+                        }
                         MenuKeycap {
                             keys: "Ctrl+K"
                             storm: false
                             visible: !roomSearch.activeFocus
+                                     && roomSearch.text.length === 0
                                      && searchCard.width >= 220
                         }
                     }
