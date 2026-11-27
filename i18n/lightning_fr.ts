@@ -21536,19 +21536,25 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Réduire la liste des salons</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+79"/>
         <source>Search</source>
         <translation>Rechercher</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+776"/>
+        <location line="+791"/>
         <location line="+1"/>
         <source>Search rooms</source>
         <translation>Rechercher des salons</translation>
     </message>
     <message>
-        <location line="-719"/>
+        <location line="-766"/>
+        <location line="+1"/>
+        <source>Clear search</source>
+        <translation>Effacer la recherche</translation>
+    </message>
+    <message>
+        <location line="+46"/>
         <location line="+1"/>
         <source>Room list options</source>
         <translation>Options de la liste des salons</translation>

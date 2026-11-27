@@ -21630,13 +21630,13 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Atidaryti erdvės apžvalgą</translation>
     </message>
     <message>
-        <location line="+104"/>
+        <location line="+105"/>
         <source>Search</source>
         <translation>Ieškoti</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+776"/>
+        <location line="+791"/>
         <location line="+1"/>
         <source>Search rooms</source>
         <translation>Ieškokite kambarių</translation>
@@ -21734,12 +21734,18 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>Mėgstamiausi</translation>
     </message>
     <message>
-        <location line="-411"/>
+        <location line="-427"/>
         <source>Collapse room list</source>
         <translation>Suskleisti kambarių sąrašą</translation>
     </message>
     <message>
-        <location line="+382"/>
+        <location line="+106"/>
+        <location line="+1"/>
+        <source>Clear search</source>
+        <translation>Išvalyti paiešką</translation>
+    </message>
+    <message>
+        <location line="+291"/>
         <source>Archived (%1)</source>
         <translation>Archyvuoti (%1)</translation>
     </message>

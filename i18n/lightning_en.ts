@@ -21495,7 +21495,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location line="+770"/>
+        <location line="+786"/>
         <source>%n room(s) updated</source>
         <translation>
             <numerusform>%n room updated</numerusform>
@@ -21503,7 +21503,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         </translation>
     </message>
     <message>
-        <location line="-775"/>
+        <location line="-791"/>
         <source>Home</source>
         <translation type="unfinished"></translation>
     </message>
@@ -21528,19 +21528,25 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+79"/>
         <source>Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+776"/>
+        <location line="+791"/>
         <location line="+1"/>
         <source>Search rooms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-719"/>
+        <location line="-766"/>
+        <location line="+1"/>
+        <source>Clear search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+46"/>
         <location line="+1"/>
         <source>Room list options</source>
         <translation type="unfinished"></translation>
