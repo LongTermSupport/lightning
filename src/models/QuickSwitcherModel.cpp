@@ -23,14 +23,27 @@ void QuickSwitcherModel::setClient(MatrixClient *client)
         m_client->disconnect(this);
     m_client = client;
     if (m_client) {
-        connect(m_client, &MatrixClient::loggedOut, this,
-                &QuickSwitcherModel::reset);
+        connect(m_client, &MatrixClient::loggedOut, this, [this] {
+            m_recent.clear();
+            reset();
+        });
         connect(m_client, &MatrixClient::roomsChanged, this, [this] {
             if (m_active)
                 rebuild();
         });
     }
+    m_recent.clear();
     reset();
+}
+
+void QuickSwitcherModel::noteVisited(const QString &roomId)
+{
+    if (roomId.isEmpty())
+        return;
+    m_recent.removeAll(roomId);
+    m_recent.prepend(roomId);
+    while (m_recent.size() > kMaxRecent)
+        m_recent.removeLast();
 }
 
 void QuickSwitcherModel::setSpaceManager(SpaceManager *spaces)
@@ -296,6 +309,8 @@ void QuickSwitcherModel::collectMatches(QList<Result> &next, QVariantMap &hidden
                 alternates << room.canonicalAlias;
             if (room.isDirect && !room.directUserId.isEmpty())
                 alternates << room.directUserId;
+            if (m_query.contains(QLatin1Char('!')))
+                alternates << room.id;
 
             const QString displayName =
                 room.name.isEmpty() ? room.id : room.name;
@@ -316,13 +331,24 @@ void QuickSwitcherModel::collectMatches(QList<Result> &next, QVariantMap &hidden
         if (r.category == QStringLiteral("space"))  return 2;
         return 3;
     };
-    std::sort(next.begin(), next.end(), [](const Result &a, const Result &b) {
+    const bool byRecency = m_query.trimmed().isEmpty();
+    const auto recencyRank = [this](const Result &r) {
+        const int i = m_recent.indexOf(r.roomId);
+        return i < 0 ? static_cast<int>(m_recent.size()) : i;
+    };
+    std::sort(next.begin(), next.end(), [&](const Result &a, const Result &b) {
         const int rankA = categoryRank(a);
         const int rankB = categoryRank(b);
         if (rankA != rankB)
             return rankA < rankB;
         if (a.score != b.score)
             return a.score > b.score;
+        if (byRecency) {
+            const int recA = recencyRank(a);
+            const int recB = recencyRank(b);
+            if (recA != recB)
+                return recA < recB;
+        }
         if (a.highlight != b.highlight)
             return a.highlight > b.highlight;
         if (a.hasUnread != b.hasUnread)

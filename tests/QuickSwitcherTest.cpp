@@ -361,9 +361,61 @@ private Q_SLOTS:
         }
 
         model.setQuery(QStringLiteral("!named"));
+        QCOMPARE(model.rowCount(), 1);
+        QCOMPARE(idAt(model, 0), QStringLiteral("!named:x"));
+        model.setQuery(QStringLiteral("named"));
         QCOMPARE(model.rowCount(), 0);
         model.setQuery(QStringLiteral("lounge"));
         QCOMPARE(idAt(model, 0), QStringLiteral("!named:x"));
+    }
+
+    void anEmptyQueryListsTheMostRecentlyVisitedRoomsFirst()
+    {
+        ManyRoomsClient client;
+        for (const char *n : { "Alpha", "Beta", "Gamma", "Delta" })
+            client.fixture << fixtureRoom(QStringLiteral("!%1:x").arg(QLatin1String(n)),
+                                          QLatin1String(n), QStringLiteral("room"));
+        QuickSwitcherModel model;
+        model.setClient(&client);
+        model.refresh();
+        QCOMPARE(names(model), (QStringList{ "Alpha", "Beta", "Delta", "Gamma" }));
+
+        model.noteVisited(QStringLiteral("!Gamma:x"));
+        model.noteVisited(QStringLiteral("!Delta:x"));
+        model.noteVisited(QStringLiteral("!Gamma:x"));
+        model.refresh();
+        QCOMPARE(names(model), (QStringList{ "Gamma", "Delta", "Alpha", "Beta" }));
+
+        model.setQuery(QStringLiteral("a"));
+        QCOMPARE(idAt(model, 0), QStringLiteral("!Alpha:x"));
+        model.setQuery(QString());
+        QCOMPARE(idAt(model, 0), QStringLiteral("!Gamma:x"));
+
+        for (int i = 0; i < 30; ++i)
+            model.noteVisited(QStringLiteral("!r%1:x").arg(i));
+        model.noteVisited(QStringLiteral("!Gamma:x"));
+        model.refresh();
+        QCOMPARE(idAt(model, 0), QStringLiteral("!Gamma:x"));
+
+        Q_EMIT client.loggedOut();
+        model.refresh();
+        QCOMPARE(names(model), (QStringList{ "Alpha", "Beta", "Delta", "Gamma" }));
+    }
+
+    void aRoomIdIsMatchedAsAnAlternate()
+    {
+        ManyRoomsClient client;
+        client.fixture << fixtureRoom(QStringLiteral("!qwerty:srv"),
+                                      QStringLiteral("Lounge"), QStringLiteral("room"))
+                       << fixtureRoom(QStringLiteral("!other:srv"),
+                                      QStringLiteral("Other"), QStringLiteral("room"));
+        QuickSwitcherModel model;
+        model.setClient(&client);
+        model.setQuery(QStringLiteral("!qwe"));
+        QCOMPARE(model.rowCount(), 1);
+        QCOMPARE(idAt(model, 0), QStringLiteral("!qwerty:srv"));
+        model.setQuery(QStringLiteral("srv"));
+        QCOMPARE(model.rowCount(), 0);
     }
 
     void anUnknownAddressOffersAPreviewRowAndNeverARoomJump()

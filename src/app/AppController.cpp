@@ -4610,6 +4610,8 @@ void AppController::setCurrentRoomId(const QString &roomId)
     ++m_currentRoomOpenSerial;
     if (!roomId.isEmpty()) {
         m_restoreRoomId.clear();
+        if (!m_accountSwitching)
+            m_quickSwitcher->noteVisited(roomId);
         if (m_settings && m_client && !m_accountSwitching && !m_screenshotDemo)
             m_settings->setLastOpenedRoom(m_client->currentUserId(), roomId);
     }
