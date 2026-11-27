@@ -1553,6 +1553,9 @@ function(_lightning_configure_qml_module target _scope)
             # Icon glyphs for interface chrome (Apache-2.0 subset; see
             # scripts/generate-icon-font.sh and qml/IconGlyphs.js).
             data/fonts/MaterialSymbolsRounded-subset.ttf
+            # Flag emoji for systems whose emoji face has none (Windows); CC-BY 4.0,
+            # see scripts/generate-flag-font.sh.
+            data/fonts/TwemojiCountryFlags.ttf
             # Window icon for source runs and Windows, which has no icon theme.
             # 256px stays crisp on high-DPI.
             data/icons/hicolor/256x256/apps/lightning.png
@@ -2880,6 +2883,16 @@ if(BUILD_TESTING)
         QML_DIR="${CMAKE_CURRENT_SOURCE_DIR}/qml")
     target_link_libraries(message-link-ink-test PRIVATE Qt6::Core Qt6::Qml Qt6::Test)
     add_test(NAME message-link-ink COMMAND message-link-ink-test)
+
+    # Flag emoji over a flagless system emoji face, fontconfig-isolated.
+    qt_add_executable(flag-emoji-font-test tests/FlagEmojiFontTest.cpp)
+    lightning_configure_qml_test(flag-emoji-font-test)
+    target_include_directories(flag-emoji-font-test PRIVATE src)
+    target_compile_definitions(flag-emoji-font-test PRIVATE
+        SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+    add_test(NAME flag-emoji-font COMMAND flag-emoji-font-test)
+    set_tests_properties(flag-emoji-font PROPERTIES
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
     qt_add_executable(emoji-ui-contract-test tests/EmojiUiContractTest.cpp)
     target_compile_definitions(emoji-ui-contract-test PRIVATE
