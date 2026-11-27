@@ -41,7 +41,16 @@ public:
     static constexpr qint64 kMaxFontFileBytes = 32LL * 1024 * 1024;
     static constexpr int kMaxImportedFonts = 16;
 
+    static constexpr const char *kFlagFontResource =
+        ":/qt/qml/MatrixClient/data/fonts/TwemojiCountryFlags.ttf";
+
+    // The family emoji text should name: the system emoji face, or, where that
+    // face cannot draw flag sequences (Windows' Segoe UI Emoji), the bundled
+    // flag face with the system face substituted behind it.
     static QString emojiFamily();
+    static QString systemEmojiFamily();
+    static QString flagFamily();
+    static bool drawsFlagSequences(const QString &family);
     static QFont withEmojiFallback(const QString &family, int pixelSize);
     static bool installEmojiFallback(const QString &family);
     // Whether the Qt running this process needs installEmojiFallback(): only

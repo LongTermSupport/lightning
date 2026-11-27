@@ -9,7 +9,9 @@
 #include <QFileInfo>
 #include <QFont>
 #include <QFontDatabase>
+#include <QGlyphRun>
 #include <QRawFont>
+#include <QTextLayout>
 #include <QLoggingCategory>
 #include <QSaveFile>
 #include <QSet>
@@ -120,7 +122,7 @@ bool FontManager::isNonTextFace(const QString &family)
     static const char *const kNames[] = {
         "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", "Twemoji",
         "JoyPixels",        "EmojiOne Color",    "Noto Emoji",
-        "Material Symbols Rounded",
+        "Material Symbols Rounded", "Twemoji Country Flags",
     };
     for (const char *name : kNames) {
         if (family.compare(QLatin1String(name), Qt::CaseInsensitive) == 0)
@@ -561,21 +563,80 @@ bool FontManager::removeImportedFont(const QString &fileName)
     return true;
 }
 
+QString FontManager::systemEmojiFamily()
+{
+    static const char *const kCandidates[] = {
+        "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji",
+        "Twemoji",          "JoyPixels",         "EmojiOne Color",
+        "Noto Emoji",
+    };
+    const QStringList installed = QFontDatabase::families();
+    for (const char *candidate : kCandidates) {
+        const QString name = QString::fromLatin1(candidate);
+        if (installed.contains(name, Qt::CaseInsensitive))
+            return name;
+    }
+    return QString();
+}
+
+QString FontManager::flagFamily()
+{
+    return QStringLiteral("Twemoji Country Flags");
+}
+
+bool FontManager::drawsFlagSequences(const QString &family)
+{
+    if (family.isEmpty())
+        return false;
+    QFont font(family);
+    font.setStyleStrategy(QFont::NoFontMerging);
+    font.setPixelSize(32);
+    const QString blackFlag = QStringLiteral("\U0001F3F4");
+    const quint32 blackFlagGlyph = [&] {
+        const QList<quint32> glyphs =
+            QRawFont::fromFont(font).glyphIndexesForString(blackFlag);
+        return glyphs.isEmpty() ? 0u : glyphs.first();
+    }();
+    // France, and England (a tag sequence that degrades to the bare black flag).
+    const QString flags[] = {
+        QStringLiteral("\U0001F1EB\U0001F1F7"),
+        blackFlag + QStringLiteral("\U000E0067\U000E0062\U000E0065\U000E006E\U000E0067\U000E007F"),
+    };
+    for (const QString &flag : flags) {
+        QTextLayout layout(flag, font);
+        layout.beginLayout();
+        layout.createLine();
+        layout.endLayout();
+        QList<quint32> drawn;
+        for (const QGlyphRun &run : layout.glyphRuns()) {
+            for (const quint32 glyph : run.glyphIndexes()) {
+                if (glyph != 0)
+                    drawn.append(glyph);
+            }
+        }
+        if (drawn.size() != 1 || drawn.first() == blackFlagGlyph)
+            return false;
+    }
+    return true;
+}
+
 QString FontManager::emojiFamily()
 {
     static const QString family = [] {
-        static const char *const kCandidates[] = {
-            "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji",
-            "Twemoji",          "JoyPixels",         "EmojiOne Color",
-            "Noto Emoji",
-        };
-        const QStringList installed = QFontDatabase::families();
-        for (const char *candidate : kCandidates) {
-            const QString name = QString::fromLatin1(candidate);
-            if (installed.contains(name, Qt::CaseInsensitive))
-                return name;
+        const QString system = systemEmojiFamily();
+        if (drawsFlagSequences(system))
+            return system;
+        QFile file(QString::fromLatin1(kFlagFontResource));
+        if (!file.open(QIODevice::ReadOnly)
+            || QFontDatabase::addApplicationFontFromData(file.readAll()) < 0
+            || !QFontDatabase::families().contains(flagFamily())) {
+            return system;
         }
-        return QString();
+        // QML takes one family, so the system face rides along as a substitute.
+        if (!system.isEmpty())
+            QFont::insertSubstitution(flagFamily(), system);
+        qCInfo(lcFonts) << "emoji: flags from" << flagFamily() << "over" << system;
+        return flagFamily();
     }();
     return family;
 }

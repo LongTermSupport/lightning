@@ -57,6 +57,24 @@ private Q_SLOTS:
                  QStringList{ QStringLiteral("Noto Color Emoji") });
     }
 
+    void aSubdivisionFlagIsOneEmojiRun()
+    {
+        QTextDocument doc;
+        const QString england = QStringLiteral(
+            "\U0001F3F4\U000E0067\U000E0062\U000E0065\U000E006E\U000E0067\U000E007F");
+        doc.setPlainText(QStringLiteral("a ") + england + QStringLiteral(" b"));
+        MentionHighlighter highlighter;
+        highlighter.setEmojiFontFamily(QStringLiteral("Noto Color Emoji"));
+        highlighter.QSyntaxHighlighter::setDocument(&doc);
+        highlighter.rehighlight();
+        for (int pos = 2; pos < 2 + england.size(); ++pos) {
+            QVERIFY2(formatAt(doc, pos).fontFamilies().toStringList()
+                         == QStringList{ QStringLiteral("Noto Color Emoji") },
+                     qPrintable(QStringLiteral("utf-16 offset %1 left the emoji run").arg(pos)));
+        }
+        QVERIFY(!formatAt(doc, 2 + england.size()).fontFamilies().isValid());
+    }
+
     void noFamilyLeavesTheDocumentAlone()
     {
         QTextDocument doc;
