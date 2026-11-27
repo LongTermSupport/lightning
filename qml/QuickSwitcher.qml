@@ -448,22 +448,34 @@ Popup {
         const keptKey = context === switcher._commandRowsContext && keptIndex >= 0
                         && keptIndex < commandRowModel.count
                         ? switcher.commandRowKey(commandRowModel.get(keptIndex)) : ""
+        const sameContext = context === switcher._commandRowsContext
         switcher._commandRowsContext = context
-        commandRowModel.clear()
-        var next = commandRows.length > 0 ? 0 : -1
+        const rows = []
         for (var i = 0; i < commandRows.length; ++i) {
             var r = commandRows[i]
-            var row = {
+            rows.push({
                 kind: r.kind || "", label: r.label || "",
                 actionId: r.kind === "action" ? (r.id || "") : "",
                 name: r.name || "", subtitle: r.subtitle || "",
                 iconName: r.iconName || "", category: r.category || "",
                 roomId: r.roomId || "", avatarUrl: r.avatarUrl || "",
                 accountUserId: r.accountUserId || "",
-                enabled: r.enabled !== false }
-            commandRowModel.append(row)
-            if (keptKey !== "" && switcher.commandRowKey(row) === keptKey)
-                next = i
+                enabled: r.enabled !== false })
+        }
+        // Same entries in the same order: update in place so delegates, hover and focus survive.
+        if (sameContext && commandRowModel.count === rows.length
+                && rows.every((row, k) => switcher.commandRowKey(row)
+                                          === switcher.commandRowKey(commandRowModel.get(k)))) {
+            for (var j = 0; j < rows.length; ++j)
+                commandRowModel.set(j, rows[j])
+            return
+        }
+        commandRowModel.clear()
+        var next = rows.length > 0 ? 0 : -1
+        for (var n = 0; n < rows.length; ++n) {
+            commandRowModel.append(rows[n])
+            if (keptKey !== "" && switcher.commandRowKey(rows[n]) === keptKey)
+                next = n
         }
         if (keptKey !== "" && next >= 0
                 && switcher.commandRowKey(commandRowModel.get(next)) !== keptKey)
