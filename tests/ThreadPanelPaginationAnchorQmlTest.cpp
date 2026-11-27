@@ -836,7 +836,8 @@ private Q_SLOTS:
         for (int i = 0; i < 40; ++i)
             events.append(reply(i));
         mock->setPaginationDelayForTest(40);
-        mock->resetTimelineForTest(timelineId, events, 1);
+        // The open's history fill takes up to eight pages; leave some for the reader.
+        mock->resetTimelineForTest(timelineId, events, 12);
         QTRY_VERIFY_WITH_TIMEOUT(
             controller.thread()->model()->rowCount() >= 40, kSignalTimeoutMs);
 
@@ -859,6 +860,10 @@ private Q_SLOTS:
         auto *replyList = root->findChild<QQuickItem *>(
             QStringLiteral("threadReplyList"));
         QVERIFY(replyList);
+        QTest::qWait(200);
+        QTRY_VERIFY_WITH_TIMEOUT(!controller.thread()->model()->paginating(),
+                                 5000);
+        QVERIFY(controller.thread()->model()->canPaginate());
         TimelineScrollController *scroll = controller.threadScroll();
         const auto distanceFromEnd = [replyList] {
             QVariant maxY;
