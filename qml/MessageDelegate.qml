@@ -2771,6 +2771,39 @@ Item {
                                                    root.sourceModelRow(index))
                                 }
                             }
+                            Label {
+                                objectName: "tooLateToCancelNote"
+                                visible: model.isOwn === true
+                                         && model.tooLateToCancel === true
+                                text: qsTr("Too late to cancel.")
+                                color: AppTheme.textMuted
+                                font.pixelSize: AppTheme.scaled(AppTheme.textMicro)
+                            }
+                            Label {
+                                objectName: "deleteForEveryoneLink"
+                                visible: model.isOwn === true
+                                         && model.tooLateToCancel === true
+                                text: qsTr("Delete for everyone")
+                                color: root.inlineLinkInk
+                                font.pixelSize: AppTheme.scaled(AppTheme.textMicro)
+                                font.underline: true
+                                Accessible.role: Accessible.Button
+                                Accessible.name: text
+                                MouseArea {
+                                    anchors.fill: parent
+                                    enabled: root.rowActionsEnabled
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        var id = model.eventId
+                                        root.confirmDestructive(
+                                            qsTr("Delete message?"),
+                                            qsTr("This removes the message for everyone in the "
+                                                 + "room. It cannot be undone."),
+                                            qsTr("Delete"),
+                                            function() { root.timelineModel.redactEvent(id) })
+                                    }
+                                }
+                            }
                             Loader {
                                 active: model.isThreadRoot === true
                                 visible: active

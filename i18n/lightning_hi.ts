@@ -333,12 +333,12 @@ It does not touch your encryption keys, your sign-in or any message on the serve
         <translation>कनेक्टेड</translation>
     </message>
     <message>
-        <location line="+228"/>
+        <location line="+252"/>
         <source>Accounts</source>
         <translation>खाते</translation>
     </message>
     <message>
-        <location line="+145"/>
+        <location line="+148"/>
         <source>Encryption ready. Open Security and Recovery.</source>
         <translation>एन्क्रिप्शन तैयार है। सुरक्षा और रिकवरी खोलें।</translation>
     </message>
@@ -1625,13 +1625,13 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     <message>
         <location line="+501"/>
         <location line="+937"/>
-        <location line="+748"/>
+        <location line="+755"/>
         <location line="+15"/>
         <source>Removal did not finish: the account&apos;s data is still in use. Nothing was deleted.</source>
         <translation>हटाना पूरा नहीं हुआ: खाते का डेटा अभी उपयोग में है। कुछ भी नहीं हटाया गया।</translation>
     </message>
     <message>
-        <location line="-1503"/>
+        <location line="-1510"/>
         <source>This backend cannot change your display name.</source>
         <translation>यह बैकएंड आपका प्रदर्शित नाम नहीं बदल सकता।</translation>
     </message>
@@ -1674,17 +1674,17 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location line="+440"/>
-        <location line="+731"/>
+        <location line="+738"/>
         <source>This account can&apos;t be removed while the system keyring can&apos;t be read: its saved sign-in is there and would be left behind. Unlock the keyring, or start it, and try again.</source>
         <translation>जब तक सिस्टम कीरिंग पढ़ी नहीं जा सकती, यह खाता हटाया नहीं जा सकता: उसका सहेजा हुआ साइन-इन वहीं है और पीछे रह जाएगा। कीरिंग अनलॉक करें या शुरू करें, और फिर कोशिश करें।</translation>
     </message>
     <message>
-        <location line="-501"/>
+        <location line="-508"/>
         <source>Up to %1 accounts can keep running. Turn one off first.</source>
         <translation>अधिकतम %1 खाते चालू रह सकते हैं। पहले किसी एक को बंद करें।</translation>
     </message>
     <message>
-        <location line="+266"/>
+        <location line="+273"/>
         <source>That account is being removed from this device.</source>
         <translation>वह खाता इस डिवाइस से हटाया जा रहा है।</translation>
     </message>
@@ -1716,7 +1716,7 @@ It does not touch your encryption keys, your sign-in or any message on the serve
     </message>
     <message>
         <location filename="../qml/LoginScreen.qml" line="+433"/>
-        <location filename="../src/app/AppController.cpp" line="-2280"/>
+        <location filename="../src/app/AppController.cpp" line="-2287"/>
         <location line="+25"/>
         <location line="+532"/>
         <location line="+454"/>
@@ -8590,7 +8590,7 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+4"/>
-        <location filename="../src/models/TimelineModel.cpp" line="+2876"/>
+        <location filename="../src/models/TimelineModel.cpp" line="+2886"/>
         <source>Voice message</source>
         <translation>वॉइस संदेश</translation>
     </message>
@@ -13890,13 +13890,13 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+91"/>
-        <location line="+949"/>
+        <location line="+982"/>
         <location line="+1168"/>
         <source>Reply</source>
         <translation>जवाब दें</translation>
     </message>
     <message>
-        <location line="-2102"/>
+        <location line="-2135"/>
         <source>(original message not loaded)</source>
         <translation>(मूल संदेश लोड नहीं हुआ)</translation>
     </message>
@@ -13997,24 +13997,24 @@ Signing out and signing in again is the only fix.</source>
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2471"/>
+        <location line="+2504"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>फिर कोशिश करें</translation>
     </message>
     <message>
-        <location line="-3487"/>
-        <location line="+1231"/>
+        <location line="-3520"/>
+        <location line="+1264"/>
         <source>Cancel</source>
         <translation>रद्द करें</translation>
     </message>
     <message>
-        <location line="-1226"/>
+        <location line="-1259"/>
         <source>Cancel sending this message</source>
         <translation>इस संदेश को भेजना रद्द करें</translation>
     </message>
     <message>
-        <location line="+190"/>
+        <location line="+223"/>
         <location line="+1525"/>
         <source>Hide image</source>
         <translation>छवि छिपाएँ</translation>
@@ -14123,7 +14123,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>थ्रेड में जवाब दें</translation>
     </message>
     <message>
-        <location line="-2117"/>
+        <location line="-2150"/>
         <source>Original message removed</source>
         <translation>मूल संदेश हटा दिया गया</translation>
     </message>
@@ -14138,7 +14138,17 @@ Signing out and signing in again is the only fix.</source>
         <translation>आप अब इस रूम में नहीं हैं। हो सकता है यह सर्वर पर हटा दिया गया हो। इसे अपनी सूची से हटाने के लिए “रूम छोड़ें” का उपयोग करें।</translation>
     </message>
     <message>
-        <location line="+241"/>
+        <location line="+63"/>
+        <source>Too late to cancel.</source>
+        <translation>रद्द करने में बहुत देर हो गई।</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Delete for everyone</source>
+        <translation>सभी के लिए हटाएँ</translation>
+    </message>
+    <message>
+        <location line="+203"/>
         <location line="+1525"/>
         <source>Hidden image limit reached</source>
         <translation>छिपी तस्वीरों की सीमा पूरी हो गई</translation>
@@ -14440,7 +14450,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>संपादित करें</translation>
     </message>
     <message>
-        <location line="-3749"/>
+        <location line="-3782"/>
         <source>%1 B</source>
         <translation>%1 B</translation>
     </message>
@@ -14474,22 +14484,22 @@ Signing out and signing in again is the only fix.</source>
     <message>
         <location line="-572"/>
         <location line="+570"/>
-        <location line="+3838"/>
+        <location line="+3871"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5331"/>
+        <location line="-5364"/>
         <location line="+53"/>
         <location line="+516"/>
-        <location line="+4387"/>
+        <location line="+4420"/>
         <source>Image</source>
         <translation>तस्वीर</translation>
     </message>
     <message>
-        <location line="-4954"/>
+        <location line="-4987"/>
         <source>Attachment</source>
         <translation>अटैचमेंट</translation>
     </message>
@@ -14555,7 +14565,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>(संपादित)</translation>
     </message>
     <message>
-        <location line="+1743"/>
+        <location line="+1776"/>
         <source>Add :%1: to my emoji</source>
         <translation>:%1: को मेरे इमोजी में जोड़ें</translation>
     </message>
@@ -14595,7 +14605,8 @@ Signing out and signing in again is the only fix.</source>
         <translation>संदेश की रिपोर्ट करें</translation>
     </message>
     <message>
-        <location line="-812"/>
+        <location line="-1886"/>
+        <location line="+1074"/>
         <location line="+826"/>
         <source>Delete</source>
         <translation>हटाएँ</translation>
@@ -14693,12 +14704,12 @@ Signing out and signing in again is the only fix.</source>
         <translation>जिसका जवाब है</translation>
     </message>
     <message>
-        <location line="-2128"/>
+        <location line="-2161"/>
         <source>Show preview</source>
         <translation>प्रीव्यू दिखाएँ</translation>
     </message>
     <message>
-        <location line="+1968"/>
+        <location line="+2001"/>
         <source>Remove edits?</source>
         <translation>संपादन हटाएँ?</translation>
     </message>
@@ -14718,12 +14729,14 @@ Signing out and signing in again is the only fix.</source>
         <translation>इससे मतदान बंद हो जाता है और परिणाम प्रकाशित होता है। पोल दोबारा खोला नहीं जा सकता।</translation>
     </message>
     <message>
-        <location line="-768"/>
+        <location line="-1842"/>
+        <location line="+1074"/>
         <source>Delete message?</source>
         <translation>संदेश हटाएँ?</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-1073"/>
+        <location line="+1074"/>
         <source>This removes the message for everyone in the room. It cannot be undone.</source>
         <translation>इससे संदेश रूम में सभी के लिए हट जाता है। इसे पूर्ववत नहीं किया जा सकता।</translation>
     </message>
@@ -14810,10 +14823,10 @@ Signing out and signing in again is the only fix.</source>
         <translation>स्टिकर लोड नहीं हो सका — फिर कोशिश करने के लिए क्लिक करें</translation>
     </message>
     <message>
-        <location line="-5748"/>
+        <location line="-5781"/>
         <location line="+57"/>
         <location line="+519"/>
-        <location line="+4385"/>
+        <location line="+4418"/>
         <location line="+1066"/>
         <location line="+93"/>
         <source>Video</source>
@@ -14826,9 +14839,9 @@ Signing out and signing in again is the only fix.</source>
         <translation>वीडियो</translation>
     </message>
     <message>
-        <location line="-6131"/>
+        <location line="-6164"/>
         <location line="+572"/>
-        <location line="+4488"/>
+        <location line="+4521"/>
         <location line="+1270"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -18093,7 +18106,7 @@ Signing out and signing in again is the only fix.</source>
         <translation>आज़माएँ %1</translation>
     </message>
     <message>
-        <location line="+122"/>
+        <location line="+134"/>
         <source>%1 is no longer listed.</source>
         <translation>%1 अब सूची में नहीं है।</translation>
     </message>
@@ -22029,7 +22042,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4807"/>
+        <location line="+4811"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -22038,15 +22051,15 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>साइन इन नहीं हैं।</translation>
     </message>
     <message>
-        <location line="-5163"/>
+        <location line="-5167"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4970"/>
+        <location line="+4974"/>
         <source>Unknown room: %1</source>
         <translation>अज्ञात रूम: %1</translation>
     </message>
     <message>
-        <location line="-5165"/>
+        <location line="-5169"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
@@ -22055,12 +22068,12 @@ These links remain in room state. Open the successor from the room&apos;s replac
     <message>
         <location line="+817"/>
         <location line="+2726"/>
-        <location line="+68"/>
+        <location line="+72"/>
         <source>The sticker could not be sent.</source>
         <translation>स्टीकर नहीं भेजा जा सका.</translation>
     </message>
     <message>
-        <location line="-1469"/>
+        <location line="-1473"/>
         <source>Lightning cannot send that yet.</source>
         <translation>Lightning अभी वह भेज नहीं सकता।</translation>
     </message>
@@ -22131,7 +22144,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>वह संदेश पहले ही भेजा जा चुका था, इसलिए रद्द नहीं किया जा सका।</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+10"/>
         <source>That message could not be cancelled.</source>
         <translation>वह संदेश रद्द नहीं किया जा सका।</translation>
     </message>
@@ -22146,13 +22159,13 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>संपादन लागू नहीं किया जा सका।</translation>
     </message>
     <message>
-        <location line="-60"/>
-        <location line="+68"/>
+        <location line="-64"/>
+        <location line="+72"/>
         <source>The poll action could not be completed.</source>
         <translation>पोल की कार्रवाई पूरी नहीं हो सकी।</translation>
     </message>
     <message>
-        <location line="-6689"/>
+        <location line="-6693"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>इस खाते का डेटा अभी किसी बैकग्राउंड सेशन में उपयोग में है। थोड़ी देर रुककर दोबारा कोशिश करें।</translation>
     </message>
@@ -22182,7 +22195,7 @@ These links remain in room state. Open the successor from the room&apos;s replac
         <translation>अपना पासवर्ड दर्ज करें।</translation>
     </message>
     <message>
-        <location line="+5818"/>
+        <location line="+5822"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>संदेश भेजा नहीं जा सका। आप संदेश के “फिर कोशिश करें” विकल्प से दोबारा भेज सकते हैं।</translation>
     </message>
@@ -35050,7 +35063,7 @@ Proposed audience
         <translation>इस थ्रेड को पढ़ा हुआ चिह्नित करें</translation>
     </message>
     <message>
-        <location line="+1391"/>
+        <location line="+1412"/>
         <source>Jump to the newest reply</source>
         <translation>सबसे नए जवाब पर जाएँ</translation>
     </message>
@@ -35063,7 +35076,7 @@ Proposed audience
         </translation>
     </message>
     <message>
-        <location line="-1846"/>
+        <location line="-1867"/>
         <source>This room has been replaced.</source>
         <translation>यह रूम बदल दिया गया है।</translation>
     </message>
@@ -35341,7 +35354,7 @@ Proposed audience
         <translation>अभी कोई जवाब नहीं। नीचे बातचीत शुरू करें।</translation>
     </message>
     <message>
-        <location line="+579"/>
+        <location line="+600"/>
         <source>Loading older replies…</source>
         <translation>पुराने जवाब लोड हो रहे हैं…</translation>
     </message>
@@ -35690,7 +35703,7 @@ Proposed audience
 <context>
     <name>TimelineModel</name>
     <message>
-        <location filename="../src/models/TimelineModel.cpp" line="-1704"/>
+        <location filename="../src/models/TimelineModel.cpp" line="-1710"/>
         <source>%1 changed their display name from “%2” to “%3” and changed their avatar.</source>
         <translation>%1 ने अपना प्रदर्शित नाम “%2” से बदलकर “%3” किया और अवतार बदला।</translation>
     </message>
@@ -35740,7 +35753,7 @@ Proposed audience
         <translation>%1 ने कॉल प्रारंभ की.</translation>
     </message>
     <message>
-        <location line="+1356"/>
+        <location line="+1362"/>
         <source>%1 is typing…</source>
         <translation>%1 लिख रहे हैं…</translation>
     </message>
@@ -35778,12 +35791,12 @@ Proposed audience
     <message>
         <location filename="../qml/SpaceLobby.qml" line="-520"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5418"/>
+        <location line="+5426"/>
         <source>Space</source>
         <translation>स्पेस</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5417"/>
+        <location filename="../qml/TimelinePane.qml" line="-5425"/>
         <source>Home</source>
         <translation>होम</translation>
     </message>
@@ -35885,12 +35898,12 @@ Proposed audience
     <message>
         <location line="+16"/>
         <location line="+2"/>
-        <location line="+3861"/>
+        <location line="+3869"/>
         <source>Room information</source>
         <translation>कक्ष जानकारी</translation>
     </message>
     <message>
-        <location line="-3850"/>
+        <location line="-3858"/>
         <location line="+1"/>
         <source>More room actions</source>
         <translation>रूम की और कार्रवाइयाँ</translation>
@@ -36106,7 +36119,7 @@ Proposed audience
         <translation>खोज पूरी नहीं हो सकी।</translation>
     </message>
     <message>
-        <location line="+2757"/>
+        <location line="+2765"/>
         <location line="+27"/>
         <location line="+466"/>
         <source>Loading older messages…</source>
@@ -36496,8 +36509,8 @@ Proposed audience
     </message>
     <message>
         <location line="+299"/>
-        <location filename="../qml/TimelinePane.qml" line="-6725"/>
-        <location line="+6902"/>
+        <location filename="../qml/TimelinePane.qml" line="-6733"/>
+        <location line="+6910"/>
         <source>Room</source>
         <translation>कक्ष</translation>
     </message>
@@ -36564,13 +36577,13 @@ Proposed audience
         <translation>रद्द करें</translation>
     </message>
     <message>
-        <location line="-6017"/>
+        <location line="-6025"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation>प्रोफ़ाइल देखें</translation>
     </message>
     <message>
-        <location line="+5237"/>
+        <location line="+5245"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation>तस्वीरें (*.png *.jpg *.jpeg *.gif *.webp *.svg)</translation>
     </message>
@@ -36647,7 +36660,7 @@ Proposed audience
         <translation>संलग्न करने के लिए फ़ाइलें छोड़ें</translation>
     </message>
     <message>
-        <location line="-5465"/>
+        <location line="-5473"/>
         <source>Join space</source>
         <translation>स्पेस में शामिल हों</translation>
     </message>

@@ -325,6 +325,8 @@ void TimelineModel::setClient(MatrixClient *client)
                 this, &TimelineModel::onTimelineReset);
         connect(m_client, &MatrixClient::loggedOut,
                 this, &TimelineModel::onLoggedOut);
+        connect(m_client, &MatrixClient::sendCancelTooLate,
+                this, &TimelineModel::onSendCancelTooLate);
         connect(m_client, &MatrixClient::typingChanged,
                 this, &TimelineModel::onTypingChanged);
         connect(m_client, &MatrixClient::membersChanged,
@@ -405,6 +407,8 @@ void TimelineModel::setRoomId(const QString &roomId)
     Q_EMIT roomIdChanged();
     endSearch();
     m_spoilersRevealed.clear();
+    m_cancelRequested.clear();
+    m_tooLateToCancel.clear();
     if (!m_threadFilterRootId.isEmpty()) {
         m_threadFilterRootId.clear();
         Q_EMIT threadPresentationChanged();
@@ -1594,6 +1598,9 @@ QVariant TimelineModel::data(const QModelIndex &index, int role) const
     case LocationTsRole:         return e.locationTs;
     case LocationLiveUntilRole:  return e.locationLiveUntil;
     case CardKindRole:           return e.cardKind;
+    case TooLateToCancelRole:
+        return !e.redacted && !e.eventId.isEmpty()
+            && m_tooLateToCancel.contains(e.eventId);
     case CanEndPollRole:
         return e.type == TimelineEvent::Poll && !e.pollEnded
             && e.sender == m_selfUserId;
@@ -1868,6 +1875,7 @@ QHash<int, QByteArray> TimelineModel::roleNames() const
         { LocationTsRole,           "locationTs" },
         { LocationLiveUntilRole,    "locationLiveUntil" },
         { CardKindRole,             "cardKind" },
+        { TooLateToCancelRole,      "tooLateToCancel" },
         { CanEndPollRole,           "canEndPoll" },
         { ReadReceiptsRole,         "readReceipts" },
         { ReadReceiptsTotalRole,    "readReceiptsTotal" },
@@ -2471,6 +2479,8 @@ void TimelineModel::onLoggedOut()
     // not leak into account B's session.
     m_senderAvatarIndex.clear();
     m_senderNameIndex.clear();
+    m_cancelRequested.clear();
+    m_tooLateToCancel.clear();
     m_roomId.clear();
     m_realRoomId.clear();
     endResetModel();
@@ -3120,7 +3130,21 @@ void TimelineModel::cancelSend(int row)
 {
     if (!canCancelSend(row))
         return;
+    m_cancelRequested.insert(m_events.at(row).transactionId);
     m_client->cancelSend(m_roomId, m_events.at(row).transactionId);
+}
+
+void TimelineModel::onSendCancelTooLate(const QString &roomId,
+                                        const QString &transactionId,
+                                        const QString &eventId)
+{
+    if (roomId != m_realRoomId || !m_cancelRequested.remove(transactionId)
+        || eventId.isEmpty())
+        return;
+    m_tooLateToCancel.insert(eventId);
+    const int row = rowForEventId(eventId);
+    if (row >= 0)
+        Q_EMIT dataChanged(index(row), index(row), { TooLateToCancelRole });
 }
 
 void TimelineModel::retryDecryption()

@@ -172,6 +172,7 @@ public:
         LocationTsRole,
         LocationLiveUntilRole,
         CardKindRole,
+        TooLateToCancelRole,
     };
 
     explicit TimelineModel(QObject *parent = nullptr);
@@ -378,6 +379,8 @@ private Q_SLOTS:
     void onEventRemovedAt(const QString &roomId, int index);
     void onEventsTruncatedTo(const QString &roomId, int length);
     void onLoggedOut();
+    void onSendCancelTooLate(const QString &roomId, const QString &transactionId,
+                             const QString &eventId);
     void onTypingChanged(const QString &roomId);
     void onMembersChanged(const QString &roomId);
     int refreshStaleMentionRows();
@@ -469,6 +472,8 @@ public:
 
 private:
     QSet<QString> m_spoilersRevealed;
+    QSet<QString> m_cancelRequested;
+    QSet<QString> m_tooLateToCancel;
     QString m_selfUserId;
     QList<TimelineEvent> m_events;
     QString m_latestCallEventId;
