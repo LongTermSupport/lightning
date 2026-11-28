@@ -94,6 +94,12 @@ Item {
     function _vimKey(event, editor) {
         if (!root.vimNormal)
             return false
+        var step = VimEditing.selectionStepAction(app.composer.vim, event)
+        if (step !== "") {
+            root.timelineKeyRequested(step)
+            event.accepted = true
+            return true
+        }
         var r = VimEditing.handleKey(app.composer.vim, event, editor,
                                      editor === richInput)
         if (!r)

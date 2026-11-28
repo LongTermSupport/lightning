@@ -231,6 +231,90 @@ pub(crate) async fn abort_or_pending(handle: matrix_sdk::send_queue::SendHandle)
     }
 }
 
+#[derive(Debug, PartialEq)]
+pub(crate) enum CancelOutcome {
+    Aborted,
+    TooLate(Option<matrix_sdk::ruma::OwnedEventId>),
+    Failed,
+}
+
+/// Cancels a local echo at the user's request. Unlike `SendHandle::abort`
+/// alone, a request already in flight is not turned into a redaction once it
+/// lands: it is reported too late, and deleting it stays the user's choice.
+pub(crate) async fn cancel_unsent(
+    room: &matrix_sdk::Room,
+    handle: matrix_sdk::send_queue::SendHandle,
+    txn: &matrix_sdk::ruma::TransactionId,
+    wait: Duration,
+) -> CancelOutcome {
+    use matrix_sdk_base::store::DependentQueuedRequestKind;
+    let Ok((_, updates)) = room.send_queue().subscribe().await else {
+        return CancelOutcome::Failed;
+    };
+    match handle.abort().await {
+        Ok(true) => {}
+        Ok(false) => return CancelOutcome::TooLate(None),
+        Err(_) => return CancelOutcome::Failed,
+    }
+    let client = room.client();
+    let store = client.state_store();
+    let Ok(dependents) = store.load_dependent_queued_requests(room.room_id()).await else {
+        return CancelOutcome::Failed;
+    };
+    // abort() of an event already in flight queues this redaction and reports success.
+    let Some(redact) = dependents.into_iter().find(|dep| {
+        &*dep.parent_transaction_id == txn
+            && matches!(dep.kind, DependentQueuedRequestKind::RedactEvent)
+    }) else {
+        return CancelOutcome::Aborted;
+    };
+    if !matches!(
+        store.remove_dependent_queued_request(room.room_id(), &redact.own_transaction_id).await,
+        Ok(true)
+    ) {
+        return CancelOutcome::TooLate(None);
+    }
+    match await_in_flight(updates, txn, wait).await {
+        InFlight::Sent(event_id) => CancelOutcome::TooLate(Some(event_id)),
+        InFlight::Failed => match handle.abort().await {
+            Ok(true) => CancelOutcome::Aborted,
+            _ => CancelOutcome::TooLate(None),
+        },
+        InFlight::Unknown => CancelOutcome::TooLate(None),
+    }
+}
+
+enum InFlight {
+    Sent(matrix_sdk::ruma::OwnedEventId),
+    Failed,
+    Unknown,
+}
+
+async fn await_in_flight(
+    mut updates: tokio::sync::broadcast::Receiver<matrix_sdk::send_queue::RoomSendQueueUpdate>,
+    txn: &matrix_sdk::ruma::TransactionId,
+    wait: Duration,
+) -> InFlight {
+    use matrix_sdk::send_queue::RoomSendQueueUpdate;
+    let deadline = tokio::time::Instant::now() + wait;
+    loop {
+        match tokio::time::timeout_at(deadline, updates.recv()).await {
+            Ok(Ok(RoomSendQueueUpdate::SentEvent { transaction_id, event_id }))
+                if &*transaction_id == txn =>
+            {
+                return InFlight::Sent(event_id);
+            }
+            Ok(Ok(RoomSendQueueUpdate::SendError { transaction_id, .. }))
+                if &*transaction_id == txn =>
+            {
+                return InFlight::Failed;
+            }
+            Ok(Ok(_)) | Ok(Err(RecvError::Lagged(_))) => {}
+            Ok(Err(RecvError::Closed)) | Err(_) => return InFlight::Unknown,
+        }
+    }
+}
+
 /// Waits for the server's answer to one queued request; `updates` must have
 /// been subscribed before the request was queued.
 pub(crate) async fn await_queued(
@@ -414,6 +498,85 @@ mod tests {
             QueuedSend::Sent(id) => assert_eq!(id.as_deref(), Some(event_id!("$sent"))),
             _ => panic!("the queued send did not report the server's event id"),
         }
+    }
+
+    async fn local_echo(
+        timeline: &matrix_sdk_ui::Timeline,
+        body: &str,
+    ) -> Option<(matrix_sdk::send_queue::SendHandle, matrix_sdk::ruma::OwnedTransactionId)> {
+        for _ in 0..50 {
+            let found = timeline.items().await.iter().find_map(|item| {
+                let ev = item.as_event()?;
+                if !ev.content().as_message().is_some_and(|m| m.body() == body) {
+                    return None;
+                }
+                Some((ev.local_echo_send_handle()?, ev.transaction_id()?.to_owned()))
+            });
+            if found.is_some() {
+                return found;
+            }
+            tokio::time::sleep(Duration::from_millis(20)).await;
+        }
+        None
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn a_cancelled_queued_send_is_aborted_and_never_reaches_the_server() {
+        use matrix_sdk_ui::timeline::RoomExt;
+        let server = MatrixMockServer::new().await;
+        let client = server.client_builder().build().await;
+        let room = server.sync_joined_room(&client, room_id!("!abort:localhost")).await;
+        server.mock_room_state_encryption().plain().mount().await;
+        server.mock_room_send().ok(event_id!("$leaked")).expect(0).mount().await;
+        let timeline = room.timeline().await.unwrap();
+        let queue = room.send_queue();
+        queue.set_enabled(false);
+        queue.send(RoomMessageEventContent::text_plain("stop").into()).await.unwrap();
+        let (handle, txn) = local_echo(&timeline, "stop").await.expect("no local echo");
+
+        let outcome = cancel_unsent(&room, handle, &txn, Duration::from_secs(2)).await;
+        assert_eq!(outcome, CancelOutcome::Aborted);
+        let mut gone = false;
+        for _ in 0..50 {
+            gone = !timeline.items().await.iter().any(|item| {
+                item.as_event().is_some_and(|ev| ev.transaction_id() == Some(&*txn))
+            });
+            if gone {
+                break;
+            }
+            tokio::time::sleep(Duration::from_millis(20)).await;
+        }
+        assert!(gone, "an aborted send still has a row");
+        queue.set_enabled(true);
+        tokio::time::sleep(Duration::from_millis(300)).await;
+        assert!(queue.subscribe().await.unwrap().0.is_empty());
+        server.server().verify().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn a_cancel_too_late_for_an_in_flight_send_is_reported_and_never_redacted() {
+        use matrix_sdk_ui::timeline::RoomExt;
+        let server = MatrixMockServer::new().await;
+        let client = server.client_builder().build().await;
+        let room = server.sync_joined_room(&client, room_id!("!late:localhost")).await;
+        server.mock_room_state_encryption().plain().mount().await;
+        server
+            .mock_room_send()
+            .ok_with_delay(event_id!("$late"), Duration::from_millis(1200))
+            .mount()
+            .await;
+        server.mock_room_redact().ok(event_id!("$redaction")).expect(0).mount().await;
+        let timeline = room.timeline().await.unwrap();
+        let queue = room.send_queue();
+        queue.set_enabled(true);
+        queue.send(RoomMessageEventContent::text_plain("oops").into()).await.unwrap();
+        let (handle, txn) = local_echo(&timeline, "oops").await.expect("no local echo");
+        tokio::time::sleep(Duration::from_millis(300)).await;
+
+        let outcome = cancel_unsent(&room, handle, &txn, Duration::from_secs(10)).await;
+        assert_eq!(outcome, CancelOutcome::TooLate(Some(event_id!("$late").to_owned())));
+        tokio::time::sleep(Duration::from_millis(800)).await;
+        server.server().verify().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]

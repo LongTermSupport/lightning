@@ -43,7 +43,9 @@ static bool isEmojiCodepoint(char32_t cp)
         || cp == 0x200D
         || cp == 0xFE0F
         || cp == 0x20E3
-        || (cp >= 0x2B00 && cp <= 0x2BFF);
+        || (cp >= 0x2B00 && cp <= 0x2BFF)
+        // Tag characters: a subdivision flag only ligates if its tags share the run.
+        || (cp >= 0xE0020 && cp <= 0xE007F);
 }
 
 void MentionHighlighter::highlightBlock(const QString &text)

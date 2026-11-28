@@ -1115,6 +1115,33 @@ ApplicationWindow {
         QVERIFY(pane->property("keyboardSelectedEventId").toString() != selected);
     }
 
+    void olderMessageWithNoSelectionSelectsTheLatest()
+    {
+        openJoinedRoom();
+        QTest::keyClick(m_window, Qt::Key_Space,
+                       Qt::ControlModifier | Qt::ShiftModifier);
+        auto *pane = item("timelinePane");
+        auto *view = item("timelineListView");
+        QTRY_VERIFY(view->hasActiveFocus());
+        QTRY_VERIFY(!view->property("enteringMessageNavigation").toBool());
+        const QString latest = pane->property("keyboardSelectedEventId").toString();
+        QVERIFY(!latest.isEmpty());
+        for (int step = 0; step < 5; ++step)
+            QTest::keyClick(m_window, Qt::Key_K);
+        QVERIFY(pane->property("keyboardSelectedEventId").toString() != latest);
+        QVERIFY(QMetaObject::invokeMethod(view, "goToEarliestLoaded"));
+        QTest::qWait(100);
+
+        QVERIFY(pane->setProperty("keyboardSelectedEventId", QString()));
+        QVERIFY(view->hasActiveFocus());
+        QTest::keyClick(m_window, Qt::Key_K);
+        QTRY_COMPARE(pane->property("keyboardSelectedEventId").toString(), latest);
+        QTRY_VERIFY(!view->property("enteringMessageNavigation").toBool());
+        QCOMPARE(pane->property("keyboardSelectedEventId").toString(), latest);
+        QTest::keyClick(m_window, Qt::Key_K);
+        QVERIFY(pane->property("keyboardSelectedEventId").toString() != latest);
+    }
+
     void halfPagingDoesNotToggleThePeoplePanel()
     {
         openJoinedRoom();
@@ -1475,6 +1502,56 @@ ApplicationWindow {
         QTRY_VERIFY(!selection->property("active").toBool());
         QVERIFY(last->property("selectedText").toString().isEmpty());
         QVERIFY(first->property("selectedText").toString().isEmpty());
+    }
+
+    void aModelResetAfterTheTouchedRowsAreDestroyedClearsTheSelection()
+    {
+        QQmlEngine engine;
+        QQmlComponent component(&engine);
+        component.setData(R"QML(
+import QtQuick
+import MatrixClient
+Item {
+    id: top
+    QtObject {
+        id: stub
+        signal modelReset()
+        function stableIdAt(row) { return ["a", "b"][row] || "" }
+        function rowForStableId(id) { return ["a", "b"].indexOf(id) }
+        function messageIdsInRows(lo, hi) { return ["a", "b"].slice(lo, hi + 1) }
+    }
+    Component {
+        id: row
+        Item { function applyDragSelection(mode, point, keep) {} }
+    }
+    property alias selection: selection
+    property alias stubModel: stub
+    MessageDragSelection { id: selection; model: stub }
+    function touchTwoRows() {
+        var a = row.createObject(top), b = row.createObject(top)
+        selection.originStable = "a"
+        selection.currentStable = "b"
+        selection.touched = [a, b]
+        selection.ids = ["a", "b"]
+        a.destroy()
+        b.destroy()
+    }
+}
+)QML", QUrl());
+        QScopedPointer<QObject> root(component.create());
+        QVERIFY2(root, qPrintable(component.errorString()));
+        QTest::failOnWarning(QRegularExpression(QStringLiteral("MessageDragSelection")));
+        QVERIFY(QMetaObject::invokeMethod(root.get(), "touchTwoRows"));
+        QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
+        auto *stub = root->property("stubModel").value<QObject *>();
+        QVERIFY(QMetaObject::invokeMethod(stub, "modelReset"));
+        auto *selection = root->property("selection").value<QObject *>();
+        QVERIFY(!selection->property("active").toBool());
+        QCOMPARE(selection->property("originStable").toString(), QString());
+        QVariant touched = selection->property("touched");
+        if (touched.userType() == qMetaTypeId<QJSValue>())
+            touched = touched.value<QJSValue>().toVariant();
+        QVERIFY(touched.toList().isEmpty());
     }
 
     void aDragThatAutoScrollsKeepsItsStartMessage_data()

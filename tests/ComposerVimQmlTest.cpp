@@ -47,6 +47,7 @@ class ComposerVimQmlTest : public QObject
     QObject *m_root = nullptr;
     QQuickWindow *m_window = nullptr;
     QStringList m_warnings;
+    QStringList m_actions;
 
     QQuickItem *item(const char *name) const
     {
@@ -79,6 +80,9 @@ class ComposerVimQmlTest : public QObject
         QMetaObject::invokeMethod(input(), "forceActiveFocus");
         QTRY_VERIFY(input()->hasActiveFocus());
     }
+
+public Q_SLOTS:
+    void noteAction(const QString &id) { m_actions << id; }
 
 private Q_SLOTS:
     void initTestCase()
@@ -206,6 +210,37 @@ private Q_SLOTS:
         QTRY_COMPARE(text(), QString());
         QVERIFY(!vim()->normal());
         QVERIFY(input()->hasActiveFocus());
+    }
+
+    void shiftKAndJInNormalModeMoveTheMessageSelection()
+    {
+        m_controller->settings()->setVimComposer(true);
+        focusFresh(QStringLiteral("one\ntwo"));
+        QObject *bar = m_root->findChild<QObject *>(QStringLiteral("composerBar"));
+        QVERIFY(bar);
+        QObject::connect(bar, SIGNAL(timelineKeyRequested(QString)), this,
+                         SLOT(noteAction(QString)));
+        m_actions.clear();
+
+        QTest::keyClick(m_window, Qt::Key_Escape);
+        QVERIFY(vim()->normal());
+        const int caret = cursor();
+        QTest::keyClick(m_window, Qt::Key_K, Qt::ShiftModifier);
+        QTest::keyClick(m_window, Qt::Key_J, Qt::ShiftModifier);
+        QCOMPARE(m_actions, (QStringList{ QStringLiteral("timeline.olderMessage"),
+                                          QStringLiteral("timeline.newerMessage") }));
+        QVERIFY(vim()->normal());
+        QCOMPARE(text(), QStringLiteral("one\ntwo"));
+        QCOMPARE(cursor(), caret);
+        QVERIFY(input()->hasActiveFocus());
+
+        m_actions.clear();
+        QTest::keyClick(m_window, Qt::Key_K);
+        QTest::keyClick(m_window, Qt::Key_J);
+        QVERIFY(m_actions.isEmpty());
+        QTest::keyClick(m_window, Qt::Key_I);
+        QTest::keyClick(m_window, Qt::Key_K, Qt::ShiftModifier);
+        QVERIFY(m_actions.isEmpty());
     }
 
     void escapeCancelsAReplyBeforeEnteringNormal()

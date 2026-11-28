@@ -333,12 +333,12 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
         <translation>Connecté</translation>
     </message>
     <message>
-        <location line="+228"/>
+        <location line="+252"/>
         <source>Accounts</source>
         <translation>Comptes</translation>
     </message>
     <message>
-        <location line="+145"/>
+        <location line="+148"/>
         <source>Encryption ready. Open Security and Recovery.</source>
         <translation>Chiffrement prêt. Ouvrez Sécurité et récupération.</translation>
     </message>
@@ -1625,13 +1625,13 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
     <message>
         <location line="+501"/>
         <location line="+937"/>
-        <location line="+748"/>
+        <location line="+755"/>
         <location line="+15"/>
         <source>Removal did not finish: the account&apos;s data is still in use. Nothing was deleted.</source>
         <translation>La suppression n&apos;a pas abouti : les données du compte sont encore utilisées. Rien n&apos;a été supprimé.</translation>
     </message>
     <message>
-        <location line="-1503"/>
+        <location line="-1510"/>
         <source>This backend cannot change your display name.</source>
         <translation>Ce backend ne peut pas modifier votre nom affiché.</translation>
     </message>
@@ -1674,17 +1674,17 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
     </message>
     <message>
         <location line="+440"/>
-        <location line="+731"/>
+        <location line="+738"/>
         <source>This account can&apos;t be removed while the system keyring can&apos;t be read: its saved sign-in is there and would be left behind. Unlock the keyring, or start it, and try again.</source>
         <translation>Ce compte ne peut pas être supprimé tant que le trousseau système est illisible : sa connexion enregistrée y est encore et serait laissée derrière. Déverrouillez le trousseau, ou démarrez-le, puis réessayez.</translation>
     </message>
     <message>
-        <location line="-501"/>
+        <location line="-508"/>
         <source>Up to %1 accounts can keep running. Turn one off first.</source>
         <translation>Jusqu&apos;à %1 comptes peuvent rester actifs. Désactivez-en un d&apos;abord.</translation>
     </message>
     <message>
-        <location line="+266"/>
+        <location line="+273"/>
         <source>That account is being removed from this device.</source>
         <translation>Ce compte est en cours de suppression de cet appareil.</translation>
     </message>
@@ -1716,7 +1716,7 @@ Elle ne touche ni à vos clés de chiffrement, ni à votre connexion, ni aux mes
     </message>
     <message>
         <location filename="../qml/LoginScreen.qml" line="+433"/>
-        <location filename="../src/app/AppController.cpp" line="-2280"/>
+        <location filename="../src/app/AppController.cpp" line="-2287"/>
         <location line="+25"/>
         <location line="+532"/>
         <location line="+454"/>
@@ -8590,7 +8590,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     </message>
     <message>
         <location line="+4"/>
-        <location filename="../src/models/TimelineModel.cpp" line="+2876"/>
+        <location filename="../src/models/TimelineModel.cpp" line="+2886"/>
         <source>Voice message</source>
         <translation>Message vocal</translation>
     </message>
@@ -13890,13 +13890,13 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     </message>
     <message>
         <location line="+91"/>
-        <location line="+949"/>
+        <location line="+982"/>
         <location line="+1168"/>
         <source>Reply</source>
         <translation>Répondre</translation>
     </message>
     <message>
-        <location line="-2102"/>
+        <location line="-2135"/>
         <source>(original message not loaded)</source>
         <translation>(message d&apos;origine non chargé)</translation>
     </message>
@@ -13997,24 +13997,24 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     </message>
     <message>
         <location line="+14"/>
-        <location line="+2471"/>
+        <location line="+2504"/>
         <location line="+1033"/>
         <source>Retry</source>
         <translation>Réessayer</translation>
     </message>
     <message>
-        <location line="-3487"/>
-        <location line="+1231"/>
+        <location line="-3520"/>
+        <location line="+1264"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location line="-1226"/>
+        <location line="-1259"/>
         <source>Cancel sending this message</source>
         <translation>Annuler l&apos;envoi de ce message</translation>
     </message>
     <message>
-        <location line="+190"/>
+        <location line="+223"/>
         <location line="+1525"/>
         <source>Hide image</source>
         <translation>Masquer l&apos;image</translation>
@@ -14123,7 +14123,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Répondre dans un fil</translation>
     </message>
     <message>
-        <location line="-2117"/>
+        <location line="-2150"/>
         <source>Original message removed</source>
         <translation>Message d&apos;origine supprimé</translation>
     </message>
@@ -14138,7 +14138,17 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Vous ne faites plus partie de ce salon. Il a peut-être été supprimé sur le serveur. Utilisez « Quitter le salon » pour le retirer de votre liste.</translation>
     </message>
     <message>
-        <location line="+241"/>
+        <location line="+63"/>
+        <source>Too late to cancel.</source>
+        <translation>Trop tard pour annuler.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Delete for everyone</source>
+        <translation>Supprimer pour tout le monde</translation>
+    </message>
+    <message>
+        <location line="+203"/>
         <location line="+1525"/>
         <source>Hidden image limit reached</source>
         <translation>Limite d&apos;images masquées atteinte</translation>
@@ -14440,7 +14450,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Modifier</translation>
     </message>
     <message>
-        <location line="-3749"/>
+        <location line="-3782"/>
         <source>%1 B</source>
         <translation>%1 o</translation>
     </message>
@@ -14474,22 +14484,22 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
     <message>
         <location line="-572"/>
         <location line="+570"/>
-        <location line="+3838"/>
+        <location line="+3871"/>
         <location line="+405"/>
         <location line="+518"/>
         <source>GIF</source>
         <translation>GIF</translation>
     </message>
     <message>
-        <location line="-5331"/>
+        <location line="-5364"/>
         <location line="+53"/>
         <location line="+516"/>
-        <location line="+4387"/>
+        <location line="+4420"/>
         <source>Image</source>
         <translation>Image</translation>
     </message>
     <message>
-        <location line="-4954"/>
+        <location line="-4987"/>
         <source>Attachment</source>
         <translation>Pièce jointe</translation>
     </message>
@@ -14555,7 +14565,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>(modifié)</translation>
     </message>
     <message>
-        <location line="+1743"/>
+        <location line="+1776"/>
         <source>Add :%1: to my emoji</source>
         <translation>Ajouter :%1: à mes emoji</translation>
     </message>
@@ -14595,7 +14605,8 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Signaler le message</translation>
     </message>
     <message>
-        <location line="-812"/>
+        <location line="-1886"/>
+        <location line="+1074"/>
         <location line="+826"/>
         <source>Delete</source>
         <translation>Supprimer</translation>
@@ -14693,12 +14704,12 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Cible de la réponse</translation>
     </message>
     <message>
-        <location line="-2128"/>
+        <location line="-2161"/>
         <source>Show preview</source>
         <translation>Afficher l&apos;aperçu</translation>
     </message>
     <message>
-        <location line="+1968"/>
+        <location line="+2001"/>
         <source>Remove edits?</source>
         <translation>Supprimer les modifications ?</translation>
     </message>
@@ -14718,12 +14729,14 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Cela clôt le vote et publie le résultat. Un sondage ne peut pas être rouvert.</translation>
     </message>
     <message>
-        <location line="-768"/>
+        <location line="-1842"/>
+        <location line="+1074"/>
         <source>Delete message?</source>
         <translation>Supprimer le message ?</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-1073"/>
+        <location line="+1074"/>
         <source>This removes the message for everyone in the room. It cannot be undone.</source>
         <translation>Cela supprime le message pour tout le monde dans le salon. Cette action est irréversible.</translation>
     </message>
@@ -14810,10 +14823,10 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Échec du chargement de l&apos;autocollant — cliquez pour réessayer</translation>
     </message>
     <message>
-        <location line="-5748"/>
+        <location line="-5781"/>
         <location line="+57"/>
         <location line="+519"/>
-        <location line="+4385"/>
+        <location line="+4418"/>
         <location line="+1066"/>
         <location line="+93"/>
         <source>Video</source>
@@ -14826,9 +14839,9 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>vidéo</translation>
     </message>
     <message>
-        <location line="-6131"/>
+        <location line="-6164"/>
         <location line="+572"/>
-        <location line="+4488"/>
+        <location line="+4521"/>
         <location line="+1270"/>
         <location line="+2"/>
         <location line="+29"/>
@@ -18093,7 +18106,7 @@ Seule une déconnexion puis une nouvelle connexion corrige ce problème.</transl
         <translation>Essayez %1</translation>
     </message>
     <message>
-        <location line="+122"/>
+        <location line="+134"/>
         <source>%1 is no longer listed.</source>
         <translation>%1 n’est plus listé.</translation>
     </message>
@@ -21523,19 +21536,25 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Réduire la liste des salons</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+79"/>
         <source>Search</source>
         <translation>Rechercher</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+776"/>
+        <location line="+791"/>
         <location line="+1"/>
         <source>Search rooms</source>
         <translation>Rechercher des salons</translation>
     </message>
     <message>
-        <location line="-719"/>
+        <location line="-766"/>
+        <location line="+1"/>
+        <source>Clear search</source>
+        <translation>Effacer la recherche</translation>
+    </message>
+    <message>
+        <location line="+46"/>
         <location line="+1"/>
         <source>Room list options</source>
         <translation>Options de la liste des salons</translation>
@@ -22029,7 +22048,7 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <location line="+191"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4807"/>
+        <location line="+4811"/>
         <location line="+69"/>
         <location line="+13"/>
         <location line="+47"/>
@@ -22038,15 +22057,15 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Non connecté.</translation>
     </message>
     <message>
-        <location line="-5163"/>
+        <location line="-5167"/>
         <location line="+57"/>
         <location line="+142"/>
-        <location line="+4970"/>
+        <location line="+4974"/>
         <source>Unknown room: %1</source>
         <translation>Salon inconnu : %1</translation>
     </message>
     <message>
-        <location line="-5165"/>
+        <location line="-5169"/>
         <location line="+57"/>
         <location line="+142"/>
         <source>Cannot send to encrypted rooms yet: Rust SDK encrypted send is not verified.</source>
@@ -22055,12 +22074,12 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
     <message>
         <location line="+817"/>
         <location line="+2726"/>
-        <location line="+68"/>
+        <location line="+72"/>
         <source>The sticker could not be sent.</source>
         <translation>L&apos;autocollant n&apos;a pas pu être envoyé.</translation>
     </message>
     <message>
-        <location line="-1469"/>
+        <location line="-1473"/>
         <source>Lightning cannot send that yet.</source>
         <translation>Lightning ne peut pas encore envoyer cela.</translation>
     </message>
@@ -22131,7 +22150,7 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Ce message avait déjà été envoyé, il ne peut donc pas être annulé.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+10"/>
         <source>That message could not be cancelled.</source>
         <translation>Ce message n&apos;a pas pu être annulé.</translation>
     </message>
@@ -22146,13 +22165,13 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>La modification n&apos;a pas pu être appliquée.</translation>
     </message>
     <message>
-        <location line="-60"/>
-        <location line="+68"/>
+        <location line="-64"/>
+        <location line="+72"/>
         <source>The poll action could not be completed.</source>
         <translation>L&apos;action sur le sondage n&apos;a pas pu être effectuée.</translation>
     </message>
     <message>
-        <location line="-6689"/>
+        <location line="-6693"/>
         <source>This account&apos;s data is still in use by a background session. Wait a moment and try again.</source>
         <translation>Les données de ce compte sont encore utilisées par une session en arrière-plan. Patientez un instant et réessayez.</translation>
     </message>
@@ -22182,7 +22201,7 @@ Ces liens restent dans l&apos;état du salon. Ouvrez le successeur depuis l&apos
         <translation>Saisissez votre mot de passe.</translation>
     </message>
     <message>
-        <location line="+5818"/>
+        <location line="+5822"/>
         <source>Message could not be sent. You can retry from the message&apos;s Retry action.</source>
         <translation>Le message n&apos;a pas pu être envoyé. Vous pouvez réessayer depuis l&apos;action Réessayer du message.</translation>
     </message>
@@ -35050,7 +35069,7 @@ Audience proposée
         <translation>Marquer ce fil comme lu</translation>
     </message>
     <message>
-        <location line="+1391"/>
+        <location line="+1412"/>
         <source>Jump to the newest reply</source>
         <translation>Aller à la réponse la plus récente</translation>
     </message>
@@ -35063,7 +35082,7 @@ Audience proposée
         </translation>
     </message>
     <message>
-        <location line="-1846"/>
+        <location line="-1867"/>
         <source>This room has been replaced.</source>
         <translation>Ce salon a été remplacé.</translation>
     </message>
@@ -35341,7 +35360,7 @@ Audience proposée
         <translation>Aucune réponse pour l&apos;instant. Démarrez la conversation ci-dessous.</translation>
     </message>
     <message>
-        <location line="+579"/>
+        <location line="+600"/>
         <source>Loading older replies…</source>
         <translation>Chargement des réponses plus anciennes…</translation>
     </message>
@@ -35690,7 +35709,7 @@ Audience proposée
 <context>
     <name>TimelineModel</name>
     <message>
-        <location filename="../src/models/TimelineModel.cpp" line="-1704"/>
+        <location filename="../src/models/TimelineModel.cpp" line="-1710"/>
         <source>%1 changed their display name from “%2” to “%3” and changed their avatar.</source>
         <translation>%1 a changé son nom affiché de « %2 » en « %3 » et a changé son avatar.</translation>
     </message>
@@ -35740,7 +35759,7 @@ Audience proposée
         <translation>%1 a démarré un appel.</translation>
     </message>
     <message>
-        <location line="+1356"/>
+        <location line="+1362"/>
         <source>%1 is typing…</source>
         <translation>%1 est en train d&apos;écrire…</translation>
     </message>
@@ -35778,12 +35797,12 @@ Audience proposée
     <message>
         <location filename="../qml/SpaceLobby.qml" line="-520"/>
         <location filename="../qml/TimelinePane.qml" line="+294"/>
-        <location line="+5418"/>
+        <location line="+5426"/>
         <source>Space</source>
         <translation>Espace</translation>
     </message>
     <message>
-        <location filename="../qml/TimelinePane.qml" line="-5417"/>
+        <location filename="../qml/TimelinePane.qml" line="-5425"/>
         <source>Home</source>
         <translation>Accueil</translation>
     </message>
@@ -35885,12 +35904,12 @@ Audience proposée
     <message>
         <location line="+16"/>
         <location line="+2"/>
-        <location line="+3861"/>
+        <location line="+3869"/>
         <source>Room information</source>
         <translation>Informations du salon</translation>
     </message>
     <message>
-        <location line="-3850"/>
+        <location line="-3858"/>
         <location line="+1"/>
         <source>More room actions</source>
         <translation>Autres actions du salon</translation>
@@ -36106,7 +36125,7 @@ Audience proposée
         <translation>La recherche n&apos;a pas pu aboutir.</translation>
     </message>
     <message>
-        <location line="+2757"/>
+        <location line="+2765"/>
         <location line="+27"/>
         <location line="+466"/>
         <source>Loading older messages…</source>
@@ -36496,8 +36515,8 @@ Audience proposée
     </message>
     <message>
         <location line="+299"/>
-        <location filename="../qml/TimelinePane.qml" line="-6725"/>
-        <location line="+6902"/>
+        <location filename="../qml/TimelinePane.qml" line="-6733"/>
+        <location line="+6910"/>
         <source>Room</source>
         <translation>Salon</translation>
     </message>
@@ -36564,13 +36583,13 @@ Audience proposée
         <translation>Annuler</translation>
     </message>
     <message>
-        <location line="-6017"/>
+        <location line="-6025"/>
         <location line="+65"/>
         <source>View profile</source>
         <translation>Voir le profil</translation>
     </message>
     <message>
-        <location line="+5237"/>
+        <location line="+5245"/>
         <source>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</source>
         <translation>Images (*.png *.jpg *.jpeg *.gif *.webp *.svg)</translation>
     </message>
@@ -36647,7 +36666,7 @@ Audience proposée
         <translation>Déposez des fichiers pour les joindre</translation>
     </message>
     <message>
-        <location line="-5465"/>
+        <location line="-5473"/>
         <source>Join space</source>
         <translation>Rejoindre l&apos;espace</translation>
     </message>

@@ -355,10 +355,12 @@ Item {
                 .indexOf(root.timelineView.threadSearchQuery.trim().toLowerCase()) >= 0
     }
     visible: roomActivityVisible && !suppressedAsThreadRoot && !dividerSuppressed
-             && !deletedFollower && threadFilterVisible && threadSearchVisible
+             && !deletedFollower && !imageGridFollower && threadFilterVisible
+             && threadSearchVisible
     readonly property real naturalImplicitHeight:
         (!roomActivityVisible || suppressedAsThreadRoot || dividerSuppressed
          || deletedFollower || !threadSearchVisible) ? 0
+        : imageGridFollower ? 0
         : !threadFilterVisible ? 0
         : isVirtualRow ? virtualRowLoader.implicitHeight
         : isCallEvent ? callEventRow.implicitHeight + AppTheme.spacingS * 2
@@ -728,6 +730,7 @@ Item {
     readonly property bool actionsVisible:
         !root.readOnlyView
         && !root.messageActionsHidden
+        && !root.imageGridLeader
         && !root.transientOwnerBlocks
         && root.hasServerEventId
         && (root.moreMenuOpen
@@ -1034,6 +1037,31 @@ Item {
     readonly property var messageSegments: model.messageSegments || []
     readonly property var galleryItems: model.galleryItems || []
     readonly property bool isGallery: galleryItems.length > 1
+    readonly property int imageGridIndex:
+        typeof model.imageGridIndex === "number" ? model.imageGridIndex : -1
+    // Off while selecting (every row keeps its checkbox) and while embeds
+    // collapse; the model groups the rows either way.
+    readonly property bool imageGridShown: imageGridIndex >= 0
+        && !root.selectionMode && !root.collapseEmbedsSetting
+    readonly property bool imageGridLeader: imageGridShown && imageGridIndex === 0
+        && imageGridItems.length > 1
+    readonly property bool imageGridFollower: imageGridShown && imageGridIndex > 0
+    readonly property var imageGridItems:
+        imageGridIndex === 0 ? (model.imageGridItems || []) : []
+    function imageGridMemberDelegate(stableId) {
+        if (stableId === "")
+            return null
+        if (stableId === root.actionKey)
+            return root
+        var view = root.timelineView
+        if (!view)
+            return null
+        if (view.delegateForStableId)
+            return view.delegateForStableId(stableId)
+        if (view.itemAtIndex && root.timelineModel)
+            return view.itemAtIndex(root.timelineModel.rowForStableId(stableId))
+        return null
+    }
     readonly property bool isSvgImage: model.isImage === true
         && (model.mediaMimetype || "").toLowerCase().indexOf("image/svg") === 0
     readonly property bool svgWithoutThumbnail:
@@ -2124,7 +2152,8 @@ Item {
                             anchors.left: parent.left
                             width: Math.min(root.contentInnerCap,
                                             item ? item.implicitWidth : 0)
-                            sourceComponent: root.isGallery ? galleryComponent
+                            sourceComponent: root.imageGridLeader ? imageGridComponent
+                                            : root.isGallery ? galleryComponent
                                             : root.svgWithoutThumbnail
                                               ? fileComponent
                                             : model.isImage ? imageComponent
@@ -2769,6 +2798,39 @@ Item {
                                     cursorShape: Qt.PointingHandCursor
                                     onClicked: root.timelineModel.cancelSend(
                                                    root.sourceModelRow(index))
+                                }
+                            }
+                            Label {
+                                objectName: "tooLateToCancelNote"
+                                visible: model.isOwn === true
+                                         && model.tooLateToCancel === true
+                                text: qsTr("Too late to cancel.")
+                                color: AppTheme.textMuted
+                                font.pixelSize: AppTheme.scaled(AppTheme.textMicro)
+                            }
+                            Label {
+                                objectName: "deleteForEveryoneLink"
+                                visible: model.isOwn === true
+                                         && model.tooLateToCancel === true
+                                text: qsTr("Delete for everyone")
+                                color: root.inlineLinkInk
+                                font.pixelSize: AppTheme.scaled(AppTheme.textMicro)
+                                font.underline: true
+                                Accessible.role: Accessible.Button
+                                Accessible.name: text
+                                MouseArea {
+                                    anchors.fill: parent
+                                    enabled: root.rowActionsEnabled
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        var id = model.eventId
+                                        root.confirmDestructive(
+                                            qsTr("Delete message?"),
+                                            qsTr("This removes the message for everyone in the "
+                                                 + "room. It cannot be undone."),
+                                            qsTr("Delete"),
+                                            function() { root.timelineModel.redactEvent(id) })
+                                    }
                                 }
                             }
                             Loader {
@@ -5360,6 +5422,260 @@ Item {
                             font.pixelSize: AppTheme.scaled(AppTheme.textMicro)
                             elide: Label.ElideRight
                             Layout.fillWidth: true
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: imageGridComponent
+        Item {
+            id: imageGrid
+            objectName: "imageGrid"
+            readonly property var items: root.imageGridItems
+            readonly property int columns: 2
+            readonly property real gap: 4
+            readonly property real gridMax: Math.min(360, root.contentInnerCap)
+            readonly property real tile: Math.max(48, Math.floor(
+                (gridMax - gap * (columns - 1)) / columns))
+            readonly property int lines: Math.ceil(items.length / columns)
+            implicitWidth: columns * tile + (columns - 1) * gap
+            implicitHeight: lines > 0 ? lines * tile + (lines - 1) * gap : 0
+
+            Repeater {
+                model: imageGrid.items
+                delegate: Rectangle {
+                    id: gridTile
+                    objectName: "imageGridTile"
+                    required property var modelData
+                    required property int index
+                    readonly property int column: index % imageGrid.columns
+                    readonly property int line: Math.floor(index / imageGrid.columns)
+                    x: (root.rtl ? imageGrid.columns - 1 - column : column)
+                       * (imageGrid.tile + imageGrid.gap)
+                    y: line * (imageGrid.tile + imageGrid.gap)
+                    width: imageGrid.tile
+                    height: imageGrid.tile
+                    radius: AppTheme.radiusSm
+                    color: AppTheme.embedSurface
+                    border.color: highlighted ? AppTheme.accent : AppTheme.border
+                    border.width: highlighted ? 2 : 1
+
+                    readonly property string eventId: modelData.eventId || ""
+                    readonly property string stableId: modelData.stableId || ""
+                    readonly property string key: modelData.mediaKey || ""
+                    readonly property string visibilityKey:
+                        key.length > 0 ? key : eventId
+                    readonly property bool highlighted: eventId !== ""
+                        && (root.navigationHighlightId === eventId
+                            || (!!root.timelineView
+                                && root.timelineView.keyboardSelectedEventId === eventId))
+                    property bool hiddenNow: false
+                    function refreshHidden() {
+                        hiddenNow = !!app.mediaVisibility && visibilityKey.length > 0
+                            && app.mediaVisibility.isHidden(visibilityKey)
+                    }
+                    onVisibilityKeyChanged: refreshHidden()
+                    Component.onCompleted: refreshHidden()
+                    Connections {
+                        target: app.mediaVisibility || null
+                        function onHiddenChanged(changedKey, hidden) {
+                            if (changedKey === gridTile.visibilityKey)
+                                gridTile.hiddenNow = hidden
+                        }
+                    }
+
+                    readonly property bool usesBridge: key.length > 0
+                        && modelData.sourceAvailable === true
+                        && app.mediaBridge.supported
+                    readonly property string fetchKind:
+                        modelData.thumbAvailable === true ? "thumb" : "full"
+                    readonly property bool wanted:
+                        root.mediaInBand && !hiddenNow
+                    property int resolveTick: 0
+                    property bool failed: false
+                    readonly property string source: {
+                        var _tick = resolveTick
+                        if (!wanted)
+                            return ""
+                        if (usesBridge)
+                            return app.mediaBridge.mediaSource(key, fetchKind)
+                        if (app.mediaBridge.supported)
+                            return ""
+                        var thumb = modelData.mediaThumbUrl
+                            ? modelData.mediaThumbUrl.toString() : ""
+                        return thumb.length > 0 ? thumb
+                            : (modelData.mediaUrl ? modelData.mediaUrl.toString() : "")
+                    }
+                    Connections {
+                        target: app.mediaBridge
+                        enabled: gridTile.usesBridge && gridTile.wanted
+                        function onMediaCached(cacheKey) {
+                            if (cacheKey === gridTile.fetchKind + ":" + gridTile.key) {
+                                gridTile.failed = false
+                                gridTile.resolveTick++
+                            }
+                        }
+                        function onMediaFetchFailed(cacheKey, category) {
+                            if (cacheKey === gridTile.fetchKind + ":" + gridTile.key)
+                                gridTile.failed = true
+                        }
+                        function onMediaRetryable(cacheKey) {
+                            if (cacheKey === gridTile.fetchKind + ":" + gridTile.key) {
+                                gridTile.failed = false
+                                gridTile.resolveTick++
+                            }
+                        }
+                    }
+
+                    function activate() {
+                        if (gridTile.failed && gridTile.usesBridge) {
+                            app.mediaBridge.retry(gridTile.fetchKind + ":" + gridTile.key)
+                            gridTile.failed = false
+                            gridTile.resolveTick++
+                            return
+                        }
+                        if (root.timelineView && root.timelineView.openImage)
+                            root.timelineView.openImage(gridTile.key,
+                                                        gridTile.modelData.mediaUrl)
+                        else if (gridTile.modelData.mediaUrl
+                                 && gridTile.modelData.mediaUrl.toString().length > 0)
+                            app.media.openExternal(gridTile.modelData.mediaUrl)
+                    }
+                    // The menu is the member's own row's, so it acts on that event.
+                    function openMenu(x, y) {
+                        var target = root.imageGridMemberDelegate(gridTile.stableId)
+                        if (!target || !target.openContextMenu)
+                            return
+                        var p = gridTile.mapToItem(Overlay.overlay, x, y)
+                        target.openContextMenu(p.x, p.y, true)
+                    }
+
+                    Accessible.role: Accessible.Button
+                    Accessible.name: (modelData.filename || "").length > 0
+                                     ? modelData.filename : qsTr("Image")
+                    Accessible.onPressAction: gridTile.activate()
+
+                    Image {
+                        id: tileImage
+                        objectName: "imageGridTileImage"
+                        anchors.fill: parent
+                        anchors.margins: 1
+                        visible: !gridTile.hiddenNow
+                        fillMode: Image.PreserveAspectCrop
+                        asynchronous: true
+                        cache: root.mediaPixmapCacheAllowed
+                        sourceSize.width: {
+                            var w = gridTile.modelData.width || 0
+                            var h = gridTile.modelData.height || 0
+                            var wide = w > 0 && h > 0 ? Math.max(1, w / h) : 1
+                            return Math.min(1280, Math.round(imageGrid.tile * 2 * wide))
+                        }
+                        source: root.mediaPixmapRetained ? gridTile.source : ""
+                    }
+                    Icon {
+                        anchors.centerIn: parent
+                        visible: !gridTile.hiddenNow
+                                 && (gridTile.failed || tileImage.status !== Image.Ready)
+                        name: gridTile.failed ? "refresh" : "image"
+                        size: 28
+                        color: AppTheme.textMuted
+                    }
+                    MouseArea {
+                        objectName: "imageGridTileMouse"
+                        anchors.fill: parent
+                        enabled: root.rowActionsEnabled
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton
+                        cursorShape: gridTile.hiddenNow ? Qt.ArrowCursor
+                                                        : Qt.PointingHandCursor
+                        onClicked: (mouse) => {
+                            if (mouse.button === Qt.RightButton)
+                                gridTile.openMenu(mouse.x, mouse.y)
+                            else if (!gridTile.hiddenNow)
+                                gridTile.activate()
+                        }
+                    }
+                    Loader {
+                        anchors.fill: parent
+                        active: gridTile.hiddenNow
+                        sourceComponent: MediaHiddenPlaceholder {
+                            hidden: true
+                            onRevealRequested: app.mediaVisibility.setHidden(
+                                                   gridTile.visibilityKey, false)
+                        }
+                    }
+                    HoverHandler {
+                        id: tileHover
+                        enabled: !root.rowHoverSuspended
+                    }
+                    Loader {
+                        id: tileActionsLoader
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        anchors.margins: 4
+                        z: 2
+                        active: tileHover.hovered && root.rowActionsEnabled
+                                && !root.readOnlyView && !root.messageActionsHidden
+                                && gridTile.eventId.length > 0
+                                && gridTile.eventId.indexOf("local:") !== 0
+                        sourceComponent: Rectangle {
+                            objectName: "imageGridTileActions"
+                            radius: AppTheme.radiusTile
+                            color: AppTheme.surface
+                            border.color: AppTheme.borderStrong
+                            border.width: 1
+                            implicitWidth: tileActionRow.implicitWidth + AppTheme.spacing2 * 2
+                            implicitHeight: tileActionRow.implicitHeight + AppTheme.spacing2 * 2
+                            Row {
+                                id: tileActionRow
+                                anchors.centerIn: parent
+                                spacing: 2
+                                IconButton {
+                                    id: tileReactButton
+                                    implicitWidth: 28; implicitHeight: 28
+                                    radius: AppTheme.radiusControl
+                                    iconName: "add_reaction"
+                                    iconSize: 18
+                                    Accessible.name: qsTr("React to message")
+                                    ToolTip.text: qsTr("React")
+                                    ToolTip.visible: hovered
+                                    ToolTip.delay: 500
+                                    onClicked: root.openReactionPickerFor(
+                                                   gridTile.eventId, tileReactButton)
+                                }
+                                IconButton {
+                                    objectName: "imageGridTileReplyButton"
+                                    visible: !root.postForbiddenFor(gridTile.eventId)
+                                    implicitWidth: 28; implicitHeight: 28
+                                    radius: AppTheme.radiusControl
+                                    iconName: "reply"
+                                    iconSize: 18
+                                    Accessible.name: qsTr("Reply to message")
+                                    ToolTip.text: qsTr("Reply")
+                                    ToolTip.visible: hovered
+                                    ToolTip.delay: 500
+                                    onClicked: root.beginReply(gridTile.eventId)
+                                }
+                                IconButton {
+                                    id: tileMoreButton
+                                    objectName: "imageGridTileMoreButton"
+                                    implicitWidth: 28; implicitHeight: 28
+                                    radius: AppTheme.radiusControl
+                                    iconName: "more_vert"
+                                    iconSize: 18
+                                    Accessible.name: qsTr("More message actions")
+                                    ToolTip.text: qsTr("More")
+                                    ToolTip.visible: hovered
+                                    ToolTip.delay: 500
+                                    onClicked: gridTile.openMenu(
+                                                   gridTile.mapFromItem(tileMoreButton, 0,
+                                                                        tileMoreButton.height).x,
+                                                   gridTile.mapFromItem(tileMoreButton, 0,
+                                                                        tileMoreButton.height).y)
+                                }
+                            }
                         }
                     }
                 }

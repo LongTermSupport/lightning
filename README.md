@@ -115,7 +115,7 @@ with a `SHA256SUMS` file:
 | Platform | Packages |
 |---|---|
 | Linux (x86-64) | AppImage, `.deb` for Debian 13+ or Ubuntu 26.04+, `.rpm` for Fedora 44+, `.flatpak`, `.snap` |
-| NixOS | `nix run github:lightning-matrix/lightning`, or the flake with its Home Manager module |
+| NixOS | `nix run github:lightning-matrix/lightning`, or the flake with its Home Manager module ([NixOS guide](docs/nixos.md)) |
 | Windows 10+ (x86-64) | MSI, Setup EXE or portable ZIP, per-user by default. Unsigned, so SmartScreen warns |
 | macOS 26+ (Apple Silicon) | ZIP. Not notarized, so the first launch needs *Open Anyway*. Does not update itself |
 

@@ -1559,6 +1559,9 @@ Q_SIGNALS:
     void eventsTruncatedTo(const QString &roomId, int length);
     void eventEdited(const QString &roomId, const QString &eventId);
     void eventRedacted(const QString &roomId, const QString &eventId);
+    // eventId is empty when the sent event's id is not known.
+    void sendCancelTooLate(const QString &roomId, const QString &transactionId,
+                           const QString &eventId);
     void redactionFinished(const QString &roomId, const QString &eventId,
                            bool ok, const QString &category);
     void redactionRateLimited(const QString &roomId, const QString &eventId,

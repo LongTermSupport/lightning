@@ -172,6 +172,9 @@ public:
         LocationTsRole,
         LocationLiveUntilRole,
         CardKindRole,
+        TooLateToCancelRole,
+        ImageGridIndexRole,
+        ImageGridItemsRole,
     };
 
     explicit TimelineModel(QObject *parent = nullptr);
@@ -250,6 +253,9 @@ public:
     Q_INVOKABLE QString stableIdAt(int row) const;
     Q_INVOKABLE QString eventIdAt(int row) const;
     Q_INVOKABLE int rowForStableId(const QString &stableId) const;
+    static constexpr int kImageGridMaxTiles = 4;
+    // The row whose grid draws this row's image, or `row` itself.
+    Q_INVOKABLE int imageGridLeaderRow(int row) const;
     Q_INVOKABLE QVariantMap layoutMetadataAt(int row) const;
 
     Q_INVOKABLE QString visibleTextForEvent(const QString &eventId) const;
@@ -378,6 +384,8 @@ private Q_SLOTS:
     void onEventRemovedAt(const QString &roomId, int index);
     void onEventsTruncatedTo(const QString &roomId, int length);
     void onLoggedOut();
+    void onSendCancelTooLate(const QString &roomId, const QString &transactionId,
+                             const QString &eventId);
     void onTypingChanged(const QString &roomId);
     void onMembersChanged(const QString &roomId);
     int refreshStaleMentionRows();
@@ -393,7 +401,11 @@ private:
     // Lazily rebuilt eventId -> row map behind rowForEventId/eventForId. Every
     // structural mutation (and whole-event replacement, which can rename local:
     // -> remote) calls invalidateRowIndex(); the next lookup rebuilds in O(n).
-    void invalidateRowIndex() const { m_rowIndexDirty = true; }
+    void invalidateRowIndex() const
+    {
+        m_rowIndexDirty = true;
+        m_imageGridDirty = true;
+    }
     const QHash<QString, int> &latestReceiptRows() const;
     mutable QHash<QString, int> m_latestReceiptRow;
     mutable bool m_latestReceiptRowDirty = true;
@@ -423,6 +435,24 @@ private:
     int deletedGroupLeaderRow(int row) const;
     int deletedGroupLengthFrom(int leaderRow) const;
     QVariantList stateGroupEntriesFrom(int leaderRow) const;
+
+    struct ImageGridSlot {
+        int leaderRow = -1;
+        int index = -1;
+        int size = 0;
+    };
+    bool imageGridEligible(const TimelineEvent &e) const;
+    bool imageGridJoins(const TimelineEvent &previous,
+                        const TimelineEvent &e) const;
+    const QList<ImageGridSlot> &imageGridSlots() const;
+    bool isImageGridFollower(int row) const;
+    QVariantList imageGridItemsFrom(int leaderRow) const;
+    QString imageGridSignature(int row) const;
+    void refreshImageGrid();
+    void forgetImageGridAnnouncements();
+    mutable QList<ImageGridSlot> m_imageGridSlots;
+    mutable bool m_imageGridDirty = true;
+    QHash<QString, QString> m_imageGridAnnounced;
 
     bool rowHostsReceipts(int row) const;
     int receiptHostRow(int row) const;
@@ -469,6 +499,8 @@ public:
 
 private:
     QSet<QString> m_spoilersRevealed;
+    QSet<QString> m_cancelRequested;
+    QSet<QString> m_tooLateToCancel;
     QString m_selfUserId;
     QList<TimelineEvent> m_events;
     QString m_latestCallEventId;

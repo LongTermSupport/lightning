@@ -75,6 +75,8 @@ public:
     Q_INVOKABLE void reset();
     Q_INVOKABLE QVariantMap resultAt(int row) const;
     Q_INVOKABLE int indexOfRoom(const QString &roomId) const;
+    // Most recent first; in memory, per client, dropped on sign-out.
+    void noteVisited(const QString &roomId);
 
     static int matchScore(const QString &query, const QString &name,
                           const QStringList &alternates);
@@ -100,9 +102,11 @@ private:
     QString m_query;
     QList<Result> m_results;
     QVariantMap m_hidden;
+    QStringList m_recent;
     // True between refresh()/setQuery() and reset(): only then do room
     // changes rebuild the open palette.
     bool m_active = false;
 
     static constexpr int kMaxPerCategory = 50;
+    static constexpr int kMaxRecent = 20;
 };

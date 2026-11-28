@@ -199,6 +199,35 @@ RoomsPanel { width: 380; height: 700 }
         QTRY_VERIFY(!f.controller->roomBatch()->selecting());
     }
 
+    // The search field shows a clear button once it holds text, and a click on it
+    // empties the field and the list filter and leaves focus in the field.
+    void theRoomSearchFieldHasAClearButton()
+    {
+        Fixture f;
+        QVERIFY(load(f, R"QML(
+import QtQuick
+import MatrixClient
+RoomsPanel { width: 380; height: 700 }
+)QML", 380, 700));
+        auto *field = byName(f.item.get(), QStringLiteral("roomSearchField"));
+        auto *clear = byName(f.item.get(), QStringLiteral("roomSearchClear"));
+        QVERIFY(field);
+        QVERIFY(clear);
+        QVERIFY(!clear->isVisible());
+
+        field->setProperty("text", QStringLiteral("x"));
+        QTRY_VERIFY(clear->isVisible());
+        QTRY_COMPARE(f.controller->roomList()->searchQuery(), QStringLiteral("x"));
+
+        const QPoint point = clear->mapToScene(
+            QPointF(clear->width() / 2, clear->height() / 2)).toPoint();
+        QTest::mouseClick(&f.window, Qt::LeftButton, Qt::NoModifier, point);
+        QTRY_VERIFY(field->property("text").toString().isEmpty());
+        QTRY_VERIFY(f.controller->roomList()->searchQuery().isEmpty());
+        QVERIFY(!clear->isVisible());
+        QVERIFY(field->hasActiveFocus());
+    }
+
     void selectionCanEnterByKeyboardAndExitWithEscape()
     {
         Fixture f;

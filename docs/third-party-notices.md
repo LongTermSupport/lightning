@@ -87,6 +87,7 @@ All bundled fonts are open-licensed; the licence text ships next to each one in
 | Plus Jakarta Sans | SIL Open Font License 1.1 | `data/fonts/OFL-PlusJakartaSans.txt` |
 | Source Sans 3 | SIL Open Font License 1.1 | `data/fonts/OFL-SourceSans3.txt` |
 | Material Symbols (subset) | Apache License 2.0 | `data/fonts/LICENSE-MaterialSymbols.txt` |
+| Twemoji Country Flags (flag subset of Mozilla's Twemoji, `scripts/generate-flag-font.sh`) | Graphics CC-BY 4.0 (Twitter, Inc and contributors); font Apache License 2.0 | `data/fonts/LICENSE-TwemojiCountryFlags.txt` |
 
 **Sign-in provider logos.** The sign-in screen draws the marks of Apple,
 Facebook, GitHub, GitLab, Google and X (MSC2858's `twitter`) on single sign-on

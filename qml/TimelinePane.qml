@@ -3135,7 +3135,12 @@ Rectangle {
 
                 function runNavigationAction(action) {
                     switch (action) {
-                    case "timeline.olderMessage": stepSelectedMessage(1); break
+                    case "timeline.olderMessage":
+                        if (root.keyboardSelectedEventId === "")
+                            enterMessageNavigation()
+                        else
+                            stepSelectedMessage(1)
+                        break
                     case "timeline.newerMessage": stepSelectedMessage(-1); break
                     case "timeline.extendSelectionOlder":
                         setRangeEnd(root.rangeAnchorEventId,
@@ -3224,6 +3229,9 @@ Rectangle {
                 function itemAtViewRow(row) {
                     return row < 0 || row >= count
                             ? null : rowRepeater.itemAt(row)
+                }
+                function delegateForStableId(stableId) {
+                    return itemAtViewRow(viewRowForStableId(stableId))
                 }
                 function rowSkippedByLayout(item) {
                     return !item || item.height <= 0 || item.width <= 0
@@ -3396,13 +3404,19 @@ Rectangle {
                 function tryLandNavigationTarget() {
                     if (navigationPendingRow < 0)
                         return false
-                    const row = navigationPendingId !== ""
+                    let row = navigationPendingId !== ""
                                 && app.timeline
                                 ? app.timeline.rowForStableId(
                                       navigationPendingId)
                                 : navigationPendingRow
-                    const viewRow = row >= 0 ? viewRowForSourceRow(row) : -1
+                    let viewRow = row >= 0 ? viewRowForSourceRow(row) : -1
                     let item = viewRow >= 0 ? itemAtViewRow(viewRow) : null
+                    // A grid member has no row of its own; land on the grid.
+                    if (item && item.imageGridFollower === true) {
+                        row = app.timeline.imageGridLeaderRow(row)
+                        viewRow = viewRowForSourceRow(row)
+                        item = viewRow >= 0 ? itemAtViewRow(viewRow) : null
+                    }
                     if (item && !navigationGeometryReady(item)
                             && (item.height > 0 || !item.visible)) {
                         rowColumn.forceLayout()
@@ -4399,6 +4413,10 @@ Rectangle {
                     case "timeline.pageDown":    keyboardPage(1); return true
                     case "timeline.jumpToStart": goToEarliestLoaded(); return true
                     case "timeline.jumpToEnd":   goToLatest(); return true
+                    case "timeline.olderMessage":
+                    case "timeline.newerMessage":
+                        root.restoredSelectionOutline = true
+                        return runNavigationAction(actionId)
                     }
                     return false
                 }

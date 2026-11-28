@@ -45,3 +45,15 @@ function handleKey(vim, event, editor, rich) {
         editor.cursorPosition = Math.min(pos, editor.length)
     return { send: r.send }
 }
+
+// Shift+K / Shift+J in Normal mode move the message selection; Shift alone,
+// with no count or operator pending.
+function selectionStepAction(vim, event) {
+    if (event.modifiers !== Qt.ShiftModifier || vim.pending.length > 0)
+        return ""
+    if (event.key === Qt.Key_K)
+        return "timeline.olderMessage"
+    if (event.key === Qt.Key_J)
+        return "timeline.newerMessage"
+    return ""
+}
